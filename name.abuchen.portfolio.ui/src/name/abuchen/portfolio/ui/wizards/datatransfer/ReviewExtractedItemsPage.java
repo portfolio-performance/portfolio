@@ -339,31 +339,34 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
                     case OK:
                     default:
                 }
-
-                // put a warning image, if we want to replace a savings plan transaction 
-                Extractor.Item item = entry.getItem();
-                if (item instanceof Extractor.BuySellEntryItem) 
-                {
-                    if (image == null && ((Extractor.BuySellEntryItem) item).isSavingsPlanItem())
-                    {
-                        image = Images.WARNING;
-                    }
-                }
-
                 return image != null ? image.image() : null;
             }
 
             @Override
             public String getToolTipText(Object entry)
             {
-                // put a warning image, if we want to replace a savings plan
-                // transaction
-                Extractor.Item item = ((ExtractedEntry) entry).getItem();
-                if (item instanceof Extractor.BuySellEntryItem)
+                List<String> messages = new ArrayList<String>();
+                ((ExtractedEntry) entry).getStatus() //
+                                .filter(s -> s.getCode() != ImportAction.Status.Code.OK) //
+                                .forEach(s -> {
+                                    if (s.getMessage() != null)
+                                    {
+                                        messages.add(s.getMessage());
+                                    }
+                                });
+                String message = null;
+                for (String m : messages)
                 {
-                    return Messages.InvestmentPlanItemImportToolTip;
+                    if (message != null && message.length() > 0)
+                    {
+                        message = message.concat("\n").concat(m); //$NON-NLS-1$
+                    }
+                    else
+                    {
+                        message = m;
+                    }
                 }
-                return null;
+                return message;
             }
 
             @Override
@@ -400,15 +403,30 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
             @Override
             public String getToolTipText(Object entry)
             {
-                // put a warning image, if we want to replace a savings plan
-                // transaction
-                Extractor.Item item = ((ExtractedEntry) entry).getItem();
-                if (item instanceof Extractor.BuySellEntryItem)
+                List<String> messages = new ArrayList<String>();
+                ((ExtractedEntry) entry).getStatus() //
+                                .filter(s -> s.getCode() != ImportAction.Status.Code.OK) //
+                                .forEach(s -> {
+                                    if (s.getMessage() != null)
+                                    {
+                                        messages.add(s.getMessage());
+                                    }
+                                });
+                String message = null;
+                for (String m : messages)
                 {
-                    return Messages.InvestmentPlanItemImportToolTip;
+                    if (message != null && message.length() > 0)
+                    {
+                        message = message.concat("\n").concat(m); //$NON-NLS-1$
+                    }
+                    else
+                    {
+                        message = m;
+                    }
                 }
-                return null;
+                return message;
             }
+
 
             @Override
             public Image getImage(ExtractedEntry entry)
@@ -740,7 +758,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         List<ImportAction> actions = new ArrayList<>();
         actions.add(new CheckValidTypesAction());
         actions.add(new CheckSecurityRelatedValuesAction());
-        actions.add(new DetectDuplicatesAction());
+        actions.add(new DetectDuplicatesAction(client));
         actions.add(new CheckCurrenciesAction());
         actions.add(new MarkNonImportableAction());
 

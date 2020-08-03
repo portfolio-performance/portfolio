@@ -41,7 +41,8 @@ public class ExtractedEntry
         // otherwise import if either the status is OK or the user explicitly
         // overrides warnings
         return maxCode == Status.Code.OK
-                        || (maxCode == Status.Code.WARNING && isImported != null && isImported.booleanValue());
+                        || (maxCode == Status.Code.WARNING && isImported != null && isImported.booleanValue()
+                        || (maxCode == Status.Code.WARNING && item.isInvestmentPlanItem()));
     }
 
     public void addStatus(ImportAction.Status status)

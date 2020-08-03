@@ -89,8 +89,8 @@ public class JSONPDFTestCase
 
         new AssertImportActions().check(result);
 
-        List<JTransaction> actualTransactions = result.stream().filter(i -> i.getData() instanceof JTransaction)
-                        .map(i -> (JTransaction) i.getData()).collect(Collectors.toList());
+        List<JTransaction> actualTransactions = result.stream().filter(i -> i.getData(JSONPDFExtractor.JTRANSACTION) instanceof JTransaction)
+                        .map(i -> (JTransaction) i.getData(JSONPDFExtractor.JTRANSACTION)).collect(Collectors.toList());
 
         List<JTransaction> expectedTransactions = JClient.from(this.path + EXT_JSON).getTransactions()
                         .collect(Collectors.toList());

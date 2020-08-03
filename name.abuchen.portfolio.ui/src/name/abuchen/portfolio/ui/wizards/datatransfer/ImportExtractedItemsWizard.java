@@ -11,7 +11,6 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.graphics.Image;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
-import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.SecurityCache;
 import name.abuchen.portfolio.datatransfer.actions.InsertAction;
@@ -136,12 +135,12 @@ public final class ImportExtractedItemsWizard extends Wizard
                 {
                     if (entry.isImported())
                     {
-                        if (entry.getItem() instanceof Extractor.BuySellEntryItem
-                                        && ((BuySellEntryItem) entry.getItem()).isSavingsPlanItem())
+                        if (entry.getItem().isInvestmentPlanItem())
                         {
-                            action.setSavingsPlanItem(true);
+                            action.setInvestmentPlanItem(true);
                         }
                         entry.getItem().apply(action, page);
+                        action.setInvestmentPlanItem(false);
                         isDirty = true;
                     }
                 }

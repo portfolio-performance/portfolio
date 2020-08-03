@@ -55,7 +55,7 @@ public interface Extractor
          * Store arbitrary data with the extracted item. Currently to pass the
          * JSON structure of the transaction to the test cases
          */
-        private Object data;
+        private Map<String, Object> data;
 
         private Account accountPrimary;
 
@@ -64,6 +64,8 @@ public interface Extractor
         private Portfolio portfolioPrimary;
 
         private Portfolio portfolioSecondary;
+        
+        private boolean investmentPlanItem = false;
 
         public abstract Annotated getSubject();
 
@@ -85,16 +87,16 @@ public interface Extractor
 
         public abstract Status apply(ImportAction action, Context context);
 
-        public Object getData()
+        public Object getData(String key)
         {
-            return data;
+            return data.get(key);
         }
 
-        public void setData(Object data)
+        public void setData(String key, Object data)
         {
-            this.data = data;
+            this.data.put(key, data);
         }
-
+        
         public Account getAccountPrimary()
         {
             return accountPrimary;
@@ -133,6 +135,16 @@ public interface Extractor
         public void setPortfolioSecondary(Portfolio portfolio)
         {
             portfolioSecondary = portfolio;
+        }
+
+        public boolean isInvestmentPlanItem()
+        {
+            return investmentPlanItem;
+        }
+
+        public void setInvestmentPlanItem(boolean flag)
+        {
+            investmentPlanItem = flag;
         }
 
     }
@@ -195,6 +207,7 @@ public interface Extractor
         {
             return note;
         }
+        
     }
 
     static class TransactionItem extends Item
@@ -291,7 +304,6 @@ public interface Extractor
     static class BuySellEntryItem extends Item
     {
         private final BuySellEntry entry;
-        private boolean savingsPlanItem = false;
 
         public BuySellEntryItem(BuySellEntry entry)
         {
@@ -334,16 +346,6 @@ public interface Extractor
             return entry.getAccountTransaction().getSecurity();
         }
         
-        public boolean isSavingsPlanItem()
-        {
-            return savingsPlanItem;
-        }
-
-        public void setSavingsPlanItem(boolean flag)
-        {
-            this.savingsPlanItem = flag;
-        }
-
         @Override
         public Status apply(ImportAction action, Context context)
         {
@@ -358,9 +360,9 @@ public interface Extractor
             Status status = action.process(entry, account, portfolio);
 
             // check if message was set in DetectDuplicatesAction
-            if (status.getMessage() != null && status.getMessage().equals(ImportAction.IMPORT_SAVINGS_PLAN_ITEM))  
+            if (Messages.InvestmentPlanItemImportToolTip.equals(status.getMessage()))  
             { 
-                this.savingsPlanItem = true;
+                super.setInvestmentPlanItem(true);
             }
             return status;
         }
