@@ -554,6 +554,40 @@ public class ViacPDFExtractorTest
     }
 
     @Test
+    public void testDividend03withUSDSecurity()
+    {
+        Client client = new Client();
+
+        ViacPDFExtractor extractor = new ViacPDFExtractor(client);
+
+        // use the same security and pretend it was in USD
+        Security existingSecurity = new Security("CSIF Emerging Markets", CurrencyUnit.USD);
+        existingSecurity.setIsin("CH0017844686");
+        client.addSecurity(existingSecurity);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ViacDividend03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        
+        assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of("CHF", Values.Amount.factorize(5.73))));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(0.0)));
+        assertThat(transaction.getNote(), is("CSIF Emerging Markets | ViacDividend03.txt"));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-27T00:00")));
+
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0))));
+        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(5.73))));
+    }
+
+    @Test
     public void testDividend04()
     {
         Client client = new Client();
