@@ -89,7 +89,7 @@ public interface Extractor
 
         public Object getData()
         {
-            return this.data;
+            return data;
         }
 
         public void setData(Object data)
@@ -207,7 +207,6 @@ public interface Extractor
         {
             return note;
         }
-        
     }
 
     static class TransactionItem extends Item

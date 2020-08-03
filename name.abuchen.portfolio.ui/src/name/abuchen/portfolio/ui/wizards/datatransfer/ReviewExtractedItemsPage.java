@@ -350,21 +350,15 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
                                 .filter(s -> s.getCode() != ImportAction.Status.Code.OK) //
                                 .forEach(s -> {
                                     if (s.getMessage() != null)
-                                    {
                                         messages.add(s.getMessage());
-                                    }
                                 });
                 String message = null;
                 for (String m : messages)
                 {
                     if (message != null && message.length() > 0)
-                    {
                         message = message.concat("\n").concat(m); //$NON-NLS-1$
-                    }
                     else
-                    {
                         message = m;
-                    }
                 }
                 return message;
             }
@@ -408,25 +402,18 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
                                 .filter(s -> s.getCode() != ImportAction.Status.Code.OK) //
                                 .forEach(s -> {
                                     if (s.getMessage() != null)
-                                    {
                                         messages.add(s.getMessage());
-                                    }
                                 });
                 String message = null;
                 for (String m : messages)
                 {
                     if (message != null && message.length() > 0)
-                    {
                         message = message.concat("\n").concat(m); //$NON-NLS-1$
-                    }
                     else
-                    {
                         message = m;
-                    }
                 }
                 return message;
             }
-
 
             @Override
             public Image getImage(ExtractedEntry entry)

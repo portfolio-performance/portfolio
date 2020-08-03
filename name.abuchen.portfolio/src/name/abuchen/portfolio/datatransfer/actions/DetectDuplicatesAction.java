@@ -60,7 +60,6 @@ public class DetectDuplicatesAction implements ImportAction
         }
 
         Status status = check(entry.getAccountTransaction(), account.getTransactions());
-
         if (status.getCode() != Status.Code.OK)
             return status;
         return check(entry.getPortfolioTransaction(), portfolio.getTransactions());
@@ -130,7 +129,6 @@ public class DetectDuplicatesAction implements ImportAction
 
             if (isPotentialDuplicate(subject, t))
                 return new Status(Status.Code.WARNING, Messages.LabelPotentialDuplicate);
-
         }
 
         return Status.OK_STATUS;
