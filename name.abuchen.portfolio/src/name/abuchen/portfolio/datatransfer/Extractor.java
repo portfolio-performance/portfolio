@@ -55,7 +55,7 @@ public interface Extractor
          * Store arbitrary data with the extracted item. Currently to pass the
          * JSON structure of the transaction to the test cases
          */
-        private Map<String, Object> data;
+        private Object data;
 
         private Account accountPrimary;
 
@@ -87,14 +87,14 @@ public interface Extractor
 
         public abstract Status apply(ImportAction action, Context context);
 
-        public Object getData(String key)
+        public Object getData()
         {
-            return data.get(key);
+            return this.data;
         }
 
-        public void setData(String key, Object data)
+        public void setData(Object data)
         {
-            this.data.put(key, data);
+            this.data = data;
         }
         
         public Account getAccountPrimary()

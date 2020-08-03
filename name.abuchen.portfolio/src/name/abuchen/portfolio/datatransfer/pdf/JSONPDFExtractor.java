@@ -47,8 +47,6 @@ public class JSONPDFExtractor extends AbstractPDFExtractor
 {
     private JPDFExtractorDefinition definition;
 
-    public static final String JTRANSACTION = "jtransaction"; //$NON-NLS-1$
-
     public JSONPDFExtractor(Client client, String resource)
     {
         super(client);
@@ -253,7 +251,7 @@ public class JSONPDFExtractor extends AbstractPDFExtractor
                         .forEach(u -> entry.getPortfolioTransaction().addUnit(u));
 
         BuySellEntryItem item = new BuySellEntryItem(entry);
-        item.setData(JTRANSACTION, t);
+        item.setData(t);
         return item;
     }
 
@@ -265,7 +263,7 @@ public class JSONPDFExtractor extends AbstractPDFExtractor
         fillIn(t, tx);
 
         TransactionItem item = new TransactionItem(tx);
-        item.setData(JTRANSACTION, t);
+        item.setData(t);
         return item;
     }
 
@@ -277,7 +275,7 @@ public class JSONPDFExtractor extends AbstractPDFExtractor
         fillIn(t, tx);
 
         TransactionItem item = new TransactionItem(tx);
-        item.setData(JTRANSACTION, t);
+        item.setData(t);
         return item;
     }
 
