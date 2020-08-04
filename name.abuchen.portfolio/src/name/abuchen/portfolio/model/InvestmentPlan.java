@@ -187,7 +187,7 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
     {
         return this.transactions;
     }
-    
+
     /**
      * Returns a list of transaction pairs, i.e. transaction and the owner
      * (account or portfolio). As the list of transactions is part of the XML
