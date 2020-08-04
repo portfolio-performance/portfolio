@@ -122,7 +122,8 @@ public class InsertAction implements ImportAction
                 existingTransaction.setNote(t.getNote());
                 existingTransaction.setShares(t.getShares());
                 existingTransaction.clearUnits();
-                existingTransaction.addUnits(t.getUnits());
+                t.getUnits().forEach(existingTransaction::addUnit);
+                
                 if (existingTransaction.getCrossEntry() != null)
                     existingTransaction.getCrossEntry().getCrossTransaction(existingTransaction).setNote(t.getNote());
             }
