@@ -187,6 +187,11 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
     {
         return this.transactions;
     }
+    
+    public void addTransaction(Transaction transaction) 
+    {
+        this.transactions.add(transaction);
+    }
 
     /**
      * Returns a list of transaction pairs, i.e. transaction and the owner
