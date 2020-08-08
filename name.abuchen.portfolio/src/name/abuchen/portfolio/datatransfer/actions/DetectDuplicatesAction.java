@@ -170,9 +170,9 @@ public class DetectDuplicatesAction implements ImportAction
             return false;
 
         LocalDateTime date = subject.getDateTime();
-        // date can be up to three days after other's date (due to shifted
-        // executions on weekends)
-        if (date.isBefore(other.getDateTime()) || date.minusDays(3).isAfter(other.getDateTime()))
+        // date can be up to five days after other's date (due to shifted
+        // executions on weekends and holidays)
+        if (date.isBefore(other.getDateTime()) || date.minusDays(5).isAfter(other.getDateTime()))
             return false;
 
         // number of shares might differ due to differing prices per share used
