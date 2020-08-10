@@ -67,6 +67,8 @@ public class ClientSettings
                         "https://www.alleaktien.de/quantitativ/{isin}/")); //$NON-NLS-1$
         answer.add(new Bookmark("Comdirect (Aktien)", //$NON-NLS-1$
                         "https://www.comdirect.de/inf/aktien/{isin}")); //$NON-NLS-1$
+        answer.add(new Bookmark("DivvyDiary", //$NON-NLS-1$
+                        "https://divvydiary.com/symbols/{isin}")); //$NON-NLS-1$
 
         return answer;
     }
