@@ -42,19 +42,20 @@ public class PDFImportAssistant
         extractors.add(new DegiroPDFExtractor(client));
         extractors.add(new DeutscheBankPDFExtractor(client));
         extractors.add(new DkbPDFExtractor(client));
+        extractors.add(new DZBankPDFExtractor(client));
         extractors.add(new FinTechGroupBankPDFExtractor(client));
-        extractors.add(new INGDiBaExtractor(client));
-        extractors.add(new OnvistaPDFExtractor(client));
-        extractors.add(new SBrokerPDFExtractor(client));
-        extractors.add(new UnicreditPDFExtractor(client));
         extractors.add(new HelloBankPDFExtractor(client));
-        extractors.add(new ViacPDFExtractor(client));
-        extractors.add(new TargobankPDFExtractor(client));
-        extractors.add(new TradeRepublicPDFExtractor(client));
+        extractors.add(new INGDiBaExtractor(client));
+        extractors.add(new JustTradePDFExtractor(client));
+        extractors.add(new OnvistaPDFExtractor(client));
         extractors.add(new PostfinancePDFExtractor(client));
+        extractors.add(new SBrokerPDFExtractor(client));
         extractors.add(new SutorPDFExtractor(client));
         extractors.add(new SwissquotePDFExtractor(client));
-        extractors.add(new DZBankPDFExtractor(client));
+        extractors.add(new TargobankPDFExtractor(client));
+        extractors.add(new TradeRepublicPDFExtractor(client));
+        extractors.add(new UnicreditPDFExtractor(client));
+        extractors.add(new ViacPDFExtractor(client));
 
         extractors.add(new JSONPDFExtractor(client, "deutsche-bank-purchase.json")); //$NON-NLS-1$
         extractors.add(new JSONPDFExtractor(client, "deutsche-bank-sale.json")); //$NON-NLS-1$
