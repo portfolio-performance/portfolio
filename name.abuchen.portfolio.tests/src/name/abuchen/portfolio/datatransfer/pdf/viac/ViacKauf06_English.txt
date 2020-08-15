@@ -1,0 +1,28 @@
+PDF author: 'VIAC'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Terzo Vorsorgestiftung der WIR Bank
+Auberg 1
+4002 Basel
+Internet www.viac.ch
+Email info@viac.ch
+Phone 0800 80 40 40
+Contract x.xxx.xxx.xxx Mr John Doe
+Portfolio x.xxx.xxx.xxx.xx 
+Bahnhofstrasse 1
+8001 Zürich
+Basel, 03.07.2020
+Exchange Settlement - Buy
+We have executed the following order for you:
+Order: Buy
+0.114 Qty UBS ETF MSCI EMU SRI
+ISIN: LU0629460675
+Price: EUR 93.09
+Amount EUR 10.58
+Exchange rate CHF/EUR 1.0672 CHF 11.29
+Stamp duty CHF 0.01
+Charged amount: Value date 03.07.2020 CHF 11.30
+S. E. & O.
+Kind regards
+Terzo Pension Foundation
+Display without signature

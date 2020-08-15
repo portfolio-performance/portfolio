@@ -105,8 +105,13 @@ public abstract class AbstractPDFExtractor implements Extractor
             }
 
             for (Item item : items)
-                item.getSubject().setNote(filename);
-
+            {
+                if (item.getSubject().getNote() == null)
+                    item.getSubject().setNote(filename);
+                else
+                    item.getSubject().setNote(item.getSubject().getNote().concat(" | ").concat(filename)); //$NON-NLS-1$
+            }
+            
             return items;
         }
         catch (IllegalArgumentException e)

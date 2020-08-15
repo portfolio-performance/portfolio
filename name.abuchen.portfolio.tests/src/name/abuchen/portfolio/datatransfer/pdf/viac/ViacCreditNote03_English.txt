@@ -1,0 +1,27 @@
+PDF author: 'VIAC'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Terzo Vorsorgestiftung der WIR Bank
+Auberg 1
+4002 Basel
+Internet www.viac.ch
+Email info@viac.ch
+Phone 0800 80 40 40
+Contract x.xxx.xxx.xxx Mr John Doe
+Portfolio x.xxx.xxx.xxx.xx 
+Bahnhofstrasse 1
+8001 Zürich
+Basel, 17.12.2019
+Deposit 3a
+Credit from 17.12.2019:
+Incoming payment from: Deposit BESR
+Reference number: xx xxxxx xxxxx xxxxx xxxxx xxxxx 
+Incoming payment: Amount CHF 1'000.00
+Credit: Value date 17.12.2019 CHF 1'000.00
+S. E. & O.
+Note: Whenever possible, our foundation bears the product costs (index funds). In the case of ETFs, product costs are charged within the fund and 
+accrue in favor of the fund provider. Product costs accrue in addition to the administration fee and amount to 0.09 % per year for the currently 
+selected strategy. VIAC does not receive any kind of reimbursements (retrocessions).
+Kind regards
+Terzo Pension Foundation
+Display without signature
