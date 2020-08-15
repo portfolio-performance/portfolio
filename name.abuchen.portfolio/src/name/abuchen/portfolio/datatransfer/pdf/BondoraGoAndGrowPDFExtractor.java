@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import java.util.Map;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -18,11 +17,10 @@ public class BondoraGoAndGrowPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier(BANK_IDENTIFIER); //$NON-NLS-1$
+        addBankIdentifier(BANK_IDENTIFIER); // $NON-NLS-1$
         addAccountStatementTransaction();
     }
-    
-    
+
     private void addAccountStatementTransaction()
     {
         final DocumentType type = new DocumentType(ACCOUNT_STATEMENT_DOCUMENT_TYPE);
@@ -39,10 +37,11 @@ public class BondoraGoAndGrowPDFExtractor extends AbstractPDFExtractor
         });
 
         block.set(pdfTransaction);
-        pdfTransaction.section("date", "kind", "amount")
-                        .match(ACCOUNT_STATEMENT_TRANSACTION_REGEX)
+        pdfTransaction
+
+                        .section("date", "kind", "amount") //
+                        .match(ACCOUNT_STATEMENT_TRANSACTION_REGEX) //
                         .assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
                             String date = v.get("date");
                             t.setDateTime(asDate(date));
                             t.setAmount(asAmount(v.get("amount")));
