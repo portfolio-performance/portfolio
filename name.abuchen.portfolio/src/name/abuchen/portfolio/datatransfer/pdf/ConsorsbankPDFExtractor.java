@@ -30,13 +30,11 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
         addPreemptiveBuyTransaction();
         addSellTransaction();
         addDividendTransaction();
-        addIncomeTransaction();
         addTaxAdjustmentTransaction();
         addVorabpauschaleTransaction();
 
         // documents since Q4 2017 look different
-        addQ42017DividendTransaction();
-        addQ42017IncomeTransaction();
+        addNewDividendTransaction();
     }
 
     @Override
@@ -201,30 +199,12 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private void addDividendTransaction()
     {
-        DocumentType type = new DocumentType("DIVIDENDENGUTSCHRIFT");
+        DocumentType type = new DocumentType("(DIVIDENDENGUTSCHRIFT|ERTRAGSGUTSCHRIFT)");
         this.addDocumentTyp(type);
 
-        Block block = new Block("DIVIDENDENGUTSCHRIFT.*");
+        Block block = new Block("(DIVIDENDENGUTSCHRIFT|ERTRAGSGUTSCHRIFT).*");
         type.addBlock(block);
-        block.set(newDividendTransaction(type));
-    }
-
-    @SuppressWarnings("nls")
-    private void addIncomeTransaction()
-    {
-        DocumentType type = new DocumentType("ERTRAGSGUTSCHRIFT");
-        this.addDocumentTyp(type);
-
-        Block block = new Block("ERTRAGSGUTSCHRIFT.*");
-        type.addBlock(block);
-        block.set(newDividendTransaction(type));
-
-    }
-
-    @SuppressWarnings("nls")
-    private Transaction<AccountTransaction> newDividendTransaction(DocumentType type)
-    {
-        return new Transaction<AccountTransaction>()
+        block.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
                             AccountTransaction t = new AccountTransaction();
@@ -347,7 +327,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                             }
                         })
 
-                        .wrap(t -> t.getAmount() != 0 ? new TransactionItem(t) : null);
+                        .wrap(t -> t.getAmount() != 0 ? new TransactionItem(t) : null));
     }
 
     @SuppressWarnings("nls")
@@ -511,33 +491,15 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
     }
 
     @SuppressWarnings("nls")
-    private void addQ42017IncomeTransaction()
+    private void addNewDividendTransaction()
     {
-        DocumentType type = new DocumentType("Ertragsgutschrift");
+        DocumentType type = new DocumentType("(Dividendengutschrift|Ertragsgutschrift)");
         this.addDocumentTyp(type);
 
-        Block block = new Block("Ertragsgutschrift.*");
+        Block block = new Block("(Dividendengutschrift|Ertragsgutschrift).*");
         type.addBlock(block);
 
-        block.set(newQ42017DividendTransaction(type));
-    }
-
-    @SuppressWarnings("nls")
-    private void addQ42017DividendTransaction()
-    {
-        DocumentType type = new DocumentType("Dividendengutschrift");
-        this.addDocumentTyp(type);
-
-        Block block = new Block("Dividendengutschrift.*");
-        type.addBlock(block);
-
-        block.set(newQ42017DividendTransaction(type));
-    }
-
-    @SuppressWarnings("nls")
-    private Transaction<AccountTransaction> newQ42017DividendTransaction(DocumentType type)
-    {
-        return new Transaction<AccountTransaction>()
+        block.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
                             AccountTransaction t = new AccountTransaction();
@@ -548,7 +510,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                         .section("name", "wkn", "isin", "currency") //
                         .find("Wertpapierbezeichnung WKN ISIN") //
                         .match("(?<name>.*) (?<wkn>[^ ]*) (?<isin>[^ ]*)$") //
-                        .match("(Dividende pro Stück|Ertragsausschüttung je Anteil) ([\\d.]+,\\d+) (?<currency>\\w{3}+).*") //
+                        .match(".*(Dividende pro St.ck|Ertragsaussch.ttung je Anteil) ([\\d.]+,\\d+) (?<currency>\\w{3}+).*") //
                         .assign((t, v) -> {
                             t.setSecurity(getOrCreateSecurity(v));
                         })
@@ -636,7 +598,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                             checkAndSetTax(tax, t, type);
                         })
 
-                        .wrap(t -> t.getAmount() != 0 ? new TransactionItem(t) : null);
+                        .wrap(t -> t.getAmount() != 0 ? new TransactionItem(t) : null));
 
     }
     

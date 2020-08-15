@@ -1,0 +1,27 @@
+PDF Autor: 'Consorsbank'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Consorsbank  90318 Nürnberg
+Depotnummer: 0123456789
+1116695023/00
+Vermerk der Bank: 1000
+2
+Max Mustermann
+Maxi Mustermann Datum: 28.07.2020
+Straße. 111 Seite: 1 von 1
+12345 Stadt
+Dividendengutschrift
+Wertpapierbezeichnung WKN ISIN
+Vonovia SE Dividende Cash A2888C DE000A2888C9
+Bestand
+125 Stück
+Steuerfreie Dividende pro Stück 1,57 EUR Schlusstag 23.07.2020
+Brutto 196,25 EUR
+Netto zugunsten IBAN DE12 1234 1234 1234 1234 12 196,25 EUR
+Valuta 28.07.2020 BIC CSDBDEXXXXX
+Fuehrt gemaess BMF-Schreiben vom 18.01.2016, Randziffer 92, zur Reduzierung der Anschaffungskosten.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+PrØsident du Conseil dAdministration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur GØnØral (Generaldirektor): Jean-Laurent BonnafØ
