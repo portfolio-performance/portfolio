@@ -39,6 +39,7 @@ public class PDFImportAssistant
         extractors.add(new ComdirectPDFExtractor(client));
         extractors.add(new CommerzbankPDFExtractor(client));
         extractors.add(new ConsorsbankPDFExtractor(client));
+        extractors.add(new ConsorsbankPre2009PDFExtractor(client));
         extractors.add(new DABPDFExtractor(client));
         extractors.add(new DegiroPDFExtractor(client));
         extractors.add(new DeutscheBankPDFExtractor(client));
@@ -136,13 +137,18 @@ public class PDFImportAssistant
         }
         PDFInputFile inputFile = new PDFInputFile(file, extractedText);
 
+        return runWithInputFile(inputFile, errors);
+    }
+
+    public List<Item> runWithInputFile(PDFInputFile file, List<Exception> errors) throws FileNotFoundException
+    {
         SecurityCache securityCache = new SecurityCache(client);
 
         List<Item> items = null;
         for (Extractor extractor : extractors)
         {
             List<Exception> warnings = new ArrayList<>();
-            items = extractor.extract(securityCache, inputFile, warnings);
+            items = extractor.extract(securityCache, file, warnings);
 
             if (!items.isEmpty())
             {
@@ -151,9 +157,9 @@ public class PDFImportAssistant
                 // did not find any transactions in this text
                 errors.clear();
                 errors.addAll(warnings);
-                
+
                 items = extractor.postProcessing(items);
-                
+
                 break;
             }
 
@@ -162,7 +168,7 @@ public class PDFImportAssistant
 
         if (items == null || items.isEmpty())
             return Collections.emptyList();
-        
+
         Map<Extractor, List<Item>> itemsByExtractor = new HashMap<>();
         itemsByExtractor.put(extractors.get(0), items);
         securityCache.addMissingSecurityItems(itemsByExtractor);
