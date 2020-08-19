@@ -40,7 +40,7 @@
 		<unit id="org.eclipse.nebula.widgets.cdatetime.feature.feature.group" version="1.4.0.202006092019"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<repository location="file:///Users/asbn/Code/portfolio-deps/update-site/target/repository"/>
+		<repository location="https://buchen.github.io/portfolio-deps/1.4.0"/>
 		<unit id="name.abuchen.portfolio.dependencies.feature.feature.group" version="1.4.0"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
