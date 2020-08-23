@@ -34,6 +34,8 @@ jobs:
         --batch-mode \
         -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
         --file portfolio-app/pom.xml
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   legacy-build:
     name: Legacy Build with Java 8
