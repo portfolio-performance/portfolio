@@ -113,21 +113,21 @@ public class InsertAction implements ImportAction
             {
                 List<Transaction> transactions = i.next().getTransactions();
                 existingTransaction = action.findInvestmentPlanTransaction(t, transactions);
-            }
+                // update existingTransaction when found and return
+                if (existingTransaction != null)
+                {
+                    existingTransaction.setDateTime(t.getDateTime());
+                    existingTransaction.setNote(t.getNote());
+                    existingTransaction.setShares(t.getShares());
+                    existingTransaction.clearUnits();
+                    t.getUnits().forEach(existingTransaction::addUnit);
 
-            // update existingTransaction
-            if (existingTransaction != null)
-            {
-                existingTransaction.setDateTime(t.getDateTime());
-                existingTransaction.setNote(t.getNote());
-                existingTransaction.setShares(t.getShares());
-                existingTransaction.clearUnits();
-                t.getUnits().forEach(existingTransaction::addUnit);
-                
-                if (existingTransaction.getCrossEntry() != null)
-                    existingTransaction.getCrossEntry().getCrossTransaction(existingTransaction).setNote(t.getNote());
+                    if (existingTransaction.getCrossEntry() != null)
+                        existingTransaction.getCrossEntry().getCrossTransaction(existingTransaction)
+                                        .setNote(t.getNote());
+                    return Status.OK_STATUS;
+                }
             }
-            return Status.OK_STATUS;
         }
 
         if (convertBuySellToDelivery)
