@@ -96,7 +96,21 @@ public class DABPDFExtractor extends AbstractPDFExtractor
 
                         .section("date") //
                         .match("^Handelstag (?<date>\\d+.\\d+.\\d{4}+) .*$")
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                        .assign((t, v) ->  t.setDate(asDate(v.get("date"))))
+
+                        .section("date", "time").optional() //
+                        .match("^Handelstag (?<date>\\d+.\\d+.\\d{4}+) .*$")
+                        .match("^Handelszeit (?<time>\\d+:\\d+).*$")
+                        .assign((t, v) -> {
+                            if (v.get("time") != null) 
+                            {
+                                t.setDate(asDate(v.get("date"), v.get("time")));   
+                            } 
+                            else 
+                            {
+                                t.setDate(asDate(v.get("date")));
+                            }
+                        })
 
                         .section("fees", "currency") //
                         .optional().match("^.* Provision (?<currency>\\w{3}+) (?<fees>[\\d.]+,\\d+)-$")
@@ -172,7 +186,18 @@ public class DABPDFExtractor extends AbstractPDFExtractor
 
                         .section("date") //
                         .match("^Handelstag (?<date>\\d+.\\d+.\\d{4}+) .*$")
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                        .assign((t, v) -> 
+                                t.setDate(asDate(v.get("date"))))
+
+                        .section("date", "time").optional() //
+                        .match("^Handelstag (?<date>\\d+.\\d+.\\d{4}+) .*$")
+                        .match("^Handelszeit (?<time>\\d+:\\d+).*$")
+                        .assign((t, v) -> {
+                            if (v.get("time") != null) 
+                            {
+                                t.setDate(asDate(v.get("date"), v.get("time")));   
+                            } 
+                        })
 
                         .section("fees", "currency").optional()
                         .match("^.*Provision (?<currency>\\w{3}+) (?<fees>[\\d.]+,\\d+)-$").assign((t, v) -> {
