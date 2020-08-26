@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.wizards.datatransfer;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -109,6 +110,8 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     private Portfolio portfolio;
 
     private List<ExtractedEntry> allEntries = new ArrayList<>();
+
+    private List<Exception> extractionErrors = new ArrayList<>();
 
     public ReviewExtractedItemsPage(Client client, Extractor extractor, IPreferenceStore preferences,
                     List<Extractor.InputFile> files, String pageId)
@@ -717,7 +720,8 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
 
         allEntries.addAll(entries);
         tableViewer.setInput(allEntries);
-        errorTableViewer.setInput(errors);
+        extractionErrors.addAll(errors);
+        errorTableViewer.setInput(extractionErrors);
 
         for (ExtractedEntry entry : entries)
         {
@@ -749,12 +753,23 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         actions.add(new CheckCurrenciesAction());
         actions.add(new MarkNonImportableAction());
 
+        List<Exception> allErrors = new ArrayList<>(extractionErrors);
+
         for (ExtractedEntry entry : entries)
         {
             entry.clearStatus();
             for (ImportAction action : actions)
-                entry.addStatus(entry.getItem().apply(action, this));
+            {
+                ImportAction.Status actionStatus = entry.getItem().apply(action, this);
+                entry.addStatus(actionStatus);
+                if (actionStatus.getCode() == ImportAction.Status.Code.ERROR)
+                    allErrors.add(new IOException(
+                                    entry.getItem().getSubject().getNote() + ": " + actionStatus.getMessage())); //$NON-NLS-1$
+
+            }
         }
+
+        errorTableViewer.setInput(allErrors);
     }
 
     abstract static class FormattedLabelProvider extends StyledCellLabelProvider // NOSONAR
