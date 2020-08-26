@@ -107,6 +107,8 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     private Portfolio portfolio;
 
     private List<ExtractedEntry> allEntries = new ArrayList<>();
+    
+    private List<Exception> errors = new ArrayList<>();
 
     public ReviewExtractedItemsPage(Client client, Extractor extractor, IPreferenceStore preferences,
                     List<Extractor.InputFile> files, String pageId)
@@ -617,7 +619,6 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
                 protected IStatus run(IProgressMonitor monitor)
                 {
                     monitor.beginTask(Messages.PDFImportWizardMsgExtracting, files.size());
-                    final List<Exception> errors = new ArrayList<>();
 
                     try
                     {
@@ -629,6 +630,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
 
                         // Logging them is not a bad idea if the whole method
                         // fails
+                        
                         PortfolioPlugin.log(errors);
 
                         Display.getDefault().asyncExec(() -> setResults(entries, errors));
@@ -706,9 +708,15 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         for (ExtractedEntry entry : entries)
         {
             entry.clearStatus();
-            for (ImportAction action : actions)
-                entry.addStatus(entry.getItem().apply(action, this));
+            for (ImportAction action : actions) {
+                ImportAction.Status actionStatus = entry.getItem().apply(action, this);
+                entry.addStatus(actionStatus);
+                if (actionStatus.getCode() == ImportAction.Status.Code.ERROR)
+                    errors.add(new IncorrectFileException(entry.getItem().getSubject().getNote() + ": " + actionStatus.getMessage())); //$NON-NLS-1$
+
+            }
         }
+        errorTableViewer.refresh();
     }
 
     abstract static class FormattedLabelProvider extends StyledCellLabelProvider // NOSONAR
@@ -748,6 +756,12 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
             cell.setImage(getImage(entry));
 
             super.update(cell);
+        }
+    }
+    
+    public class IncorrectFileException extends Exception { 
+        public IncorrectFileException(String errorMessage) {
+            super(errorMessage);
         }
     }
 }
