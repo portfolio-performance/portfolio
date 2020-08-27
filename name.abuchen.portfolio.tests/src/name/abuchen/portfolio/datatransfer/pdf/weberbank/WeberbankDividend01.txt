@@ -1,0 +1,58 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+ Seite 1
+Depotnummer
+ XXXXXXXXXX
+ Kundennummer XXXXXXXXXX
+ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXX Datum 14.08.2020
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX 
+XXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXX
+ 
+   
+Dividendengutschrift
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 107 APPLE INC. US0378331005 (865985)
+REGISTERED SHARES O.N.
+Zahlbarkeitstag 13.08.2020 Dividende pro Stück 0,82 USD
+Bestandsstichtag 06.08.2020 Herkunftsland USA
+Ex-Tag 07.08.2020 Art der Dividende Quartalsdividende
+Geschäftsjahr 01.10.2019 - 30.09.2020
+Devisenkurs EUR / USD 1,1848
+Devisenkursdatum 14.08.2020
+Dividendengutschrift 87,74 USD 74,05+ EUR
+Umrechnung in EUR 74,05 EUR
+Einbehaltene Quellensteuer 15 % auf 87,74 USD 11,11- EUR
+Anrechenbare Quellensteuer 15 % auf 74,05 EUR 11,11 EUR
+Kapitalertragsteuerpflichtige Dividende 74,05 EUR
+Verrechnete anrechenbare ausländische Quellensteuer
+(Verhältnis 100/25) auf 11,11 EUR 44,44 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 29,61 EUR
+Kapitalertragsteuer 25 % auf 29,61 EUR 7,40- EUR
+Solidaritätszuschlag 5,5 % auf 7,40 EUR 0,40- EUR
+Ausmachender Betrag 55,14+ EUR
+Lagerstelle Clearstream Banking FFM (849000 / 40030000)
+Den Betrag buchen wir zu Gunsten des Kontos 18000XXXXX (IBAN DE45 1012 0100 1800 0XXX XX), BLZ 101 201 00 (BIC
+WELADED1WBB).
+Keine Steuerbescheinigung. 
+0858.08150100.0000330ER01
+
+Seite 2
+Depotnummer XXXXXXXXXX
+Kundennummer XXXXXXXXXX
+Abrechnungsnr. XXXXXXXXXX
+Datum 14.08.2020
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2020 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher XX.XXX,XX X,XX X,XX X,XX X.XXX,XX
+Ertrag XX,XX
+0,00 0,00 0,00 11,11- 29,61
+Nachher XX.XXX,XX X,XX X,XX X,XX X.XXX,XX
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0858.08150100.0000331ER01
