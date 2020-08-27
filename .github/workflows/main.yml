@@ -29,11 +29,7 @@ jobs:
       with:
         java-version: 11
     - name: Build with Maven
-      run: |
-        mvn verify sonar:sonar \
-        --batch-mode \
-        -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
-        --file portfolio-app/pom.xml
+      run: mvn verify sonar:sonar --batch-mode -Dsonar.login=${{ secrets.SONAR_TOKEN }} --file portfolio-app/pom.xml
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
