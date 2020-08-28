@@ -70,6 +70,7 @@ import name.abuchen.portfolio.util.TextUtil;
 
         ImageHyperlink button = new ImageHyperlink(container, SWT.NONE);
         button.setImage(Images.VIEW_SHARE.image());
+        button.setBackground(container.getBackground());
         button.addHyperlinkListener(new HyperlinkAdapter()
         {
             @Override
