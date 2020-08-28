@@ -9,7 +9,8 @@ on:
 
 jobs:
   build:
-    name: Primary Build + Sonar Analysis
+    name: Maven Build
+    if: github.ref != 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -29,7 +30,38 @@ jobs:
       with:
         java-version: 11
     - name: Build with Maven
-      run: mvn verify sonar:sonar --batch-mode -Dsonar.login=${{ secrets.SONAR_TOKEN }} --file portfolio-app/pom.xml
+      run: |
+        mvn verify \
+        --batch-mode \
+        --file portfolio-app/pom.xml
+
+  build-analyze:
+    name: Maven Build + Sonar Analysis
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Cache Maven repository
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.m2/repository
+          ~/.sonar/cache
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-
+    - name: Set up JDK 11
+      uses: actions/setup-java@v1
+      with:
+        java-version: 11
+    - name: Build with Maven
+      run: |
+        mvn verify sonar:sonar \
+        --batch-mode \
+        -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
+        --file portfolio-app/pom.xml
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
