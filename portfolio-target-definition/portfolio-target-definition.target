@@ -34,10 +34,9 @@
 		<unit id="org.mockito" version="2.23.0.v20200310-1642"/>
 		<unit id="org.mockito.source" version="2.23.0.v20200310-1642"/>
 	</location>
-
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<repository location="https://download.eclipse.org/nebula/releases/2.4.0"/>
-		<unit id="org.eclipse.nebula.widgets.cdatetime.feature.feature.group" version="1.4.0.202006092019"/>
+		<repository location="https://download.eclipse.org/nebula/releases/2.4.2"/>
+		<unit id="org.eclipse.nebula.widgets.cdatetime.feature.feature.group" version="1.5.0.202007241204"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<repository location="https://buchen.github.io/portfolio-deps/1.4.0"/>
