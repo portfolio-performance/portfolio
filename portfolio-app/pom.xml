@@ -65,17 +65,19 @@
 									<version>1.8</version>
 								</requireJavaVersion>
 								<evaluateBeanshell>
-									<condition>new String(java.nio.file.Files.readAllBytes(
+									<condition>String version = "${project.version}".replace("-SNAPSHOT", ".qualifier");
+												new String(java.nio.file.Files.readAllBytes(
 												java.nio.file.Paths.get("${project.basedir}/",
 																		new String[]{"releng/x86/x86-distro.product"})))
-												.contains("version=\"${project.version}\"")</condition>
+												.contains("version=\"" + version + "\"")</condition>
 									<message>releng/x86/x86-distro.product does not contain the correct version</message>
 								</evaluateBeanshell>
 								<evaluateBeanshell>
-									<condition>new String(java.nio.file.Files.readAllBytes(
+									<condition>String version = "${project.version}".replace("-SNAPSHOT", ".qualifier");
+												new String(java.nio.file.Files.readAllBytes(
 												java.nio.file.Paths.get("${project.basedir}/",
 																		new String[]{"releng/x86/x86-product.product"})))
-												.contains("version=\"${project.version}\"")</condition>
+												.contains("version=\"" + version + "\"")</condition>
 									<message>releng/x86/x86-product.product does not contain the correct version</message>
 								</evaluateBeanshell>
 							</rules>
