@@ -91,9 +91,9 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
             List<YearMonth> yearMonths = (List<YearMonth>) chart.getData();
             if (yearMonths == null || yearMonths.isEmpty())
                 return;
-            
+
             // collect years
-            
+
             IAxis xAxis = chart.getAxisSet().getXAxis(0);
 
             List<Pair<Integer, Integer>> years = new ArrayList<>();
@@ -178,6 +178,7 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
         GridDataFactory.fillDefaults().grab(true, false).applyTo(title);
 
         chart = new Chart(container, SWT.NONE);
+        chart.setBackground(container.getBackground());
         chart.getTitle().setVisible(false);
         chart.getTitle().setText(title.getText());
 

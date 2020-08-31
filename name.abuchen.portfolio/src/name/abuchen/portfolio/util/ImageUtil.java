@@ -5,9 +5,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
@@ -138,10 +140,12 @@ public class ImageUtil
         int posX = preserveRatio ? 0 : (maxWidth - newWidth) / 2;
         int posY = preserveRatio ? 0 : (maxHeight - newHeight) / 2;
 
-        Image background = new Image(null, imageWidth, imageHeight);
-        ImageData imageData = background.getImageData();
-        imageData.transparentPixel = imageData.getPixel(0, 0);
-        background.dispose();
+        if (posX + newWidth > imageWidth)
+            newWidth = imageWidth - posX;
+        if (posY + newHeight > imageHeight)
+            newWidth = imageHeight - posY;
+
+        ImageData imageData = getTransparentImage(imageWidth, imageHeight);
 
         Image canvas = new Image(null, imageData);
 
@@ -158,5 +162,48 @@ public class ImageUtil
         canvas.dispose();
 
         return answer;
+    }
+
+    /**
+     * Creates an ImageData objects that is fully transparent.
+     */
+    private static ImageData getTransparentImage(int imageWidth, int imageHeight)
+    {
+        Image background = new Image(null, imageWidth, imageHeight);
+        ImageData imageData = background.getImageData();
+
+        String flag = System.getProperty("transparency-hack"); //$NON-NLS-1$
+        String os = Platform.getOS();
+
+        // use the hack on macOS and Linux or if explicitly configured
+
+        boolean useHack = flag != null ? Boolean.parseBoolean(flag)
+                        : (Platform.OS_MACOSX.equals(os) || Platform.OS_LINUX.equals(os));
+
+        if (!useHack)
+        {
+            imageData.transparentPixel = imageData.getPixel(0, 0);
+        }
+        else
+        {
+            // it is unclear why this works, but on macOS 10.15.6 and Ubuntu
+            // 20.04 LTS it does work to have a transparent background even
+            // though the code actually paints it white
+
+            // first, set both (usually mutually exclusive) methods of
+            // transparency (pixel and alphaData) because setting only of of the
+            // two does not work
+
+            imageData.transparentPixel = imageData.getPixel(0, 0);
+            imageData.alphaData = new byte[imageWidth * imageHeight];
+
+            // second, fill the background non-transparent with white color
+
+            Arrays.fill(imageData.alphaData, (byte) 0xFF);
+            Arrays.fill(imageData.data, (byte) 0xFF);
+        }
+
+        background.dispose();
+        return imageData;
     }
 }

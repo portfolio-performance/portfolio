@@ -249,9 +249,13 @@ public final class UpdateQuotesJob extends AbstractClientJob
         // small; otherwise entries would be evicted in order
         Collections.shuffle(securities);
 
+        int jobCounter = 0;
+        
         for (Security security : securities)
         {
-            Job job = new Job(security.getName())
+            jobCounter++;
+            
+            Job job = new Job("#" + jobCounter + " / " + security.getName())  //$NON-NLS-1$//$NON-NLS-2$
             {
                 @Override
                 protected IStatus run(IProgressMonitor monitor)

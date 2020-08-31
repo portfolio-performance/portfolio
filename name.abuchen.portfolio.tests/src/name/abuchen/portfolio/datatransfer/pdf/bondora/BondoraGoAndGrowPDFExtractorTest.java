@@ -3,7 +3,7 @@ package name.abuchen.portfolio.datatransfer.pdf.bondora;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -23,6 +23,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 
+@SuppressWarnings("nls")
 public class BondoraGoAndGrowPDFExtractorTest
 {
 
@@ -33,8 +34,8 @@ public class BondoraGoAndGrowPDFExtractorTest
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor
-                .extract(PDFInputFile.loadTestCase(getClass(), "KontoauszugGoAndGrow.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KontoauszugGoAndGrow.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(210));
@@ -49,9 +50,9 @@ public class BondoraGoAndGrowPDFExtractorTest
         assertThat(depositTransaction.getDateTime(), is(LocalDateTime.parse("2020-01-15T00:00")));
         assertThat(depositTransaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 100_00L)));
 
-
         // check interest
-        Optional<Item> interest = results.stream().filter(i -> i instanceof TransactionItem).skip(results.size() - 1).findFirst();
+        Optional<Item> interest = results.stream().filter(i -> i instanceof TransactionItem).skip(results.size() - 1)
+                        .findFirst();
         assertThat(interest.isPresent(), is(true));
         assertThat(interest.get().getSubject(), instanceOf(AccountTransaction.class));
         AccountTransaction interstTransaction = (AccountTransaction) interest.get().getSubject();
