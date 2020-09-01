@@ -574,62 +574,32 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                         .match("abzgl. Quellensteuer .* (\\w{3}+) (?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)")
                         .assign((t, v) -> {
                             Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-                            checkAndSetTax(tax, t, type);
+                            PDFExtractorUtils.checkAndSetTax(tax, t, type);
                         })
 
                         .section("tax", "currency").optional() //
                         .match("abzgl. Kapitalertragsteuer.* (?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)$")
                         .assign((t, v) -> {
                             Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-                            checkAndSetTax(tax, t, type);
+                            PDFExtractorUtils.checkAndSetTax(tax, t, type);
                         })
 
                         .section("tax", "currency").optional() //
                         .match("abzgl. Solidaritätszuschlag.* (?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)$")
                         .assign((t, v) -> {
                             Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-                            checkAndSetTax(tax, t, type);
+                            PDFExtractorUtils.checkAndSetTax(tax, t, type);
                         })
 
                         .section("tax", "currency").optional() //
                         .match("abzgl. Kirchensteuer.* (?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)$")
                         .assign((t, v) -> {
                             Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-                            checkAndSetTax(tax, t, type);
+                            PDFExtractorUtils.checkAndSetTax(tax, t, type);
                         })
 
                         .wrap(t -> t.getAmount() != 0 ? new TransactionItem(t) : null));
 
-    }
-    
-    @SuppressWarnings("nls")
-    private void checkAndSetTax(Money tax, AccountTransaction t, DocumentType type) 
-    {
-        if (tax.getCurrencyCode().equals(t.getCurrencyCode()))
-        {
-            t.addUnit(new Unit(Unit.Type.TAX, tax));
-        }
-        else if (type.getCurrentContext().containsKey("exchangeRate"))
-        {
-            BigDecimal exchangeRate = new BigDecimal(type.getCurrentContext().get("exchangeRate"));
-            BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
-
-            Money txTax = Money.of(t.getCurrencyCode(),
-                            BigDecimal.valueOf(tax.getAmount()).multiply(inverseRate)
-                                            .setScale(0, RoundingMode.HALF_UP).longValue());
-
-            // store tax value in both currencies, if
-            // security's currency
-            // is different to transaction currency
-            if (t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
-            {
-                t.addUnit(new Unit(Unit.Type.TAX, txTax));
-            }
-            else
-            {
-                t.addUnit(new Unit(Unit.Type.TAX, txTax, tax, inverseRate));
-            }
-        }
     }
 
     @SuppressWarnings("nls")
