@@ -401,8 +401,8 @@ public class DABPDFExtractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(DocumentType documentType, T pdfTransaction)
     {
-        pdfTransaction.section("exchangeRate").optional() //
-                        .match("Devisenkurs: (?<localCurrency>\\w{3}+)/(?<forexCurrency>\\w{3}+) (?<exchangeRate>[\\d.]+,\\d+)")
+        pdfTransaction.section("exchangeRate", "fxCurrency").optional() //
+                        .match("Devisenkurs: (\\w{3}+)/(?<fxCurrency>\\w{3}+) (?<exchangeRate>[\\d.]+,\\d+)")
                         .assign((t, v) -> {
 
                             BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
