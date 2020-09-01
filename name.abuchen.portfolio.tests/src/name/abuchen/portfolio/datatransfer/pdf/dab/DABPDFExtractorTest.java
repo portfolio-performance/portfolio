@@ -557,8 +557,11 @@ public class DABPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1.39))));
         
-        assertThat(transaction.getUnit(Unit.Type.GROSS_VALUE).get().getAmount(),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(6.20))));        
+        Unit grossValue = transaction.getUnit(Unit.Type.GROSS_VALUE).get();
+        assertThat(grossValue.getAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(6.20))));
+        assertThat(grossValue.getForex(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.25))));
+
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(6.20))));
         
         CheckCurrenciesAction c = new CheckCurrenciesAction();
         Account account = new Account();
