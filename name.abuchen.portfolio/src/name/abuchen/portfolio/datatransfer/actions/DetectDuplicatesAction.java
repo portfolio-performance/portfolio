@@ -46,7 +46,9 @@ public class DetectDuplicatesAction implements ImportAction
         // search for a match in existing investment plan transactions
         List<InvestmentPlan> plans = client.getPlans();
         Iterator<InvestmentPlan> i = plans.stream()
-                        .filter(p -> p.getSecurity().equals(entry.getPortfolioTransaction().getSecurity())).iterator();
+                        .filter(p -> p.getSecurity() != null
+                                        && p.getSecurity().equals(entry.getPortfolioTransaction().getSecurity()))
+                        .iterator();
         while (i.hasNext())
         {
             List<Transaction> transactions = i.next().getTransactions();
