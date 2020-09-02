@@ -17,9 +17,12 @@ import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
+import name.abuchen.portfolio.datatransfer.ImportAction.Status;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
+import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
 import name.abuchen.portfolio.datatransfer.pdf.DABPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -520,6 +523,52 @@ public class DABPDFExtractorTest
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(198.79))));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2013-05-31T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(100)));
+    }
+    
+    @Test
+    public void testDividend7withUSDAccount() throws IOException
+    {
+        Client client = new Client();
+        DABPDFExtractor extractor = new DABPDFExtractor(client);
+
+        Security existingSecurity = new Security("Paychex Inc. Registered Shares DL -,01",
+                        CurrencyUnit.EUR);
+        existingSecurity.setIsin("US7043261079");
+        client.addSecurity(existingSecurity);
+
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABDividend7.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.USD);
+
+        // check buy sell transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(4.64))));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-08-27T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(10)));
+        
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1.56))));
+        
+        Unit grossValue = transaction.getUnit(Unit.Type.GROSS_VALUE).get();
+        assertThat(grossValue.getAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(6.20))));
+        assertThat(grossValue.getForex(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.25))));
+
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(6.20))));
+        
+        CheckCurrenciesAction c = new CheckCurrenciesAction();
+        Account account = new Account();
+        account.setCurrencyCode(CurrencyUnit.USD);
+        Status s = c.process(transaction, account);
+        assertThat(s, is(Status.OK_STATUS));
+
     }
     
     @Test

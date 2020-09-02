@@ -359,15 +359,17 @@ public class DataSeriesChartLegend extends Composite
             {
                 // add the legend item to the line if
                 // a) we anyway only have one line (SWT.DEFAULT), or
-                // b) it is the last item and it fits, or
-                // c) it is not the last item but the chevron would still fit
+                // b) it fits onto the first full lines (where there is no space
+                // for the chevron needed)
+                // c) it is the last item and it fits, or
+                // d) it is not the last item but the chevron would still fit
 
                 if (wHint == SWT.DEFAULT || //
-                                (line < LINES - 1 && x + PADDING + sizes[ii].x < wHint - MARGIN) || //
+                                (line < LINES - 1 && x + PADDING + sizes[ii].x <= wHint - MARGIN) || //
                                 (line == LINES - 1 && x + 1 == children.length
-                                                && x + PADDING + sizes[ii].x < wHint - MARGIN)
+                                                && x + PADDING + sizes[ii].x <= wHint - MARGIN)
                                 || //
-                                (line == LINES - 1 && x + PADDING + sizes[ii].x + PADDING + chevronSize.x < wHint
+                                (line == LINES - 1 && x + PADDING + sizes[ii].x + PADDING + chevronSize.x <= wHint
                                                 - MARGIN))
                 {
                     children[ii].setBounds(x + PADDING, y + PADDING, sizes[ii].x, sizes[ii].y);
