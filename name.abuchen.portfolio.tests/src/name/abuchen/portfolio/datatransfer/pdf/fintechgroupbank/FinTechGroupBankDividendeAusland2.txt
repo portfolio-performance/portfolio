@@ -1,0 +1,47 @@
+PDF Author: '' 
+PDFBox Version: 1.8.13
+-----------------------------------------
+FinTech Group Bank AG
+Hausbroicher Str. 222
+47877 Willich
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 (0)9221 - 7035898
+E-Mail: kunden@flatex.de
+FinTech Group Bank AG -  Rotfeder-Ring 7 - 60327 Frankfurt am Main
+0000000000000000000000
+Herrn
+Xxxxxx Xxxxxx Frankfurt,        21.12.2017n
+Xxxxxxxx. 00
+00000 Xxxxxxx
+Dividendengutschrift für ausländische Wertpapiere
+Ihre Depotnummer: 0000000000
+Depotinhaber    : Xxxxxxx, Xxxxxx
+Nr.0000000000                  ROYAL DUTCH SHELL A EO-07 (GB00B03MLX29/A0D94M)
+St.             :         180          Bruttodividende
+                                       pro Stück       :       0,3985 EUR
+Extag           :  16.11.2017          Bruttodividende :        71,73 EUR
+Zahlungstag     :  20.12.2017          Bemessungs-
+Valuta          :  20.12.2017          grundlage       :         0,00 EUR
+                                      *Einbeh. Steuer  :         0,00 EUR
+Quellenst.-satz :       15,00 %        Gez. Quellenst. :        10,76 EUR
+                                       Endbetrag       :        60,97 EUR
+* Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+                                  Kapitalertragsteuer  :         0,00 EUR
+                                  Solidaritätszuschlag :         0,00 EUR
+                                  Kirchensteuer        :         0,00 EUR
+  Details dazu inkl. evtl. angerechneter ausländischer Quellensteuer
+  finden Sie im Steuerreport unter der Transaktion-Nr.: 0000000000.
+Die Verrechnung des Endbetrages erfolgt über Ihr Konto Nr.:  0000000000
+Anrechenbare Quellensteuer**           15,00 % =                10,76 EUR
+** nur relevant für Steuerinländer
+Die  Gutschrift erfolgt  unter Vorbehalt  des  Eingangs.  Einwendungen  müssen
+unverzüglich  nach  Zugang  erhoben  werden.  Die  Unterlassung  rechtzeitiger
+Einwendung gilt als Genehmigung.
+Dieser   Beleg   ist    keine   Steuerbescheinigung.    Kapitalerträge   sind
+einkommensteuerpflichtig.
+Diese Mitteilung ist maschinell erstellt und wird nicht unterschrieben.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Bernd Würfel
+0000000000000000 0000000000000000

@@ -23,13 +23,13 @@ public class ClientIRRYield
     {
         Interval interval = Interval.of(snapshotStart.getTime(), snapshotEnd.getTime());
 
-        List<Transaction> transactions = new ArrayList<Transaction>();
+        List<Transaction> transactions = new ArrayList<>();
         collectAccountTransactions(client, interval, transactions);
         collectPortfolioTransactions(client, interval, transactions);
         Collections.sort(transactions, new Transaction.ByDate());
 
-        List<LocalDate> dates = new ArrayList<LocalDate>();
-        List<Double> values = new ArrayList<Double>();
+        List<LocalDate> dates = new ArrayList<>();
+        List<Double> values = new ArrayList<>();
         collectDatesAndValues(interval, snapshotStart, snapshotEnd, transactions, dates, values);
 
         double irr = IRR.calculate(dates, values);
@@ -54,7 +54,7 @@ public class ClientIRRYield
         for (Portfolio portfolio : client.getPortfolios())
         {
             portfolio.getTransactions().stream() //
-                            .filter(t -> interval.contains(t.getDate())) //
+                            .filter(t -> interval.contains(t.getDateTime())) //
                             .forEach(t -> {
                                 switch (t.getType())
                                 {
@@ -79,7 +79,7 @@ public class ClientIRRYield
         for (Account account : client.getAccounts())
         {
             account.getTransactions().stream() //
-                            .filter(t -> interval.contains(t.getDate())) //
+                            .filter(t -> interval.contains(t.getDateTime())) //
                             .forEach(t -> {
                                 switch (t.getType())
                                 {
@@ -118,12 +118,12 @@ public class ClientIRRYield
 
         for (Transaction t : transactions)
         {
-            dates.add(t.getDate());
+            dates.add(t.getDateTime().toLocalDate());
 
             if (t instanceof AccountTransaction)
             {
                 AccountTransaction at = (AccountTransaction) t;
-                long amount = converter.convert(t.getDate(), t.getMonetaryAmount()).getAmount();
+                long amount = converter.convert(t.getDateTime(), t.getMonetaryAmount()).getAmount();
                 if (at.getType() == Type.DEPOSIT || at.getType() == Type.TRANSFER_IN)
                     amount = -amount;
                 values.add(amount / Values.Amount.divider());
@@ -131,7 +131,7 @@ public class ClientIRRYield
             else if (t instanceof PortfolioTransaction)
             {
                 PortfolioTransaction pt = (PortfolioTransaction) t;
-                long amount = converter.convert(t.getDate(), t.getMonetaryAmount()).getAmount();
+                long amount = converter.convert(t.getDateTime(), t.getMonetaryAmount()).getAmount();
                 if (pt.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND
                                 || pt.getType() == PortfolioTransaction.Type.TRANSFER_IN)
                     amount = -amount;

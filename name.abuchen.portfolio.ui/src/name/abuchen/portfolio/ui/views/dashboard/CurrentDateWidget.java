@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.function.Supplier;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -13,8 +14,9 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
 import name.abuchen.portfolio.model.Dashboard.Widget;
+import name.abuchen.portfolio.util.TextUtil;
 
-public class CurrentDateWidget extends WidgetDelegate
+public class CurrentDateWidget extends WidgetDelegate<Object>
 {
     private Label title;
 
@@ -34,21 +36,30 @@ public class CurrentDateWidget extends WidgetDelegate
         GridLayoutFactory.fillDefaults().numColumns(1).margins(5, 5).applyTo(container);
 
         title = new Label(container, SWT.NONE);
-        title.setText(getWidget().getLabel());
+        title.setBackground(container.getBackground());
+        title.setText(TextUtil.tooltip(getWidget().getLabel()));
         GridDataFactory.fillDefaults().grab(true, false).applyTo(title);
+
+        update(null);
 
         return container;
     }
 
     @Override
-    Control getTitleControl()
+    public Control getTitleControl()
     {
         return title;
     }
 
     @Override
-    void update()
+    public Supplier<Object> getUpdateTask()
     {
-        this.title.setText(getWidget().getLabel() + ' ' + formatter.format(LocalDate.now()));
+        return () -> null;
+    }
+
+    @Override
+    public void update(Object data)
+    {
+        this.title.setText(TextUtil.tooltip(getWidget().getLabel()) + ' ' + formatter.format(LocalDate.now()));
     }
 }

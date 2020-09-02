@@ -1,0 +1,80 @@
+{
+	"version": 1,
+	"name": "Weberbank - Dividendenbuchung",
+	"locale": "de",
+	"pattern": [
+		"BLZ 101 201 00"
+	],
+	"transactions": [
+		{
+			"type": "DIVIDEND",
+			"startsWith": "^Dividendengutschrift$",
+			"sections": [
+				{
+					"context": "SECURITY",
+					"pattern": [
+						"Nominale Wertpapierbezeichnung ISIN \\(WKN\\)",
+						"St.ck ([\\d+,.]+) (?<name>.*) (?<isin>\\w{12}).*"
+					]
+				},
+				{
+					"pattern": [
+						"Ausmachender Betrag (?<amount>[\\d+,.]+)+ (?<currency>\\w{3})"
+					]
+				},
+				{
+					"pattern": [
+						"Zahlbarkeitstag (?<date>\\d+.\\d+.\\d{4}) .*"
+					]
+				},
+				{
+					"pattern": [
+						"Nominale Wertpapierbezeichnung ISIN \\(WKN\\)",
+						"St.ck (?<shares>[\\d+,.]*) .*"
+					]
+				},
+				{
+					"context": "UNIT",
+					"isOptional": true,
+					"pattern": [
+						"Devisenkurs \\w{3} / \\w{3} (?<fxRateToBase>[\\d.,]+).*",
+						"Dividendengutschrift (?<fxAmount>[\\d+,.]+) (?<fxCurrency>\\w{3}) (?<amount>[\\d+,.]+) \\w{3}.*$"
+					],
+					"attributes": {
+						"type": "GROSS_VALUE"
+					}
+				},
+				{
+					"context": "UNIT",
+					"isOptional": true,
+					"pattern": [
+						"Kapitalertragsteuer \\d+ % auf [\\d.,]+ \\w{3} (?<amount>[\\d.,]+)- (?<currency>\\w{3}+)"
+					],
+					"attributes": {
+						"type": "TAX"
+					}
+				},
+				{
+					"context": "UNIT",
+					"isOptional": true,
+					"pattern": [
+						"Solidaritätszuschlag [\\d.,]+ % auf [\\d.,]+ \\w{3} (?<amount>[\\d.,]+)- (?<currency>\\w{3})"
+					],
+					"attributes": {
+						"type": "TAX"
+					}
+				},
+				{
+					"context": "UNIT",
+					"isOptional": true,
+					"pattern": [
+						"Einbehaltene Quellensteuer \\d+ % auf [\\d.,]+ \\w{3} (?<amount>[\\d.,]+)- (?<currency>\\w{3})"
+					],
+					"attributes": {
+						"type": "TAX"
+					}
+				}
+			]
+		}
+	]
+}

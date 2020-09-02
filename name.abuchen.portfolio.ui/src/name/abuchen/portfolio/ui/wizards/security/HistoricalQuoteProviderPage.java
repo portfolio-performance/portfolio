@@ -1,7 +1,6 @@
 package name.abuchen.portfolio.ui.wizards.security;
 
 import java.text.MessageFormat;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,14 +16,22 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 
 import name.abuchen.portfolio.model.Exchange;
-import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityProperty;
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.QuoteFeed;
+import name.abuchen.portfolio.online.QuoteFeedData;
+import name.abuchen.portfolio.online.impl.AlphavantageQuoteFeed;
+import name.abuchen.portfolio.online.impl.FinnhubQuoteFeed;
+import name.abuchen.portfolio.online.impl.GenericJSONQuoteFeed;
+import name.abuchen.portfolio.online.impl.PortfolioReportQuoteFeed;
+import name.abuchen.portfolio.online.impl.QuandlQuoteFeed;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.BindingHelper;
@@ -32,9 +39,11 @@ import name.abuchen.portfolio.ui.util.QuotesTableViewer;
 
 public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
 {
+    private QuoteFeedData feedData;
     private QuotesTableViewer tableSampleData;
+    private Button showRawResponse;
 
-    private Map<Object, List<LatestSecurityPrice>> cacheQuotes = new HashMap<Object, List<LatestSecurityPrice>>();
+    private Map<Object, QuoteFeedData> cacheQuotes = new HashMap<>();
 
     // read and write 'currentJob' only from the UI thread; used to check
     // whether a more recent job has already been started
@@ -42,14 +51,15 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
 
     public HistoricalQuoteProviderPage(final EditSecurityModel model, BindingHelper bindings)
     {
-        super(model);
+        super(model, bindings);
 
         setTitle(Messages.EditWizardQuoteFeedTitle);
 
         // validate that quote provider message is null -> no errors
         bindings.getBindingContext().addValidationStatusProvider(new MultiValidator()
         {
-            IObservableValue observable = BeanProperties.value("statusHistoricalQuotesProvider").observe(model); //$NON-NLS-1$
+            @SuppressWarnings("unchecked")
+            IObservableValue<?> observable = BeanProperties.value("statusHistoricalQuotesProvider").observe(model); //$NON-NLS-1$
 
             @Override
             protected IStatus validate()
@@ -94,13 +104,34 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
     @Override
     protected List<QuoteFeed> getAvailableFeeds()
     {
-        return Factory.getQuoteFeedProvider();
+        List<QuoteFeed> feeds = new ArrayList<>();
+        feeds.addAll(Factory.getQuoteFeedProvider());
+
+        if (getModel().getSecurity().getOnlineId() == null)
+            feeds.remove(Factory.getQuoteFeedProvider(PortfolioReportQuoteFeed.ID));
+
+        return feeds;
     }
 
     @Override
     protected QuoteFeed getQuoteFeedProvider(String feedId)
     {
         return Factory.getQuoteFeedProvider(feedId);
+    }
+
+    @Override
+    protected void createAdditionalButtons(Composite buttonArea)
+    {
+        showRawResponse = new Button(buttonArea, SWT.NONE);
+        showRawResponse.setText(Messages.LabelShowRawResponse);
+        showRawResponse.setEnabled(false);
+
+        showRawResponse.addSelectionListener(SelectionListener.widgetSelectedAdapter(event -> {
+            if (feedData == null || feedData.getResponses().isEmpty())
+                return;
+
+            new RawResponsesDialog(Display.getCurrent().getActiveShell(), feedData.getResponses()).open();
+        }));
     }
 
     @Override
@@ -116,7 +147,7 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
     @Override
     protected void reinitCaches()
     {
-        cacheQuotes = new HashMap<Object, List<LatestSecurityPrice>>();
+        cacheQuotes = new HashMap<>();
     }
 
     @Override
@@ -125,26 +156,57 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
         currentJob = null;
         tableSampleData.setInput(null);
         tableSampleData.refresh();
+        feedData = null;
+        showRawResponse.setEnabled(false);
+    }
+
+    private Object buildCacheKey(Exchange exchange)
+    {
+        if (exchange != null)
+            return getFeed() + exchange.getId();
+        else if (AlphavantageQuoteFeed.ID.equals(getFeed()))
+            return AlphavantageQuoteFeed.ID + getModel().getTickerSymbol();
+        else if (FinnhubQuoteFeed.ID.equals(getFeed()))
+            return FinnhubQuoteFeed.ID + getModel().getTickerSymbol();
+        else if (QuandlQuoteFeed.ID.equals(getFeed()))
+            return QuandlQuoteFeed.ID
+                            + String.valueOf(getModel().getFeedProperty(QuandlQuoteFeed.QUANDL_CODE_PROPERTY_NAME))
+                            + String.valueOf(getModel()
+                                            .getFeedProperty(QuandlQuoteFeed.QUANDL_CLOSE_COLUMN_NAME_PROPERTY_NAME));
+        else if (GenericJSONQuoteFeed.ID.equals(getFeed()))
+            return GenericJSONQuoteFeed.ID + getModel().getFeedURL()
+                            + String.valueOf(getModel().getFeedProperty(GenericJSONQuoteFeed.DATE_PROPERTY_NAME))
+                            + String.valueOf(getModel().getFeedProperty(GenericJSONQuoteFeed.CLOSE_PROPERTY_NAME));
+        else
+            return getFeed() + getModel().getFeedURL();
     }
 
     @Override
     protected void showSampleQuotes(QuoteFeed feed, Exchange exchange)
     {
-        Object cacheKey = exchange != null ? exchange : getModel().getFeedURL();
+        Object cacheKey = buildCacheKey(exchange);
 
-        List<LatestSecurityPrice> quotes = cacheQuotes.get(cacheKey);
+        QuoteFeedData data = cacheQuotes.get(cacheKey);
 
-        if (quotes != null)
+        if (data != null)
         {
-            tableSampleData.setInput(quotes);
+            feedData = data;
+
+            tableSampleData.setInput(data.getLatestPrices());
             tableSampleData.refresh();
+
+            showRawResponse.setEnabled(!data.getResponses().isEmpty());
         }
         else
         {
+            feedData = null;
+
             tableSampleData.setMessage(Messages.EditWizardQuoteFeedMsgLoading);
             tableSampleData.refresh();
 
-            Job job = new LoadHistoricalQuotes(feed, exchange);
+            showRawResponse.setEnabled(false);
+
+            Job job = new LoadHistoricalQuotes(feed, exchange, cacheKey);
             job.setUser(true);
             job.schedule(150);
         }
@@ -154,13 +216,15 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
     {
         private QuoteFeed feed;
         private Exchange exchange;
+        private Object cacheKey;
 
-        public LoadHistoricalQuotes(QuoteFeed feed, Exchange exchange)
+        public LoadHistoricalQuotes(QuoteFeed feed, Exchange exchange, Object cacheKey)
         {
             super(MessageFormat.format(Messages.JobMsgSamplingHistoricalQuotes,
                             exchange != null ? exchange.getName() : "")); //$NON-NLS-1$
             this.feed = feed;
             this.exchange = exchange;
+            this.cacheKey = cacheKey;
 
             HistoricalQuoteProviderPage.this.currentJob = this;
         }
@@ -172,25 +236,28 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
             {
                 Security s = buildTemporarySecurity();
                 if (exchange != null)
+                {
                     s.setTickerSymbol(exchange.getId());
+                    s.setPropertyValue(SecurityProperty.Type.FEED, PortfolioReportQuoteFeed.MARKET_PROPERTY_NAME,
+                                    exchange.getId());
+                }
                 s.setFeed(feed.getId());
 
-                // last 2 months as sample
-                LocalDate t = LocalDate.now().minusMonths(2);
-
-                final List<LatestSecurityPrice> quotes = feed.getHistoricalQuotes(s, t, new ArrayList<Exception>());
+                QuoteFeedData data = feed.previewHistoricalQuotes(s);
 
                 Display.getDefault().asyncExec(() -> {
                     if (LoadHistoricalQuotes.this.equals(HistoricalQuoteProviderPage.this.currentJob)
                                     && !tableSampleData.getControl().isDisposed())
                     {
                         HistoricalQuoteProviderPage.this.currentJob = null;
-                        cacheQuotes.put(exchange, quotes);
-                        if (!tableSampleData.getControl().isDisposed())
-                        {
-                            tableSampleData.setInput(quotes);
-                            tableSampleData.refresh();
-                        }
+                        cacheQuotes.put(cacheKey, data);
+
+                        feedData = data;
+
+                        tableSampleData.setInput(data.getLatestPrices());
+                        tableSampleData.refresh();
+
+                        showRawResponse.setEnabled(!data.getResponses().isEmpty());
                     }
                 });
             }
@@ -201,8 +268,17 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
                                     && !tableSampleData.getControl().isDisposed())
                     {
                         currentJob = null;
-                        tableSampleData.setMessage(Messages.EditWizardQuoteFeedMsgErrorOrNoData);
+
+                        feedData = null;
+
+                        String message = e.getMessage();
+                        if (message == null || message.isEmpty())
+                            message = Messages.EditWizardQuoteFeedMsgErrorOrNoData;
+
+                        tableSampleData.setMessage(message);
                         tableSampleData.refresh();
+
+                        showRawResponse.setEnabled(false);
                     }
                 });
 

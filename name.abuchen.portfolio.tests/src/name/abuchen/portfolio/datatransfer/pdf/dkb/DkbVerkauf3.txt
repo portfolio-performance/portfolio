@@ -1,0 +1,60 @@
+﻿PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+10919 Berlin Seite 1 von 2
+Depotnummer 123456789
+Kundennummer 9999999999
+Max Mustermann
+Auftragsnummer 123456/12.34
+Herrn Datum 06.05.2020
+Max Mustermann Rechnungsnummer W00123-0001234567/10
+Musterstraße 4 Umsatzsteuer-ID DE123456789
+12345 Musterhausen
+Wertpapier Abrechnung Verkauf Direkthandel
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 100 TEAMVIEWER AG DE000A2YN900 (A2YN90)
+INHABER-AKTIEN O.N.
+Handels-/Ausführungsplatz Außerbörslich (gemäß Weisung)
+Handelspartner Baader Bank
+Schlusstag/-Zeit 06.05.2020 14:32:46 Auftraggeber Max Mustermann
+Ausführungskurs 42,455 EUR Auftragserteilung/ -ort Online-Banking
+Girosammelverw. mehrere Sammelurkunden - kein Stückeausdruck -
+Kurswert 4.245,50 EUR
+Provision 7,00- EUR
+Ermittlung steuerrelevante Erträge
+Veräußerungsgewinn 1.227,64 EUR
+Bemessungsgrundlage für die Kapitalertragsteuer 1.227,64 EUR
+Verrechneter Sparerpauschbetrag 773,97- EUR
+Anrechenbare Quellensteuer 4,05- EUR
+Verrechnete anrechenbare Quellensteuer 16,20- EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 437,47 EUR
+Steuerberechnung
+Kapitalertragsteuer 25,00% auf 437,47 EUR 109,37- EUR
+Solidaritätszuschlag 5,50% auf 109,37 EUR 6,01- EUR
+Ausmachender Betrag 4.123,12 EUR
+Den Gegenwert buchen wir mit Valuta 08.05.2020 zu Gunsten des Kontos 1234567890
+(IBAN DE44 1203 0000 1234 5678 90), BLZ 12030000 (BIC BYLADEM1001).
+Die Wertpapiere entnehmen wir Ihrem Depotkonto.
+1234.56789012.0012345OR07
+Seite 2 von 2
+Depotnummer 123456789
+Kundennummer 9999999999
+Auftragsnummer 123456/12.34
+Datum 06.05.2020
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Für das Geschäft wurde keine Anlageberatung erbracht.
+Initiator der Besprechung war der Kunde.
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verlustverrechnungstöpfe 2020 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 773,97 4,05 0,00
+Verkauf 0,00 0,00 773,97- 4,05- 437,47
+Nachher 0,00 0,00 0,00 0,00 437,47
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäft Auftragsnr. Ausführ.-tag Whr./St. Nennwert/Stück AS-Kosten Erlös ant. Ergebnis
+Kauf 2345678900 06.01.2020 Stück 100,0000 3.010,86- 4.238,50 1.227,64 (D)
+Summe aller Erträge nach Differenzmethode und/oder Ersatzbemessungsgrundlage 1.227,64
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+1234.56789012.0012346OR07

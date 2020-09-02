@@ -1,0 +1,120 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Herr
+Max MUSTERMANN
+Musterstr. 2
+54321 Musterhausen
+Frankfurt am Main, den 22.01.2019
+Jahresdepotauszug per 31.12.2018
+Sehr geehrter Depotkunde,
+wir überreichen Ihnen hiermit die zum oben genannten Stichtag abgeschlossene Aufstellung der für
+Sie verwahrten Wertpapiere. Wir bitten Sie, diese Aufstellung, gemäß Ziffer 11 Abs. 4 der
+Allgemeinen Geschäftsbedingungen, umgehend auf Richtigkeit und Vollständigkeit zu überprüfen.
+Beanstandungen oder Einwendungen richten Sie bitte schriftlich an:
+onvista bank
+Interne Revision
+Wildunger Straße 6a
+60487 Frankfurt/Main
+Hinweise zu nachfolgender Abrechnung:
+⋅ Festverzinsliche Namenspapiere sind ohne Rücksicht auf getilgte Beträge mit ihrem
+ursprünglichen Nominalbetrag aufgeführt. Die angegebenen Kurse sollten nicht ungeprüft,
+insbesondere in eine Handels- oder Steuerbilanz, übernommen werden.
+⋅ Sämtliche angegebenen Vermögenswerte fallen unter die Regelungen der Richtlinie 2014/65/EU
+(MiFID II) und deren Durchführungsmaßnahmen.
+⋅ Aktien, Bankschuldverschreibungen (beispielsweise verzinsliche Bankanleihen und Zertifikate)
+sowie andere Forderungen gegen Kreditinstitute unterliegen besonderen Vorschriften. Diese
+Regelungen können sich für den Anleger/Vertragspartner des Kreditinstituts im Abwicklungsfall
+des Kreditinstituts nachteilig auswirken. Einzelheiten dazu finden Sie unter
+https://www.onvista-bank.de/files/dokumente/formulare/formularcenter/
+176-erklaerungstext-bail-in.pdf
+Mit freundlichen Grüßen
+onvista bank
+onvista bank Wildunger Straße 6a 60487 Frankfurt am Main T: +49 (0)69-7107-0 F: +49 (0)69-7107-100 info@onvista-bank.de www.onvista-bank.de
+onvista bank ist eine Marke der comdirect bank AG
+Sitz der comdirect bank AG: Pascalkehre 15 25451 Quickborn (AG Pinneberg HRB 4889) T: +49 (0)4106-704-0 F: +49 (0)4106-708-258-5 www.comdirect.de
+Vorstand: Arno Walter (Vorsitzender), Dietmar von Blücher, Matthias Hach Vorsitzender des Aufsichtsrates: Michael Mandel
+190233
+BELEGDRUCK=J
+FAXVERSAND=N
+AUSZUGPER=GZJ
+2AUSFERTIGUNG=N
+DUPLIKAT=N
+STAMMNUMMER=000000
+Depot-Nr. Depotauszug per 31.12.2018 Seite 1Herr 172406048 DEPOTNUMMER=172406048
+Max MUSTERMANN DEPOTUNTERBEZEICHNUNG=
+Musterstr. 2
+54321 Musterhausen VERSANDARTENSCHLUESSEL=EBOX
+Depotinhaber LFDDEPOT=190233
+Max MUSTERMANN Bewertung in EUR LFDSEITE=0001
+ADRESSZEILE1=Herr
+ADRESSZEILE2=Max MUSTERMANN
+Nominal/Stück Zinssatz Gattungsbezeichnung ISIN Zinstermin Verwahrart Kurs Währ. Dev.-kurs Kurswert Depot- ADRESSZEILE3=Musterstr. 2
+Endfälligkeit Lagerland Kursdatum Gebühren ADRESSZEILE4=54321 Musterhausen
+ 
+STK 6,000 Vonovia SE Namens-Aktien o.N.                          D   E  000A1ML7J1 Girosammelverwahrung 39,5600 EUR 237,36 0,00 ADRESSZEILE5=
+31.12.2018 ADRESSZEILE6=
+Ltd. auf Ihren Namen
+ ANSPRECHPARTNER=
+STK 600,000 SolarWorld AG Inhaber-Aktien o.N.                     D   E  0 00A1YCMM2 Girosammelverwahrung 0,0260 EUR 15,60 0,00 SUBMANDANT=
+31.12.2018
+ 
+STK 70,000 Commerzbank AG Inhaber-Aktien o.N.                D  E   0  0  0 CBK1001 Girosammelverwahrung 5,5760 EUR 390,32 0,00 
+31.12.2018
+ 
+STK 4,000 Porsche Automobil Holding SE DE000PAH0038  Girosammelverwahrung 51,2800 EUR 205,12 0,00 
+Inhaber-Vorzugsaktien o.St.o.N 31.12.2018
+ 
+STK 25,000 TUI AG Namens-Aktien o.N.                                  D E000TUAG000 Girosammelverwahrung 12,2400 EUR 306,00 0,00 
+31.12.2018
+Ltd. auf Ihren Namen
+ 
+STK 25,000 Deutsche Telekom AG Namens-Aktien o.N.        D  E   0  0  0  5  5 57508 Girosammelverwahrung 14,5450 EUR 363,63 0,00 
+31.12.2018
+Ltd. auf Ihren Namen
+ 
+STK 288,000 Infineon Technologies AG Namens-Aktien DE0006231004 Girosammelverwahrung 16,8000 EUR 4.838,40 0,00 
+o.N.                 31.12.2018
+Ltd. auf Ihren Namen
+ 
+STK 33,000 DEUTZ AG Inhaber-Aktien o.N.                            D   E 0006305006 Girosammelverwahrung 5,0100 EUR 165,33 0,00 
+31.12.2018
+ 
+STK 156,729 AGIF-Allianz Euro Bond Inhaber Anteile A LU0165915215 Girosammelverwahrung 11,3600 EUR 1.780,44 0,00 
+(EUR) o.N.         31.12.2018
+ 
+STK 1.000,000 Ocean Sky International Ltd Registered SG1DD2000002 Wertpapierrechnung 0,0200 EUR 20,00 0,00 
+Shares o.N.          Singapur 31.12.2018
+ 
+STK 20,000 Solar Enertech Corp. Registered Shares DL US8341561012 Wertpapierrechnung 0,0021 USD 1,145 0,04 0,00 
+-,01              USA 31.12.2018
+Insgesamt 11 Posten Endsumme 8.322,24 0,00
+onvista bank Wildunger Straße 6a
+onvista bank ist eine Marke der comdirect b6a0n4k8A7GFrankfurt am Main T: +49 (0)69-7107-0 F: +49 (0)69-7107-100 info@onvista-bank.de
+Sitz der comdirect bank AG: Pascalkehre 15 www.onvista-bank.de25451 Quickborn
+Vorstand: Arno Walter (Vorsitzender), Dietmar von Blücher, Mat(AthGiaPsinHnaecbherg HRB 4889)Vorsitzender dTe:s+A4u9f(s0ic)h4t1s0r6a-t7e0s:4M-0ichFa:e+l4M9a(n0d)4e1l 06-708-258-5 www.comdirect.de
+190233 BELEGDRUCK=J
+Depot-Nr. Seite Depotauszug per 31.12.2018 FAXVERSAND=N
+172406048 2 AUSZUGPER=GZJ
+Depotinhaber
+Max MUSTERMANN 2AUSFERTIGUNG=N
+DUPLIKAT=N
+Bewertung in EUR STAMMNUMMER=000000
+DEPOTNUMMER=172406048
+Solange nicht anderweitig dargestellt, unterliegen die Vermögenswerte in dieser Aufstellung der Richtlinie 2014/65/EU und deren Durchführungsmaßnahmen. Einlagen werden in diesem Zusammenhang nicht berücksichtigt. DEPOTUNTERBEZEICHNUNG=
+Bei Fragen zu Inhalt und Auswirkung bei dem Vorliegen von Sperren und Besonderheiten kontaktieren Sie bitte Ihren Kundenbetreuer.
+Sofern das Kursdatum nicht angegeben ist, handelt es sich um einen Schätzwert. Ein fehlender Marktwert ist mit hoher Wahrscheinlichkeit auf mangelnde Liquidität zurückzuführen. VERSANDARTENSCHLUESSEL=EBOX
+LFDDEPOT=190233
+LFDSEITE=0002
+ADRESSZEILE1=Herr
+ADRESSZEILE2=Max MUSTERMANN
+ADRESSZEILE3=Musterstr. 2
+ADRESSZEILE4=54321 Musterhausen
+ADRESSZEILE5=
+ADRESSZEILE6=
+ANSPRECHPARTNER=
+SUBMANDANT=
+onvista bank Wildunger Straße 6a
+onvista bank ist eine Marke der comdirect b6a0n4k8A7GFrankfurt am Main T: +49 (0)69-7107-0 F: +49 (0)69-7107-100 info@onvista-bank.de
+Sitz der comdirect bank AG: Pascalkehre 15 www.onvista-bank.de25451 Quickborn
+Vorstand: Arno Walter (Vorsitzender), Dietmar von Blücher, Mat(AthGiaPsinHnaecbherg HRB 4889)Vorsitzender dTe:s+A4u9f(s0ic)h4t1s0r6a-t7e0s:4M-0ichFa:e+l4M9a(n0d)4e1l 06-708-258-5 www.comdirect.de

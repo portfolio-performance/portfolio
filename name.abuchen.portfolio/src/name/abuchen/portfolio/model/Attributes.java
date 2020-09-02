@@ -2,6 +2,7 @@ package name.abuchen.portfolio.model;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 public class Attributes
 {
@@ -25,6 +26,11 @@ public class Attributes
     public boolean exists(AttributeType attribute)
     {
         return map.containsKey(attribute.getId());
+    }
+
+    public Stream<Object> getAllValues()
+    {
+        return map.values().stream();
     }
 
 }

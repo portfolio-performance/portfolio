@@ -11,10 +11,10 @@ import org.eclipse.core.runtime.IStatus;
  * conversion error is only written to the log but does not produce a validation
  * error anymore. See https://bugs.eclipse.org/bugs/show_bug.cgi?id=495789
  */
-public interface IValidatingConverter extends IConverter, IValidator
+public interface IValidatingConverter<S, D> extends IConverter<S, D>, IValidator<S>
 {
     @Override
-    default IStatus validate(Object value)
+    default IStatus validate(S value)
     {
         try
         {
@@ -28,9 +28,9 @@ public interface IValidatingConverter extends IConverter, IValidator
         }
     }
 
-    public static IValidatingConverter wrap(IConverter converter)
+    public static <S, D> IValidatingConverter<S, D> wrap(IConverter<S, D> converter)
     {
-        return new IValidatingConverter()
+        return new IValidatingConverter<S, D>()
         {
             @Override
             public Object getFromType()
@@ -45,7 +45,7 @@ public interface IValidatingConverter extends IConverter, IValidator
             }
 
             @Override
-            public Object convert(Object fromObject)
+            public D convert(S fromObject)
             {
                 return converter.convert(fromObject);
             }

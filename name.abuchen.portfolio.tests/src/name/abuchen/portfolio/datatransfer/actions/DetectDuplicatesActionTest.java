@@ -8,6 +8,7 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -15,12 +16,12 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 
 import name.abuchen.portfolio.datatransfer.ImportAction.Status.Code;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
@@ -30,22 +31,22 @@ public class DetectDuplicatesActionTest
 {
     @SuppressWarnings("nls")
     @Test
-    public void testDuplicateDetection4AccountTransaction() throws Exception
+    public void testDuplicateDetection4AccountTransaction() throws IntrospectionException, ReflectiveOperationException
     {
-        DetectDuplicatesAction action = new DetectDuplicatesAction();
+        DetectDuplicatesAction action = new DetectDuplicatesAction(new Client());
 
-        new PropertyChecker<AccountTransaction>(AccountTransaction.class, "note", "forex", "monetaryAmount")
-                        .before((name, o, c) -> assertThat(name, action.process(o, account(c)).getCode(),
-                                        is(Code.WARNING)))
+        new PropertyChecker<AccountTransaction>(AccountTransaction.class, "note", "forex", "monetaryAmount").before(
+                        (name, o, c) -> assertThat(name, action.process(o, account(c)).getCode(), is(Code.WARNING)))
                         .after((name, o, c) -> assertThat(name, action.process(o, account(c)).getCode(), is(Code.OK)))
                         .run();
     }
 
     @SuppressWarnings("nls")
     @Test
-    public void testDuplicateDetection4PortfolioTransaction() throws Exception
+    public void testDuplicateDetection4PortfolioTransaction()
+                    throws IntrospectionException, ReflectiveOperationException
     {
-        DetectDuplicatesAction action = new DetectDuplicatesAction();
+        DetectDuplicatesAction action = new DetectDuplicatesAction(new Client());
 
         new PropertyChecker<PortfolioTransaction>(PortfolioTransaction.class, "fees", "taxes", "note", "forex",
                         "monetaryAmount") //
@@ -56,9 +57,43 @@ public class DetectDuplicatesActionTest
                                         .run();
     }
 
+    @SuppressWarnings("nls")
+    @Test
+    public void testDuplicateDetectionWithPurchaseAndDeliveryPairs()
+                    throws IntrospectionException, ReflectiveOperationException
+    {
+        DetectDuplicatesAction action = new DetectDuplicatesAction(new Client());
+
+        new PropertyChecker<PortfolioTransaction>(PortfolioTransaction.class, "type", "fees", "taxes", "note", "forex",
+                        "monetaryAmount") //
+                                        .before((name, o, c) -> {
+                                            o.setType(PortfolioTransaction.Type.BUY);
+                                            c.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
+                                            assertThat(name, action.process(o, portfolio(c)).getCode(),
+                                                            is(Code.WARNING));
+                                        }) //
+                                        .after((name, o, c) -> assertThat(name,
+                                                        action.process(o, portfolio(c)).getCode(), is(Code.OK)))
+                                        .run();
+
+        new PropertyChecker<PortfolioTransaction>(PortfolioTransaction.class, "type", "fees", "taxes", "note", "forex",
+                        "monetaryAmount") //
+                                        .before((name, o, c) -> {
+                                            o.setType(PortfolioTransaction.Type.SELL);
+                                            c.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
+                                            assertThat(name, action.process(o, portfolio(c)).getCode(),
+                                                            is(Code.WARNING));
+                                        }) //
+                                        .after((name, o, c) -> assertThat(name,
+                                                        action.process(o, portfolio(c)).getCode(), is(Code.OK)))
+                                        .run();
+
+    }
+
     private Account account(AccountTransaction t)
     {
         Account a = new Account();
+        a.setCurrencyCode(t.getCurrencyCode());
         a.addTransaction(t);
         return a;
     }
@@ -81,7 +116,7 @@ public class DetectDuplicatesActionTest
         private Random random = new Random();
 
         private Class<T> type;
-        private List<PropertyDescriptor> properties = new ArrayList<PropertyDescriptor>();
+        private List<PropertyDescriptor> properties = new ArrayList<>();
 
         private Consumer<T> before;
         private Consumer<T> after;
@@ -89,10 +124,10 @@ public class DetectDuplicatesActionTest
         public PropertyChecker(Class<T> type, String... excludes) throws IntrospectionException
         {
             this.type = type;
-            Set<String> excludedSet = new HashSet<String>(Arrays.asList(excludes));
+            Set<String> excludedSet = new HashSet<>(Arrays.asList(excludes));
 
             BeanInfo info = Introspector.getBeanInfo(type);
-            for (PropertyDescriptor p : info.getPropertyDescriptors())
+            for (PropertyDescriptor p : info.getPropertyDescriptors()) // NOSONAR
             {
                 if (excludedSet.contains(p.getName()))
                     continue;
@@ -116,16 +151,16 @@ public class DetectDuplicatesActionTest
             return this;
         }
 
-        public void run() throws Exception
+        public void run() throws ReflectiveOperationException
         {
             for (PropertyDescriptor p : properties)
                 check(p);
         }
 
-        private void check(PropertyDescriptor change) throws Exception
+        private void check(PropertyDescriptor change) throws ReflectiveOperationException
         {
-            T instance = type.newInstance();
-            T other = type.newInstance();
+            T instance = type.getDeclaredConstructor().newInstance();
+            T other = type.getDeclaredConstructor().newInstance();
 
             for (PropertyDescriptor p : properties)
             {
@@ -156,6 +191,10 @@ public class DetectDuplicatesActionTest
             {
                 return LocalDate.of(1999, 1, 1);
             }
+            else if (propertyType == LocalDateTime.class)
+            {
+                return LocalDateTime.of(1999, 1, 1, 0, 0, 0);
+            }
             else if (propertyType == Security.class)
             {
                 return new Security();
@@ -180,7 +219,15 @@ public class DetectDuplicatesActionTest
         {
             if (propertyType == String.class)
             {
-                return RandomStringUtils.random(10);
+                char start = ' ';
+                char end = 'z';
+                int range = end - start;
+
+                StringBuilder builder = new StringBuilder();
+                for (int ii = 0; ii < 10; ii++)
+                    builder.append((char) (random.nextInt(range) + start));
+
+                return builder.toString();
             }
             else if (propertyType == long.class)
             {
@@ -189,6 +236,10 @@ public class DetectDuplicatesActionTest
             else if (propertyType == LocalDate.class)
             {
                 return LocalDate.of(2000 + random.nextInt(30), 1, 1);
+            }
+            else if (propertyType == LocalDateTime.class)
+            {
+                return LocalDateTime.of(2000 + random.nextInt(30), 1, 1, 0, 0, 0);
             }
             else if (propertyType == Security.class)
             {

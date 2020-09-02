@@ -1,0 +1,53 @@
+UniCredit Bank AG
+W e r t p a p i e r - A b r e c h n u n g K a u f Restausf}hrung
+
+- Gesch{ftsbest{tigung vor steuerlicher Behandlung - Kommissionsgesch{ft
+Depotnummer Abrechnungstag Blatt
+459 1234567 15.02.2016 1
+Depotart Filiale
+Depot Private Banking Bay.
+09111 313-312
+Kontonummer
+0459 216
+Herr BETREUERNAME
+459 1234567
+R e c h n u n g s n u m m e r
+Herrn
+Ordernummer Abrechnungsnr. Urspr. Abrechnungsnr.
+NAME1
+NAME2
+9-WPK- 7931950 220299
+STRASSE
+Depotinhaber
+NAME
+PLZ STADT
+NAME2
+Nennbetrag Wertpapierbezeichnung Wertpapierkennnummer/ISIN
+SANOFI S.A. 920657
+ST 22
+ACTIONS PORT. EO 2 FR0000120578
+Zum Kurs von Ausf}hrungstag/Zeit Ausf}hrungsort Verwahrart
+15.02.2016
+EUR 70,33 PARIS WP-Rechnung
+16.28.03
+Abrechnung
+Kurswert EUR 1.547,26
+Brokerkommission* EUR 0,27
+Transaktionsentgelt* EUR 3,09
+Provision EUR 10,21
+-----------------------
+Belastung (vor Steuern) EUR 1.560,83
+Valuta 17.02.2016 -----------------------
+Lagerland: Frankreich
+Umsatzreferenz: 20160215WAB1861426155
+Diese Abrechnung erfolgt ohne Ber}cksichtigung der Kapitalertragsteuer.
+Eine eventuell anfallende Kapitalertragsteuer oder Kapitalertragsteuer-Gutschrift
+wird separat auf Ihrem Kontoauszug ausgewiesen.
+
+- Enth{lt u.a. b»rsenplatzabh{ngige Entgelte (z.B. Maklercourtage, Transaktions-
+entgelt) und ggf. eine anfallende ausl{ndische Finanztransaktionssteuer.
+Die Leistung ist umsatzsteuerbefreit nach @ 4 Nr. 8 UStG.
+Unsere Umsatzsteuer-Identifikationsnummer: DE 129 273 380.
+Bitte R}ckseite beachten.
+Bitte bewahren Sie diese Gesch{ftsbest{tigung sowie einen eventuell gesondert erstellten Steuer-Informationsbeleg auf.
+BV0081/VK0081/03.2008

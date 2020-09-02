@@ -20,45 +20,58 @@ import name.abuchen.portfolio.money.MutableMoney;
     }
 
     @Override
-    public void visit(CurrencyConverter converter, DividendInitialTransaction t)
+    public void visit(CurrencyConverter converter, CalculationLineItem.ValuationAtStart t)
     {
-        Money amount = t.getMonetaryAmount().with(converter.at(t.getDate()));
+        Money amount = t.getValue().with(converter.at(t.getDateTime()));
         delta.subtract(amount);
         cost.add(amount);
     }
 
     @Override
-    public void visit(CurrencyConverter converter, DividendFinalTransaction t)
+    public void visit(CurrencyConverter converter, CalculationLineItem.ValuationAtEnd t)
     {
-        delta.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
+        delta.add(t.getValue().with(converter.at(t.getDateTime())));
     }
 
     @Override
-    public void visit(CurrencyConverter converter, DividendTransaction t)
+    public void visit(CurrencyConverter converter, CalculationLineItem.DividendPayment t)
     {
-        delta.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
+        delta.add(t.getValue().with(converter.at(t.getDateTime())));
     }
 
     @Override
-    public void visit(CurrencyConverter converter, AccountTransaction t)
+    public void visit(CurrencyConverter converter, CalculationLineItem.TransactionItem item, AccountTransaction t)
     {
-        delta.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
+        switch (t.getType())
+        {
+            case TAXES:
+            case FEES:
+                delta.subtract(t.getMonetaryAmount().with(converter.at(t.getDateTime())));
+                break;
+            case TAX_REFUND:
+            case FEES_REFUND:
+                delta.add(t.getMonetaryAmount().with(converter.at(t.getDateTime())));
+                break;
+            default:
+                throw new IllegalArgumentException();
+        }
+
     }
 
     @Override
-    public void visit(CurrencyConverter converter, PortfolioTransaction t)
+    public void visit(CurrencyConverter converter, CalculationLineItem.TransactionItem item, PortfolioTransaction t)
     {
         switch (t.getType())
         {
             case BUY:
             case DELIVERY_INBOUND:
-                Money amount = t.getMonetaryAmount().with(converter.at(t.getDate()));
+                Money amount = t.getMonetaryAmount().with(converter.at(t.getDateTime()));
                 delta.subtract(amount);
                 cost.add(amount);
                 break;
             case SELL:
             case DELIVERY_OUTBOUND:
-                delta.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
+                delta.add(t.getMonetaryAmount().with(converter.at(t.getDateTime())));
                 break;
             case TRANSFER_IN:
             case TRANSFER_OUT:

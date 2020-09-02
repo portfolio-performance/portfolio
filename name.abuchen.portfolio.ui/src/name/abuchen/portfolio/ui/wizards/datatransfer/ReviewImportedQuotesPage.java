@@ -1,18 +1,18 @@
 package name.abuchen.portfolio.ui.wizards.datatransfer;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Composite;
 
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.online.Factory;
-import name.abuchen.portfolio.online.QuoteFeed;
+import name.abuchen.portfolio.online.QuoteFeedData;
+import name.abuchen.portfolio.online.impl.HTMLTableQuoteFeed;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.QuotesTableViewer;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
-
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Composite;
 
 public class ReviewImportedQuotesPage extends AbstractWizardPage
 {
@@ -36,11 +36,13 @@ public class ReviewImportedQuotesPage extends AbstractWizardPage
     {
         String source = page.getSourceText();
 
-        QuoteFeed feed = Factory.getQuoteFeedProvider("GENERIC_HTML_TABLE"); //$NON-NLS-1$
+        HTMLTableQuoteFeed feed = (HTMLTableQuoteFeed) Factory.getQuoteFeedProvider(HTMLTableQuoteFeed.ID);
 
-        List<Exception> errors = new ArrayList<Exception>();
-        quotes = feed.getHistoricalQuotes(source, errors);
-        PortfolioPlugin.log(errors);
+        QuoteFeedData data = feed.getHistoricalQuotes(source);
+        quotes = data.getLatestPrices();
+
+        if (!data.getErrors().isEmpty())
+            PortfolioPlugin.log(data.getErrors());
 
         setErrorMessage(null);
         setPageComplete(!quotes.isEmpty());

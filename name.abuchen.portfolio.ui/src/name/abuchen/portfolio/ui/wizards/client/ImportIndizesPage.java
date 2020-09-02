@@ -12,11 +12,7 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ComboViewer;
-import org.eclipse.jface.viewers.DoubleClickEvent;
-import org.eclipse.jface.viewers.IDoubleClickListener;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
@@ -31,6 +27,7 @@ import org.eclipse.swt.widgets.Table;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
@@ -40,7 +37,7 @@ public class ImportIndizesPage extends AbstractWizardPage
     private static final class ProposedSecurities
     {
         private String label;
-        private List<Security> securities = new ArrayList<Security>();
+        private List<Security> securities = new ArrayList<>();
 
         public ProposedSecurities(String label)
         {
@@ -55,7 +52,7 @@ public class ImportIndizesPage extends AbstractWizardPage
     }
 
     private Client client;
-    private List<ProposedSecurities> proposals = new ArrayList<ProposedSecurities>();
+    private List<ProposedSecurities> proposals = new ArrayList<>();
 
     private Combo comboDropDown;
 
@@ -85,7 +82,8 @@ public class ImportIndizesPage extends AbstractWizardPage
                 security.setName(bundle.getString(key + ".name")); //$NON-NLS-1$
                 security.setIsin(safeGetString(bundle, key + ".isin")); //$NON-NLS-1$
                 security.setFeed("YAHOO"); //$NON-NLS-1$
-                security.setRetired(safeGetBoolean(bundle, key + ".isRetired")); //$NON-NLS-1$
+                security.setCurrencyCode(
+                                "XXX".equals(safeGetString(bundle, key + ".currency")) ? null : CurrencyUnit.EUR); //$NON-NLS-1$ //$NON-NLS-2$
                 proposal.securities.add(security);
             }
         }
@@ -100,18 +98,6 @@ public class ImportIndizesPage extends AbstractWizardPage
         catch (MissingResourceException ignore)
         {
             return null;
-        }
-    }
-
-    private boolean safeGetBoolean(ResourceBundle bundle, String key)
-    {
-        try
-        {
-            return Boolean.parseBoolean(bundle.getString(key));
-        }
-        catch (MissingResourceException ignore)
-        {
-            return false;
         }
     }
 
@@ -141,16 +127,11 @@ public class ImportIndizesPage extends AbstractWizardPage
 
         final TableViewer tViewer = new TableViewer(tableContainer);
 
-        comboViewer.addSelectionChangedListener(new ISelectionChangedListener()
-        {
-            @Override
-            public void selectionChanged(SelectionChangedEvent event)
-            {
-                ProposedSecurities element = (ProposedSecurities) ((IStructuredSelection) event.getSelectionProvider()
-                                .getSelection()).getFirstElement();
-                if (element != null)
-                    tViewer.setInput(element.securities);
-            }
+        comboViewer.addSelectionChangedListener(event -> {
+            ProposedSecurities element = (ProposedSecurities) ((IStructuredSelection) event.getSelectionProvider()
+                            .getSelection()).getFirstElement();
+            if (element != null)
+                tViewer.setInput(element.securities);
         });
 
         Table table = tViewer.getTable();
@@ -192,18 +173,13 @@ public class ImportIndizesPage extends AbstractWizardPage
             }
         });
 
-        tViewer.addDoubleClickListener(new IDoubleClickListener()
-        {
-            @Override
-            public void doubleClick(DoubleClickEvent event)
-            {
-                Security security = (Security) ((IStructuredSelection) event.getSelection()).getFirstElement();
+        tViewer.addDoubleClickListener(event -> {
+            Security security = (Security) ((IStructuredSelection) event.getSelection()).getFirstElement();
 
-                if (security != null && !client.getSecurities().contains(security))
-                {
-                    client.addSecurity(security);
-                    tViewer.refresh(security);
-                }
+            if (security != null && !client.getSecurities().contains(security))
+            {
+                client.addSecurity(security);
+                tViewer.refresh(security);
             }
         });
 

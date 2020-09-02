@@ -1,0 +1,65 @@
+PDF Author: '' 
+PDFBox Version: 1.8.13
+-----------------------------------------
+FinTech Group Bank AG
+Hausbroicher Str. 222
+47877 Willich
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 (0)9221 - 7035898
+E-Mail: kunden@flatex.de
+FinTech Group Bank AG -  Rotfeder-Ring 7 - 60327 Frankfurt am Main
+Frankfurt,        03.01.2018
+0202272000000871477580
+F Auftragsdatum     02.01.2018rau
+VORNAME NAME Schlusstag        02.01.2018
+STRASSE Ausführungszeit   00:00 Uhr
+PLZ ORT Valuta            05.01.2018
+Auftragsnummer    101010101/1
+Ausf.platz/-art   KAG/außerbörsl.
+Wertpapierabrechnung Kauf Fonds/Zertifikate
+Ihre Depotnummer  1234567890
+Depotinhaber      NAME, VORNAME
+Nr.106043038/1 Kauf            SPDR S+P US DIV.ARIST.ETF (IE00B6YX5D40/A1JKS0)
+Ausgeführt     22,973458 St.           Kurswert       EUR               998,50
+Kurs           43,463200 EUR           Provision      EUR                 1,50
+Devisenkurs                            Eigene Spesen
+Verwahrart     GS-Verwahrung          *Fremde Spesen
+Lagerstelle    Clearstream Nat.
+Lagerland      Deutschland
+                                       Bemessungs-
+Gewinn/Verlust 0,00 EUR                grundlage      EUR                 0,00
+                                     **Einbeh. Steuer EUR                 0,00
+                                       Endbetrag      EUR            -1.000,00
+* Enthalten sind folgende Gebühren     Courtage       EUR                 0,00
+                                       Tradinggebühr  EUR                 0,00
+                                       Regulierung    EUR                 0,00
+                                       Schlussnoten   EUR                 0,00
+                                       Sonstige       EUR                 0,00
+**  Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+                                 Kapitalertragsteuer  EUR                 0,00
+                                 Solidaritätszuschlag EUR                 0,00
+                                 Kirchensteuer        EUR                 0,00
+    Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+    1340886542.
+Der Kurswert enthält 0,000% regulären Ausgabeaufschlag (AA).
+Rabattierung   keine                   gezahlter AA   EUR                 0,00
+Kurs           43,4632 EUR             Kurswert       EUR               998,50
+Die Verrechnung des Endbetrags erfolgt über Ihr Konto Nr.: 9876543210
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Bernd Würfel
+2000000871477580 0113202270000102
+Die Wertpapiere sowie den Gegenwert werden wir entsprechend der Abrechnung mit
+dem angegebenen Valutatag buchen. Bitte prüfen Sie diese Abrechnung auf
+Richtigkeit und Vollständigkeit. Etwaige Einwendungen gegen diese Abrechnung
+müssen unverzüglich nach Zugang bei der Bank erhoben werden. Die
+Unterlassung rechtzeitiger Einwendung gilt als Genehmigung. Bitte beachten
+Sie mögliche Hinweise des Emittenten hinsichtlich vorzeitiger Fälligstellung,
+beispielsweise wegen Knock-Out, in den jeweiligen Optionsscheinbedingungen und
+informieren Sie sich rechtzeitig, welche spezielle Fälligkeitsregelung auf die
+von Ihnen gehaltenen Wertpapiere zutreffen. Kapitalerträge sind ESt-pflichtig.
+Diese Mitteilung ist maschinell erstellt und wird nicht unterschrieben.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Bernd Würfel
+2000000871477580 0113202270000202

@@ -1,0 +1,36 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KASTANIENALLEE 32  10435 BERLIN
+Andreas SEITE 1 von 1
+Strasse DATUM 18.06.2019
+ORT ORDER 55a8-39ad
+AUSFÜHRUNG 051a-e65e
+DEPOT 152479301
+WERTPAPIERABRECHNUNG
+ÜBERSICHT
+Market-Order Verkauf am 18.06.2019, um 17:50 Uhr an der Lang & Schwarz Exchange.
+Der Kontrahent der Transaktion ist Lang & Schwarz TradeCenter AG & Co. KG.
+POSITION ANZAHL KURS BETRAG
+Clinuvel Pharmaceuticals Ltd. 80 Stk. 22,82 EUR 1.825,60 EUR
+Registered Shares o.N.
+AU000000CUV3
+GESAMT 1.825,60 EUR
+ABRECHNUNG
+POSITION BETRAG
+Fremdkostenzuschlag -1,00 EUR
+Kapitalertragssteuer -30,63 EUR
+Solidaritätszuschlag -1,68 EUR
+GESAMT 1.792,29 EUR
+BUCHUNG
+VERRECHNUNGSKONTO VALUTA BETRAG
+DE4911010100888XXX8497 20.06.2019 1.792,29 EUR
+Clinuvel Pharmaceuticals Ltd. Registered Shares o.N. in Wertpapierrechnung.
+Lagerland: Australien
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie 
+Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Düsseldorf Geschäftsführer
+Kastanienallee 32 service@traderepublic.com AG Düsseldorf HRB 85864 Ingo Hillen
+10435 Berlin USt-ID DE307510626 Karsten Müller
+ABRE / 18.06.2019 / 49122704 / 4dba-7fe5

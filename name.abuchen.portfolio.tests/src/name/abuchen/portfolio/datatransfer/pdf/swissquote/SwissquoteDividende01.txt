@@ -1,0 +1,33 @@
+PDF Author: 'Registered to: SWISQUOT'
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRANSAKTIONSBELEG
+Kunde: 999999 - TRADING
+IBAN: CHXXXXXXXXXXXXXXXXX
+Herrn Vorname Nachname
+Strasse Hausnummer
+CH-8000 Musterhausen
+Gland, 27.06.2019
+Dividende Unsere Referenz: 32484929
+Im Hinblick auf folgenden Titel:
+Titel
+Bezeichnung Anzahl
+HARVEST CAPITAL CREDIT ORD ISIN: US41753F1093NKN: 350
+haben wir Ihrem Konto den folgenden Betrag gutgeschrieben:
+Kontonummer 99999900
+Ausführungsdatum 19.06.2019
+Valutadatum 27.06.2019
+Anzahl 350
+Dividende 0.08 USD
+Betrag USD 28.00
+Quellensteuer 15.00% (US) USD 4.20
+Zusätzlicher Steuerrückbehalt 15% USD 4.20
+Total USD 19.60
+Diese Erklärung dient der Geltendmachung von Verrechnungs- und Rückforderungsansprüchen Zusätzlicher Steuerrückbehalt
+15% : USD 4.20 = CHF 4.11
+Wechselkurs USD / CHF : 0.97764
+Dieser Transaktionsbeleg sowie die aufgeführte Transaktion unterliegen unseren Allgemeinen Geschäftsbedingungen und Depotreglement.
+Swissquote Bank AG, 33 chemin de la Crétaux, CH-1196 Gland
+Customer Care : 0848 25 88 88 (Aus dem Ausland +41 44 825 88 88)
+Formular ohne Unterschrift S.E. & O.
+MwSt n° CHE-116.310.079

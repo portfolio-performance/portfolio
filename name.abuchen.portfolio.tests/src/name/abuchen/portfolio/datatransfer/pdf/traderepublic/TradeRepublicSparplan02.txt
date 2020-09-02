@@ -1,0 +1,29 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KASTANIENALLEE 32  10435 BERLIN
+Xxxxxxxxx xxxx SEITE 1 von 1
+Xxxxxxxxxx xx DATUM 04.05.2020
+D xxxxx Xxxxxxxxx AUSFÜHRUNG xxxx-xxxx
+SPARPLAN xxxx-xxxx
+DEPOT xxxxxxxxx
+WERTPAPIERABRECHNUNG SPARPLAN
+ÜBERSICHT
+Sparplanausführung am 04.05.2020 an der Lang & Schwarz Exchange.
+Der Kontrahent der Transaktion ist Lang & Schwarz TradeCenter AG & Co. KG.
+POSITION ANZAHL DURCHSCHNITTSKURS BETRAG
+iSh.DJ Asia Pa.S.D.30 U.ETF DE 4,9261 Stk. 20,30 EUR 100,00 EUR
+Inhaber-Anteile
+ISIN: DE000A0H0744
+GESAMT 100,00 EUR
+BUCHUNG
+VERRECHNUNGSKONTO VALUTA BETRAG
+DExxxxxxxxxxxxxxxxxxxx 06.05.2020 -100,00 EUR
+iSh.DJ Asia Pa.S.D.30 U.ETF DE Inhaber-Anteile in Girosammelverwahrung.
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie 
+Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Düsseldorf Geschäftsführer
+Kastanienallee 32 service@traderepublic.com AG Düsseldorf HRB 85864 Ingo Hillen
+10435 Berlin USt-ID DE307510626 Karsten Müller
+ABRE / 2020-05-04 / xxxxxxxx / xxxx-xxxx

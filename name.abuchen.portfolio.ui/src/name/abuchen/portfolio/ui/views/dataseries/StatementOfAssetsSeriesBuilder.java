@@ -5,9 +5,9 @@ import org.swtchart.ILineSeries;
 
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
-import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries.ClientDataSeries;
+import name.abuchen.portfolio.util.Interval;
 
 public class StatementOfAssetsSeriesBuilder extends AbstractChartSeriesBuilder
 {
@@ -16,7 +16,7 @@ public class StatementOfAssetsSeriesBuilder extends AbstractChartSeriesBuilder
         super(chart, cache);
     }
 
-    public void build(DataSeries series, ReportingPeriod reportingPeriod)
+    public void build(DataSeries series, Interval reportingPeriod)
     {
         PerformanceIndex index = getCache().lookup(series, reportingPeriod);
 
@@ -77,6 +77,13 @@ public class StatementOfAssetsSeriesBuilder extends AbstractChartSeriesBuilder
             case INTEREST_CHARGE_ACCUMULATED:
                 values = accumulateAndToDouble(clientIndex.getInterestCharge(), Values.Amount.divider());
                 break;
+            case EARNINGS:
+                values = toDouble(add(clientIndex.getDividends(), clientIndex.getInterest()), Values.Amount.divider());
+                break;
+            case EARNINGS_ACCUMULATED:
+                values = accumulateAndToDouble(add(clientIndex.getDividends(), clientIndex.getInterest()),
+                                Values.Amount.divider());
+                break;
             default:
                 throw new IllegalArgumentException(String.valueOf(series.getInstance()));
         }
@@ -91,6 +98,18 @@ public class StatementOfAssetsSeriesBuilder extends AbstractChartSeriesBuilder
             IBarSeries barSeries = getChart().addDateBarSeries(clientIndex.getDates(), values, series.getLabel());
             configure(series, barSeries);
         }
+    }
+
+    private long[] add(long[] a, long[] b)
+    {
+        if (a.length != b.length)
+            throw new IllegalArgumentException();
+
+        long[] result = new long[a.length];
+        for (int ii = 0; ii < result.length; ii++)
+            result[ii] = a[ii] + b[ii];
+
+        return result;
     }
 
     private double[] toDouble(long[] input, double divider)

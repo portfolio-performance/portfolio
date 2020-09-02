@@ -1,0 +1,28 @@
+PDF Author: 'motth' 
+PDFBox Version: 1.8.13
+-----------------------------------------
+Terzo Vorsorgestiftung der WIR Bank
+Auberg 1
+4002 Basel
+Internet www.viac.ch
+E-Mail info@viac.ch
+Telefon 0800 80 40 40
+Kunde 1.234.567.890 Herr
+Portfolio 1.234.567.890.01 Max Mustermann
+Musterweg 12
+1234 Schweiz
+Basel, 05.07.2018
+Börsenabrechnung - Kauf
+Wir haben für Sie folgenden Auftrag ausgeführt:
+Order: Kauf
+1.369 Ant iShares Core S&P500
+ISIN: IE00B5BMR087
+Kurs: USD 262.51
+Betrag USD 359.27
+Umrechnungskurs CHF/USD 1.00195 CHF 359.98
+Stempelsteuer CHF 0.46
+Verrechneter Betrag: Valuta 05.07.2018 CHF 360.43
+S. E. & O.
+Freundliche Grüsse
+Terzo Vorsorgestiftung
+Anzeige ohne Unterschrift

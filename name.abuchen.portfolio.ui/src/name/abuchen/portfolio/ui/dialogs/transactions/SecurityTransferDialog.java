@@ -5,7 +5,7 @@ import static name.abuchen.portfolio.ui.util.SWTHelper.amountWidth;
 import static name.abuchen.portfolio.ui.util.SWTHelper.currencyWidth;
 import static name.abuchen.portfolio.ui.util.SWTHelper.widest;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -27,20 +27,20 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransferModel.Properties;
-import name.abuchen.portfolio.ui.util.DateTimePicker;
-import name.abuchen.portfolio.ui.util.SimpleDateTimeSelectionProperty;
+import name.abuchen.portfolio.ui.util.SWTHelper;
 
 public class SecurityTransferDialog extends AbstractTransactionDialog
 {
     private final class PortfoliosMustBeDifferentValidator extends MultiValidator
     {
-        IObservableValue source;
-        IObservableValue target;
+        IObservableValue<?> source;
+        IObservableValue<?> target;
 
-        public PortfoliosMustBeDifferentValidator(IObservableValue source, IObservableValue target)
+        public PortfoliosMustBeDifferentValidator(IObservableValue<?> source, IObservableValue<?> target)
         {
             this.source = source;
             this.target = target;
@@ -60,11 +60,15 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
     private Client client;
 
     @Inject
-    public SecurityTransferDialog(@Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell, Client client)
+    public SecurityTransferDialog(@Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell, Client client,
+                    ExchangeRateProviderFactory factory)
     {
         super(parentShell);
         this.client = client;
-        setModel(new SecurityTransferModel(client));
+
+        SecurityTransferModel m = new SecurityTransferModel(client);
+        m.setExchangeRateProviderFactory(factory);
+        setModel(m);
     }
 
     private SecurityTransferModel model()
@@ -90,7 +94,7 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
 
         ComboInput source = new ComboInput(editArea, Messages.ColumnAccountFrom);
         source.value.setInput(including(client.getActivePortfolios(), model().getSourcePortfolio()));
-        IObservableValue sourceObservable = source.bindValue(Properties.sourcePortfolio.name(),
+        IObservableValue<?> sourceObservable = source.bindValue(Properties.sourcePortfolio.name(),
                         Messages.MsgPortfolioFromMissing);
         source.bindCurrency(Properties.sourcePortfolioLabel.name());
 
@@ -98,20 +102,19 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
 
         ComboInput target = new ComboInput(editArea, Messages.ColumnAccountTo);
         target.value.setInput(including(client.getActivePortfolios(), model().getTargetPortfolio()));
-        IObservableValue targetObservable = target.bindValue(Properties.targetPortfolio.name(),
+        IObservableValue<?> targetObservable = target.bindValue(Properties.targetPortfolio.name(),
                         Messages.MsgPortfolioToMissing);
         target.bindCurrency(Properties.targetPortfolioLabel.name());
 
         MultiValidator validator = new PortfoliosMustBeDifferentValidator(sourceObservable, targetObservable);
         context.addValidationStatusProvider(validator);
 
-        // date
+        // date + time
 
-        Label lblDate = new Label(editArea, SWT.RIGHT);
-        lblDate.setText(Messages.ColumnDate);
-        DateTimePicker valueDate = new DateTimePicker(editArea);
-        context.bindValue(new SimpleDateTimeSelectionProperty().observe(valueDate.getControl()),
-                        BeanProperties.value(Properties.date.name()).observe(model));
+        DateTimeInput dateTime = new DateTimeInput(editArea, Messages.ColumnDate);
+        dateTime.bindDate(Properties.date.name());
+        dateTime.bindTime(Properties.time.name());
+        dateTime.bindButton(() -> model().getTime(), time -> model().setTime(time));
 
         // amount
 
@@ -130,9 +133,11 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
 
         Label lblNote = new Label(editArea, SWT.LEFT);
         lblNote.setText(Messages.ColumnNote);
-        Text valueNote = new Text(editArea, SWT.BORDER);
-        context.bindValue(WidgetProperties.text(SWT.Modify).observe(valueNote),
-                        BeanProperties.value(Properties.note.name()).observe(model));
+        Text valueNote = new Text(editArea, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
+        IObservableValue<?> targetNote = WidgetProperties.text(SWT.Modify).observe(valueNote);
+        @SuppressWarnings("unchecked")
+        IObservableValue<?> noteObservable = BeanProperties.value(Properties.note.name()).observe(model);
+        context.bindValue(targetNote, noteObservable);
 
         //
         // form layout
@@ -144,21 +149,25 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
         startingWith(securities.value.getControl(), securities.label).suffix(securities.currency)
                         .thenBelow(source.value.getControl()).label(source.label).suffix(source.currency)
                         .thenBelow(target.value.getControl()).label(target.label).suffix(target.currency)
-                        .thenBelow(valueDate.getControl()).label(lblDate)
-                        // shares - quote - amount
-                        .thenBelow(shares.value).width(amountWidth).label(shares.label).thenRight(quote.label)
-                        .thenRight(quote.value).width(amountWidth).thenRight(quote.currency).width(currencyWidth)
-                        .thenRight(amount.label).thenRight(amount.value).width(amountWidth).thenRight(amount.currency)
-                        .width(currencyWidth);
+                        .thenBelow(dateTime.date.getControl()).label(dateTime.label).thenRight(dateTime.time)
+                        .thenRight(dateTime.button, 0);
 
-        startingWith(shares.value).thenBelow(valueNote).left(securities.value.getControl()).right(amount.value)
-                        .label(lblNote);
+        // shares - quote - amount
+        startingWith(dateTime.date.getControl()).thenBelow(shares.value).width(amountWidth).label(shares.label)
+                        .thenRight(quote.label).thenRight(quote.value).width(amountWidth).thenRight(quote.currency)
+                        .width(currencyWidth).thenRight(amount.label).thenRight(amount.value).width(amountWidth)
+                        .thenRight(amount.currency).width(currencyWidth);
 
-        int widest = widest(securities.label, source.label, target.label, lblDate, amount.label, lblNote);
+        startingWith(shares.value).thenBelow(valueNote).height(SWTHelper.lineHeight(valueNote) * 3)
+                        .left(securities.value.getControl()).right(amount.value).label(lblNote);
+
+        int widest = widest(securities.label, source.label, target.label, dateTime.label, shares.label, lblNote);
         startingWith(securities.label).width(widest);
 
         WarningMessages warnings = new WarningMessages(this);
-        warnings.add(() -> model().getDate().isAfter(LocalDate.now()) ? Messages.MsgDateIsInTheFuture : null);
+        warnings.add(() -> LocalDateTime.of(model().getDate(), model().getTime()).isAfter(LocalDateTime.now())
+                        ? Messages.MsgDateIsInTheFuture
+                        : null);
         warnings.add(() -> new StockSplitWarning().check(model().getSecurity(), model().getDate()));
         model.addPropertyChangeListener(Properties.security.name(), e -> warnings.check());
         model.addPropertyChangeListener(Properties.date.name(), e -> warnings.check());

@@ -7,6 +7,7 @@ import static org.junit.Assert.assertThat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
 
@@ -19,6 +20,7 @@ import name.abuchen.portfolio.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
+import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -46,10 +48,10 @@ public class ClientPerformanceSnapshotTest
         Client client = new Client();
 
         Account account = new Account();
-        account.addTransaction(new AccountTransaction(LocalDate.of(2010, Month.JANUARY, 1), CurrencyUnit.EUR, 1000_00,
-                        null, AccountTransaction.Type.DEPOSIT));
-        account.addTransaction(new AccountTransaction(LocalDate.of(2011, Month.JUNE, 1), CurrencyUnit.EUR, 50_00, null,
-                        AccountTransaction.Type.INTEREST));
+        account.addTransaction(new AccountTransaction(LocalDateTime.of(2010, Month.JANUARY, 1, 0, 0), CurrencyUnit.EUR,
+                        1000_00, null, AccountTransaction.Type.DEPOSIT));
+        account.addTransaction(new AccountTransaction(LocalDateTime.of(2011, Month.JUNE, 1, 0, 0), CurrencyUnit.EUR,
+                        50_00, null, AccountTransaction.Type.INTEREST));
         client.addAccount(account);
 
         CurrencyConverter converter = new TestCurrencyConverter();
@@ -82,10 +84,10 @@ public class ClientPerformanceSnapshotTest
         Client client = new Client();
 
         Account account = new Account();
-        account.addTransaction(new AccountTransaction(LocalDate.of(2010, Month.JANUARY, 1), CurrencyUnit.EUR, 1000_00,
-                        null, AccountTransaction.Type.DEPOSIT));
-        account.addTransaction(new AccountTransaction(LocalDate.of(2010, Month.DECEMBER, 31), CurrencyUnit.EUR, 50_00,
-                        null, AccountTransaction.Type.INTEREST));
+        account.addTransaction(new AccountTransaction(LocalDateTime.of(2010, Month.JANUARY, 1, 0, 0), CurrencyUnit.EUR,
+                        1000_00, null, AccountTransaction.Type.DEPOSIT));
+        account.addTransaction(new AccountTransaction(LocalDateTime.of(2010, Month.DECEMBER, 31, 0, 0),
+                        CurrencyUnit.EUR, 50_00, null, AccountTransaction.Type.INTEREST));
         client.addAccount(account);
 
         CurrencyConverter converter = new TestCurrencyConverter();
@@ -107,10 +109,10 @@ public class ClientPerformanceSnapshotTest
         Client client = new Client();
 
         Account account = new Account();
-        account.addTransaction(new AccountTransaction(LocalDate.of(2010, Month.JANUARY, 1), CurrencyUnit.EUR, 1000_00,
-                        null, AccountTransaction.Type.DEPOSIT));
-        account.addTransaction(new AccountTransaction(LocalDate.of(2011, Month.DECEMBER, 31), CurrencyUnit.EUR, 50_00,
-                        null, AccountTransaction.Type.INTEREST));
+        account.addTransaction(new AccountTransaction(LocalDateTime.of(2010, Month.JANUARY, 1, 0, 0), CurrencyUnit.EUR,
+                        1000_00, null, AccountTransaction.Type.DEPOSIT));
+        account.addTransaction(new AccountTransaction(LocalDateTime.of(2011, Month.DECEMBER, 31, 0, 0),
+                        CurrencyUnit.EUR, 50_00, null, AccountTransaction.Type.INTEREST));
         client.addAccount(account);
 
         CurrencyConverter converter = new TestCurrencyConverter();
@@ -135,16 +137,23 @@ public class ClientPerformanceSnapshotTest
         Security security = new Security();
         client.addSecurity(security);
 
+        Account account = new Account();
+        client.addAccount(account);
+
         Portfolio portfolio = new Portfolio();
-        portfolio.setReferenceAccount(new Account());
-        portfolio.addTransaction(new PortfolioTransaction(LocalDate.of(2010, Month.JANUARY, 1), CurrencyUnit.EUR, 1_00,
-                        security, Values.Share.factorize(10), PortfolioTransaction.Type.BUY, 0, 0));
+        portfolio.setReferenceAccount(account);
         client.addPortfolio(portfolio);
 
-        Account account = new Account();
-        account.addTransaction(new AccountTransaction(LocalDate.of(2011, Month.JANUARY, 31), CurrencyUnit.EUR, 50_00,
-                        security, AccountTransaction.Type.INTEREST));
-        client.addAccount(account);
+        BuySellEntry purchase = new BuySellEntry(portfolio, account);
+        purchase.setType(PortfolioTransaction.Type.BUY);
+        purchase.setDate(LocalDateTime.of(2010, Month.JANUARY, 1, 0, 0));
+        purchase.setSecurity(security);
+        purchase.setMonetaryAmount(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.00)));
+        purchase.setShares(Values.Share.factorize(10));
+        purchase.insert();
+
+        account.addTransaction(new AccountTransaction(LocalDateTime.of(2011, Month.JANUARY, 31, 0, 0), CurrencyUnit.EUR,
+                        50_00, security, AccountTransaction.Type.DIVIDENDS));
 
         CurrencyConverter converter = new TestCurrencyConverter();
         ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate);
@@ -170,8 +179,9 @@ public class ClientPerformanceSnapshotTest
 
         Portfolio portfolio = new Portfolio();
         portfolio.setReferenceAccount(new Account());
-        portfolio.addTransaction(new PortfolioTransaction(LocalDate.of(2010, Month.JANUARY, 1), CurrencyUnit.EUR, 1_00,
-                        security, Values.Share.factorize(10), PortfolioTransaction.Type.BUY, 0, 0));
+        portfolio.addTransaction(
+                        new PortfolioTransaction(LocalDateTime.of(2010, Month.JANUARY, 1, 0, 0), CurrencyUnit.EUR, 1_00,
+                                        security, Values.Share.factorize(10), PortfolioTransaction.Type.BUY, 0, 0));
         client.addPortfolio(portfolio);
 
         CurrencyConverter converter = new TestCurrencyConverter();
@@ -200,10 +210,12 @@ public class ClientPerformanceSnapshotTest
 
         Portfolio portfolio = new Portfolio();
         portfolio.setReferenceAccount(new Account());
-        portfolio.addTransaction(new PortfolioTransaction("2010-01-01", CurrencyUnit.EUR, 1_00, security,
-                        Values.Share.factorize(10), PortfolioTransaction.Type.BUY, 0, 0));
-        portfolio.addTransaction(new PortfolioTransaction("2011-01-15", CurrencyUnit.EUR, 99_00, security,
-                        Values.Share.factorize(1), PortfolioTransaction.Type.DELIVERY_INBOUND, 0, 0));
+        portfolio.addTransaction(
+                        new PortfolioTransaction(LocalDateTime.of(2010, Month.JANUARY, 1, 0, 0), CurrencyUnit.EUR, 1_00,
+                                        security, Values.Share.factorize(10), PortfolioTransaction.Type.BUY, 0, 0));
+        portfolio.addTransaction(new PortfolioTransaction(LocalDateTime.of(2011, Month.JANUARY, 15, 0, 0),
+                        CurrencyUnit.EUR, 99_00, security, Values.Share.factorize(1),
+                        PortfolioTransaction.Type.DELIVERY_INBOUND, 0, 0));
         client.addPortfolio(portfolio);
 
         CurrencyConverter converter = new TestCurrencyConverter();
@@ -246,9 +258,15 @@ public class ClientPerformanceSnapshotTest
 
         assertThat(snapshot.getValue(CategoryType.INITIAL_VALUE), is(Money.of(CurrencyUnit.EUR, 1000_00)));
         assertThat(snapshot.getValue(CategoryType.EARNINGS), is(Money.of(CurrencyUnit.EUR, 0)));
+
         assertThat(snapshot.getValue(CategoryType.CAPITAL_GAINS),
-                        is(Money.of(CurrencyUnit.EUR, 10_00 * 9 + (99_00 - 100_00))));
-        assertThat(snapshot.getValue(CategoryType.FINAL_VALUE), is(Money.of(CurrencyUnit.EUR, 110_00 * 9)));
+                        is(Money.of(CurrencyUnit.EUR, Values.Money.factorize(110.0 * 9 - 100.0 * 9))));
+
+        assertThat(snapshot.getValue(CategoryType.REALIZED_CAPITAL_GAINS),
+                        is(Money.of(CurrencyUnit.EUR, Values.Money.factorize(99.0 - 100.0))));
+
+        assertThat(snapshot.getValue(CategoryType.FINAL_VALUE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(110.0 * 9))));
 
         assertThat(snapshot.getAbsoluteDelta(),
                         is(snapshot.getValue(CategoryType.FINAL_VALUE)
@@ -280,7 +298,11 @@ public class ClientPerformanceSnapshotTest
         ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate);
 
         assertThat(snapshot.getValue(CategoryType.CAPITAL_GAINS),
-                        is(Money.of(CurrencyUnit.EUR, 1000 * 9 + (9900 - 10000) + 1)));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize((110.0 * 9) - (100.0 * 9)))));
+
+        assertThat(snapshot.getValue(CategoryType.REALIZED_CAPITAL_GAINS),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(99.0 + 0.01 - 100))));
+
         assertThat(snapshot.getValue(CategoryType.FEES), is(Money.of(CurrencyUnit.EUR, 1)));
 
         assertThat(snapshot.getAbsoluteDelta(),
@@ -333,7 +355,7 @@ public class ClientPerformanceSnapshotTest
         // insert account transfer
 
         AccountTransferEntry entry = new AccountTransferEntry(usd, cad);
-        entry.setDate(LocalDate.parse("2015-01-10"));
+        entry.setDate(LocalDateTime.parse("2015-01-10T00:00"));
 
         AccountTransaction source = entry.getSourceTransaction();
         AccountTransaction target = entry.getTargetTransaction();
@@ -355,6 +377,7 @@ public class ClientPerformanceSnapshotTest
         MutableMoney currencyGains = MutableMoney.of(converter.getTermCurrency());
         currencyGains.subtract(snapshot.getValue(CategoryType.INITIAL_VALUE));
         currencyGains.subtract(snapshot.getValue(CategoryType.CAPITAL_GAINS));
+        currencyGains.subtract(snapshot.getValue(CategoryType.REALIZED_CAPITAL_GAINS));
         currencyGains.subtract(snapshot.getValue(CategoryType.EARNINGS));
         currencyGains.add(snapshot.getValue(CategoryType.FEES));
         currencyGains.add(snapshot.getValue(CategoryType.TAXES));
@@ -373,7 +396,7 @@ public class ClientPerformanceSnapshotTest
         Account account = new AccountBuilder().addTo(client);
 
         AccountTransaction dividend = new AccountTransaction();
-        dividend.setDate(LocalDate.parse("2011-03-01"));
+        dividend.setDateTime(LocalDateTime.parse("2011-03-01T00:00"));
         dividend.setType(AccountTransaction.Type.DIVIDENDS);
         dividend.setSecurity(security);
         dividend.setMonetaryAmount(Money.of(CurrencyUnit.EUR, 100_00));
@@ -390,7 +413,7 @@ public class ClientPerformanceSnapshotTest
         assertThat(snapshot.getValue(CategoryType.TAXES), is(Money.of(CurrencyUnit.EUR, 10_00)));
 
         assertThat(snapshot.getEarnings().size(), is(1));
-        assertThat(snapshot.getCategoryByType(CategoryType.EARNINGS).getPositions().get(0).getValuation(),
+        assertThat(snapshot.getCategoryByType(CategoryType.EARNINGS).getPositions().get(0).getValue(),
                         is(Money.of(CurrencyUnit.EUR, 110_00)));
 
         GroupEarningsByAccount.Item item = new GroupEarningsByAccount(snapshot).getItems().get(0);
@@ -405,12 +428,14 @@ public class ClientPerformanceSnapshotTest
         Client client = new Client();
 
         Security security = new SecurityBuilder().addTo(client);
-        Portfolio portfolio = new PortfolioBuilder().addTo(client);
+        Account account = new AccountBuilder().addTo(client);
+        Portfolio portfolio = new PortfolioBuilder(account).addTo(client);
 
         PortfolioTransaction delivery = new PortfolioTransaction();
-        delivery.setDate(LocalDate.parse("2011-03-01"));
+        delivery.setDateTime(LocalDateTime.parse("2011-03-01T00:00"));
         delivery.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
         delivery.setSecurity(security);
+        delivery.setShares(Values.Share.factorize(1));
         delivery.setMonetaryAmount(Money.of(CurrencyUnit.EUR, 100_00));
         delivery.addUnit(new Transaction.Unit(Transaction.Unit.Type.TAX, Money.of(CurrencyUnit.EUR, 10_00)));
         delivery.addUnit(new Transaction.Unit(Transaction.Unit.Type.FEE, Money.of(CurrencyUnit.EUR, 10_00)));
@@ -445,7 +470,7 @@ public class ClientPerformanceSnapshotTest
         assertThat(snapshot.getValue(CategoryType.EARNINGS),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(-100))));
         assertThat(snapshot.getCategoryByType(CategoryType.EARNINGS).getPositions().size(), is(1));
-        assertThat(snapshot.getCategoryByType(CategoryType.EARNINGS).getPositions().get(0).getValuation(),
+        assertThat(snapshot.getCategoryByType(CategoryType.EARNINGS).getPositions().get(0).getValue(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(-100))));
 
         assertThat(snapshot.getEarnings().size(), is(1));
@@ -481,11 +506,211 @@ public class ClientPerformanceSnapshotTest
         assertThatCalculationWorksOut(snapshot, converter);
     }
 
+    @Test
+    public void testRealizedAndUnrealizedForexCapitalGains()
+    {
+        CurrencyConverter converter = new TestCurrencyConverter();
+
+        Client client = buildClientWithSaleAndPurchaseInForex(converter, 10, 5);
+
+        // code under test
+
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter,
+                        LocalDate.parse("2015-01-05"), LocalDate.parse("2016-01-01"));
+
+        // assertions - unrealized gains
+
+        assertThat(snapshot.getValue(CategoryType.CAPITAL_GAINS), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(
+                        // price at end * exchange rate at end
+                        (120.0 * 5 / 1.1588)
+                                        // price at start * exchange rate at
+                                        // start period
+                                        - (100.0 * 5 / 1.1915)))));
+
+        assertThat(snapshot.getCategoryByType(CategoryType.CAPITAL_GAINS).getPositions().get(0).getForexGain(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(
+                                        // price at start w/
+                                        // exchange rate at end
+                                        (100.0 * 5 / 1.1588)
+                                                        // price at start w/
+                                                        // exchange rate at
+                                                        // start
+                                                        - (100.0 * 5 / 1.1915)))));
+
+        // assertions - realized gains
+
+        assertThat(snapshot.getValue(CategoryType.REALIZED_CAPITAL_GAINS),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(
+                                        // EUR transaction value at sale (is
+                                        // realized!)
+                                        (100.0 * 5)
+                                                        // price at start *
+                                                        // exchange rate at
+                                                        // start of period
+                                                        - (100.0 * 5 / 1.1915)))));
+
+        assertThat(snapshot.getCategoryByType(CategoryType.REALIZED_CAPITAL_GAINS).getPositions().get(0).getForexGain(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(
+                                        // price at start USD w/
+                                        // exchange rate at end
+                                        (100.0 * 5 / 1.1813)
+                                                        // price at start USD w/
+                                                        // exchange rate at
+                                                        // start
+                                                        - (100.0 * 5 / 1.1915)))));
+
+        assertThat(snapshot.getAbsoluteDelta(),
+                        is(snapshot.getValue(CategoryType.FINAL_VALUE)
+                                        .subtract(snapshot.getValue(CategoryType.TRANSFERS))
+                                        .subtract(snapshot.getValue(CategoryType.INITIAL_VALUE))));
+
+        assertThatCalculationWorksOut(snapshot, converter);
+    }
+
+    @Test
+    public void testRealizedAndUnrealizedForexCapitalGainsWithMultiplePortfolios()
+    {
+        CurrencyConverter converter = new TestCurrencyConverter();
+
+        Client client = buildClientWithSaleAndPurchaseInForex(converter, 10, 5);
+
+        // add a new portfolio + a new purchase *before* purchase. Because the
+        // new purchase is in a different securities account, the realized
+        // capital gains must not change compared to test method
+        // #testRealizedAndUnrealizedForexCapitalGains (see above)
+
+        Security security = client.getSecurities().get(0);
+        Account account = client.getAccounts().get(0);
+        Portfolio secondPortfolio = new PortfolioBuilder(account).addTo(client);
+
+        LocalDate purchaseDate = LocalDate.parse("2015-01-01");
+        Money purchaseAmount = Money.of(CurrencyUnit.EUR, Values.Amount.factorize(80.0 * 10));
+        BuySellEntry purchase = new BuySellEntry(secondPortfolio, account);
+        purchase.setType(PortfolioTransaction.Type.BUY);
+        purchase.setSecurity(security);
+        purchase.setDate(purchaseDate.atStartOfDay());
+        purchase.setShares(Values.Share.factorize(10));
+        purchase.setMonetaryAmount(purchaseAmount);
+        purchase.getPortfolioTransaction()
+                        .addUnit(new Unit(Unit.Type.GROSS_VALUE, purchaseAmount,
+                                        purchaseAmount.with(converter.with(CurrencyUnit.USD).at(purchaseDate)),
+                                        converter.getRate(purchaseDate, CurrencyUnit.USD).getValue()));
+        purchase.insert();
+
+        // code under test
+
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter,
+                        LocalDate.parse("2014-12-31"), LocalDate.parse("2016-01-01"));
+
+        // assertions - unrealized gains
+
+        assertThat(snapshot.getValue(CategoryType.CAPITAL_GAINS), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(
+                        // price at end * exchange rate at end
+                        (120.0 * (5 + 10) / 1.1588)
+                                        // purchase price
+                                        - (90.0 * 5) //
+                                        - (80.0 * 10)))));
+
+        // assertions - realized gains
+
+        assertThat(snapshot.getValue(CategoryType.REALIZED_CAPITAL_GAINS),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(
+                                        // EUR transaction value at sale (is
+                                        // realized!)
+                                        (100.0 * 5)
+                                                        // price at start *
+                                                        // exchange rate at
+                                                        // start of period
+                                                        - (90.0 * 5)))));
+
+        assertThat(snapshot.getCategoryByType(CategoryType.REALIZED_CAPITAL_GAINS).getPositions().get(0).getForexGain(),
+                        is(Money.of(CurrencyUnit.EUR,
+                                        // value at start -> to USD with rate at
+                                        // start -> back to EUR with rate at end
+                                        // -> minus start value
+                                        Values.Amount.factorize((90.0 * 5 * 1.2043 / 1.1813) - (90.0 * 5)))));
+
+        assertThat(snapshot.getAbsoluteDelta(),
+                        is(snapshot.getValue(CategoryType.FINAL_VALUE)
+                                        .subtract(snapshot.getValue(CategoryType.TRANSFERS))
+                                        .subtract(snapshot.getValue(CategoryType.INITIAL_VALUE))));
+
+        assertThatCalculationWorksOut(snapshot, converter);
+    }
+
+    private Client buildClientWithSaleAndPurchaseInForex(CurrencyConverter converter, int noToPurchase, int noToSale)
+    {
+        Client client = new Client();
+
+        Security security = new SecurityBuilder(CurrencyUnit.USD) //
+                        .addPrice("2015-01-02", Values.Quote.factorize(100)) //
+                        .addPrice("2015-01-08", Values.Quote.factorize(110)) //
+                        .addPrice("2015-12-01", Values.Quote.factorize(120)) //
+                        .addTo(client);
+
+        Account account = new AccountBuilder() //
+                        .deposit_("2014-01-01", Values.Quote.factorize(1000)) //
+                        .addTo(client);
+
+        Portfolio portfolio = new PortfolioBuilder(account).addTo(client);
+
+        // create purchase with forex (outside reporting period)
+
+        LocalDate purchaseDate = LocalDate.parse("2015-01-02");
+        Money purchaseAmount = Money.of(CurrencyUnit.EUR, Values.Amount.factorize(90.0 * noToPurchase));
+        BuySellEntry purchase = new BuySellEntry(portfolio, account);
+        purchase.setType(PortfolioTransaction.Type.BUY);
+        purchase.setSecurity(security);
+        purchase.setDate(purchaseDate.atStartOfDay());
+        purchase.setShares(Values.Share.factorize(noToPurchase));
+        purchase.setMonetaryAmount(purchaseAmount);
+        purchase.getPortfolioTransaction()
+                        .addUnit(new Unit(Unit.Type.GROSS_VALUE, purchaseAmount,
+                                        purchaseAmount.with(converter.with(CurrencyUnit.USD).at(purchaseDate)),
+                                        converter.getRate(purchaseDate, CurrencyUnit.USD).getValue()));
+        purchase.insert();
+
+        // create a partial sell (inside the reporting period)
+
+        LocalDate saleDate = LocalDate.parse("2015-01-09");
+        Money saleAmount = Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100.0 * noToSale));
+        BuySellEntry sale = new BuySellEntry(portfolio, account);
+        sale.setType(PortfolioTransaction.Type.SELL);
+        sale.setSecurity(security);
+        sale.setDate(saleDate.atStartOfDay());
+        sale.setShares(Values.Share.factorize(noToSale));
+        sale.setMonetaryAmount(saleAmount);
+        sale.getPortfolioTransaction()
+                        .addUnit(new Unit(Unit.Type.GROSS_VALUE, saleAmount,
+                                        saleAmount.with(converter.with(CurrencyUnit.USD).at(saleDate)),
+                                        converter.getRate(saleDate, CurrencyUnit.USD).getValue()));
+        sale.insert();
+        return client;
+    }
+
+    @Test
+    public void testForexCapitalGainsWithShortSale()
+    {
+        CurrencyConverter converter = new TestCurrencyConverter();
+        Client client = buildClientWithSaleAndPurchaseInForex(converter, 10, 11);
+
+        // code under test
+
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter,
+                        LocalDate.parse("2015-01-05"), LocalDate.parse("2016-01-01"));
+
+        // calculation does not work out b/c of the short sale!
+
+        assertThat(snapshot.getEndClientSnapshot().getPositionsByVehicle().get(client.getSecurities().get(0))
+                        .getPosition().getShares(), is(Values.Share.factorize(-1)));
+    }
+
     private void assertThatCalculationWorksOut(ClientPerformanceSnapshot snapshot, CurrencyConverter converter)
     {
         MutableMoney valueAtEndOfPeriod = MutableMoney.of(converter.getTermCurrency());
         valueAtEndOfPeriod.add(snapshot.getValue(CategoryType.INITIAL_VALUE));
         valueAtEndOfPeriod.add(snapshot.getValue(CategoryType.CAPITAL_GAINS));
+        valueAtEndOfPeriod.add(snapshot.getValue(CategoryType.REALIZED_CAPITAL_GAINS));
         valueAtEndOfPeriod.add(snapshot.getValue(CategoryType.EARNINGS));
         valueAtEndOfPeriod.subtract(snapshot.getValue(CategoryType.FEES));
         valueAtEndOfPeriod.subtract(snapshot.getValue(CategoryType.TAXES));

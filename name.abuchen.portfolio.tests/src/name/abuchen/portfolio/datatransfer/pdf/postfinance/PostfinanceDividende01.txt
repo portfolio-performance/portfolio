@@ -1,0 +1,31 @@
+PDF Author: 'Registered to: SWISQUOT'
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRANSAKTIONSBELEG
+Kunde: 999999 - TRADING
+Herrn Vorname Nachname
+Strasse Hausnummer
+CH-2540 Grenchen
+Bern, 05.06.2019
+Dividende Unsere Referenz: 169933304 
+Im Hinblick auf folgenden Titel:
+Titel
+Bezeichnung Anzahl
+ISIN: NL0000009355
+UNILEVER DUTCH CERT NKN: 2560588 60
+Verwahrungsstelle: Swissquote Bank AG
+haben wir Ihrem Konto den folgenden Betrag gutgeschrieben:
+Kontonummer 99999902
+Ausführungsdatum 02.05.2019
+Valutadatum 05.06.2019
+Anzahl 60
+Dividende 0.4104 EUR
+Betrag EUR 24.62
+Quellensteuer 15.00% (NL) EUR 3.69
+Total EUR 20.93
+Wechselkurs EUR / CHF : 1.11652
+Bitte prüfen Sie dieses Dokument und benachrichtigen Sie uns bei Unstimmigkeiten innert Monatsfrist.
+PostFinance AG, Mingerstrasse 20, 3030 Bern
+Kontaktcenter E-Trading: 0848 800 000 (Mo-Fr: 08.00-18.00 Uhr, ab Festnetz CHF 0.08/Min.)
+Formular ohne Unterschrift S.E. & O.
+MwSt n° CHE-116.302.542

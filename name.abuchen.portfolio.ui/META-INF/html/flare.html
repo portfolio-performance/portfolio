@@ -109,6 +109,9 @@ var flare = {
   },
 
   click: function(d) {
+	if (!d.caption)
+	    return;
+
     node = d;
 
     flare.path.transition()
@@ -141,6 +144,9 @@ var flare = {
   },
 
   mouseover: function(d) {
+    if (!d.caption)
+      return;
+
     tooltip.transition()
       .duration(250)
       .style("opacity", 1);
@@ -151,6 +157,9 @@ var flare = {
   },
 
   mousemove: function(d) {
+	if (!d.caption)
+	    return;
+
     tooltip
         .style("left", (d3.event.pageX + 6) + "px")
         .style("top", (d3.event.pageY - 20) + "px");

@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
+import java.util.function.Supplier;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -7,8 +9,10 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
 import name.abuchen.portfolio.model.Dashboard.Widget;
+import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.util.TextUtil;
 
-public class HeadingWidget extends WidgetDelegate
+public class HeadingWidget extends WidgetDelegate<Object>
 {
     private Label title;
 
@@ -29,21 +33,29 @@ public class HeadingWidget extends WidgetDelegate
 
         title = new Label(heading, SWT.NONE);
         title.setFont(resources.getBoldFont());
-        title.setForeground(resources.getHeadingColor());
-        title.setText(getWidget().getLabel());
+        title.setForeground(Colors.HEADINGS);
+        title.setBackground(heading.getBackground());
+        title.setText(TextUtil.tooltip(getWidget().getLabel()));
 
         return heading;
     }
 
     @Override
-    Control getTitleControl()
+    public Control getTitleControl()
     {
         return title;
     }
 
+
     @Override
-    public void update()
+    public Supplier<Object> getUpdateTask()
     {
-        title.setText(getWidget().getLabel());
+        return () -> null;
+    }
+
+    @Override
+    public void update(Object data)
+    {
+        title.setText(TextUtil.tooltip(getWidget().getLabel()));
     }
 }

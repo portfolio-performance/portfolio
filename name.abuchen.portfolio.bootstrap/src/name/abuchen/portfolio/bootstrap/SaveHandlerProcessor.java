@@ -10,8 +10,6 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.modeling.ISaveHandler;
-import org.osgi.service.event.Event;
-import org.osgi.service.event.EventHandler;
 
 // see http://www.eclipse.org/forums/index.php/t/369989/
 public class SaveHandlerProcessor
@@ -20,7 +18,8 @@ public class SaveHandlerProcessor
     private final IEventBroker eventBroker;
 
     @Inject
-    public SaveHandlerProcessor(@Named("name.abuchen.portfolio.ui.window.mainwindow") MWindow window, IEventBroker eventBroker)
+    public SaveHandlerProcessor(@Named("name.abuchen.portfolio.ui.window.mainwindow") MWindow window,
+                    IEventBroker eventBroker)
     {
         this.window = window;
         this.eventBroker = eventBroker;
@@ -29,35 +28,29 @@ public class SaveHandlerProcessor
     @Execute
     void installIntoContext()
     {
-        eventBroker.subscribe(UIEvents.Context.TOPIC_CONTEXT, new EventHandler()
-        {
-            @Override
-            public void handleEvent(Event event)
+        eventBroker.subscribe(UIEvents.Context.TOPIC_CONTEXT, event -> {
+            if (!UIEvents.isSET(event))
+                return;
+
+            if (!window.equals(event.getProperty("ChangedElement")) || window.getContext() == null) //$NON-NLS-1$
+                return;
+
+            window.getContext().runAndTrack(new RunAndTrack()
             {
-                if (!UIEvents.isSET(event))
-                    return;
+                private final ISaveHandler saveHandler = new CustomSaveHandler();
 
-                if (!window.equals(event.getProperty("ChangedElement")) || window.getContext() == null) //$NON-NLS-1$
-                    return;
-
-                window.getContext().runAndTrack(new RunAndTrack()
+                @Override
+                public boolean changed(IEclipseContext context)
                 {
-                    private final ISaveHandler saveHandler = new CustomSaveHandler();
+                    Object value = context.get(ISaveHandler.class);
 
-                    @Override
-                    public boolean changed(IEclipseContext context)
-                    {
-                        Object value = context.get(ISaveHandler.class);
+                    if (!saveHandler.equals(value))
+                        context.set(ISaveHandler.class, saveHandler);
 
-                        if (!saveHandler.equals(value))
-                            context.set(ISaveHandler.class, saveHandler);
+                    return true;
+                }
 
-                        return true;
-                    }
-
-                });
-            }
-
+            });
         });
     }
 }

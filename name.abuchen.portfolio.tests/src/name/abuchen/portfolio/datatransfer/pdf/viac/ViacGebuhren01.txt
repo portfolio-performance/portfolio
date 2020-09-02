@@ -1,0 +1,30 @@
+PDF Author: 'VIAC'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Terzo Vorsorgestiftung der WIR Bank
+Auberg 1
+4002 Basel
+Internet www.viac.ch
+E-Mail info@viac.ch
+Telefon 0800 80 40 40
+Vertrag Vertragsnummer Anrede
+Portfolio Portfolionummer Vorname Nachname
+Strasse Nummer
+PLZ Stadt
+Basel, 01.02.2019
+Belastung
+Am 31.01.2019 haben wir Ihr Konto belastet:
+VIAC Verwaltungsgebühr: 0.11% p.a.
+Durchschnittliches Vorsorgevermögen: CHF 1'123.11
+Abzüglich 3a Kontoguthaben (Liquidität): CHF 123.11
+Effektive Berechnungsbasis: Monat Januar CHF 1'000.00
+Effektive VIAC Verwaltungsgebühr: 0.123% p.a. CHF -1.11
+Verrechneter Betrag: Valuta 31.01.2019 CHF -1.11
+S. E. & O.
+Anmerkung: Wo immer möglich übernimmt die Stiftung selbst die Produktkosten (Indexfonds). Bei den ETFs werden die Produktkosten direkt 
+innerhalb der Anlagen zu Gunsten der Fondsanbieter belastet. Diese fallen zusätzlich zu der Verwaltungsgebühr an und betragen für die aktuell 
+gewählte Strategie 0.03% pro Jahr. VIAC erhält keinerlei Rückervergütungen (Retrozessionen).
+Freundliche Grüsse
+Terzo Vorsorgestiftung
+Anzeige ohne Unterschrift
+

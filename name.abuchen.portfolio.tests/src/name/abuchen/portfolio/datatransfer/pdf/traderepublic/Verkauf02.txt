@@ -1,0 +1,35 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KASTANIENALLEE 32  10435 BERLIN
+XXXXXX XXXXXX SEITE 1 von 1
+XXX XXX XXXX XX DATUM 11.06.2020
+D 12345 Stadt Stadtteil abcd ORDER 1234-1234
+AUSFÜHRUNG 1234-1234
+DEPOT 123456789
+WERTPAPIERABRECHNUNG
+ÜBERSICHT
+Stop-Market-Order Verkauf am 10.06.2020, um 11:42 Uhr.
+Der Kontrahent der Transaktion ist HSBC Trinkaus & Burkhardt AG.
+POSITION ANZAHL KURS BETRAG
+HSBC Trinkaus & Burkhardt AG 500 Stk. 7,19 EUR 3.595,00 EUR
+Call 15.12.21 DAX 14000
+ISIN: DE000TR95XU9
+GESAMT 3.595,00 EUR
+ABRECHNUNG
+POSITION BETRAG
+Fremdkostenzuschlag -1,00 EUR
+Kapitalertragssteuer Optimierung 20,50 EUR
+Solidaritätszuschlag Optimierung 1,13 EUR
+GESAMT 3.615,63 EUR
+BUCHUNG
+VERRECHNUNGSKONTO VALUTA BETRAG
+DE49110101001234567890 12.06.2020 3.615,63 EUR
+HSBC Trinkaus & Burkhardt AG Call 15.12.21 DAX 14000 in Girosammelverwahrung.
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie 
+Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Düsseldorf Geschäftsführer
+Kastanienallee 32 service@traderepublic.com AG Düsseldorf HRB 85864 Ingo Hillen
+10435 Berlin USt-ID DE307510626 Karsten Müller
+ABRE / 2020-06-10 / 51201552 / 1234-1234

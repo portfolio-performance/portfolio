@@ -15,7 +15,6 @@ import org.junit.Test;
 
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
-import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
@@ -26,9 +25,7 @@ public class CSVSecurityPriceExtractorTest
     @Test
     public void testSecurityCreation() throws ParseException
     {
-        Client client = new Client();
-
-        CSVExtractor extractor = new CSVSecurityPriceExtractor(client);
+        CSVExtractor extractor = new CSVSecurityPriceExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(0,
@@ -50,9 +47,7 @@ public class CSVSecurityPriceExtractorTest
     @Test
     public void testErrorIfDateIsMissing() throws ParseException
     {
-        Client client = new Client();
-
-        CSVExtractor extractor = new CSVSecurityPriceExtractor(client);
+        CSVExtractor extractor = new CSVSecurityPriceExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(0, Arrays.<String[]>asList( //
@@ -65,9 +60,7 @@ public class CSVSecurityPriceExtractorTest
     @Test
     public void testErrorIfAmountIsMissing() throws ParseException
     {
-        Client client = new Client();
-
-        CSVExtractor extractor = new CSVSecurityPriceExtractor(client);
+        CSVExtractor extractor = new CSVSecurityPriceExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(0, Arrays.<String[]>asList( //

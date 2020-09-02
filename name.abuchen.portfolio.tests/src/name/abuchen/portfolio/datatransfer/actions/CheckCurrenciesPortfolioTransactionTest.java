@@ -105,20 +105,21 @@ public class CheckCurrenciesPortfolioTransactionTest
         t.addUnit(tax);
         assertThat(action.process(t, portfolio).getCode(), is(Status.Code.OK));
 
+        t.setType(Type.DELIVERY_INBOUND);
         t.setMonetaryAmount(Money.of("EUR", 7_00));
         assertThat(action.process(t, portfolio).getCode(), is(Status.Code.ERROR));
 
-        t.setType(Type.DELIVERY_INBOUND);
+        t.setType(Type.DELIVERY_OUTBOUND);
         assertThat(action.process(t, portfolio).getCode(), is(Status.Code.OK));
 
-        t.setType(Type.DELIVERY_OUTBOUND);
+        t.setType(Type.DELIVERY_INBOUND);
         t.removeUnit(tax);
         assertThat(action.process(t, portfolio).getCode(), is(Status.Code.OK));
 
         t.setMonetaryAmount(Money.of("EUR", 3_00));
         assertThat(action.process(t, portfolio).getCode(), is(Status.Code.ERROR));
 
-        t.setType(Type.DELIVERY_INBOUND);
+        t.setType(Type.DELIVERY_OUTBOUND);
         assertThat(action.process(t, portfolio).getCode(), is(Status.Code.OK));
     }
 

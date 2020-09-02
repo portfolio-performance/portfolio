@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 import javax.inject.Inject;
 
@@ -27,6 +28,7 @@ import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerDropAdapter;
+import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
@@ -38,7 +40,6 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Classification.Assignment;
@@ -50,9 +51,11 @@ import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPart;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
+import name.abuchen.portfolio.ui.editor.PortfolioPart;
+import name.abuchen.portfolio.ui.selection.SecuritySelection;
+import name.abuchen.portfolio.ui.selection.SelectionService;
 import name.abuchen.portfolio.ui.util.BookmarkMenu;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ContextMenu;
@@ -135,9 +138,15 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 
             Assignment assignment = nodes.size() == 1 ? nodes.get(0).getAssignment() : null;
             if (assignment != null && assignment.getInvestmentVehicle() instanceof Security)
-                SecurityTransfer.getTransfer().setSecurity((Security) assignment.getInvestmentVehicle());
+            {
+                List<Security> securities = new ArrayList<>();
+                securities.add((Security) assignment.getInvestmentVehicle());
+                SecurityTransfer.getTransfer().setSecurities(securities);
+            }
             else
-                SecurityTransfer.getTransfer().setSecurity(null);
+            {
+                SecurityTransfer.getTransfer().setSecurities(null);
+            }
 
             event.data = nodes;
         }
@@ -150,7 +159,7 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
             @SuppressWarnings("unchecked")
             List<TaxonomyNode> nodes = ((TreeSelection) treeViewer.getSelection()).toList();
 
-            event.doit = !nodes.stream().filter(n -> n.getParent().isRoot()).findAny().isPresent();
+            event.doit = nodes.stream().noneMatch(n -> n.getParent().isRoot());
         }
     }
 
@@ -182,15 +191,19 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
                     return false;
             }
 
+            // do not allow dragging into virtual root
+            if (target.isRoot() || target.getParent().isRoot())
+                return false;
+
             // do not allow dragging of categories into the "unassigned
             // category" (must be deleted via right-click instead)
-            if (target.getPath().stream().filter(TaxonomyNode::isUnassignedCategory).findAny().isPresent()
-                            && droppedNodes.stream().filter(TaxonomyNode::isClassification).findAny().isPresent())
+            if (target.getPath().stream().anyMatch(TaxonomyNode::isUnassignedCategory)
+                            && droppedNodes.stream().anyMatch(TaxonomyNode::isClassification))
                 return false;
 
             switch (getCurrentLocation())
             {
-                case ViewerDropAdapter.LOCATION_AFTER: // NOSONAR
+                case ViewerDropAdapter.LOCATION_AFTER:
                     TaxonomyNode t = target;
                     for (TaxonomyNode node : droppedNodes)
                     {
@@ -206,9 +219,9 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 
                     viewer.onTaxnomyNodeEdited(viewer.getModel().getVirtualRootNode());
                     break;
-                case ViewerDropAdapter.LOCATION_ON: // NOSONAR
+                case ViewerDropAdapter.LOCATION_ON:
                     // do not drag parent into child
-                    if (target.getPath().stream().filter(droppedNodes::contains).findAny().isPresent())
+                    if (target.getPath().stream().anyMatch(droppedNodes::contains))
                         return false;
                     // do not move node into its own parent
                     droppedNodes.stream().filter(n -> !n.getParent().equals(target)).forEach(n -> n.moveTo(target));
@@ -233,7 +246,7 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
             for (TaxonomyNode node : nodes)
             {
                 List<TaxonomyNode> path = node.getPath();
-                if (!path.subList(0, path.size() - 1).stream().filter(nodes::contains).findAny().isPresent())
+                if (path.subList(0, path.size() - 1).stream().noneMatch(nodes::contains))
                     answer.add(node);
             }
             return answer;
@@ -263,13 +276,15 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
     protected static final String MENU_GROUP_DELETE_ACTIONS = "deleteActions"; //$NON-NLS-1$
 
     @Inject
+    private SelectionService selectionService;
+
+    @Inject
     private PortfolioPart part;
 
     private boolean useIndirectQuotation = false;
 
     private TreeViewer nodeViewer;
     private ShowHideColumnHelper support;
-    private Color warningColor;
 
     private boolean isFirstView = true;
 
@@ -279,7 +294,7 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
     }
 
     @Inject
-    public void setUseIndirectQuotation(
+    private void setUseIndirectQuotation(
                     @Preference(value = UIConstants.Preferences.USE_INDIRECT_QUOTATION) boolean useIndirectQuotation)
     {
         this.useIndirectQuotation = useIndirectQuotation;
@@ -295,11 +310,6 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
     protected final TreeViewer getNodeViewer()
     {
         return nodeViewer;
-    }
-
-    public Color getWarningColor()
-    {
-        return warningColor;
     }
 
     @Override
@@ -346,9 +356,6 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
         TreeColumnLayout layout = new TreeColumnLayout();
         container.setLayout(layout);
 
-        warningColor = new Color(container.getDisplay(), Colors.WARNING.swt());
-        container.addDisposeListener(e -> warningColor.dispose());
-
         nodeViewer = new TreeViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
 
         ColumnEditingSupport.prepare(nodeViewer);
@@ -371,6 +378,27 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
         nodeViewer.addDropSupport(DND.DROP_MOVE | DND.DROP_COPY, new Transfer[] { TaxonomyNodeTransfer.getTransfer() },
                         new NodeDropListener(this));
 
+        nodeViewer.addFilter(new ViewerFilter()
+        {
+            @Override
+            public boolean select(Viewer viewer, Object parentElement, Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+
+                for (Predicate<TaxonomyNode> predicate : getModel().getNodeFilters())
+                    if (!predicate.test(node))
+                        return false;
+
+                return true;
+            }
+        });
+
+        nodeViewer.addSelectionChangedListener(event -> {
+            TaxonomyNode node = ((TaxonomyNode) ((IStructuredSelection) event.getSelection()).getFirstElement());
+            if (node != null && node.getBackingSecurity() != null)
+                selectionService.setSelection(new SecuritySelection(getModel().getClient(), node.getBackingSecurity()));
+        });
+
         nodeViewer.setInput(getModel());
 
         new ContextMenu(nodeViewer.getControl(), this::fillContextMenu).hook();
@@ -382,8 +410,8 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 
     protected void addDimensionColumn(ShowHideColumnHelper support)
     {
-        Column column = new NameColumn("txname", Messages.ColumnLevels, SWT.NONE, 400); //$NON-NLS-1$
-        column.setLabelProvider(new NameColumnLabelProvider() // NOSONAR
+        Column column = new NameColumn("txname", Messages.ColumnLevels, SWT.NONE, 400, part.getClient()); //$NON-NLS-1$
+        column.setLabelProvider(new NameColumnLabelProvider(part.getClient()) // NOSONAR
         {
             @Override
             public Image getImage(Object e)
@@ -442,15 +470,14 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
             public Color getForeground(Object element)
             {
                 TaxonomyNode node = (TaxonomyNode) element;
-                return node.isAssignment() && getModel().hasWeightError(node)
-                                ? Display.getDefault().getSystemColor(SWT.COLOR_BLACK) : null;
+                return node.isAssignment() && getModel().hasWeightError(node) ? Colors.BLACK : null;
             }
 
             @Override
             public Color getBackground(Object element)
             {
                 TaxonomyNode node = (TaxonomyNode) element;
-                return node.isAssignment() && getModel().hasWeightError(node) ? warningColor : null;
+                return node.isAssignment() && getModel().hasWeightError(node) ? Colors.WARNING : null;
             }
 
             @Override
@@ -495,6 +522,29 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
                     return Values.Percent.format(0d);
                 else
                     return Values.Percent.format((double) actual / (double) base);
+            }
+        });
+        support.addColumn(column);
+
+        // Column which shows percentage of this asset class in relationship to
+        // total assets
+        column = new Column("amGV%", Messages.ColumnPctOfTotal, SWT.RIGHT, 60); //$NON-NLS-1$
+        column.setMenuLabel(Messages.ColumnPctOfTotal_MenuLabel);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+                // Divide amount in this asset class by amount of total assets
+                // (root of asset class tree)
+                long actual = node.getActual().getAmount();
+                long total = node.getRoot().getActual().getAmount();
+
+                if (total == 0)
+                    return Values.Percent.format(0d);
+                else
+                    return Values.Percent.format((double) actual / (double) total);
             }
         });
         support.addColumn(column);
@@ -592,16 +642,13 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
         column.setVisible(false);
         support.addColumn(column);
 
-        getModel().getClient() //
-                        .getSettings() //
-                        .getAttributeTypes() //
-                        .filter(a -> a.supports(Security.class)) //
-                        .forEach(attribute -> {
-                            Column col = new AttributeColumn(attribute);
-                            col.setVisible(false);
-                            col.setSorter(null);
-                            col.getEditingSupport().addListener(this);
-                            support.addColumn(col);
+        getModel().getAttachedModels().forEach(m -> m.addColumns(support));
+
+        AttributeColumn.createFor(getModel().getClient(), Security.class) //
+                        .forEach(c -> {
+                            c.setSorter(null);
+                            c.getEditingSupport().addListener(this);
+                            support.addColumn(c);
                         });
     }
 
@@ -672,7 +719,8 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 
     @Override
     public void afterPage()
-    {}
+    {
+    }
 
     @Override
     public void dispose()

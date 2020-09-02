@@ -18,7 +18,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
-import name.abuchen.portfolio.snapshot.ReportingPeriod;
+import name.abuchen.portfolio.util.Interval;
 
 @SuppressWarnings("nls")
 public class VolatilityTestCase
@@ -35,7 +35,7 @@ public class VolatilityTestCase
     @Test
     public void testVolatilityOfSharesHeldIsIdenticalToExcel() throws IOException
     {
-        ReportingPeriod report = new ReportingPeriod.FromXtoY(LocalDate.parse("2014-01-31"), LocalDate.parse("2014-07-31"));
+        Interval report = Interval.of(LocalDate.parse("2014-01-31"), LocalDate.parse("2014-07-31"));
         List<Exception> warnings = new ArrayList<>();
         PerformanceIndex index = PerformanceIndex.forClient(client, converter, report, warnings);
 
@@ -46,7 +46,7 @@ public class VolatilityTestCase
     @Test
     public void testVolatilityIfSecurityIsSoldDuringReportingPeriod() throws IOException
     {
-        ReportingPeriod report = new ReportingPeriod.FromXtoY(LocalDate.parse("2014-01-31"), LocalDate.parse("2015-01-31"));
+        Interval report = Interval.of(LocalDate.parse("2014-01-31"), LocalDate.parse("2015-01-31"));
         List<Exception> warnings = new ArrayList<>();
 
         Security basf = client.getSecurities().stream().filter(s -> "Basf SE".equals(s.getName())).findAny().get();
@@ -57,12 +57,12 @@ public class VolatilityTestCase
         assertThat(index.getVolatility().getStandardDeviation(), closeTo(0.200573810778, 0.1e-10)); // excel
         assertThat(clientIndex.getVolatility().getStandardDeviation(), closeTo(0.200599730118, 0.1e-10)); // excel
         assertThat(index.getDates()[index.getDates().length - 1], is(LocalDate.parse("2015-01-31")));
-    }  
+    }
 
     @Test
     public void testVolatilityIfSecurityIsSoldAndLaterBoughtDuringReportingPeriod() throws IOException
     {
-        ReportingPeriod report = new ReportingPeriod.FromXtoY(LocalDate.parse("2014-01-31"), LocalDate.parse("2015-02-20"));
+        Interval report = Interval.of(LocalDate.parse("2014-01-31"), LocalDate.parse("2015-02-20"));
         List<Exception> warnings = new ArrayList<>();
 
         Security basf = client.getSecurities().stream().filter(s -> "Basf SE".equals(s.getName())).findAny().get();
@@ -76,7 +76,7 @@ public class VolatilityTestCase
     @Test
     public void testVolatilityIfBenchmarkHasNoQuotes() throws IOException
     {
-        ReportingPeriod report = new ReportingPeriod.FromXtoY(LocalDate.parse("2014-01-31"), LocalDate.parse("2015-01-31"));
+        Interval report = Interval.of(LocalDate.parse("2014-01-31"), LocalDate.parse("2015-01-31"));
         List<Exception> warnings = new ArrayList<>();
 
         PerformanceIndex index = PerformanceIndex.forClient(client, converter, report, warnings);

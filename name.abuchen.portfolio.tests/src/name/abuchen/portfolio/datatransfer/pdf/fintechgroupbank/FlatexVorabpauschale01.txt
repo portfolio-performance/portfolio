@@ -1,0 +1,54 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+flatex Bank AG
+Postfach 100551
+41405 Neuss
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 (0)9221 - 7035898
+E-Mail: kunden@flatex.de
+flatex Bank AG -  Rotfeder-Ring 7 - 60327 Frankfurt am Main
+0602282000001393503480
+Herrn
+Peter Pan Frankfurt, 11.01.2020
+Wolkenstr. 21
+12345 Wolke
+Buchungsdatum        11.01.2020
+Zuflussdatum         02.01.2020
+Wertpapierabrechnung Vorabpauschale gem. § 18 InvStG
+Ihre Depotnummer: 1005970691
+Depotinhaber:     Peter Pan
+ISHS MSCI EM USD-AC                 IE00BKM4GZ66/A111X9                       
+Gesamtbestand       476,000000 St.  zum                             31.12.2019
+Vorabpauschale                      Vorabpauschale
+pro Stück          0,081536360 EUR  nach Teilfreistellung            17,80 EUR
+Teilfrei-                30,00 %    Bemessungs-
+stellung                  7,65 EUR  grundlage                        17,80 EUR
+                                 ** Einbeh. Steuer                    4,69 EUR
+** Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+                                 Kapitalertragsteuer                  4,45 EUR
+                                 Solidaritätszuschlag                 0,24 EUR
+                                 Kirchensteuer                        0,00 EUR
+   Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+   1776319005.
+Anschaffung   zugrundeliegende   Faktor besitzanteilige        besitzanteilige
+               Bestände in St.           Vorabpauschale  Vorabpauschale in EUR
+Vorjahr(e)          112,000000                    12/12                   9,13
+Januar               34,000000                    12/12                   2,77
+Februar              32,000000                    11/12                   2,39
+März                 29,000000                    10/12                   1,97
+April                29,000000                     9/12                   1,77
+Mai                  31,000000                     8/12                   1,69
+Juni                 30,000000                     7/12                   1,43
+Juli                 30,000000                     6/12                   1,22
+August               32,000000                     5/12                   1,09
+September            30,000000                     4/12                   0,82
+Oktober              29,000000                     3/12                   0,59
+November             27,000000                     2/12                   0,37
+Dezember             31,000000                     1/12                   0,21
+Kumulierte                                                                    
+besitzanteilige Vorabpauschale vor Teilfreistellung                      25,45
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Jörn Engelmann
+2000001393503480 0113602280000101

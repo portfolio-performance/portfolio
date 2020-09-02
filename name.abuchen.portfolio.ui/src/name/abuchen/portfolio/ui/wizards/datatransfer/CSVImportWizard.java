@@ -5,19 +5,26 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.graphics.Image;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
+import name.abuchen.portfolio.datatransfer.SecurityCache;
 import name.abuchen.portfolio.datatransfer.actions.InsertAction;
+import name.abuchen.portfolio.datatransfer.csv.CSVConfig;
+import name.abuchen.portfolio.datatransfer.csv.CSVConfigManager;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter;
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
-import name.abuchen.portfolio.ui.ConsistencyChecksJob;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.jobs.ConsistencyChecksJob;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 public class CSVImportWizard extends Wizard
@@ -38,27 +45,50 @@ public class CSVImportWizard extends Wizard
         }
 
         @Override
-        public String getFilterExtension()
+        public List<Item> extract(SecurityCache securityCache, Extractor.InputFile file, List<Exception> errors)
         {
-            return this.importer.getExtractor().getFilterExtension();
+            return this.importer.createItems(errors);
         }
 
         @Override
-        public List<Item> extract(List<File> files, List<Exception> errors)
+        public List<Item> extract(List<InputFile> file, List<Exception> errors)
         {
             return this.importer.createItems(errors);
         }
     }
 
+    /* package */static final String REVIEW_PAGE_ID = "reviewitems"; //$NON-NLS-1$
+
     private Client client;
     private IPreferenceStore preferences;
     private CSVImporter importer;
+
+    @Inject
+    private CSVConfigManager configManager;
 
     /**
      * If a target security is given, then only security prices are imported
      * directly into that security.
      */
     private Security target;
+
+    /**
+     * If a target account is given, then only security prices are imported
+     * directly into that security.
+     */
+    private Account account;
+
+    /**
+     * If a target portfolio is given, then only security prices are imported
+     * directly into that security.
+     */
+    private Portfolio portfolio;
+
+    /**
+     * If a CSVConfig is given, then this configuration is preset (used when
+     * opening the wizard with a specific configuration from the menu)
+     */
+    private CSVConfig initialConfig;
 
     private CSVImportDefinitionPage definitionPage;
     private ReviewExtractedItemsPage reviewPage;
@@ -72,9 +102,24 @@ public class CSVImportWizard extends Wizard
         setWindowTitle(Messages.CSVImportWizardTitle);
     }
 
+    public void setTarget(Account target)
+    {
+        this.account = target;
+    }
+
+    public void setTarget(Portfolio target)
+    {
+        this.portfolio = target;
+    }
+
     public void setTarget(Security target)
     {
         this.target = target;
+    }
+
+    public void setConfiguration(CSVConfig config)
+    {
+        this.initialConfig = config;
     }
 
     @Override
@@ -86,15 +131,22 @@ public class CSVImportWizard extends Wizard
     @Override
     public void addPages()
     {
-        definitionPage = new CSVImportDefinitionPage(importer, target != null);
+        definitionPage = new CSVImportDefinitionPage(client, importer, configManager, target != null);
+        if (initialConfig != null)
+            definitionPage.setInitialConfiguration(initialConfig);
         addPage(definitionPage);
-
-        reviewPage = new ReviewExtractedItemsPage(client, new ExtractorProxy(importer), preferences,
-                        Arrays.asList(importer.getInputFile()));
-        addPage(reviewPage);
 
         selectSecurityPage = new SelectSecurityPage(client);
         addPage(selectSecurityPage);
+
+        reviewPage = new ReviewExtractedItemsPage(client, new ExtractorProxy(importer), preferences,
+                        Arrays.asList(new Extractor.InputFile(importer.getInputFile())), REVIEW_PAGE_ID);
+        if (account != null)
+            reviewPage.setAccount(account);
+        if (portfolio != null)
+            reviewPage.setPortfolio(portfolio);
+        reviewPage.setDoExtractBeforeEveryPageDisplay(true);
+        addPage(reviewPage);
 
         AbstractWizardPage.attachPageListenerTo(getContainer());
     }
@@ -145,6 +197,7 @@ public class CSVImportWizard extends Wizard
     {
         InsertAction action = new InsertAction(client);
         action.setConvertBuySellToDelivery(reviewPage.doConvertToDelivery());
+        action.setRemoveDividends(reviewPage.doRemoveDividends());
 
         boolean isDirty = false;
         for (ExtractedEntry entry : reviewPage.getEntries())

@@ -1,0 +1,30 @@
+SUTOR BANK · Postfach 11 33 37 · 20433 Hamburg
+Depotnummer 123456789
+Kundennummer 123456
+Vorname Mittelname Nachnaame
+Auftragsnummer 123456/12.12
+Herrn Datum 02.01.2020
+Vorname Mittelname Nachname Rechnungsnummer W12345-1234567890/12
+Strasse mit Hausnummer 54 Umsatzsteuer-ID DE123456789
+12345 Berlin
+justTRADE
+Wertpapier Abrechnung Kauf
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 53 ISHSII-DEV.MKTS PROP.YLD U.ETF IE00B1FZS350 (A0LEW8)
+REGISTERED SHS USD (DIST) O.N.
+Handels-/Ausführungsplatz Hamburg (gemäß Weisung)
+Börsensegment HAMB
+Schlusstag/-Zeit 02.01.2020 10:49:34 Auftragserteilung/ -ort sonstige
+Ausführungskurs 25,295 EUR
+Wertpapierrechnung Lagerland Irland
+Kurswert 1.340,64- EUR
+Ausmachender Betrag 1.340,64- EUR
+Verwaltungsvergütung pro Jahr 0,59 %
+Den Gegenwert buchen wir mit Valuta 06.01.2020 zu Lasten des Kontos 123456789, BLZ 12345678.
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+afsdiuh38h4aooohdijhfads
+Für das Geschäft wurde keine Anlageberatung erbracht.
+Initiator der Besprechung war der Kunde.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+1234.12345678.1234567AB12

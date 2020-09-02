@@ -1,0 +1,78 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Erträgnisgutschrift aus Wertpapieren ADRESSZEILE1=Herr
+ADRESSZEILE2=Vorname Nachname
+ADRESSZEILE3=Teststr. 8
+ADRESSZEILE4=12345 Irgendwo
+Ausschüttung für
+Herr ADRESSZEILE5=01.01.2018 - 31.12.2018
+Vorname Nachname ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+Teststr. 8 BELEGNUMMER=2782
+12345 Irgendwo 12345 12345 / 06.02.2019 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Vorname Nachname
+Frankfurt am Main, 06.02.2019
+Erträgnisgutschrift
+Gattungsbezeichnung ISIN
+UBS-ETF-UBS-ETF MSCI Wld U.ETF Inhaber-Anteile (USD) A-dis LU0340285161
+oN
+Nominal Ex-Tag Zahltag Ausschüttungsbetrag pro Stück
+STK 32,000 31.01.2019 05.02.2019 USD 1,420100
+Wert Konto-Nr. Devisenkurs Betrag zu Ihren Gunsten
+05.02.2019 000000000 EUR/USD 1,1474 EUR 39,60
+Ertrag für 2018 USD 45,44
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Steuerpflichtiger Ausschüttungsbetrag EUR 27,72
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Freistellungsauftrag (eingereicht: EUR 1.200,00) EUR 1.167,26 1.139,54
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern EUR 0,00
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 0,00
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 0,00
+im laufenden Jahr einbehaltene Kirchensteuer EUR 0,00
+Steuerlicher Stichtag: 05.02.2019
+Jahressteuerbescheinigung folgt
+Fondsart: Aktienfonds (§ 2 Abs. 6 InvStG)
+Angewendete Teilfreistellungsquote: 30%
+Im Steuerabzugsverfahren werden generell - auch bei betrieblichen Anlegern - die Teilfreistellungsquoten (TFQ) für
+Privatanleger herangezogen.
+Es folgt Seite 2
+onvista bank Wildunger Straße 6a 60487 Frankfurt am Main T: +49 (0)69-7107-0 F: +49 (0)69-7107-100 info@onvista-bank.de www.onvista-bank.de
+onvista bank ist eine Marke der comdirect bank AG
+Sitz der comdirect bank AG: Pascalkehre 15 25451 Quickborn (AG Pinneberg HRB 4889) T: +49 (0)4106-704-0 F: +49 (0)4106-708-258-5 www.comdirect.de
+Vorstand: Arno Walter (Vorsitzender), Dietmar von Blücher, Matthias Hach Vorsitzender des Aufsichtsrates: Michael Mandel
+3.20/ABREEREIERTR/GDBERTRG/002782/070219/012819
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=000000000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+ADRESSZEILE1=Herr
+Depot-Nr. Abrechnungs-Nr. Seite-Nr. ADRESSZEILE2=Vorname Nachname
+000000000 92928136 2 ADRESSZEILE3=Teststr. 8
+ADRESSZEILE4=12345 Irgendwo
+ADRESSZEILE5=
+ADRESSZEILE6=
+BELEGNUMMER=2782
+SEITENNUMMER=2
+Verwahrart: Girosammelverwahrung      STEUERERSTATTUNG=N
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+onvista bank Wildunger Straße 6a 60487 Frankfurt am Main T: +49 (0)69-7107-0 F: +49 (0)69-7107-100 info@onvista-bank.de www.onvista-bank.de
+onvista bank ist eine Marke der comdirect bank AG
+Sitz der comdirect bank AG: Pascalkehre 15 25451 Quickborn (AG Pinneberg HRB 4889) T: +49 (0)4106-704-0 F: +49 (0)4106-708-258-5 www.comdirect.de
+Vorstand: Arno Walter (Vorsitzender), Dietmar von Blücher, Matthias Hach Vorsitzender des Aufsichtsrates: Michael Mandel
+3.20/ABREEREIERTR/GDBERTRG/002782/070219/012819

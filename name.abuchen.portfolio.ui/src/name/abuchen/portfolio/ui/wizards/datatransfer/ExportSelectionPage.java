@@ -27,8 +27,8 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
-import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 public class ExportSelectionPage extends AbstractWizardPage
@@ -78,7 +78,7 @@ public class ExportSelectionPage extends AbstractWizardPage
         layout.setColumnData(column, new ColumnWeightData(100));
 
         treeViewer.setContentProvider(new ExportItemsContentProvider());
-        treeViewer.setLabelProvider(new ExportItemsLabelProvider());
+        treeViewer.setLabelProvider(new ExportItemsLabelProvider(client));
         treeViewer.setInput(client);
         treeViewer.setExpandedElements(new Object[] { AccountTransaction.class, PortfolioTransaction.class,
                         Security.class });
@@ -145,7 +145,8 @@ public class ExportSelectionPage extends AbstractWizardPage
                 else if (parentElement == Security.class)
                     return new String[] { Messages.ExportWizardSecurityMasterData,
                                     Messages.ExportWizardMergedSecurityPrices,
-                                    Messages.ExportWizardAllTransactionsAktienfreundeNet };
+                                    Messages.ExportWizardAllTransactionsAktienfreundeNet,
+                                    Messages.ExportWizardVINISApp};
                 else if (parentElement == SecurityPrice.class)
                     return client.getSecurities().stream().sorted(new Security.ByName()).toArray();
             }
@@ -167,11 +168,19 @@ public class ExportSelectionPage extends AbstractWizardPage
 
         @Override
         public void dispose()
-        {}
+        {
+        }
     }
 
     static class ExportItemsLabelProvider extends LabelProvider
     {
+        private Client client;
+        
+        public ExportItemsLabelProvider(Client client) 
+        {
+            this.client = client;
+        }
+        
         @Override
         public String getText(Object element)
         {
@@ -198,15 +207,7 @@ public class ExportSelectionPage extends AbstractWizardPage
         @Override
         public Image getImage(Object element)
         {
-            if (element instanceof Class)
-                return Images.CATEGORY.image();
-            else if (element instanceof Account)
-                return Images.ACCOUNT.image();
-            else if (element instanceof Portfolio)
-                return Images.PORTFOLIO.image();
-            else if (element instanceof Security)
-                return Images.SECURITY.image();
-            return null;
+            return LogoManager.instance().getDefaultColumnImage(element, client.getSettings());
         }
     }
 }

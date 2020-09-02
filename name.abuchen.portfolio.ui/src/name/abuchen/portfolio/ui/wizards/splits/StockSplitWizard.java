@@ -23,6 +23,7 @@ public class StockSplitWizard extends Wizard
         return Images.BANNER.image();
     }
 
+    @Override
     public void addPages()
     {
         addPage(new SelectSplitPage(model));

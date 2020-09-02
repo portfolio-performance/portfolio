@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -40,11 +39,10 @@ public class AktienfreundeNetExporter
                         .collect(Collectors.toList());
 
         // write to file
-        try (Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))
+        try (CSVPrinter printer = new CSVPrinter(
+                        new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8),
+                        CSVExporter.STRATEGY))
         {
-            CSVPrinter printer = new CSVPrinter(writer);
-            printer.setStrategy(CSVExporter.STRATEGY);
-
             writeHeader(printer);
 
             // only buy/sell/dividend transactions
@@ -59,7 +57,7 @@ public class AktienfreundeNetExporter
     }
 
     @SuppressWarnings("nls")
-    private void writeDividend(CSVPrinter printer, AccountTransaction transaction)
+    private void writeDividend(CSVPrinter printer, AccountTransaction transaction) throws IOException
     {
         if (transaction.getSecurity() == null)
             return;
@@ -67,7 +65,7 @@ public class AktienfreundeNetExporter
                         && transaction.getType() != AccountTransaction.Type.DIVIDENDS)
             return;
 
-        printer.print(DATE_FORMAT.format(transaction.getDate()));
+        printer.print(DATE_FORMAT.format(transaction.getDateTime().toLocalDate()));
         printer.print(CSVExporter.escapeNull(transaction.getSecurity().getIsin()));
         printer.print(CSVExporter.escapeNull(transaction.getSecurity().getName()));
         printer.print("Aktie");
@@ -80,7 +78,7 @@ public class AktienfreundeNetExporter
     }
 
     @SuppressWarnings("nls")
-    private void writeBuySell(CSVPrinter printer, PortfolioTransaction transaction)
+    private void writeBuySell(CSVPrinter printer, PortfolioTransaction transaction) throws IOException
     {
         String type;
 
@@ -99,7 +97,7 @@ public class AktienfreundeNetExporter
                 return;
         }
 
-        printer.print(DATE_FORMAT.format(transaction.getDate()));
+        printer.print(DATE_FORMAT.format(transaction.getDateTime().toLocalDate()));
         printer.print(CSVExporter.escapeNull(transaction.getSecurity().getIsin()));
         printer.print(CSVExporter.escapeNull(transaction.getSecurity().getName()));
         printer.print("Aktie");
@@ -112,7 +110,7 @@ public class AktienfreundeNetExporter
     }
 
     @SuppressWarnings("nls")
-    private void writeHeader(CSVPrinter printer)
+    private void writeHeader(CSVPrinter printer) throws IOException
     {
         printer.print("Datum");
         printer.print("ISIN");

@@ -1,22 +1,8 @@
 package name.abuchen.portfolio.model;
 
-import java.util.Comparator;
-
-public class ConsumerPriceIndex
+@Deprecated
+/* package */class ConsumerPriceIndex
 {
-    public static class ByDate implements Comparator<ConsumerPriceIndex>
-    {
-        @Override
-        public int compare(ConsumerPriceIndex p1, ConsumerPriceIndex p2)
-        {
-            if (p1.year != p2.year)
-                return Integer.valueOf(p1.year).compareTo(p2.year);
-            if (p1.month != p2.month)
-                return Integer.valueOf(p1.month).compareTo(p2.month);
-            return 0;
-        }
-    }
-
     private int year;
     private int month;
     private int index;

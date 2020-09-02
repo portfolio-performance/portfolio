@@ -3,11 +3,14 @@ package name.abuchen.portfolio.ui.wizards.security;
 import java.text.MessageFormat;
 import java.util.Objects;
 
+import javax.inject.Inject;
+
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
-import org.eclipse.core.databinding.validation.IValidator;
+import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -30,6 +33,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import name.abuchen.portfolio.events.ChangeEventConstants;
+import name.abuchen.portfolio.events.SecurityChangeEvent;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Images;
@@ -39,6 +44,9 @@ import name.abuchen.portfolio.ui.util.FormDataFactory;
 
 public class EditSecurityDialog extends Dialog
 {
+    @Inject
+    private IEventBroker eventBroker;
+
     private CTabFolder tabFolder;
     private Label errorMessage;
 
@@ -47,6 +55,7 @@ public class EditSecurityDialog extends Dialog
 
     private boolean showQuoteConfigurationInitially = false;
 
+    @Inject
     public EditSecurityDialog(Shell parentShell, Client client, Security security)
     {
         super(parentShell);
@@ -153,19 +162,16 @@ public class EditSecurityDialog extends Dialog
 
         // bind to model
 
-        bindings.getBindingContext().bindValue(WidgetProperties.text(SWT.Modify).observe(name), //
-                        BeanProperties.value("name").observe(model), //$NON-NLS-1$
-                        new UpdateValueStrategy().setAfterConvertValidator(new IValidator()
-                        {
-                            @Override
-                            public IStatus validate(Object value)
-                            {
-                                String v = (String) value;
-                                return v != null && v.trim().length() > 0 ? ValidationStatus.ok()
-                                                : ValidationStatus.error(MessageFormat.format(
-                                                                Messages.MsgDialogInputRequired, Messages.ColumnName));
-                            }
-                        }), //
+        @SuppressWarnings("unchecked")
+        IObservableValue<String> targetName = WidgetProperties.text(SWT.Modify).observe(name);
+        @SuppressWarnings("unchecked")
+        IObservableValue<String> observable = BeanProperties.value("name").observe(model); //$NON-NLS-1$
+        bindings.getBindingContext().bindValue(targetName, observable,
+                        new UpdateValueStrategy<String, String>().setAfterConvertValidator(
+                                        v -> v != null && v.trim().length() > 0 ? ValidationStatus.ok()
+                                                        : ValidationStatus.error(MessageFormat.format(
+                                                                        Messages.MsgDialogInputRequired,
+                                                                        Messages.ColumnName))),
                         null);
     }
 
@@ -179,6 +185,7 @@ public class EditSecurityDialog extends Dialog
         {
             private AbstractPage current = null;
 
+            @Override
             public void widgetSelected(SelectionEvent e)
             {
                 if (current != null)
@@ -236,6 +243,8 @@ public class EditSecurityDialog extends Dialog
         boolean quotesCanChange = feedChanged || tickerChanged || feedURLChanged || currencyChanged;
 
         model.applyChanges();
+
+        eventBroker.post(ChangeEventConstants.Security.EDITED, new SecurityChangeEvent(model.getClient(), security));
 
         if (hasQuotes && quotesCanChange)
         {

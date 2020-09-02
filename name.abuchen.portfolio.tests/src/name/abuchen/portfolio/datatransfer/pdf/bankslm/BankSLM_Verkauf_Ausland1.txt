@@ -1,0 +1,49 @@
+Spar + Leihkasse M�nsingen AG
+Dorfplatz 5
+Postfach 1080
+3110 M�nsingen
+CHE-123.123.123 MWST
+Depot 80 1.123.123.05
+IBAN CH24 1234 1234 1234 1234 5
+Ihr Kundenberater Max Mustermann
+Direktwahl +41 123 123 12 12 HerrMax Mustermann
+Auftragsnummer AUF1231456 Musterstrasse 1
+Auftragsdatum 24.01.2013 1234 Musterstadt
+M�nsingen, 24.01.2013
+B�rsenabrechnung - Verkauf
+Wir haben f�r Sie am 24.01.2013 verkauft.
+11'500 Inhaber-Aktien
+Nokia Corp
+Valor: 472672
+B�rsenplatz: OMX-Nordic Exchange Helsinki Equities
+Menge/Nominal Preis
+2'281 3.09
+1'790 3.088
+62 3.088
+1'032 3.088
+4'000 3.088
+2'300 3.088
+35 3.088
+Total Kurswert EUR 35'516.56
+Change EUR/CHF 1.225050 CHF 43'509.55
+Eidg. Umsatzabgabe CHF -65.25
+Eigene Courtage CHF -264.30
+Netto CHF 43'180.00
+Valuta: 29.01.2013
+Unsere Gutschrift erfolgt auf dem Konto 42 0.123.123.00
+Auftrag aus Internet-Banking
+123'123'123 Seite 1/2
+Spar + Leihkasse M�nsingen AG
+Dorfplatz 5
+Postfach 1080
+3110 M�nsingen
+CHE-123.123.123 MWST
+Max Mustermann
+Ihr Kundenberater Max Mustermann Musterstrasse 1
+Direktwahl +41 123 123 12 12 1234 Musterstadt
+Auftragsnummer AUF123456
+Auftragsdatum 24.01.2013 M�nsingen, 24.01.2013
+Freundliche Gr�sse
+Spar + Leihkasse M�nsingen AG
+Anzeige ohne Unterschrift
+123'123'123 Seite 2/2

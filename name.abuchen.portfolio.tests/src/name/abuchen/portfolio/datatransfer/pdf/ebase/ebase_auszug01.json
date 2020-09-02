@@ -1,0 +1,59 @@
+{
+	"version": 1,
+	"transactions": [
+		{
+			"type": "INBOUND_DELIVERY",
+			"date": "2019-09-30",
+			"currency": "EUR",
+			"amount": 202.64,
+			"shares": 10.0,
+			"security": {
+				"name": "ComStage-Nikkei 225 UCITS ET99133507781F Inhaber-Anteile I o.N.",
+				"isin": "LU0378453376",
+				"currency": "EUR"
+			}
+		},
+		{
+			"type": "PURCHASE",
+			"date": "2019-11-20",
+			"currency": "EUR",
+			"amount": 300.0,
+			"shares": 12.729132,
+			"security": {
+				"name": "Xtr.(IE) - Russell Midcap Registered Shares 1C USD o.N.",
+				"isin": "IE00BJZ2DC62",
+				"currency": "USD"
+			},
+			"units": [
+				{
+					"type": "GROSS_VALUE",
+					"amount": 299.4,
+					"fxCurrency": "USD",
+					"fxRateToBase": 1.1055
+				},
+				{
+					"type": "FEE",
+					"amount": 0.6
+				}
+			]
+		},
+		{
+			"type": "PURCHASE",
+			"date": "2020-01-13",
+			"currency": "EUR",
+			"amount": 211.05,
+			"shares": 199.5,
+			"security": {
+				"name": "Lyxor MSCI Greece UCITS ETF Actions au Porteur Dist o.N.",
+				"isin": "FR0010405431",
+				"currency": "EUR"
+			},
+			"units": [
+				{
+					"type": "FEE",
+					"amount": 0.42
+				}
+			]
+		}
+	]
+}

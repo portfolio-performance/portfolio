@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.settings;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -9,6 +10,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -16,11 +18,8 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CTabFolder;
-import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.model.Bookmark;
 import name.abuchen.portfolio.model.Client;
@@ -30,6 +29,7 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.DesktopAPI;
+import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.viewers.Column;
@@ -37,8 +37,9 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
+import name.abuchen.portfolio.ui.views.AbstractTabbedView;
 
-public class BookmarksListTab implements SettingsView.Tab, ModificationListener
+public class BookmarksListTab implements AbstractTabbedView.Tab, ModificationListener
 {
     private static final String DEFAULT_URL = "http://example.net/{tickerSymbol}?isin={isin}&wkn={wkn}&name={name}"; //$NON-NLS-1$
 
@@ -51,9 +52,47 @@ public class BookmarksListTab implements SettingsView.Tab, ModificationListener
     private IPreferenceStore preferences;
 
     @Override
-    public CTabItem createTab(CTabFolder folder)
+    public String getTitle()
     {
-        Composite container = new Composite(folder, SWT.NONE);
+        return Messages.BookmarksListView_title;
+    }
+
+    @Override
+    public void addButtons(ToolBarManager manager)
+    {
+        manager.add(new DropDown(Messages.BookmarksListView_NewBookmark, Images.PLUS, SWT.NONE, menuListener -> {
+
+            menuListener.add(new SimpleAction(Messages.BookmarksListView_NewBookmark, a -> {
+                Bookmark wl = new Bookmark(Messages.BookmarksListView_NewBookmark, DEFAULT_URL);
+
+                client.getSettings().getBookmarks().add(wl);
+                client.touch();
+
+                bookmarks.setInput(client.getSettings().getBookmarks());
+                bookmarks.editElement(wl, 0);
+            }));
+
+            menuListener.add(new Separator());
+            menuListener.add(new LabelOnly(Messages.LabelTaxonomyTemplates));
+
+            List<Bookmark> templates = ClientSettings.getDefaultBookmarks();
+            Collections.sort(templates, (r, l) -> r.getLabel().compareTo(l.getLabel()));
+
+            templates.forEach(bm -> menuListener.add(new SimpleAction(bm.getLabel(), a -> {
+                client.getSettings().getBookmarks().add(bm);
+                client.touch();
+
+                bookmarks.setInput(client.getSettings().getBookmarks());
+                bookmarks.editElement(bm, 0);
+            })));
+
+        }));
+    }
+
+    @Override
+    public Composite createTab(Composite parent)
+    {
+        Composite container = new Composite(parent, SWT.NONE);
         TableColumnLayout layout = new TableColumnLayout();
         container.setLayout(layout);
 
@@ -77,7 +116,7 @@ public class BookmarksListTab implements SettingsView.Tab, ModificationListener
             @Override
             public Image getImage(Object element)
             {
-                return Images.TEXT.image();
+                return Images.BOOKMARK.image();
             }
 
         });
@@ -111,16 +150,13 @@ public class BookmarksListTab implements SettingsView.Tab, ModificationListener
 
         new ContextMenu(bookmarks.getTable(), this::fillContextMenu).hook();
 
-        CTabItem item = new CTabItem(folder, SWT.NONE);
-        item.setText(Messages.BookmarksListView_title);
-        item.setControl(container);
-        return item;
+        return container;
     }
 
     @Override
     public void onModified(Object element, Object newValue, Object oldValue)
     {
-        client.markDirty();
+        client.touch();
     }
 
     private void fillContextMenu(IMenuManager manager)
@@ -145,7 +181,7 @@ public class BookmarksListTab implements SettingsView.Tab, ModificationListener
                 Bookmark wl = new Bookmark(Messages.BookmarksListView_NewBookmark, DEFAULT_URL);
 
                 client.getSettings().insertBookmark(index, wl);
-                client.markDirty();
+                client.touch();
 
                 bookmarks.setInput(client.getSettings().getBookmarks());
                 bookmarks.editElement(wl, 0);
@@ -161,7 +197,7 @@ public class BookmarksListTab implements SettingsView.Tab, ModificationListener
                 Bookmark wl = new Bookmark(Messages.BookmarksListView_NewBookmark, DEFAULT_URL);
 
                 client.getSettings().insertBookmarkAfter(index, wl);
-                client.markDirty();
+                client.touch();
 
                 bookmarks.setInput(client.getSettings().getBookmarks());
                 bookmarks.editElement(wl, 0);
@@ -177,7 +213,7 @@ public class BookmarksListTab implements SettingsView.Tab, ModificationListener
                 Bookmark wl = new Bookmark("-", ""); //$NON-NLS-1$ //$NON-NLS-2$
 
                 client.getSettings().insertBookmarkAfter(index, wl);
-                client.markDirty();
+                client.touch();
 
                 bookmarks.setInput(client.getSettings().getBookmarks());
             }
@@ -196,7 +232,7 @@ public class BookmarksListTab implements SettingsView.Tab, ModificationListener
                 for (Object element : ((IStructuredSelection) bookmarks.getSelection()).toArray())
                     settings.removeBookmark((Bookmark) element);
 
-                client.markDirty();
+                client.touch();
                 bookmarks.setInput(settings.getBookmarks());
             }
         });
@@ -209,8 +245,7 @@ public class BookmarksListTab implements SettingsView.Tab, ModificationListener
         manager.add(submenu);
 
         @SuppressWarnings("nls")
-        List<String> defaultReplacements = Arrays
-                        .asList(new String[] { "isin", "name", "wkn", "tickerSymbol", "tickerSymbolPrefix" });
+        List<String> defaultReplacements = Arrays.asList("isin", "name", "wkn", "tickerSymbol", "tickerSymbolPrefix");
 
         submenu.add(new LabelOnly(Messages.BookmarksListView_LabelDefaultReplacements));
         defaultReplacements.forEach(r -> addReplacementMenu(submenu, r));
@@ -232,7 +267,7 @@ public class BookmarksListTab implements SettingsView.Tab, ModificationListener
             Bookmark bookmark = (Bookmark) ((IStructuredSelection) bookmarks.getSelection()).getFirstElement();
             bookmark.setPattern(bookmark.getPattern() + '{' + replacement + '}');
             bookmarks.refresh(bookmark);
-            client.markDirty();
+            client.touch();
         }));
     }
 
@@ -262,7 +297,7 @@ public class BookmarksListTab implements SettingsView.Tab, ModificationListener
                     settings.removeBookmark(bookmark);
                     settings.insertBookmark(index - 1, bookmark);
                     bookmarks.setInput(client.getSettings().getBookmarks());
-                    client.markDirty();
+                    client.touch();
                 }
             });
         }
@@ -278,21 +313,9 @@ public class BookmarksListTab implements SettingsView.Tab, ModificationListener
                     settings.removeBookmark(bookmark);
                     settings.insertBookmark(index + 1, bookmark);
                     bookmarks.setInput(client.getSettings().getBookmarks());
-                    client.markDirty();
+                    client.touch();
                 }
             });
         }
-    }
-
-    @Override
-    public void showAddMenu(Shell shell)
-    {
-        Bookmark wl = new Bookmark(Messages.BookmarksListView_NewBookmark, DEFAULT_URL);
-
-        client.getSettings().getBookmarks().add(wl);
-        client.markDirty();
-
-        bookmarks.setInput(client.getSettings().getBookmarks());
-        bookmarks.editElement(wl, 0);
     }
 }

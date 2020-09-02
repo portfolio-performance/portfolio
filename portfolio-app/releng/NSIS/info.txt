@@ -1,0 +1,5 @@
+BMP files:
+* Export from Omnigraffle as BMP
+* Open in GIMP and export again as BMP
+* In the window titled "Export Image as BMP" expand "Compatibility Options"
+  and check the box that says "Do not write color space information"

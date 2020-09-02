@@ -1,0 +1,32 @@
+Bank SLM AG 123 123 10 10 Postcheck 30-38161-3
+Dorfplatz 5 info@bankslm.ch Bankclearing-Nr. 6363
+3110 M�nsingen bankslm.ch UID CHE-123.456.789 MWST
+Depot 80 1.123.123.12
+IBAN CH24 1234 1234 1234 1234 5
+Ihr Kundenberater Max Mustermann
+Direktwahl 123 123 10 36
+Herr
+Auftragsnummer AUF256343 Max Mustermann
+Auftragsdatum 10.02.2016 Musterstrasse 1
+1234 Musterstadt
+Musterstadt, 10.02.2016
+B�rsenabrechnung - Kauf
+Wir haben f�r Sie am 10.02.2016 gekauft.
+3'000 Namen-Aktien nom CHF 0.10
+UBS Group AG
+Valor: 24476758
+B�rsenplatz: Swiss Blue Chip Segment
+Menge/Nominal Preis
+3'000 14.40
+Total Kurswert CHF -43'200.00
+Eidg. Umsatzabgabe CHF -32.40
+B�rsengeb�hr Inland CHF -3.50
+Eigene Courtage CHF -176.20
+Netto CHF -43'412.10
+Valuta: 12.02.2016
+Unsere Belastung erfolgt auf dem Konto 42 0.123.123.00
+Auftrag aus Internet-Banking
+Freundliche Gr�sse
+Bank SLM AG
+Anzeige ohne Unterschrift
+123'123'123 Seite 1/1

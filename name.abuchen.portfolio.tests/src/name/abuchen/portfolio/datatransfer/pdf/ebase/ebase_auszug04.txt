@@ -1,0 +1,37 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+European Bank for Financial Services GmbH, 80218 München
+Depotauszug-Nr. 5
+Depot-Nr. 11111111111
+Herrn Seite 1 von 4
+Max Mustermann
+Musterstraße 1
+12345 Stadt
+02.01.2018
+Depotauszug für Ihr VL-FondsDepot bei ebase
+für den Zeitraum vom 05.04.2017 bis 31.12.2017
+
+Kauf 15,00 EUR mit Kursdatum 02.05.2017 in Depotposition 11111111111.01
+db x-trackers DAX ETF (DR) Inhaber-Anteile 1C o.N.
+Ref. Nr. 111111111/11111111, Buchungsdatum 03.05.2017
+ISIN Anteile Abrechnungskurs Betrag
+LU0274211480 0,122649 122,056100 EUR 14,97 EUR
+vermögenswirksame Leistungen
+Entgelte zzgl. Entgelte
+ETF-Transaktionsentgelt 0,03 EUR
+Zahlungsbetrag aus Überweisung 15,00 EUR
+
+Entgelte zzgl. Entgelte
+ETF-Transaktionsentgelt 0,03 EUR
+Zahlungsbetrag aus Überweisung 15,00 EUR
+Entgelt Verkauf mit Kursdatum 20.12.2017 aus Depotposition 11111111111.01
+db x-trackers DAX ETF (DR) Inhaber-Anteile 1C o.N.
+Ref. Nr. 111111111/11111111, Buchungsdatum 22.12.2017
+ISIN Anteile Abrechnungskurs Betrag
+LU0274211480 -0,100548 127,228500 EUR 12,79 EUR
+Entgelte abzgl. Entgelte
+Depotführungsentgelt inkl. 19% USt 12,00 EUR
+Kapitalertragsteuer Solidaritätszuschlag Kirchensteuer abzgl. Steuern
+0,75 EUR 0,04 EUR 0,00 EUR 0,79 EUR
+Zahlungsbetrag 0,00 EUR

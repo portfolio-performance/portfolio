@@ -22,7 +22,6 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 
 import name.abuchen.portfolio.model.Classification;
@@ -36,6 +35,7 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class SecurityDetailsViewer
 {
@@ -75,7 +75,7 @@ public class SecurityDetailsViewer
 
         protected String escape(String label)
         {
-            return label != null ? label.replaceAll("&", "&&") : EMPTY_LABEL; //$NON-NLS-1$ //$NON-NLS-2$
+            return label != null ? TextUtil.tooltip(label) : EMPTY_LABEL;
         }
 
         protected String nonNullString(String label)
@@ -200,7 +200,6 @@ public class SecurityDetailsViewer
         private Label valueDaysHigh;
         private Label valueDaysLow;
         private Label valueVolume;
-        private Label valuePreviousClose;
 
         public LatestQuoteFacet(Font boldFont, Color color)
         {
@@ -234,10 +233,6 @@ public class SecurityDetailsViewer
             labelVolume.setText(Messages.ColumnVolume);
             valueVolume = new Label(composite, SWT.RIGHT);
 
-            Label labelPreviousClose = new Label(composite, SWT.NONE);
-            labelPreviousClose.setText(Messages.ColumnPreviousClose);
-            valuePreviousClose = new Label(composite, SWT.RIGHT);
-
             // layout
 
             FormLayout layout = new FormLayout();
@@ -264,7 +259,6 @@ public class SecurityDetailsViewer
             placeBelow(valueLatestTrade, labelDaysHigh, valueDaysHigh);
             placeBelow(valueDaysHigh, labelDaysLow, valueDaysLow);
             placeBelow(valueDaysLow, labelVolume, valueVolume);
-            placeBelow(valueVolume, labelPreviousClose, valuePreviousClose);
 
             return composite;
         }
@@ -272,17 +266,19 @@ public class SecurityDetailsViewer
         @Override
         public void setInput(Security security)
         {
+            if (valueLatestPrices.isDisposed())
+                return;
+
             if (security == null || security.getLatest() == null)
             {
-                clearLabel(valueLatestPrices, valueLatestTrade, valueDaysHigh, valueDaysLow, valueVolume,
-                                valuePreviousClose);
+                clearLabel(valueLatestPrices, valueLatestTrade, valueDaysHigh, valueDaysLow, valueVolume);
             }
             else
             {
                 LatestSecurityPrice p = security.getLatest();
 
                 valueLatestPrices.setText(Values.Quote.format(p.getValue()));
-                valueLatestTrade.setText(Values.Date.format(p.getTime()));
+                valueLatestTrade.setText(Values.Date.format(p.getDate()));
                 long daysHigh = p.getHigh();
                 valueDaysHigh.setText(daysHigh == LatestSecurityPrice.NOT_AVAILABLE ? Messages.LabelNotAvailable
                                 : Values.Quote.format(daysHigh));
@@ -292,9 +288,6 @@ public class SecurityDetailsViewer
                 long volume = p.getVolume();
                 valueVolume.setText(volume == LatestSecurityPrice.NOT_AVAILABLE ? Messages.LabelNotAvailable
                                 : String.format("%,d", volume)); //$NON-NLS-1$
-                long prevClose = p.getPreviousClose();
-                valuePreviousClose.setText(prevClose == LatestSecurityPrice.NOT_AVAILABLE ? Messages.LabelNotAvailable
-                                : Values.Quote.format(prevClose));
             }
         }
 
@@ -305,7 +298,7 @@ public class SecurityDetailsViewer
         private Taxonomy taxonomy;
 
         private Label heading;
-        private List<Label> labels = new ArrayList<Label>();
+        private List<Label> labels = new ArrayList<>();
 
         public TaxonomyFacet(Taxonomy taxonomy, Font boldFont, Color color)
         {
@@ -384,7 +377,7 @@ public class SecurityDetailsViewer
                 heading.setText(taxonomy.getName());
 
             List<Classification> path = classification[0] != null ? classification[0].getPathToRoot()
-                            : new ArrayList<Classification>();
+                            : new ArrayList<>();
             for (int ii = 0; ii < labels.size(); ii++)
                 labels.get(ii).setText(path.size() > ii + 1 ? escape(path.get(ii + 1).getName()) : EMPTY_LABEL);
         }
@@ -392,7 +385,7 @@ public class SecurityDetailsViewer
 
     private Composite container;
 
-    private List<SecurityFacet> children = new ArrayList<SecurityFacet>();
+    private List<SecurityFacet> children = new ArrayList<>();
 
     public SecurityDetailsViewer(Composite parent, int style, Client client)
     {
@@ -402,28 +395,27 @@ public class SecurityDetailsViewer
     public SecurityDetailsViewer(Composite parent, int style, Client client, boolean showMasterData)
     {
         container = new Composite(parent, style);
-        container.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+        container.setBackground(Colors.WHITE);
         container.setBackgroundMode(SWT.INHERIT_FORCE);
 
         // fonts
 
         LocalResourceManager resources = new LocalResourceManager(JFaceResources.getResources(), container);
         Font boldFont = resources.createFont(FontDescriptor.createFrom(container.getFont()).setStyle(SWT.BOLD));
-        Color color = resources.createColor(Colors.HEADINGS.swt());
 
         // facets
 
         GridLayoutFactory.fillDefaults().numColumns(1).applyTo(container);
 
         if (showMasterData)
-            children.add(new MasterDataFacet(boldFont, color));
+            children.add(new MasterDataFacet(boldFont, Colors.HEADINGS));
 
-        children.add(new LatestQuoteFacet(boldFont, color));
+        children.add(new LatestQuoteFacet(boldFont, Colors.HEADINGS));
 
         for (Taxonomy taxonomy : client.getTaxonomies())
-            children.add(new TaxonomyFacet(taxonomy, boldFont, color));
+            children.add(new TaxonomyFacet(taxonomy, boldFont, Colors.HEADINGS));
 
-        children.add(new NoteFacet(boldFont, color));
+        children.add(new NoteFacet(boldFont, Colors.HEADINGS));
 
         for (SecurityFacet child : children)
         {

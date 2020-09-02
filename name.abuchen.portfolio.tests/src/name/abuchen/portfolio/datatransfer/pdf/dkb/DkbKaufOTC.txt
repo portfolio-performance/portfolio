@@ -1,0 +1,27 @@
+﻿10919 Berlin
+Depotnummer 500123451
+Kundennummer 51234561
+Max Mustermann
+Auftragsnummer 718643/69.00
+Herrn Datum 25.01.2016
+Max Mustermann Rechnungsnummer W00883-0000051964/16
+Musterstraße 2 Umsatzsteuer-ID DE137178746
+12345 Musterhausen
+DEUTSCHLAND
+Wertpapier Abrechnung Kauf Direkthandel
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 10 COMSTAGE-MSCI WORLD TRN U.ETF LU0392494562 (ETF110)
+NAMENS-AKTIEN O.N.
+Handels-/Ausführungsplatz Außerbörslich (gemäß Weisung)
+Handelspartner Baader Bank
+Schlusstag/-Zeit 07.11.2019 11:11:56 Auftraggeber Max Mustermann
+Ausführungskurs 114,26 EUR Auftragserteilung/ -ort Online-Banking
+Girosammelverwahrung - Sammel-Urkunden in Namensaktien
+Kurswert 1.142,60- EUR
+Provision 1,00- EUR
+Fremde Abwicklungsgebühr für die Umschreibung von Namensaktien 0,60- EUR
+Ausmachender Betrag 1.144,20- EUR
+Den Gegenwert buchen wir mit Valuta 27.01.2016 zu Lasten des Kontos 12345678 (IBAN DE30 1203 0000 0012 3456 78),
+BLZ 12030000 (BIC BYLADEM1001).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.

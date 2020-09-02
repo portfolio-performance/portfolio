@@ -6,6 +6,7 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -32,6 +33,13 @@ public class SelectSecurityPage extends AbstractWizardPage
         setDescription(Messages.PageDescriptionSelectSecurity);
 
         this.client = client;
+    }
+
+    @Override
+    public IWizardPage getNextPage()
+    {
+        // never go to the review items pages b/c we only have security quotes
+        return null;
     }
 
     @Override

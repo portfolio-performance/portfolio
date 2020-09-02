@@ -1,0 +1,38 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+justTRADE
+Ein Service der Sutor Bank
+JT Technologies GmbH
+Kaiserhofstraße 16
+Herr 60313 Frankfurt am Main
+[Vorname] [Name] Email: service@justtrade.com
+[Strasse] [Hausnummer] Web: www.justtrade.com
+[PLZ] [Ort]
+Name des Kunden: [Vorname] [Name]
+Kontonummer: [123456]
+WERTPAPIERABRECHNUNG
+Sehr geehrter [Anrede] [Vorname] [Name],
+dieses Dokument ist eine Bestätigung der Transaktion, die wir in Ihrem Namen durchgeführt haben.
+Bei Fragen oder im Falle einer fehlerhaften Abrechnung wenden Sie sich bitte an den justTRADE -
+Kundenservice. Sie finden die Kontaktdetails im Briefkopf dieser Abrechnung.
+Der Gegenwert der Transaktion wird per Valutatag gebucht.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Produktbezeichnung - Vanguard FTSE All-World U.ETF Re
+Wertpapierhändlername: justTRADE
+Internationale Wertpapierkennnummer (ISIN): IE00BK5BQT80
+Währung: EUR
+Handels-/Ausführungsplatz: HAMN
+Handelsreferenz: [0123456789abcdef01234567]
+Orderausführung Datum/Zeit: 3 Jun 2020 09:27:01
+Valutatag Datum: 5 Jun 2020
+Transaktionsart: Kauf
+Kurs: €71,8600
+Stück/Nominale: 29,00
+Kurswert: €2.083,94
+Ausmachender Betrag: €2.083,94
+MAX HEINR. SUTOR OHG TELEFON 040-8090685-0 GESCHÄFTSLEITUNG FINANZAMT HAMBURG AMTSGERICHT HAMBURG
+HERMANNSTRASSE 46 TELEFAX 040-8090685-810 ROBERT FREITAG STNR: 2761000074 HRA 25379
+20095 HAMBURG THOMAS MEIER UST-IDNR: DE155617009
+POSTFACH 11 33 37 INFO@SUTORBANK.DE BANKLEITZAHL 202 308 00
+20433 HAMBURG WWW.SUTORBANK.DE BIC CODE: MHSBDEHBXXX

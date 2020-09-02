@@ -5,12 +5,15 @@ import java.time.LocalDate;
 import javax.inject.Inject;
 
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
+
+import com.ibm.icu.text.MessageFormat;
 
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Security;
@@ -20,7 +23,9 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.AssetPosition;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.swt.ActiveShell;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
@@ -88,10 +93,56 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                 TaxonomyNode node = (TaxonomyNode) element;
                 if (node.getTarget() == null)
                     return null;
-                return Display.getCurrent().getSystemColor(node.getActual().isGreaterOrEqualThan(node.getTarget())
-                                ? SWT.COLOR_DARK_GREEN : SWT.COLOR_DARK_RED);
+                return Display.getCurrent()
+                                .getSystemColor(node.getActual().isGreaterOrEqualThan(node.getTarget())
+                                                ? SWT.COLOR_DARK_GREEN
+                                                : SWT.COLOR_DARK_RED);
             }
         });
+        support.addColumn(column);
+
+        column = new Column("delta%indicator", Messages.ColumnDeltaPercentIndicator, SWT.LEFT, 60); //$NON-NLS-1$
+
+        column.setLabelProvider(new DeltaPercentageIndicatorLabelProvider(getNodeViewer().getControl(),
+                        getModel().getClient(), element -> (TaxonomyNode) element));
+        support.addColumn(column);
+
+        column = new Column("delta%relative", Messages.ColumnDeltaPercentRelative, SWT.RIGHT, 100); //$NON-NLS-1$
+        column.setDescription(Messages.ColumnDeltaPercentRelative_Description);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+                if (node.getTarget() == null)
+                    return null;
+
+                return Values.Percent.format(calculateRelativeDelta(node));
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+                if (node.getTarget() == null)
+                    return null;
+                return Display.getCurrent().getSystemColor(
+                                calculateRelativeDelta(node) >= 0 ? SWT.COLOR_DARK_GREEN : SWT.COLOR_DARK_RED);
+            }
+
+            private double calculateRelativeDelta(TaxonomyNode node)
+            {
+                long actual = node.getActual().getAmount();
+                long base = node.getParent() == null ? node.getActual().getAmount()
+                                : node.getParent().getActual().getAmount();
+                double weightPercent = node.getWeight() / (double) Classification.ONE_HUNDRED_PERCENT;
+                double actualPercent = (base != 0) ? (double) actual / base : weightPercent;
+
+                return actualPercent - weightPercent;
+            }
+        });
+        column.setVisible(false);
         support.addColumn(column);
 
         column = new Column("delta", Messages.ColumnDeltaValue, SWT.RIGHT, 100); //$NON-NLS-1$
@@ -112,8 +163,10 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                 TaxonomyNode node = (TaxonomyNode) element;
                 if (node.getTarget() == null)
                     return null;
-                return Display.getCurrent().getSystemColor(node.getActual().isGreaterOrEqualThan(node.getTarget())
-                                ? SWT.COLOR_DARK_GREEN : SWT.COLOR_DARK_RED);
+                return Display.getCurrent()
+                                .getSystemColor(node.getActual().isGreaterOrEqualThan(node.getTarget())
+                                                ? SWT.COLOR_DARK_GREEN
+                                                : SWT.COLOR_DARK_RED);
             }
         });
         support.addColumn(column);
@@ -151,7 +204,7 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                 AssetPosition position = getModel().getClientSnapshot().getPositionsByVehicle().get(security);
                 if (position == null)
                     return null;
-                
+
                 return Math.round(position.getPosition().getShares() * node.getWeight()
                                 / (double) Classification.ONE_HUNDRED_PERCENT);
             }
@@ -222,14 +275,15 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
             {
                 TaxonomyNode node = (TaxonomyNode) element;
                 return node.isClassification() && getModel().hasWeightError(node)
-                                ? Display.getDefault().getSystemColor(SWT.COLOR_BLACK) : null;
+                                ? Display.getDefault().getSystemColor(SWT.COLOR_BLACK)
+                                : null;
             }
 
             @Override
             public Color getBackground(Object element)
             {
                 TaxonomyNode node = (TaxonomyNode) element;
-                return node.isClassification() && getModel().hasWeightError(node) ? getWarningColor() : null;
+                return node.isClassification() && getModel().hasWeightError(node) ? Colors.WARNING : null;
             }
 
             @Override
@@ -252,6 +306,19 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
 
         }.addListener(this::onWeightModified).attachTo(column);
         support.addColumn(column);
+    }
+
+    @Override
+    public void configMenuAboutToShow(IMenuManager manager)
+    {
+        super.configMenuAboutToShow(manager);
+
+        manager.add(new Separator());
+
+        RebalancingColoringRule rule = new RebalancingColoringRule(getModel().getClient());
+        manager.add(new SimpleAction(MessageFormat.format(Messages.MenuConfigureRebalancingIndicator, //
+                        rule.getAbsoluteThreshold(), rule.getRelativeThreshold()),
+                        a -> new EditRebalancingColoringRuleDialog(ActiveShell.get(), rule).open()));
     }
 
     @Override

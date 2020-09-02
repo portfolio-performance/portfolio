@@ -33,8 +33,38 @@ Verwahrart Girosammelverwahrung
  
 Wert  Konto-Nr. Betrag zu Ihren Gunsten  
 12.04.2011 172306238 EUR 21,45
-   
- 
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Veräußerungsverlust Aktien EUR 1,67
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern (negativ) EUR 1,67
+Steuerausgleich nach § 43a EStG:
+Kapitalertragsteuer EUR 0,27
+Solidaritätszuschlag EUR 0,01
+Wert Konto-Nr. Abrechnungs-Nr. Betrag zu Ihren Gunsten
+12.04.2011 243921041 30158878 EUR 0,28
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 253,34
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 13,93
+Es folgt Seite 2
+3.18/ABREABHNHANDVFDI/GAAASAFG/009745/131216/004522
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=173458000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+ADRESSZEILE1=Herr
+Depot-Nr. Abrechnungs-Nr. Seite-Nr. ADRESSZEILE2=Max MUSTERMANN
+173458000 94325542 2 ADRESSZEILE3=Musterstrasse 2
+ADRESSZEILE4=54321 Musterhausen
+ADRESSZEILE5=
+ADRESSZEILE6=
+BELEGNUMMER=974
+Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer nach gemeldetem Kirchensteuersatz verrechnet mit dem SEITENNUMMER=2
+Finanzamt Köln-Porz, Steuernummer 216/5881/1238. STEUERERSTATTUNG=N
+Jahressteuerbescheinigung folgt 
 Wir werden in Ihrem Depot wie angegeben buche n.
 Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
 Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen

@@ -11,8 +11,8 @@ import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel.TaxonomyModelUpdat
 
 /* package */abstract class Page implements TaxonomyModelUpdatedListener
 {
-    private TaxonomyModel model;
-    private TaxonomyNodeRenderer renderer;
+    private final TaxonomyModel model;
+    private final TaxonomyNodeRenderer renderer;
 
     @Inject
     private IPreferenceStore preferenceStore;
@@ -35,16 +35,18 @@ import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel.TaxonomyModelUpdat
         return renderer;
     }
 
-    public IPreferenceStore getPreferenceStore()
+    public final IPreferenceStore getPreferenceStore()
     {
         return preferenceStore;
     }
 
     public void configMenuAboutToShow(IMenuManager manager)
-    {}
+    {
+    }
 
     public void exportMenuAboutToShow(IMenuManager manager)
-    {}
+    {
+    }
 
     public abstract Control createControl(Composite parent);
 
@@ -53,5 +55,6 @@ import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel.TaxonomyModelUpdat
     public abstract void afterPage();
 
     public void dispose()
-    {}
+    {
+    }
 }

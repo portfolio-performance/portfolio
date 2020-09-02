@@ -1,0 +1,44 @@
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=47110815
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Wertpapierabrechnung ADRESSZEILE1=Herr
+ADRESSZEILE2=Max Mustermann
+Kauf Sparplan ADRESSZEILE3=Am Steintor
+Kommissionsgeschäft ADRESSZEILE4=99888 Musterhausen
+Herr ADRESSZEILE5=
+Max Mustermann ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+Am Steintor BELEGNUMMER=16999
+99888 Musterhausen 47110815 79899478 / 18.07.2017 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Max Mustermann
+Frankfurt am Main, 18.07.2017
+Wir haben für Sie gekauft
+Gattungsbezeichnung ISIN
+iS.eb.r.Go.G.1.5-2.5y U.ETF DE Inhaber-Anteile DE0006289473
+Nominal Kurs
+STK 0,5638 EUR 88,6800
+Handelstag 17.07.2017 Kurswert EUR 50,00-
+Handelszeit 09:04
+Börse Xetra/EDE
+Verwahrart Girosammelverwahrung
+Wert Konto-Nr. Betrag zu Ihren Lasten
+19.07.2017 47110815 EUR 50,00
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Zwischengewinn EUR 0,21
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern (negativ) EUR 0,21
+Steuerausgleich nach § 43a EStG:
+Kapitalertragsteuer EUR 0,06
+Wert Konto-Nr. Abrechnungs-Nr. Betrag zu Ihren Gunsten
+18.07.2017 47110815 86298863 EUR 0,06
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 0,39
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 0,02
+Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer nach gemeldetem Kirchensteuersatz verrechnet mit dem
+Finanzamt Frankfurt/M. V-Höchst, Steuernummer 047/220/43907.

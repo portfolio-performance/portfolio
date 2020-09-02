@@ -1,0 +1,159 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+European Bank for Financial Services GmbH, 80218 München
+Depotauszug-Nr. 88
+Depot-Nr. XXXXXXXXXXX
+Seite 1 von 4
+Herrn
+XXX
+
+Fondsertrag (Ausschüttung) mit Bestandsdatum 14.10.2019 in Depotposition XXXXXXXXX.21
+iSh.DJ U.S.Select Div.U.ETF DE Inhaber-Anteile
+Ref. Nr. XXXXXXXXX/XXXXXXXXX, Buchungsdatum 16.10.2019
+ISIN Anteilsbestand Betrag je Anteil Betrag
+DE000A0D8Q49 1,000000 0,394130 USD 0,39 USD
+Kapitalertragsteuer Solidaritätszuschlag Kirchensteuer Devisenkurs abzgl. Steuern
+0,06 EUR 0,00 EUR 0,00 EUR 1,104600 0,07 USD
+Zahlungsbetrag in Fremdwährung 0,32 USD
+Zahlungsbetrag nach Währungskonvertierung mit Devisenkurs 1,104600 0,29 EUR
+
+
+Verkauf wegen Vorabpauschale 0,13 EUR mit Kursdatum 27.01.2020 aus Depotposition XXXXXXXX.02
+Xtrackers MSCI Europe Mid Cap Inhaber-Anteile 1C o.N.
+Ref. Nr. XXXXXXXX/XXXXXXXX, Buchungsdatum 27.01.2020
+Belastung der angefallenen Steuern aus Depotposition XXXXXXXX.02 mit Ref. Nr. XXXXXXXX/XXXXXXXX (Vorabpauschale)
+ISIN Anteile Abrechnungskurs Betrag
+LU0322253732 -0,001162 111,900000 EUR 0,13 EUR
+abzgl. Steuereinbehalt 0,13 EUR
+Zahlungsbetrag 0,00 EUR
+
+
+Kauf 50,00 EUR mit Kursdatum 21.10.2019 in Depotposition 1234567890.09
+iSh.ST.Gl.Sel.Div.100 U.ETF DE Inhaber-Anteile
+Ref. Nr. XXXXXXXXX/XXXXXXXX, Buchungsdatum 22.10.2019
+ISIN Anteile Abrechnungskurs Betrag
+DE000A0F5UH1 1,705860 29,252100 EUR 49,90 EUR
+vermögenswirksame Leistungen
+gezahlte Vertriebsprovision 0,00 EUR (im Abrechnungskurs enthalten, XXX0% Bonus)
+Zahlungsbetrag aus Überweisung 50,00 EUR
+
+
+
+
+Für Fragen steht Ihnen Ihr Berater oder ebase unter der Rufnummer +49 89 45460-890 gerne zur Verfügung.
+Diese Mitteilung wird nicht unterschrieben.
+ebase - Amtsgericht München HRB 141 740 Fax: +49 89 45460-892 Vorsitzende des Aufsichtsrats:
+European Bank for Financial USt-ID Nr. DE 813330104 E-Mail: service@ebase.com Hiltrud Thelen-Pischke
+Services GmbH (ebase®) Gläubiger-ID: Web: www.ebase.com Geschäftsführung:
+80218 München DE68ZZZ00000025032 Rudolf Geyer, Lars Müller-Lambrecht
+Depotauszug-Nr. 88
+Depot-Nr. XXXXXXXXXXX
+Seite 4 von 4
+Pos. Fonds Anteile Bewertungskurs zum Datum Devisenkurs Bestand
+25 LUXXXXXXXXXX XXX XXX EUR 27.12.2019 XXX EUR
+XX FONDSNAME XX
+Verwahrart: Wertpapierrechnung, Lagerland: Luxemburg
+Depotgesamtwert XXX EUR
+
+Ihre Depotbestände werden in der Girosammelverwahrung geführt - es sei denn, es ist ein besonderer Verwahrart-Hinweis in der
+Aufstellung vermerkt.
+4Ihr Freistellungsauftrag in Höhe von XXX EUR ist vorgemerkt ab dem 1.1.2018.
+4Sie haben einen verbleibenden Freistellungsbetrag in Höhe von XXX EUR.
+Bei einem Depotbestand größer/gleich 5.000 Euro zum Ende des Kalenderjahres, der durch die Deutsche Fondsvermittlung
+GmbH und Co. KG vermittelt wurde, zahlt die Deutsche Fondsvermittlung GmbH und Co. KG für Sie derzeit das Depot-
+führungsentgelt. Das gegebenenfalls zusätzliche VL - Vertragsentgelt ist von dieser Regelung ausgenommen. Sie möchten
+mehr erfahren? Gerne! Rufen Sie Ihren Vermittler die Deutsche Fondsvermittlung GmbH und Co. KG unter 0800.7600067
+an.
+Bitte beachten Sie folgende Hinweise:
+Einwendungen
+Wir bitten Sie, diesen Depotauszug auf seine Richtigkeit und Vollständigkeit zu überprüfen. Einwendungen wegen Unrichtigkeit
+oder Unvollständigkeit dieses Depotauszugs erheben Sie bitte innerhalb von sechs Wochen nach Erhalt dieses Depotauszugs
+gegenüber der internen Revision der ebase unter Nennung der Depotnummer und des Datums des Depotauszugs. Sofern Sie die
+Einwendungen schriftlich/in Textform erheben, genügt das Absenden innerhalb der Sechs-Wochen-Frist. Das Unterlassen der
+rechtzeitigen Einwendung(en) gilt als Genehmigung der Abrechnung(en)/des Depotauszugs, gemäß Punkt "Mitwirkungspflichten
+und Obliegenheiten des Kunden/ Prüfung und Einwendungen bei Mitteilungen der ebase" der Allgemeinen Geschäftsbedingungen
+der European Bank for Financial Services GmbH für Privatanleger.
+Bitte denken Sie daran, uns frühzeitig über Änderungen Ihrer persönlichen Daten zu informieren.
+Für Fragen steht Ihnen Ihr Berater oder ebase unter der Rufnummer +49 89 45460-890 gerne zur Verfügung.
+Diese Mitteilung wird nicht unterschrieben.
+ebase - Amtsgericht München HRB 141 740 Fax: +49 89 45460-892 Vorsitzende des Aufsichtsrats:
+European Bank for Financial USt-ID Nr. DE 813330104 E-Mail: service@ebase.com Hiltrud Thelen-Pischke
+Services GmbH (ebase®) Gläubiger-ID: Web: www.ebase.com Geschäftsführung:
+80218 München DE68ZZZ00000025032 Rudolf Geyer, Lars Müller-Lambrecht
+Sehr geehrte Kundin, sehr geehrter Kunde,
+mit dem folgenden "Informationsbogen für den Einleger" unterrichten wir Sie gemäß § 23 a Abs. 1 Satz 3 des
+Kreditwesengesetzes über die gesetzliche Einlagensicherung. Außerdem sind Ihre Einlagen durch den
+Einlagensicherungsfonds des Bundesverbandes deutscher Banken geschützt. Nähere Informationen dazu
+finden Sie auf www.bankenverband.de/einlagensicherung.
+Informationsbogen für den Einleger
+Einlagen bei der European Bank for Entschädigungseinrichtung deutscher Banken GmbH (1)
+Financial Services GmbH (ebase®)
+sind geschützt durch:
+Sicherungsobergrenze 100.000 Euro pro Einleger pro Kreditinstitut (2)
+Die folgenden Marken sind Teil der European Bank for Financial Services
+GmbH (ebase®): finvesto, fintego
+Falls Sie mehrere Einlagen bei Alle Ihre Einlagen bei demselben Kreditinstitut werden "aufaddiert", und
+demselben Kreditinstitut haben die Gesamtsumme unterliegt der Obergrenze von 100.000 Euro (2)
+Falls Sie ein Gemeinschaftskonto mit Die Obergrenze von 100.000 Euro gilt für jeden einzelnen Einleger (3)
+einer oder mehreren anderen
+Personen haben
+Erstattungsfrist bei Ausfall eines 7 Arbeitstage (4)
+Kreditinstitutes
+Währung der Erstattung Euro
+Kontaktdaten Entschädigungseinrichtung deutscher Banken GmbH
+Burgstraße 28
+10178 Berlin
+Deutschland
+Postanschrift:
+Postfach 11 04 48
+10834 Berlin
+Telefon: +49 30 59 00 11 96 - 0
+E-Mail: info@edb-banken.de
+Weitere Informationen: www.edb-banken.de
+Empfangsbestätigung durch den/die Ihre Unterschrift(en) ist/sind nicht erforderlich. Sie haben den Empfang
+Einleger: dieser Informationen bereits im Rahmen der Depot- / Kontoeröffnung
+bestätigt.
+Bitte beachten Sie die Fußnoten - Erläuterungen auf der Folgeseite!
+European Bank 80218 München E-Mail: service@ebase.com
+for Financial Services GmbH (ebase®) DEUTSCHLAND
+Zusätzliche Informationen
+(1) Ihre Einlage wird von einem gesetzlichen Einlagensicherungssystem und einem vertraglichen Einlagensicherungs-
+system gedeckt. Im Falle einer Insolvenz Ihres Kreditinstituts werden Ihre Einlagen in jedem Fall bis zu 100.000 Euro
+erstattet.
+(2) Sollte eine Einlage nicht verfügbar sein, weil ein Kreditinstitut seinen finanziellen Verpflichtungen nicht nachkommen
+kann, so werden die Einleger von dem Einlagensicherungssystem entschädigt. Die betreffende Deckungssumme
+beträgt maximal 100.000 Euro pro Kreditinstitut. Das heißt, dass bei der Ermittlung dieser Summe alle bei demselben
+Kreditinstitut gehaltenen Einlagen addiert werden. Hält ein Einleger beispielsweise 90.000 Euro auf einem Sparkonto
+und 20.000 Euro auf einem Girokonto, so werden ihm lediglich 100.000 Euro erstattet.
+Diese Methode wird auch angewandt, wenn ein Kreditinstitut unter unterschiedlichen Marken auftritt. Die European
+Bank for Financial Services GmbH (ebase®) ist auch unter dem Namen finvesto und fintego tätig. Das heißt, dass die
+Gesamtsumme aller Einlagen bei einem oder mehreren dieser Marken in Höhe von bis zu 100.000 Euro gedeckt ist.
+(3) Bei Gemeinschaftskonten gilt die Obergrenze von 100.000 Euro für jeden Einleger.
+Einlagen auf einem Konto, über das zwei oder mehrere Personen als Mitglieder einer Personengesellschaft oder
+Sozietät, einer Vereinigung oder eines ähnlichen Zusammenschlusses ohne Rechtspersönlichkeit verfügen können,
+werden bei der Berechnung der Obergrenze von 100.000 Euro allerdings zusammengefasst und als Einlage eines
+einzigen Einlegers behandelt.
+In den Fällen des § 8 Absätze 2 bis 4 des Einlagensicherungsgesetzes sind Einlagen über 100.000 Euro hinaus
+gesichert. Weitere Informationen sind erhältlich über die Webseite der Entschädigungseinrichtung deutscher Banken
+GmbH unter www.edb-banken.de.
+(4) Das zuständige Einlagensicherungssystem ist die
+Entschädigungseinrichtung deutscher Banken GmbH
+Burgstraße 28
+10178 Berlin
+Deutschland
+Postanschrift
+Postfach 11 04 48
+10834 Berlin
+Telefon: +49 30 59 00 11 96 - 0
+E-Mail: info@edb-banken.de.
+Es wird Ihnen Ihre Einlagen (bis zu 100.000 Euro) spätestens innerhalb von 7 Arbeitstagen erstatten.
+Haben Sie die Erstattung innerhalb dieser Fristen nicht erhalten, sollten Sie mit dem Einlagensicherungssystem
+Kontakt aufnehmen, da der Gültigkeitszeitraum für Erstattungsforderungen nach einer bestimmten Frist abgelaufen
+sein kann. Weitere Informationen sind erhältlich über die Website der Entschädigungseinrichtung deutscher Banken
+GmbH unter www.edb-banken.de.
+Weitere wichtige Informationen
+Einlagen von Privatkunden und Unternehmen sind im Allgemeinen durch Einlagensicherungssysteme gedeckt. Für
+bestimmte Einlagen geltende Ausnahmen werden auf der Website des zuständigen Einlagensicherungssystems
+mitgeteilt. Ihr Kreditinstitut wird Sie auf Anfrage auch darüber informieren, ob bestimmte Produkte gedeckt sind oder
+nicht. Wenn Einlagen gedeckt sind, wird das Kreditinstitut dies auch auf dem Kontoauszug bestätigen.

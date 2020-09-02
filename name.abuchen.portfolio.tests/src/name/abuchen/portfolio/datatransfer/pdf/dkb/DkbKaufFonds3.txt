@@ -1,0 +1,34 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+10919 Berlin
+Depotnummer 502384936
+Kundennummer 1140843111
+Pete Folio
+Auftragsnummer 643780/74.00
+Herrn Datum 07.01.2019
+Pete Folio Rechnungsnummer W00883-0000047230/19
+Steuerallee 88 Umsatzsteuer-ID DE137178746
+23571 Steueroase
+Wertpapier Abrechnung Ausgabe Investmentfonds
+Auftrag vom 05.01.2019 00:25:57 Uhr
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 25,6 COMSTAGE-MSCI WORLD TRN U.ETF LU0392494562 (ETF110)
+INHABER-ANTEILE I O.N.
+Handels-/Ausführungsplatz Außerbörslich (gemäß Weisung)
+Schlusstag 07.01.2019 Auftraggeber Pete Folio
+Ausführungskurs 46,875 EUR Auftragserteilung/ -ort sonstige
+Girosammelverw. mehrere Sammelurkunden - kein Stückeausdruck -
+Kurswert 1.200,00- EUR
+Provision 1,50- EUR
+Ausmachender Betrag 1.201,50- EUR
+Den Gegenwert buchen wir mit Valuta 09.01.2019 zu Lasten des Kontos 1001391737
+(IBAN DE82 1203 0000 1001 2904 63), BLZ 12030000 (BIC BYLADEM1001).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Gegenpartei bei diesem Geschäft war BÖRSE QUOTRIX
+.
+ABR. OHNE AUSGABEAUFSCHLAG
+IHR ETF-SPARPLAN NR. 4
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0883.01072106.0003973OR07

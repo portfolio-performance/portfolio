@@ -64,7 +64,7 @@ public class CSVSecurityExtractorTest
                                         new String[] { "DE0007164600", "716460", "SAP.DE", "SAP SE", "EUR", "Notiz" }),
                         buildField2Column(extractor), errors);
 
-        assertThat(errors.size(), is(1));
+        assertThat(errors, empty());
         assertThat(results, empty());
     }
 

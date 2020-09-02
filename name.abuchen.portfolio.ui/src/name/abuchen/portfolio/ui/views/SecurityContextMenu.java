@@ -4,19 +4,23 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
 
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionDialog;
+import name.abuchen.portfolio.ui.dialogs.transactions.InvestmentPlanDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransferDialog;
+import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.BookmarkMenu;
+import name.abuchen.portfolio.ui.wizards.events.CustomEventWizard;
+import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
 import name.abuchen.portfolio.ui.wizards.splits.StockSplitWizard;
 
 public class SecurityContextMenu
@@ -67,6 +71,13 @@ public class SecurityContextMenu
                         .with(security) //
                         .addTo(manager);
 
+        new OpenDialogAction(owner, AccountTransaction.Type.TAXES + "...") //$NON-NLS-1$
+                        .type(AccountTransactionDialog.class) //
+                        .parameters(AccountTransaction.Type.TAXES) //
+                        .with(portfolio != null ? portfolio.getReferenceAccount() : null) //
+                        .with(security) //
+                        .addTo(manager);
+
         new OpenDialogAction(owner, AccountTransaction.Type.TAX_REFUND + "...") //$NON-NLS-1$
                         .type(AccountTransactionDialog.class) //
                         .parameters(AccountTransaction.Type.TAX_REFUND) //
@@ -81,7 +92,22 @@ public class SecurityContextMenu
             {
                 StockSplitWizard wizard = new StockSplitWizard(owner.getClient(), security);
                 WizardDialog dialog = new WizardDialog(owner.getActiveShell(), wizard);
-                if (dialog.open() == Dialog.OK)
+                if (dialog.open() == Window.OK)
+                {
+                    owner.markDirty();
+                    owner.notifyModelUpdated();
+                }
+            }
+        });
+
+        manager.add(new Action(Messages.SecurityMenuAddEvent)
+        {
+            @Override
+            public void run()
+            {
+                CustomEventWizard wizard = new CustomEventWizard(owner.getClient(), security);
+                WizardDialog dialog = new WizardDialog(owner.getActiveShell(), wizard);
+                if (dialog.open() == Window.OK)
                 {
                     owner.markDirty();
                     owner.notifyModelUpdated();
@@ -116,6 +142,28 @@ public class SecurityContextMenu
 
         if (security != null)
         {
+            manager.add(new OpenDialogAction(owner, Messages.InvestmentPlanMenuCreate) //
+                            .type(InvestmentPlanDialog.class) //
+                            .parameters(PortfolioTransaction.class) //
+                            .with(security));
+
+            manager.add(new Separator());
+
+            manager.add(new Action(Messages.SecurityMenuEditSecurity)
+            {
+                @Override
+                public void run()
+                {
+                    Dialog dialog = owner.make(EditSecurityDialog.class, security);                    
+                    
+                    if (dialog.open() == Window.OK)
+                    {
+                        owner.markDirty();
+                        owner.notifyModelUpdated();
+                    }
+                }
+            });
+            
             manager.add(new Separator());
             manager.add(new BookmarkMenu(owner.getPart(), security));
         }

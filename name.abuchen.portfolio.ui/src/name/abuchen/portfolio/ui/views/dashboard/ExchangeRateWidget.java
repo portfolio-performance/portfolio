@@ -1,10 +1,12 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
 import java.text.MessageFormat;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -20,8 +22,9 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.InfoToolTip;
+import name.abuchen.portfolio.util.TextUtil;
 
-public class ExchangeRateWidget extends WidgetDelegate
+public class ExchangeRateWidget extends WidgetDelegate<Object>
 {
     private DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
                     .withZone(ZoneId.systemDefault());
@@ -45,41 +48,51 @@ public class ExchangeRateWidget extends WidgetDelegate
         GridLayoutFactory.fillDefaults().numColumns(1).margins(5, 5).applyTo(container);
 
         title = new Label(container, SWT.NONE);
-        title.setText(getWidget().getLabel());
+        title.setText(TextUtil.tooltip(getWidget().getLabel()));
+        title.setBackground(container.getBackground());
         GridDataFactory.fillDefaults().grab(true, false).applyTo(title);
 
         indicator = new Label(container, SWT.NONE);
         indicator.setFont(resources.getKpiFont());
+        indicator.setBackground(container.getBackground());
         indicator.setText(""); //$NON-NLS-1$
         GridDataFactory.fillDefaults().grab(true, false).applyTo(indicator);
 
         InfoToolTip.attach(indicator, () -> {
             ReportingPeriod period = get(ReportingPeriodConfig.class).getReportingPeriod();
             ExchangeRateTimeSeries series = get(ExchangeRateSeriesConfig.class).getSeries();
-            Optional<ExchangeRate> rate = series.lookupRate(period.getEndDate());
+            Optional<ExchangeRate> rate = series.lookupRate(period.toInterval(LocalDate.now()).getEnd());
             return rate.isPresent() ? MessageFormat.format(Messages.TooltipDateOfExchangeRate,
                             formatter.format(rate.get().getTime())) : ""; //$NON-NLS-1$
         });
+
+        update(null);
 
         return container;
     }
 
     @Override
-    Control getTitleControl()
+    public Control getTitleControl()
     {
         return title;
     }
 
     @Override
-    void update()
+    public Supplier<Object> getUpdateTask()
     {
-        this.title.setText(getWidget().getLabel());
+        return () -> null;
+    }
+
+    @Override
+    public void update(Object data)
+    {
+        this.title.setText(TextUtil.tooltip(getWidget().getLabel()));
 
         ReportingPeriod period = get(ReportingPeriodConfig.class).getReportingPeriod();
         ExchangeRateTimeSeries series = get(ExchangeRateSeriesConfig.class).getSeries();
-        Optional<ExchangeRate> rate = series.lookupRate(period.getEndDate());
+        Optional<ExchangeRate> rate = series.lookupRate(period.toInterval(LocalDate.now()).getEnd());
 
-        this.indicator.setText(series.getLabel() + ' '
+        this.indicator.setText(series.getBaseCurrency() + '/' + series.getTermCurrency() + ' '
                         + (rate.isPresent() ? Values.ExchangeRate.format(rate.get().getValue()) : '-'));
     }
 }

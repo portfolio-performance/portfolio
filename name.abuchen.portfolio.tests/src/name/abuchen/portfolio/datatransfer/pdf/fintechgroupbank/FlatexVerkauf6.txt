@@ -1,0 +1,46 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+flatex Bank AG
+Postfach 100551
+41405 Neuss
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 (0)9221 - 7035898
+E-Mail: kunden@flatex.de
+flatex Bank AG -  Rotfeder-Ring 7 - 60327 Frankfurt am Main
+123456789123456789
+Herrn
+x y
+str. 123ab
+12345 LandFluss
+          Frankfurt, 10.04.2019
+Sammelabrechnung (Wertpapierkauf/-verkauf)
+Ihre Depotnummer: 123456789
+Depotinhaber:     x y
+Nr.123456789/1    Verkauf                    APHRIA INC. (CA03765K1049/A12HM0)
+Ordervolumen  : 540,00 St.              Handelsplatz  :              Tradegate
+davon ausgef. : 540,00 St.              Schlusstag    :      09.04.2019, 16:52
+Kurs          : 8,4700 EUR              Kurswert      :           4.573,80 EUR
+Devisenkurs   :                         Provision     :               5,90 EUR
+Bew-Faktor    : 1,0000                  Eigene Spesen :
+Verwahrart    : Wertpapierrechnung     *Fremde Spesen :               2,51 EUR
+Lagerstelle   : Clearstream Lux.
+Lagerland     : Canada                  Bemessungs-
+Gewinn/Verlust: 1.408,00 EUR            grundlage     :           1.384,64 EUR
+Valuta        : 11.04.2019            **Einbeh. Steuer:             148,87 EUR
+                                        Endbetrag     :           4.416,52 EUR
+*   Enthalten sind folgende Gebühren    Courtage      :               0,00 EUR
+                                        Tradinggebühr :               0,00 EUR
+                                        Regulierung   :               2,44 EUR
+                                        Schlussnoten  :               0,07 EUR
+                                        Sonstige      :               0,00 EUR
+**  Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+                                 Kapitalertragsteuer  :             141,11 EUR
+                                 Solidaritätszuschlag :               7,76 EUR
+                                 Kirchensteuer        :               0,00 EUR
+    Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+    123456789.
+Die Verrechnung der Endbeträge erfolgt über Ihr Konto Nr.: 123456789
+______________________________________________________________________________
+                                                                     Seite 1/2

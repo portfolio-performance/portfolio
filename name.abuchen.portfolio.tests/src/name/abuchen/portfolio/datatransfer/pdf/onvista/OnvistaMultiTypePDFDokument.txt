@@ -1,0 +1,133 @@
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=123456789
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Wertpapierabrechnung ADRESSZEILE1=Herr
+ADRESSZEILE2=Max Mustermann
+Verkauf ADRESSZEILE3=Musterstraße 1
+Kommissionsgeschäft ADRESSZEILE4=12345 Musterstadt
+Herr ADRESSZEILE5=
+Max Mustermann ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+Musterstraße 1 BELEGNUMMER=12345
+12345 Musterstadt 123456789 12345678 / 14.09.2016 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Max Mustermann
+Frankfurt am Main, 14.09.2016
+Wir haben für Sie verkauft
+Gattungsbezeichnung ISIN
+MPH Mittelst.Pharma Hldg AG Inhaber-Aktien o.N. DE000A0L1H32
+Nominal Kurs
+STK 14,000 EUR 2,8000
+Handelstag 14.09.2016 Kurswert EUR 39,20 
+Handelszeit 09:02 Orderprovision EUR 5,00-
+Börse Xetra/EDE Handelsplatzgebühr EUR 1,50-
+Verwahrart Girosammelverwahrung
+Wert Konto-Nr. Betrag zu Ihren Gunsten
+16.09.2016 172306238 EUR 32,70
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Veräußerungsverlust Aktien EUR 4,49
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern (negativ) EUR 4,49
+Steuerausgleich nach § 43a EStG:
+Kapitalertragsteuer EUR 1,12
+Solidaritätszuschlag EUR 0,06
+Wert Konto-Nr. Abrechnungs-Nr. Betrag zu Ihren Gunsten
+14.09.2016 172306238 47883712 EUR 1,18
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 35,95
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 1,97
+Es folgt Seite 2
+3.18/ABREABHNHANDVFDI/GAAASAFG/006218/140916/235358
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=123456789
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+ADRESSZEILE1=Herr
+Depot-Nr. Abrechnungs-Nr. Seite-Nr. ADRESSZEILE2=Max Mustermann
+123456789 435345 2 ADRESSZEILE3=Musterstraße 1
+ADRESSZEILE4=12345 Musterstadt
+ADRESSZEILE5=
+ADRESSZEILE6=
+BELEGNUMMER=44556677
+Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer nach gemeldetem Kirchensteuersatz verrechnet mit dem SEITENNUMMER=2
+Finanzamt Köln-Porz, Steuernummer 216/5881/1238. STEUERERSTATTUNG=N
+Jahressteuerbescheinigung folgt
+Wir werden in Ihrem Depot wie angegeben buchen.
+Ausfuehrung zu XETRA Order Nummer: 654363534534
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+3.18/ABREABHNHANDVFDI/GAAASAFG/006218/140916/235358
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=123456789
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Wertpapierabrechnung ADRESSZEILE1=Herr
+ADRESSZEILE2=Max Mustermann
+Verkauf ADRESSZEILE3=Musterstraße 1
+Kommissionsgeschäft ADRESSZEILE4=12345 Musterstadt
+Herr ADRESSZEILE5=
+Max Mustermann ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+Musterstraße 1 BELEGNUMMER=12345
+12345 Musterstadt 123456789 12345678 / 14.09.2016 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Max Mustermann
+Frankfurt am Main, 14.09.2016
+Wir haben für Sie verkauft
+Gattungsbezeichnung ISIN
+paragon AG Inhaber-Aktien o.N. DE0005558696
+Nominal Kurs
+STK 55,000 EUR 30,4900
+Handelstag 14.09.2016 Kurswert EUR 1.676,95 
+Handelszeit 12:54 Orderprovision EUR 5,00-
+Börse Xetra/EDE Handelsplatzgebühr EUR 1,50-
+Verwahrart Girosammelverwahrung Kapitalertragsteuer EUR 4,78-
+Solidaritätszuschlag EUR 0,26-
+Wert Konto-Nr. Betrag zu Ihren Gunsten
+16.09.2016 172306238 EUR 1.665,41
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Veräußerungsgewinn Aktien EUR 19,10
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern EUR 19,10
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 37,07
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 2,03
+Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer nach gemeldetem Kirchensteuersatz verrechnet mit dem
+Finanzamt Köln-Porz, Steuernummer 216/5881/1238.
+Jahressteuerbescheinigung folgt
+Wir werden in Ihrem Depot wie angegeben buchen.
+Es folgt Seite 2
+3.18/ABREABHNHANDVFDI/GAAASAFG/006219/140916/235358
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=123456789
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+ADRESSZEILE1=Herr
+Depot-Nr. Abrechnungs-Nr. Seite-Nr. ADRESSZEILE2=Max Mustermann
+123456789 435345 2 ADRESSZEILE3=Musterstraße 1
+ADRESSZEILE4=12345 Musterstadt
+ADRESSZEILE5=
+ADRESSZEILE6=
+BELEGNUMMER=44556677
+Ausfuehrung zu XETRA Order Nummer: 654363534534 SEITENNUMMER=2
+STEUERERSTATTUNG=N
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+3.18/ABREABHNHANDVFDI/GAAASAFG/006219/140916/235358

@@ -5,16 +5,30 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Dashboard
+public final class Dashboard
 {
     public enum Config
     {
-        REPORTING_PERIOD, DATA_SERIES, CONFIG_UUID, AGGREGATION, EXCHANGE_RATE_SERIES;
+        REPORTING_PERIOD, DATA_SERIES, SECONDARY_DATA_SERIES, CONFIG_UUID, AGGREGATION, EXCHANGE_RATE_SERIES, COLOR_SCHEMA, LAYOUT, HEIGHT, EARNING_TYPE, NET_GROSS, CLIENT_FILTER, CALCULATION_METHOD, METRIC;
     }
-    
-    public static class Column
+
+    public static final class Column
     {
+        private int weight = 1;
         private List<Widget> widgets = new ArrayList<>();
+
+        public int getWeight()
+        {
+            return weight;
+        }
+
+        public void setWeight(int weight)
+        {
+            if (weight <= 0)
+                throw new IllegalArgumentException();
+            
+            this.weight = weight;
+        }
 
         public List<Widget> getWidgets()
         {
@@ -25,9 +39,20 @@ public class Dashboard
         {
             this.widgets = widgets;
         }
+
+        public void increaseWeight()
+        {
+            weight++;
+        }
+
+        public void decreaseWeight()
+        {
+            if (weight > 1)
+                weight--;
+        }
     }
 
-    public static class Widget
+    public static final class Widget
     {
         private String type;
         private String label;

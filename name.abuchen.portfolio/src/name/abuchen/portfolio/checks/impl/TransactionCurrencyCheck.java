@@ -94,7 +94,7 @@ public class TransactionCurrencyCheck implements Check
         @Override
         public LocalDate getDate()
         {
-            return pair.getTransaction().getDate();
+            return pair.getTransaction().getDateTime().toLocalDate();
         }
 
         @Override

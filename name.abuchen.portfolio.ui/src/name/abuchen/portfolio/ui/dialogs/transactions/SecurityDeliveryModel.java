@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.dialogs.transactions;
 
+import java.time.LocalDateTime;
+
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -42,6 +44,12 @@ public class SecurityDeliveryModel extends AbstractSecurityTransactionModel
         this.transactionCurrency = CurrencyUnit.getInstance(source.getTransaction().getCurrencyCode());
         fillFromTransaction(source.getTransaction());
     }
+    
+    @Override
+    public boolean hasSource()
+    {
+        return source != null;
+    }
 
     @Override
     public void applyChanges()
@@ -71,7 +79,7 @@ public class SecurityDeliveryModel extends AbstractSecurityTransactionModel
 
         PortfolioTransaction transaction = entry.getTransaction();
 
-        transaction.setDate(date);
+        transaction.setDateTime(LocalDateTime.of(date, time));
         transaction.setCurrencyCode(getTransactionCurrencyCode());
         transaction.setSecurity(security);
         transaction.setShares(shares);
@@ -95,6 +103,7 @@ public class SecurityDeliveryModel extends AbstractSecurityTransactionModel
         return transactionCurrency.getCurrencyCode();
     }
 
+    @Override
     public void setPortfolio(Portfolio portfolio)
     {
         setTransactionCurrency(CurrencyUnit.getInstance(portfolio.getReferenceAccount().getCurrencyCode()));

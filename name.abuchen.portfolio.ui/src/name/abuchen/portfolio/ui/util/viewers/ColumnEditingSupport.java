@@ -3,8 +3,6 @@ package name.abuchen.portfolio.ui.util.viewers;
 import java.util.ArrayList;
 import java.util.List;
 
-import name.abuchen.portfolio.ui.AbstractFinanceView;
-
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.ColumnViewerEditor;
@@ -18,26 +16,29 @@ import org.eclipse.jface.viewers.TreeViewerEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
+import name.abuchen.portfolio.model.Client;
+
 public abstract class ColumnEditingSupport
 {
+    @FunctionalInterface
     public interface ModificationListener
     {
         void onModified(Object element, Object newValue, Object oldValue);
     }
 
-    public static class MarkDirtyListener implements ModificationListener
+    public static class TouchClientListener implements ModificationListener
     {
-        private final AbstractFinanceView view;
+        private final Client client;
 
-        public MarkDirtyListener(AbstractFinanceView view)
+        public TouchClientListener(Client client)
         {
-            this.view = view;
+            this.client = client;
         }
 
         @Override
         public void onModified(Object element, Object newValue, Object oldValue)
         {
-            view.markDirty();
+            client.touch();
         }
     }
 
@@ -57,7 +58,8 @@ public abstract class ColumnEditingSupport
      * Called before the editor for the given element is made visible
      */
     public void prepareEditor(Object element)
-    {}
+    {
+    }
 
     public abstract Object getValue(Object element) throws Exception;
 
@@ -66,7 +68,7 @@ public abstract class ColumnEditingSupport
     public final ColumnEditingSupport addListener(ModificationListener listener)
     {
         if (listeners == null)
-            listeners = new ArrayList<ModificationListener>();
+            listeners = new ArrayList<>();
         listeners.add(listener);
         return this;
     }
@@ -89,11 +91,13 @@ public abstract class ColumnEditingSupport
     {
         ColumnViewerEditorActivationStrategy activationStrategy = new ColumnViewerEditorActivationStrategy(viewer)
         {
+            @Override
             protected boolean isEditorActivationEvent(ColumnViewerEditorActivationEvent event)
             {
                 return event.eventType == ColumnViewerEditorActivationEvent.TRAVERSAL
                                 || event.eventType == ColumnViewerEditorActivationEvent.MOUSE_DOUBLE_CLICK_SELECTION
-                                || (event.eventType == ColumnViewerEditorActivationEvent.KEY_PRESSED && event.keyCode == SWT.CR)
+                                || (event.eventType == ColumnViewerEditorActivationEvent.KEY_PRESSED
+                                                && event.keyCode == SWT.CR)
                                 || event.eventType == ColumnViewerEditorActivationEvent.PROGRAMMATIC;
             }
         };

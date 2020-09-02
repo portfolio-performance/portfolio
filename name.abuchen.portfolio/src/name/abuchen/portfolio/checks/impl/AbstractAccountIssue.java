@@ -23,7 +23,7 @@ import name.abuchen.portfolio.model.Client;
     @Override
     public LocalDate getDate()
     {
-        return transaction.getDate();
+        return transaction.getDateTime().toLocalDate();
     }
 
     @Override

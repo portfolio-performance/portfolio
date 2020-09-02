@@ -5,15 +5,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertThat;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.Scanner;
 
 import org.junit.Test;
 
@@ -22,7 +18,8 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
-import name.abuchen.portfolio.datatransfer.pdf.CommerzbankPDFExctractor;
+import name.abuchen.portfolio.datatransfer.pdf.CommerzbankPDFExtractor;
+import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -39,17 +36,12 @@ public class CommerzbankPDFExtractorTest
     @Test
     public void testErtragsgutschrift() throws IOException
     {
-        CommerzbankPDFExctractor extractor = new CommerzbankPDFExctractor(new Client())
-        {
-            @Override
-            protected String strip(File file) throws IOException
-            {
-                return from(file.getName());
-            }
-        };
+        CommerzbankPDFExtractor extractor = new CommerzbankPDFExtractor(new Client());
+
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(Arrays.asList(new File("CommerzbankErtragsgutschrift.txt")), errors);
+        List<Item> results = extractor
+                        .extract(PDFInputFile.loadTestCase(getClass(), "CommerzbankErtragsgutschrift.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -69,7 +61,7 @@ public class CommerzbankPDFExtractorTest
         AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
-        assertThat(transaction.getDate(), is(LocalDate.parse("2015-06-22")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-06-22T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 223_45L)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(123)));
     }
@@ -77,17 +69,12 @@ public class CommerzbankPDFExtractorTest
     @Test
     public void testErtragsgutschrift2() throws IOException
     {
-        CommerzbankPDFExctractor extractor = new CommerzbankPDFExctractor(new Client())
-        {
-            @Override
-            protected String strip(File file) throws IOException
-            {
-                return from(file.getName());
-            }
-        };
+        CommerzbankPDFExtractor extractor = new CommerzbankPDFExtractor(new Client());
+
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(Arrays.asList(new File("CommerzbankErtragsgutschrift2.txt")), errors);
+        List<Item> results = extractor
+                        .extract(PDFInputFile.loadTestCase(getClass(), "CommerzbankErtragsgutschrift2.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -107,7 +94,7 @@ public class CommerzbankPDFExtractorTest
         AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
-        assertThat(transaction.getDate(), is(LocalDate.parse("2015-07-20")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-07-20T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 1045_67L)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1234)));
     }
@@ -115,17 +102,12 @@ public class CommerzbankPDFExtractorTest
     @Test
     public void testWertpapierkauf() throws IOException
     {
-        CommerzbankPDFExctractor extractor = new CommerzbankPDFExctractor(new Client())
-        {
-            @Override
-            protected String strip(File file) throws IOException
-            {
-                return from(file.getName());
-            }
-        };
+        CommerzbankPDFExtractor extractor = new CommerzbankPDFExtractor(new Client());
+
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(Arrays.asList(new File("CommerzbankWertpapierkauf.txt")), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "CommerzbankWertpapierkauf.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -134,7 +116,6 @@ public class CommerzbankPDFExtractorTest
         // check security
         Security security = results.stream().filter(i -> i instanceof SecurityItem).findAny().get().getSecurity();
         assertThat(security.getName(), is("i S h s I I I - C o r e MSCI W o r l d U . E T F"));
-        assertThat(security.getIsin(), is("DE26100400480680403302"));
         assertThat(security.getWkn(), is("A0RPWH"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -149,15 +130,74 @@ public class CommerzbankPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(24.96))));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2017-04-18")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-04-18T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.572)));
     }
 
-    private String from(String resource)
+    @Test
+    public void testDividendengutschrift() throws IOException
     {
-        try (Scanner scanner = new Scanner(getClass().getResourceAsStream(resource), StandardCharsets.UTF_8.name()))
-        {
-            return scanner.useDelimiter("\\A").next();
-        }
+        CommerzbankPDFExtractor extractor = new CommerzbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor
+                        .extract(PDFInputFile.loadTestCase(getClass(), "CommerzbankDividendengutschrift.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findAny().get().getSecurity();
+        assertThat(security.getName(), is("Samsung E l e c t r o n i c s Co. L t d ."));
+        assertThat(security.getIsin(), is("US7960502018"));
+        assertThat(security.getWkn(), is("881823"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-05-28T00:00")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 61_30L)));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(12)));
+    }
+
+    @Test
+    public void testSteuerlicheBehandlung() throws IOException
+    {
+        CommerzbankPDFExtractor extractor = new CommerzbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor
+                        .extract(PDFInputFile.loadTestCase(getClass(), "CommerzbankSteuerlicheBehandlung.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findAny().get().getSecurity();
+        assertThat(security.getName(), is("SAMSUNG EL./25 GDRS NV PF"));
+        assertThat(security.getIsin(), is("US7960502018"));
+        assertThat(security.getWkn(), is("881823"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-05-28T00:00")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(52.98))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(61.30))));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(12)));
     }
 }

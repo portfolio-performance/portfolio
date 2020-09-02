@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.dialogs.transactions;
 
+import java.time.LocalDateTime;
+
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -39,6 +41,12 @@ import name.abuchen.portfolio.ui.Messages;
         this.account = (Account) source.getOwner(source.getAccountTransaction());
         fillFromTransaction(source.getPortfolioTransaction());
     }
+    
+    @Override
+    public boolean hasSource()
+    {
+        return source != null;
+    }
 
     @Override
     public void applyChanges()
@@ -67,10 +75,11 @@ import name.abuchen.portfolio.ui.Messages;
             }
 
             entry = new BuySellEntry(portfolio, account);
+            entry.setCurrencyCode(account.getCurrencyCode());
             entry.insert();
         }
 
-        entry.setDate(date);
+        entry.setDate(LocalDateTime.of(date, time));
         entry.setCurrencyCode(account.getCurrencyCode());
         entry.setSecurity(security);
         entry.setShares(shares);

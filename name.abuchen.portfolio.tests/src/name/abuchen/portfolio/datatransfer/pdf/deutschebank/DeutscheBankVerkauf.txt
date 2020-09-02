@@ -1,0 +1,43 @@
+Deutsche Bank Privat- und Geschäftskunden AG
+V 123/123.2.005
+Max Mustermann Hans Ansprechpartner
+Musterstrasse 1 Telefon (0711) 225516-10
+12345 Musterstadt 24h-Kundenservice (069) 910-10000
+7. April 2015
+Abrechnung: Verkauf von Wertpapieren
+Depotinhaber: Max Mustermann
+Filialnummer Depotnummer Wertpapierbezeichnung Seite
+950 2484780 00 BASF SE
+WKN BASF11 Nominal ST 61
+ISIN DE000BASF111 Kurs EUR 36,31
+Verwahrart Girosammeldepot
+Geschäft Kommissionsgeschäft im XETRA-Handel
+Börse Frankfurt a.M. - Deutsche Börse - Frankfurter Wertpapierbörse (FWB) - Xetra
+Belegnummer 1234567890 / 123456 Schlusstag/-zeit MEZ 02.04.2015 / 09:04
+Auftragsart Limitauftrag
+Diese Order wurde elektronisch übermittelt.
+Abrechnung Währung Betrag
+Kurswert EUR 2.214,91
+Provision EUR -7,90
+Weitere Provision der Bank bei der börslichen Orderausführung EUR -2,00
+XETRA-Kosten EUR -0,60
+Kapitalertragsteuer EUR -122,94
+Solidaritätszuschlag auf Kapitalertragsteuer EUR -6,76
+Kirchensteuer auf Kapitalertragsteuer EUR -1,23
+Gutschrift
+Buchung auf Kontonummer 1234567 40 mit Wertstellung 08.04.2015 EUR 2.074,71
+Informationen zum Steuerabzug
+- keine Steuerbescheinigung - Währung Betrag
+Veräußerungsgewinn EUR 491,75
+KESt-pflichtiger Kapitalertrag EUR 491,75
+Der steuerrelevante Immobiliengewinn beträgt 0,00% des Rücknahmepreises vom 02.04.2015.
+TR00000001 / 12345678 / 20150407 / A#
+Filialnummer Depotnummer Wertpapierbezeichnung Seite
+950 2484780 00 DB X-TR.MSCI EMER.MKTS.IDX.ETF INH.ANT.1C ON 2/2
+Sind die Wertpapiere vermögenswirksam angelegt, so gilt das Pfandrecht gemäß Ziffer 14 Abs. 1 der Allgemeinen Geschäftsbedingungen (AGB) für die
+Dauer der Festlegungsfrist nicht. Unser Geschäftsverkehr mit Ihnen wird durch unsere Allgemeinen Geschäftsbedingungen und die Sonderbedingungen
+für Wertpapiergeschäfte geregelt. Bitte überprüfen Sie diese Abrechnung schnellstmöglich und richten Sie etwaige Einwendungen in den Geschäftsräumen
+der Bank oder schriftlich an Deutsche Bank Privat- und Geschäftskunden AG, QM - Support, 04082 Leipzig. Andernfalls gilt diese Abrechnung als genehmigt.
+Die abgerechneten Leistungen sind als Bank- oder Finanzdienstleistungen von der Umsatzsteuer befreit, sofern Umsatzsteuer nicht gesondert ausgewiesen
+ist. Umsatzsteuer ID Nr.: Deutsche Bank Privat- und Geschäftskunden AG, 60262 Frankfurt DE811907980
+TR00000001 / 12345678 / 20150407 / A#

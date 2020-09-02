@@ -1,0 +1,43 @@
+PDF Author: '' 
+PDFBox Version: 1.8.13
+-----------------------------------------
+Abrechnung Handel
+Hellobank BNP Paribas Austria AG 36885633-28.4.2017
+Elisabethstraße 22 Depot-Nr.: DEPOTNUMMER
+5020 Salzburg DEPOTINHABER                  
+22/9865
+Hello bank!                        
+Frau
+DEPOTINHABER
+STRASSE
+PLZ ORT                                                                                                                                                                                                      
+Wir haben für Sie am 28.4.2017 unten angeführtes Geschäft abgerechnet:
+Geschäftsart: Kauf
+Auftrags-Nr.: 36959617-27.4.2017
+Auftragseingang: 26.4.2017-15:30:55
+Zugang: 55 Stk Teilausführung
+Titel: GB00B03MLX29  R o y a l  D u t c h Shell                  
+Reg. Shares Class A EO -,07        
+Kurs: 20 GBP 
+Handelsplatz: XLON     London Stock Exchange (LSE)
+Handelszeit: 27.4.2017 um 16:36:18 Uhr
+Verwahrart: WR
+Positionsdaten: Loco: London                             
+Kurswert: -1.100,-- GBP 
+-1.100,-- GBP 
+Devisenkurs: 0,8423 (28.4.2017) -1.305,95 EUR 
+Fremde Spesen: -6,53 EUR 
+Grundgebühr: -1,55 EUR 
+Zu Lasten IBAN AT44 1925 0654 0668 9002 -1.314,03 EUR 
+Valuta 2.5.2017
+Schlusstag: 27.4.2017
+Kassatag: 2.5.2017
+Devisenkurs: ,8423 (28.4.2017)
+Bestand nach Buchung:
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 55 Stk
+steuerlicher Anschaffungswert: 1.305,95 EUR
+2.5.2017 Seite 1
+____________________________________________________________________________________
+Diese Mitteilung wird nicht unterschrieben. Irrtum vorbehalten! DVR: 1026402
+56213 Doknr.: ON00-036-0000000001

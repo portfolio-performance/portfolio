@@ -47,7 +47,7 @@ import name.abuchen.portfolio.money.Values;
             PortfolioTransaction t = new PortfolioTransaction();
             t.setType(target);
             t.setCurrencyCode(transaction.getCurrencyCode());
-            t.setDate(transaction.getDate());
+            t.setDateTime(transaction.getDateTime());
             t.setSecurity(transaction.getSecurity());
             t.setShares(transaction.getShares());
             t.setAmount(transaction.getAmount());
@@ -85,7 +85,7 @@ import name.abuchen.portfolio.money.Values;
         {
             BuySellEntry entry = new BuySellEntry(portfolio, account);
             entry.setCurrencyCode(transaction.getCurrencyCode());
-            entry.setDate(transaction.getDate());
+            entry.setDate(transaction.getDateTime());
             entry.setType(transaction.getType());
             entry.setSecurity(transaction.getSecurity());
             entry.setShares(transaction.getShares());

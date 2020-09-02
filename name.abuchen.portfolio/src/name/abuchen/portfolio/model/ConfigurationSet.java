@@ -66,6 +66,15 @@ public class ConfigurationSet
     }
 
     /**
+     * Returns the index of the specified configuration, or -1 if the
+     * configuration set does not contain this configuration.
+     */
+    public int indexOf(Configuration config)
+    {
+        return configurations.indexOf(config);
+    }
+
+    /**
      * Returns the configuration with the given UUID.
      */
     public Optional<Configuration> lookup(String uuid)
@@ -81,6 +90,14 @@ public class ConfigurationSet
     public void add(Configuration configuration)
     {
         configurations.add(configuration);
+    }
+
+    /**
+     * Inserts the specified configuration at the specified location.
+     */
+    public void add(int index, Configuration configuration)
+    {
+        configurations.add(index, configuration);
     }
 
     /**

@@ -1,0 +1,45 @@
+{
+	"version": 1,
+	"transactions": [
+		{
+			"type": "PURCHASE",
+			"date": "2017-05-02",
+			"currency": "EUR",
+			"amount": 15.00,
+			"shares": 0.122649,
+			"security": {
+				"name": "db x-trackers DAX ETF (DR) Inhaber-Anteile 1C o.N.",
+				"isin": "LU0274211480",
+				"currency": "EUR"
+			},
+			"units": [
+				{
+					"type": "FEE",
+					"amount": 0.03
+				}
+			]
+		},
+		{
+			"type": "SALE",
+			"date": "2017-12-20",
+			"currency": "EUR",
+			"amount": 0.00,
+			"shares": 0.100548,
+			"security": {
+				"name": "db x-trackers DAX ETF (DR) Inhaber-Anteile 1C o.N.",
+				"isin": "LU0274211480",
+				"currency": "EUR"
+			},
+			"units": [
+				{
+					"type": "FEE",
+					"amount": 12.00
+				},
+				{
+					"type": "TAX",
+					"amount": 0.79
+				}
+			]
+		}
+	]
+}

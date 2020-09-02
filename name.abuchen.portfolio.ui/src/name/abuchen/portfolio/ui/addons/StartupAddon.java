@@ -18,9 +18,7 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.UIEventTopic;
-import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.e4.ui.workbench.UIEvents;
-import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.resource.JFaceResources;
@@ -38,6 +36,7 @@ import name.abuchen.portfolio.ui.log.LogEntryCache;
 import name.abuchen.portfolio.ui.update.UpdateHelper;
 import name.abuchen.portfolio.ui.util.ProgressMonitorFactory;
 import name.abuchen.portfolio.ui.util.RecentFilesCache;
+import name.abuchen.portfolio.ui.util.swt.ActiveShell;
 
 @SuppressWarnings("restriction")
 public class StartupAddon
@@ -45,17 +44,14 @@ public class StartupAddon
     private static final class UpdateExchangeRatesJob extends Job
     {
         private final IEventBroker broker;
-        private final ExchangeRateProviderFactory factory;
         private final ExchangeRateProvider provider;
 
         private boolean loadDone = false;
 
-        private UpdateExchangeRatesJob(IEventBroker broker, ExchangeRateProviderFactory factory,
-                        ExchangeRateProvider provider)
+        private UpdateExchangeRatesJob(IEventBroker broker, ExchangeRateProvider provider)
         {
             super(MessageFormat.format(Messages.MsgUpdatingExchangeRates, provider.getName()));
             this.broker = broker;
-            this.factory = factory;
             this.provider = provider;
         }
 
@@ -91,7 +87,6 @@ public class StartupAddon
             }
             finally
             {
-                factory.clearCache();
                 broker.post(UIConstants.Event.ExchangeRates.LOADED, provider);
             }
         }
@@ -108,7 +103,6 @@ public class StartupAddon
             }
             finally
             {
-                factory.clearCache();
                 broker.post(UIConstants.Event.ExchangeRates.LOADED, provider);
             }
         }
@@ -136,7 +130,6 @@ public class StartupAddon
     @Inject
     @Optional
     public void checkForUpdates(@UIEventTopic(UIEvents.UILifeCycle.APP_STARTUP_COMPLETE) Event event, // NOSONAR
-                    final IWorkbench workbench, final EPartService partService,
                     @Preference(value = UIConstants.Preferences.AUTO_UPDATE) boolean autoUpdate)
     {
         if (autoUpdate)
@@ -150,7 +143,7 @@ public class StartupAddon
                     try
                     {
                         monitor.beginTask(Messages.JobMsgCheckingForUpdates, 200);
-                        UpdateHelper updateHelper = new UpdateHelper(workbench, partService);
+                        UpdateHelper updateHelper = new UpdateHelper();
                         updateHelper.runUpdate(monitor, true);
                     }
                     catch (CoreException e) // NOSONAR
@@ -167,19 +160,19 @@ public class StartupAddon
     }
 
     @PostConstruct
-    public void updateExchangeRates(IEventBroker broker, ExchangeRateProviderFactory factory)
+    public void updateExchangeRates(IEventBroker broker)
     {
-        for (final ExchangeRateProvider provider : factory.getProviders())
+        for (final ExchangeRateProvider provider : ExchangeRateProviderFactory.getProviders())
         {
-            Job job = new UpdateExchangeRatesJob(broker, factory, provider);
+            Job job = new UpdateExchangeRatesJob(broker, provider);
             job.schedule();
         }
     }
 
     @PreDestroy
-    public void storeExchangeRates(ExchangeRateProviderFactory factory)
+    public void storeExchangeRates()
     {
-        for (ExchangeRateProvider provider : factory.getProviders())
+        for (ExchangeRateProvider provider : ExchangeRateProviderFactory.getProviders())
         {
             try
             {
@@ -209,5 +202,11 @@ public class StartupAddon
         registry.put(Dialog.DLG_IMG_MESSAGE_ERROR, Images.ERROR.descriptor());
         registry.put(Dialog.DLG_IMG_MESSAGE_WARNING, Images.WARNING.descriptor());
         registry.put(Dialog.DLG_IMG_MESSAGE_INFO, Images.INFO.descriptor());
+    }
+
+    @PostConstruct
+    public void setupActiveShellTracker()
+    {
+        ActiveShell.get();
     }
 }

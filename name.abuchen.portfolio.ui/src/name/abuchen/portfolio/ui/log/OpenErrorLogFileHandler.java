@@ -40,7 +40,7 @@ public class OpenErrorLogFileHandler
         else
         {
             MPart part = partService.createPart(UIConstants.Part.TEXT_VIEWER);
-            part.getPersistedState().put(UIConstants.File.PERSISTED_STATE_KEY, logfile.getAbsolutePath());
+            part.getPersistedState().put(UIConstants.PersistedState.FILENAME, logfile.getAbsolutePath());
 
             MPartStack stack = (MPartStack) modelService.find(UIConstants.PartStack.MAIN, app);
             stack.getChildren().add(part);

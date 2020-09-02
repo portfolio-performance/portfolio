@@ -1,0 +1,44 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=123450000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Wertpapierabrechnung ADRESSZEILE1=Max Mustermann
+ADRESSZEILE2=Martina Mustermann
+Kauf Sparplan ADRESSZEILE3=Musterstr. 1
+Kommissionsgeschäft ADRESSZEILE4=12345 Musterstadt
+Max Mustermann ADRESSZEILE5=
+Martina Mustermann ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+Musterstr. 1 BELEGNUMMER=10383
+12345 Musterstadt 123450000 65655059 / 16.08.2019 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Max Mustermann und Martina Mustermann
+Frankfurt am Main, 16.08.2019
+Wir haben für Sie gekauft
+Gattungsbezeichnung ISIN
+DWS Deutschland Inhaber-Anteile LC DE0008490962
+Nominal Kurs
+STK 0,7445 EUR 200,1500
+Handelstag 15.08.2019 Kurswert EUR 149,01-
+Handelsplatz außerbörslich Orderprovision EUR 1,00-
+Verwahrart Girosammelverwahrung
+Wert Konto-Nr. Betrag zu Ihren Lasten
+19.08.2019 123450042 EUR 150,01
+Die jährlich zu zahlende Verwaltungsvergütung und die Gesamtkostenquote sind dem Verkaufsprospekt bzw. den
+Vertragsbedingungen zu entnehmen.
+Wir werden in Ihrem Depot wie angegeben buchen.
+Sparplan mit ID 123450019
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+onvista bank Wildunger Straße 6a 60487 Frankfurt am Main T: +49 (0)69-7107-0 F: +49 (0)69-7107-100 info@onvista-bank.de www.onvista-bank.de
+onvista bank ist eine Marke der comdirect bank AG
+Sitz der comdirect bank AG: Pascalkehre 15 25451 Quickborn (AG Pinneberg HRB 4889) T: +49 (0)4106-704-0 F: +49 (0)4106-708-258-5 www.comdirect.de
+Vorstand: Arno Walter (Vorsitzender), Dietmar von Blücher, Matthias Hach, Frauke Hegemann Vorsitzender des Aufsichtsrates: Michael Mandel
+3.18/ABREABHNHANDKF/GABAUFTL/010383/170819/000841

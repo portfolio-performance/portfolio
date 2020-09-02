@@ -26,7 +26,7 @@ public class TextViewerPart
     @PostConstruct
     public void createComposite(Composite parent, MPart part)
     {
-        String filename = part.getPersistedState().get(UIConstants.File.PERSISTED_STATE_KEY);
+        String filename = part.getPersistedState().get(UIConstants.PersistedState.FILENAME);
 
         Text text = new Text(parent, SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL);
         part.setLabel(filename);

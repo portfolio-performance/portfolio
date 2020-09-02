@@ -8,6 +8,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
@@ -26,6 +28,7 @@ import name.abuchen.portfolio.money.MutableMoney;
 import name.abuchen.portfolio.snapshot.AssetPosition;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyNode.AssignmentNode;
 import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyNode.ClassificationNode;
 import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyNode.UnassignedContainerNode;
@@ -50,9 +53,40 @@ public final class TaxonomyModel
         void onModelEdited();
     }
 
+    public interface AttachedModel
+    {
+        default void setup(TaxonomyModel model)
+        {
+        }
+
+        void recalculate(TaxonomyModel model);
+
+        default void addColumns(ShowHideColumnHelper columns)
+        {
+        }
+    }
+
+    public static final String KEY_FILTER_NON_ZERO = "-filter-non-zero"; //$NON-NLS-1$
+    public static final String KEY_FILTER_NOT_RETIRED = "-filter-not-retired"; //$NON-NLS-1$
+
+    public static final Predicate<TaxonomyNode> FILTER_NON_ZERO = node -> node.isClassification()
+                    || !node.getActual().isZero();
+    public static final Predicate<TaxonomyNode> FILTER_NOT_RETIRED = node -> node.isClassification()
+                    || !node.getAssignment().getInvestmentVehicle().isRetired();
+
     private final Taxonomy taxonomy;
+    private final Client client;
+    private final ExchangeRateProviderFactory factory;
+    private CurrencyConverter converter;
+
+    /**
+     * The Client file which was used to create the ClientSnapshot. When
+     * filtering, we cannot replace the original client as the filtered client
+     * may not contain all securities. But we need the filtered to calculate for
+     * example the stacked chart series.
+     */
+    private Client filteredClient;
     private ClientSnapshot snapshot;
-    private final CurrencyConverter converter;
 
     private TaxonomyNode virtualRootNode;
     private TaxonomyNode classificationRootNode;
@@ -60,22 +94,31 @@ public final class TaxonomyModel
     private Map<InvestmentVehicle, Assignment> investmentVehicle2weight = new HashMap<>();
 
     private boolean excludeUnassignedCategoryInCharts = false;
+    private boolean excludeSecuritiesInPieChart = false;
     private boolean orderByTaxonomyInStackChart = false;
     private String expansionStateDefinition;
     private String expansionStateRebalancing;
 
+    private List<Predicate<TaxonomyNode>> nodeFilters = new ArrayList<>();
+
+    private List<AttachedModel> attachedModels = new ArrayList<>();
     private List<TaxonomyModelUpdatedListener> listeners = new ArrayList<>();
     private List<DirtyListener> dirtyListener = new ArrayList<>();
 
     @Inject
     /* package */ TaxonomyModel(ExchangeRateProviderFactory factory, Client client, Taxonomy taxonomy)
     {
-        Objects.requireNonNull(client);
-        Objects.requireNonNull(taxonomy);
+        this.taxonomy = Objects.requireNonNull(taxonomy);
+        this.client = Objects.requireNonNull(client);
+        this.factory = Objects.requireNonNull(factory);
 
-        this.taxonomy = taxonomy;
         this.converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
+
+        this.filteredClient = client;
         this.snapshot = ClientSnapshot.create(client, converter, LocalDate.now());
+
+        this.attachedModels.add(new RecalculateTargetsAttachedModel());
+        this.attachedModels.add(new ExpectedReturnsAttachedModel());
 
         Classification virtualRoot = new Classification(null, Classification.VIRTUAL_ROOT,
                         Messages.PerformanceChartLabelEntirePortfolio, taxonomy.getRoot().getColor());
@@ -117,8 +160,11 @@ public final class TaxonomyModel
         // calculate actuals
         visitActuals(snapshot, virtualRootNode);
 
+        // setup attached models
+        this.attachedModels.forEach(m -> m.setup(this));
+
         // calculate targets
-        recalculateTargets();
+        runRecalculations();
     }
 
     private void addUnassigned(Client client)
@@ -193,19 +239,9 @@ public final class TaxonomyModel
         node.setActual(actual.toMoney());
     }
 
-    private void recalculateTargets()
+    private void runRecalculations()
     {
-        virtualRootNode.setTarget(virtualRootNode.getActual().subtract(unassignedNode.getActual()));
-
-        visitAll(node -> {
-            if (node.isClassification() && !node.isRoot())
-            {
-                Money parent = node.getParent().getTarget();
-                Money target = Money.of(parent.getCurrencyCode(), Math.round(
-                                parent.getAmount() * node.getWeight() / (double) Classification.ONE_HUNDRED_PERCENT));
-                node.setTarget(target);
-            }
-        });
+        this.attachedModels.forEach(m -> m.recalculate(this));
     }
 
     public boolean isUnassignedCategoryInChartsExcluded()
@@ -216,6 +252,16 @@ public final class TaxonomyModel
     public void setExcludeUnassignedCategoryInCharts(boolean excludeUnassignedCategoryInCharts)
     {
         this.excludeUnassignedCategoryInCharts = excludeUnassignedCategoryInCharts;
+    }
+
+    public boolean isSecuritiesInPieChartExcluded()
+    {
+        return excludeSecuritiesInPieChart;
+    }
+
+    public void setExcludeSecuritiesInPieChart(boolean excludeSecuritiesInPieChart)
+    {
+        this.excludeSecuritiesInPieChart = excludeSecuritiesInPieChart;
     }
 
     public boolean isOrderByTaxonomyInStackChart()
@@ -246,6 +292,16 @@ public final class TaxonomyModel
     public void setExpansionStateRebalancing(String expansionStateRebalancing)
     {
         this.expansionStateRebalancing = expansionStateRebalancing;
+    }
+
+    public List<Predicate<TaxonomyNode>> getNodeFilters()
+    {
+        return nodeFilters;
+    }
+
+    public Stream<AttachedModel> getAttachedModels()
+    {
+        return attachedModels.stream();
     }
 
     public Taxonomy getTaxonomy()
@@ -287,12 +343,13 @@ public final class TaxonomyModel
     public TaxonomyNode getChartRenderingRootNode()
     {
         return isUnassignedCategoryInChartsExcluded() || getUnassignedNode().getActual().isZero()
-                        ? getClassificationRootNode() : getVirtualRootNode();
+                        ? getClassificationRootNode()
+                        : getVirtualRootNode();
     }
 
     public Client getClient()
     {
-        return snapshot.getClient();
+        return client;
     }
 
     public CurrencyConverter getCurrencyConverter()
@@ -305,10 +362,21 @@ public final class TaxonomyModel
         return converter.getTermCurrency();
     }
 
-    public void setClientSnapshot(ClientSnapshot newSnapshot)
+    public void updateClientSnapshot(Client filteredClient)
     {
-        this.snapshot = newSnapshot;
+        if (!filteredClient.getBaseCurrency().equals(converter.getTermCurrency()))
+            this.converter = new CurrencyConverterImpl(factory, filteredClient.getBaseCurrency());
+
+        this.filteredClient = filteredClient;
+        this.snapshot = ClientSnapshot.create(filteredClient, converter, LocalDate.now());
+
         recalculate();
+        fireTaxonomyModelChange(getVirtualRootNode());
+    }
+
+    public Client getFilteredClient()
+    {
+        return filteredClient;
     }
 
     public ClientSnapshot getClientSnapshot()
@@ -320,7 +388,7 @@ public final class TaxonomyModel
     {
         virtualRootNode.setActual(snapshot.getMonetaryAssets());
         visitActuals(snapshot, virtualRootNode);
-        recalculateTargets();
+        runRecalculations();
     }
 
     public void visitAll(NodeVisitor visitor)
@@ -350,7 +418,7 @@ public final class TaxonomyModel
 
     public void markDirty()
     {
-        dirtyListener.forEach(l -> l.onModelEdited());
+        dirtyListener.forEach(DirtyListener::onModelEdited);
     }
 
     public int getWeightByInvestmentVehicle(InvestmentVehicle vehicle)

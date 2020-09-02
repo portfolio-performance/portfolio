@@ -26,10 +26,10 @@ public class ListEditingSupport extends PropertyEditingSupport
             if (option == null)
                 throw new IllegalArgumentException();
 
-        this.comboBoxItems = new ArrayList<Object>(options);
+        this.comboBoxItems = new ArrayList<>(options);
     }
 
-    public boolean canBeNull(Object element)
+    public boolean canBeNull(Object element) // NOSONAR
     {
         return false;
     }
@@ -53,7 +53,7 @@ public class ListEditingSupport extends PropertyEditingSupport
         }
         else
         {
-            if (comboBoxItems.size() > 0 && comboBoxItems.get(0) == null)
+            if (!comboBoxItems.isEmpty() && comboBoxItems.get(0) == null)
                 comboBoxItems.remove(0);
         }
 
@@ -77,7 +77,7 @@ public class ListEditingSupport extends PropertyEditingSupport
             if (item != null && item.equals(property))
                 return ii;
             else if (item == null && property == null)
-                return ii;
+                return ii; // NOSONAR
         }
 
         return 0;

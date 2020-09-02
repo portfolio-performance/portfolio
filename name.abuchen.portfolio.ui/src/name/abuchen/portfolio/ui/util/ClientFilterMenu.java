@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.util;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -7,25 +8,33 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.snapshot.filter.ClientFilter;
 import name.abuchen.portfolio.snapshot.filter.PortfolioClientFilter;
-import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.dialogs.EditClientFilterDialog;
 import name.abuchen.portfolio.ui.dialogs.ListSelectionDialog;
 
 public final class ClientFilterMenu implements IMenuListener
@@ -34,18 +43,23 @@ public final class ClientFilterMenu implements IMenuListener
     {
         String label;
         String uuids;
-        ClientFilter filter;
+        transient ClientFilter filter; // NOSONAR Gson serialization
 
         public Item(String label, String uuids, ClientFilter filter)
         {
             this.label = label;
-            this.uuids = uuids;
+            this.uuids = Objects.requireNonNull(uuids);
             this.filter = filter;
         }
 
         public String getLabel()
         {
             return label;
+        }
+
+        public void setLabel(String label)
+        {
+            this.label = label;
         }
 
         public String getUUIDs()
@@ -57,9 +71,18 @@ public final class ClientFilterMenu implements IMenuListener
         {
             return filter;
         }
+
+        @Override
+        public String toString()
+        {
+            return label;
+        }
     }
 
-    private static final int MAXIMUM_NO_CUSTOM_ITEMS = 10;
+    public static final String PREF_KEY_POSTFIX = "-client-filter"; //$NON-NLS-1$
+    private static final String PREF_KEY = ClientFilterDropDown.class.getSimpleName() + "@json"; //$NON-NLS-1$
+
+    private static final int MAXIMUM_NO_CUSTOM_ITEMS = 30;
 
     private final Client client;
     private final IPreferenceStore preferences;
@@ -74,13 +97,14 @@ public final class ClientFilterMenu implements IMenuListener
         this.client = client;
         this.preferences = preferences;
 
-        selectedItem = new Item(Messages.PerformanceChartLabelEntirePortfolio, null, c -> c);
+        selectedItem = new Item(Messages.PerformanceChartLabelEntirePortfolio, "", ClientFilter.NO_FILTER); //$NON-NLS-1$
         defaultItems.add(selectedItem);
 
-        client.getPortfolios().forEach(portfolio -> {
-            defaultItems.add(new Item(portfolio.getName(), null, new PortfolioClientFilter(portfolio)));
+        client.getActivePortfolios().forEach(portfolio -> {
+            defaultItems.add(new Item(portfolio.getName(), portfolio.getUUID(), new PortfolioClientFilter(portfolio)));
             defaultItems.add(new Item(portfolio.getName() + " + " + portfolio.getReferenceAccount().getName(), //$NON-NLS-1$
-                            null, new PortfolioClientFilter(portfolio, portfolio.getReferenceAccount())));
+                            portfolio.getUUID() + "," + portfolio.getReferenceAccount().getUUID(), //$NON-NLS-1$
+                            new PortfolioClientFilter(portfolio, portfolio.getReferenceAccount())));
         });
 
         loadCustomItems();
@@ -94,26 +118,47 @@ public final class ClientFilterMenu implements IMenuListener
 
     private void loadCustomItems()
     {
-        String code = preferences.getString(ClientFilterDropDown.class.getSimpleName());
-        if (code == null || code.isEmpty())
+        String json = preferences.getString(PREF_KEY); // $NON-NLS-1$
+        if (json != null && !json.isEmpty())
+        {
+            loadCustomItemsFromJSON(json);
+        }
+        else
+        {
+            String code = preferences.getString(ClientFilterDropDown.class.getSimpleName());
+            if (code != null && !code.isEmpty())
+                loadCustomItemsLegacy(code);
+        }
+    }
+
+    private void loadCustomItemsFromJSON(String json)
+    {
+        Type listType = new TypeToken<ArrayList<Item>>()
+        {
+        }.getType();
+        List<Item> fromJson = new Gson().fromJson(json, listType);
+
+        if (fromJson.isEmpty())
             return;
 
+        for (Item item : fromJson)
+        {
+            buildItem(item.uuids).ifPresent(i -> {
+                i.label = item.label;
+                customItems.add(i);
+            });
+        }
+    }
+
+    private void loadCustomItemsLegacy(String code)
+    {
         Map<String, Object> uuid2object = new HashMap<>();
         client.getPortfolios().forEach(p -> uuid2object.put(p.getUUID(), p));
         client.getAccounts().forEach(a -> uuid2object.put(a.getUUID(), a));
 
         String[] items = code.split(";"); //$NON-NLS-1$
         for (String item : items)
-        {
-            String[] uuids = item.split(","); //$NON-NLS-1$
-            Object[] objects = Arrays.stream(uuids).map(uuid2object::get).filter(o -> o != null).toArray();
-
-            if (objects.length > 0)
-            {
-                Item newItem = buildItem(objects);
-                customItems.add(newItem);
-            }
-        }
+            buildItem(item).ifPresent(i -> customItems.add(i));
     }
 
     @Override
@@ -144,6 +189,8 @@ public final class ClientFilterMenu implements IMenuListener
 
         manager.add(new Separator());
         manager.add(new SimpleAction(Messages.LabelClientFilterNew, a -> createCustomFilter()));
+        manager.add(new SimpleAction(Messages.LabelClientFilterManage, a -> editCustomFilter()));
+
         manager.add(new SimpleAction(Messages.LabelClientClearCustomItems, a -> {
             if (customItems.contains(selectedItem))
             {
@@ -152,8 +199,34 @@ public final class ClientFilterMenu implements IMenuListener
             }
 
             customItems.clear();
+            preferences.setToDefault(PREF_KEY);
             preferences.setToDefault(ClientFilterDropDown.class.getSimpleName());
         }));
+    }
+
+    private void editCustomFilter()
+    {
+        if (customItems.isEmpty())
+        {
+            MessageDialog.openInformation(Display.getDefault().getActiveShell(), Messages.LabelInfo,
+                            Messages.LabelClientFilterNoCustomFilterExisting);
+            return;
+        }
+
+        boolean isCustomItemSelected = customItems.contains(selectedItem);
+
+        EditClientFilterDialog dialog = new EditClientFilterDialog(Display.getDefault().getActiveShell(), client,
+                        preferences);
+        dialog.setItems(customItems);
+        dialog.open();
+
+        preferences.putValue(PREF_KEY, new Gson().toJson(customItems));
+
+        if (isCustomItemSelected && !customItems.contains(selectedItem))
+        {
+            selectedItem = defaultItems.get(0);
+            listeners.forEach(l -> l.accept(selectedItem.filter));
+        }
     }
 
     private void createCustomFilter()
@@ -163,25 +236,30 @@ public final class ClientFilterMenu implements IMenuListener
             @Override
             public Image getImage(Object element)
             {
-                return element instanceof Account ? Images.ACCOUNT.image() : Images.PORTFOLIO.image();
+                return LogoManager.instance().getDefaultColumnImage(element, client.getSettings());
             }
         };
         ListSelectionDialog dialog = new ListSelectionDialog(Display.getDefault().getActiveShell(), labelProvider);
 
         dialog.setTitle(Messages.LabelClientFilterDialogTitle);
         dialog.setMessage(Messages.LabelClientFilterDialogMessage);
+        dialog.setPropertyLabel(Messages.ColumnName);
 
         List<Object> elements = new ArrayList<>();
         elements.addAll(client.getPortfolios());
         elements.addAll(client.getAccounts());
         dialog.setElements(elements);
 
-        if (dialog.open() == ListSelectionDialog.OK)
+        if (dialog.open() == Window.OK)
         {
             Object[] selected = dialog.getResult();
             if (selected.length > 0)
             {
                 Item newItem = buildItem(selected);
+
+                String label = dialog.getProperty();
+                if (!label.isEmpty())
+                    newItem.label = label;
 
                 selectedItem = newItem;
                 customItems.addFirst(newItem);
@@ -189,12 +267,27 @@ public final class ClientFilterMenu implements IMenuListener
                 if (customItems.size() > MAXIMUM_NO_CUSTOM_ITEMS)
                     customItems.removeLast();
 
-                preferences.putValue(ClientFilterDropDown.class.getSimpleName(), String.join(";", //$NON-NLS-1$
-                                customItems.stream().map(i -> i.uuids).collect(Collectors.toList())));
+                preferences.putValue(PREF_KEY, new Gson().toJson(customItems));
 
                 listeners.forEach(l -> l.accept(newItem.filter));
             }
         }
+    }
+
+    private Optional<Item> buildItem(String uuids)
+    {
+        if (uuids == null || uuids.isEmpty())
+            return Optional.empty();
+
+        String[] ids = uuids.split(","); //$NON-NLS-1$
+        if (ids.length == 0)
+            return Optional.empty();
+
+        Map<String, Object> uuid2object = new HashMap<>();
+        client.getPortfolios().forEach(p -> uuid2object.put(p.getUUID(), p));
+        client.getAccounts().forEach(a -> uuid2object.put(a.getUUID(), a));
+
+        return Optional.of(buildItem(Arrays.stream(ids).map(uuid2object::get).filter(Objects::nonNull).toArray()));
     }
 
     private Item buildItem(Object[] selected)
@@ -204,13 +297,11 @@ public final class ClientFilterMenu implements IMenuListener
         List<Account> accounts = Arrays.stream(selected).filter(o -> o instanceof Account).map(o -> (Account) o)
                         .collect(Collectors.toList());
 
-        String label = String.join(", ", //$NON-NLS-1$
-                        Arrays.stream(selected).map(String::valueOf).collect(Collectors.toList()));
+        String label = Arrays.stream(selected).map(String::valueOf).collect(Collectors.joining(", ")); //$NON-NLS-1$
 
-        String uuids = String.join(",", //$NON-NLS-1$
-                        Arrays.stream(selected).map(
-                                        o -> o instanceof Account ? ((Account) o).getUUID() : ((Portfolio) o).getUUID())
-                                        .collect(Collectors.toList()));
+        String uuids = Arrays.stream(selected)
+                        .map(o -> o instanceof Account ? ((Account) o).getUUID() : ((Portfolio) o).getUUID())
+                        .collect(Collectors.joining(",")); //$NON-NLS-1$
 
         return new Item(label, uuids, new PortfolioClientFilter(portfolios, accounts));
     }
@@ -225,13 +316,29 @@ public final class ClientFilterMenu implements IMenuListener
         return selectedItem.filter;
     }
 
+    public Item getSelectedItem()
+    {
+        return selectedItem;
+    }
+
     public void addListener(Consumer<ClientFilter> listener)
     {
         listeners.add(listener);
+    }
+
+    public Stream<Item> getAllItems()
+    {
+        return Stream.concat(defaultItems.stream(), customItems.stream());
     }
 
     public List<Item> getCustomItems()
     {
         return Collections.unmodifiableList(customItems);
     }
+
+    public void select(Item item)
+    {
+        selectedItem = item;
+    }
+
 }

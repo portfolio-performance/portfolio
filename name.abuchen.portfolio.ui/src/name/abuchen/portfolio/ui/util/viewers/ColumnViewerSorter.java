@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.TableViewer;
@@ -26,6 +27,7 @@ import org.eclipse.swt.widgets.Widget;
 
 import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Quote;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 
 public final class ColumnViewerSorter
@@ -41,17 +43,11 @@ public final class ColumnViewerSorter
         private static final String OPTION = "option"; //$NON-NLS-1$
         private static final String DIRECTION = "direction"; //$NON-NLS-1$
 
-        private static final ThreadLocal<Map<String, Object>> MAP = new ThreadLocal<Map<String, Object>>()
-        {
-            @Override
-            protected Map<String, Object> initialValue()
-            {
-                return new HashMap<>();
-            }
-        };
+        private static final ThreadLocal<Map<String, Object>> MAP = ThreadLocal.withInitial(HashMap::new);
 
         private SortingContext()
-        {}
+        {
+        }
 
         /* protected */ static void setSortDirection(int direction)
         {
@@ -140,6 +136,8 @@ public final class ColumnViewerSorter
                 type = 7;
             else if (returnType.isAssignableFrom(Money.class))
                 type = 8;
+            else if (returnType.isAssignableFrom(Quote.class))
+                type = 9;
             else
                 type = 0;
         }
@@ -208,6 +206,8 @@ public final class ColumnViewerSorter
                         return ((Boolean) attribute1).compareTo((Boolean) attribute2);
                     case 8:
                         return ((Money) attribute1).compareTo((Money) attribute2);
+                    case 9:
+                        return ((Quote) attribute1).compareTo((Quote) attribute2);
                     default:
                         return String.valueOf(attribute1).compareToIgnoreCase(String.valueOf(attribute2));
                 }
@@ -251,6 +251,39 @@ public final class ColumnViewerSorter
                 return 1;
 
             return v1.compareTo(v2);
+        }
+    }
+
+    private static final class StringValueProviderComparator implements Comparator<Object>
+    {
+        private final Function<Object, String> valueProvider;
+
+        public StringValueProviderComparator(Function<Object, String> valueProvider)
+        {
+            this.valueProvider = valueProvider;
+        }
+
+        @Override
+        public int compare(Object o1, Object o2)
+        {
+            if (o1 == null && o2 == null)
+                return 0;
+            else if (o1 == null)
+                return -1;
+            else if (o2 == null)
+                return 1;
+
+            String v1 = valueProvider.apply(o1);
+            String v2 = valueProvider.apply(o2);
+
+            if (v1 == null && v2 == null)
+                return 0;
+            else if (v1 == null)
+                return -1;
+            else if (v2 == null)
+                return 1;
+
+            return v1.compareToIgnoreCase(v2);
         }
     }
 
@@ -389,13 +422,18 @@ public final class ColumnViewerSorter
         return create(new ValueProviderComparator(valueProvider));
     }
 
+    public static ColumnViewerSorter createIgnoreCase(Function<Object, String> valueProvider)
+    {
+        return create(new StringValueProviderComparator(valueProvider));
+    }
+
     @SuppressWarnings("unchecked")
     public static ColumnViewerSorter create(Comparator<? extends Object> comparator)
     {
         return new ColumnViewerSorter((Comparator<Object>) comparator);
     }
 
-    public ColumnViewerSorter wrap(Function<Comparator<Object>, Comparator<Object>> provider)
+    public ColumnViewerSorter wrap(UnaryOperator<Comparator<Object>> provider)
     {
         this.comparator = provider.apply(this.comparator);
         return this;

@@ -1,0 +1,72 @@
+{
+	"version": 1,
+	"name": "Trade Republic - Sparplan",
+	"locale": "de",
+	"pattern": [
+		"TRADE REPUBLIC",
+		"SPARPLAN"
+	],
+	"transactions": [
+		{
+			"type": "PURCHASE",
+			"startsWith": "WERTPAPIERABRECHNUNG SPARPLAN",
+			"sections": [
+				{
+					"context": "SECURITY",
+					"pattern": [
+						"POSITION ANZAHL (KURS|DURCHSCHNITTSKURS) BETRAG",
+						"(?<name>.*) ([\\d+,.]*) Stk. ([\\d+,.]*) (?<currency>\\w{3}+) ([\\d+,.]*) (\\w{3}+)$",
+						".*",
+						"(ISIN: )?(?<isin>.*)"
+					]
+				},
+				{
+					"pattern": [
+						"GESAMT (?<amount>[\\d+,.]*) (?<currency>\\w{3}+)"
+					]
+				},
+				{
+					"pattern": [
+						"Sparplanausführung am (?<date>\\d+.\\d+.\\d{4}+) .*"
+					]
+				},
+				{
+					"pattern": [
+						"POSITION ANZAHL (KURS|DURCHSCHNITTSKURS) BETRAG",
+						"(.*) (?<shares>[\\d+,.]*) Stk. ([\\d+,.]*) (\\w{3}+) ([\\d+,.]*) (\\w{3}+)$"
+					]
+				},
+				{
+					"context": "UNIT",
+					"isOptional": true,
+					"pattern": [
+						"Fremdkostenzuschlag -(?<amount>[\\d.,]+) (?<currency>\\w{3}+)"
+					],
+					"attributes": {
+						"type": "FEE"
+					}
+				},
+				{
+					"context": "UNIT",
+					"isOptional": true,
+					"pattern": [
+						"Kapitalertragssteuer -(?<amount>[\\d.,]+) (?<currency>\\w{3}+)"
+					],
+					"attributes": {
+						"type": "TAX"
+					}
+				},
+				{
+					"context": "UNIT",
+					"isOptional": true,
+					"pattern": [
+						"Solidaritätszuschlag -(?<amount>[\\d.,]+) (?<currency>\\w{3}+)"
+					],
+					"attributes": {
+						"type": "TAX"
+					}
+				}
+			]
+		}
+	]
+}

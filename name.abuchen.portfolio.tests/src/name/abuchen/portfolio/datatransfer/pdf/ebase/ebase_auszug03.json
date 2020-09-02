@@ -1,0 +1,63 @@
+{
+	"version": 1,
+	"transactions": [
+		{
+			"type": "DIVIDEND",
+			"date": "2019-10-16",
+			"currency": "EUR",
+			"amount": 0.29,
+			"shares": 1.0,
+			"security": {
+				"name": "iSh.DJ U.S.Select Div.U.ETF DE Inhaber-Anteile",
+				"isin": "DE000A0D8Q49",
+				"currency": "USD"
+			},
+			"units": [
+				{
+					"type": "GROSS_VALUE",
+					"amount": 0.35,
+					"fxAmount" : 0.39,
+					"fxCurrency": "USD",
+					"fxRateToBase": 1.1046
+				},
+				{
+					"type": "TAX",
+					"amount": 0.06,
+					"fxAmount" : 0.07,
+					"fxCurrency": "USD",
+					"fxRateToBase": 1.1046
+				}
+			]
+		},
+		{
+			"type": "OUTBOUND_DELIVERY",
+			"date": "2020-01-27",
+			"currency": "EUR",
+			"amount": 0.0,
+			"shares": 0.001162,
+			"security": {
+				"name": "Xtrackers MSCI Europe Mid Cap Inhaber-Anteile 1C o.N.",
+				"isin": "LU0322253732",
+				"currency": "EUR"
+			},
+			"units": [
+				{
+					"type": "TAX",
+					"amount": 0.13
+				}
+			]
+		},
+		{
+			"type": "PURCHASE",
+			"date": "2019-10-21",
+			"currency": "EUR",
+			"amount": 50.0,
+			"shares": 1.70586,
+			"security": {
+				"name": "iSh.ST.Gl.Sel.Div.100 U.ETF DE Inhaber-Anteile",
+				"isin": "DE000A0F5UH1",
+				"currency": "EUR"
+			}
+		}
+	]
+}

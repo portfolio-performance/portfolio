@@ -1,0 +1,31 @@
+PDF Author: 'Unknown'
+PDFBox Version: 1.8.16
+-----------------------------------------
+DB Privat- und Firmenkundenbank AG
+V 123/123 2 123
+Max Mustermann
+Musterstrasse 1
+12345 Musterstadt
+31. Mai 2019
+Ihr Depot Nr. 950 2484780 00
+Ertragsgutschrift
+Stück WKN ISIN
+1.014,000000 A0MZWQ IE00B1YZSC51
+ISHSII-CORE MSCI EUROPE U.ETF REG.SH.O.N.
+Ausschüttung pro Stück 0,2935000000 EUR Zahlbar 31.05.2019
+Geschäftsjahr 2018 / 2019
+Bruttoertrag 297,61 EUR
+Gutschrift mit Wert 31.05.2019 297,61 EUR
+Steuerliche Bemessungsgrundlagen zur Ertragsgutschrift - keine Steuerbescheinigung
+Abzüglich Teilfreistellung von Erträgen (Gewinne,
+89,28 EUR
+Ersatz-BMG, Ausschüttungen)
+Auf Ihren Freistellungsbetrag angerechnet 208,33 EUR
+Wir überweisen den Betrag von 297,61 EUR auf Ihr Konto 1234567 12.
+Kapitalerträge sind einkommensteuerpflichtig!
+Diese Mitteilung wurde maschinell erstellt und wird nicht unterschrieben.
+Aufsichtsrat: Christian Sewing, Vorsitzender DB Privat- und Firmenkundenbank AG
+Vorstand: Frank Strauß, Vorsitzender; Stefan Bender, Philipp Gossow, mit Sitz in Frankfurt am Main, Amtsgericht Frankfurt am Main, HRB Nr. 47141,
+Dr. Alexander Ilgen, Susanne Klöß-Braekler, Britta Lehfeldt, Dr. Ralph Müller, Umsatzsteuer-Id-Nr. DE811907980; www.deutsche-bank.de
+Dr. Markus Pertlwieser, Zvezdana Seeger, Lars Stoy
+TRINCM0001 ERTR 20190531 21822757

@@ -79,6 +79,7 @@ public class Aggregation
         private static final ResourceBundle RESOURCES = ResourceBundle
                         .getBundle("name.abuchen.portfolio.snapshot.labels"); //$NON-NLS-1$
 
+        @Override
         public String toString()
         {
             return RESOURCES.getString("aggregation." + name()); //$NON-NLS-1$
@@ -90,37 +91,43 @@ public class Aggregation
         LocalDate[] dates = index.getDates();
         double[] accumulated = index.getAccumulatedPercentage();
         double[] delta = index.getDeltaPercentage();
-        long[] transferals = index.getTransferals();
+        long[] inboundTransferals = index.getInboundTransferals();
+        long[] outboundTransferals = index.getOutboundTransferals();
         long[] totals = index.getTotals();
 
         LocalDate start = period.getStartDateFor(dates[0]).plus(period.getPeriod());
         LocalDate kill = start.minusDays(1);
 
-        List<LocalDate> cDates = new ArrayList<LocalDate>();
-        List<Double> cAccumulated = new ArrayList<Double>();
-        List<Double> cDelta = new ArrayList<Double>();
-        List<Long> cTransferals = new ArrayList<Long>();
-        List<Long> cTotals = new ArrayList<Long>();
+        List<LocalDate> cDates = new ArrayList<>();
+        List<Double> cAccumulated = new ArrayList<>();
+        List<Double> cDelta = new ArrayList<>();
+        List<Long> cInboundTransferals = new ArrayList<>();
+        List<Long> cOutboundTransferals = new ArrayList<>();
+        List<Long> cTotals = new ArrayList<>();
 
         double d = 0d;
-        long t = 0;
+        long in_t = 0;
+        long out_t = 0;
 
         for (int ii = 0; ii < dates.length; ii++)
         {
             LocalDate current = dates[ii];
             d = ((d + 1) * (delta[ii] + 1)) - 1;
-            t += transferals[ii];
+            in_t += inboundTransferals[ii];
+            out_t += outboundTransferals[ii];
 
             if (current.equals(kill) || ii == dates.length - 1)
             {
                 cDates.add(current);
                 cAccumulated.add(accumulated[ii]);
                 cDelta.add(d);
-                cTransferals.add(t);
+                cInboundTransferals.add(in_t);
+                cOutboundTransferals.add(out_t);
                 cTotals.add(totals[ii]);
 
                 d = 0d;
-                t = 0;
+                in_t = 0;
+                out_t = 0;
 
                 start = start.plus(period.getPeriod());
                 kill = start.minusDays(1);
@@ -132,7 +139,8 @@ public class Aggregation
         answer.dates = cDates.toArray(new LocalDate[0]);
         answer.accumulated = asArrayD(cAccumulated);
         answer.delta = asArrayD(cDelta);
-        answer.transferals = asArrayL(cTransferals);
+        answer.inboundTransferals = asArrayL(cInboundTransferals);
+        answer.outboundTransferals = asArrayL(cOutboundTransferals);
         answer.totals = asArrayL(cTotals);
         return answer;
     }

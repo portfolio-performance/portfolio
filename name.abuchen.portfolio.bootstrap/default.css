@@ -1,7 +1,25 @@
-.MPartStack {
-	swt-tab-renderer: url('bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.renderers.CTabRendering');
+CTabFolder {
+	swt-tab-renderer: url('bundleclass://org.eclipse.e4.ui.workbench.renderers.swt/org.eclipse.e4.ui.workbench.renderers.swt.CTabRendering');
+
+    swt-tab-outline: #F4F5F5;
+    swt-unselected-tabs-color:  white white white 100% 100%;
+    swt-selected-tab-fill: #E4E6E9;
+    swt-selected-tabs-background: white white 100%;
+
+    swt-outer-keyline-color: white;
+    swt-shadow-visible: true;
+    swt-simple: true;
+    swt-tab-height: 22px;
+    swt-shadow-color: red;
+    
+    swt-corner-radius: 10px;
 }
 
-CTabFolder {
-	swt-tab-renderer: url('bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.renderers.CTabRendering');
+CTabItem {
+	color: #393E42;
+}
+
+CTabItem:selected {
+	color: #393E42;
+	font-weight: bold;
 }

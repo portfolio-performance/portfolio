@@ -1,0 +1,28 @@
+PDF Author: 'Registered to: SWISQUOT'
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRANSAKTIONSBELEG
+Kunde: 999999 - TRADING
+Herrn Vorname Nachname
+Strasse Hausnummer
+CH-2540 Grenchen
+Bern, 20.09.2018
+Börsentransaktion: Verkauf Unsere Referenz: 153327044 
+Gemäss Ihrem Verkaufsauftrag vom 20.09.2018 haben wir folgende Transaktionen vorgenommen:
+Titel Ort der Ausführung
+UBSETF MSCI USA hdg to CHF ISIN: IE00BD4TYL27 SIX Swiss Exchange
+NKN: 22375108
+Anzahl Preis Betrag
+308 24.29 CHF 7'481.30
+Total CHF 7'481.30
+Abgabe (Eidg. Stempelsteuer) CHF 11.20
+Börsengebühren CHF 2.60
+Zu Ihren Gunsten CHF 7'467.50
+Betrag gutgeschrieben auf Ihrer Kontonummer 99999900, Valutadatum 24.09.2018
+Vielen Dank für Ihren Auftrag.
+Im Rahmen dieser Transaktion hat PostFinance als Kommissionär gehandelt.
+Bitte prüfen Sie dieses Dokument und benachrichtigen Sie uns bei Unstimmigkeiten innert Monatsfrist.
+PostFinance AG, Mingerstrasse 20, 3030 Bern
+Kontaktcenter E-Trading: 0848 800 000 (Mo-Fr: 08.00-22.00 Uhr, ab Festnetz CHF 0.08/Min.)
+Formular ohne Unterschrift S.E. & O.
+MwSt n° CHE-116.302.542

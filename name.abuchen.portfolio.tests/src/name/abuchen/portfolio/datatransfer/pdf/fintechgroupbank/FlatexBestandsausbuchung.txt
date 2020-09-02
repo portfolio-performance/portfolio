@@ -1,0 +1,69 @@
+FinTech Group Bank AG
+Hausbroicher Str. 222
+47877 Willich
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 (0)9221 - 7035898
+E-Mail: kunden@flatex.de
+FinTech Group Bank AG -  Rotfeder-Ring 7 - 60327 Frankfurt am Main
+0003432000000136655070
+Herr 
+Max Mustermann 
+Musterstr. 2 
+54321 Musterhausen
+          Frankfurt, den 17.03.2010
+Gutschrifts-/Belastungsanzeige
+Ihre Depotnummer: 1002322280
+Depotinhaber:     Max Mustermann
+------------------------------------------------------------------------------
+Bestandsausbuchung                       COMMERZBANK PUT10 EOLS (DE000CB81KN1)
+------------------------------------------------------------------------------
+Stk./Nominale**: 2.000,000000 Stk       Einbeh. Steuer*:              0,00 EUR
+Verwahrart     : GS-Verwahrung
+Lagerstelle    : Clearstream Nat.
+Vermerk/Sperrschlüssel
+Transaktionsnr.  : 223770199                   Steuer    : 0,00            EUR
+Fälligkeitstag   : 16.03.2010                  Letzter Handelstag:  25.02.2010
+Rückzahlungsgrund: Ablauf der Optionsfrist     Betrag/Stk: 0,0000000000000 EUR
+*Einbehaltene Kapitalertragsteuer zuzüglich Solidaritätszuschlag und ggf.
+Kirchensteuer (negative Werte bedeuten Steuererstattung). Evtl. Details dazu
+finden Sie im Steuerreport unter der Transaktion-Nr.: 223770199.
+**oben genannten Bestand haben wir wertlos ausgebucht
+______________________________________________________________________________
+                                                                     Seite 1/2
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Willich  -  Amtsgericht Krefeld  (HRB 10867)
+Vorsitzender des Aufsichtsrats: Dr. Ulrich Ivo von Trotha   -  Vorstand: Dirk Franzmeyer, Michael Heinks, Thomas J. Schmidt
+2000000136655070 00343000
+------------------------------------------------------------------------------
+Bestandsausbuchung                     COMMERZBANK CALL10 EO/DL (DE000CM3C8A3)
+------------------------------------------------------------------------------
+Stk./Nominale**: 1.250,000000 Stk       Einbeh. Steuer*:              0,00 EUR
+Verwahrart     : GS-Verwahrung
+Lagerstelle    : Clearstream Nat.
+Vermerk/Sperrschlüssel
+Transaktionsnr.  : 223770243                   Steuer    : 0,00            EUR
+Fälligkeitstag   : 16.03.2010                  Letzter Handelstag:  25.02.2010
+Rückzahlungsgrund: Ablauf der Optionsfrist     Betrag/Stk: 0,0000000000000 EUR
+*Einbehaltene Kapitalertragsteuer zuzüglich Solidaritätszuschlag und ggf.
+Kirchensteuer (negative Werte bedeuten Steuererstattung). Evtl. Details dazu
+finden Sie im Steuerreport unter der Transaktion-Nr.: 223770243.
+**oben genannten Bestand haben wir wertlos ausgebucht
+------------------------------------------------------------------------------
+Bestandsausbuchung                     COMMERZBANK CALL10 EO/DL (DE000CM3C896)
+------------------------------------------------------------------------------
+Stk./Nominale**: 750,000000 Stk         Einbeh. Steuer*:              0,00 EUR
+Verwahrart     : GS-Verwahrung
+Lagerstelle    : Clearstream Nat.
+Vermerk/Sperrschlüssel
+Transaktionsnr.  : 223770249                   Steuer    : 0,00            EUR
+Fälligkeitstag   : 16.03.2010                  Letzter Handelstag:  25.02.2010
+Rückzahlungsgrund: Ablauf der Optionsfrist     Betrag/Stk: 0,0000000000000 EUR
+*Einbehaltene Kapitalertragsteuer zuzüglich Solidaritätszuschlag und ggf.
+Kirchensteuer (negative Werte bedeuten Steuererstattung). Evtl. Details dazu
+finden Sie im Steuerreport unter der Transaktion-Nr.: 223770249.
+**oben genannten Bestand haben wir wertlos ausgebucht
+------------------------------------------------------------------------------
+______________________________________________________________________________
+                                                                     Seite 2/2
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Willich  -  Amtsgericht Krefeld  (HRB 10867)
+Vorsitzender des Aufsichtsrats: Dr. Ulrich Ivo von Trotha   -  Vorstand: Dirk Franzmeyer, Michael Heinks, Thomas J. Schmidt

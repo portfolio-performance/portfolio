@@ -1,0 +1,69 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+flatex Bank AG
+Postfach 100551
+41405 Neuss
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 (0)9221 - 7035898
+E-Mail: kunden@flatex.de
+flatex Bank AG -  Rotfeder-Ring 7 - 60327 Frankfurt am Main
+        Frankfurt, 20.06.2019
+1234123412341234123470
+Herr Auftragsdatum      19.06.2019n
+XXXX XXXX Handelstag         20.06.2019
+XXX Ausführungszeit    09:08 Uhr
+XXX 8 Valuta             24.06.2019
+12345 Musterhausen Auftragsnummer     123412340/1
+Ausf.platz/-art    Tradegate
+Wertpapierabrechnung Verkauf Fonds/Zertifikate
+Ihre Depotnummer: 1234123416
+Depotinhaber:     XXXX, XXXX
+Nr.123410540/1     Verkauf     SPDR BL.BA.EO AG.BD U.ETF (IE00B41RYL63/A1JJTM)
+Ausgeführt    :             151 St.     Kurswert      :           9.538,22 EUR
+Kurs          :       63,167000 EUR     Provision     :               5,90 EUR
+Devisenkurs   :        1,000000         Eigene Spesen :               0,00 EUR
+                                       *Fremde Spesen :               2,51 EUR
+Verwahrart    : Wertpapierrechnung
+Lagerstelle   : Clearstream Lux.
+Lagerland     : Irland                  Bemessungs-
+                                        grundlage     :             546,12 EUR
+Kumulierte                              Ertrag aus fikt.
+Vorabpauschale:            0,00 EUR     Veräußerung   :             142,47 EUR
+Gewinn/Verlust:          423,86 EUR   **Einbeh. Steuer:               0,00 EUR
+                                        Endbetrag     :           9.529,81 EUR
+*   Enthalten sind folgende Gebühren    Courtage      :               0,00 EUR
+                                        Tradingbegühr :               0,00 EUR
+                                        Regulierung   :               2,44 EUR
+                                        Schlussnoten  :               0,07 EUR
+                                        LS-Umlegung   :               0,00 EUR
+                                        Sonstige      :               0,00 EUR
+**  Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+                                 Kapitalerstragsteuer :               0,00 EUR
+                                 Solidaritätszuschlag :               0,00 EUR
+                                 Kirchensteuer        :               0,00 EUR
+    Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+    1234140149.
+Die Verrechnung der Endbeträge erfolgt über Ihr Konto Nr.: 1234123409
+______________________________________________________________________________
+                                                                     Seite 1/2
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Jörn Engelmann
+2000001218409770 0113202280000102
+Die Wertpapiere sowie den Gegenwert werden wir entsprechend der Abrechnung mit
+dem angegebenen Valutatag buchen. Bitte prüfen Sie diese Abrechnung auf
+Richtigkeit und Vollständigkeit. Etwaige Einwendungen gegen diese Abrechnung
+müssen unverzüglich nach Zugang bei der Bank erhoben werden. Die
+Unterlassung rechtzeitiger Einwendung gilt als Genehmigung. Bitte beachten
+Sie mögliche Hinweise des Emittenten hinsichtlich vorzeitiger Fälligstellung,
+beispielsweise wegen Knock-Out, in den jeweiligen Optionsscheinbedingungen und
+informieren Sie sich rechtzeitig, welche spezielle Fälligkeitsregelung auf die
+von Ihnen gehaltenen Wertpapiere zutreffen. Kapitalerträge sind ESt-pflichtig.
+Diese Mitteilung ist maschinell erstellt und wird nicht unterschrieben.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+______________________________________________________________________________
+                                                                     Seite 2/2
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Jörn Engelmann
+2000001218409770 0113202280000202

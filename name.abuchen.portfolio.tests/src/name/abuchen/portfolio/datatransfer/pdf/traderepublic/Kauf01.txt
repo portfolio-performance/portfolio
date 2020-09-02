@@ -1,0 +1,34 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KASTANIENALLEE 32  10435 BERLIN
+Max Mustermann SEITE 1 von 1
+Beispielstraße 1 DATUM 13.05.2019
+D 12345 Stadt ORDER dead-beef
+AUSFÜHRUNG ab12-c3de
+DEPOT 123456789
+WERTPAPIERABRECHNUNG
+ÜBERSICHT
+Market-Order Kauf am 13.05.2019, um 12:14 Uhr an der Lang & Schwarz Exchange.
+Der Kontrahent der Transaktion ist Lang & Schwarz TradeCenter AG & Co. KG.
+POSITION ANZAHL KURS BETRAG
+iShs Core MSCI EM IMI U.ETF 1 Stk. 24,045 EUR 24,05 EUR
+Registered Shares o.N.
+IE00BKM4GZ66
+GESAMT 24,05 EUR
+ABRECHNUNG
+POSITION BETRAG
+Fremdkostenzuschlag -1,00 EUR
+GESAMT -25,05 EUR
+BUCHUNG
+VERRECHNUNGSKONTO VALUTA BETRAG
+DE12345678901234567890 15.05.2019 -25,05 EUR
+iShs Core MSCI EM IMI U.ETF Registered Shares o.N. in Wertpapierrechnung.
+Lagerland: Grossbritannien
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie 
+Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Düsseldorf Geschäftsführer
+Kastanienallee 32 service@traderepublic.com AG Düsseldorf HRB 85864 Ingo Hillen
+10435 Berlin USt-ID DE307510626 Karsten Müller
+ABRE / 13.05.2019 / 23456789 / 1a23-b45c

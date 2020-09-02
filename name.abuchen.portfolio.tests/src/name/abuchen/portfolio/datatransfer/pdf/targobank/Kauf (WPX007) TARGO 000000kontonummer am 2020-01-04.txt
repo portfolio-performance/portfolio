@@ -1,0 +1,45 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+TARGOBANK AG
+Postfach 10 02 30
+47002 Duisburg
+TARGOBANK AG - Postfach 10 02 30 - 47002 Duisburg www.targobank.de
+FRAU
+MAXIME MITTELNAME MUSTERMANN
+MUSTERSTR.1
+12345 MUSTERHAUSEN
+Depotnummer 010175316543
+........................................................................................................................................................................................................
+Effektenabrechnung 04.01.2020
+Rechnungsnummer: BOE-2020-0223620085-0000068
+MAXIME MUSTERMANN
+Transaktionstyp Kauf
+Stück 987,654
+Wertpapier FanCy shaRe. nAmE X0-X0
+WKN / ISIN ABC123 / DE0000ABC123
+Handelsplatz Außerbörs. Limithandel
+Handelspartner MUSTERBÖRSE
+Schlusstag / Handelszeit 02.01.2020 / 13:01:00
+Kurs 12,34 EUR
+Auftragsart Limitauftrag
+Verwahrart Girosammelverwahrung
+Neuer Bestand 5.432,01
+Geschäftsnummer 111222333444
+Referenznummer 555666777888
+Kurswert 1.000,01 EUR
+Provision 8,90 EUR
+Belastung Ihres Kontos mit Wertstellung zum 04. Januar 2020
+Konto-Nr. 0101753165 1.008,91 EUR
+Kommissionsgeschäft
+Finanzdienstleistungen mit Leistungsort in der Europäischen Union sind umsatzsteuerfrei nach § 4 Nr. 8 UStG.
+Finanzdienstleistungen mit Leistungsort in einem Drittland sind nicht umsatzsteuerbar.
+Dieses Produkt ist keine Bankeinlage. Es unterliegt nicht der Einlagensicherung. Die vergangene Performance lässt
+keine Rückschlüsse auf die zukünftige Wertentwicklung zu. Der Wert der Anlage kann schwanken. Ein teilweiser oder
+ganzer Verlust ist möglich. Dieser Beleg wurde maschinell erstellt und wird nicht unterschrieben. Irrtum vorbehalten.
+Seite 1
+TARGOBANK AG | Vorstand: Pascal Laugel (Vorsitzender); Berthold Rüsing; Maria Topaler
+Vorsitzender des Aufsichtsrates:  René Dangel | Sitz der Gesellschaft: Düsseldorf
+Handelsregister Amtsgericht Düsseldorf HRB 83351 | USt-ID-Nr.: DE 811 285 485
+USt-ID-Nr. des umsatzsteuerlichen Organträgers: DE 811 623 326
+GH.20200121.021202.5018.0014.2959 X 0 R

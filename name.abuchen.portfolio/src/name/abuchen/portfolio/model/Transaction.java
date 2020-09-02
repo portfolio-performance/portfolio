@@ -3,7 +3,7 @@ package name.abuchen.portfolio.model;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -18,7 +18,7 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MoneyCollectors;
 import name.abuchen.portfolio.money.Values;
 
-public abstract class Transaction implements Annotated
+public abstract class Transaction implements Annotated, Adaptable
 {
     public static class Unit
     {
@@ -58,21 +58,45 @@ public abstract class Transaction implements Annotated
 
         public Unit(Type type, Money amount, Money forex, BigDecimal exchangeRate)
         {
+            this(type, amount, forex, exchangeRate, true);
+        }
+
+        private Unit(Type type, Money amount, Money forex, BigDecimal exchangeRate, boolean doValidityCheck)
+        {
             this.type = Objects.requireNonNull(type);
             this.amount = Objects.requireNonNull(amount);
             this.forex = Objects.requireNonNull(forex);
             this.exchangeRate = Objects.requireNonNull(exchangeRate);
 
-            // check whether given amount is in range of converted amount
-            long upper = Math.round(exchangeRate.add(BigDecimal.valueOf(0.001))
-                            .multiply(BigDecimal.valueOf(forex.getAmount())).doubleValue());
-            long lower = Math.round(exchangeRate.add(BigDecimal.valueOf(-0.001))
-                            .multiply(BigDecimal.valueOf(forex.getAmount())).doubleValue());
+            if (doValidityCheck)
+            {
+                // check whether given amount is in range of converted amount
+                long upper = Math.round(exchangeRate.add(BigDecimal.valueOf(0.003))
+                                .multiply(BigDecimal.valueOf(forex.getAmount())).doubleValue());
+                long lower = Math.round(exchangeRate.add(BigDecimal.valueOf(-0.003))
+                                .multiply(BigDecimal.valueOf(forex.getAmount())).doubleValue());
 
-            if (amount.getAmount() < lower || amount.getAmount() > upper)
-                throw new IllegalArgumentException(
-                                MessageFormat.format(Messages.MsgErrorIllegalForexUnit, type.toString(),
-                                                Values.Money.format(forex), exchangeRate, Values.Money.format(amount)));
+                if (amount.getAmount() < lower || amount.getAmount() > upper)
+                    throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorIllegalForexUnit,
+                                    type.toString(), Values.Money.format(forex), exchangeRate,
+                                    Values.Money.format(amount)));
+            }
+        }
+
+        public Unit split(double weight)
+        {
+            Money newAmount = Money.of(amount.getCurrencyCode(), Math.round(amount.getAmount() * weight));
+
+            if (forex == null)
+                return new Unit(type, newAmount);
+
+            // when splitting units with forex currency values, small amounts
+            // can lead to rounding errors for which the validity check in the
+            // constructor would throw an exception. We accept the rounding
+            // errors when splitting an unit, e.g. when grouping by taxonomy
+
+            Money newForex = Money.of(forex.getCurrencyCode(), Math.round(forex.getAmount() * weight));
+            return new Unit(type, newAmount, newForex, exchangeRate, false);
         }
 
         public Type getType()
@@ -95,6 +119,16 @@ public abstract class Transaction implements Annotated
             return exchangeRate;
         }
 
+        @Override
+        public String toString()
+        {
+            return String.format("%-17s %s %s %s", //$NON-NLS-1$
+                            type.name(), //
+                            amount.toString(), //
+                            (forex != null ? forex.toString() : "<no forex>"), //$NON-NLS-1$
+                            (exchangeRate != null ? exchangeRate.toString() : "<no exchange>") //$NON-NLS-1$
+            );
+        }
     }
 
     public static final class ByDate implements Comparator<Transaction>, Serializable
@@ -104,11 +138,11 @@ public abstract class Transaction implements Annotated
         @Override
         public int compare(Transaction t1, Transaction t2)
         {
-            return t1.getDate().compareTo(t2.getDate());
+            return t1.getDateTime().compareTo(t2.getDateTime());
         }
     }
 
-    private LocalDate date;
+    private LocalDateTime date;
     private String currencyCode;
     private long amount;
 
@@ -120,14 +154,16 @@ public abstract class Transaction implements Annotated
     private List<Unit> units;
 
     public Transaction()
-    {}
+    {
+    }
 
-    public Transaction(LocalDate date, String currencyCode, long amount)
+    public Transaction(LocalDateTime date, String currencyCode, long amount)
     {
         this(date, currencyCode, amount, null, 0, null);
     }
 
-    public Transaction(LocalDate date, String currencyCode, long amount, Security security, long shares, String note)
+    public Transaction(LocalDateTime date, String currencyCode, long amount, Security security, long shares,
+                    String note)
     {
         this.date = date;
         this.currencyCode = currencyCode;
@@ -137,12 +173,12 @@ public abstract class Transaction implements Annotated
         this.note = note;
     }
 
-    public LocalDate getDate()
+    public LocalDateTime getDateTime()
     {
         return date;
     }
 
-    public void setDate(LocalDate date)
+    public void setDateTime(LocalDateTime date)
     {
         this.date = date;
     }
@@ -181,6 +217,11 @@ public abstract class Transaction implements Annotated
     public Security getSecurity()
     {
         return security;
+    }
+
+    public Optional<Security> getOptionalSecurity()
+    {
+        return Optional.ofNullable(security);
     }
 
     public void setSecurity(Security security)
@@ -298,5 +339,14 @@ public abstract class Transaction implements Annotated
     {
         Collections.sort(transactions, new ByDate());
         return transactions;
+    }
+
+    @Override
+    public <T> T adapt(Class<T> type)
+    {
+        if (type == Security.class)
+            return type.cast(security);
+        else
+            return null;
     }
 }

@@ -15,10 +15,12 @@ public abstract class AbstractWizardPage extends WizardPage
     }
 
     public void beforePage()
-    {}
+    {
+    }
 
     public void afterPage()
-    {}
+    {
+    }
 
     public static final void attachPageListenerTo(final IWizardContainer c)
     {

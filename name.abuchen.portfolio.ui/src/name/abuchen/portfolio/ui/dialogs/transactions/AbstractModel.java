@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.dialogs.transactions;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
@@ -73,7 +74,7 @@ public abstract class AbstractModel
      */
     /* package */ static String createCurrencyToolTip(BigDecimal exchangeRate, String term, String base)
     {
-        BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, BigDecimal.ROUND_HALF_DOWN);
+        BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
 
         StringBuilder tooltip = new StringBuilder();
         tooltip.append(Values.ExchangeRate.format(exchangeRate)) //

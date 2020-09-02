@@ -4,11 +4,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.AttributeType.AmountPlainConverter;
-import name.abuchen.portfolio.model.AttributeType.PercentPlainConverter;
+import name.abuchen.portfolio.model.AttributeType.ImageConverter;
+import name.abuchen.portfolio.model.AttributeType.PercentConverter;
 import name.abuchen.portfolio.model.AttributeType.StringConverter;
 
 public class ClientSettings
@@ -27,7 +30,7 @@ public class ClientSettings
         if (bookmarks == null)
         {
             this.bookmarks = new ArrayList<>();
-            addDefaultBookmarks();
+            this.bookmarks.addAll(getDefaultBookmarks());
         }
 
         if (attributeTypes == null)
@@ -40,36 +43,59 @@ public class ClientSettings
             configurationSets = new HashMap<>();
     }
 
-    private void addDefaultBookmarks()
+    public static List<Bookmark> getDefaultBookmarks()
     {
-        bookmarks.add(new Bookmark("Yahoo Finance", //$NON-NLS-1$
+        List<Bookmark> answer = new ArrayList<>();
+
+        answer.add(new Bookmark("Yahoo Finance", //$NON-NLS-1$
                         "http://de.finance.yahoo.com/q?s={tickerSymbol}")); //$NON-NLS-1$
-        bookmarks.add(new Bookmark("OnVista", //$NON-NLS-1$
+        answer.add(new Bookmark("OnVista", //$NON-NLS-1$
                         "http://www.onvista.de/suche.html?SEARCH_VALUE={isin}&SELECTED_TOOL=ALL_TOOLS")); //$NON-NLS-1$
-        bookmarks.add(new Bookmark("Finanzen.net", //$NON-NLS-1$
+        answer.add(new Bookmark("Finanzen.net", //$NON-NLS-1$
                         "http://www.finanzen.net/suchergebnis.asp?frmAktiensucheTextfeld={isin}")); //$NON-NLS-1$
-        bookmarks.add(new Bookmark("Ariva.de Fundamentaldaten", //$NON-NLS-1$
+        answer.add(new Bookmark("Ariva.de Fundamentaldaten", //$NON-NLS-1$
                         "http://www.ariva.de/{isin}/bilanz-guv")); //$NON-NLS-1$
-        bookmarks.add(new Bookmark("justETF", //$NON-NLS-1$
+        answer.add(new Bookmark("justETF", //$NON-NLS-1$
                         "https://www.justetf.com/de/etf-profile.html?isin={isin}")); //$NON-NLS-1$
-        bookmarks.add(new Bookmark("fondsweb.de", //$NON-NLS-1$
+        answer.add(new Bookmark("fondsweb.de", //$NON-NLS-1$
                         "http://www.fondsweb.de/{isin}")); //$NON-NLS-1$
-        bookmarks.add(new Bookmark("Morningstar.de", //$NON-NLS-1$
+        answer.add(new Bookmark("Morningstar.de", //$NON-NLS-1$
                         "http://www.morningstar.de/de/funds/SecuritySearchResults.aspx?type=ALL&search={isin}")); //$NON-NLS-1$
-        bookmarks.add(new Bookmark(
-                        "maxblue Kauforder", //$NON-NLS-1$
-                        "https://meine.deutsche-bank.de/trxm/db/init.do" //$NON-NLS-1$
-                                        + "?style=mb&style=mb&login=br24order&action=PurchaseSecurity2And3Steps&wknOrIsin={isin}")); //$NON-NLS-1$         
+        answer.add(new Bookmark("extraETF.com", //$NON-NLS-1$
+                        "https://extraetf.com/etf-profile/{isin}")); //$NON-NLS-1$
+        answer.add(new Bookmark("Alle Aktien Kennzahlen", //$NON-NLS-1$
+                        "https://www.alleaktien.de/quantitativ/{isin}/")); //$NON-NLS-1$
+        answer.add(new Bookmark("Comdirect (Aktien)", //$NON-NLS-1$
+                        "https://www.comdirect.de/inf/aktien/{isin}")); //$NON-NLS-1$
+        answer.add(new Bookmark("DivvyDiary", //$NON-NLS-1$
+                        "https://divvydiary.com/symbols/{isin}")); //$NON-NLS-1$
+
+        return answer;
     }
 
     private void addDefaultAttributeTypes()
     {
+        Function<Class<? extends Attributable>, AttributeType> factory = target -> {
+            AttributeType logoType = new AttributeType("logo"); //$NON-NLS-1$
+            logoType.setName(Messages.AttributesLogoName);
+            logoType.setColumnLabel(Messages.AttributesLogoColumn);
+            logoType.setTarget(target);
+            logoType.setType(String.class);
+            logoType.setConverter(ImageConverter.class);
+            return logoType;
+        };
+
+        attributeTypes.add(factory.apply(Security.class));
+        attributeTypes.add(factory.apply(Account.class));
+        attributeTypes.add(factory.apply(Portfolio.class));
+        attributeTypes.add(factory.apply(InvestmentPlan.class));
+
         AttributeType ter = new AttributeType("ter"); //$NON-NLS-1$
         ter.setName(Messages.AttributesTERName);
         ter.setColumnLabel(Messages.AttributesTERColumn);
         ter.setTarget(Security.class);
         ter.setType(Double.class);
-        ter.setConverter(PercentPlainConverter.class);
+        ter.setConverter(PercentConverter.class);
         attributeTypes.add(ter);
 
         AttributeType aum = new AttributeType("aum"); //$NON-NLS-1$
@@ -93,8 +119,16 @@ public class ClientSettings
         fee.setColumnLabel(Messages.AttributesAcquisitionFeeColumn);
         fee.setTarget(Security.class);
         fee.setType(Double.class);
-        fee.setConverter(PercentPlainConverter.class);
+        fee.setConverter(PercentConverter.class);
         attributeTypes.add(fee);
+
+        AttributeType managementFee = new AttributeType("managementFee"); //$NON-NLS-1$
+        managementFee.setName(Messages.AttributesManagementFeeName);
+        managementFee.setColumnLabel(Messages.AttributesManagementFeeColumn);
+        managementFee.setTarget(Security.class);
+        managementFee.setType(Double.class);
+        managementFee.setConverter(PercentConverter.class);
+        attributeTypes.add(managementFee);
     }
 
     public List<Bookmark> getBookmarks()
@@ -148,8 +182,21 @@ public class ClientSettings
         attributeTypes.add(index, type);
     }
 
+    public int getAttributeTypeIndexOf(AttributeType type)
+    {
+        return attributeTypes.indexOf(type);
+    }
+
     public ConfigurationSet getConfigurationSet(String key)
     {
         return configurationSets.computeIfAbsent(key, k -> new ConfigurationSet());
+    }
+
+    @SuppressWarnings("unchecked")
+    public Optional<AttributeType> getOptionalLogoAttributeType(Class<? extends Object> type)
+    {
+        return getAttributeTypes().filter(t -> t.getConverter() instanceof AttributeType.ImageConverter
+                        && t.getName().equalsIgnoreCase("logo") //$NON-NLS-1$
+                        && t.supports((Class<? extends Attributable>) type)).findFirst();
     }
 }

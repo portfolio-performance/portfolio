@@ -18,7 +18,9 @@ public interface QuickFix
 
         @Override
         public void execute()
-        {}
+        {
+            throw new UnsupportedOperationException();
+        }
     };
 
     String getLabel();

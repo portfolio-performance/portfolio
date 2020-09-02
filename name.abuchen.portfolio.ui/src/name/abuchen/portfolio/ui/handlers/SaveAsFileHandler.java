@@ -22,11 +22,10 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 
-import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPart;
 import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.util.DesktopAPI;
 
 public class SaveAsFileHandler
@@ -43,8 +42,7 @@ public class SaveAsFileHandler
                     @Named(UIConstants.Parameter.EXTENSION) String extension,
                     @Named(UIConstants.Parameter.ENCRYPTION_METHOD) @Optional String encryptionMethod)
     {
-        Client client = MenuHelper.getActiveClient(part);
-        if (client == null)
+        if (!MenuHelper.getActiveClientInput(part).isPresent())
             return;
 
         if (extension == null)
@@ -58,7 +56,7 @@ public class SaveAsFileHandler
         }
 
         // trigger part to save file
-        ((PortfolioPart) part.getObject()).doSaveAs(part, shell, extension, encryptionMethod);
+        ((PortfolioPart) part.getObject()).doSaveAs(shell, extension, encryptionMethod);
     }
 
     private static class JurisdictionFilesDownloadDialog extends MessageDialog

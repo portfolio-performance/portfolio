@@ -1,0 +1,363 @@
+{
+	"version": 1,
+	"name": "ebase - Depot-Auszug",
+	"locale": "de",
+	"pattern": [
+		"European Bank for Financial Services GmbH"
+	],
+	"transactions": [
+		{
+			"type": "INBOUND_DELIVERY",
+			"startsWith": "Eingang externer Übertrag.*",
+			"sections": [
+				{
+					"context": "SECURITY",
+					"pattern": [
+						"Eingang externer Übertrag.*",
+						"^(?<name>.*)$",
+						"^(.*)$",
+						"^ISIN Anteile$",
+						"^(?<isin>[^ ]*) .*",
+						"^Gegenwert der Anteile: ([\\d.,]+) (?<currency>\\w{3}+)$"
+					]
+				},
+				{
+					"pattern": [
+						"^ISIN Anteile$",
+						"^([^ ]*) (?<shares>[\\d.,]+)"
+					]
+				},
+				{
+					"pattern": [
+						"^Gegenwert der Anteile: (?<amount>[\\d.,]+) (?<currency>\\w{3}+)$"
+					]
+				},
+				{
+					"pattern": [
+						".* Buchungsdatum (?<date>\\d+.\\d+.\\d{4}+)"
+					]
+				}
+			]
+		},
+		{
+			"type": "PURCHASE",
+			"startsWith": "^(Kauf|Ansparplan) .* mit Kursdatum .*",
+			"sections": [
+				{
+					"context": "SECURITY",
+					"pattern": [
+						"^(Kauf|Ansparplan) .*",
+						"^(?<name>.*)$",
+						".*",
+						"^ISIN .*",
+						"^(?<isin>[^ ]*) .* (?<currency>\\w{3}+) (.*)$"
+					]
+				},
+				{
+					"pattern": [
+						"^ISIN Anteile .*",
+						"^([^ ]*) (?<shares>[\\d.,]+) .*"
+					]
+				},
+				{
+					"isOptional": true,
+					"pattern": [
+						"^Zahlungsbetrag aus Überweisung (?<amount>[\\d.,]+) (?<currency>\\w{3}+)$"
+					]
+				},
+				{
+					"isOptional": true,
+					"pattern": [
+						"^Abwicklung .*",
+						"^.* (?<amount>[\\d.,]+) (?<currency>\\w{3}+)$"
+					]
+				},
+				{
+					"pattern": [
+						"^(Kauf|Ansparplan) .* mit Kursdatum (?<date>\\d+.\\d+.\\d{4}+) .*"
+					]
+				},
+				{
+					"context": "UNIT",
+					"isOptional": true,
+					"pattern": [
+						"^ISIN Anteile .*",
+						"^([^ ]*) ([\\d.,]+) ([\\d.,]+) (?<fxCurrency>\\w{3}) (?<fxRateToBase>[\\d.,]+) (?<amount>[\\d.,]+) (?<currency>\\w{3}+)$"
+					],
+					"attributes": {
+						"type": "GROSS_VALUE"
+					}
+				},
+				{
+					"context": "UNIT",
+					"isOptional": true,
+					"pattern": [
+						"ETF-Transaktionsentgelt (?<amount>[\\d.,]+) (?<currency>\\w{3}+)"
+					],
+					"attributes": {
+						"type": "FEE"
+					}
+				}
+			]
+		},
+		{
+			"type": "DIVIDEND",
+			"startsWith": "Fondsertrag .*",
+			"endsWith": "^Zahlungsbetrag (nach Währungskonvertierung mit Devisenkurs [\\d.,]+ )?[\\d.,]+ \\w{3}$",
+			"sections": [
+				{
+					"context": "SECURITY",
+					"pattern": [
+						"Fondsertrag .*",
+						"^(?<name>.*)$",
+						"^(.*)$",
+						"^ISIN Anteil.*$",
+						"^(?<isin>[^ ]*) .*(?<currency>\\w{3}+).*"
+					]
+				},
+				{
+					"pattern": [
+						".* Buchungsdatum (?<date>\\d+.\\d+.\\d{4}+)"
+					]
+				},
+				{
+					"pattern": [
+						"^ISIN Anteil.*$",
+						"^([^ ]*) (?<shares>[\\d.,]+) .*"
+					]
+				},
+				{
+					"isOptional": true,
+					"pattern": [
+						"^Zahlungsbetrag (?<amount>[\\d.,]+) (?<currency>\\w{3})$"
+					]
+				},
+				{
+					"isOptional": true,
+					"pattern": [
+						"^Zahlungsbetrag nach Währungskonvertierung mit Devisenkurs [\\d.,]+ (?<amount>[\\d.,]+) (?<currency>\\w{3})$"
+					]
+				},
+				{
+					"context": "UNIT",
+					"isOptional": true,
+					"pattern": [
+						"^ISIN Anteil.*$",
+						"^([^ ]*) [\\d.,]+ [\\d.,]+ \\w{3} (?<fxAmount>[\\d.,]+) (?<fxCurrency>\\w{3})$",
+						"^Zahlungsbetrag nach Währungskonvertierung mit Devisenkurs (?<fxRateToBase>[\\d.,]+) [\\d.,]+ \\w{3}$"
+					],
+					"attributes": {
+						"type": "GROSS_VALUE"
+					}
+				},
+				{
+					"context": "UNIT",
+					"isOptional": true,
+					"pattern": [
+						"^Kapitalertragsteuer .*",
+						".* (?<amount>[\\d.,]+) \\w{3}$",
+						"^Zahlungsbetrag [\\d.,]+ (?<currency>\\w{3})$"
+					],
+					"attributes": {
+						"type": "TAX"
+					}
+				},
+				{
+					"context": "UNIT",
+					"isOptional": true,
+					"pattern": [
+						"^Kapitalertragsteuer .*",
+						".* \\w{3} (?<fxRateToBase>[\\d.,]+) (?<fxAmount>[\\d.,]+) \\w{3}$",
+						"^Zahlungsbetrag in Fremdwährung [\\d.,]+ (?<fxCurrency>\\w{3})$"
+					],
+					"attributes": {
+						"type": "TAX"
+					}
+				}
+			]
+		},
+		{
+			"type": "PURCHASE",
+			"startsWith": "^Wiederanlage .* mit Kursdatum .*",
+			"sections": [
+				{
+					"context": "SECURITY",
+					"pattern": [
+						"^Wiederanlage .*",
+						"^(?<name>.*)$",
+						"^ISIN .*",
+						"^(?<isin>[^ ]*) .* (?<currency>\\w{3}+) .*$"
+					]
+				},
+				{
+					"pattern": [
+						"^ISIN Anteile .*",
+						"^([^ ]*) (?<shares>[\\d.,]+) .*"
+					]
+				},
+				{
+					"pattern": [
+						"^Zahlungsbetrag (?<amount>[\\d.,]+) (?<currency>\\w{3}+)$"
+					]
+				},
+				{
+					"pattern": [
+						"^Wiederanlage .* mit Kursdatum (?<date>\\d+.\\d+.\\d{4}+) .*"
+					]
+				}
+			]
+		},
+		{
+			"type": "OUTBOUND_DELIVERY",
+			"startsWith": "^Verkauf wegen Vorabpauschale .*",
+			"sections": [
+				{
+					"context": "SECURITY",
+					"pattern": [
+						"^Verkauf .*",
+						"^(?<name>.*)$",
+						"^ISIN .*",
+						"^(?<isin>[^ ]*) .* (?<currency>\\w{3}+) .*$"
+					]
+				},
+				{
+					"pattern": [
+						"^ISIN Anteile .*",
+						"^([^ ]*) -(?<shares>[\\d.,]+) .*"
+					]
+				},
+				{
+					"pattern": [
+						"^ISIN Anteile .*",
+						"^.* (?<currency>\\w{3}+)$"
+					]
+				},
+				{
+					"pattern": [
+						".* Buchungsdatum (?<date>\\d+.\\d+.\\d{4}+)"
+					]
+				},
+				{
+					"context": "UNIT",
+					"isOptional": true,
+					"pattern": [
+						"^ISIN Anteile .*",
+						"^[^ ]* -[\\d.,]+ [\\d.,]+ (?<fxCurrency>\\w{3}) (?<fxRateToBase>[\\d.,]+) (?<amount>[\\d.,]+) \\w{3}$"
+					],
+					"attributes": {
+						"type": "GROSS_VALUE"
+					}
+				},
+				{
+					"context": "UNIT",
+					"pattern": [
+						"^ISIN Anteile .*",
+						"^.* (?<amount>[\\d.,]+) (?<currency>\\w{3}+)$"
+					],
+					"attributes": {
+						"type": "TAX"
+					}
+				}
+			]
+		},
+		{
+			"comment": "Entgelt durch Verkauf",
+			"type": "SALE",
+			"startsWith": "^(Entgelt Verkauf).* mit Kursdatum .*",
+			"sections": [
+				{
+					"context": "SECURITY",
+					"pattern": [
+						"^(Entgelt Verkauf) .*",
+						"^(?<name>.*)$",
+						".*",
+						"^ISIN .*",
+						"^(?<isin>[^ ]*).*"
+					]
+				},
+				{
+					"pattern": [
+						"^(Entgelt Verkauf) mit Kursdatum (?<date>\\d+.\\d+.\\d{4}+) .*"
+					]
+				},
+				{
+					"pattern": [
+						"^ISIN .*",
+						"^.*-(?<shares>[\\d+,.]*).*"
+					]
+				},
+				{
+					"pattern": [
+						"^(Zahlungsbetrag) (?<amount>[\\d+,.]*) (?<currency>\\w{3}+)$"
+					]
+				},
+				{
+					"context": "UNIT",
+					"isOptional": true,
+					"pattern": [
+						"^(Depotführungsentgelt inkl. \\d*\\% USt) (?<amount>[\\d,.]*) (?<currency>\\w{3}+)$"
+					],
+					"attributes": {
+						"type": "FEE"
+					}
+				},
+				{
+					"context": "UNIT",
+					"isOptional": true,
+					"pattern": [
+						"^(Kapitalertragsteuer Solidaritätszuschlag Kirchensteuer abzgl. Steuern)$",
+						"^([\\d,.]* \\w{3} ){3}(?<amount>[\\d,.]*) (?<currency>\\w{3})$"
+					],
+					"attributes": {
+						"type": "TAX"
+					}
+				}
+			]
+		},
+		{
+			"comment": "Verkauf",
+			"type": "SALE",
+			"startsWith": "^Verkauf [0-9,]* Anteile mit Kursdatum .*",
+			"sections": [
+				{
+					"context": "SECURITY",
+					"pattern": [
+						"^Verkauf [0-9,]* Anteile mit Kursdatum .*",
+						"^(?<name>.*)$",
+						".*",
+						"^ISIN .*",
+						"^(?<isin>[^ ]*).*"
+					]
+				},
+				{
+					"pattern": [
+						"^Verkauf [0-9,]* Anteile mit Kursdatum (?<date>\\d+.\\d+.\\d{4}+) .*"
+					]
+				},
+				{
+					"pattern": [
+						"^ISIN .*",
+						"^.*-(?<shares>[\\d+,.]*).*"
+					]
+				},
+				{
+					"pattern": [
+						"^.* Zahlungsbetrag$",
+						"^.* (?<amount>[\\d.,]+) (?<currency>\\w{3}+)$"
+					]
+				},
+				{
+					"context": "UNIT",
+					"isOptional": true,
+					"pattern": [
+						"^(Kapitalertragsteuer Solidaritätszuschlag Kirchensteuer abzgl. Steuern)$",
+						"^([\\d,.]* \\w{3} ){3}(?<amount>[\\d,.]*) (?<currency>\\w{3})$"
+					],
+					"attributes": {
+						"type": "TAX"
+					}
+				}
+			]
+		}
+	]
+}

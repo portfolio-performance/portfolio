@@ -1,0 +1,358 @@
+<client>
+  <version>35</version>
+  <baseCurrency>EUR</baseCurrency>
+  <securities>
+    <security>
+      <uuid>936a64f3-ef4d-4c97-bf4e-6a6f8c8eb623</uuid>
+      <name>Sap AG</name>
+      <currencyCode>EUR</currencyCode>
+      <isin>DE0007164600</isin>
+      <tickerSymbol>SAP.DE</tickerSymbol>
+      <feed>MANUAL</feed>
+      <prices>
+        <price t="2016-12-30" v="828100"/>
+        <price t="2017-01-02" v="835400"/>
+        <price t="2017-01-03" v="828900"/>
+        <price t="2017-01-04" v="824300"/>
+        <price t="2017-01-05" v="826900"/>
+        <price t="2017-01-06" v="836600"/>
+        <price t="2017-01-09" v="843400"/>
+        <price t="2017-01-10" v="840000"/>
+        <price t="2017-01-11" v="839500"/>
+        <price t="2017-01-12" v="835800"/>
+        <price t="2017-01-13" v="841800"/>
+        <price t="2017-01-16" v="837300"/>
+        <price t="2017-01-17" v="834700"/>
+        <price t="2017-01-18" v="836000"/>
+        <price t="2017-01-19" v="839900"/>
+        <price t="2017-01-20" v="838000"/>
+        <price t="2017-01-23" v="828700"/>
+        <price t="2017-01-24" v="834600"/>
+        <price t="2017-01-25" v="846600"/>
+        <price t="2017-01-26" v="850200"/>
+        <price t="2017-01-27" v="852300"/>
+        <price t="2017-01-30" v="851400"/>
+        <price t="2017-01-31" v="846300"/>
+      </prices>
+      <latestFeed>MANUAL</latestFeed>
+      <attributes>
+        <map/>
+      </attributes>
+      <events/>
+      <isRetired>false</isRetired>
+    </security>
+    <security>
+      <uuid>776e1108-2d06-4e37-9d87-2b6e03a0eff4</uuid>
+      <name>Adidas AG</name>
+      <currencyCode>EUR</currencyCode>
+      <isin>DE000A1EWWW0</isin>
+      <tickerSymbol>ADS.DE</tickerSymbol>
+      <feed>MANUAL</feed>
+      <prices>
+        <price t="2016-12-30" v="1501500"/>
+        <price t="2017-01-02" v="1513000"/>
+        <price t="2017-01-03" v="1492500"/>
+        <price t="2017-01-04" v="1464000"/>
+        <price t="2017-01-05" v="1443000"/>
+        <price t="2017-01-06" v="1448000"/>
+        <price t="2017-01-09" v="1445000"/>
+        <price t="2017-01-10" v="1448000"/>
+        <price t="2017-01-11" v="1455500"/>
+        <price t="2017-01-12" v="1460000"/>
+        <price t="2017-01-13" v="1479500"/>
+        <price t="2017-01-16" v="1483000"/>
+        <price t="2017-01-17" v="1473500"/>
+        <price t="2017-01-18" v="1517000"/>
+        <price t="2017-01-19" v="1523000"/>
+        <price t="2017-01-20" v="1522000"/>
+        <price t="2017-01-23" v="1525000"/>
+        <price t="2017-01-24" v="1528000"/>
+        <price t="2017-01-25" v="1538500"/>
+        <price t="2017-01-26" v="1554000"/>
+        <price t="2017-01-27" v="1538500"/>
+        <price t="2017-01-30" v="1505000"/>
+        <price t="2017-01-31" v="1456500"/>
+      </prices>
+      <latestFeed>MANUAL</latestFeed>
+      <attributes>
+        <map/>
+      </attributes>
+      <events/>
+      <isRetired>false</isRetired>
+    </security>
+  </securities>
+  <watchlists/>
+  <consumerPriceIndeces/>
+  <accounts>
+    <account>
+      <uuid>020ce088-8704-417b-aab1-932abaf8f727</uuid>
+      <name>Account</name>
+      <currencyCode>EUR</currencyCode>
+      <isRetired>false</isRetired>
+      <transactions>
+        <account-transaction>
+          <date>2016-12-31</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>1000000</amount>
+          <shares>0</shares>
+          <type>DEPOSIT</type>
+        </account-transaction>
+        <account-transaction>
+          <date>2017-01-02</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>153300</amount>
+          <security reference="../../../../../securities/security[2]"/>
+          <crossEntry class="buysell">
+            <portfolio>
+              <uuid>d1d55231-a8e9-4500-8298-e55555b50685</uuid>
+              <name>Portfolio</name>
+              <isRetired>false</isRetired>
+              <referenceAccount reference="../../../../.."/>
+              <transactions>
+                <portfolio-transaction>
+                  <date reference="../../../../../date"/>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>153300</amount>
+                  <security reference="../../../../../../../../../securities/security[2]"/>
+                  <crossEntry class="buysell" reference="../../../.."/>
+                  <shares>10000000</shares>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                    <unit type="TAX">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <type>BUY</type>
+                </portfolio-transaction>
+              </transactions>
+            </portfolio>
+            <portfolioTransaction reference="../portfolio/transactions/portfolio-transaction"/>
+            <account reference="../../../.."/>
+            <accountTransaction reference="../.."/>
+          </crossEntry>
+          <shares>0</shares>
+          <type>BUY</type>
+        </account-transaction>
+        <account-transaction>
+          <date>2017-01-09</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>1000</amount>
+          <security reference="../../../../../securities/security[2]"/>
+          <shares>0</shares>
+          <type>FEES</type>
+        </account-transaction>
+        <account-transaction>
+          <date>2017-01-10</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>500</amount>
+          <security reference="../../../../../securities/security[2]"/>
+          <shares>0</shares>
+          <type>FEES_REFUND</type>
+        </account-transaction>
+        <account-transaction>
+          <date>2017-01-11</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>2500</amount>
+          <security reference="../../../../../securities/security[2]"/>
+          <shares>0</shares>
+          <type>TAXES</type>
+        </account-transaction>
+        <account-transaction>
+          <date>2017-01-12</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>500</amount>
+          <security reference="../../../../../securities/security[2]"/>
+          <shares>0</shares>
+          <type>TAX_REFUND</type>
+        </account-transaction>
+      </transactions>
+    </account>
+  </accounts>
+  <portfolios>
+    <portfolio reference="../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio"/>
+  </portfolios>
+  <plans/>
+  <taxonomies>
+    <taxonomy>
+      <id>27424984-8b32-4168-afc0-7b363f11398f</id>
+      <name>case_full_classification_adidas</name>
+      <root>
+        <id>33f0ae3d-a262-4d28-b5a5-a56ec87d4e32</id>
+        <name>case_full_classification</name>
+        <color>#edb3fa</color>
+        <children>
+          <classification>
+            <id>75fd22c3-a985-424b-b650-33538d25b380</id>
+            <name>category_security</name>
+            <color>#ac82d3</color>
+            <parent reference="../../.."/>
+            <children/>
+            <assignments>
+              <assignment>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[2]"/>
+                <weight>10000</weight>
+                <rank>0</rank>
+              </assignment>
+            </assignments>
+            <weight>10000</weight>
+            <rank>1</rank>
+          </classification>
+        </children>
+        <assignments/>
+        <weight>10000</weight>
+        <rank>0</rank>
+      </root>
+    </taxonomy>
+    <taxonomy>
+      <id>1e3c1a4d-019b-46e9-a158-25f1dcc33943</id>
+      <name>case_partial_classification_adidas</name>
+      <root>
+        <id>22843a63-66db-4c02-a3c7-88c5da1e0d51</id>
+        <name>case_full_classification</name>
+        <color>#edb3fa</color>
+        <children>
+          <classification>
+            <id>f0f7eb5c-a434-452e-8e23-a0d5c39812dd</id>
+            <name>category_security</name>
+            <color>#cc8fdb</color>
+            <parent reference="../../.."/>
+            <children/>
+            <assignments>
+              <assignment>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[2]"/>
+                <weight>5000</weight>
+                <rank>0</rank>
+              </assignment>
+            </assignments>
+            <weight>10000</weight>
+            <rank>0</rank>
+          </classification>
+        </children>
+        <assignments/>
+        <weight>10000</weight>
+        <rank>0</rank>
+      </root>
+    </taxonomy>
+    <taxonomy>
+      <id>5ed9110f-c4fa-4bad-a9f0-305f65ceee38</id>
+      <name>case_full_classification_adidas_with_account</name>
+      <root>
+        <id>2b311db4-92ee-4689-8aaa-02b39260d691</id>
+        <name>case_full_classification</name>
+        <color>#edb3fa</color>
+        <children>
+          <classification>
+            <id>9dd8aa8d-8133-4893-bc5c-24aea55f1b95</id>
+            <name>category_security</name>
+            <color>#8086f8</color>
+            <parent reference="../../.."/>
+            <children/>
+            <assignments>
+              <assignment>
+                <investmentVehicle class="account" reference="../../../../../../../../accounts/account"/>
+                <weight>10000</weight>
+                <rank>0</rank>
+              </assignment>
+              <assignment>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[2]"/>
+                <weight>10000</weight>
+                <rank>1</rank>
+              </assignment>
+            </assignments>
+            <weight>10000</weight>
+            <rank>0</rank>
+          </classification>
+        </children>
+        <assignments/>
+        <weight>10000</weight>
+        <rank>0</rank>
+      </root>
+    </taxonomy>
+    <taxonomy>
+      <id>02a5cdc8-f728-47cd-81f9-e4cb0d2576b8</id>
+      <name>case_partial_classification_adidas_with_account</name>
+      <root>
+        <id>c257a114-5c15-484d-9086-3fe1ffd79ccc</id>
+        <name>case_full_classification</name>
+        <color>#edb3fa</color>
+        <children>
+          <classification>
+            <id>51bfb408-e742-4da5-83eb-6e1d1b1aab48</id>
+            <name>category_security</name>
+            <color>#99d1e7</color>
+            <parent reference="../../.."/>
+            <children/>
+            <assignments>
+              <assignment>
+                <investmentVehicle class="account" reference="../../../../../../../../accounts/account"/>
+                <weight>10000</weight>
+                <rank>0</rank>
+              </assignment>
+              <assignment>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[2]"/>
+                <weight>5000</weight>
+                <rank>1</rank>
+              </assignment>
+            </assignments>
+            <weight>10000</weight>
+            <rank>2</rank>
+          </classification>
+        </children>
+        <assignments/>
+        <weight>10000</weight>
+        <rank>0</rank>
+      </root>
+    </taxonomy>
+    <taxonomy>
+      <id>f1e01550-821d-460d-aad6-9fc55b3c4e34</id>
+      <name>case_account_classification</name>
+      <root>
+        <id>a6e9df24-9a79-44c2-8280-e61b921f0011</id>
+        <name>case_full_classification</name>
+        <color>#edb3fa</color>
+        <children>
+          <classification>
+            <id>3f4483f0-1bff-4cf9-b23d-d6d78d7b30ee</id>
+            <name>category_account</name>
+            <color>#99d1e7</color>
+            <parent reference="../../.."/>
+            <children/>
+            <assignments>
+              <assignment>
+                <investmentVehicle class="account" reference="../../../../../../../../accounts/account"/>
+                <weight>10000</weight>
+                <rank>0</rank>
+              </assignment>
+            </assignments>
+            <weight>10000</weight>
+            <rank>2</rank>
+          </classification>
+        </children>
+        <assignments/>
+        <weight>10000</weight>
+        <rank>0</rank>
+      </root>
+    </taxonomy>
+  </taxonomies>
+  <dashboards>
+    <dashboard name="Dashboard">
+      <configuration>
+        <entry>
+          <string>REPORTING_PERIOD</string>
+          <string>L1Y0</string>
+        </entry>
+      </configuration>
+      <columns>
+        <column/>
+      </columns>
+    </dashboard>
+  </dashboards>
+  <properties/>
+  <settings>
+    <bookmarks/>
+    <attributeTypes/>
+    <configurationSets/>
+  </settings>
+</client>

@@ -1,0 +1,36 @@
+PDF Author: 'Consorsbank'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Consorsbank • 90318 Nürnberg
+Depotnummer xxxxxxxxxxx
+xxxxxxxxxxxxxxxx
+Vorname Nachname
+Straße Nummer
+PLZ Ort Vermerk der Bank 100002
+ORDERABRECHNUNG
+KAUF AM 03.02.2020  UM 08:02:51 SPARPLAN NR. xxxxxxxxx
+Bezeichnung WKN ISIN
+AXA S.A. INH.     EO 2,29 855705 FR0000120628
+Einheit Umsatz
+ST 1,01514
+Kurs 24,190000 EUR P.ST.  
+Kurswert EUR 24,56
+Franzoesische Finanztransaktionssteuer 0,30% EUR 0,07
+Provision EUR 0,37
+Wert 05.02.2020 EUR 25,00
+zulasten Konto-Nr. xxxxxxxxxxxxxx
+Bestand zugunsten Girosammelverwahrung 
+CBF 2126
+Die Order wurde an folgender Börse gehandelt: MUENCHEN
+Sparplanname: Axa                      
+Beratungsfreies Geschäft
+Hinweis für Orderabrechnungen und Depotbuchungsanzeigen:
+Einwendungen wegen Unrichtigkeit oder Unvollständigkeit dieser Mitteilung müssen unverzüglich erhoben werden, vgl. Nummer B. Ziffer I. 11 (4) und (5) der
+Allgemeinen Geschäftsbedingungen (AGB Banken).
+Machen Sie Ihre Einwendungen in Textform geltend, genügt die Absendung innerhalb der Sechs-Wochen-Frist an die Consorsbank oder per Fax oder Mail an die
+unten angegebenen Adressen. Das Unterlassen rechtzeitiger Einwendungen gilt als Genehmigung.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+Président du Conseil d‘Administration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur Général (Generaldirektor): Jean-Laurent Bonnafé

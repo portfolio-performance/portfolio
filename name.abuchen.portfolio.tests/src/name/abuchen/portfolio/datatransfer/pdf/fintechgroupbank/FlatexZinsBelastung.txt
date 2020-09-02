@@ -1,0 +1,264 @@
+FinTech Group Bank AG
+Hausbroicher Str. 222
+47877 Willich
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 (0)9221 - 7035898
+E-Mail: kunden@flatex.de
+FinTech Group Bank AG -  Rotfeder-Ring 7 - 60327 Frankfurt am Main
+Frankfurt,                04.01.2011
+0101012000000174512370
+Herr 
+Max Mustermann 
+Musterstr. 2 
+54321 Musterhausen
+Kontoauszug Nr:    004/2010                              Seite     1 von     6
+Kontonummer :      1003232541  dazugehörige IBAN:  DE31 1013 0800 1002 4598 75
+Kontowährung:      EUR
+Alter Saldo vom    30.09.2010                     in EUR               106,14+
+Buchungs-  Valuta  Buchungstext                                         Betrag
+datum                                                                   in EUR
+01.10.     01.10.  EINZAHLUNG 4 FLATEX / 0/16765097                  2.000,00+
+01.10.     30.09.  Zinsabschluss   01.07.2010 - 30.09.2010               0,00+
+04.10.     06.10.  Ausführung ORDER Kauf DE000GS3FNF6                1.210,00-
+                   29514705
+04.10.     06.10.  Gebühren Ordernummer 29515705 Transnr                 5,90-
+                   276433152                                                  
+05.10.     07.10.  Ausführung ORDER Kauf DE000DE25D33                  330,00-
+                   29530141
+05.10.     07.10.  Gebühren Ordernummer 29530141 Transnr                 5,90-
+                   274303103                                                  
+07.10.     11.10.  Ausführung ORDER Kauf DE000TBD1VE7                  220,00-
+                   29561795
+07.10.     11.10.  Ausführung ORDER Kauf DE000TBD1VG2                  324,00-
+                   29568393                                                   
+07.10.     11.10.  Ausführung ORDER Verkauf DE000TBD1VG2               405,00+
+                   29568421
+07.10.     11.10.  Ausführung ORDER Kauf DE000TB9J6J2                  403,75-
+                   29577668                                                   
+07.10.     11.10.  Gebühren Ordernummer 29561795 Transnr                 5,90-
+                   278048753
+07.10.     11.10.  Gebühren Ordernummer 29568093 Transnr                 5,90-
+                   278069911                                                  
+07.10.     11.10.  Gebühren Ordernummer 29568421 Transnr                 5,90-
+                   278083316
+07.10.     11.10.  Gebühren Ordernummer 29575668 Transnr                 5,90-
+                   278237311                                                  
+08.10.     08.10.  Opt.-Recht - vorz. KO DE000DE25D33 (mit               1,00+
+                   Restwert)
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Willich  -  Amtsgericht Krefeld  (HRB 10867)
+Vorsitzender des Aufsichtsrats: Dr. Ulrich Ivo von Trotha   -  Vorstand: Dirk Franzmeyer, Michael Heinks
+2000000174512370 10101000
+Kontoauszug Nr:    004/2010                              Seite     2 von     6
+Kontonummer :      1003232541  dazugehörige IBAN:  DE31 1013 0800 1002 4598 75
+Buchungs-  Valuta  Buchungstext                                         Betrag
+datum                                                                   in EUR
+08.10.     12.10.  Ausführung ORDER Verkauf DE000TB9J6J2               467,50+
+                   29586384
+08.10.     12.10.  Gebühren Ordernummer 29586384 Transnr                 5,90-
+                   278597288                                                  
+12.10.     14.10.  Ausführung ORDER Kauf DE000TBD1WB1                  440,00-
+                   29626777
+12.10.     14.10.  Ausführung ORDER Verkauf DE000TBD1WB1               660,00+
+                   29626809                                                   
+12.10.     14.10.  Gebühren Ordernummer 29626777 Transnr                 5,90-
+                   279312484
+12.10.     14.10.  Gebühren Ordernummer 29626809 Transnr                 5,90-
+                   279315547                                                  
+13.10.     13.10.  Ablauf der Optionsfrist DE000TBD1VE7                  1,00+
+                   (mit Restwert)
+13.10.     15.10.  Ausführung ORDER Kauf DE000TBD1WQ9                  649,00-
+                   29647557                                                   
+13.10.     18.10.  Ausführung ORDER Verkauf DE000TBD1WQ9               684,40+
+                   29653076
+13.10.     15.10.  Gebühren Ordernummer 29647657 Transnr                 5,90-
+                   279788969                                                  
+13.10.     18.10.  Gebühren Ordernummer 29653076 Transnr                 5,90-
+                   279786930
+18.10.     20.10.  Ausführung ORDER Kauf DE000TBD1XH6                  675,00-
+                   29711826                                                   
+18.10.     20.10.  Ausführung ORDER Verkauf DE000TBD1XH6               810,00+
+                   29715897
+18.10.     20.10.  Gebühren Ordernummer 29711826 Transnr                 5,90-
+                   281032428                                                  
+18.10.     20.10.  Gebühren Ordernummer 29715897 Transnr                 5,90-
+                   281050593
+19.10.     21.10.  Ausführung ORDER Kauf DE000DZ7BNF0                  792,00-
+                   29742689                                                   
+19.10.     21.10.  Ausführung ORDER Verkauf DE000DZ7BNF0               864,00+
+                   29742719
+19.10.     21.10.  Gebühren Ordernummer 29742689 Transnr                 5,90-
+                   281507249                                                  
+19.10.     21.10.  Gebühren Ordernummer 29742719 Transnr                 6,74-
+                   281510888
+20.10.     22.10.  Ausführung ORDER Kauf DE000DE3K0V1                  855,00-
+                   29757374                                                   
+20.10.     22.10.  Ausführung ORDER Verkauf DE000DE3K0V1               937,50+
+                   29757451
+20.10.     22.10.  Gebühren Ordernummer 29757374 Transnr                 5,90-
+                   281902222                                                  
+20.10.     22.10.  Gebühren Ordernummer 29757451 Transnr                 5,90-
+                   281903380
+21.10.     25.10.  Ausführung ORDER Kauf DE000TBD1YF8                  927,00-
+                   29774237                                                   
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Willich  -  Amtsgericht Krefeld  (HRB 10867)
+Vorsitzender des Aufsichtsrats: Dr. Ulrich Ivo von Trotha   -  Vorstand: Dirk Franzmeyer, Michael Heinks
+Kontoauszug Nr:    004/2010                              Seite     3 von     6
+Kontonummer :      1003232541  dazugehörige IBAN:  DE31 1013 0800 1002 4598 75
+Buchungs-  Valuta  Buchungstext                                         Betrag
+datum                                                                   in EUR
+21.10.     25.10.  Gebühren Ordernummer 29774237 Transnr                 5,90-
+                   282326049
+27.10.     27.10.  Ablauf der Optionsfrist DE000TBD1YF8                545,90+
+                   (mit Restwert)                                             
+27.10.     29.10.  Ausführung ORDER Kauf DE000DE3C2A1                  538,65-
+                   29852152
+27.10.     29.10.  Ausführung ORDER Verkauf DE000DE3C2A1               627,75+
+                   29857090                                                   
+27.10.     29.10.  Ausführung ORDER Kauf DE000DE3M5N5                  621,00-
+                   29867058
+27.10.     29.10.  Ausführung ORDER Verkauf DE000DE3M5N5               643,50+
+                   29887666                                                   
+27.10.     29.10.  Ausführung ORDER Kauf DE000DE3C2A1                  652,80-
+                   29867720
+27.10.     29.10.  Gebühren Ordernummer 29852152 Transnr                 5,90-
+                   283932069                                                  
+27.10.     29.10.  Gebühren Ordernummer 29857090 Transnr                 5,90-
+                   286960883
+27.10.     29.10.  Gebühren Ordernummer 29867058 Transnr                 5,90-
+                   283994933                                                  
+27.10.     29.10.  Gebühren Ordernummer 29867666 Transnr                 5,90-
+                   283996649
+27.10.     29.10.  Gebühren Ordernummer 29867720 Transnr                 5,90-
+                   283896816                                                  
+28.10.     01.11.  Ausführung ORDER Verkauf DE000DE3C2A1               816,00+
+                   29867737
+28.10.     01.11.  Ausführung ORDER Kauf DE000TBD1ZX8                  787,50-
+                   29876411                                                   
+28.10.     01.11.  Ausführung ORDER Verkauf DE000TBD1ZX8               980,00+
+                   29877402
+28.10.     01.11.  Gebühren Ordernummer 29867737 Transnr                 5,90-
+                   284329358                                                  
+28.10.     01.11.  Gebühren Ordernummer 29876411 Transnr                 5,90-
+                   284356046
+28.10.     01.11.  Gebühren Ordernummer 29877402 Transnr                 5,90-
+                   284367110                                                  
+01.11.     03.11.  Ausführung ORDER Kauf DE000DE3E537                  960,00-
+                   29924192
+01.11.     03.11.  Ausführung ORDER Verkauf DE000DE3E537               990,00+
+                   29924607                                                   
+01.11.     03.11.  Gebühren Ordernummer 29924192 Transnr                 5,90-
+                   285167650
+01.11.     03.11.  Gebühren Ordernummer 29924607 Transnr                 5,90-
+                   285169479                                                  
+02.11.     04.11.  Ausführung ORDER Kauf DE000DE3P1C4                  977,50-
+                   29940328
+02.11.     04.11.  Ausführung ORDER Verkauf DE000DE3P1C4             1.062,50+
+                   29941399                                                   
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Willich  -  Amtsgericht Krefeld  (HRB 10867)
+Vorsitzender des Aufsichtsrats: Dr. Ulrich Ivo von Trotha   -  Vorstand: Dirk Franzmeyer, Michael Heinks
+Kontoauszug Nr:    004/2010                              Seite     4 von     6
+Kontonummer :      1003232541  dazugehörige IBAN:  DE31 1013 0800 1002 4598 75
+Buchungs-  Valuta  Buchungstext                                         Betrag
+datum                                                                   in EUR
+02.11.     04.11.  Gebühren Ordernummer 29940328 Transnr                 5,90-
+                   285575176
+02.11.     04.11.  Gebühren Ordernummer 29941399 Transnr                 5,90-
+                   285578543                                                  
+03.11.     05.11.  Ausführung ORDER Kauf DE000TBD21M8                1.052,00-
+                   29967253
+03.11.     05.11.  Ausführung ORDER Verkauf DE000TBD21M8             1.104,60+
+                   29967329                                                   
+03.11.     05.11.  Ausführung ORDER Kauf DE000DE25DC8                1.092,00-
+                   29973253
+03.11.     08.11.  Ausführung ORDER Verkauf DE000DE25DC8             1.167,60+
+                   29974541                                                   
+03.11.     08.11.  Ausführung ORDER Kauf DE000DE25DC8                1.170,00-
+                   29974745
+03.11.     08.11.  Ausführung ORDER Verkauf DE000DE25DC8             1.251,00+
+                   29975142                                                   
+03.11.     08.11.  Ausführung ORDER Kauf DE000DE25DC8                1.261,00-
+                   29975365
+03.11.     05.11.  Gebühren Ordernummer 29967253 Transnr                 5,90-
+                   286020572                                                  
+03.11.     05.11.  Gebühren Ordernummer 29967329 Transnr                 5,90-
+                   286021108
+03.11.     05.11.  Gebühren Ordernummer 29973253 Transnr                 5,90-
+                   286045129                                                  
+03.11.     08.11.  Gebühren Ordernummer 29974541 Transnr                 5,90-
+                   286045567
+03.11.     08.11.  Gebühren Ordernummer 29974745 Transnr                 5,90-
+                   286046391                                                  
+03.11.     08.11.  Gebühren Ordernummer 29975142 Transnr                 5,90-
+                   286046590
+03.11.     08.11.  Gebühren Ordernummer 29975365 Transnr                 5,90-
+                   286047256                                                  
+04.11.     08.11.  Ausführung ORDER Verkauf DE000DE25DC8             1.280,40+
+                   29975556
+04.11.     08.11.  Ausführung ORDER Kauf DE000DE25DC8                1.224,50-
+                   29980526                                                   
+04.11.     08.11.  Ausführung ORDER Verkauf DE000DE25DC8               759,50+
+                   29997246
+04.11.     08.11.  Ausführung ORDER Kauf DE000DE3R497                  776,00-
+                   29999515                                                   
+04.11.     08.11.  Gebühren Ordernummer 29975556 Transnr                 5,90-
+                   286451002
+04.11.     08.11.  Gebühren Ordernummer 29980526 Transnr                 5,90-
+                   286464556                                                  
+04.11.     08.11.  Gebühren Ordernummer 29997246 Transnr                 5,90-
+                   286542430
+04.11.     08.11.  Gebühren Ordernummer 29999515 Transnr                 5,90-
+                   286548437                                                  
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Willich  -  Amtsgericht Krefeld  (HRB 10867)
+Vorsitzender des Aufsichtsrats: Dr. Ulrich Ivo von Trotha   -  Vorstand: Dirk Franzmeyer, Michael Heinks
+Kontoauszug Nr:    004/2010                              Seite     5 von     6
+Kontonummer :      1003232541  dazugehörige IBAN:  DE31 1013 0800 1002 4598 75
+Buchungs-  Valuta  Buchungstext                                         Betrag
+datum                                                                   in EUR
+11.11.     11.11.  Opt.-Recht - vorz. KO DE000DE3R497 (mit               0,49+
+                   Restwert)
+02.12.     06.12.  Ausführung ORDER Verkauf DE000GS3FNF6               265,00+
+                   31492895                                                   
+02.12.     06.12.  Gebühren Ordernummer 31492895 Transnr                 5,90-
+                   296243943
+07.12.     09.12.  Ausführung ORDER Kauf DE000DE32PZ9                  232,00-
+                   31560141                                                   
+07.12.     09.12.  Ausführung ORDER Verkauf DE000DE32PZ9               264,00+
+                   31563863
+07.12.     09.12.  Ausführung ORDER Kauf DE000DE320A4                  264,60-
+                   31568850                                                   
+07.12.     09.12.  Gebühren Ordernummer 31560141 Transnr                 5,90-
+                   297717499
+07.12.     09.12.  Gebühren Ordernummer 31563863 Transnr                 5,90-
+                   297734197                                                  
+07.12.     09.12.  Gebühren Ordernummer 31568850 Transnr                 5,90-
+                   297756834
+14.12.     14.12.  Ablauf der Optionsfrist DE000DB4H085                  0,30+
+                   (mit Restwert)                                             
+14.12.     14.12.  Opt.-Recht - vorz. KO DE000DE320A4 (mit               0,54+
+                   Restwert)
+31.12.     31.12.  Zinsabschluss   01.10.2010 - 31.12.2010               0,20-
+                   Sollzinsen  11,750%         -0,20 EUR                      
+Neuer Saldo 31.12.2010 Nr. 004/2010         Währung EUR                  6,22-
+Der ausgewiesene Kontosaldo kann durch abweichende Wertstellung (Valuta) vom
+wertmäßigen Kontostand abweichen. Die Wertstellung von Buchungen ist auch
+relevant für die Berechnung von Zinsen.
+Bei Geldeingängen aus dem Ausland beachten Sie bitte eventuelle Meldungen nach
+der Außenwirtschaftsverordnung (AWV). Die Deutsche Bundesbank und ihre
+Filialen erteilen dazu gern die notwendigen Auskünfte.
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Willich  -  Amtsgericht Krefeld  (HRB 10867)
+Vorsitzender des Aufsichtsrats: Dr. Ulrich Ivo von Trotha   -  Vorstand: Dirk Franzmeyer, Michael Heinks
+Kontoauszug Nr:    004/2010                              Seite     6 von     6
+Kontonummer :      1003232541  dazugehörige IBAN:  DE31 1013 0800 1002 4598 75
+Beanstandungen  gegen Rechnungsabschlüsse sind unverzüglich und schriftlich zu
+senden an:
+      biw AG
+      Revision
+      Hausbroicher Str. 222
+      47877 Willich.
+Der Abschlusssaldo gilt als genehmigt, wenn ihm nicht innerhalb von 6 Wochen
+ab Zugang schriftlich widersprochen  wird. Zur Fristwahrung genügt die
+rechtzeitige Absendung der Einwendung.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Willich  -  Amtsgericht Krefeld  (HRB 10867)
+Vorsitzender des Aufsichtsrats: Dr. Ulrich Ivo von Trotha   -  Vorstand: Dirk Franzmeyer, Michael Heinks

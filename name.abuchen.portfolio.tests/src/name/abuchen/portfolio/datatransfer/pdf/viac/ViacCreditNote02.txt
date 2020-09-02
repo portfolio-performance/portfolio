@@ -1,0 +1,24 @@
+PDF Author: 'VIAC'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Terzo Vorsorgestiftung der WIR Bank
+Auberg 1
+4002 Basel
+Internet www.viac.ch
+E-Mail info@viac.ch
+Telefon 0800 80 40 40
+Vertrag Vertragsnummer Anrede
+Portfolio Portfolionummer Vorname Nachname
+Strasse Nummer
+PLZ Stadt
+Basel, 15.01.2020
+Einzahlung 3a
+Gutschrift vom 15.01.2020:
+Zahlungseingang von: Einzahlung ABCD
+Referenznummer: 01 2344 5678 9012 345 6789
+Zahlungseingang: Betrag CHF 150.00
+Gutschrift: Valuta 15.01.2020 CHF 150.00
+S. E. & O.
+Freundliche Grüsse
+Terzo Vorsorgestiftung
+Anzeige ohne Unterschrift

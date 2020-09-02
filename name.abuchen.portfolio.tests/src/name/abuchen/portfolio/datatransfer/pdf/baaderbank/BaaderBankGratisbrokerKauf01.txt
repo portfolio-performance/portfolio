@@ -1,0 +1,48 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Seite 1/1
+München
+23.01.2020
+DonauCapital Wertpapier GmbH
+GRATISBROKER GmbH 
+wg. GRATISBROKER GmbH service@gratisbroker.de
+Passauer Str. 5
+Name NachN
+94161 Ruderting Stamm-Nr.: 1111111    Portfolio: 1
+Depot-Nr.: 1111111101
+Vorgangs-Nr.: 137111111
+Referenz-Nr.: 461111111
+Wertpapierabrechnung: Kauf KOPIE
+Auftragsdatum: 12.01.2020 Ausführungsplatz: GETTEX - MM Munich
+Auftragszeit: 18:00:10:43
+Nominale ISIN: JP3436100006 WKN: 891624 Kurs 
+STK 13 SoftBank Group Corp. EUR 39,925
+Registered Shares o.N.
+Auftraggeber: Depotinhaber
+Art der Auftragserteilung: Orderroutingssystem
+Kurswert EUR 519,03
+Zu Lasten Konto 11111111111111 Valuta: 14.01.2020 EUR 519,03
+Die Wertpapiere buchen wir zu Gunsten Ihres Depots.
+Details zur Ausführung:
+Handels- Handels- 
+Nominale Kurs Ausführungsplatz datum uhrzeit
+STK   13 EUR 39,925 GETTEX - MM Munich 12.01.2020 18:00:10:78
+Verwahrart: Wertpapierrechnung Zeitzone der Handelsuhrzeit: MEZ/MESZ
+Lagerstelle: 1359 MIC des Ausführungsplatzes: MUNC
+Lagerland: Japan
+Für die Ausführung dieses Auftrags gelten die Usancen des jeweiligen Ausführungsplatzes.
+Bitte prüfen Sie diese Auftragsbestätigung/Abrechnung auf Richtigkeit und Vollständigkeit. Etwaige Einwendungen gegen diese 
+Auftragsbestätigung/Abrechnung müssen nach Zugang unverzüglich bei der Baader Bank AG erhoben werden.
+Dieser Auftrag erfolgte ohne Empfehlung der Bank. Es wurde keine Anlageberatung und keine individuelle Aufklärung durch die Bank 
+erbracht.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+GRATISBROKER GmbH | Geschäftsführer: Malte Rubruck, Stefan Mross, Philipp Röben | HRB 242583 Amtsgericht München | USt-IdNr. DE319411410
+GRATISBROKER GmbH erbringt Anlagevermittlung als vertraglich gebundener Vermittler der DonauCapital Wertpapier GmbH
+Baader Bank Aktiengesellschaft Weihenstephaner Straße 4 85716 Unterschleißheim Deutschland T 00800 00 222 337* F +49 89 5150 2442
+service@baaderbank.de www.baaderbank.de 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft. WPABRECHNUNG-051.108
+

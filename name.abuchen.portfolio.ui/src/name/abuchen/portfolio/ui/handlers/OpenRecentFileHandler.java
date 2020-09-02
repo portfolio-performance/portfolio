@@ -28,7 +28,7 @@ public class OpenRecentFileHandler
         MPart part = partService.createPart(UIConstants.Part.PORTFOLIO);
         part.setLabel(new File(file).getName());
         part.setTooltip(file);
-        part.getPersistedState().put(UIConstants.File.PERSISTED_STATE_KEY, file);
+        part.getPersistedState().put(UIConstants.PersistedState.FILENAME, file);
 
         if (activePart != null)
             activePart.getParent().getChildren().add(part);

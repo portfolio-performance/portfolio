@@ -1,0 +1,49 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Seite 1/1
+München
+23.11.2019
+Scalable Capital Vermögensverw.GmbH
+Scalable Capital 
+Prinzregentenstr. 48 Vermögensverwaltung GmbH 
+Prinzregentenstr. 48
+80538 München
+80538 München
+service@scalable.capital
+Max Mustermann
+Stamm-Nr.: 123456789    Portfolio: 1
+Depot-Nr.: 123456789
+Vorgangs-Nr.: 123456789
+Referenz-Nr.: 123456789
+Wertpapierabrechnung: Kauf KOPIE
+Auftragsdatum: 22.11.2019 Ausführungsplatz: XETRA
+Auftragszeit: 15:58:36:08
+Nominale ISIN: LU0489337690 WKN: DBX0F1 Kurs 
+STK 3 Xtr.FTSE Devel.Europ.R.Estate EUR 29,10
+Inhaber-Anteile 1C o.N.
+Auftraggeber: ext.Vermögensverw.
+Art der Auftragserteilung: Orderroutingssystem
+Kurswert EUR 87,30
+Zu Lasten Konto 123456789 Valuta: 26.11.2019 EUR 87,30
+Die Wertpapiere buchen wir zu Gunsten Ihres Depots.
+Details zur Ausführung:
+Handelsdatum Handelsuhrzeit
+22.11.2019 16:14:40:71
+Verwahrart: Girosammelverwahrung Zeitzone der Handelsuhrzeit: MEZ/MESZ
+Lagerstelle: 100 MIC des Ausführungsplatzes: XETR
+Lagerland: Deutschland
+Für die Ausführung dieses Auftrags gelten die Usancen des jeweiligen Ausführungsplatzes.
+Bitte prüfen Sie diese Auftragsbestätigung/Abrechnung auf Richtigkeit und Vollständigkeit. Etwaige Einwendungen gegen diese 
+Auftragsbestätigung/Abrechnung müssen nach Zugang unverzüglich bei der Baader Bank AG erhoben werden.
+Dieser Auftrag erfolgte ohne Empfehlung der Bank. Es wurde keine Anlageberatung und keine individuelle Aufklärung durch die Bank 
+erbracht.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Scalable Capital Vermögensverwaltung GmbH | Geschäftsführung: Erik Podzuweit, Florian Prucker | HRB 217778, Amtsgericht München |
+USt-IdNr. DE300434774 | www.scalable.capital 
+Baader Bank Aktiengesellschaft Weihenstephaner Straße 4 85716 Unterschleißheim Deutschland T 00800 00 222 337* F +49 89 5150 2442
+service@baaderbank.de www.baaderbank.de 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen. 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft. WPABRECHNUNG-051.108

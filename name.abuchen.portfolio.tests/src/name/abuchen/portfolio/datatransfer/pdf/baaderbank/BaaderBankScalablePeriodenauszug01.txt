@@ -1,0 +1,45 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Seite 1/5
+Unterschleißheim, 01.05.2018
+T 00800 00 222 337*
+Scalable Capital Vermögensverw.GmbH
+F +49 89 5150 2442
+Prinzregentenstr. 48 service@baaderbank.de
+80538 München Phillip ****
+Stamm-Nr.: *****    Portfolio: 1
+Konto-Nr.: *******
+IBAN: DE53 **** **** **** **** **
+BLZ: 700 331 00
+BIC: BDWBDEMM
+Vorgangs-Nr.: ******
+Referenz-Nr.: ********
+Perioden-Kontoauszug: EUR-Konto KOPIE
+Periodenauszugs-Nr. 018001
+Buchungstag Erläuterungen Valuta Belastung Gutschrift
+in EUR in EUR
+Kontostand in EUR am 0,00
+12.04.2018 Lastschrift aktiv 12.04.2018 10.000,00
+Phillip ****
+DE862003***************
+HYV********
+Scalable Capital Erste Einzahlung
+End to end Referenz:
+WJ4MVUHE4WJG9DNI79SFJC
+Mandatsreferenz:
+***********************
+Mandatsdatum:
+07.04.2018
+Gläubiger-ID:
+DE63MUC00001787612
+Vorgangs-Nr.: 900411957
+13.04.2018 Kauf 17.04.2018 418,00 -
+ISHSVII-CORE S+P500 DLACC
+ISIN IE00B5BMR087
+STK               2
+Vorgangs-Nr.: WWUM 05319192
+13.04.2018 Kauf 17.04.2018 238,20 -
+ISHSVII-C.MSCI P.XJPDLACC
+ISIN IE00B52MJY50
+STK               2

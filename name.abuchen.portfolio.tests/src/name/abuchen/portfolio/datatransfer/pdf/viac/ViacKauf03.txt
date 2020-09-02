@@ -1,0 +1,28 @@
+PDF Author: 'VIAC'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Terzo Vorsorgestiftung der WIR Bank
+Auberg 1
+4002 Basel
+Internet www.viac.ch
+E-Mail info@viac.ch
+Telefon 0800 80 40 40
+Vertrag Vertragsnummer Anrede
+Portfolio Portfolionummer Vorname Nachname
+Strasse Nummer
+PLZ Stadt
+Basel, 07.01.2019
+Börsenabrechnung - Kauf
+Wir haben für Sie folgenden Auftrag ausgeführt:
+Order: Kauf
+1.924 Ant iShares Core S&P500
+ISIN: IE00B5BMR087
+Kurs: USD 500.51
+Betrag USD 1'001.02
+Umrechnungskurs CHF/USD 0.99838 CHF 999.40
+Stempelsteuer CHF 1.68
+Verrechneter Betrag: Valuta 07.01.2019 CHF 1'001.08
+S. E. & O.
+Freundliche Grüsse
+Terzo Vorsorgestiftung
+Anzeige ohne Unterschrift

@@ -1,0 +1,35 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KASTANIENALLEE 32  10435 BERLIN
+My Name SEITE 1 von 1
+My Str. 2 DATUM 23.12.2019
+D 12345 Berlin DEPOT XXXXXXXXX
+DIVIDENDE
+ÜBERSICHT
+Dividende mit dem Ex-Tag 05.12.2019.
+POSITION ANZAHL ERTRÄGNIS BETRAG
+Blackrock Inc. 1 Stk. 3,30 USD 3,30 USD
+Reg. Shares Class A DL -,01
+ISIN: US09247X1019
+GESAMT 3,30 USD
+ABRECHNUNG
+POSITION BETRAG
+Quellensteuer DE für US-Emittent -0,500 USD
+Zwischensumme 2,80 USD
+Zwischensumme 1,11435 EUR/USD 2,51 EUR
+Kapitalertragssteuer -0,280 EUR
+Solidaritätszuschlag -0,010 EUR
+Kirchensteuer -0,020 EUR
+GESAMT 2,20 EUR
+BUCHUNG
+VERRECHNUNGSKONTO VALUTA BETRAG
+DEXXXXXXXXXXXXXXXXXXXX 23.12.2019 2,20 EUR
+Blackrock Inc. Reg. Shares Class A DL -,01 in Girosammelverwahrung.
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie 
+Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Düsseldorf Geschäftsführer
+Kastanienallee 32 service@traderepublic.com AG Düsseldorf HRB 85864 Ingo Hillen
+10435 Berlin USt-ID DE307510626 Karsten Müller
+ABRE / 2019-12-23 / 363XXXXX / XXXX-XXXX

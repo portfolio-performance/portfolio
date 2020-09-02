@@ -7,7 +7,7 @@ import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertThat;
 
 import java.text.ParseException;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,6 +25,7 @@ import name.abuchen.portfolio.datatransfer.csv.CSVImporter.EnumField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.EnumMapFormat;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.FieldFormat;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.AccountTransaction.Type;
 import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -46,7 +47,7 @@ public class CSVAccountTransactionExtractorTest
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(0,
-                        Arrays.<String[]>asList(new String[] { "2013-01-01", "DE0007164600", "SAP.DE", "", "100",
+                        Arrays.<String[]>asList(new String[] { "2013-01-01", "", "DE0007164600", "SAP.DE", "", "100",
                                         "EUR", "DIVIDENDS", "SAP SE", "10", "Notiz" }),
                         buildField2Column(extractor), errors);
 
@@ -65,7 +66,7 @@ public class CSVAccountTransactionExtractorTest
         assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 100_00)));
         assertThat(t.getNote(), is("Notiz"));
-        assertThat(t.getDate(), is(LocalDate.parse("2013-01-01")));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2013-01-01T00:00")));
         assertThat(t.getShares(), is(Values.Share.factorize(10)));
         assertThat(t.getSecurity(), is(security));
     }
@@ -82,7 +83,7 @@ public class CSVAccountTransactionExtractorTest
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(0,
-                        Arrays.<String[]>asList(new String[] { "2013-01-01", "DE0007164600", "SAP.DE", "", "100",
+                        Arrays.<String[]>asList(new String[] { "2013-01-01", "", "DE0007164600", "SAP.DE", "", "100",
                                         "EUR", "DIVIDENDS", "SAP SE", "10", "Notiz" }),
                         buildField2Column(extractor), errors);
 
@@ -95,7 +96,7 @@ public class CSVAccountTransactionExtractorTest
         assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 100_00)));
         assertThat(t.getNote(), is("Notiz"));
-        assertThat(t.getDate(), is(LocalDate.parse("2013-01-01")));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2013-01-01T00:00")));
         assertThat(t.getShares(), is(Values.Share.factorize(10)));
         assertThat(t.getSecurity(), is(security));
     }
@@ -109,7 +110,7 @@ public class CSVAccountTransactionExtractorTest
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(0, Arrays.<String[]>asList(
-                        new String[] { "2013-01-01", "", "", "", "100", "EUR", "DIVIDENDS", "", "10", "Notiz" }),
+                        new String[] { "2013-01-01", "", "", "", "", "100", "EUR", "DIVIDENDS", "", "10", "Notiz" }),
                         buildField2Column(extractor), errors);
 
         assertThat(errors.size(), is(1));
@@ -130,8 +131,8 @@ public class CSVAccountTransactionExtractorTest
         CSVExtractor extractor = new CSVAccountTransactionExtractor(client);
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(
-                        0, Arrays.<String[]>asList(new String[] { "2013-01-01", "DE0007164600", "SAP.DE", "", "100",
+        List<Item> results = extractor.extract(0,
+                        Arrays.<String[]>asList(new String[] { "2013-01-01", "", "DE0007164600", "SAP.DE", "", "100",
                                         "EUR", "DIVIDENDS", "SAP SE", "10", "Notiz" }),
                         buildField2Column(extractor), errors);
 
@@ -147,9 +148,8 @@ public class CSVAccountTransactionExtractorTest
         CSVExtractor extractor = new CSVAccountTransactionExtractor(client);
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(0,
-                        Arrays.<String[]>asList(
-                                        new String[] { "2013-01-02", "", "", "", "100", "EUR", "", "", "10", "Notiz" }),
+        List<Item> results = extractor.extract(0, Arrays.<String[]>asList(
+                        new String[] { "2013-01-02", "", "", "", "", "100", "EUR", "", "", "10", "Notiz" }),
                         buildField2Column(extractor), errors);
 
         assertThat(errors, empty());
@@ -159,7 +159,7 @@ public class CSVAccountTransactionExtractorTest
         assertThat(t.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 100_00)));
         assertThat(t.getNote(), is("Notiz"));
-        assertThat(t.getDate(), is(LocalDate.parse("2013-01-02")));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2013-01-02T00:00")));
         assertThat(t.getShares(), is(0L));
         assertThat(t.getSecurity(), is(nullValue()));
     }
@@ -173,7 +173,7 @@ public class CSVAccountTransactionExtractorTest
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(0, Arrays.<String[]>asList(
-                        new String[] { "2013-01-01", "", "", "", "-100", "EUR", "", "", "10", "Notiz" }),
+                        new String[] { "2013-01-01", "10:00", "", "", "", "-100", "EUR", "", "", "10", "Notiz" }),
                         buildField2Column(extractor), errors);
 
         assertThat(errors, empty());
@@ -183,7 +183,9 @@ public class CSVAccountTransactionExtractorTest
         assertThat(t.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 100_00)));
         assertThat(t.getNote(), is("Notiz"));
-        assertThat(t.getDate(), is(LocalDate.parse("2013-01-01")));
+
+        // asset that time is removed --> not supported for removal
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2013-01-01T00:00")));
         assertThat(t.getShares(), is(0L));
         assertThat(t.getSecurity(), is(nullValue()));
     }
@@ -200,7 +202,7 @@ public class CSVAccountTransactionExtractorTest
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(0, Arrays.<String[]>asList(
-                        new String[] { "2013-01-01", "DE0007164600", "", "", "100", "EUR", "", "", "10", "Notiz" }),
+                        new String[] { "2013-01-01", "", "DE0007164600", "", "", "100", "EUR", "", "", "10", "Notiz" }),
                         buildField2Column(extractor), errors);
 
         assertThat(errors, empty());
@@ -220,8 +222,8 @@ public class CSVAccountTransactionExtractorTest
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(0, Arrays.<String[]>asList( //
-                        new String[] { "2013-01-01", "DE0007164600", "", "", "100", "EUR", "", "", "", "Notiz" },
-                        new String[] { "2013-01-02", "DE0007164600", "", "", "200", "EUR", "", "", "", "Notiz" }),
+                        new String[] { "2013-01-01", "", "DE0007164600", "", "", "100", "EUR", "", "", "", "Notiz" },
+                        new String[] { "2013-01-02", "", "DE0007164600", "", "", "200", "EUR", "", "", "", "Notiz" }),
                         buildField2Column(extractor), errors);
 
         assertThat(errors, empty());
@@ -239,9 +241,9 @@ public class CSVAccountTransactionExtractorTest
         CSVExtractor extractor = new CSVAccountTransactionExtractor(client);
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(0, Arrays.<String[]>asList(
-                        new String[] { "2013-01-01", "DE0007164600", "", "", "100", "EUR", "BUY", "", "10", "Notiz" }),
-                        buildField2Column(extractor), errors);
+        List<Item> results = extractor.extract(0, Arrays.<String[]>asList(new String[] { "2013-01-01", "10:00",
+                        "DE0007164600", "", "", "100", "EUR", "BUY", "", "10", "Notiz" }), buildField2Column(extractor),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
@@ -251,7 +253,7 @@ public class CSVAccountTransactionExtractorTest
         assertThat(t.getType(), is(AccountTransaction.Type.BUY));
         assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 100_00)));
         assertThat(t.getNote(), is("Notiz"));
-        assertThat(t.getDate(), is(LocalDate.parse("2013-01-01")));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2013-01-01T10:00")));
         assertThat(t.getShares(), is(0L));
         assertThat(t.getSecurity(), is(security));
     }
@@ -267,9 +269,9 @@ public class CSVAccountTransactionExtractorTest
         CSVExtractor extractor = new CSVAccountTransactionExtractor(client);
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(0, Arrays.<String[]>asList(
-                        new String[] { "2013-01-01", "DE0007164600", "", "", "100", "EUR", "BUY", "", "", "Notiz" }),
-                        buildField2Column(extractor), errors);
+        List<Item> results = extractor.extract(0, Arrays.<String[]>asList(new String[] { "2013-01-01", "",
+                        "DE0007164600", "", "", "100", "EUR", "BUY", "", "", "Notiz" }), buildField2Column(extractor),
+                        errors);
 
         assertThat(results, empty());
         assertThat(errors.size(), is(1));
@@ -287,7 +289,7 @@ public class CSVAccountTransactionExtractorTest
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(0, Arrays.<String[]>asList(
-                        new String[] { "2013-01-01", "", "", "", "100", "EUR", "BUY", "", "10", "Notiz" }),
+                        new String[] { "2013-01-01", "", "", "", "", "100", "EUR", "BUY", "", "10", "Notiz" }),
                         buildField2Column(extractor), errors);
 
         assertThat(results, empty());
@@ -303,7 +305,7 @@ public class CSVAccountTransactionExtractorTest
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(0, Arrays.<String[]>asList( //
-                        new String[] { "2013-01-01", "", "", "", "100", "EUR", "TRANSFER_OUT", "", "", "Notiz" }),
+                        new String[] { "2013-01-01", "", "", "", "", "100", "EUR", "TRANSFER_OUT", "", "", "Notiz" }),
                         buildField2Column(extractor), errors);
 
         assertThat(results.size(), is(1));
@@ -314,7 +316,7 @@ public class CSVAccountTransactionExtractorTest
         assertThat(t.getType(), is(AccountTransaction.Type.TRANSFER_OUT));
         assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 100_00)));
         assertThat(t.getNote(), is("Notiz"));
-        assertThat(t.getDate(), is(LocalDate.parse("2013-01-01")));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2013-01-01T00:00")));
         assertThat(t.getShares(), is(0L));
         assertThat(t.getSecurity(), is(nullValue()));
     }
@@ -327,9 +329,8 @@ public class CSVAccountTransactionExtractorTest
         CSVExtractor extractor = new CSVAccountTransactionExtractor(client);
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(0,
-                        Arrays.<String[]>asList( //
-                                        new String[] { "", "", "", "", "100", "EUR", "", "", "", "Notiz" }),
+        List<Item> results = extractor.extract(0, Arrays.<String[]>asList( //
+                        new String[] { "", "", "", "", "", "100", "EUR", "", "", "", "Notiz" }),
                         buildField2Column(extractor), errors);
 
         assertThat(results, empty());
@@ -344,9 +345,8 @@ public class CSVAccountTransactionExtractorTest
         CSVExtractor extractor = new CSVAccountTransactionExtractor(client);
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(0,
-                        Arrays.<String[]>asList( //
-                                        new String[] { "2015-01-01", "", "", "", "", "EUR", "", "", "", "Notiz" }),
+        List<Item> results = extractor.extract(0, Arrays.<String[]>asList( //
+                        new String[] { "2015-01-01", "", "", "", "", "", "EUR", "", "", "", "Notiz" }),
                         buildField2Column(extractor), errors);
 
         assertThat(results, empty());
@@ -361,10 +361,9 @@ public class CSVAccountTransactionExtractorTest
         CSVExtractor extractor = new CSVAccountTransactionExtractor(client);
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(0,
-                        Arrays.<String[]>asList( //
-                                        new String[] { "2013-01-01", "DE0007164600", "SAP.DE", "", "100", "EUR",
-                                                        "DIVIDENDS", "SAP SE", "10", "Notiz", "10" }),
+        List<Item> results = extractor.extract(0, Arrays.<String[]>asList( //
+                        new String[] { "2013-01-01", "", "DE0007164600", "SAP.DE", "", "100", "EUR", "DIVIDENDS",
+                                        "SAP SE", "10", "Notiz", "10" }),
                         buildField2Column(extractor), errors);
 
         assertThat(results.size(), is(2));
@@ -391,15 +390,17 @@ public class CSVAccountTransactionExtractorTest
         @SuppressWarnings("unchecked")
         EnumField<AccountTransaction.Type> field = (EnumField<AccountTransaction.Type>) typeColumn.getField();
 
-        EnumMapFormat<AccountTransaction.Type> format = field.createFormat();
+        @SuppressWarnings("unchecked")
+        EnumMapFormat<AccountTransaction.Type> format = (EnumMapFormat<Type>) field.guessFormat(new Client(), null)
+                        .getFormat();
         format.map().put(AccountTransaction.Type.FEES_REFUND, "Gebührenerstattung");
         format.map().put(AccountTransaction.Type.FEES, "Gebühren");
         typeColumn.setFormat(new FieldFormat(Messages.CSVColumn_Type, format));
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(0, Arrays.<String[]>asList( //
-                        new String[] { "2017-04-21", "", "", "", "10", "", "Gebührenerstattung", "", "", "", "" },
-                        new String[] { "2017-04-21", "", "", "", "20", "", "Gebühren", "", "", "", "" }),
+                        new String[] { "2017-04-21", "", "", "", "", "10", "", "Gebührenerstattung", "", "", "", "" },
+                        new String[] { "2017-04-21", "", "", "", "", "20", "", "Gebühren", "", "", "", "" }),
                         field2column, errors);
 
         assertThat(results.size(), is(2));

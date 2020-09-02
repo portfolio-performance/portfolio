@@ -1,0 +1,25 @@
+PDF Author: 'VIAC'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Terzo Vorsorgestiftung der WIR Bank
+Auberg 1
+4002 Basel
+Internet www.viac.ch
+E-Mail info@viac.ch
+Telefon 0800 80 40 40
+Vertrag Vertragsnummer Anrede
+Portfolio Portfolionummer Vorname Nachname
+Strasse Nummer
+PLZ Stadt
+Basel, 01.04.2019
+Zins
+Am 31.03.2019 haben wir Ihrem Konto gutgeschrieben:
+Zinssatz: 0.11%
+Zinsperiode: März
+Zinsgutschrift: CHF 0.04
+Verrechneter Betrag: CHF  0.04
+S. E. & O.
+Freundliche Grüsse
+Terzo Vorsorgestiftung
+Anzeige ohne Unterschrift
+

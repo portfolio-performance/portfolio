@@ -73,7 +73,7 @@ public abstract class SharesLabelProvider extends OwnerDrawLabelProvider
             s = s.substring(0, p);
 
         TextLayout textLayout = getSharedTextLayout(event.display);
-        textLayout.setText(s + ",000"); //$NON-NLS-1$
+        textLayout.setText(s + ",000 "); //$NON-NLS-1$
 
         return textLayout.getBounds();
     }
@@ -96,13 +96,7 @@ public abstract class SharesLabelProvider extends OwnerDrawLabelProvider
         {
             String text = format.format(value / Values.Share.divider());
             Rectangle size = getSize(event, text);
-
-            Rectangle tableItem = getBounds(event.item, event.index);
-
-            int width = Math.min(size.width, tableItem.width);
-
-            event.setBounds(new Rectangle(event.x + tableItem.width - width, event.y, //
-                            width, event.height));
+            event.setBounds(new Rectangle(event.x, event.y, size.width, event.height));
         }
     }
 
@@ -135,7 +129,7 @@ public abstract class SharesLabelProvider extends OwnerDrawLabelProvider
 
         Rectangle layoutBounds = textLayout.getBounds();
         int x = event.x + tableItem.width - Math.min(size.width, tableItem.width);
-        int y = tableItem.y + Math.max(0, (tableItem.height - layoutBounds.height) / 2);
+        int y = event.y + Math.max(0, (tableItem.height - layoutBounds.height) / 2);
 
         textLayout.draw(event.gc, x, y);
 

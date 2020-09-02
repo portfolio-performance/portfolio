@@ -5,6 +5,7 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +19,7 @@ import name.abuchen.portfolio.TaxonomyBuilder;
 import name.abuchen.portfolio.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.Client;
@@ -30,11 +32,12 @@ import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.util.Interval;
 
 @SuppressWarnings("nls")
 public class ClassificationIndexTest
 {
-    private ReportingPeriod.FromXtoY period = new ReportingPeriod.FromXtoY( //
+    private Interval period = Interval.of( //
                     LocalDate.parse("2011-12-31"), LocalDate.parse("2012-01-08"));
 
     private Client createClient(int weight)
@@ -170,11 +173,11 @@ public class ClassificationIndexTest
                         .addTo(client);
 
         Account account = new AccountBuilder() //
-                        .addTo(client);
+                        .deposit_("2014-01-01", Values.Amount.factorize(1000)).addTo(client);
 
         AccountTransaction t = new AccountTransaction();
         t.setType(AccountTransaction.Type.DIVIDENDS);
-        t.setDate(LocalDate.parse("2016-06-01"));
+        t.setDateTime(LocalDateTime.parse("2016-06-01T00:00"));
         t.setSecurity(security);
         t.setMonetaryAmount(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100)));
         t.setShares(Values.Share.factorize(10));
@@ -183,15 +186,23 @@ public class ClassificationIndexTest
         Portfolio portfolio = new PortfolioBuilder(account) //
                         .addTo(client);
 
-        portfolio.addTransaction(new PortfolioTransaction("2015-12-31", //
-                        CurrencyUnit.EUR, Values.Amount.factorize(1000), //
-                        security, Values.Share.factorize(10), PortfolioTransaction.Type.BUY, //
-                        0, 0));
+        BuySellEntry buy = new BuySellEntry(portfolio, account);
+        buy.setType(PortfolioTransaction.Type.BUY);
+        buy.setDate(LocalDateTime.parse("2015-12-31T00:00"));
+        buy.setMonetaryAmount(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000)));
+        buy.setShares(Values.Share.factorize(10));
+        buy.setSecurity(security);
+        buy.insert();
 
-        portfolio.addTransaction(new PortfolioTransaction("2016-12-31", //
-                        CurrencyUnit.EUR, Values.Amount.factorize(1070), //
-                        security, Values.Share.factorize(10), PortfolioTransaction.Type.SELL, //
-                        0, Values.Amount.factorize(30)));
+        BuySellEntry sell = new BuySellEntry(portfolio, account);
+        sell.setType(PortfolioTransaction.Type.SELL);
+        sell.setDate(LocalDateTime.parse("2016-12-31T00:00"));
+        sell.setMonetaryAmount(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1070)));
+        sell.setShares(Values.Share.factorize(10));
+        sell.setSecurity(security);
+        sell.getPortfolioTransaction()
+                        .addUnit(new Unit(Unit.Type.TAX, Money.of(CurrencyUnit.EUR, Values.Amount.factorize(30))));
+        sell.insert();
 
         Classification classification = new Classification(null, null);
         classification.addAssignment(new Assignment(security));
@@ -199,8 +210,7 @@ public class ClassificationIndexTest
         List<Exception> warnings = new ArrayList<Exception>();
 
         PerformanceIndex index = PerformanceIndex.forClassification(client, new TestCurrencyConverter(), classification,
-                        new ReportingPeriod.FromXtoY(LocalDate.parse("2015-01-01"), LocalDate.parse("2017-01-01")),
-                        warnings);
+                        Interval.of(LocalDate.parse("2015-01-01"), LocalDate.parse("2017-01-01")), warnings);
 
         assertThat(warnings.isEmpty(), is(true));
 
@@ -212,8 +222,7 @@ public class ClassificationIndexTest
         t.addUnit(new Unit(Unit.Type.TAX, Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50))));
 
         index = PerformanceIndex.forClassification(client, new TestCurrencyConverter(), classification,
-                        new ReportingPeriod.FromXtoY(LocalDate.parse("2015-01-01"), LocalDate.parse("2017-01-01")),
-                        warnings);
+                        Interval.of(LocalDate.parse("2015-01-01"), LocalDate.parse("2017-01-01")), warnings);
 
         // dividend payment 15% * quote change 10%
         assertThat(index.getFinalAccumulatedPercentage(), IsCloseTo.closeTo((1.15 * 1.1) - 1, 0.000000001d));

@@ -1,0 +1,34 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KASTANIENALLEE 32  10435 BERLIN
+My Name SEITE 1 von 1
+My Street 1 DATUM 26.09.2019
+D 69190 Walldorf DEPOT xxxxxx
+AUSSCHÜTTUNG
+ÜBERSICHT
+Ausschüttung mit dem Ex-Tag 12.09.2019.
+POSITION ANZAHL ERTRÄGNIS BETRAG
+iShsV-EM Dividend UCITS ETF 10 Stk. 0,563 USD 5,63 USD
+Registered Shares USD o.N.
+IE00B652H904
+GESAMT 5,63 USD
+ABRECHNUNG
+POSITION BETRAG
+Zwischensumme 5,63 USD
+Zwischensumme 1,102 EUR/USD 5,11 EUR
+Kapitalertragssteuer -0,890 EUR
+Solidaritätszuschlag -0,040 EUR
+GESAMT 4,18 EUR
+BUCHUNG
+VERRECHNUNGSKONTO VALUTA BETRAG
+DExxxxxx 25.09.2019 4,18 EUR
+iShsV-EM Dividend UCITS ETF Registered Shares USD o.N. in Wertpapierrechnung.
+Lagerland: Republik Irland
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie
+Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Düsseldorf Geschäftsführer
+Kastanienallee 32 service@traderepublic.com AG Düsseldorf HRB 85864 Ingo Hillen
+10435 Berlin USt-ID DE307510626 Karsten Müller
+ABRE / 26.09.2019 / 91006300 / 5a5c-a8c2

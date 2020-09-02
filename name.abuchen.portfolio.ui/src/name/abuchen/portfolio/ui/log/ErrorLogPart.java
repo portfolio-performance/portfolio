@@ -15,8 +15,6 @@ import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnPixelData;
-import org.eclipse.jface.viewers.DoubleClickEvent;
-import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -40,7 +38,8 @@ public class ErrorLogPart
 
         @Override
         public void dispose()
-        {}
+        {
+        }
 
         @Override
         public void inputChanged(Viewer viewer, Object oldInput, Object newInput)
@@ -140,15 +139,10 @@ public class ErrorLogPart
 
         logViewer.setInput(entries);
 
-        logViewer.addDoubleClickListener(new IDoubleClickListener()
-        {
-            @Override
-            public void doubleClick(DoubleClickEvent event)
-            {
-                LogEntry entry = (LogEntry) ((IStructuredSelection) event.getSelection()).getFirstElement();
-                DisplayTextDialog dialog = new DisplayTextDialog(Display.getCurrent().getActiveShell(), entry.getText());
-                dialog.open();
-            }
+        logViewer.addDoubleClickListener(event -> {
+            LogEntry entry = (LogEntry) ((IStructuredSelection) event.getSelection()).getFirstElement();
+            DisplayTextDialog dialog = new DisplayTextDialog(Display.getCurrent().getActiveShell(), entry.getText());
+            dialog.open();
         });
     }
 

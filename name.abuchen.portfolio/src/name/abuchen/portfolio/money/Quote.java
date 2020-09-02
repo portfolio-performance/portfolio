@@ -31,6 +31,11 @@ public final class Quote implements Comparable<Quote>
         return amount;
     }
 
+    public boolean isZero()
+    {
+        return amount == 0L;
+    }
+
     public Money toMoney()
     {
         return Money.of(currencyCode, Math.round(amount / Values.Quote.dividerToMoney()));

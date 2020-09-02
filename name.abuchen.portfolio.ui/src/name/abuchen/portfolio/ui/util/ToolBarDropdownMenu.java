@@ -78,6 +78,7 @@ public abstract class ToolBarDropdownMenu<E> extends SelectionAdapter
 
         menuItem.addSelectionListener(new SelectionAdapter()
         {
+            @Override
             public void widgetSelected(SelectionEvent event)
             {
                 MenuItem selected = (MenuItem) event.widget;
@@ -101,6 +102,7 @@ public abstract class ToolBarDropdownMenu<E> extends SelectionAdapter
         });
     }
 
+    @Override
     public void widgetSelected(SelectionEvent event)
     {
         ToolItem item = (ToolItem) event.widget;

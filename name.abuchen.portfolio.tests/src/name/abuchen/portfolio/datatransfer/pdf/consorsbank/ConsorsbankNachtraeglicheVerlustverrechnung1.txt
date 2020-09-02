@@ -1,0 +1,17 @@
+
+Consorsbank
+
+Nachträgliche Verlustverrechnung
+
+
+ Erstattung/Belastung (-) von Steuern
+ 
+  Den Steuerausgleich buchen wir mit Wertstellung 10.07.2017  
+ 
+ 
+ Anteil                             100,00%
+ KapSt Person 1                                 :                79,89
+ SolZ  Person 1                                 :                 4,36
+ KiSt  Person 1                                 :                 6,36
+ ======================================================================
+                                                                 90,61

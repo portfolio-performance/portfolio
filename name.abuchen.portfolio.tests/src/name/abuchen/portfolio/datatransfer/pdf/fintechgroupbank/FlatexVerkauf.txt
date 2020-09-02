@@ -1,0 +1,55 @@
+FinTech Group Bank AG
+Hausbroicher Str. 222
+47877 Willich
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 (0)9221 - 7035898
+E-Mail: kunden@flatex.de
+FinTech Group Bank AG -  Rotfeder-Ring 7 - 60327 Frankfurt am Main
+Frankfurt,          23.01.2016
+0202472000000571787090
+Herr Auftragsdatum     19.01.2016n
+Max Mu Schlusstag        22.01.2016stermann
+Musterstr. 2 Ausführungszeit   16:14 Uhr
+54321 Musterhausen Valuta            26.01.2016
+Auftragsnummer    76443716/1
+Ausf.platz/-art   außerbörslich
+Wertpapierabrechnung Verkauf
+Ihre Depotnummer  1003232541
+Depotinhaber      Mustermann, Max
+Nr.76443716/1  Verkauf           UBS AG LONDON 14/16 RWE (DE000US9RGR9/US9RGR)
+Ausgeführt     25.000,00000 EUR
+Kurs           29,0000 %               Kurswert       EUR             7.250,00
+Devisenkurs                            Provision      EUR                 5,90
+Faktor         1,0000000               Eigene Spesen
+Verwahrart     GS-Verwahrung          *Fremde Spesen
+Lagerstelle    Clearstream Nat.
+Lagerland      Deutschland             Zinsbetrag     EUR             9.264,06
+Zinsen für     539 Tage
+Gewinn/Verlust -267,59 EUR             Endbetrag      EUR            16.508,16
+* Enthalten sind folgende Gebühren     Courtage       EUR                 0,00
+                                       Tradinggebühr  EUR                 0,00
+                                       Regulierung    EUR                 0,00
+                                       Schlussnoten   EUR                 0,00
+                                       Sonstige       EUR                 0,00
+**  Einbehaltene Kapitalertragsteuer zuzüglich Solidaritätszuschlag und ggf.
+    Kirchensteuer (negative Werte bedeuten Steuererstattung). Evtl. Details dazu
+    finden Sie im Steuerreport unter der Transaktion-Nr.: 980001189
+Die Verrechnung des Endbetrags erfolgt über Ihr Konto Nr.: 1002459875
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Willich  -  Amtsgericht Krefeld  (HRB 10867)
+Vorsitzender des Aufsichtsrats: Frank Niehage   -  Vorstand: Lars Lankes, Andreas Wolf, Bernd Würfel
+2000000571787090 0113202470000102
+Die Wertpapiere sowie den Gegenwert werden wir entsprechend der Abrechnung mit
+dem  angegebenen  Valutatag  buchen.  Bitte prüfen Sie  diese  Abrechnung  auf
+Richtigkeit und Vollständigkeit.  Etwaige Einwendungen gegen diese  Abrechnung
+müssen unverzüglich  nach Zugang bei der Bank  erhoben werden. Die
+Unterlassung rechtzeitiger Einwendung gilt als Genehmigung. Bitte beachten
+Sie mögliche Hinweise des Emittenten  hinsichtlich vorzeitiger Fälligstellung,
+beispielsweise wegen Knock-Out, in den jeweiligen Optionsscheinbedingungen und
+informieren Sie sich rechtzeitig, welche spezielle Fälligkeitsregelung auf die
+von Ihnen gehaltenen Wertpapiere zutreffen. Kapitalerträge sind ESt-pflichtig.
+Diese  Mitteilung  ist  maschinell  erstellt  und  wird  nicht unterschrieben.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Willich  -  Amtsgericht Krefeld  (HRB 10867)
+Vorsitzender des Aufsichtsrats: Frank Niehage   -  Vorstand: Lars Lankes, Andreas Wolf, Bernd Würfel
+2000000571787090 0113202470000202

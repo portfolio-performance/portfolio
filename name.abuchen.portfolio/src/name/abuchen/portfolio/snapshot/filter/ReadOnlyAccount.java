@@ -15,6 +15,12 @@ public class ReadOnlyAccount extends Account
         super(source.getName());
         this.setCurrencyCode(source.getCurrencyCode());
         this.source = Objects.requireNonNull(source);
+        this.setAttributes(source.getAttributes());
+    }
+
+    public Account unwrap()
+    {
+        return source instanceof ReadOnlyAccount ? ((ReadOnlyAccount) source).unwrap() : source;
     }
 
     public Account getSource()

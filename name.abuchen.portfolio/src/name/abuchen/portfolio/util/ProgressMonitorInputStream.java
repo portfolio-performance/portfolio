@@ -15,7 +15,6 @@ public class ProgressMonitorInputStream extends FilterInputStream
     private IProgressMonitor monitor;
     private int updateIncrement;
     private long bytesRead = 0;
-    private long lastUpdate = -1;
     private long nextUpdate = 0;
 
     public ProgressMonitorInputStream(InputStream in, int updateIncrement, IProgressMonitor monitor)
@@ -23,6 +22,7 @@ public class ProgressMonitorInputStream extends FilterInputStream
         super(in);
         this.updateIncrement = updateIncrement;
         this.monitor = monitor;
+        this.nextUpdate = updateIncrement;
     }
 
     /**
@@ -35,6 +35,7 @@ public class ProgressMonitorInputStream extends FilterInputStream
         this(in, (int) Math.min(in.available() / 20L, Integer.MAX_VALUE), monitor);
     }
 
+    @Override
     public void close() throws IOException
     {
         try
@@ -47,6 +48,7 @@ public class ProgressMonitorInputStream extends FilterInputStream
         }
     }
 
+    @Override
     public int read() throws IOException
     {
         int b = in.read();
@@ -58,6 +60,7 @@ public class ProgressMonitorInputStream extends FilterInputStream
         return b;
     }
 
+    @Override
     public int read(byte[] buffer, int offset, int length) throws IOException
     {
         try
@@ -78,6 +81,7 @@ public class ProgressMonitorInputStream extends FilterInputStream
         }
     }
 
+    @Override
     public long skip(long amount) throws IOException
     {
         try
@@ -95,6 +99,7 @@ public class ProgressMonitorInputStream extends FilterInputStream
         }
     }
 
+    @Override
     public boolean markSupported()
     {
         return false;
@@ -104,10 +109,7 @@ public class ProgressMonitorInputStream extends FilterInputStream
     {
         if (bytesRead >= nextUpdate)
         {
-            nextUpdate = bytesRead - (bytesRead % updateIncrement);
-            if (nextUpdate != lastUpdate)
-                monitor.worked(1);
-            lastUpdate = nextUpdate;
+            monitor.worked(1);
             nextUpdate += updateIncrement;
         }
     }

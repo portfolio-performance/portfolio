@@ -3,16 +3,17 @@ package name.abuchen.portfolio.online;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import javax.imageio.spi.ServiceRegistry;
+import java.util.ServiceLoader;
 
 public class Factory
 {
     private static final List<QuoteFeed> FEEDS;
+    private static final List<DividendFeed> DIVIDEND_FEEDS;
     private static final List<SecuritySearchProvider> SEARCH;
 
     private Factory()
-    {}
+    {
+    }
 
     public static final List<QuoteFeed> getQuoteFeedProvider()
     {
@@ -29,6 +30,12 @@ public class Factory
         return null;
     }
 
+    public static <F extends DividendFeed> F getDividendFeed(Class<F> feedType)
+    {
+        return feedType.cast(DIVIDEND_FEEDS.stream().filter(c -> feedType.equals(c.getClass())).findAny()
+                        .orElseThrow(IllegalArgumentException::new));
+    }
+
     public static final List<SecuritySearchProvider> getSearchProvider()
     {
         return SEARCH;
@@ -37,12 +44,17 @@ public class Factory
     static
     {
         FEEDS = new ArrayList<>();
-        Iterator<QuoteFeed> feeds = ServiceRegistry.lookupProviders(QuoteFeed.class);
+        Iterator<QuoteFeed> feeds = ServiceLoader.load(QuoteFeed.class).iterator();
         while (feeds.hasNext())
             FEEDS.add(feeds.next());
 
+        DIVIDEND_FEEDS = new ArrayList<>();
+        Iterator<DividendFeed> dividendFeeds = ServiceLoader.load(DividendFeed.class).iterator();
+        while (dividendFeeds.hasNext())
+            DIVIDEND_FEEDS.add(dividendFeeds.next());
+
         SEARCH = new ArrayList<>();
-        Iterator<SecuritySearchProvider> search = ServiceRegistry.lookupProviders(SecuritySearchProvider.class);
+        Iterator<SecuritySearchProvider> search = ServiceLoader.load(SecuritySearchProvider.class).iterator();
         while (search.hasNext())
             SEARCH.add(search.next());
 

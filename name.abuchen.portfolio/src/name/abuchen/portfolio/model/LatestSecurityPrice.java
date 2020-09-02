@@ -9,20 +9,21 @@ public class LatestSecurityPrice extends SecurityPrice
     private long volume;
 
     private long previousClose;
-    
+
     public static final long NOT_AVAILABLE = -1L;
 
     public LatestSecurityPrice()
-    {}
-
-    public LatestSecurityPrice(LocalDate time, long price)
     {
-        super(time, price);
     }
 
-    public LatestSecurityPrice(LocalDate time, long price, long high, long low, long volume)
+    public LatestSecurityPrice(LocalDate date, long price)
     {
-        super(time, price);
+        super(date, price);
+    }
+
+    public LatestSecurityPrice(LocalDate date, long price, long high, long low, long volume)
+    {
+        super(date, price);
 
         this.high = high;
         this.low = low;
@@ -59,6 +60,7 @@ public class LatestSecurityPrice extends SecurityPrice
         this.volume = volume;
     }
 
+    @Deprecated
     public long getPreviousClose()
     {
         return previousClose;

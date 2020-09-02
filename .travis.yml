@@ -1,6 +1,0 @@
-sudo: false
-language: java
-install: true
-script: mvn -f ./portfolio-app/pom.xml install
-jdk:
-  - oraclejdk8

@@ -1,0 +1,39 @@
+﻿PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+   
+Volksbank Stuttgart eG · Postfach 200333 · 70372 Stuttgart
+Depotnummer
+ 5052257500
+ Kundennummer 50544500
+Max Mustermann
+ Auftragsnummer 742981/12.00
+Max Mustermann Datum 04.06.2019
+Straßenname-Str. 15 Rechnungsnummer W07203-0000004073/19
+70372 Stuttgart Steuernummer 99003/01007   
+Onlinedepot
+ 
+Wertpapier Abrechnung Kauf 
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 2 XING SE                            DE000XNG8888 (XNG888)
+NAMENS-AKTIEN O.N.                 
+Handels-/Ausführungsplatz Tradegate (gemäß Weisung)
+Börsensegment XGAT
+Limit-Order
+Limit 341,00 EUR 
+Schlusstag/-Zeit 04.06.2019 18:09:18 Auftraggeber Max Mustermann
+Ausführungskurs 340,00 EUR Auftragserteilung/ -ort Online-Banking
+Girosammelverwahrung - Sammel-Urkunden in Namensaktien
+Kurswert 680,00- EUR
+Provision 9,95- EUR
+Übertragungs-/Liefergebühr 0,10- EUR
+Ausmachender Betrag 690,05- EUR
+ 
+Den Gegenwert buchen wir mit Valuta 06.06.2019 zu Lasten des Kontos 5052258000
+(IBAN DE27 9509 0000 3074 2520 00), BLZ 60090100 (BIC VOBADESS).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+7202.06045102.0000007OR07

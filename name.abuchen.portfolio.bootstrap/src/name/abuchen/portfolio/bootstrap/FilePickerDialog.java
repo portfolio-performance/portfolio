@@ -1,6 +1,8 @@
 package name.abuchen.portfolio.bootstrap;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.jface.dialogs.Dialog;
@@ -8,10 +10,8 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ColumnWeightData;
-import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.ViewerComparator;
@@ -25,7 +25,46 @@ import org.eclipse.swt.widgets.Table;
 
 public class FilePickerDialog extends Dialog
 {
+    public static class FileInfo
+    {
+        private List<MPart> parts = new ArrayList<>();
+        private String name;
+        private String path;
+
+        public FileInfo(String name, String path)
+        {
+            this.name = name;
+            this.path = path;
+        }
+
+        public String getName()
+        {
+            return name;
+        }
+
+        public String getPath()
+        {
+            return path;
+        }
+
+        public void addPart(MPart part)
+        {
+            this.parts.add(part);
+        }
+
+        public void addParts(List<MPart> parts)
+        {
+            this.parts.addAll(parts);
+        }
+
+        public List<MPart> getParts()
+        {
+            return this.parts;
+        }
+    }
+
     public static final int SAVE_ALL = 42;
+    public static final int SAVE_NONE = 43;
 
     private LabelProvider labelProvider;
 
@@ -42,9 +81,9 @@ public class FilePickerDialog extends Dialog
             @Override
             public String getText(Object element)
             {
-                MPart part = (MPart) element;
-                String tooltip = part.getTooltip();
-                return tooltip != null ? part.getLabel() + " (" + part.getTooltip() + ")" : part.getLabel(); //$NON-NLS-1$ //$NON-NLS-2$
+                FileInfo info = (FileInfo) element;
+                String path = info.getPath();
+                return path != null ? info.getName() + " (" + path + ")" : info.getName(); //$NON-NLS-1$ //$NON-NLS-2$
             }
         };
 
@@ -56,14 +95,15 @@ public class FilePickerDialog extends Dialog
     {
         super.createButtonsForButtonBar(parent);
         createButton(parent, SAVE_ALL, Messages.LabelSaveAll, false);
+        createButton(parent, SAVE_NONE, Messages.LabelSaveNone, false);
     }
 
     @Override
     protected void buttonPressed(int buttonId)
     {
-        if (buttonId == SAVE_ALL)
+        if (buttonId == SAVE_ALL || buttonId == SAVE_NONE)
         {
-            setReturnCode(SAVE_ALL);
+            setReturnCode(buttonId);
             close();
         }
         else
@@ -132,13 +172,6 @@ public class FilePickerDialog extends Dialog
 
     private void hookListener()
     {
-        tableViewer.addCheckStateListener(new ICheckStateListener()
-        {
-            @Override
-            public void checkStateChanged(CheckStateChangedEvent event)
-            {
-                selected = tableViewer.getCheckedElements();
-            }
-        });
+        tableViewer.addCheckStateListener(event -> selected = tableViewer.getCheckedElements());
     }
 }

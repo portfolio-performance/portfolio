@@ -1,0 +1,52 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+ 
+Wertpapierabrechnung DEPOTNUMMER=123/4567/890DEPOTUNTERBEZEICHNUNG=
+ 
+Kauf Limitauftrag VERSANDARTENSCHLUESSEL=0000ADRESSZEILE1=Herrn
+Kommissionsgeschäft ADRESSZEILE2=John Doe
+ADRESSZEILE3=Schlossallee 25
+ADRESSZEILE4=99999 Monopoly
+       ADRESSZEILE5=
+Herrn Depot-Nr. Abrechnungs-Nr. ADRESSZEILE6=
+John Doe  123/4567/890 28116496 BELEGNUMMER=2746
+Schlossallee 25 SEITENNUMMER=1 
+99999 Monopoly STEUERERSTATTUNG=N 
+ 
+Depotinhaber
+John Doe
+ 
+ 
+Wir haben für Sie gekauft Wiesbaden, 11.11.2011
+ 
+ 
+Gattungsbezeichnung ISIN
+McDonald's Corp. Registered Shares DL-,01 US5801351017
+Nominal Kurs
+STK 18,000 EUR 68,8000
+ 
+ 
+Handelstag 11.11.201 1 Kurswert                    EUR 1.238,40-
+Handelszeit 09:02 Orderentgelt                EUR 10,90-
+Börse Xetra/EDE
+Verwahrart Girosammelverwahrung
+ 
+Wert  Konto-Nr. Betrag zu Ihren Lasten  
+15.11.2011 12/3456/789 EUR 1.249,30
+ 
+ 
+ 
+ 
+Wir werden in Ihrem Depot wie angegeben buchen.
+ 
+Mit freundlichen Grüßen
+S Broker AG & Co. KG
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+           
+3.31/ABREABHNHANDKFDI/GAAASAFG/002746/111111/235014
+            

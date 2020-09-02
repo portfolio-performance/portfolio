@@ -1,0 +1,49 @@
+PDF Author: '' 
+PDFBox Version: 1.8.13
+-----------------------------------------
+Abrechnung Ereignis
+Hellobank BNP Paribas Austria AG 36569247-24.8.2017
+Elisabethstraße 22 Depot-Nr.: DEPOTNUMMER
+5020 Salzburg DEPOTINHABER                  
+22/9865
+Hello bank!                        
+Frau
+DEPOTINHABER
+STRASSE
+PLZ ORT                                                                                                                                                                                                      
+Wir haben für Sie am 24.8.2017 unten angeführtes Geschäft abgerechnet:
+Geschäftsart: Ertrag
+800 Stk
+Titel: US3682872078  G a z p r o m  P J S C                       
+Nam.Akt.(Sp.ADRs)/2 RL 5           
+Dividende: 0,267851 USD 
+Verwahrart: WR
+Positionsdaten: Loco: München                            
+Bruttoertrag: 214,28 USD 
+Quellensteuer: -32,14 USD 
+KESt Ausländische Dividende: -26,79 USD 
+155,35 USD 
+Devisenkurs: 1,1805 (18.8.2017) 131,60 EUR 
+Inkassoprovision: -0,95 EUR 
+130,65 EUR 
+Devisenkurs: 1,1805 (18.8.2017) 154,23 USD 
+Fremde Spesen: -16,-- USD 
+138,23 USD 
+Devisenkurs: 1,1805 (18.8.2017) 117,10 EUR 
+Umsatzsteuer: -0,19 EUR 
+Zu Gunsten IBAN AT44 1925 0654 0668 9002 116,91 EUR 
+Valuta 21.8.2017
+Es wurde Umsatzsteuer in der Höhe von 20% berücksichtigt.
+Extag: 19.7.2017
+Record-Tag: 20.7.2017
+QUSt pro Stück 15,00 %
+Es wurde Auslands-KESt in der Höhe von +12,5% berücksichtigt.
+Die KESt-Abfuhr erfolgt an das Finanzamt Salzburg-Stadt (FA91).
+Devisenkurs: 1,1805 (18.8.2017)
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 800 Stk
+Ertrag: 181,52 EUR
+29.8.2017 Seite 1
+____________________________________________________________________________________
+Diese Mitteilung wird nicht unterschrieben. Irrtum vorbehalten! DVR: 1026402
+32745 Doknr.: ON00-036-0000000001

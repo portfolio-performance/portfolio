@@ -1,0 +1,190 @@
+PDF Author: 'HAVI Solutions GmbH & Co. KG, phg'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Ihren Auftrag haben wir gemäß unseren produktbezogenen
+Geschäftsbedingungen "Trading" wie nachstehend ausgeführt.
+Die Wertpapiere haben wir der Abrechnung entsprechend gebucht.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und
+Vollständigkeit zu überprüfen und etwaige Einwendungen
+25449 Quickborn unverzüglich zu erheben.
+fon   : 04106-708 25 00                                                  Tele   
+                                                                              
+                             
+                                       
+                             
+    12345 010
+Depotnr.:        1234567 00 
+            BLZ:             200 123 45
+Max Mustermann             
+                             
+                             
+Musterstr. 1                                            
+12345 Musterstadt                                              
+                             
+                             
+                             
+                                                  
+                                                  
+GESCHÄFTSABRECHNUNG VOM 21.02.2020                                                   
+                                                                                                                                    
+*
+Wertpapierkauf                                                                                                                      
+Geschäftsnummer   : 12 345678                                                                                                       
+Ordernummer       : 111111111111-111  Rechnungsnummer   : 2222222222222A22                                                          
+Geschäftstag      : 21.02.2020        Ausführungsplatz  : FRANKFURT                                                                 
+Handelszeit       : 15:43 Uhr (MEZ/MESZ)                  (Kommissionsgeschäft)                                                     
+                                                                                                                                    
+Wertpapier-Bezeichnung                                               WPKNR/ISIN                                                     
+Toromont Industries Ltd.                                                 914305                                                     
+Registered Shares o.N.                                             CA8911021050                                                     
+                                                                                                                                    
+                                                                                                                                    
+Nennwert                  Zum Kurs von                                                                                              
+St.  34                   EUR  49,00                                                                                                
+                          Kurswert                    : EUR            1.666,00                                                     
+                                                                                                                                    
+--------------------------------------------------------------------------------                                                    
+Eigene Entgelte                                                                                                                     
+                          Abwickl.entgelt Clearstream : EUR                2,90                                                     
+                          Provision                   : EUR                9,90                                                     
+                          Börsenplatzabhäng. Entgelt  : EUR                5,00                                                     
+                          Summe Entgelte              : EUR               17,80                                                     
+--------------------------------------------------------------------------------                                                    
+Fremde Kosten                                                                                                                       
+                          Variable Börsenspesen       : EUR                3,00                                                     
+--------------------------------------------------------------------------------                                                    
+                                                                                                                                    
+                                                                                                                                    
+IBAN                                  Valuta         Zu Ihren Lasten vor Steuern                                                    
+DE12 3456 7890 1234 5678 00   EUR     25.02.2020        EUR            1.686,80                                                     
+                                                                                                                                    
+Verwahrungs-Art: WERTPAPIERRECHNUNG KANADA/USA (AKV)                                                                                
+Ihre Wertpapier-Order wurde über das Online Banking erteilt.                                                                        
+                                                                                                                                    
+                                                                                                                                    
+                                                                                                                                    
+Informationen zur steuerlichen Behandlung dieses Geschäftsvorgangs und den auf                                                      
+Ihrem Konto gebuchten Endbetrag finden Sie auf der separaten Steuermitteilung.                                                      
+                                                                                                                                    
+                                                                                                                                    
+Bei Fragen geben Sie bitte die Ordernummer an.                                                                                      
+                                                                                                                                    
+comdirect bank AG                                                                                                                   
+                                                                                                                                    
+Diese Abrechnung wird von der Bank nicht unterschrieben                                                                             
+Die Leistung ist gemäß §4 Nr.8 UStG umsatzsteuerfrei. USt-Id-Nr.: DE 812 279 461                                                    
+A113
+DO15DD/16/04/2010
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Kundennr. /BLZ Bezeichnung
+1234567  Max  Mastermann                                  
+                                                  
+            
+200 411 55 Musterstr. 123                                    12345 Musterstadt                                      
+abweichend wirtschaftlich Berechtigter
+                              
+                                              ----                    
+c  o  m   d  i r e  c  t   b  a  n  k    A  G               
+               
+2   5  4  5  1   Q  u  i c  k  b  o  r n                   
+0  1   0  9  7828
+                                                  
+T   e  le  f o  n  :              0  4  1  0  6   -  7  0 8 25 00
+                              
+Herrn                          D  a  t u  m   :                       2   1  . 0  2  .2020         
+ Max M u s t e r m a n n               
+ D  e  p  o  t  n  u  m   m  er:        12345678 00  
+Musterstr .  1  2 3                  
+63  R  e  f e  r e  n  z  - N   u mmer:    1 A   B C  D   E  F   G  0PS00038       12345   Musterstadt                   
+                                      
+                                                  
+                                                  
+                                                  
+Steuerliche Behandlung: Wertpapierkauf Nr. 92017081 vom 21.02.2020                                                                
+Stk.              34 TOROMONT INDS LTD. , WKN / ISIN: 914305  / CA8911021050                                                      
+ Zu  Ih r e n L a s te n  v o r  S te u e r n:                                                                                                       E U R          -1.686,8 0   
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+S  te u e rb e m  e ss u n g s g r u n d la g e                                                            E  U   R                                  0 , 0 0                          
+                                                                                                                                
+                                                                                                                                
+ K ap i ta le r tr a gs t e ue r                                                                        E  U   R                                  0 , 0 0                          
+ S ol id a ri tä t sz u s c hl a g                                                                      E  U   R                                  0 , 0 0                          
+K  irc h e n s te u e r                                                                              _E  _U   _R  _  _  _   _  _  _   _  _  _  _   _  _  _   _  _0 ,_ _0 0_                          
+ ab g e f ü h rt e S t e u er n                                                                                                                    _E _U R_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 0__,0_ 0_   
+                                                                                                                                
+ Zu  Ih r e n L a s te n  n a ch  S te u e r n :                                                                                                    E U R          -1.686,8 0   
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+Die Belastung erfolgt mit Valuta 25.02.2020 auf Konto EUR mit der IBAN DE12 3456 7890 1234 5678 00                                                    
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+KEINE STEUERBESCHEINIGUNG ...
+Bisher einbehaltene bzw. angerechnete Steuer in EUR (4)
+in 2020 einbehaltene einbehaltener einbehaltene angerechneteKapitalertragsteuer Solidaritätszuschlag Kirchensteuer ausländische Quellensteuer
+vor Ermittlung
+                0,00                 0,00
+                0,00                 0,00
+nach Ermittlung
+                0,00 0,00                 0,00                 0,00                
+Verrechnungssalden in EUR (4)
+in 2020 Gewinne / Verluste sonstige anrechenbare verfügbareraus Aktien Gewinne / Verluste ausländische Quellensteuer Freistellungsauftrag
+vor Ermittlung
+             -837,44               344,00               -43,85                 0,00
+nach Ermittlung
+             -837,44               344,00
+              -43,85                 0,00
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+comdirect bank AG                                                                                                                                     
+Diese Abrechnung ist maschinell erstellt und wird nicht unterschrieben.                                                                               
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+(4) Die ausgewiesenen EUR-Beträge spiegeln den Stand zum Abrechnungszeitpunkt wider.                                                                  
+KEINE STEUERBESCHEINIGUNG

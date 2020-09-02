@@ -28,7 +28,7 @@ public class OpenFileHandler
                     MApplication app, EPartService partService, EModelService modelService)
     {
         FileDialog dialog = new FileDialog(shell, SWT.OPEN);
-        dialog.setFilterExtensions(new String[] { "*.xml;*.portfolio", "*.*" }); //$NON-NLS-1$ //$NON-NLS-2$
+        dialog.setFilterExtensions(new String[] { "*.xml;*.zip;*.portfolio", "*.*" }); //$NON-NLS-1$ //$NON-NLS-2$
         dialog.setFilterNames(new String[] { Messages.LabelPortfolioPerformanceFile, Messages.LabelAllFiles });
         String fileSelected = dialog.open();
 
@@ -37,7 +37,7 @@ public class OpenFileHandler
             MPart part = partService.createPart(UIConstants.Part.PORTFOLIO);
             part.setLabel(new File(fileSelected).getName());
             part.setTooltip(fileSelected);
-            part.getPersistedState().put(UIConstants.File.PERSISTED_STATE_KEY, fileSelected);
+            part.getPersistedState().put(UIConstants.PersistedState.FILENAME, fileSelected);
 
             if (activePart != null)
                 activePart.getParent().getChildren().add(part);

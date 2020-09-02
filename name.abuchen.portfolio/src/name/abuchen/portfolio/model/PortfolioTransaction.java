@@ -1,7 +1,8 @@
 package name.abuchen.portfolio.model;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -75,7 +76,7 @@ public class PortfolioTransaction extends Transaction
         // needed for xstream de-serialization
     }
 
-    public PortfolioTransaction(LocalDate date, String currencyCode, long amount, Security security, long shares,
+    public PortfolioTransaction(LocalDateTime date, String currencyCode, long amount, Security security, long shares,
                     Type type, long fees, long taxes)
     {
         super(date, currencyCode, amount, security, shares, null);
@@ -85,12 +86,6 @@ public class PortfolioTransaction extends Transaction
             addUnit(new Unit(Unit.Type.FEE, Money.of(currencyCode, fees)));
         if (taxes != 0)
             addUnit(new Unit(Unit.Type.TAX, Money.of(currencyCode, taxes)));
-    }
-
-    public PortfolioTransaction(String date, String currencyCode, long amount, Security security, long shares,
-                    Type type, long fees, long taxes)
-    {
-        this(LocalDate.parse(date), currencyCode, amount, security, shares, type, fees, taxes);
     }
 
     public Type getType()
@@ -121,22 +116,23 @@ public class PortfolioTransaction extends Transaction
             // use exchange rate used within the transaction,
             // not the historical exchange rate
             BigDecimal exchangeRate = grossValue.isPresent() ? grossValue.get().getExchangeRate()
-                            : converter.getRate(getDate(), getCurrencyCode()).getValue();
+                            : converter.getRate(getDateTime(), getCurrencyCode()).getValue();
 
-            return Money.of(converter.getTermCurrency(),
-                            BigDecimal.ONE.divide(exchangeRate, 10, BigDecimal.ROUND_HALF_DOWN)
-                                            .multiply(BigDecimal.valueOf(getAmount()))
-                                            .setScale(0, BigDecimal.ROUND_HALF_DOWN).longValue());
+            return Money.of(converter.getTermCurrency(), BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN)
+                            .multiply(BigDecimal.valueOf(getAmount())).setScale(0, RoundingMode.HALF_DOWN).longValue());
         }
         else
         {
-            return converter.convert(getDate(), getMonetaryAmount());
+            return converter.convert(getDateTime(), getMonetaryAmount());
         }
     }
 
     /**
-     * Returns the gross value, i.e. the value including taxes and fees. See
-     * {@link #getGrossValue()}.
+     * Returns the gross value, i.e. the value before taxes and fees are
+     * applied. In the case of a buy transaction, that are the gross costs, i.e.
+     * before adding additional taxes and fees. In the case of sell
+     * transactions, that are the gross proceeds before the deduction of taxes
+     * and fees. See {@link #getGrossValue()}.
      */
     public long getGrossValueAmount()
     {
@@ -176,14 +172,11 @@ public class PortfolioTransaction extends Transaction
         {
             Optional<Unit> grossValue = getUnit(Unit.Type.GROSS_VALUE);
 
-            return Money.of(converter.getTermCurrency(),
-                            grossValue.isPresent() ? grossValue.get().getForex().getAmount()
-                                            : getGrossValue().with(converter.at(getDate())).getAmount());
+            if (grossValue.isPresent())
+                return Money.of(converter.getTermCurrency(), grossValue.get().getForex().getAmount());
         }
-        else
-        {
-            return converter.convert(getDate(), getGrossValue());
-        }
+
+        return converter.convert(getDateTime(), getGrossValue());
     }
 
     /**
@@ -218,8 +211,15 @@ public class PortfolioTransaction extends Transaction
         // transaction currency and not in security currency) we must convert
         // the gross value (instead of checking the unit type GROSS_VALUE)
 
-        long grossValue = getGrossValue().with(converter.at(getDate())).getAmount();
+        long grossValue = getGrossValue(converter).getAmount();
         double grossPrice = grossValue * Values.Share.factor() * Values.Quote.factorToMoney() / (double) getShares();
         return Quote.of(converter.getTermCurrency(), Math.round(grossPrice));
+    }
+
+    @Override
+    public String toString()
+    {
+        return String.format("%s %-17s %s %9s %s", Values.DateTime.format(this.getDateTime()), type.name(), //$NON-NLS-1$
+                        getCurrencyCode(), Values.Amount.format(getAmount()), getSecurity().getName());
     }
 }

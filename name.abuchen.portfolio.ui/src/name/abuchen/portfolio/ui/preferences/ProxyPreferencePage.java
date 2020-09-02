@@ -18,6 +18,7 @@ public class ProxyPreferencePage extends FieldEditorPreferencePage
         setDescription(Messages.PrefDescriptionProxy);
     }
 
+    @Override
     public void createFieldEditors()
     {
         addField(new StringFieldEditor(UIConstants.Preferences.PROXY_HOST, //

@@ -75,6 +75,8 @@ public class StackedTimelineChart extends Chart
         toolTip.enableCategory(true);
         toolTip.reverseLabels(true);
         toolTip.setValueFormat(new DecimalFormat("#0.0%")); //$NON-NLS-1$
+
+        new ChartContextMenu(this);
     }
 
     public ILineSeries addSeries(String label, double[] values, Color color)
@@ -118,5 +120,11 @@ public class StackedTimelineChart extends Chart
 
             current = current.plusYears(1);
         }
+    }
+
+    @Override
+    public void save(String filename, int format)
+    {
+        ChartUtil.save(this, filename, format);
     }
 }

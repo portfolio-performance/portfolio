@@ -1,0 +1,1093 @@
+<client>
+  <version>39</version>
+  <baseCurrency>EUR</baseCurrency>
+  <securities>
+    <security>
+      <uuid>b23ec5dd-c899-4f45-90f9-bfd83ed971ad</uuid>
+      <name>Adidas AG</name>
+      <currencyCode>EUR</currencyCode>
+      <isin>DE000A1EWWW0</isin>
+      <tickerSymbol>ADS.DE</tickerSymbol>
+      <feed>MANUAL</feed>
+      <prices>
+        <price t="2011-12-30" v="496600"/>
+        <price t="2012-01-02" v="508000"/>
+        <price t="2012-01-03" v="515100"/>
+        <price t="2012-01-04" v="513400"/>
+        <price t="2012-01-05" v="514600"/>
+        <price t="2012-01-06" v="511200"/>
+        <price t="2012-01-09" v="522700"/>
+        <price t="2012-01-10" v="528800"/>
+        <price t="2012-01-11" v="528100"/>
+        <price t="2012-01-12" v="530600"/>
+        <price t="2012-01-13" v="520400"/>
+        <price t="2012-01-16" v="531400"/>
+        <price t="2012-01-17" v="539900"/>
+        <price t="2012-01-18" v="551500"/>
+        <price t="2012-01-19" v="543100"/>
+        <price t="2012-01-20" v="547000"/>
+        <price t="2012-01-23" v="543800"/>
+        <price t="2012-01-24" v="544200"/>
+        <price t="2012-01-25" v="545600"/>
+        <price t="2012-01-26" v="558200"/>
+        <price t="2012-01-27" v="552500"/>
+        <price t="2012-01-30" v="548400"/>
+        <price t="2012-01-31" v="544200"/>
+      </prices>
+      <latestFeed>MANUAL</latestFeed>
+      <attributes>
+        <map/>
+      </attributes>
+      <events/>
+      <isRetired>false</isRetired>
+    </security>
+    <security>
+      <uuid>07c00f1e-101b-46b2-8587-93b137a4119b</uuid>
+      <name>Allianz SE</name>
+      <currencyCode>EUR</currencyCode>
+      <note>#testPartialOutboundDeliveryIncludingTransfers</note>
+      <isin>DE0008404005</isin>
+      <tickerSymbol>ALV.DE</tickerSymbol>
+      <feed>MANUAL</feed>
+      <prices>
+        <price t="2011-12-30" v="709800"/>
+        <price t="2012-01-02" v="736700"/>
+        <price t="2012-01-03" v="749800"/>
+        <price t="2012-01-04" v="731100"/>
+        <price t="2012-01-05" v="719000"/>
+        <price t="2012-01-06" v="709500"/>
+        <price t="2012-01-09" v="697200"/>
+        <price t="2012-01-10" v="730100"/>
+        <price t="2012-01-11" v="740000"/>
+        <price t="2012-01-12" v="753300"/>
+        <price t="2012-01-13" v="749500"/>
+        <price t="2012-01-16" v="754400"/>
+        <price t="2012-01-17" v="768400"/>
+        <price t="2012-01-18" v="768400"/>
+        <price t="2012-01-19" v="800400"/>
+        <price t="2012-01-20" v="806300"/>
+        <price t="2012-01-23" v="821200"/>
+        <price t="2012-01-24" v="815100"/>
+        <price t="2012-01-25" v="815400"/>
+        <price t="2012-01-26" v="820900"/>
+        <price t="2012-01-27" v="821800"/>
+        <price t="2012-01-30" v="800600"/>
+        <price t="2012-01-31" v="807300"/>
+      </prices>
+      <latestFeed>MANUAL</latestFeed>
+      <attributes>
+        <map/>
+      </attributes>
+      <events/>
+      <isRetired>false</isRetired>
+    </security>
+    <security>
+      <uuid>dc22bc1a-0cdb-4ee9-aeda-e3509d21bea5</uuid>
+      <name>BASF SE</name>
+      <currencyCode>EUR</currencyCode>
+      <isin>DE000BASF111</isin>
+      <tickerSymbol>BAS.DE</tickerSymbol>
+      <feed>MANUAL</feed>
+      <prices>
+        <price t="2011-12-30" v="523700"/>
+        <price t="2012-01-02" v="535800"/>
+        <price t="2012-01-03" v="547600"/>
+        <price t="2012-01-04" v="545800"/>
+        <price t="2012-01-05" v="551500"/>
+        <price t="2012-01-06" v="543400"/>
+        <price t="2012-01-09" v="541000"/>
+        <price t="2012-01-10" v="558700"/>
+        <price t="2012-01-11" v="558800"/>
+        <price t="2012-01-12" v="565600"/>
+        <price t="2012-01-13" v="559900"/>
+        <price t="2012-01-16" v="562900"/>
+        <price t="2012-01-17" v="571300"/>
+        <price t="2012-01-18" v="573600"/>
+        <price t="2012-01-19" v="573500"/>
+        <price t="2012-01-20" v="567400"/>
+        <price t="2012-01-23" v="572900"/>
+        <price t="2012-01-24" v="570600"/>
+        <price t="2012-01-25" v="575800"/>
+        <price t="2012-01-26" v="583100"/>
+        <price t="2012-01-27" v="587700"/>
+        <price t="2012-01-30" v="581200"/>
+        <price t="2012-01-31" v="571200"/>
+      </prices>
+      <latestFeed>MANUAL</latestFeed>
+      <attributes>
+        <map/>
+      </attributes>
+      <events/>
+      <isRetired>false</isRetired>
+    </security>
+    <security>
+      <uuid>6d90d476-112b-4bec-b345-53db714d7c4b</uuid>
+      <name>Commerzbank AG</name>
+      <currencyCode>EUR</currencyCode>
+      <note>#testCompletedTrade</note>
+      <isin>DE0008032004</isin>
+      <tickerSymbol>CBK.DE</tickerSymbol>
+      <feed>MANUAL</feed>
+      <prices>
+        <price t="2011-12-30" v="130000"/>
+        <price t="2012-01-02" v="135000"/>
+        <price t="2012-01-03" v="135000"/>
+        <price t="2012-01-04" v="128000"/>
+        <price t="2012-01-05" v="122000"/>
+        <price t="2012-01-06" v="123000"/>
+        <price t="2012-01-09" v="118000"/>
+        <price t="2012-01-10" v="124000"/>
+        <price t="2012-01-11" v="130000"/>
+        <price t="2012-01-12" v="137000"/>
+        <price t="2012-01-13" v="142000"/>
+        <price t="2012-01-16" v="143000"/>
+        <price t="2012-01-17" v="144000"/>
+        <price t="2012-01-18" v="141000"/>
+        <price t="2012-01-19" v="162000"/>
+        <price t="2012-01-20" v="172000"/>
+        <price t="2012-01-23" v="195000"/>
+        <price t="2012-01-24" v="189000"/>
+        <price t="2012-01-25" v="190000"/>
+        <price t="2012-01-26" v="189000"/>
+        <price t="2012-01-27" v="188000"/>
+        <price t="2012-01-30" v="181000"/>
+        <price t="2012-01-31" v="183000"/>
+      </prices>
+      <latestFeed>MANUAL</latestFeed>
+      <attributes>
+        <map/>
+      </attributes>
+      <events>
+        <event>
+          <date>2013-04-24</date>
+          <type>STOCK_SPLIT</type>
+          <details>1:10</details>
+        </event>
+      </events>
+      <isRetired>false</isRetired>
+    </security>
+    <security>
+      <uuid>704f5f3e-dd03-4a56-9fdf-84626c4503ca</uuid>
+      <name>DAX</name>
+      <isin></isin>
+      <tickerSymbol>^GDAXI</tickerSymbol>
+      <feed>MANUAL</feed>
+      <prices>
+        <price t="2011-12-30" v="58983500"/>
+        <price t="2012-01-03" v="61665700"/>
+        <price t="2012-01-04" v="61115500"/>
+        <price t="2012-01-05" v="60959900"/>
+        <price t="2012-01-06" v="60579200"/>
+        <price t="2012-01-09" v="60172300"/>
+        <price t="2012-01-10" v="61629800"/>
+        <price t="2012-01-11" v="61523400"/>
+        <price t="2012-01-12" v="61792100"/>
+        <price t="2012-01-13" v="61430800"/>
+        <price t="2012-01-16" v="62200100"/>
+        <price t="2012-01-17" v="63329300"/>
+        <price t="2012-01-18" v="63545700"/>
+        <price t="2012-01-19" v="64162600"/>
+        <price t="2012-01-20" v="64043900"/>
+        <price t="2012-01-23" v="64366200"/>
+        <price t="2012-01-24" v="64192200"/>
+        <price t="2012-01-25" v="64218500"/>
+        <price t="2012-01-26" v="65398500"/>
+        <price t="2012-01-27" v="65119800"/>
+        <price t="2012-01-30" v="64444500"/>
+        <price t="2012-01-31" v="64589100"/>
+      </prices>
+      <latestFeed>MANUAL</latestFeed>
+      <attributes>
+        <map/>
+      </attributes>
+      <events/>
+      <isRetired>false</isRetired>
+    </security>
+    <security>
+      <uuid>3765c42a-e243-4444-a113-f4fba5b79e21</uuid>
+      <name>Linde AG</name>
+      <currencyCode>EUR</currencyCode>
+      <note>#testPartialTransferOutOfMultiplePurchases</note>
+      <isin>DE0006483001</isin>
+      <tickerSymbol>LIN.DE</tickerSymbol>
+      <feed>MANUAL</feed>
+      <prices>
+        <price t="2011-12-30" v="1132800"/>
+        <price t="2012-01-02" v="1152600"/>
+        <price t="2012-01-03" v="1157000"/>
+        <price t="2012-01-04" v="1172300"/>
+        <price t="2012-01-05" v="1173700"/>
+        <price t="2012-01-06" v="1166400"/>
+        <price t="2012-01-09" v="1159500"/>
+        <price t="2012-01-10" v="1180200"/>
+        <price t="2012-01-11" v="1171800"/>
+        <price t="2012-01-12" v="1172800"/>
+        <price t="2012-01-13" v="1162900"/>
+        <price t="2012-01-16" v="1170300"/>
+        <price t="2012-01-17" v="1171300"/>
+        <price t="2012-01-18" v="1180200"/>
+        <price t="2012-01-19" v="1177700"/>
+        <price t="2012-01-20" v="1180600"/>
+        <price t="2012-01-23" v="1181600"/>
+        <price t="2012-01-24" v="1185600"/>
+        <price t="2012-01-25" v="1161900"/>
+        <price t="2012-01-26" v="1178200"/>
+        <price t="2012-01-27" v="1167800"/>
+        <price t="2012-01-30" v="1165400"/>
+        <price t="2012-01-31" v="1195400"/>
+      </prices>
+      <latestFeed>MANUAL</latestFeed>
+      <attributes>
+        <map/>
+      </attributes>
+      <events/>
+      <isRetired>false</isRetired>
+    </security>
+    <security>
+      <uuid>fdec0fea-ebf5-40b5-88e9-783005c8e85c</uuid>
+      <name>MAN SE</name>
+      <currencyCode>EUR</currencyCode>
+      <isin>DE0005937007</isin>
+      <tickerSymbol>MAN.DE</tickerSymbol>
+      <feed>MANUAL</feed>
+      <prices>
+        <price t="2011-12-30" v="675600"/>
+        <price t="2012-01-02" v="712200"/>
+        <price t="2012-01-03" v="718100"/>
+        <price t="2012-01-04" v="718000"/>
+        <price t="2012-01-05" v="724400"/>
+        <price t="2012-01-06" v="731200"/>
+        <price t="2012-01-09" v="715900"/>
+        <price t="2012-01-10" v="734800"/>
+        <price t="2012-01-11" v="732700"/>
+        <price t="2012-01-12" v="740400"/>
+        <price t="2012-01-13" v="737600"/>
+        <price t="2012-01-16" v="743400"/>
+        <price t="2012-01-17" v="769700"/>
+        <price t="2012-01-18" v="785500"/>
+        <price t="2012-01-19" v="782000"/>
+        <price t="2012-01-20" v="780400"/>
+        <price t="2012-01-23" v="779000"/>
+        <price t="2012-01-24" v="778400"/>
+        <price t="2012-01-25" v="783900"/>
+        <price t="2012-01-26" v="805100"/>
+        <price t="2012-01-27" v="805900"/>
+        <price t="2012-01-30" v="780500"/>
+        <price t="2012-01-31" v="790300"/>
+      </prices>
+      <latestFeed>MANUAL</latestFeed>
+      <attributes>
+        <map/>
+      </attributes>
+      <events/>
+      <isRetired>false</isRetired>
+    </security>
+    <security>
+      <uuid>bb5c7307-f0ec-43e4-a8f0-1f2327355d8c</uuid>
+      <name>Apple Inc.</name>
+      <currencyCode>USD</currencyCode>
+      <tickerSymbol>AAPL</tickerSymbol>
+      <feed>MANUAL</feed>
+      <prices>
+        <price t="2011-12-30" v="4050000"/>
+        <price t="2012-01-03" v="4112300"/>
+        <price t="2012-01-04" v="4134400"/>
+        <price t="2012-01-05" v="4180299"/>
+        <price t="2012-01-06" v="4224000"/>
+        <price t="2012-01-09" v="4217300"/>
+        <price t="2012-01-10" v="4232399"/>
+        <price t="2012-01-11" v="4225499"/>
+        <price t="2012-01-12" v="4213899"/>
+        <price t="2012-01-13" v="4198100"/>
+        <price t="2012-01-17" v="4247000"/>
+        <price t="2012-01-18" v="4291100"/>
+        <price t="2012-01-19" v="4277500"/>
+        <price t="2012-01-20" v="4203000"/>
+        <price t="2012-01-23" v="4274099"/>
+        <price t="2012-01-24" v="4204099"/>
+        <price t="2012-01-25" v="4466599"/>
+        <price t="2012-01-26" v="4446299"/>
+        <price t="2012-01-27" v="4472800"/>
+        <price t="2012-01-30" v="4530099"/>
+        <price t="2012-01-31" v="4564799"/>
+      </prices>
+      <latestFeed>MANUAL</latestFeed>
+      <attributes>
+        <map/>
+      </attributes>
+      <events/>
+      <isRetired>false</isRetired>
+    </security>
+  </securities>
+  <watchlists/>
+  <consumerPriceIndeces>
+    <cpi y="2011" m="1" i="10070"/>
+    <cpi y="2011" m="2" i="10130"/>
+    <cpi y="2011" m="3" i="10190"/>
+    <cpi y="2011" m="4" i="10190"/>
+    <cpi y="2011" m="5" i="10190"/>
+    <cpi y="2011" m="6" i="10200"/>
+    <cpi y="2011" m="7" i="10220"/>
+    <cpi y="2011" m="8" i="10230"/>
+    <cpi y="2011" m="9" i="10250"/>
+    <cpi y="2011" m="10" i="10250"/>
+    <cpi y="2011" m="11" i="10270"/>
+    <cpi y="2011" m="12" i="10290"/>
+    <cpi y="2012" m="1" i="10280"/>
+    <cpi y="2012" m="2" i="10350"/>
+    <cpi y="2012" m="3" i="10410"/>
+    <cpi y="2012" m="4" i="10390"/>
+    <cpi y="2012" m="5" i="10390"/>
+    <cpi y="2012" m="6" i="10370"/>
+    <cpi y="2012" m="7" i="10410"/>
+    <cpi y="2012" m="8" i="10450"/>
+    <cpi y="2012" m="9" i="10460"/>
+    <cpi y="2012" m="10" i="10460"/>
+    <cpi y="2012" m="11" i="10470"/>
+    <cpi y="2012" m="12" i="10500"/>
+    <cpi y="2013" m="1" i="10450"/>
+    <cpi y="2013" m="2" i="10510"/>
+    <cpi y="2013" m="3" i="10560"/>
+    <cpi y="2013" m="4" i="10510"/>
+    <cpi y="2013" m="5" i="10550"/>
+    <cpi y="2013" m="6" i="10560"/>
+    <cpi y="2013" m="7" i="10610"/>
+    <cpi y="2013" m="8" i="10610"/>
+    <cpi y="2013" m="9" i="10610"/>
+    <cpi y="2013" m="10" i="10590"/>
+    <cpi y="2013" m="11" i="10610"/>
+    <cpi y="2013" m="12" i="10650"/>
+    <cpi y="2014" m="1" i="10590"/>
+    <cpi y="2014" m="2" i="10640"/>
+    <cpi y="2014" m="3" i="10670"/>
+    <cpi y="2014" m="4" i="10650"/>
+    <cpi y="2014" m="5" i="10640"/>
+    <cpi y="2014" m="6" i="10670"/>
+    <cpi y="2014" m="7" i="10700"/>
+    <cpi y="2014" m="8" i="10700"/>
+    <cpi y="2014" m="9" i="10700"/>
+    <cpi y="2014" m="10" i="10670"/>
+    <cpi y="2014" m="11" i="10670"/>
+    <cpi y="2014" m="12" i="10670"/>
+    <cpi y="2015" m="1" i="10560"/>
+    <cpi y="2015" m="2" i="10650"/>
+    <cpi y="2015" m="3" i="10700"/>
+    <cpi y="2015" m="4" i="10700"/>
+    <cpi y="2015" m="5" i="10710"/>
+    <cpi y="2015" m="6" i="10700"/>
+    <cpi y="2015" m="7" i="10720"/>
+    <cpi y="2015" m="8" i="10720"/>
+    <cpi y="2015" m="9" i="10700"/>
+    <cpi y="2015" m="10" i="10700"/>
+    <cpi y="2015" m="11" i="10710"/>
+  </consumerPriceIndeces>
+  <accounts>
+    <account>
+      <uuid>d18cef06-ebb6-4e14-8cad-fe7410d2e6b6</uuid>
+      <name>Konto 1</name>
+      <currencyCode>EUR</currencyCode>
+      <isRetired>false</isRetired>
+      <transactions>
+        <account-transaction>
+          <date>2011-12-31T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>1500000</amount>
+          <shares>0</shares>
+          <type>DEPOSIT</type>
+        </account-transaction>
+        <account-transaction>
+          <date>2012-01-01T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>101980</amount>
+          <security reference="../../../../../securities/security[4]"/>
+          <crossEntry class="buysell">
+            <portfolio>
+              <uuid>c8676f98-3337-4c64-a6c2-0974788790bb</uuid>
+              <name>Depot 1</name>
+              <isRetired>false</isRetired>
+              <referenceAccount reference="../../../../.."/>
+              <transactions>
+                <portfolio-transaction>
+                  <date reference="../../../../../date"/>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>101980</amount>
+                  <security reference="../../../../../../../../../securities/security[4]"/>
+                  <crossEntry class="buysell" reference="../../../.."/>
+                  <shares>74800000</shares>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <date>2012-01-01T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>381358</amount>
+                  <security reference="../../../../../../../../../securities/security[6]"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <date reference="../../../date"/>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>381358</amount>
+                      <security reference="../../../../../../../../../../../securities/security[6]"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>33000000</shares>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                    <unit type="TAX">
+                      <amount currency="EUR" amount="2000"/>
+                    </unit>
+                  </units>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <date>2012-01-02T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>239760</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <date reference="../../../date"/>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>239760</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>47000000</shares>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <date>2012-01-02T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>664030</amount>
+                  <security reference="../../../../../../../../../securities/security[2]"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <date reference="../../../date"/>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>664030</amount>
+                      <security reference="../../../../../../../../../../../securities/security[2]"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>90000000</shares>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <date>2012-01-10T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>68836</amount>
+                  <security reference="../../../../../../../../../securities/security[4]"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account>
+                      <uuid>05495daf-e7d0-44ee-b127-ce4c99f97b4c</uuid>
+                      <name>Konto 2</name>
+                      <currencyCode>EUR</currencyCode>
+                      <isRetired>false</isRetired>
+                      <transactions>
+                        <account-transaction>
+                          <date>2012-01-10T00:00</date>
+                          <currencyCode>EUR</currencyCode>
+                          <amount>1650</amount>
+                          <security reference="../../../../../../../../../../../../../securities/security[6]"/>
+                          <shares>33000000</shares>
+                          <type>DIVIDENDS</type>
+                        </account-transaction>
+                        <account-transaction>
+                          <date reference="../../../../../date"/>
+                          <currencyCode>EUR</currencyCode>
+                          <amount>68836</amount>
+                          <security reference="../../../../../../../../../../../../../securities/security[4]"/>
+                          <crossEntry class="buysell" reference="../../../.."/>
+                          <shares>0</shares>
+                          <type>SELL</type>
+                        </account-transaction>
+                        <account-transaction>
+                          <date>2012-01-20T00:00</date>
+                          <currencyCode>EUR</currencyCode>
+                          <amount>2000</amount>
+                          <shares>0</shares>
+                          <type>INTEREST</type>
+                        </account-transaction>
+                        <account-transaction>
+                          <date>2012-01-21T00:00</date>
+                          <currencyCode>EUR</currencyCode>
+                          <amount>1000</amount>
+                          <shares>0</shares>
+                          <type>FEES</type>
+                        </account-transaction>
+                        <account-transaction>
+                          <date>2012-01-22T00:00</date>
+                          <currencyCode>EUR</currencyCode>
+                          <amount>2000</amount>
+                          <shares>0</shares>
+                          <type>FEES_REFUND</type>
+                        </account-transaction>
+                        <account-transaction>
+                          <date>2012-01-23T00:00</date>
+                          <currencyCode>EUR</currencyCode>
+                          <amount>1000</amount>
+                          <shares>0</shares>
+                          <type>INTEREST_CHARGE</type>
+                        </account-transaction>
+                        <account-transaction>
+                          <date>2012-01-24T00:00</date>
+                          <currencyCode>EUR</currencyCode>
+                          <amount>10000</amount>
+                          <shares>0</shares>
+                          <type>REMOVAL</type>
+                        </account-transaction>
+                        <account-transaction>
+                          <date>2012-01-25T00:00</date>
+                          <currencyCode>EUR</currencyCode>
+                          <amount>10000</amount>
+                          <crossEntry class="account-transfer">
+                            <accountFrom reference="../../../.."/>
+                            <transactionFrom reference="../.."/>
+                            <accountTo reference="../../../../../../../../../../../.."/>
+                            <transactionTo>
+                              <date reference="../../../date"/>
+                              <currencyCode>EUR</currencyCode>
+                              <amount>10000</amount>
+                              <crossEntry class="account-transfer" reference="../.."/>
+                              <shares>0</shares>
+                              <type>TRANSFER_IN</type>
+                            </transactionTo>
+                          </crossEntry>
+                          <shares>0</shares>
+                          <type>TRANSFER_OUT</type>
+                        </account-transaction>
+                        <account-transaction>
+                          <date>2012-01-26T00:00</date>
+                          <currencyCode>EUR</currencyCode>
+                          <amount>1000</amount>
+                          <shares>0</shares>
+                          <type>TAX_REFUND</type>
+                        </account-transaction>
+                        <account-transaction>
+                          <date>2012-01-27T00:00</date>
+                          <currencyCode>EUR</currencyCode>
+                          <amount>1000</amount>
+                          <security reference="../../../../../../../../../../../../../securities/security[6]"/>
+                          <shares>0</shares>
+                          <type>TAX_REFUND</type>
+                        </account-transaction>
+                        <account-transaction>
+                          <date>2012-01-28T00:00</date>
+                          <currencyCode>EUR</currencyCode>
+                          <amount>1000</amount>
+                          <shares>0</shares>
+                          <type>TAXES</type>
+                        </account-transaction>
+                        <account-transaction>
+                          <date>2012-01-20T00:00</date>
+                          <currencyCode>EUR</currencyCode>
+                          <amount>39020</amount>
+                          <security reference="../../../../../../../../../../../../../securities/security[7]"/>
+                          <crossEntry class="buysell">
+                            <portfolio>
+                              <uuid>639cbf96-1002-483b-9d02-99555b83c9b4</uuid>
+                              <name>Depot 2</name>
+                              <isRetired>false</isRetired>
+                              <referenceAccount reference="../../../../.."/>
+                              <transactions>
+                                <portfolio-transaction>
+                                  <date>2012-01-11T00:00</date>
+                                  <currencyCode>EUR</currencyCode>
+                                  <amount>666000</amount>
+                                  <security reference="../../../../../../../../../../../../../../../../../securities/security[2]"/>
+                                  <crossEntry class="portfolio-transfer">
+                                    <portfolioFrom reference="../../../../../../../../../../../.."/>
+                                    <transactionFrom>
+                                      <date reference="../../../date"/>
+                                      <currencyCode>EUR</currencyCode>
+                                      <amount>666000</amount>
+                                      <security reference="../../../../../../../../../../../../../../../../../../../securities/security[2]"/>
+                                      <crossEntry class="portfolio-transfer" reference="../.."/>
+                                      <shares>90000000</shares>
+                                      <type>TRANSFER_OUT</type>
+                                    </transactionFrom>
+                                    <portfolioTo reference="../../../.."/>
+                                    <transactionTo reference="../.."/>
+                                  </crossEntry>
+                                  <shares>90000000</shares>
+                                  <type>TRANSFER_IN</type>
+                                </portfolio-transaction>
+                                <portfolio-transaction>
+                                  <date>2012-01-13T00:00</date>
+                                  <currencyCode>EUR</currencyCode>
+                                  <amount>160500</amount>
+                                  <security reference="../../../../../../../../../../../../../../../../../securities/security[2]"/>
+                                  <shares>10000000</shares>
+                                  <units>
+                                    <unit type="FEE">
+                                      <amount currency="EUR" amount="1000"/>
+                                    </unit>
+                                    <unit type="TAX">
+                                      <amount currency="EUR" amount="1000"/>
+                                    </unit>
+                                  </units>
+                                  <type>DELIVERY_OUTBOUND</type>
+                                </portfolio-transaction>
+                                <portfolio-transaction>
+                                  <date>2012-01-16T00:00</date>
+                                  <currencyCode>USD</currencyCode>
+                                  <amount>47648</amount>
+                                  <security reference="../../../../../../../../../../../../../../../../../securities/security[8]"/>
+                                  <crossEntry class="buysell">
+                                    <portfolio reference="../../../.."/>
+                                    <portfolioTransaction reference="../.."/>
+                                    <account>
+                                      <uuid>7551bc47-a2df-483d-a319-a1673a95cd38</uuid>
+                                      <name>Account Forex</name>
+                                      <currencyCode>USD</currencyCode>
+                                      <isRetired>false</isRetired>
+                                      <transactions>
+                                        <account-transaction>
+                                          <date>2011-12-31T00:00</date>
+                                          <currencyCode>USD</currencyCode>
+                                          <amount>100000</amount>
+                                          <shares>0</shares>
+                                          <type>DEPOSIT</type>
+                                        </account-transaction>
+                                        <account-transaction>
+                                          <date reference="../../../../../date"/>
+                                          <currencyCode>USD</currencyCode>
+                                          <amount>47648</amount>
+                                          <security reference="../../../../../../../../../../../../../../../../../../../../../securities/security[8]"/>
+                                          <crossEntry class="buysell" reference="../../../.."/>
+                                          <shares>0</shares>
+                                          <type>BUY</type>
+                                        </account-transaction>
+                                        <account-transaction>
+                                          <date>2012-01-17T00:00</date>
+                                          <currencyCode>USD</currencyCode>
+                                          <amount>10000</amount>
+                                          <crossEntry class="account-transfer">
+                                            <accountFrom reference="../../../.."/>
+                                            <transactionFrom reference="../.."/>
+                                            <accountTo>
+                                              <uuid>2c5ed412-cfc8-4f72-ada0-b67bddcf9cc0</uuid>
+                                              <name>Konto 3</name>
+                                              <currencyCode>EUR</currencyCode>
+                                              <isRetired>false</isRetired>
+                                              <transactions>
+                                                <account-transaction>
+                                                  <date>2011-12-31T00:00</date>
+                                                  <currencyCode>EUR</currencyCode>
+                                                  <amount>100000</amount>
+                                                  <shares>0</shares>
+                                                  <type>DEPOSIT</type>
+                                                </account-transaction>
+                                                <account-transaction>
+                                                  <date reference="../../../../../date"/>
+                                                  <currencyCode>EUR</currencyCode>
+                                                  <amount>7819</amount>
+                                                  <crossEntry class="account-transfer" reference="../../../.."/>
+                                                  <shares>0</shares>
+                                                  <type>TRANSFER_IN</type>
+                                                </account-transaction>
+                                                <account-transaction>
+                                                  <date>2012-01-18T00:00</date>
+                                                  <currencyCode>EUR</currencyCode>
+                                                  <amount>39135</amount>
+                                                  <security reference="../../../../../../../../../../../../../../../../../../../../../../../../../securities/security[8]"/>
+                                                  <crossEntry class="buysell">
+                                                    <portfolio reference="../../../../../../../../../../../.."/>
+                                                    <portfolioTransaction>
+                                                      <date reference="../../../date"/>
+                                                      <currencyCode>EUR</currencyCode>
+                                                      <amount>39135</amount>
+                                                      <security reference="../../../../../../../../../../../../../../../../../../../../../../../../../../../securities/security[8]"/>
+                                                      <crossEntry class="buysell" reference="../.."/>
+                                                      <shares>1000000</shares>
+                                                      <units>
+                                                        <unit type="FEE">
+                                                          <amount currency="EUR" amount="1000"/>
+                                                        </unit>
+                                                        <unit type="TAX">
+                                                          <amount currency="EUR" amount="1000"/>
+                                                        </unit>
+                                                        <unit type="FEE">
+                                                          <amount currency="EUR" amount="779"/>
+                                                          <forex currency="USD" amount="1000"/>
+                                                          <exchangeRate>0.7793624815</exchangeRate>
+                                                        </unit>
+                                                        <unit type="TAX">
+                                                          <amount currency="EUR" amount="779"/>
+                                                          <forex currency="USD" amount="1000"/>
+                                                          <exchangeRate>0.7793624815</exchangeRate>
+                                                        </unit>
+                                                        <unit type="GROSS_VALUE">
+                                                          <amount currency="EUR" amount="35576"/>
+                                                          <forex currency="USD" amount="45648"/>
+                                                          <exchangeRate>0.7793624815</exchangeRate>
+                                                        </unit>
+                                                      </units>
+                                                      <type>BUY</type>
+                                                    </portfolioTransaction>
+                                                    <account reference="../../../.."/>
+                                                    <accountTransaction reference="../.."/>
+                                                  </crossEntry>
+                                                  <shares>0</shares>
+                                                  <type>BUY</type>
+                                                </account-transaction>
+                                              </transactions>
+                                            </accountTo>
+                                            <transactionTo reference="../accountTo/transactions/account-transaction[2]"/>
+                                          </crossEntry>
+                                          <shares>0</shares>
+                                          <units>
+                                            <unit type="GROSS_VALUE">
+                                              <amount currency="USD" amount="10000"/>
+                                              <forex currency="EUR" amount="7819"/>
+                                              <exchangeRate>1.2790000000</exchangeRate>
+                                            </unit>
+                                          </units>
+                                          <type>TRANSFER_OUT</type>
+                                        </account-transaction>
+                                      </transactions>
+                                    </account>
+                                    <accountTransaction reference="../account/transactions/account-transaction[2]"/>
+                                  </crossEntry>
+                                  <shares>1000000</shares>
+                                  <units>
+                                    <unit type="FEE">
+                                      <amount currency="USD" amount="1000"/>
+                                    </unit>
+                                    <unit type="TAX">
+                                      <amount currency="USD" amount="1000"/>
+                                    </unit>
+                                  </units>
+                                  <type>BUY</type>
+                                </portfolio-transaction>
+                                <portfolio-transaction reference="../portfolio-transaction[3]/crossEntry/account/transactions/account-transaction[3]/crossEntry/accountTo/transactions/account-transaction[3]/crossEntry/portfolioTransaction"/>
+                                <portfolio-transaction>
+                                  <date>2019-01-28T00:00</date>
+                                  <currencyCode>EUR</currencyCode>
+                                  <amount>478160</amount>
+                                  <security reference="../../../../../../../../../../../../../../../../../securities/security[6]"/>
+                                  <crossEntry class="portfolio-transfer">
+                                    <portfolioFrom reference="../../../../../../../../../../../.."/>
+                                    <transactionFrom>
+                                      <date reference="../../../date"/>
+                                      <currencyCode>EUR</currencyCode>
+                                      <amount>478160</amount>
+                                      <security reference="../../../../../../../../../../../../../../../../../../../securities/security[6]"/>
+                                      <crossEntry class="portfolio-transfer" reference="../.."/>
+                                      <shares>40000000</shares>
+                                      <type>TRANSFER_OUT</type>
+                                    </transactionFrom>
+                                    <portfolioTo reference="../../../.."/>
+                                    <transactionTo reference="../.."/>
+                                  </crossEntry>
+                                  <shares>40000000</shares>
+                                  <type>TRANSFER_IN</type>
+                                </portfolio-transaction>
+                                <portfolio-transaction>
+                                  <date reference="../../../../../date"/>
+                                  <currencyCode>EUR</currencyCode>
+                                  <amount>39020</amount>
+                                  <security reference="../../../../../../../../../../../../../../../../../securities/security[7]"/>
+                                  <crossEntry class="buysell" reference="../../../.."/>
+                                  <shares>5000000</shares>
+                                  <type>SELL</type>
+                                </portfolio-transaction>
+                                <portfolio-transaction>
+                                  <date>2012-01-21T00:00</date>
+                                  <currencyCode>EUR</currencyCode>
+                                  <amount>31216</amount>
+                                  <security reference="../../../../../../../../../../../../../../../../../securities/security[7]"/>
+                                  <crossEntry class="buysell">
+                                    <portfolio reference="../../../.."/>
+                                    <portfolioTransaction reference="../.."/>
+                                    <account reference="../../../../../../../.."/>
+                                    <accountTransaction>
+                                      <date reference="../../../date"/>
+                                      <currencyCode>EUR</currencyCode>
+                                      <amount>31216</amount>
+                                      <security reference="../../../../../../../../../../../../../../../../../../../securities/security[7]"/>
+                                      <crossEntry class="buysell" reference="../.."/>
+                                      <shares>0</shares>
+                                      <type>SELL</type>
+                                    </accountTransaction>
+                                  </crossEntry>
+                                  <shares>4000000</shares>
+                                  <type>SELL</type>
+                                </portfolio-transaction>
+                                <portfolio-transaction>
+                                  <date>2012-01-12T00:00</date>
+                                  <currencyCode>EUR</currencyCode>
+                                  <amount>91450</amount>
+                                  <security reference="../../../../../../../../../../../../../../../../../securities/security[7]"/>
+                                  <crossEntry class="buysell">
+                                    <portfolio reference="../../../.."/>
+                                    <portfolioTransaction reference="../.."/>
+                                    <account reference="../../../../../../../.."/>
+                                    <accountTransaction>
+                                      <date reference="../../../date"/>
+                                      <currencyCode>EUR</currencyCode>
+                                      <amount>91450</amount>
+                                      <security reference="../../../../../../../../../../../../../../../../../../../securities/security[7]"/>
+                                      <crossEntry class="buysell" reference="../.."/>
+                                      <shares>0</shares>
+                                      <type>BUY</type>
+                                    </accountTransaction>
+                                  </crossEntry>
+                                  <shares>10000000</shares>
+                                  <type>BUY</type>
+                                </portfolio-transaction>
+                              </transactions>
+                            </portfolio>
+                            <portfolioTransaction reference="../portfolio/transactions/portfolio-transaction[6]"/>
+                            <account reference="../../../.."/>
+                            <accountTransaction reference="../.."/>
+                          </crossEntry>
+                          <shares>0</shares>
+                          <type>SELL</type>
+                        </account-transaction>
+                        <account-transaction reference="../account-transaction[12]/crossEntry/portfolio/transactions/portfolio-transaction[7]/crossEntry/accountTransaction"/>
+                        <account-transaction reference="../account-transaction[12]/crossEntry/portfolio/transactions/portfolio-transaction[8]/crossEntry/accountTransaction"/>
+                      </transactions>
+                    </account>
+                    <accountTransaction reference="../account/transactions/account-transaction[2]"/>
+                  </crossEntry>
+                  <shares>74800000</shares>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                    <unit type="TAX">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <type>SELL</type>
+                </portfolio-transaction>
+                <portfolio-transaction reference="../portfolio-transaction[5]/crossEntry/account/transactions/account-transaction[12]/crossEntry/portfolio/transactions/portfolio-transaction/crossEntry/transactionFrom"/>
+                <portfolio-transaction>
+                  <date>2012-01-28T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>198526</amount>
+                  <security reference="../../../../../../../../../securities/security[6]"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <date reference="../../../date"/>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>198526</amount>
+                      <security reference="../../../../../../../../../../../securities/security[6]"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>17000000</shares>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction reference="../portfolio-transaction[5]/crossEntry/account/transactions/account-transaction[12]/crossEntry/portfolio/transactions/portfolio-transaction[5]/crossEntry/transactionFrom"/>
+              </transactions>
+            </portfolio>
+            <portfolioTransaction reference="../portfolio/transactions/portfolio-transaction"/>
+            <account reference="../../../.."/>
+            <accountTransaction reference="../.."/>
+          </crossEntry>
+          <shares>0</shares>
+          <type>BUY</type>
+        </account-transaction>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[2]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[3]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[4]/crossEntry/accountTransaction"/>
+        <account-transaction>
+          <date>2012-01-10T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>1944</amount>
+          <security reference="../../../../../securities/security"/>
+          <shares>47000000</shares>
+          <units>
+            <unit type="TAX">
+              <amount currency="EUR" amount="500"/>
+            </unit>
+          </units>
+          <type>DIVIDENDS</type>
+        </account-transaction>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[5]/crossEntry/account/transactions/account-transaction[8]/crossEntry/transactionTo"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[7]/crossEntry/accountTransaction"/>
+      </transactions>
+    </account>
+    <account reference="../account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[5]/crossEntry/account"/>
+    <account reference="../account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[5]/crossEntry/account/transactions/account-transaction[12]/crossEntry/portfolio/transactions/portfolio-transaction[3]/crossEntry/account"/>
+    <account reference="../account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[5]/crossEntry/account/transactions/account-transaction[12]/crossEntry/portfolio/transactions/portfolio-transaction[3]/crossEntry/account/transactions/account-transaction[3]/crossEntry/accountTo"/>
+  </accounts>
+  <portfolios>
+    <portfolio reference="../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio"/>
+    <portfolio reference="../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[5]/crossEntry/account/transactions/account-transaction[12]/crossEntry/portfolio"/>
+  </portfolios>
+  <plans/>
+  <taxonomies/>
+  <dashboards/>
+  <properties/>
+  <settings>
+    <bookmarks>
+      <bookmark>
+        <label>Yahoo Finance</label>
+        <pattern>http://de.finance.yahoo.com/q?s={tickerSymbol}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>OnVista</label>
+        <pattern>http://www.onvista.de/suche.html?SEARCH_VALUE={isin}&amp;SELECTED_TOOL=ALL_TOOLS</pattern>
+      </bookmark>
+      <bookmark>
+        <label>Finanzen.net</label>
+        <pattern>http://www.finanzen.net/suchergebnis.asp?frmAktiensucheTextfeld={isin}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>finanztreff.de</label>
+        <pattern>http://www.finanztreff.de/kurse_einzelkurs_suche.htn?suchbegriff={isin}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>Ariva.de Fundamentaldaten</label>
+        <pattern>http://www.ariva.de/{isin}/bilanz-guv</pattern>
+      </bookmark>
+      <bookmark>
+        <label>justETF</label>
+        <pattern>https://www.justetf.com/de/etf-profile.html?isin={isin}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>fondsweb.de</label>
+        <pattern>http://www.fondsweb.de/{isin}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>Morningstar.de</label>
+        <pattern>http://www.morningstar.de/de/funds/SecuritySearchResults.aspx?type=ALL&amp;search={isin}</pattern>
+      </bookmark>
+    </bookmarks>
+    <attributeTypes>
+      <attribute-type>
+        <id>ter</id>
+        <name>Gesamtkostenquote (TER)</name>
+        <columnLabel>TER</columnLabel>
+        <target>name.abuchen.portfolio.model.Security</target>
+        <type>java.lang.Double</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$PercentPlainConverter</converterClass>
+      </attribute-type>
+      <attribute-type>
+        <id>aum</id>
+        <name>Fondsgröße</name>
+        <columnLabel>Fondsgröße</columnLabel>
+        <target>name.abuchen.portfolio.model.Security</target>
+        <type>java.lang.Long</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$AmountPlainConverter</converterClass>
+      </attribute-type>
+    </attributeTypes>
+    <configurationSets>
+      <entry>
+        <string>StatementOfAssetsHistoryView-PICKER</string>
+        <config-set>
+          <configurations>
+            <config>
+              <uuid>12c9e399-4ab2-4ef6-8bb8-b6d43986f1f7</uuid>
+              <name>Standard</name>
+              <data>Client-totals;#000000;SOLID;false,Client-transferals;#808080;SOLID;false</data>
+            </config>
+          </configurations>
+        </config-set>
+      </entry>
+      <entry>
+        <string>ReturnsVolatilityChartView-PICKER</string>
+        <config-set>
+          <configurations>
+            <config>
+              <uuid>50162312-5684-4d5e-a617-4067b4179290</uuid>
+              <name>Standard</name>
+              <data>Client-totals;#000000;SOLID;false,Classification45;#0080ff;SOLID;false,Classification40;#ff8000;SOLID;false,Classification25;#80ff00;SOLID;false</data>
+            </config>
+          </configurations>
+        </config-set>
+      </entry>
+      <entry>
+        <string>name.abuchen.portfolio.ui.views.SecuritiesPerformanceView</string>
+        <config-set>
+          <configurations>
+            <config>
+              <uuid>086a4b67-2166-4cbd-a04d-771b7d5f5484</uuid>
+              <name>Standard</name>
+              <data>shares=80;name=1024$144;pv=75;pp=75;quote=75;mv=75;sumdiv=80;twror=80;izf=80;delta=80;note=214;</data>
+            </config>
+          </configurations>
+        </config-set>
+      </entry>
+      <entry>
+        <string>name.abuchen.portfolio.ui.views.SecuritiesTable</string>
+        <config-set>
+          <configurations>
+            <config>
+              <uuid>ab5938a9-b8e5-474b-b8f2-fa0ca22ada7e</uuid>
+              <name>Standard</name>
+              <data>0=1024$176;note=341;</data>
+            </config>
+          </configurations>
+        </config-set>
+      </entry>
+      <entry>
+        <string>PerformanceChartView-PICKER</string>
+        <config-set>
+          <configurations>
+            <config>
+              <uuid>c696adf2-2783-4a0a-98b5-fe79c7cbbe86</uuid>
+              <name>Standard</name>
+              <data>Client-totals;#000000;SOLID;false,Client-delta_percentage;#808080;SOLID;false,[b]ConsumerPriceIndex;#787878;DASHDOTDOT;false,Classification45;#0080ff;DOT;false</data>
+            </config>
+          </configurations>
+        </config-set>
+      </entry>
+      <entry>
+        <string>name.abuchen.portfolio.ui.views.StatementOfAssetsViewer</string>
+        <config-set>
+          <configurations>
+            <config>
+              <uuid>097a30bb-9af0-46f9-a73a-330d1a613d7b</uuid>
+              <name>Standard</name>
+              <data>0=80;1=300;2=60;4=104;5=80;6=80;note=33;</data>
+            </config>
+          </configurations>
+        </config-set>
+      </entry>
+    </configurationSets>
+  </settings>
+</client>

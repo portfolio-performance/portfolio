@@ -1,0 +1,248 @@
+Seite 1 von 5
+Herr
+Max Mustermann Unsere Postanschrift:
+Musterstr. 1 Postfach 10 08 60
+99999 Ort 99999 Ort
+Kundenservice:
+Telefon: +49 (0) 69 7107 - 530
+Fax +49 (0) 69 7107 - 100
+Mo-Fr 8:00 - 19:00 Uhr
+service@onvista-bank.de
+Ihre Bankverbindung für Überweisungen:
+IBAN DE99999999999999999999
+BIC BOURDEFF
+Kontoauszug Nr. 2017 / 2 und Rechnungsabschluss zum 30.06.2017
+EUR - Verrechnungskonto: 0 111111 222
+Alter Saldo 341,04 H
+Neuer Saldo 30,59 H
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig.
+Nähere Informationen können dem "Informationsbogen für den Einleger", der unter www.onvista-bank.de
+im Menü "Service - Formulare" abgelegt ist, entnommen werden.
+Einwendungen wegen Unrichtigkeit oder Unvollständigkeit eines Rechnungsabschlusses sind gem. Nr. 7
+Abs. 2 unserer Allgemeinen Geschäftsbedingungen spätestens vor Ablauf von sechs Wochen nach
+Zugang des Rechnungsabschlusses zu erheben. Sofern Sie Ihre Einwendungen schriftlich geltend
+machen, richten Sie diese bitte unter Angabe der oben genannten Kontonummer an die OnVista
+Bank GmbH, Innenrevision, Postfach 10 08 60, 60008 Frankfurt am Main. Es genügt die Absendung
+innerhalb der Sechs-Wochen-Frist. Das Unterlassen rechtzeitiger Einwendungen gilt als
+Genehmigung.
+Bei Zahlungen größer 12.500 EUR bitte Meldepflichten nach dem Außenwirtschaftsrecht beachten.
+Seite 2 von 5
+Kontoauszug Nr. 2017 / 2 und Rechnungsabschluss zum 30.06.2017
+EUR - Verrechnungskonto: 0 111111 222
+Buchungs- Valuta Buchungstext Soll in EUR Haben in EUR
+datum
+Alter Kontostand vom 31.03.17 341,04+
+04.04. 04.04. REF: 000045862247 200,00+
+Überweisungseingang SEPA Max Mustermann
+BYLADEM1001 / DE99999999999999999999
+Aktien und ETF
+04.04. 03.04. REF: 000045902174 22,75+
+Zinsen/Dividenden
+DAIMLER AG NA O.N.
+STK: 7
+ISIN: DE0007100000
+ABR: 4104696720170404
+05.04. 05.04. REF: 000045928485 50,00-
+Wertpapierkauf
+ISHARES NASDAQ-100 U.ETF
+STK: 0,9926
+ISIN: DE000A0F5UF5
+ABR: 1203158820170404
+10.04. 06.04. REF: 000046091508 44,95-
+Umtausch/Bezug
+DEUTSCHE BANK AG NA O.N.
+STK: 3
+ISIN: DE0005140008
+ABR: 2890176620170407
+11.04. 10.04. REF: 000046112470 0,89-
+Registrierung Namensaktie
+DEUTSCHE BANK AG NA O.N.
+STK: 3
+ISIN: DE0005140008
+ABR: 4975336420170410
+18.04. 18.04. REF: 000046213987 0,75+
+Zinsen/Dividenden
+IS.EO ST.SEL.DIV.30 U.ETF
+STK: 5,2287
+ISIN: DE0002635281
+ABR: 4518334120170413
+18.04. 18.04. REF: 000046213988 1,08+
+Zinsen/Dividenden
+IS.S.GL.SE.D.100 U.ETF A.
+STK: 3,6023
+ISIN: DE000A0F5UH1
+ABR: 7510023320170413
+20.04. 20.04. REF: 000046264596 50,00-
+Wertpapierkauf
+IS.EO ST.SEL.DIV.30 U.ETF
+STK: 2,4283
+ISIN: DE0002635281
+ABR: 2711194220170419
+ÜBERTRAG 419,78+
+Seite 3 von 5
+Kontoauszug Nr. 2017 / 2 und Rechnungsabschluss zum 30.06.2017
+EUR - Verrechnungskonto: 0 111111 222
+Buchungs- Valuta Buchungstext Soll in EUR Haben in EUR
+datum
+ÜBERTRAG 419,78+
+27.04. 27.04. REF: 000046445102 4,50+
+Zinsen/Dividenden
+IS.EO ST.SEL.DIV.30 U.ETF
+STK: 7,657
+ISIN: DE0002635281
+ABR: 4893762720170427
+27.04. 27.04. REF: 000046445103 2,21+
+Zinsen/Dividenden
+ISH.STOX.EUROPE 600 U.ETF
+STK: 5,6533
+ISIN: DE0002635307
+ABR: 2189703720170427
+27.04. 27.04. REF: 000046445104 0,84+
+Zinsen/Dividenden
+IS.S.GL.SE.D.100 U.ETF A.
+STK: 3,6023
+ISIN: DE000A0F5UH1
+ABR: 7664146520170427
+27.04. 27.04. REF: 000046445105 2,04+
+Zinsen/Dividenden
+ISHARES NASDAQ-100 U.ETF
+STK: 4,5168
+ISIN: DE000A0F5UF5
+ABR: 7679025520170427
+03.05. 03.05. REF: 000046541352 200,00+
+Überweisungseingang SEPA Max Mustermann
+BYLADEM1001 / DE99999999999999999999
+Aktien und ETF
+04.05. 04.05. REF: 000046630106 16,20+
+Zinsen/Dividenden
+BAYER AG NA O.N.
+STK: 6
+ISIN: DE000BAY0017
+ABR: 5726467420170504
+04.05. 05.05. REF: 000046630107 352,92+
+Wertpapierverkauf
+COMMERZBANK AG
+STK: 40
+ISIN: DE000CBK1001
+ABR: 6413672920170503
+05.05. 08.05. REF: 000046646836 333,71+
+Wertpapierverkauf
+BAYER AG NA O.N.
+STK: 3
+ISIN: DE000BAY0017
+ABR: 1498429020170504
+ÜBERTRAG 1.332,20+
+Seite 4 von 5
+Kontoauszug Nr. 2017 / 2 und Rechnungsabschluss zum 30.06.2017
+EUR - Verrechnungskonto: 0 111111 222
+Buchungs- Valuta Buchungstext Soll in EUR Haben in EUR
+datum
+ÜBERTRAG 1.332,20+
+08.05. 08.05. REF: 000046689752 666,01-
+Wertpapierkauf
+DB X-TR.CAC 40 ETF(DR) 1D
+STK: 12
+ISIN: LU0322250985
+ABR: 4435391720170505
+15.05. 15.05. REF: 000046873098 8,24+
+Zinsen/Dividenden
+VOLKSWAGEN AG VZO O.N.
+STK: 4
+ISIN: DE0007664039
+ABR: 9704729720170513
+16.05. 16.05. REF: 000046920636 14,00+
+Zinsen/Dividenden
+BAY.MOTOREN WERKE AG ST
+STK: 4
+ISIN: DE0005190003
+ABR: 3431705320170516
+17.05. 17.05. REF: 000047001253 50,00-
+Wertpapierkauf
+IS.S.GL.SE.D.100 U.ETF A.
+STK: 1,7768
+ISIN: DE000A0F5UH1
+ABR: 2909711120170516
+23.05. 23.05. REF: 000047145059 1,71+
+Zinsen/Dividenden
+DEUTSCHE BANK AG NA O.N.
+STK: 9
+ISIN: DE0005140008
+ABR: 2247441920170523
+23.05. 24.05. REF: 000047145060 599,99-
+Wertpapierkauf
+FORD MOTOR DL-,01
+STK: 60
+ISIN: US3453708600
+ABR: 1779828620170522
+01.06. 01.06. REF: 000047323533 100,00+
+Überweisungseingang SEPA Max Mustermann
+BYLADEM1001 / DE99999999999999999999
+Etf 2
+02.06. 02.06. REF: 000047362999 200,00+
+Überweisungseingang SEPA Max Mustermann
+BYLADEM1001 / DE99999999999999999999
+Aktien und ETF
+05.06. 05.06. REF: 000047402052 50,00-
+Wertpapierkauf
+ISH.STOX.EUROPE 600 U.ETF
+STK: 1,2751
+ISIN: DE0002635307
+ABR: 8089348120170602
+ÜBERTRAG 290,15+
+Seite 5 von 5
+Kontoauszug Nr. 2017 / 2 und Rechnungsabschluss zum 30.06.2017
+EUR - Verrechnungskonto: 0 111111 222
+Buchungs- Valuta Buchungstext Soll in EUR Haben in EUR
+datum
+ÜBERTRAG 290,15+
+05.06. 05.06. REF: 000047402053 50,00-
+Wertpapierkauf
+DK DAXPLUS MAX.DIVIDEND
+STK: 0,5379
+ISIN: DE000ETFL235
+ABR: 2613738720170602
+15.06. 15.06. REF: 000047713521 3,29+
+Zinsen/Dividenden
+ISH.STOX.EUROPE 600 U.ETF
+STK: 6,9284
+ISIN: DE0002635307
+ABR: 1680440320170615
+15.06. 15.06. REF: 000047713522 1,08+
+Zinsen/Dividenden
+ISHARES NASDAQ-100 U.ETF
+STK: 4,5168
+ISIN: DE000A0F5UF5
+ABR: 9038621420170615
+19.06. 19.06. REF: 000047766883 50,00-
+Wertpapierkauf
+IS.DJ AS.PAC.S.D.30 U.ETF
+STK: 1,6496
+ISIN: DE000A0H0744
+ABR: 1417647320170616
+20.06. 19.06. REF: 000047795518 50,00-
+Wertpapierkauf
+LYX.MSCI WORLD U.ETF DEO
+STK: 0,2917
+ISIN: FR0010315770
+ABR: 5671952720170619
+21.06. 21.06. REF: 000047836445 5,17+
+Zinsen/Dividenden
+QUALCOMM INC. DL-,0001
+STK: 12
+ISIN: US7475251036
+ABR: 2467660920170621
+26.06. 26.06. REF: 000047921839 300,00+
+Überweisungseingang SEPA PETER MÜLLER
+BYLADEM1001 / DE99999999999999999999
+Vorschuss
+26.06. 26.06. REF: 000047921840 200,00+
+Überweisungseingang SEPA PETER MÜLLER
+BYLADEM1001 / DE99999999999999999999
+Vorschuss
+30.06. 03.07. REF: 000048086782 619,10-
+Wertpapierkauf
+MEDICAL PROPERTIES TR.
+STK: 54
+ISIN: US58463J3041
+ABR: 3930943720170629
+Neuer Kontostand zum 30.06.2017 30,59+

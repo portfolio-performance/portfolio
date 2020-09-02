@@ -1,0 +1,60 @@
+10919 Berlin
+Herrn
+MAx Mustermann
+Musterstraße 43
+12345 Musterstadt
+Depotnummer 123456789
+Kundennummer 123456789
+Max Mustermann
+Abrechnungsnr. 123456789
+Datum 02.10.2017
+
+Gutschrift von Investmenterträgen
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 10,6841 SPDR S&P US DIVID.ARISTOCR.ETF
+REGISTERED SHARES O.N.
+IE00B6YX5D40 (A1JKS0)
+Zahlbarkeitstag 02.10.2017
+Bestandsstichtag 15.09.2017
+Ex-Tag 18.09.2017
+Geschäftsjahr 01.04.2017 - 31.12.2017
+Devisenkurs EUR / USD 1,1780
+Devisenkursdatum 02.10.2017
+Ertrag pro St. 0,230700000 USD
+Ausländischer Dividenden- und Veräußerungsgewinnanteil
+pro St. 0,273690300 USD
+Herkunftsland Irland
+Ausschüttung 2,46 USD 2,09+ EUR
+Anrechenbare Quellensteuer pro Stück 0,0429116 USD 0,46 USD
+Kapitalertragsteuerpflichtiger ausländischer Dividendenund
+Veräußerungsgewinnanteil gesamt 2,92 USD
+Umrechnung in EUR 2,48 EUR
+Verrechneter Sparer-Pauschbetrag 2,48 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 0,00 EUR
+Ausmachender Betrag 2,09+ EUR
+Lagerstelle Clearstream Banking FFM (849000 / 4003)
+Den Betrag buchen wir mit Wertstellung 04.10.2017 zu Gunsten des Kontos 123456789 (IBAN DE12 3456 7891 2345
+6789 12), BLZ 123 456 78 (BIC BYLADEM1001).
+Keine Steuerbescheinigung.
+Bitte ggf. Rückseite beachten.
+
+
+Seite 2
+Depotnummer 123456789
+Kundennummer 123456789
+Abrechnungsnr. 12345667889
+Datum 02.10.2017
+
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2017 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer-
+Pauschbetrag
+anrechenbare
+Quellensteuer
+Aktien und Sonstige
+Vorher 0,00 0,00 123,45 0,10 0,00
+Ertrag 0,00 0,00 1,23- 0,39 0,00
+Nachher 0,00 0,00 123,45 0,49 0,00
+
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.

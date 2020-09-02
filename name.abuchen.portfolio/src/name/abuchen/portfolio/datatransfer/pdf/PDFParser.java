@@ -19,12 +19,16 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
 {
     /* package */static class DocumentType
     {
-        private String mustInclude;
-        private String mustExclude;
+        private List<Pattern> mustInclude = new ArrayList<>();
 
         private List<Block> blocks = new ArrayList<>();
         private Map<String, String> context = new HashMap<>();
         private BiConsumer<Map<String, String>, String[]> contextProvider;
+
+        public DocumentType(List<Pattern> mustInclude)
+        {
+            this.mustInclude.addAll(mustInclude);
+        }
 
         public DocumentType(String mustInclude)
         {
@@ -33,24 +37,19 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
 
         public DocumentType(String mustInclude, BiConsumer<Map<String, String>, String[]> contextProvider)
         {
-            this.mustInclude = mustInclude;
+            this.mustInclude.add(Pattern.compile(mustInclude));
             this.contextProvider = contextProvider;
         }
 
         public boolean matches(String text)
         {
-            if (!text.contains(mustInclude))
-                return false;
-
-            if (mustExclude != null)
-                return !text.contains(mustExclude);
+            for (Pattern pattern : mustInclude)
+            {
+                if (!pattern.matcher(text).find())
+                    return false;
+            }
 
             return true;
-        }
-
-        public void setMustExclude(String mustExclude)
-        {
-            this.mustExclude = mustExclude;
         }
 
         public void addBlock(Block block)
@@ -79,24 +78,21 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
 
             // reset context and parse it from this file
             context.clear();
-            parseContext(context, filename, lines);
+            parseContext(context, lines);
 
             for (Block block : blocks)
                 block.parse(filename, items, lines);
         }
 
         /**
-         * Parses the current context and could be overridden in a subclass to
-         * fill the context.
+         * Parses the current context.
          * 
          * @param context
          *            context map
-         * @param filename
-         *            current filename
          * @param lines
          *            content lines of the file
          */
-        protected void parseContext(Map<String, String> context, String filename, String[] lines)
+        private void parseContext(Map<String, String> context, String[] lines)
         {
             // if a context provider is given call it, else parse the current
             // context in a subclass
@@ -109,12 +105,21 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
 
     /* package */static class Block
     {
-        private Pattern marker;
+        private Pattern startsWith;
+        private Pattern endsWith;
         private Transaction<?> transaction;
 
-        public Block(String marker)
+        public Block(String startsWith)
         {
-            this.marker = Pattern.compile(marker);
+            this(startsWith, null);
+        }
+
+        public Block(String startsWith, String endsWith)
+        {
+            this.startsWith = Pattern.compile(startsWith);
+
+            if (endsWith != null)
+                this.endsWith = Pattern.compile(endsWith);
         }
 
         public void set(Transaction<?> transaction)
@@ -128,7 +133,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
 
             for (int ii = 0; ii < lines.length; ii++)
             {
-                Matcher matcher = marker.matcher(lines[ii]);
+                Matcher matcher = startsWith.matcher(lines[ii]);
                 if (matcher.matches())
                     blocks.add(ii);
             }
@@ -138,8 +143,30 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
                 int startLine = blocks.get(ii);
                 int endLine = ii + 1 < blocks.size() ? blocks.get(ii + 1) - 1 : lines.length - 1;
 
+                // if an "endsWith" pattern exists, check if the block might end
+                // earlier
+
+                if (endsWith != null)
+                {
+                    endLine = findBlockEnd(lines, startLine, endLine);
+                    if (endLine == -1)
+                        continue;
+                }
+
                 transaction.parse(filename, items, lines, startLine, endLine);
             }
+        }
+
+        private int findBlockEnd(String[] lines, int startLine, int endLine)
+        {
+            for (int lineNo = startLine; lineNo <= endLine; lineNo++)
+            {
+                Matcher matcher = endsWith.matcher(lines[lineNo]);
+                if (matcher.matches())
+                    return lineNo;
+            }
+
+            return -1;
         }
     }
 
@@ -162,6 +189,48 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
             return section;
         }
 
+        @SafeVarargs
+        public final Transaction<T> oneOf(Function<Section<T>, Transaction<T>>... alternatives)
+        {
+            List<Section<T>> subSections = new ArrayList<>();
+            for (Function<Section<T>, Transaction<T>> function : alternatives)
+            {
+                Section<T> s = new Section<>(this, null);
+                function.apply(s);
+                subSections.add(s);
+            }
+
+            sections.add(new Section<T>(this, null)
+            {
+                @Override
+                public void parse(String filename, String[] lines, int lineNo, int lineNoEnd, T target)
+                {
+                    List<String> errors = new ArrayList<>();
+
+                    for (Section<T> section : subSections)
+                    {
+                        try
+                        {
+                            section.parse(filename, lines, lineNo, lineNoEnd, target);
+
+                            // if parsing was successful, then return
+                            return;
+                        }
+                        catch (IllegalArgumentException ignore)
+                        {
+                            // try next sub-section
+                            errors.add(ignore.getMessage());
+                        }
+                    }
+
+                    throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorNoneOfSubSectionsMatched,
+                                    String.valueOf(subSections.size()), String.join("; ", errors), lineNo + 1, //$NON-NLS-1$
+                                    lineNoEnd + 1));
+                }
+            });
+            return this;
+        }
+
         public Transaction<T> wrap(Function<T, Item> wrapper)
         {
             this.wrapper = wrapper;
@@ -173,7 +242,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
             T target = supplier.get();
 
             for (Section<T> section : sections)
-                section.parse(filename, items, lines, lineNoStart, lineNoEnd, target);
+                section.parse(filename, lines, lineNoStart, lineNoEnd, target);
 
             if (wrapper == null)
                 throw new IllegalArgumentException("Wrapping function missing"); //$NON-NLS-1$
@@ -187,6 +256,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
     /* package */static class Section<T>
     {
         private boolean isOptional = false;
+        private boolean isMultipleTimes = false;
         private Transaction<T> transaction;
         private String[] attributes;
         private List<Pattern> pattern = new ArrayList<>();
@@ -198,9 +268,21 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
             this.attributes = attributes;
         }
 
+        public Section<T> attributes(String... attributes)
+        {
+            this.attributes = attributes;
+            return this;
+        }
+
         public Section<T> optional()
         {
             this.isOptional = true;
+            return this;
+        }
+
+        public Section<T> multipleTimes()
+        {
+            this.isMultipleTimes = true;
             return this;
         }
 
@@ -222,45 +304,58 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
             return transaction;
         }
 
-        public void parse(String filename, List<Item> items, String[] lines, int lineNo, int lineNoEnd, T target)
+        public void parse(String filename, String[] lines, int lineNo, int lineNoEnd, T target)
         {
+            if (assignment == null)
+                throw new IllegalArgumentException("Assignment function missing"); //$NON-NLS-1$
+
             Map<String, String> values = new HashMap<>();
 
             int patternNo = 0;
+            boolean sectionFoundAtLeastOnce = false;
             for (int ii = lineNo; ii <= lineNoEnd; ii++)
             {
                 Pattern p = pattern.get(patternNo);
                 Matcher m = p.matcher(lines[ii]);
                 if (m.matches())
                 {
+
                     // extract attributes
                     extractAttributes(values, p, m);
 
                     // next pattern?
                     patternNo++;
                     if (patternNo >= pattern.size())
-                        break;
+                    {
+                        // all pattern matched:
+
+                        if (values.size() != attributes.length)
+                            throw new IllegalArgumentException(MessageFormat.format(
+                                            Messages.MsgErrorMissingValueMatches, values.keySet().toString(),
+                                            Arrays.toString(attributes), filename, lineNo + 1, lineNoEnd + 1));
+
+                        assignment.accept(target, values);
+
+                        // if there might be multiple occurrences that match,
+                        // the found values need to be added and the search
+                        // continues through all lines with the same patterns
+                        if (isMultipleTimes)
+                        {
+                            // continue searching with first pattern
+                            sectionFoundAtLeastOnce = true;
+                            patternNo = 0;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
                 }
             }
 
-            if (patternNo < pattern.size())
-            {
-                // if section is optional, ignore if patterns do not match
-                if (isOptional)
-                    return;
-
+            if (patternNo < pattern.size() && !sectionFoundAtLeastOnce && !isOptional)
                 throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorNotAllPatternMatched,
-                                patternNo, pattern.size(), pattern.toString(), filename));
-            }
-
-            if (values.size() != attributes.length)
-                throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorMissingValueMatches,
-                                values.keySet().toString(), Arrays.toString(attributes), filename));
-
-            if (assignment == null)
-                throw new IllegalArgumentException("Assignment function missing"); //$NON-NLS-1$
-
-            assignment.accept(target, values);
+                                patternNo, pattern.size(), pattern.toString(), filename, lineNo + 1, lineNoEnd + 1));
         }
 
         private void extractAttributes(Map<String, String> values, Pattern p, Matcher m)
@@ -278,5 +373,6 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
     }
 
     private PDFParser()
-    {}
+    {
+    }
 }

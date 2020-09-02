@@ -2,28 +2,40 @@ package name.abuchen.portfolio.ui.util;
 
 import java.util.function.Consumer;
 
+import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.ToolBar;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.snapshot.filter.ClientFilter;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 
-public final class ClientFilterDropDown extends AbstractDropDown
+public final class ClientFilterDropDown extends DropDown implements IMenuListener
 {
     private ClientFilterMenu menu;
 
-    public ClientFilterDropDown(ToolBar toolBar, Client client, IPreferenceStore preferences,
+    public ClientFilterDropDown(Client client, IPreferenceStore preferences, String prefKey,
                     Consumer<ClientFilter> listener)
     {
-        super(toolBar, Messages.MenuChooseClientFilter, Images.FILTER_OFF.image(), SWT.NONE);
+        super(Messages.MenuChooseClientFilter, Images.FILTER_OFF, SWT.NONE);
+        setMenuListener(this);
 
         this.menu = new ClientFilterMenu(client, preferences, listener);
-        this.menu.addListener(filter -> getToolItem()
-                        .setImage(menu.hasActiveFilter() ? Images.FILTER_ON.image() : Images.FILTER_OFF.image()));
+        this.menu.addListener(filter -> setImage(menu.hasActiveFilter() ? Images.FILTER_ON : Images.FILTER_OFF));
+
+        String selection = preferences.getString(prefKey + ClientFilterMenu.PREF_KEY_POSTFIX);
+        if (selection != null)
+        {
+            this.menu.getAllItems().filter(item -> item.getUUIDs().equals(selection)).findAny().ifPresent(item -> {
+                this.menu.select(item);
+                setImage(menu.hasActiveFilter() ? Images.FILTER_ON : Images.FILTER_OFF);
+            });
+        }
+
+        addDisposeListener(e -> preferences.putValue(prefKey + ClientFilterMenu.PREF_KEY_POSTFIX,
+                        this.menu.getSelectedItem().getUUIDs()));
     }
 
     @Override
@@ -35,5 +47,10 @@ public final class ClientFilterDropDown extends AbstractDropDown
     public ClientFilter getSelectedFilter()
     {
         return menu.getSelectedFilter();
+    }
+
+    public boolean hasActiveFilter()
+    {
+        return menu.hasActiveFilter();
     }
 }

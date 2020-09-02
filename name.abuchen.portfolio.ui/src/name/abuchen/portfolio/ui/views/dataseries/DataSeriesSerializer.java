@@ -24,11 +24,9 @@ public class DataSeriesSerializer
             load(set, config, series);
 
         if (series.isEmpty())
-            set.getAvailableSeries().stream()
-                            .filter(s -> s.getType() == DataSeries.Type.CLIENT
-                                            && (s.getInstance() == ClientDataSeries.TOTALS
-                                                            || s.getInstance() == ClientDataSeries.TRANSFERALS)
-                                            || s.getType() == DataSeries.Type.CONSUMER_PRICE_INDEX)
+            set.getAvailableSeries().stream().filter(
+                            s -> s.getType() == DataSeries.Type.CLIENT && (s.getInstance() == ClientDataSeries.TOTALS
+                                            || s.getInstance() == ClientDataSeries.TRANSFERALS))
                             .forEach(series::add);
 
         return series;
@@ -37,7 +35,7 @@ public class DataSeriesSerializer
     private void load(DataSeriesSet set, String config, List<DataSeries> series)
     {
         Map<String, DataSeries> uuid2series = set.getAvailableSeries().stream()
-                        .collect(Collectors.toMap(s -> s.getUUID(), s -> s));
+                        .collect(Collectors.toMap(DataSeries::getUUID, s -> s));
 
         String[] items = config.split(","); //$NON-NLS-1$
         for (String item : items)

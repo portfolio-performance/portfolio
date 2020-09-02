@@ -1,0 +1,28 @@
+PDF Author: 'Registered to: SWISQUOT'
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRANSAKTIONSBELEG
+Kunde: 999999 - TRADING
+IBAN: CHXXXXXXXXXXXXXXXXX
+Herrn Vorname Nachname
+Strasse Hausnummer
+CH-8000 Musterhausen
+Gland, 27.06.2019
+Kapitalgewinn Unsere Referenz: 32484929
+Im Hinblick auf folgenden Titel:
+Titel
+Bezeichnung Anzahl
+Landis+Gyr N ISIN: CH0371153492NKN: 37115349 34
+haben wir Ihrem Konto den folgenden Betrag gutgeschrieben:
+Kontonummer 99999900
+Ausführungsdatum 27.06.2019
+Valutadatum 01.07.2019
+Anzahl 34
+Kapitalgewinn 3.15 CHF
+Betrag CHF 107.10
+Total CHF 107.10
+Dieser Transaktionsbeleg sowie die aufgeführte Transaktion unterliegen unseren Allgemeinen Geschäftsbedingungen und Depotreglement.
+Swissquote Bank AG, 33 chemin de la Crétaux, CH-1196 Gland
+Customer Care : 0848 25 88 88 (Aus dem Ausland +41 44 825 88 88)
+Formular ohne Unterschrift S.E. & O.
+MwSt n° CHE-116.310.079

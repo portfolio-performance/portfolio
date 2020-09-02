@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.FileDialog;
 
 import name.abuchen.portfolio.datatransfer.csv.AktienfreundeNetExporter;
 import name.abuchen.portfolio.datatransfer.csv.CSVExporter;
+import name.abuchen.portfolio.datatransfer.csv.VINISExporter;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
@@ -20,20 +21,24 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class ExportWizard extends Wizard
 {
     private final Client client;
+    private final ExchangeRateProviderFactory factory;
 
     private ExportSelectionPage exportPage;
 
-    public ExportWizard(Client client)
+    public ExportWizard(Client client, ExchangeRateProviderFactory factory)
     {
         this.client = client;
+        this.factory = factory;
     }
 
     @Override
@@ -85,8 +90,9 @@ public class ExportWizard extends Wizard
             // master data
             else if (exportItem == Security.class)
             {
-                new CSVExporter().exportSecurityMasterData(new File(file, Messages.ExportWizardSecurityMasterData
-                                + ".csv"), client.getSecurities()); //$NON-NLS-1$
+                new CSVExporter().exportSecurityMasterData(
+                                new File(file, Messages.ExportWizardSecurityMasterData + ".csv"), //$NON-NLS-1$
+                                client.getSecurities());
             }
             else if (exportClass == Security.class)
             {
@@ -96,6 +102,8 @@ public class ExportWizard extends Wizard
                     new CSVExporter().exportMergedSecurityPrices(file, client.getSecurities());
                 else if (Messages.ExportWizardAllTransactionsAktienfreundeNet.equals(exportItem))
                     new AktienfreundeNetExporter().exportAllTransactions(file, client);
+                else if (Messages.ExportWizardVINISApp.equals(exportItem))
+                    new VINISExporter().exportAllValues(file, client, factory);
             }
 
             // historical quotes
@@ -109,8 +117,8 @@ public class ExportWizard extends Wizard
             }
             else
             {
-                throw new UnsupportedOperationException(MessageFormat.format(Messages.ExportWizardUnsupportedExport,
-                                exportClass, exportItem));
+                throw new UnsupportedOperationException(
+                                MessageFormat.format(Messages.ExportWizardUnsupportedExport, exportClass, exportItem));
             }
         }
         catch (IOException e)
@@ -148,8 +156,9 @@ public class ExportWizard extends Wizard
                 name = (String) exportItem;
 
             FileDialog dialog = new FileDialog(getShell(), SWT.SAVE);
+            dialog.setOverwrite(true);
             if (name != null)
-                dialog.setFileName(name + ".csv"); //$NON-NLS-1$
+                dialog.setFileName(TextUtil.sanitizeFilename(name + ".csv")); //$NON-NLS-1$
             String fileName = dialog.open();
 
             if (fileName != null)

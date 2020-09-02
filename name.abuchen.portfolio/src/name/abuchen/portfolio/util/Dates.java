@@ -26,7 +26,7 @@ public class Dates
             end = temp;
         }
 
-        TradeCalendar calender = new TradeCalendar();
+        TradeCalendar calender = TradeCalendarManager.getDefaultInstance();
 
         int days = 0;
 

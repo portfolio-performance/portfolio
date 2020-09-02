@@ -1,0 +1,17 @@
+{
+	"version": 1,
+	"transactions": [
+		{
+			"type": "SALE",
+			"date": "2016-06-03",
+			"currency": "EUR",
+			"amount": 6193.80,
+			"shares": 60,
+			"security": {
+				"name": "Lyxor ETF MSCI WORLD FCP Actions au Port.D-EUR o.N.",
+				"isin": "FR0010315770",
+				"currency": "EUR"
+			}
+		}
+	]
+}

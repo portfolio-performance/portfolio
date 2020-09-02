@@ -1,0 +1,31 @@
+PDF Author: 'Unknown'
+PDFBox Version: 1.8.16
+-----------------------------------------
+DB Privat- und Firmenkundenbank AG
+V 123/123.2.005
+Max Mustermann Kundenberater
+Musterstr. 1 Telefon (0271) 597-0
+57072 Siegen 24h-Kundenservice (069) 910-10000
+21. August 2019
+Abrechnung: Kauf von Wertpapieren
+Depotinhaber: Max Mustermann
+Filialnummer Depotnummer Wertpapierbezeichnung Seite
+123 1234567 01 COMSTAGE-MSCI WORLD TRN U.ETF INH.ANT.I O.N. 1/1
+WKN ETF110 Nominal ST 5,5791
+ISIN LU0392494562 Kurs EUR 53,772
+Verwahrart Girosammeldepot
+Geschäft Kommissionsgeschäft außerbörslich
+Belegnummer 1694278628 / 24281 Schlusstag 20.08.2019
+Auftragsart Marktpreisauftrag
+Abrechnung Währung Betrag
+Kurswert EUR 300,00
+Belastung
+Buchung auf Kontonummer 1234567 01 mit Wertstellung 22.08.2019 EUR 300,00
+DieWertpapiere haben wir entsprechend der Abrechnung gebucht. Unser Geschäftsverkehr mit Ihnen wird durch unsere Allgemeinen Geschäftsbedingungen
+und die Sonderbedingungen fürWertpapiergeschäfte geregelt. Bitte überprüfen Sie diese Abrechnung schnellstmöglich und richten Sie etwaige Einwendungen
+in den Geschäftsräumen der Bank oder schriftlich an DB Privat- und Firmenkundenbank AG, QM - Support, 04082 Leipzig. Andernfalls gilt diese Abrechnung
+als genehmigt. Die unter § 4 Nr. 8 UStG im Inland fallenden Bank- und Finanzdienstleistungen sind von der Umsatzsteuer befreit, sofern Umsatzsteuer
+nicht gesondert ausgewiesen ist. Soweit der Leistungsempfänger umsatzsteuerlicher Unternehmer ist und seinen Sitz in einem anderen EU-Mitgliedstaat
+hat und die Bank und Finanzdienstleistungen nach dortigem Recht umsatzsteuerpflichtig sind, gilt die Steuerschuldnerschaft des Leistungsempfängers.
+Umsatzsteuer ID Nr.: DB Privat- und Firmenkundenbank AG, 60262 Frankfurt DE811907980
+TR00000001 / IR12_17_DBTRADER_68059 / 20190821 / A#

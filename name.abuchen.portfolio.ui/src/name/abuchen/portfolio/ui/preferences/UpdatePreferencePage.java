@@ -18,6 +18,7 @@ public class UpdatePreferencePage extends FieldEditorPreferencePage
         setDescription(Messages.PrefMsgConfigureUpdates);
     }
 
+    @Override
     public void createFieldEditors()
     {
         addField(new StringFieldEditor(UIConstants.Preferences.UPDATE_SITE, //
