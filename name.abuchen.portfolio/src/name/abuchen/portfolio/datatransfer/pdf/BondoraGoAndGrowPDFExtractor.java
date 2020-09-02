@@ -10,7 +10,7 @@ import name.abuchen.portfolio.model.Client;
 public class BondoraGoAndGrowPDFExtractor extends AbstractPDFExtractor
 {
     static String ACCOUNT_STATEMENT_DOCUMENT_TYPE = "Zusammenfassung"; //$NON-NLS-1$
-    static String ACCOUNT_STATEMENT_TRANSACTION_REGEX = "(?<date>\\d{2}.\\d{2}.\\d{4})\\s(?<kind>[\\D]+)\\s(?<sign>-?)(?<amount>\\d+,?\\d{0,2}).+(?<currency>[\\S]+)"; //$NON-NLS-1$
+    static String ACCOUNT_STATEMENT_TRANSACTION_REGEX = "(?<date>\\d{2}.\\d{2}.\\d{4})\\s(?<kind>[\\D]+)\\s(?<sign>-?)(?<amount>(\\d+\\.)?\\d+,?\\d{0,2}).+(?<currency>[\\S]+)"; //$NON-NLS-1$
     static String BANK_IDENTIFIER = "Go & Grow";
 
     public BondoraGoAndGrowPDFExtractor(Client client)
