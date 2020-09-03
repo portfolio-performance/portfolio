@@ -47,11 +47,6 @@ public class BondoraGoAndGrowPDFExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode("EUR");
 
-                            String sign = v.get("sign");
-                            if ("-".equals(sign))
-                            {
-                                t.setType(AccountTransaction.Type.REMOVAL);
-                            }
                             String kind = v.get("kind");
                             if (kind != null)
                             {
@@ -59,6 +54,9 @@ public class BondoraGoAndGrowPDFExtractor extends AbstractPDFExtractor
                                 {
                                     case "Überweisen":
                                         t.setType(AccountTransaction.Type.DEPOSIT);
+                                        break;
+                                    case "Abheben":
+                                        t.setType(AccountTransaction.Type.REMOVAL);
                                         break;
                                     case "Go & Grow Zinsen":
                                         t.setType(AccountTransaction.Type.INTEREST);
