@@ -111,7 +111,7 @@ public class InsertAction implements ImportAction
             Iterator<InvestmentPlan> i = plans.stream()
                             .filter(p -> p.getSecurity() != null && p.getSecurity().equals(t.getSecurity())).iterator();
 
-            while (i.hasNext())
+            while (i != null && i.hasNext())
             {
                 List<Transaction> transactions = i.next().getTransactions();
                 existingTransaction = action.findInvestmentPlanTransaction(t, transactions);
