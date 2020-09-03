@@ -178,7 +178,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Wertpapierabrechnung Kauf Fonds/Zertifikate");
         this.addDocumentTyp(type);
 
-        Block block = new Block(" *FinTech Group Bank AG*| *biw AG*| *flatex Bank AG");
+        Block block = new Block(".*Auftragsdatum.*");
         type.addBlock(block);
         block.set(new Transaction<BuySellEntry>()
 
@@ -195,7 +195,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date")
-                        .match(".*[Schlusstag|Handelstag][\\s:]*(?<date>\\d+.\\d+.\\d{4}).*") //
+                        .match(".*[Schlusstag|Handelstag]\\s*(?<date>\\d+.\\d+.\\d{4}).*") //
                         .assign((t, v) -> {
                             if (type.getCurrentContext().get("time") != null)
                             {
