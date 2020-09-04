@@ -38,7 +38,7 @@ public class BondoraGoAndGrowPDFExtractorTest
                         errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(210));
+        assertThat(results.size(), is(211));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check deposit
@@ -50,8 +50,18 @@ public class BondoraGoAndGrowPDFExtractorTest
         assertThat(depositTransaction.getDateTime(), is(LocalDateTime.parse("2020-01-15T00:00")));
         assertThat(depositTransaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 100_00L)));
 
+        // check removal
+        Optional<Item> removal = results.stream().filter(i -> i instanceof TransactionItem).skip(results.size() - 1)
+                        .findFirst();
+        assertThat(removal.isPresent(), is(true));
+        assertThat(removal.get().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction removalTransaction = (AccountTransaction) removal.get().getSubject();
+        assertThat(removalTransaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(removalTransaction.getDateTime(), is(LocalDateTime.parse("2020-08-07T00:00")));
+        assertThat(removalTransaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 200_00L)));
+
         // check interest
-        Optional<Item> interest = results.stream().filter(i -> i instanceof TransactionItem).skip(results.size() - 1)
+        Optional<Item> interest = results.stream().filter(i -> i instanceof TransactionItem).skip(results.size() - 2)
                         .findFirst();
         assertThat(interest.isPresent(), is(true));
         assertThat(interest.get().getSubject(), instanceOf(AccountTransaction.class));
