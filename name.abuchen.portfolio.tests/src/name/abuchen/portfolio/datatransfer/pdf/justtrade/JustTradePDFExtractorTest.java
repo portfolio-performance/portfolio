@@ -94,4 +94,103 @@ public class JustTradePDFExtractorTest
         assertThat(tx.getShares(), is(Values.Share.factorize(29)));
         assertThat(tx.getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0))));
     }
+
+    @Test
+    public void testVerkauf01()
+    {
+        JustTradePDFExtractor extractor = new JustTradePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
+        assertThat(security.getIsin(), is("DE000CL9E825"));
+        assertThat(security.getName(), is("Leveraged Certificate auf DAX"));
+
+        // check transaction
+        item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
+        PortfolioTransaction tx = entry.getPortfolioTransaction();
+
+        assertThat(tx.getType(), is(PortfolioTransaction.Type.SELL));
+
+        assertThat(tx.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2232.23))));
+        assertThat(tx.getDateTime(), is(LocalDateTime.parse("2020-07-31T21:00:15")));
+        assertThat(tx.getShares(), is(Values.Share.factorize(58)));
+        assertThat(tx.getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0))));
+        assertThat(tx.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.77))));
+    }
+
+    @Test
+    public void testSammelabrechnung01()
+    {
+        JustTradePDFExtractor extractor = new JustTradePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sammelabrechnung01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(9));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
+        assertThat(security.getIsin(), is("DE000SR8YZ53"));
+        assertThat(security.getName(), is("Leveraged Certificate auf DAX / XDAX COMBI INDEX"));
+
+        
+
+        // check first transaction
+        item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
+        PortfolioTransaction tx = entry.getPortfolioTransaction();
+
+        assertThat(tx.getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(tx.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1228.00))));
+        assertThat(tx.getDateTime(), is(LocalDateTime.parse("2020-08-10T14:31:04")));
+        assertThat(tx.getShares(), is(Values.Share.factorize(100)));
+        assertThat(tx.getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0))));
+        assertThat(tx.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0))));
+
+        // check second transaction
+        item = results.stream().filter(i -> i instanceof BuySellEntryItem).skip(1).findFirst();
+        entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
+        tx = entry.getPortfolioTransaction();
+
+        assertThat(tx.getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(tx.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1575.00))));
+        assertThat(tx.getDateTime(), is(LocalDateTime.parse("2020-08-10T15:48:16")));
+        assertThat(tx.getShares(), is(Values.Share.factorize(125)));
+
+        // check fifth second transaction
+        item = results.stream().filter(i -> i instanceof BuySellEntryItem).skip(4).findFirst();
+        entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
+        tx = entry.getPortfolioTransaction();
+
+        assertThat(tx.getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(tx.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1262.00))));
+        assertThat(tx.getDateTime(), is(LocalDateTime.parse("2020-08-10T15:33:52")));
+        assertThat(tx.getShares(), is(Values.Share.factorize(100)));
+        
+        // check sixth second transaction
+        item = results.stream().filter(i -> i instanceof BuySellEntryItem).skip(5).findFirst();
+        entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
+        tx = entry.getPortfolioTransaction();
+
+        assertThat(tx.getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(tx.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1576.25))));
+        assertThat(tx.getDateTime(), is(LocalDateTime.parse("2020-08-10T15:50:52")));
+        assertThat(tx.getShares(), is(Values.Share.factorize(125)));
+        
+    }
+
 }
