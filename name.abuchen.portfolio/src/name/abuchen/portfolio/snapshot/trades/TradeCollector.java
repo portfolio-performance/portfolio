@@ -60,8 +60,11 @@ public class TradeCollector
                     break;
 
                 case SELL:
-                case COVER:
                 case DELIVERY_OUTBOUND:
+                    trades.add(createNewTradeFromSell(openTransactions, pair));
+                    break;
+
+                case COVER:
                     trades.add(createNewTradeFromSell(openTransactions, pair));
                     break;
 
@@ -90,7 +93,7 @@ public class TradeCollector
 
             long shares = position.stream().mapToLong(p -> p.getTransaction().getShares()).sum();
 
-            Trade newTrade = new Trade(security, entry.getKey(), shares);
+            Trade newTrade = new Trade(security, entry.getKey(), shares, position.get(0).getTransaction().getType());
             newTrade.setStart(position.get(0).getTransaction().getDateTime());
             newTrade.getTransactions().addAll(position);
 
@@ -106,7 +109,7 @@ public class TradeCollector
                     TransactionPair<PortfolioTransaction> pair) throws TradeCollectorException
     {
         Trade newTrade = new Trade(pair.getTransaction().getSecurity(), (Portfolio) pair.getOwner(),
-                        pair.getTransaction().getShares());
+                pair.getTransaction().getShares(), pair.getTransaction().getType());
 
         List<TransactionPair<PortfolioTransaction>> open = openTransactions.get(pair.getOwner());
 
@@ -120,6 +123,8 @@ public class TradeCollector
         {
             if (sharesToDistribute == 0)
                 break;
+
+            newTrade.setType(candidate.getTransaction().getType());
 
             if (newTrade.getStart() == null)
                 newTrade.setStart(candidate.getTransaction().getDateTime());

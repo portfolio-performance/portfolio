@@ -26,6 +26,7 @@ public class Trade implements Adaptable
     private LocalDateTime start;
     private LocalDateTime end;
     private final long shares;
+    private PortfolioTransaction.Type type;
 
     private List<TransactionPair<PortfolioTransaction>> transactions = new ArrayList<>();
 
@@ -34,11 +35,12 @@ public class Trade implements Adaptable
     private long holdingPeriod;
     private double irr;
 
-    public Trade(Security security, Portfolio portfolio, long shares)
+    public Trade(Security security, Portfolio portfolio, long shares, PortfolioTransaction.Type type)
     {
         this.security = security;
         this.shares = shares;
         this.portfolio = portfolio;
+        this.type = type;
     }
 
     /* package */ void calculate(CurrencyConverter converter)
@@ -77,6 +79,11 @@ public class Trade implements Adaptable
                             .sum() / (double) shares);
         }
 
+        if (PortfolioTransaction.Type.SHORT == this.type) {
+            this.entryValue = Money.of(this.entryValue.getCurrencyCode(), -this.entryValue.getAmount());
+            this.exitValue = Money.of(this.exitValue.getCurrencyCode(), -this.exitValue.getAmount());
+        }
+
         calculateIRR(converter);
     }
 
@@ -104,6 +111,10 @@ public class Trade implements Adaptable
         }
 
         this.irr = IRR.calculate(dates, values);
+
+        if (PortfolioTransaction.Type.SHORT == this.type) {
+            this.irr = -this.irr;
+        }
     }
 
     public Security getSecurity()
@@ -139,6 +150,15 @@ public class Trade implements Adaptable
     public long getShares()
     {
         return shares;
+    }
+
+    public PortfolioTransaction.Type getType() {
+        return type;
+    }
+
+    public Trade setType(PortfolioTransaction.Type type) {
+        this.type = type;
+        return this;
     }
 
     public List<TransactionPair<PortfolioTransaction>> getTransactions()
