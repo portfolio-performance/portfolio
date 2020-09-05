@@ -217,6 +217,8 @@ public interface Extractor
         {
             if (EnumSet.of(AccountTransaction.Type.BUY, //
                             AccountTransaction.Type.SELL, //
+                            AccountTransaction.Type.COVER, //
+                            AccountTransaction.Type.SHORT, //
                             AccountTransaction.Type.TRANSFER_IN, //
                             AccountTransaction.Type.TRANSFER_OUT) //
                             .contains(transaction.getType()))
@@ -228,6 +230,8 @@ public interface Extractor
         {
             if (EnumSet.of(PortfolioTransaction.Type.BUY, //
                             PortfolioTransaction.Type.SELL, //
+                            PortfolioTransaction.Type.COVER, //
+                            PortfolioTransaction.Type.SHORT, //
                             PortfolioTransaction.Type.TRANSFER_IN, //
                             PortfolioTransaction.Type.TRANSFER_OUT) //
                             .contains(transaction.getType()))

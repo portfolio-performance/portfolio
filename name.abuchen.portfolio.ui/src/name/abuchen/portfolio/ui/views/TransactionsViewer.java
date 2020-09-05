@@ -550,7 +550,9 @@ public final class TransactionsViewer implements ModificationListener
             PortfolioTransaction ptx = tx.getTransaction();
 
             allBuyOrSellType &= ptx.getType() == PortfolioTransaction.Type.BUY
-                            || ptx.getType() == PortfolioTransaction.Type.SELL;
+                            || ptx.getType() == PortfolioTransaction.Type.SELL
+                            || ptx.getType() == PortfolioTransaction.Type.COVER
+                            || ptx.getType() == PortfolioTransaction.Type.SHORT;
 
             allDelivery &= ptx.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND
                             || ptx.getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND;

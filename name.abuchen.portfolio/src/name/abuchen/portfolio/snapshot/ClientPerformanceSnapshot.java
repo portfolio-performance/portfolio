@@ -388,6 +388,8 @@ public class ClientPerformanceSnapshot
                         break;
                     case BUY:
                     case SELL:
+                    case COVER:
+                    case SHORT:
                     case TRANSFER_IN:
                     case TRANSFER_OUT:
                         // no operation
@@ -431,6 +433,8 @@ public class ClientPerformanceSnapshot
                         break;
                     case BUY:
                     case SELL:
+                    case COVER:
+                    case SHORT:
                     case TRANSFER_IN:
                     case TRANSFER_OUT:
                         break;
@@ -520,6 +524,7 @@ public class ClientPerformanceSnapshot
                     case DEPOSIT:
                     case TAX_REFUND:
                     case SELL:
+                    case SHORT:
                     case FEES_REFUND:
                         value.subtract(t.getMonetaryAmount().with(converter.at(t.getDateTime())));
                         break;
@@ -528,6 +533,7 @@ public class ClientPerformanceSnapshot
                     case INTEREST_CHARGE:
                     case TAXES:
                     case BUY:
+                    case COVER:
                         value.add(t.getMonetaryAmount().with(converter.at(t.getDateTime())));
                         break;
                     case TRANSFER_IN:

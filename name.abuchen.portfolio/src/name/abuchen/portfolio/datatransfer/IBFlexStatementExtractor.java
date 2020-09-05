@@ -305,6 +305,14 @@ public class IBFlexStatementExtractor implements Extractor
             {
                 transaction.setType(PortfolioTransaction.Type.SELL);
             }
+            else if (element.getAttribute("buySell").equals("SHORT"))
+            {
+                transaction.setType(PortfolioTransaction.Type.SHORT);
+            }
+            else if (element.getAttribute("buySell").equals("COVER"))
+            {
+                transaction.setType(PortfolioTransaction.Type.COVER);
+            }
             else
             {
                 throw new IllegalArgumentException();

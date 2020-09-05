@@ -24,8 +24,10 @@ import name.abuchen.portfolio.money.Values;
 
 public class CheckCurrenciesAction implements ImportAction
 {
-    private static final Set<AccountTransaction.Type> TRANSACTIONS_WO_UNITS = EnumSet.of(AccountTransaction.Type.BUY,
-                    AccountTransaction.Type.SELL, AccountTransaction.Type.TRANSFER_IN);
+    private static final Set<AccountTransaction.Type> TRANSACTIONS_WO_UNITS = EnumSet.of(
+                    AccountTransaction.Type.BUY, AccountTransaction.Type.SELL,
+                    AccountTransaction.Type.COVER, AccountTransaction.Type.SHORT,
+                    AccountTransaction.Type.TRANSFER_IN);
 
     @Override
     public Status process(Security security)
@@ -81,7 +83,8 @@ public class CheckCurrenciesAction implements ImportAction
             return status;
 
         if (transaction.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND
-                        || transaction.getType() == PortfolioTransaction.Type.BUY)
+                        || transaction.getType() == PortfolioTransaction.Type.BUY
+                        || transaction.getType() == PortfolioTransaction.Type.SHORT)
         {
             // tax + fees must be < than transaction amount
             Money taxAndFees = transaction.getUnits() //

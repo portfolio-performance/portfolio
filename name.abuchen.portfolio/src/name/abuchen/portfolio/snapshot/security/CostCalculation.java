@@ -88,6 +88,7 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
         switch (t.getType())
         {
             case BUY:
+            case COVER:
             case DELIVERY_INBOUND:
                 long grossAmount = t.getMonetaryAmount(converter).getAmount();
                 long netAmount = t.getGrossValue(converter).getAmount();
@@ -104,6 +105,7 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
                 break;
 
             case SELL:
+            case SHORT:
             case DELIVERY_OUTBOUND:
                 long sold = t.getShares();
 

@@ -89,6 +89,8 @@ public class CrossEntryCheck implements Check
                     {
                         case BUY:
                         case SELL:
+                        case COVER:
+                        case SHORT:
                         case TRANSFER_IN:
                         case TRANSFER_OUT:
                             accountTransactions.add(new AccountEntry(account, t));
@@ -113,6 +115,8 @@ public class CrossEntryCheck implements Check
                     {
                         case BUY:
                         case SELL:
+                        case SHORT:
+                        case COVER:
                         case TRANSFER_IN:
                         case TRANSFER_OUT:
                             portfolioTransactions.add(new PortfolioEntry(portfolio, t));
@@ -132,7 +136,9 @@ public class CrossEntryCheck implements Check
                 AccountEntry suspect = iterAccount.next();
 
                 if (suspect.transaction.getType() != AccountTransaction.Type.BUY
-                                && suspect.transaction.getType() != AccountTransaction.Type.SELL)
+                                && suspect.transaction.getType() != AccountTransaction.Type.SELL
+                                && suspect.transaction.getType() != AccountTransaction.Type.COVER
+                                && suspect.transaction.getType() != AccountTransaction.Type.SHORT)
                     continue;
 
                 if (suspect.transaction.getSecurity() == null)

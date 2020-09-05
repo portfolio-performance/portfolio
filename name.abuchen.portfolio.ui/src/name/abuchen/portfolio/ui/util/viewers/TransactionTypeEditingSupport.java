@@ -67,10 +67,22 @@ public class TransactionTypeEditingSupport extends ColumnEditingSupport
                     PortfolioTransaction.Type.DELIVERY_OUTBOUND, PortfolioTransaction.Type.BUY,
                     new Class[] { RevertDeliveryAction.class, ConvertDeliveryToBuySellAction.class },
 
+                    PortfolioTransaction.Type.SHORT, PortfolioTransaction.Type.COVER,
+                    new Class[] { RevertBuySellAction.class },
+
+                    PortfolioTransaction.Type.COVER, PortfolioTransaction.Type.SHORT,
+                    new Class[] { RevertBuySellAction.class },
+
                     AccountTransaction.Type.SELL, AccountTransaction.Type.BUY,
                     new Class[] { RevertBuySellAction.class },
 
                     AccountTransaction.Type.BUY, AccountTransaction.Type.SELL,
+                    new Class[] { RevertBuySellAction.class },
+
+                    AccountTransaction.Type.SHORT, AccountTransaction.Type.COVER,
+                    new Class[] { RevertBuySellAction.class },
+
+                    AccountTransaction.Type.COVER, AccountTransaction.Type.SHORT,
                     new Class[] { RevertBuySellAction.class },
 
                     AccountTransaction.Type.TRANSFER_IN, AccountTransaction.Type.TRANSFER_OUT,

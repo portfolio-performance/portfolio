@@ -440,7 +440,8 @@ public class Client
                             .map(t -> new TransactionPair<>(portfolio, t)).forEach(transactions::add);
 
         EnumSet<AccountTransaction.Type> exclude = EnumSet.of(AccountTransaction.Type.TRANSFER_IN,
-                        AccountTransaction.Type.BUY, AccountTransaction.Type.SELL);
+                        AccountTransaction.Type.BUY, AccountTransaction.Type.SELL,
+                        AccountTransaction.Type.COVER, AccountTransaction.Type.SHORT);
 
         for (Account account : accounts)
         {

@@ -411,6 +411,8 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
                 return Messages.ColumnCreditNote;
             case BUY:
             case SELL:
+            case COVER:
+            case SHORT:
             case TRANSFER_IN:
             case TRANSFER_OUT:
             default:

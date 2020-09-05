@@ -20,6 +20,10 @@ public class PortfolioTransaction extends Transaction
         BUY(true),
         /** Records the sale of a security. */
         SELL(false),
+        /** Records the short selling of a security. */
+        SHORT(true),
+        /** Records the short covering of a security. */
+        COVER(false),
         /** Records the transfer of assets from another portfolio. */
         TRANSFER_IN(true),
         /** Records the transfer of assets to another portfolio. */

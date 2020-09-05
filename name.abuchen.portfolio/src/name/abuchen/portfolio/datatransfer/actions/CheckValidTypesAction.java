@@ -18,6 +18,8 @@ public class CheckValidTypesAction implements ImportAction
         {
             case BUY:
             case SELL:
+            case COVER:
+            case SHORT:
             case TRANSFER_IN:
             case TRANSFER_OUT:
                 return new Status(Status.Code.ERROR, MessageFormat.format(Messages.MsgCheckInvalidTransactionType,
@@ -44,6 +46,8 @@ public class CheckValidTypesAction implements ImportAction
         {
             case BUY:
             case SELL:
+            case COVER:
+            case SHORT:
             case TRANSFER_IN:
             case TRANSFER_OUT:
                 return new Status(Status.Code.ERROR, MessageFormat.format(Messages.MsgCheckInvalidTransactionType,

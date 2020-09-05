@@ -59,6 +59,8 @@ public class WithoutTaxesFilter implements ClientFilter
             {
                 case BUY:
                 case SELL:
+                case COVER:
+                case SHORT:
                     stripTaxes((BuySellEntry) t.getCrossEntry(), pseudoPortfolio,
                                     account2pseudo.get(t.getCrossEntry().getCrossOwner(t)));
                     break;
@@ -82,7 +84,8 @@ public class WithoutTaxesFilter implements ClientFilter
     {
         PortfolioTransaction t = buySell.getPortfolioTransaction();
 
-        boolean isBuy = t.getType() == PortfolioTransaction.Type.BUY;
+        boolean isBuy = (t.getType() == PortfolioTransaction.Type.BUY
+                            || t.getType() == PortfolioTransaction.Type.COVER);
 
         Money taxes = t.getUnitSum(Unit.Type.TAX);
 
@@ -155,6 +158,8 @@ public class WithoutTaxesFilter implements ClientFilter
                     break;
                 case BUY:
                 case SELL:
+                case COVER:
+                case SHORT:
                     // skip -> handled by portfolio transaction
                     break;
                 case TRANSFER_IN:

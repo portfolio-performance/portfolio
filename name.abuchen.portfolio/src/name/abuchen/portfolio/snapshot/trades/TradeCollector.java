@@ -54,11 +54,13 @@ public class TradeCollector
             switch (t.getType())
             {
                 case BUY:
+                case SHORT:
                 case DELIVERY_INBOUND:
                     openTransactions.computeIfAbsent(portfolio, p -> new ArrayList<>()).add(pair);
                     break;
 
                 case SELL:
+                case COVER:
                 case DELIVERY_OUTBOUND:
                     trades.add(createNewTradeFromSell(openTransactions, pair));
                     break;

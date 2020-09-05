@@ -604,9 +604,11 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
         switch (type)
         {
             case BUY:
+            case COVER:
             case DELIVERY_INBOUND:
                 return Math.max(0, total - feesAndTaxes);
             case SELL:
+            case SHORT:
             case DELIVERY_OUTBOUND:
                 return total + feesAndTaxes;
             default:
@@ -621,9 +623,11 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
         switch (type)
         {
             case BUY:
+            case COVER:
             case DELIVERY_INBOUND:
                 return convertedGrossValue + feesAndTaxes;
             case SELL:
+            case SHORT:
             case DELIVERY_OUTBOUND:
                 return Math.max(0, convertedGrossValue - feesAndTaxes);
             default:

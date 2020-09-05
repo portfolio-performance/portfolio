@@ -64,6 +64,20 @@ public class SecurityContextMenu
                         .with(security) //
                         .addTo(manager);
 
+        new OpenDialogAction(owner, Messages.SecurityMenuCover + "...") //$NON-NLS-1$
+                        .type(SecurityTransactionDialog.class) //
+                        .parameters(PortfolioTransaction.Type.COVER) //
+                        .with(portfolio) //
+                        .with(security) //
+                        .addTo(manager);
+
+        new OpenDialogAction(owner, Messages.SecurityMenuShort + "...") //$NON-NLS-1$
+                        .type(SecurityTransactionDialog.class) //
+                        .parameters(PortfolioTransaction.Type.SHORT) //
+                        .with(portfolio) //
+                        .with(security) //
+                        .addTo(manager);
+
         new OpenDialogAction(owner, Messages.SecurityMenuDividends + "...") //$NON-NLS-1$
                         .type(AccountTransactionDialog.class) //
                         .parameters(AccountTransaction.Type.DIVIDENDS) //

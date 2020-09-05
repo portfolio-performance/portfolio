@@ -185,7 +185,9 @@ public class ClientClassificationFilter implements ClientFilter
 
         long taxes = value(t.getUnitSum(Unit.Type.TAX).getAmount(), securityWeight);
         long securityAmount = value(t.getAmount(), securityWeight);
-        securityAmount = t.getType() == PortfolioTransaction.Type.BUY ? securityAmount - taxes : securityAmount + taxes;
+        securityAmount = (t.getType() == PortfolioTransaction.Type.BUY
+                            || t.getType() == PortfolioTransaction.Type.COVER) ?
+                                securityAmount - taxes : securityAmount + taxes;
 
         Account account = (Account) t.getCrossEntry().getCrossOwner(t);
         int accountWeight = state.getWeight(account);
@@ -219,7 +221,8 @@ public class ClientClassificationFilter implements ClientFilter
         {
             AccountTransaction ta = new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
                             accountAmount - commonAmount, null,
-                            t.getType() == PortfolioTransaction.Type.BUY ? AccountTransaction.Type.REMOVAL
+                            (t.getType() == PortfolioTransaction.Type.BUY
+                                || t.getType() == PortfolioTransaction.Type.COVER) ? AccountTransaction.Type.REMOVAL
                                             : AccountTransaction.Type.DEPOSIT);
 
             state.asReadOnly(account).internalAddTransaction(ta);
@@ -235,8 +238,9 @@ public class ClientClassificationFilter implements ClientFilter
             tp.setCurrencyCode(t.getCurrencyCode());
             tp.setSecurity(t.getSecurity());
             tp.setShares(value(t.getShares(), securityWeight - commonWeight));
-            tp.setType(t.getType() == PortfolioTransaction.Type.BUY ? PortfolioTransaction.Type.DELIVERY_INBOUND
-                            : PortfolioTransaction.Type.DELIVERY_OUTBOUND);
+            tp.setType((t.getType() == PortfolioTransaction.Type.BUY
+                        || t.getType() == PortfolioTransaction.Type.COVER) ?
+                            PortfolioTransaction.Type.DELIVERY_INBOUND : PortfolioTransaction.Type.DELIVERY_OUTBOUND);
 
             tp.setAmount(securityAmount - commonAmount);
 
@@ -282,6 +286,7 @@ public class ClientClassificationFilter implements ClientFilter
             switch (t.getType())
             {
                 case SELL:
+                case SHORT:
                     // only if the security is not included (and therefore
                     // buy/sell transactions are handled by the
                     // #adaptPortfolioTransactions method), create a deposit or
@@ -292,6 +297,7 @@ public class ClientClassificationFilter implements ClientFilter
                     break;
 
                 case BUY:
+                case COVER:
                     if (!state.isCategorized(t.getSecurity()))
                         state.asReadOnly(account).internalAddTransaction(new AccountTransaction(t.getDateTime(),
                                         t.getCurrencyCode(), amount, null, AccountTransaction.Type.REMOVAL));
@@ -500,8 +506,10 @@ public class ClientClassificationFilter implements ClientFilter
                     // ignore taxes when calculating performance of
                     // securities
                 case BUY:
+                case COVER:
                 case TRANSFER_IN:
                 case SELL:
+                case SHORT:
                 case TRANSFER_OUT:
                 case DEPOSIT:
                 case REMOVAL:

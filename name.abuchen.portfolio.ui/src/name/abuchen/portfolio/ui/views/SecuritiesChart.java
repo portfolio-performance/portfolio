@@ -925,6 +925,7 @@ public class SecuritiesChart
         List<PortfolioTransaction> purchase = client.getPortfolios().stream().flatMap(p -> p.getTransactions().stream())
                         .filter(t -> t.getSecurity() == security)
                         .filter(t -> t.getType() == PortfolioTransaction.Type.BUY
+                                        || t.getType() == PortfolioTransaction.Type.COVER
                                         || t.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND)
                         .filter(t -> chartInterval.contains(t.getDateTime())) //
                         .sorted(new Transaction.ByDate()).collect(Collectors.toList());
@@ -934,6 +935,7 @@ public class SecuritiesChart
         List<PortfolioTransaction> sales = client.getPortfolios().stream().flatMap(p -> p.getTransactions().stream())
                         .filter(t -> t.getSecurity() == security)
                         .filter(t -> t.getType() == PortfolioTransaction.Type.SELL
+                                        || t.getType() == PortfolioTransaction.Type.SHORT
                                         || t.getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND)
                         .filter(t -> chartInterval.contains(t.getDateTime())) //
                         .sorted(new Transaction.ByDate()).collect(Collectors.toList());

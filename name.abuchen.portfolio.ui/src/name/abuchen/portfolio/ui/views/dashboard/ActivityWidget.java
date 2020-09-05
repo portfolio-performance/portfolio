@@ -265,10 +265,16 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
             createSeries(chartType, interval, transactions, yearMonths, PortfolioTransaction.Type.BUY,
                             Colors.ICON_BLUE);
 
+            createSeries(chartType, interval, transactions, yearMonths, PortfolioTransaction.Type.COVER,
+                            Colors.ICON_BLUE);
+
             createSeries(chartType, interval, transactions, yearMonths, PortfolioTransaction.Type.DELIVERY_INBOUND,
                             Colors.brighter(Colors.ICON_BLUE));
 
             createSeries(chartType, interval, transactions, yearMonths, PortfolioTransaction.Type.SELL,
+                            Colors.ICON_ORANGE);
+
+            createSeries(chartType, interval, transactions, yearMonths, PortfolioTransaction.Type.SHORT,
                             Colors.ICON_ORANGE);
 
             createSeries(chartType, interval, transactions, yearMonths, PortfolioTransaction.Type.DELIVERY_OUTBOUND,

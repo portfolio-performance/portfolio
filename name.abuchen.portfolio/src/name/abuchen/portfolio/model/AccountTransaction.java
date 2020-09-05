@@ -19,6 +19,7 @@ public class AccountTransaction extends Transaction
         FEES(true), FEES_REFUND(false), //
         TAXES(true), TAX_REFUND(false), //
         BUY(true), SELL(false), //
+        COVER(true), SHORT(false), //
         TRANSFER_IN(false), TRANSFER_OUT(true);
 
         private static final ResourceBundle RESOURCES = ResourceBundle.getBundle("name.abuchen.portfolio.model.labels"); //$NON-NLS-1$

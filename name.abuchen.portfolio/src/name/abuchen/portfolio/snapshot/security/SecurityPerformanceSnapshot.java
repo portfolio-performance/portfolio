@@ -123,6 +123,8 @@ public class SecurityPerformanceSnapshot
                     break;
                 case BUY:
                 case SELL:
+                case COVER:
+                case SHORT:
                     break;
                 case DEPOSIT:
                 case REMOVAL:

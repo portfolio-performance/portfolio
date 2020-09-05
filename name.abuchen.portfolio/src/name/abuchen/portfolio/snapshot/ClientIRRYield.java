@@ -66,6 +66,8 @@ public class ClientIRRYield
                                         break;
                                     case BUY:
                                     case SELL:
+                                    case COVER:
+                                    case SHORT:
                                         break;
                                     default:
                                         throw new UnsupportedOperationException();
@@ -91,6 +93,8 @@ public class ClientIRRYield
                                         break;
                                     case BUY:
                                     case SELL:
+                                    case COVER:
+                                    case SHORT:
                                     case FEES:
                                     case FEES_REFUND:
                                     case TAXES:

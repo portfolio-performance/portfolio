@@ -121,6 +121,8 @@ public class GroupEarningsByAccount
                             break;
                         case BUY:
                         case SELL:
+                        case COVER:
+                        case SHORT:
                             CrossEntry crossEntry = at.getCrossEntry();
                             if (crossEntry instanceof BuySellEntry)
                             {

@@ -42,6 +42,8 @@ public class NewTransactionMenuContribution
 
         items.add(create(portfolioPart, SecurityTransactionDialog.class, PortfolioTransaction.Type.BUY));
         items.add(create(portfolioPart, SecurityTransactionDialog.class, PortfolioTransaction.Type.SELL));
+        items.add(create(portfolioPart, SecurityTransactionDialog.class, PortfolioTransaction.Type.SHORT));
+        items.add(create(portfolioPart, SecurityTransactionDialog.class, PortfolioTransaction.Type.COVER));
         items.add(create(portfolioPart, SecurityTransactionDialog.class, PortfolioTransaction.Type.DELIVERY_INBOUND));
         items.add(create(portfolioPart, SecurityTransactionDialog.class, PortfolioTransaction.Type.DELIVERY_OUTBOUND));
 

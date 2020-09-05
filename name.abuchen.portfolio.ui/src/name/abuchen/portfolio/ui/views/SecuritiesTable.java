@@ -904,6 +904,18 @@ public final class SecuritiesTable implements ModificationListener
                         .with(security) //
                         .addTo(manager);
 
+        new OpenDialogAction(view, Messages.SecurityMenuCover + "...") //$NON-NLS-1$
+                        .type(SecurityTransactionDialog.class) //
+                        .parameters(PortfolioTransaction.Type.COVER) //
+                        .with(security) //
+                        .addTo(manager);
+
+        new OpenDialogAction(view, Messages.SecurityMenuShort + "...") //$NON-NLS-1$
+                        .type(SecurityTransactionDialog.class) //
+                        .parameters(PortfolioTransaction.Type.SHORT) //
+                        .with(security) //
+                        .addTo(manager);
+
         new OpenDialogAction(view, Messages.SecurityMenuDividends + "...") //$NON-NLS-1$
                         .type(AccountTransactionDialog.class) //
                         .parameters(AccountTransaction.Type.DIVIDENDS) //

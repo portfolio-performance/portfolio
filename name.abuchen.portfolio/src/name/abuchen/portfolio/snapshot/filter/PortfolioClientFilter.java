@@ -109,6 +109,7 @@ public class PortfolioClientFilter implements ClientFilter
             switch (t.getType())
             {
                 case BUY:
+                case COVER:
                     if (accounts.contains(t.getCrossEntry().getCrossOwner(t)))
                         recreateBuySell((BuySellEntry) t.getCrossEntry(), pseudoPortfolio,
                                         account2pseudo.get(t.getCrossEntry().getCrossOwner(t)));
@@ -125,6 +126,7 @@ public class PortfolioClientFilter implements ClientFilter
                                         convertTo(t, PortfolioTransaction.Type.DELIVERY_INBOUND));
                     break;
                 case SELL:
+                case SHORT:
                     if (accounts.contains(t.getCrossEntry().getCrossOwner(t)))
                         recreateBuySell((BuySellEntry) t.getCrossEntry(), pseudoPortfolio,
                                         account2pseudo.get(t.getCrossEntry().getCrossOwner(t)));
@@ -209,8 +211,10 @@ public class PortfolioClientFilter implements ClientFilter
                     }
                     break;
                 case BUY:
+                case COVER:
                 case TRANSFER_IN:
                 case SELL:
+                case SHORT:
                 case TRANSFER_OUT:
                 case DEPOSIT:
                 case REMOVAL:
@@ -234,11 +238,13 @@ public class PortfolioClientFilter implements ClientFilter
             switch (t.getType())
             {
                 case BUY:
+                case COVER:
                     if (!portfolios.contains(t.getCrossEntry().getCrossOwner(t)))
                         pseudoAccount.internalAddTransaction(convertTo(t, AccountTransaction.Type.REMOVAL));
                     // regular buy is handled via portfolio transactions
                     break;
                 case SELL:
+                case SHORT:
                     if (!portfolios.contains(t.getCrossEntry().getCrossOwner(t)))
                         pseudoAccount.internalAddTransaction(convertTo(t, AccountTransaction.Type.DEPOSIT));
                     // regular sell is handled via portfolio transactions

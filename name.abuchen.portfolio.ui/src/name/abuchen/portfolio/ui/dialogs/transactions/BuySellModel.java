@@ -28,7 +28,10 @@ import name.abuchen.portfolio.ui.Messages;
     @Override
     public boolean accepts(PortfolioTransaction.Type type)
     {
-        return type == PortfolioTransaction.Type.BUY || type == PortfolioTransaction.Type.SELL;
+        return type == PortfolioTransaction.Type.BUY
+                || type == PortfolioTransaction.Type.SELL
+                || type == PortfolioTransaction.Type.COVER
+                || type == PortfolioTransaction.Type.SHORT;
     }
 
     @Override

@@ -75,11 +75,13 @@ import name.abuchen.portfolio.money.Values;
         switch (t.getType())
         {
             case BUY:
+            case COVER:
             case DELIVERY_INBOUND:
             case TRANSFER_IN:
                 values.add((-amount + taxes) / Values.Amount.divider());
                 break;
             case SELL:
+            case SHORT:
             case DELIVERY_OUTBOUND:
             case TRANSFER_OUT:
                 values.add((amount + taxes) / Values.Amount.divider());

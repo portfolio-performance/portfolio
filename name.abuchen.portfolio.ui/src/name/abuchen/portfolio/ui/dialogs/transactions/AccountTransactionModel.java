@@ -92,6 +92,8 @@ public class AccountTransactionModel extends AbstractModel
                 return;
             case BUY:
             case SELL:
+            case COVER:
+            case SHORT:
             case TRANSFER_IN:
             case TRANSFER_OUT:
             default:

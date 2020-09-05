@@ -59,7 +59,10 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
     @PostConstruct
     private void createModel(ExchangeRateProviderFactory factory, PortfolioTransaction.Type type) // NOSONAR
     {
-        boolean isBuySell = type == PortfolioTransaction.Type.BUY || type == PortfolioTransaction.Type.SELL;
+        boolean isBuySell = type == PortfolioTransaction.Type.BUY
+                || type == PortfolioTransaction.Type.SELL
+                || type == PortfolioTransaction.Type.COVER
+                || type == PortfolioTransaction.Type.SHORT;
         AbstractSecurityTransactionModel model = isBuySell ? new BuySellModel(client, type)
                         : new SecurityDeliveryModel(client, type);
         model.setExchangeRateProviderFactory(factory);
@@ -289,9 +292,11 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
         switch (model().getType())
         {
             case BUY:
+            case COVER:
             case DELIVERY_INBOUND:
                 return "+ "; //$NON-NLS-1$
             case SELL:
+            case SHORT:
             case DELIVERY_OUTBOUND:
                 return "- "; //$NON-NLS-1$
             default:
@@ -304,10 +309,12 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
         switch (model().getType())
         {
             case BUY:
+            case COVER:
                 return Messages.ColumnDebitNote;
             case DELIVERY_INBOUND:
                 return Messages.LabelValueInboundDelivery;
             case SELL:
+            case SHORT:
                 return Messages.ColumnCreditNote;
             case DELIVERY_OUTBOUND:
                 return Messages.LabelValueOutboundDelivery;

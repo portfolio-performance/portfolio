@@ -120,6 +120,8 @@ import name.abuchen.portfolio.ui.selection.SelectionService;
         for (final PortfolioTransaction.Type type : EnumSet.of( //
                         PortfolioTransaction.Type.BUY, //
                         PortfolioTransaction.Type.SELL, //
+                        PortfolioTransaction.Type.COVER, //
+                        PortfolioTransaction.Type.SHORT, //
                         PortfolioTransaction.Type.DELIVERY_INBOUND, //
                         PortfolioTransaction.Type.DELIVERY_OUTBOUND))
         {

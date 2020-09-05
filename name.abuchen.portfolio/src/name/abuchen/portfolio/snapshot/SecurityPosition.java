@@ -247,10 +247,12 @@ public class SecurityPosition
             switch (t.getType())
             {
                 case BUY:
+                case COVER:
                 case TRANSFER_IN:
                 case DELIVERY_INBOUND:
                     return t.getShares();
                 case SELL:
+                case SHORT:
                 case TRANSFER_OUT:
                 case DELIVERY_OUTBOUND:
                     return -t.getShares();

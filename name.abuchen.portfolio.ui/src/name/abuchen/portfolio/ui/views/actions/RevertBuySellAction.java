@@ -25,14 +25,20 @@ public class RevertBuySellAction extends Action
         {
             PortfolioTransaction.Type type = ((PortfolioTransaction) transaction.getTransaction()).getType();
 
-            if (type != PortfolioTransaction.Type.BUY && type != PortfolioTransaction.Type.SELL)
+            if (type != PortfolioTransaction.Type.BUY
+                    && type != PortfolioTransaction.Type.SELL
+                    && type != PortfolioTransaction.Type.COVER
+                    && type != PortfolioTransaction.Type.SHORT)
                 throw new IllegalArgumentException();
         }
         else if (transaction.getTransaction() instanceof AccountTransaction)
         {
             AccountTransaction.Type type = ((AccountTransaction) transaction.getTransaction()).getType();
 
-            if (type != AccountTransaction.Type.BUY && type != AccountTransaction.Type.SELL)
+            if (type != AccountTransaction.Type.BUY
+                    && type != AccountTransaction.Type.SELL
+                    && type != AccountTransaction.Type.COVER
+                    && type != AccountTransaction.Type.SHORT)
                 throw new IllegalArgumentException();
         }
         else
@@ -68,6 +74,20 @@ public class RevertBuySellAction extends Action
         {
             buysell.getAccountTransaction().setType(AccountTransaction.Type.BUY);
             tx.setType(PortfolioTransaction.Type.BUY);
+
+            buysell.setMonetaryAmount(grossAmount.add(feesAndTaxes));
+        }
+        else if (tx.getType() == PortfolioTransaction.Type.COVER)
+        {
+            buysell.getAccountTransaction().setType(AccountTransaction.Type.SHORT);
+            tx.setType(PortfolioTransaction.Type.SHORT);
+
+            buysell.setMonetaryAmount(grossAmount.add(feesAndTaxes));
+        }
+        else if (tx.getType() == PortfolioTransaction.Type.SHORT)
+        {
+            buysell.getAccountTransaction().setType(AccountTransaction.Type.COVER);
+            tx.setType(PortfolioTransaction.Type.COVER);
 
             buysell.setMonetaryAmount(grossAmount.add(feesAndTaxes));
         }

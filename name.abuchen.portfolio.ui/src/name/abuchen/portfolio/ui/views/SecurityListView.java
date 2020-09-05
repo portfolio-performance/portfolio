@@ -250,9 +250,11 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                                 switch (t.getType())
                                 {
                                     case BUY:
+                                    case COVER:
                                     case DELIVERY_INBOUND:
                                         return t.getShares();
                                     case SELL:
+                                    case SHORT:
                                     case DELIVERY_OUTBOUND:
                                         return -t.getShares();
                                     default:

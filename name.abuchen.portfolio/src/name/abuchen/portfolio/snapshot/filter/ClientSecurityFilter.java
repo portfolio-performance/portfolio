@@ -80,11 +80,13 @@ public class ClientSecurityFilter implements ClientFilter
         switch (pair.getTransaction().getType())
         {
             case BUY:
+            case COVER:
             case DELIVERY_INBOUND:
                 getPortfolio.apply((Portfolio) pair.getOwner()).internalAddTransaction(
                                 convertToDelivery(pair.getTransaction(), PortfolioTransaction.Type.DELIVERY_INBOUND));
                 break;
             case SELL:
+            case SHORT:
             case DELIVERY_OUTBOUND:
                 getPortfolio.apply((Portfolio) pair.getOwner()).internalAddTransaction(
                                 convertToDelivery(pair.getTransaction(), PortfolioTransaction.Type.DELIVERY_OUTBOUND));
@@ -132,7 +134,9 @@ public class ClientSecurityFilter implements ClientFilter
                 // ignore taxes
                 break;
             case BUY:
+            case COVER:
             case SELL:
+            case SHORT:
             case DEPOSIT:
             case REMOVAL:
             case TRANSFER_IN:

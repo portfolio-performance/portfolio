@@ -95,12 +95,14 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
         switch (t.getType())
         {
             case BUY:
+            case COVER:
             case DELIVERY_INBOUND:
                 fifo.add(new LineItem(t.getShares(), t.getDateTime().toLocalDate(), convertedGrossValue.getAmount(),
                                 txTrail, transactionItem));
                 break;
 
             case SELL:
+            case SHORT:
             case DELIVERY_OUTBOUND:
 
                 long value = convertedGrossValue.getAmount();

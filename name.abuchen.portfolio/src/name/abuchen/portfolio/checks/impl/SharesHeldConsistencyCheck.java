@@ -87,11 +87,13 @@ public class SharesHeldConsistencyCheck implements Check
                 switch (t.getType())
                 {
                     case BUY:
+                    case COVER:
                     case TRANSFER_IN:
                     case DELIVERY_INBOUND:
                         shares[index] += t.getShares();
                         break;
                     case SELL:
+                    case SHORT:
                     case TRANSFER_OUT:
                     case DELIVERY_OUTBOUND:
                         shares[index] -= t.getShares();
