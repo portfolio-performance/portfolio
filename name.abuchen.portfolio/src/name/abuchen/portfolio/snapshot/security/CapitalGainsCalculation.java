@@ -95,14 +95,14 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
         switch (t.getType())
         {
             case BUY:
-            case COVER:
+            case SHORT:
             case DELIVERY_INBOUND:
                 fifo.add(new LineItem(t.getShares(), t.getDateTime().toLocalDate(), convertedGrossValue.getAmount(),
                                 txTrail, transactionItem));
                 break;
 
             case SELL:
-            case SHORT:
+            case COVER:
             case DELIVERY_OUTBOUND:
 
                 long value = convertedGrossValue.getAmount();
@@ -151,10 +151,17 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
                                         .substract(startTrail);
                     }
 
-                    realizedCapitalGains.addCapitalGains(Money.of(termCurrency, end - start));
-                    realizedCapitalGains.addCapitalGainsTrail(txTrail //
-                                    .fraction(Money.of(termCurrency, end), soldShares, t.getShares())
-                                    .substract(startTrail));
+                    if (PortfolioTransaction.Type.COVER == t.getType()) {
+                        realizedCapitalGains.addCapitalGains(Money.of(termCurrency, start - end));
+                        realizedCapitalGains.addCapitalGainsTrail(startTrail //
+                                .fraction(Money.of(termCurrency, start), soldShares, t.getShares())
+                                .substract(txTrail));
+                    } else {
+                        realizedCapitalGains.addCapitalGains(Money.of(termCurrency, end - start));
+                        realizedCapitalGains.addCapitalGainsTrail(txTrail //
+                                .fraction(Money.of(termCurrency, end), soldShares, t.getShares())
+                                .substract(startTrail));
+                    }
                     realizedCapitalGains.addForexCaptialGains(Money.of(termCurrency, forexGain));
                     realizedCapitalGains.addForexCapitalGainsTrail(forexGainTrail);
 
@@ -349,8 +356,13 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
                             .substract(startTrail);
         }
 
-        unrealizedCapitalGains.addCapitalGains(Money.of(termCurrency, end - start));
-        unrealizedCapitalGains.addCapitalGainsTrail(endTrail.substract(startTrail));
+        if (PortfolioTransaction.Type.SHORT.toString().equals(startTrail.getLabel())) {
+            unrealizedCapitalGains.addCapitalGains(Money.of(termCurrency, end + start));
+            unrealizedCapitalGains.addCapitalGainsTrail(endTrail.add(startTrail));
+        } else {
+            unrealizedCapitalGains.addCapitalGains(Money.of(termCurrency, end - start));
+            unrealizedCapitalGains.addCapitalGainsTrail(endTrail.substract(startTrail));
+        }
         unrealizedCapitalGains.addForexCaptialGains(Money.of(termCurrency, forexGain));
         unrealizedCapitalGains.addForexCapitalGainsTrail(forexGainTrail);
     }
