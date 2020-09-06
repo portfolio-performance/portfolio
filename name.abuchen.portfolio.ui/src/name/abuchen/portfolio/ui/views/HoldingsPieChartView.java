@@ -163,14 +163,13 @@ public class HoldingsPieChartView extends AbstractFinanceView
                 JSColors colors = new JSColors();
 
                 snapshot.getAssetPositions() //
-                                .filter(p -> p.getValuation().getAmount() > 0) //
                                 .sorted((l, r) -> Long.compare(r.getValuation().getAmount(),
                                                 l.getValuation().getAmount())) //
                                 .forEach(p -> {
                                     String name = JSONObject.escape(p.getDescription());
                                     String percentage = Values.Percent2.format(p.getShare());
                                     joiner.add(String.format(ENTRY, name, //
-                                                    p.getValuation().getAmount(), //
+                                                    Math.abs(p.getValuation().getAmount()), //
                                                     colors.next(), //
                                                     name, percentage, Values.Share.format(p.getPosition().getShares()), //
                                                     Values.Money.format(p.getValuation()
