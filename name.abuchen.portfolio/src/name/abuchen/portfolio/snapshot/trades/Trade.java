@@ -79,7 +79,8 @@ public class Trade implements Adaptable
                             .sum() / (double) shares);
         }
 
-        if (PortfolioTransaction.Type.SHORT == this.type) {
+        if (PortfolioTransaction.Type.SHORT == this.type)
+        {
             this.entryValue = Money.of(this.entryValue.getCurrencyCode(), -this.entryValue.getAmount());
             this.exitValue = Money.of(this.exitValue.getCurrencyCode(), -this.exitValue.getAmount());
         }
@@ -112,7 +113,8 @@ public class Trade implements Adaptable
 
         this.irr = IRR.calculate(dates, values);
 
-        if (PortfolioTransaction.Type.SHORT == this.type) {
+        if (PortfolioTransaction.Type.SHORT == this.type)
+        {
             this.irr = -this.irr;
         }
     }
@@ -152,11 +154,13 @@ public class Trade implements Adaptable
         return shares;
     }
 
-    public PortfolioTransaction.Type getType() {
+    public PortfolioTransaction.Type getType()
+    {
         return type;
     }
 
-    public Trade setType(PortfolioTransaction.Type type) {
+    public Trade setType(PortfolioTransaction.Type type)
+    {
         this.type = type;
         return this;
     }

@@ -151,12 +151,15 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
                                         .substract(startTrail);
                     }
 
-                    if (PortfolioTransaction.Type.COVER == t.getType()) {
+                    if (PortfolioTransaction.Type.COVER == t.getType())
+                    {
                         realizedCapitalGains.addCapitalGains(Money.of(termCurrency, start - end));
                         realizedCapitalGains.addCapitalGainsTrail(startTrail //
                                 .fraction(Money.of(termCurrency, start), soldShares, t.getShares())
                                 .substract(txTrail));
-                    } else {
+                    }
+                    else
+                    {
                         realizedCapitalGains.addCapitalGains(Money.of(termCurrency, end - start));
                         realizedCapitalGains.addCapitalGainsTrail(txTrail //
                                 .fraction(Money.of(termCurrency, end), soldShares, t.getShares())
@@ -356,10 +359,13 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
                             .substract(startTrail);
         }
 
-        if (PortfolioTransaction.Type.SHORT.toString().equals(startTrail.getLabel())) {
+        if (PortfolioTransaction.Type.SHORT.toString().equals(startTrail.getLabel()))
+        {
             unrealizedCapitalGains.addCapitalGains(Money.of(termCurrency, end + start));
             unrealizedCapitalGains.addCapitalGainsTrail(endTrail.add(startTrail));
-        } else {
+        }
+        else
+        {
             unrealizedCapitalGains.addCapitalGains(Money.of(termCurrency, end - start));
             unrealizedCapitalGains.addCapitalGainsTrail(endTrail.substract(startTrail));
         }
