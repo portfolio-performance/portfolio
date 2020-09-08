@@ -143,6 +143,11 @@ public class PortfolioTransaction extends Transaction
         long taxAndFees = getUnits().filter(u -> u.getType() == Unit.Type.TAX || u.getType() == Unit.Type.FEE)
                         .collect(MoneyCollectors.sum(getCurrencyCode(), u -> u.getAmount())).getAmount();
 
+        if (Type.SHORT == this.type)
+            return getAmount() + taxAndFees;
+        else if (Type.COVER == this.type)
+            return getAmount() - taxAndFees;
+
         if (this.type.isPurchase())
             return getAmount() - taxAndFees;
         else

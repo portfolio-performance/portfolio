@@ -160,14 +160,14 @@ public class SecurityPosition
 
                 if (t.getType().isPurchase())
                 {
-                    // this is a buy
+                    // this is a buy or short
                     sharesHeld += numShares;
                     netInvestment += netAmount;
                     grossInvestment += grossAmount;
                 }
                 else
                 {
-                    // this is a sell
+                    // this is a sell or cover
                     long remainingShares = sharesHeld - numShares;
 
                     if (remainingShares <= 0 || sharesHeld == 0)
