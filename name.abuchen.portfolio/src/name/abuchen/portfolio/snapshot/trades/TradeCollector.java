@@ -60,11 +60,8 @@ public class TradeCollector
                     break;
 
                 case SELL:
-                case DELIVERY_OUTBOUND:
-                    trades.add(createNewTradeFromSell(openTransactions, pair));
-                    break;
-
                 case COVER:
+                case DELIVERY_OUTBOUND:
                     trades.add(createNewTradeFromSell(openTransactions, pair));
                     break;
 
