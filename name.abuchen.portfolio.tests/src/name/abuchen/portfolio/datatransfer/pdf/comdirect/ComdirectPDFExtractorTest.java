@@ -527,6 +527,38 @@ public class ComdirectPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierVerkauf4()
+    {
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "comdirectWertpapierabrechnung_Verkauf4.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getName(), is("Wirecard AG Inhaber-Aktien o.N."));
+        assertThat(security.getIsin(), is("DE0007472060"));
+        assertThat(security.getWkn(), is("747206"));
+
+        // purchase
+        PortfolioTransaction txP = ((BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject()).getPortfolioTransaction();
+
+        assertThat(txP.getType(), is(PortfolioTransaction.Type.SELL));
+
+        assertThat(txP.getAmount(), is(Values.Amount.factorize(-8.86)));
+        assertThat(txP.getDateTime(), is(LocalDateTime.parse("2020-08-25T14:34")));
+        assertThat(txP.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(12.40))));
+        assertThat(txP.getShares(), is(Values.Share.factorize(3)));
+    }
+
+    @Test
     public void testGutschrift1()
     {
         ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
