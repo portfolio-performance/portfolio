@@ -545,8 +545,17 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
             tableViewer.setInput(input);
             tableViewer.refresh();
             tableViewer.getTable().pack();
+            int hack = 0;
             for (TableColumn column : tableViewer.getTable().getColumns())
+            {
+                int saveWidth = 0;
+                if (hack > 0)
+                    saveWidth = tableViewer.getTable().getColumns()[0].getWidth();
                 column.pack();
+                if (hack > 0)
+                     tableViewer.getTable().getColumns()[0].setWidth(saveWidth);
+                hack += 1;
+            }
 
             doUpdateErrorMessages();
         }
