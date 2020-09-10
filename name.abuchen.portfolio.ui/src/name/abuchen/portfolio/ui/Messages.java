@@ -846,6 +846,7 @@ public class Messages extends NLS
     public static String MsgPortfolioToMissing;
     public static String MsgPreviousStockSplit;
     public static String MsgRestartRequired;
+    public static String MsgSecurityHasNoQuotes;
     public static String MsgUpdateNewInVersionX;
     public static String MsgUpdateRequiresLatestJavaVersion;
     public static String MsgUpdateRunning32BitOn64BitOS;
