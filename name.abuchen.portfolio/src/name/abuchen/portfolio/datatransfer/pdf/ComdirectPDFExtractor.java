@@ -229,11 +229,18 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         .section("amount", "currency") //
-                        .find(".*Zu Ihren Gunsten vor Steuern *") //
-                        .match(".* \\d+.\\d+.\\d{4}+ *(?<currency>\\w{3}+) *(?<amount>[\\d.]+,\\d+).*") //
+                        .find(".*(Zu Ihren Gunsten vor Steuern|Zu Ihren Lasten vor Steuern) *") //
+                        .match(".* \\d+.\\d+.\\d{4}+ *(?<currency>\\w{3}+) *(?<amount>[\\d.]+,\\d+-?).*") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
+                            if (v.get("amount").indexOf("-") != -1)
+                            {
+                                t.setAmount(-asAmount(v.get("amount").substring(0, v.get("amount").length() - 1)));
+                            }
+                            else 
+                            {
+                                t.setAmount(asAmount(v.get("amount")));
+                            }
                         })
 
                         .section("tax").optional() //

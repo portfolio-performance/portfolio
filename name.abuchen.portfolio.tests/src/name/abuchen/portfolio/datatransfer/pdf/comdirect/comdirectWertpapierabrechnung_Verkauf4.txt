@@ -1,0 +1,186 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Ihren Auftrag haben wir gemäß unseren produktbezogenen
+Geschäftsbedingungen "Trading" wie nachstehend ausgeführt.
+Die Wertpapiere haben wir der Abrechnung entsprechend gebucht.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und
+Vollständigkeit zu überprüfen und etwaige Einwendungen
+25449 Quickborn unverzüglich zu erheben.
+Telefon   :   04106-708 25 00                                                  
+                                                                              
+                             
+                                       
+                             
+    XXXXX XXX
+Depotnr.:        XXXXXXX XX 
+            BLZ:             XXX XXX XX
+Max Mustermann                 
+                             
+                             
+Musterstraße 1                                              
+XXXXX Musterstadt                                          
+                             
+                             
+                             
+                                                  
+                                                  
+GESCHÄFTSABRECHNUNG VOM 25.08.2020                                                   
+                                                                                                                                    
+*
+Wertpapierverkauf                                                                                                                   
+Geschäftsnummer   : XX XXXXXX                                                                                                       
+Ordernummer       : XXXXXXXXXXXX-XXX  Rechnungsnummer   : XXXXXXXXXXXXXXXX                                                          
+Geschäftstag      : 25.08.2020        Ausführungsplatz  : XETRA                                                                     
+Handelszeit       : 14:34 Uhr (MEZ/MESZ)                  (Kommissionsgeschäft)                                                     
+                                                                                                                                    
+Wertpapier-Bezeichnung                                               WPKNR/ISIN                                                     
+Wirecard AG                                                              747206                                                     
+Inhaber-Aktien o.N.                                                DE0007472060                                                     
+                                                                                                                                    
+                                                                                                                                    
+Nennwert                  Zum Kurs von                                                                                              
+St.  3                    EUR  1,18                                                                                                 
+                          Kurswert                    : EUR                3,54                                                     
+                                                                                                                                    
+--------------------------------------------------------------------------------                                                    
+Eigene Entgelte                                                                                                                     
+                          Provision                   : EUR                9,90-                                                    
+                          Börsenplatzabhäng. Entgelt  : EUR                2,50-                                                    
+                          Summe Entgelte              : EUR               12,40-                                                    
+--------------------------------------------------------------------------------                                                    
+                                                                                                                                    
+                                                                                                                                    
+IBAN                                  Valuta         Zu Ihren Lasten vor Steuern                                                    
+XXXX XXXX XXXX XXXX XXXX XX   EUR     27.08.2020        EUR                8,86-                                                    
+                                                                                                                                    
+Verwahrungs-Art: GIROSAMMELDEPOT                                                                                                    
+GLOBALURKUNDE, KEIN STUECKEAUSDRUCK                                                                                                 
+Ihre Wertpapier-Order wurde über das Online Banking erteilt.                                                                        
+                                                                                                                                    
+                                                                                                                                    
+                                                                                                                                    
+Informationen zur steuerlichen Behandlung dieses Geschäftsvorgangs und den auf                                                      
+Ihrem Konto gebuchten Endbetrag finden Sie auf der separaten Steuermitteilung.                                                      
+                                                                                                                                    
+                                                                                                                                    
+Bei Fragen geben Sie bitte die Ordernummer an.                                                                                      
+                                                                                                                                    
+comdirect bank AG                                                                                                                   
+                                                                                                                                    
+Diese Abrechnung wird von der Bank nicht unterschrieben                                                                             
+Die Leistung ist gemäß §4 Nr.8 UStG umsatzsteuerfrei. USt-Id-Nr.: XX XXX XXX XXX                                                    
+XXXX
+XXXXXX/XX/XX/XXXX
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Kundennr. /BLZ Bezeichnung
+ XXXXXXX  Max Mustermann                              
+                                                  
+            
+XXX XXX XX Musterstraße 1                                      XXXXX Musterstadt                                   
+abweichend wirtschaftlich Berechtigter
+                              
+                                              ----                    
+ c o  m   d  i r e  c  t   b  a  n  k    A  G               
+               
+ 2  5  4  5  1   Q  u  i c  k  b  o  r n                   
+0  1  0   1  1872
+                                                  
+T   e  le  f o  n  :             0   4  1  0  6   -  7  0 8 25 00
+                              
+ H  e  r r n                            D  a  t u  m   :                        2  5  . 0  8  .2020
+M   a  x   M   u  s  t  e  r  m  a  n  n                   
+ D  e  p  o  t  n  u  m   m  er:        X   X  X  X  X  X X XX  
+ M  u  s t e r  s  t  r  a  ß  e   1                    
+XXXXX Musterstadt               R   e  f e  r e  n  z  - N   u mmer:     X X  X X   X  X  X  X   XXXXXXXX                               
+                                      
+                                                  
+                                                  
+                                                  
+Steuerliche Behandlung: Wertpapierverkauf Nr. 91013277 vom 25.08.2020                                                             
+Stk.               3 WIRECARD AG , WKN / ISIN: 747206  / DE0007472060                                                             
+Z u  Ih r e n L a s te n  v o r  S te u e r n:                                                                                                       E U R              -8,8 6   
+                                                                                                                                
+                                                                                                                                
+ S te u e rb e m  e ss u n g s g r u n d la g e v o r V e r lu s tv e r re c h n u n g  ( 1 )                 E    U     R                                       -  3   4  8 , 0 6                          
+                                                                                                                                
+v e r re c h n e te  V e r lu s te   au s  A  kt ie n                                                         E  U   R                           -  3   4  8 , 0 6                          
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+S  te u e rb e m  e ss u n g s g r u n d la g e n a c h V e r lu s t ve r r ec h n u n g               E   U  R                                  0 , 0 0                          
+                                                                                                                                
+                                                                                                                                
+K  ap i ta le r tr a gs t e ue r                                                                        E  U   R                                  0 , 0 0                          
+ S ol id a ri tä t sz u s c hl a g                                                                      E  U   R                                  0 , 0 0                          
+ K irc h e n s te u e r                                                                              _E  _U   _R  _  _  _   _  _  _   _  _  _  _   _  _  _   _  0_ _, _0 0_                          
+ ab g e f ü h rt e S t e u er n                                                                                                                    E_ _U _R _ _ _ _ _ _ _ _ _ _ _ _ _ _ 0__,0_ 0_   
+                                                                                                                                
+ Zu  Ih r e n L a s te n  n a ch  S te u e r n :                                                                                                    E U R              -8,8 6   
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+Die Belastung erfolgt mit Valuta 27.08.2020 auf Konto EUR mit der IBAN XXXX XXXX XXXX XXXX XXXX XX                                                    
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+(1) siehe "Hinweise zur Ermittlung der Steuerbemessungsgrundlage" auf der Folgeseite                                                                  
+KEINE STEUERBESCHEINIGUNG ...
+Bisher einbehaltene bzw. angerechnete Steuer in EUR (4)
+in 2020 einbehaltene einbehaltener einbehaltene angerechneteKapitalertragsteuer Solidaritätszuschlag Kirchensteuer ausländische Quellensteuer
+vor Ermittlung
+                0,00                 0,00
+                0,00                 0,00
+nach Ermittlung
+                0,00 0,00                 0,00                 0,00                
+Verrechnungssalden in EUR (4)
+2020 Gewinne / Verluste sonstige anrechenbare verfügbarerin aus Aktien Gewinne / Verluste ausländische Quellensteuer Freistellungsauftrag
+vor Ermittlung
+                0,00                78,17                -4,84               271,83
+nach Ermittlung
+             -348,06                78,17
+               -4,84               271,83
+Hinweise zur Ermittlung der Steuerbemessungsgrundlage:                                                                                                             
+                                                                                                                                                                                    
+ zu  Ih r e n L a s te n  v o r S t e u e rn                                                                                                                                                            E  U R               -8,86                           
+Anschaffung vom 11.02.2019               1,00 Stück                      E U R             - 1 03,00                                                   
+ An s c  ha f f  u ng   v o m 1 5 .  1 0 . 2 01 9                 2 ,0  0 S  t üc k                       E_ U_ R_ _ _ _ _ _ _ _ _ _ _ _ _ -_ 2_ _36__,_2_0                                                   
+Summe der Anschaffungskosten aus Anschaffungsvorgängen nach                                                                                                      
+ ab g e l tu n g s te u e rr e le v a n te m  S t ic h ta g                                                                                                                                                  _E  _U _R_  _ __  _ _ _ _ __ _ _ _ -_3_3_9__,_20_                           
+ S te u e r b e m e s s u n g s g r u n d la g e  v o r  V  er l u s tv e r re c h n u n g                                                                                                                   E  U R             -348,06                           
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+comdirect bank AG                                                                                                                                     
+Diese Abrechnung ist maschinell erstellt und wird nicht unterschrieben.                                                                               
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+(4) Die ausgewiesenen EUR-Beträge spiegeln den Stand zum Abrechnungszeitpunkt wider.                                                                  
+KEINE STEUERBESCHEINIGUNG```
