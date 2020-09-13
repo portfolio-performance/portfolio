@@ -8,3 +8,15 @@
 CTabFolder {
     padding: 0px;
 }
+
+.MPart .sidebar,
+.MPart .sidebar Label {
+	color: #D7D8D8;
+	background-color: #1D1F21;
+	selection-color: #D7D8D8;
+	selection-background-color: #383A3D;
+}
+
+.MPart .sidebarBorder {
+	background-color: #15171A;
+}

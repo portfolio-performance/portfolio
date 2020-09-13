@@ -52,7 +52,6 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.Navigation.Item;
-import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.swt.SashLayout;
 import name.abuchen.portfolio.ui.util.swt.SashLayoutData;
@@ -156,7 +155,7 @@ public class PortfolioPart implements ClientInputListener
                         menuManager -> addToNavigationMenu(menuManager, 0, clientInput.getNavigation().getRoots()));
 
         Composite divider = new Composite(navigationBar, SWT.NONE);
-        divider.setBackground(Colors.SIDEBAR_BORDER);
+        navigationBar.setData(UIConstants.CSS.CLASS_NAME, "sidebarBorder"); //$NON-NLS-1$
         GridDataFactory.fillDefaults().span(0, 2).hint(1, SWT.DEFAULT).applyTo(divider);
 
         ClientProgressProvider provider = make(ClientProgressProvider.class, clientInput.getClient(), navigationBar);

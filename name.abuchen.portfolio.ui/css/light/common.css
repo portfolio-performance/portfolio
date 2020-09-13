@@ -38,3 +38,15 @@ CTabItem {
 CTabItem:selected {
 	color: #393E42;
 }
+
+.MPart .sidebar,
+.MPart .sidebar Label {
+	color: #393E42;
+	background-color: #F9FAFA;
+	selection-color: #393E42;
+	selection-background-color: #E4E6E9;
+}
+
+.MPart .sidebarBorder {
+	background-color: #F4F5F5;
+}

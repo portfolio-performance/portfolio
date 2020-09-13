@@ -43,7 +43,7 @@ public final class Colors
     public static final Color WARNING = getColor(254, 223, 107); // FEDF6B
     public static final Color WARNING_RED = getColor(209, 29, 29); // D11D1D
 
-    public static final Color SIDEBAR_TEXT = getColor(57, 62, 66);
+    public static final Color SIDEBAR_TEXT = getColor(57, 62, 66); // 393E42
     public static final Color SIDEBAR_BACKGROUND = getColor(249, 250, 250); // F9FAFA
     public static final Color SIDEBAR_BACKGROUND_SELECTED = getColor(228, 230, 233); // E4E6E9
     public static final Color SIDEBAR_BORDER = getColor(244, 245, 245); // F4F5F5
