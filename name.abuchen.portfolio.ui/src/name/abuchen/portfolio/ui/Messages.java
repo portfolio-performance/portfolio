@@ -673,6 +673,7 @@ public class Messages extends NLS
     public static String LabelSuffix_PreTax;
     public static String LabelTaxonomies;
     public static String LabelTaxonomyTemplates;
+    public static String LabelTheme;
     public static String LabelToday;
     public static String LabelToolTipDividendDetails;
     public static String LabelToolTipInvestmentDetails;
@@ -847,6 +848,7 @@ public class Messages extends NLS
     public static String MsgPreviousStockSplit;
     public static String MsgRestartRequired;
     public static String MsgSecurityHasNoQuotes;
+    public static String MsgThemeRestartRequired;
     public static String MsgUpdateNewInVersionX;
     public static String MsgUpdateRequiresLatestJavaVersion;
     public static String MsgUpdateRunning32BitOn64BitOS;

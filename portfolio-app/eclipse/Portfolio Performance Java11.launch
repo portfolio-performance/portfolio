@@ -143,6 +143,7 @@
         <setEntry value="org.eclipse.swt.cocoa.macosx.x86_64@default:false"/>
         <setEntry value="org.eclipse.swt@default:default"/>
         <setEntry value="org.eclipse.ui.forms@default:default"/>
+        <setEntry value="org.eclipse.ui.themes@default:default"/>
         <setEntry value="org.eclipse.urischeme@default:default"/>
         <setEntry value="org.jsoup@default:default"/>
         <setEntry value="org.objectweb.asm@default:default"/>

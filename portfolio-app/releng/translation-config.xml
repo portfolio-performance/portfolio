@@ -58,6 +58,11 @@
 			<filename>labels</filename>
 		</artifact>
 		<artifact>
+			<context>ui.bundle</context>
+			<path>name.abuchen.portfolio.ui/OSGI-INF/l10n</path>
+			<filename>bundle</filename>
+		</artifact>
+		<artifact>
 			<context>ui.bootstrap</context>
 			<path>name.abuchen.portfolio.bootstrap/src/name/abuchen/portfolio/bootstrap</path>
 			<filename>messages</filename>

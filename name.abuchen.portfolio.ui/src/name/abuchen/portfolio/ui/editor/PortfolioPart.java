@@ -145,6 +145,7 @@ public class PortfolioPart implements ClientInputListener
         sash.setLayout(sashLayout);
 
         Composite navigationBar = new Composite(sash, SWT.NONE);
+        navigationBar.setData(UIConstants.CSS.CLASS_NAME, "sidebar"); //$NON-NLS-1$
         GridLayoutFactory.fillDefaults().numColumns(2).spacing(0, 0).margins(0, 0).applyTo(navigationBar);
 
         this.sidebar = new ClientEditorSidebar(this);

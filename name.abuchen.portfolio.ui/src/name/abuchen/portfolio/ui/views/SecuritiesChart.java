@@ -315,7 +315,8 @@ public class SecuritiesChart
 
         Composite buttons = new Composite(parent, SWT.NONE);
         buttons.setBackground(Colors.WHITE);
-        RowLayoutFactory.fillDefaults().type(SWT.VERTICAL).spacing(2).fill(true).wrap(true).applyTo(buttons);
+        RowLayoutFactory.fillDefaults().type(SWT.VERTICAL).spacing(2).margins(2, 2).fill(true).wrap(true)
+                        .applyTo(buttons);
 
         addConfigButton(buttons);
 
