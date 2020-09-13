@@ -1,0 +1,40 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+justTRADE
+Ein Service der Sutor Bank
+JT Technologies GmbH
+Kaiserhofstraße 16
+Herr 60313 Frankfurt am Main
+Vor Zu Email: service@justtrade.com
+Straße 4 Web: www.justtrade.com
+30000 Stadt
+Name des Kunden: Vor Zu
+Kontonummer: 6
+WERTPAPIERABRECHNUNG
+Sehr geehrter Herr Vor Zu,
+dieses Dokument ist eine Bestätigung der Transaktion, die wir in Ihrem Namen durchgeführt haben.
+Bei Fragen oder im Falle einer fehlerhaften Abrechnung wenden Sie sich bitte an den justTRADE -
+Kundenservice. Sie finden die Kontaktdetails im Briefkopf dieser Abrechnung.
+Der Gegenwert der Transaktion wird per Valutatag gebucht.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Produktbezeichnung - Leveraged Certificate auf DAX
+Wertpapierhändlername: justTRADE
+Internationale Wertpapierkennnummer (ISIN): DE000CL9E825
+Währung: EUR
+Handels-/Ausführungsplatz: XSGA
+Handelsreferenz: 5f245de9567c6400199b6ba9
+Orderausführung Datum/Zeit: 31 Jul 2020 21:00:15
+Valutatag Datum: 4 Aug 2020
+Transaktionsart: Verkauf
+Kurs: €38,5000
+Stück/Nominale: 58,00
+Kurswert: €2.233,00
+Kapitalertragssteuer: €0,73
+Solidaritätszuschlag: €0,04
+Ausmachender Betrag: €2.232,23
+MAX HEINR. SUTOR OHG TELEFON 040-8090685-0 GESCHÄFTSLEITUNG FINANZAMT HAMBURG AMTSGERICHT HAMBURG
+HERMANNSTRASSE 46 TELEFAX 040-8090685-810 ROBERT FREITAG STNR: 2761000074 HRA 25379
+20095 HAMBURG THOMAS MEIER UST-IDNR: DE155617009
+POSTFACH 11 33 37 INFO@SUTORBANK.DE BANKLEITZAHL 202 308 00
+20433 HAMBURG WWW.SUTORBANK.DE BIC CODE: MHSBDEHBXXX
