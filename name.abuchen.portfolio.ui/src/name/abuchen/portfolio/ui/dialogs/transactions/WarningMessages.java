@@ -32,9 +32,11 @@ public class WarningMessages
         List<String> messages = new ArrayList<>();
         for (Supplier<String> check : checks)
         {
-            if (check.get() != null)
-                messages.add(check.get());
+            String message = check.get();
+            if (message != null)
+                messages.add(message);
         }
+
         if (messages.size() > 0)
         {
             dialog.setMessage(String.join("\n", messages), IMessageProvider.WARNING); //$NON-NLS-1$
