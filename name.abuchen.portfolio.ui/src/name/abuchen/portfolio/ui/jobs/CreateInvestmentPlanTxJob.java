@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.jobs;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,7 @@ import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 
 public final class CreateInvestmentPlanTxJob extends AbstractClientJob
 {
@@ -50,9 +52,16 @@ public final class CreateInvestmentPlanTxJob extends AbstractClientJob
 
             CurrencyConverterImpl converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
             getClient().getPlans().stream().filter(InvestmentPlan::isAutoGenerate).forEach(plan -> {
-                List<TransactionPair<?>> transactions = plan.generateTransactions(converter);
-                if (!transactions.isEmpty())
-                    tx.put(plan, transactions);
+                try
+                {
+                    List<TransactionPair<?>> transactions = plan.generateTransactions(converter);
+                    if (!transactions.isEmpty())
+                        tx.put(plan, transactions);
+                }
+                catch (IOException e)
+                {
+                    PortfolioPlugin.log(e);
+                }
             });
 
             if (!tx.isEmpty())
