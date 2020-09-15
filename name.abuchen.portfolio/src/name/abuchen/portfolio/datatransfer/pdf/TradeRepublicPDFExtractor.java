@@ -98,15 +98,28 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                             t.setShares(asShares(v.get("shares")));
                         })
 
-                        // there are two lines with "GESAMT" - one for gross and
+                        // there might be two lines with "GESAMT" - one for gross and
                         // one for the net value - pick the second
 
-                        .section("amount", "currency") //
+                        .section("amount", "currency").optional() //
                         .match("GESAMT ([\\d+,.]*) (\\w{3}+)") //
                         .match("GESAMT (?<amount>[\\d+,.]*) (?<currency>\\w{3}+)") //
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
+
+                        // in case there is no tax, only one line with "GESAMT"
+                        // exists and we need to grab data from that line
+                        .section("amount", "currency") //
+                        .match("GESAMT (?<amount>[\\d+,.]*) (?<currency>\\w{3}+)") //
+                        .assign((t, v) -> {
+                            // if amount is already set, we do nothing
+                            if (t.getPortfolioTransaction().getAmount() == 0L)
+                            {
+                                t.setAmount(asAmount(v.get("amount")));
+                                t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            }
                         })
 
                         .section("date", "time") //
