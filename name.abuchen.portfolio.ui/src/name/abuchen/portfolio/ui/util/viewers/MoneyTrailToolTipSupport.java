@@ -40,6 +40,9 @@ public class MoneyTrailToolTipSupport extends ColumnViewerToolTipSupport
     @Override
     protected Composite createViewerToolTipContentArea(Event event, ViewerCell cell, Composite parent)
     {
+        if (cell == null)
+            return super.createViewerToolTipContentArea(event, cell, parent);
+            
         Object element = cell.getElement();
 
         if (!(element instanceof TrailProvider))
