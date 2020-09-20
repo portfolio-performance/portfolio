@@ -189,10 +189,8 @@ public class ChartWidget extends WidgetDelegate<Object>
     {
         Composite container = new Composite(parent, SWT.NONE);
         GridLayoutFactory.fillDefaults().numColumns(1).margins(5, 5).applyTo(container);
-        container.setBackground(parent.getBackground());
 
         title = new Label(container, SWT.NONE);
-        title.setBackground(container.getBackground());
         title.setText(TextUtil.tooltip(getWidget().getLabel()));
         GridDataFactory.fillDefaults().grab(true, false).applyTo(title);
 
@@ -210,6 +208,8 @@ public class ChartWidget extends WidgetDelegate<Object>
         gc.dispose();
 
         GridDataFactory.fillDefaults().hint(SWT.DEFAULT, stringExtend.y * 6).grab(true, false).applyTo(chart);
+
+        getDashboardData().getStylingEngine().style(chart);
 
         container.layout();
 

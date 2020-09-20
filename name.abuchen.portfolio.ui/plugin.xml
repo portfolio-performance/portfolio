@@ -24,9 +24,9 @@
    <extension
          point="org.eclipse.e4.ui.css.core.propertyHandler">
       <handler
-            adapter="name.abuchen.portfolio.ui.editor.SidebarElementAdapter"
+            adapter="name.abuchen.portfolio.ui.theme.SidebarElementAdapter"
             composite="true"
-            handler="name.abuchen.portfolio.ui.editor.SidebarCSSHandler">
+            handler="name.abuchen.portfolio.ui.theme.SidebarCSSHandler">
          <property-name
                name="selection-color">
          </property-name>
@@ -34,25 +34,42 @@
                name="selection-background-color">
          </property-name>
       </handler>
+      <handler
+            adapter="name.abuchen.portfolio.ui.theme.ChartElementAdapter"
+            composite="false"
+            handler="name.abuchen.portfolio.ui.theme.ChartCSSHandler">
+         <property-name
+               name="background-color">
+         </property-name>
+         <property-name
+               name="axis-color">
+         </property-name>
+         <property-name
+               name="grid-color">
+         </property-name>
+         <property-name
+               name="highlight-color">
+         </property-name>
+      </handler>
    </extension>
    <extension
          point="org.eclipse.e4.ui.css.core.elementProvider">
       <provider
-            class="name.abuchen.portfolio.ui.util.theme.ThemeElementDefinitionProvider">
+            class="name.abuchen.portfolio.ui.theme.ElementProvider">
          <widget
-               class="name.abuchen.portfolio.ui.util.theme.ThemesExtension">
+               class="name.abuchen.portfolio.ui.theme.ThemesExtension">
          </widget>
          <widget
-               class="name.abuchen.portfolio.ui.util.theme.ColorDefinition">
+               class="name.abuchen.portfolio.ui.theme.ColorDefinition">
          </widget>
          <widget
-               class="name.abuchen.portfolio.ui.util.theme.FontDefinition">
+               class="name.abuchen.portfolio.ui.theme.FontDefinition">
          </widget>
-      </provider>
-      <provider
-            class="name.abuchen.portfolio.ui.editor.SidebarElementProvider">
          <widget
                class="name.abuchen.portfolio.ui.editor.Sidebar">
+         </widget>
+         <widget
+               class="org.swtchart.Chart">
          </widget>
       </provider>
    </extension>

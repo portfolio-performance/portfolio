@@ -20,7 +20,6 @@ import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.swtchart.Chart;
 import org.swtchart.IAxis;
 import org.swtchart.IAxis.Position;
@@ -34,6 +33,8 @@ import org.swtchart.LineStyle;
 import org.swtchart.Range;
 
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.util.Colors;
 
 public class TimelineChart extends Chart // NOSONAR
 {
@@ -106,8 +107,8 @@ public class TimelineChart extends Chart // NOSONAR
     {
         super(parent, SWT.NONE);
 
-        setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
-        getTitle().setForeground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
+        setData(UIConstants.CSS.CLASS_NAME, "chart"); //$NON-NLS-1$
+
         getLegend().setVisible(false);
 
         // x axis
@@ -119,7 +120,6 @@ public class TimelineChart extends Chart // NOSONAR
         // y axis
         IAxis yAxis = getAxisSet().getYAxis(0);
         yAxis.getTitle().setVisible(false);
-        yAxis.getTick().setForeground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
         yAxis.setPosition(Position.Secondary);
 
         // 2nd y axis
@@ -206,7 +206,7 @@ public class TimelineChart extends Chart // NOSONAR
 
     public ILineSeries addDateSeries(LocalDate[] dates, double[] values, String label)
     {
-        return addDateSeries(dates, values, Display.getDefault().getSystemColor(SWT.COLOR_BLACK), false, label);
+        return addDateSeries(dates, values, Colors.BLACK, false, label);
     }
 
     public ILineSeries addDateSeries(LocalDate[] dates, double[] values, Color color, String label)
@@ -232,7 +232,7 @@ public class TimelineChart extends Chart // NOSONAR
         IBarSeries barSeries = (IBarSeries) getSeriesSet().createSeries(SeriesType.BAR, label);
         barSeries.setXDateSeries(toJavaUtilDate(dates));
         barSeries.setYSeries(values);
-        barSeries.setBarColor(Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY));
+        barSeries.setBarColor(Colors.DARK_GRAY);
         barSeries.setBarPadding(100);
 
         return barSeries;
@@ -283,11 +283,13 @@ public class TimelineChart extends Chart // NOSONAR
                 cursor = cursor.plusYears(1).withDayOfYear(1);
         }
 
+        e.gc.setForeground(getTitle().getForeground());
+
         while (cursor.isBefore(end))
         {
             int y = xAxis.getPixelCoordinate((double) cursor.atStartOfDay(zoneId).toInstant().toEpochMilli());
             e.gc.drawLine(y, 0, y, e.height);
-            e.gc.drawText(format.format(cursor), y + 5, 5);
+            e.gc.drawText(format.format(cursor), y + 5, 5, true);
 
             cursor = cursor.plus(period);
         }

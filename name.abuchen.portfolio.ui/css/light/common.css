@@ -56,3 +56,17 @@ CTabItem:selected {
 	color: black;
 	background-color: #ECECEC;
 }
+
+.chart {
+	background-color: white;
+	axis-color: black;
+	grid-color: lightgrey;
+	highlight-color: black;
+}
+
+.dashboard Composite,
+.dashboard Label,
+.dashboard StyledLabel,
+.dashboard ImageHyperlink {
+	background-color: white;
+}

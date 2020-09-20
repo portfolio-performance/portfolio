@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.editor;
+package name.abuchen.portfolio.ui.theme;
 
 import org.eclipse.e4.ui.css.core.dom.properties.ICSSPropertyHandler;
 import org.eclipse.e4.ui.css.core.dom.properties.converters.ICSSValueConverter;
@@ -7,6 +7,8 @@ import org.eclipse.e4.ui.css.swt.properties.AbstractCSSPropertySWTHandler;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Control;
 import org.w3c.dom.css.CSSValue;
+
+import name.abuchen.portfolio.ui.editor.Sidebar;
 
 @SuppressWarnings("restriction")
 public class SidebarCSSHandler extends AbstractCSSPropertySWTHandler implements ICSSPropertyHandler

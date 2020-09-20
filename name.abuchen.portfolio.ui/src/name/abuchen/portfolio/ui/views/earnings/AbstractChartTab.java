@@ -9,44 +9,23 @@ import org.eclipse.jface.resource.ColorDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.swtchart.Chart;
 import org.swtchart.IAxis;
 import org.swtchart.IAxis.Position;
-import org.swtchart.ICustomPaintListener;
-import org.swtchart.IPlotArea;
 import org.swtchart.ISeries;
 import org.swtchart.Range;
 
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart.ThousandsNumberFormat;
+import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
 
 public abstract class AbstractChartTab implements EarningsTab
 {
-    private class PaintBehindListener implements ICustomPaintListener
-    {
-        @Override
-        public void paintControl(PaintEvent e)
-        {
-            int y = chart.getAxisSet().getYAxis(0).getPixelCoordinate(0);
-            e.gc.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
-            e.gc.setLineStyle(SWT.LINE_SOLID);
-            e.gc.drawLine(0, y, e.width, y);
-        }
-
-        @Override
-        public boolean drawBehindSeries()
-        {
-            return true;
-        }
-    }
-
     private static final int[][] COLORS = new int[][] { //
                     new int[] { 140, 86, 75 }, //
                     new int[] { 227, 119, 194 }, //
@@ -88,26 +67,21 @@ public abstract class AbstractChartTab implements EarningsTab
         resources = new LocalResourceManager(JFaceResources.getResources(), parent);
 
         chart = new Chart(parent, SWT.NONE);
-        chart.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+
+        chart.setData(UIConstants.CSS.CLASS_NAME, "chart"); //$NON-NLS-1$
+
         chart.getTitle().setVisible(false);
         chart.getLegend().setPosition(SWT.BOTTOM);
-        chart.getPlotArea().addPaintListener(new PaintBehindListener());
 
         IAxis xAxis = chart.getAxisSet().getXAxis(0);
         xAxis.getTitle().setVisible(false);
-        xAxis.getTick().setForeground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
         xAxis.getTitle().setText(Messages.ColumnMonth);
 
         IAxis yAxis = chart.getAxisSet().getYAxis(0);
         yAxis.getTitle().setVisible(false);
-        yAxis.getTick().setForeground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
         yAxis.setPosition(Position.Secondary);
-        
-        xAxis.enableCategory(true);
 
-        // add paint listeners
-        IPlotArea plotArea = (IPlotArea) chart.getPlotArea();
-        plotArea.addCustomPaintListener(new PaintBehindListener());
+        xAxis.enableCategory(true);
 
         // format symbols returns 13 values as some calendars have 13 months
         xAxis.setCategorySeries(Arrays.copyOfRange(new DateFormatSymbols().getMonths(), 0, 12));

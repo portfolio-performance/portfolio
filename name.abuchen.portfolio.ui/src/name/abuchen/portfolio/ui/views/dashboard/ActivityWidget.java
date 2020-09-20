@@ -18,7 +18,6 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.swtchart.Chart;
 import org.swtchart.IAxis;
@@ -38,6 +37,7 @@ import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.filter.ClientFilter;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.CacheKey;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
@@ -178,6 +178,9 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
         GridDataFactory.fillDefaults().grab(true, false).applyTo(title);
 
         chart = new Chart(container, SWT.NONE);
+        chart.setData(UIConstants.CSS.CLASS_NAME, "chart"); //$NON-NLS-1$
+        getDashboardData().getStylingEngine().style(chart);
+
         chart.setBackground(container.getBackground());
         chart.getTitle().setVisible(false);
         chart.getTitle().setText(title.getText());
@@ -206,7 +209,6 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
 
         IAxis xAxis = chart.getAxisSet().getXAxis(0);
         xAxis.getTick().setVisible(true);
-        xAxis.getTick().setForeground(Colors.BLACK);
         xAxis.getTitle().setVisible(false);
         xAxis.getTitle().setText(Messages.ColumnMonth);
         xAxis.getGrid().setStyle(LineStyle.NONE);
@@ -214,7 +216,6 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
 
         IAxis yAxis = chart.getAxisSet().getYAxis(0);
         yAxis.getTitle().setVisible(false);
-        yAxis.getTick().setForeground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
         yAxis.setPosition(Position.Secondary);
 
         chart.getPlotArea().addTraverseListener(event -> event.doit = true);

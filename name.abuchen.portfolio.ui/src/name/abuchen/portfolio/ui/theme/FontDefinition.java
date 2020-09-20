@@ -1,15 +1,15 @@
-package name.abuchen.portfolio.ui.util.theme;
+package name.abuchen.portfolio.ui.theme;
 
-import org.eclipse.e4.ui.internal.css.swt.definition.IColorDefinitionOverridable;
-import org.eclipse.swt.graphics.RGB;
+import org.eclipse.e4.ui.internal.css.swt.definition.IFontDefinitionOverridable;
+import org.eclipse.swt.graphics.FontData;
 
 @SuppressWarnings("restriction")
-public class ColorDefinition implements IColorDefinitionOverridable
+public class FontDefinition implements IFontDefinitionOverridable
 {
     private final String id;
-    private RGB value;
+    private FontData[] value;
 
-    public ColorDefinition(String id)
+    public FontDefinition(String id)
     {
         this.id = id;
     }
@@ -21,13 +21,13 @@ public class ColorDefinition implements IColorDefinitionOverridable
     }
 
     @Override
-    public void setValue(RGB data)
+    public void setValue(FontData[] data)
     {
         this.value = data;
     }
 
     @Override
-    public RGB getValue()
+    public FontData[] getValue()
     {
         return value;
     }

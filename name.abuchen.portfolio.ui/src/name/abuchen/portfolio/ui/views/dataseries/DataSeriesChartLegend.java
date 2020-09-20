@@ -50,7 +50,7 @@ public class DataSeriesChartLegend extends Composite
 
     /**
      * Constructor.
-     * 
+     *
      * @param parent
      *            the parent composite
      * @param configurator
@@ -62,8 +62,6 @@ public class DataSeriesChartLegend extends Composite
 
         this.configurator = configurator;
         this.resources = new LocalResourceManager(JFaceResources.getResources(), parent);
-
-        setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 
         setLayout(new RowPlusChevronLayout(this));
 
@@ -97,8 +95,6 @@ public class DataSeriesChartLegend extends Composite
             super(parent, SWT.NONE);
 
             this.series = series;
-
-            setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_WHITE));
 
             addListener(SWT.Paint, this);
             addListener(SWT.Resize, this);
@@ -143,12 +139,12 @@ public class DataSeriesChartLegend extends Composite
             gc.setBackground(getColor());
             gc.fillRectangle(r.x, r.y, r.width, r.height);
 
-            gc.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_BLACK));
+            gc.setForeground(getForeground());
             gc.drawRectangle(r.x, r.y, r.width - 1, r.height - 1);
 
             String text = series.getLabel();
 
-            e.gc.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_BLACK));
+            e.gc.setForeground(getForeground());
             e.gc.drawString(text, size.y + 2, 1, true);
 
             e.gc.setForeground(oldForeground);

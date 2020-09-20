@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 import name.abuchen.portfolio.model.Client;
@@ -29,6 +30,7 @@ public class DashboardData
 
     private final Client client;
     private final IPreferenceStore preferences;
+    private final IStylingEngine stylingEngine;
     private final ExchangeRateProviderFactory factory;
     private final CurrencyConverter converter;
 
@@ -45,11 +47,12 @@ public class DashboardData
     private Dashboard dashboard;
 
     @Inject
-    public DashboardData(Client client, IPreferenceStore preferences, ExchangeRateProviderFactory factory,
-                    DataSeriesCache dataSeriesCache)
+    public DashboardData(Client client, IPreferenceStore preferences, IStylingEngine stylingEngine,
+                    ExchangeRateProviderFactory factory, DataSeriesCache dataSeriesCache)
     {
         this.client = client;
         this.preferences = preferences;
+        this.stylingEngine = stylingEngine;
         this.factory = factory;
         this.converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
 
@@ -65,6 +68,11 @@ public class DashboardData
     public IPreferenceStore getPreferences()
     {
         return preferences;
+    }
+
+    public IStylingEngine getStylingEngine()
+    {
+        return stylingEngine;
     }
 
     public Dashboard getDashboard()

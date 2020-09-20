@@ -26,3 +26,10 @@ CTabFolder {
 	color: #EEEEEE;
 	background-color: #515658;
 }
+
+.chart {
+	background-color: #515658;
+	axis-color: #A0A0A0;
+	grid-color: #606060;
+	highlight-color: white;
+}
