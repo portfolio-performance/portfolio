@@ -20,3 +20,9 @@ CTabFolder {
 .MPart .sidebarBorder {
 	background-color: #15171A;
 }
+
+.tooltip Label,
+.tooltip Composite {
+	color: #EEEEEE;
+	background-color: #515658;
+}

@@ -39,6 +39,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 
 import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.Colors;
 
 public final class Sidebar<I> extends Composite
@@ -80,7 +81,7 @@ public final class Sidebar<I> extends Composite
         super(parent, SWT.NONE);
         this.model = model;
 
-        this.setData("org.eclipse.e4.ui.css.CssClassName", "sidebar"); //$NON-NLS-1$ //$NON-NLS-2$
+        this.setData(UIConstants.CSS.CLASS_NAME, "sidebar"); //$NON-NLS-1$
 
         setLayout(new FormLayout());
         setFont(getFont());

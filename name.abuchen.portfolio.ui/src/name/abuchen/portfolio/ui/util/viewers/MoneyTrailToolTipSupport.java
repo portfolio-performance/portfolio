@@ -23,7 +23,6 @@ import name.abuchen.portfolio.snapshot.trail.TrailProvider;
 import name.abuchen.portfolio.snapshot.trail.TrailRecord;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.Colors;
-import name.abuchen.portfolio.util.TextUtil;
 
 public class MoneyTrailToolTipSupport extends ColumnViewerToolTipSupport
 {
@@ -42,7 +41,7 @@ public class MoneyTrailToolTipSupport extends ColumnViewerToolTipSupport
     {
         if (cell == null)
             return super.createViewerToolTipContentArea(event, cell, parent);
-            
+
         Object element = cell.getElement();
 
         if (!(element instanceof TrailProvider))
@@ -94,7 +93,7 @@ public class MoneyTrailToolTipSupport extends ColumnViewerToolTipSupport
 
         Label label = new Label(composite, SWT.NONE);
         label.setBackground(composite.getBackground());
-        label.setText(TextUtil.pad(trail.getLabel()));
+        label.setText(trail.getLabel());
 
         Label shares = new Label(composite, SWT.RIGHT);
         shares.setBackground(composite.getBackground());
@@ -113,8 +112,8 @@ public class MoneyTrailToolTipSupport extends ColumnViewerToolTipSupport
             if (index == level)
             {
                 answer = column;
-                column.setText(TextUtil.pad(trail.getValue() != null ? Values.Money.format(trail.getValue())
-                                : Messages.LabelNotAvailable));
+                column.setText(trail.getValue() != null ? Values.Money.format(trail.getValue())
+                                : Messages.LabelNotAvailable);
 
                 highlight(Arrays.asList(label, column), inputs);
             }

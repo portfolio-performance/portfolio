@@ -155,7 +155,7 @@ public class PortfolioPart implements ClientInputListener
                         menuManager -> addToNavigationMenu(menuManager, 0, clientInput.getNavigation().getRoots()));
 
         Composite divider = new Composite(navigationBar, SWT.NONE);
-        navigationBar.setData(UIConstants.CSS.CLASS_NAME, "sidebarBorder"); //$NON-NLS-1$
+        divider.setData(UIConstants.CSS.CLASS_NAME, "sidebarBorder"); //$NON-NLS-1$
         GridDataFactory.fillDefaults().span(0, 2).hint(1, SWT.DEFAULT).applyTo(divider);
 
         ClientProgressProvider provider = make(ClientProgressProvider.class, clientInput.getClient(), navigationBar);

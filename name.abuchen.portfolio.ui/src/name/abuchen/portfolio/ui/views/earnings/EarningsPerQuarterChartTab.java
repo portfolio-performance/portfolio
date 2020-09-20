@@ -6,9 +6,7 @@ import java.util.stream.Collectors;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.swtchart.Chart;
 import org.swtchart.IBarSeries;
@@ -16,8 +14,8 @@ import org.swtchart.ISeries.SeriesType;
 
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
+import name.abuchen.portfolio.ui.util.swt.ColoredLabel;
 import name.abuchen.portfolio.ui.views.earnings.EarningsViewModel.Line;
 import name.abuchen.portfolio.util.TextUtil;
 
@@ -59,28 +57,19 @@ public class EarningsPerQuarterChartTab extends AbstractChartTab
             container.setBackgroundMode(SWT.INHERIT_FORCE);
             GridLayoutFactory.swtDefaults().numColumns(1 + noOfYears).applyTo(container);
 
-            Color foregroundColor = Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
-            container.setForeground(foregroundColor);
-            container.setBackground(Colors.INFO_TOOLTIP_BACKGROUND);
-
             Label topLeft = new Label(container, SWT.NONE);
-            topLeft.setForeground(foregroundColor);
             topLeft.setText(Messages.ColumnSecurity);
 
             for (int year = 0; year < noOfYears; year++)
             {
-                Label label = new Label(container, SWT.CENTER);
-
-                Color color = ((IBarSeries) getChart().getSeriesSet().getSeries()[year]).getBarColor();
-                label.setBackground(color);
-                label.setForeground(Colors.getTextColor(color));
-                label.setText(TextUtil.pad(String.valueOf(model.getStartYear() + year)));
+                ColoredLabel label = new ColoredLabel(container, SWT.CENTER);
+                label.setHightlightColor(((IBarSeries) getChart().getSeriesSet().getSeries()[year]).getBarColor());
+                label.setText(String.valueOf(model.getStartYear() + year));
                 GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(label);
             }
 
             lines.forEach(line -> {
                 Label l = new Label(container, SWT.NONE);
-                l.setForeground(foregroundColor);
                 l.setText(TextUtil.tooltip(line.getVehicle().getName()));
 
                 for (int m = quarter * 3; m < totalNoOfMonths; m += 12)
@@ -90,14 +79,12 @@ public class EarningsPerQuarterChartTab extends AbstractChartTab
                     for (int mQuarter = m; mQuarter < mLimit && mQuarter < totalNoOfMonths; mQuarter += 1)
                         value += line.getValue(mQuarter);
                     l = new Label(container, SWT.RIGHT);
-                    l.setForeground(foregroundColor);
-                    l.setText(TextUtil.pad(Values.Amount.format(value)));
+                    l.setText(Values.Amount.format(value));
                     GridDataFactory.fillDefaults().align(SWT.END, SWT.FILL).applyTo(l);
                 }
             });
 
             Label l = new Label(container, SWT.NONE);
-            l.setForeground(foregroundColor);
             l.setText(Messages.ColumnSum);
 
             for (int m = quarter * 3; m < totalNoOfMonths; m += 12)
@@ -106,12 +93,10 @@ public class EarningsPerQuarterChartTab extends AbstractChartTab
                 long value = 0;
                 for (int mQuarter = m; mQuarter < mLimit && mQuarter < totalNoOfMonths; mQuarter += 1)
                     value += model.getSum().getValue(mQuarter);
-                l = new Label(container, SWT.RIGHT);
-                Color color = ((IBarSeries) getChart().getSeriesSet().getSeries()[m / 12]).getBarColor();
-                l.setBackground(color);
-                l.setForeground(Colors.getTextColor(color));
-                l.setText(TextUtil.pad(Values.Amount.format(value)));
-                GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(l);
+                ColoredLabel cl = new ColoredLabel(container, SWT.RIGHT);
+                cl.setHightlightColor(((IBarSeries) getChart().getSeriesSet().getSeries()[m / 12]).getBarColor());
+                cl.setText(Values.Amount.format(value));
+                GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(cl);
             }
         }
     }

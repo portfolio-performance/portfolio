@@ -144,7 +144,7 @@ public interface UIConstants
         String CALENDAR = "CALENDAR"; //$NON-NLS-1$
     }
 
-    interface CSS
+    interface CSS // NOSONAR
     {
         String CLASS_NAME = "org.eclipse.e4.ui.css.CssClassName"; //$NON-NLS-1$
     }

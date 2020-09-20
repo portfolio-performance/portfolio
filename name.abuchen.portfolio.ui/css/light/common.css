@@ -50,3 +50,9 @@ CTabItem:selected {
 .MPart .sidebarBorder {
 	background-color: #F4F5F5;
 }
+
+.tooltip Label,
+.tooltip Composite {
+	color: black;
+	background-color: #ECECEC;
+}
