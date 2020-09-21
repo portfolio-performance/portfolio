@@ -385,27 +385,20 @@ public final class Security implements Attributable, InvestmentVehicle
             return false;
 
         LocalDate now = LocalDate.now();
-        LocalDate lastStoredDate = null;
         LocalDate previousStoredDate = null;
 
         Optional<Pair<SecurityPrice, SecurityPrice>> previous = getLatestTwoSecurityPrices();
         if (previous.isPresent())
         {
-            lastStoredDate = previous.get().getLeft().getDate();
             previousStoredDate = previous.get().getRight().getDate();
         }
-
-        LocalDate last = null;
-        if (!prices.isEmpty())
-            last = prices.get(prices.size() - 1).getDate();
 
         boolean isUpdated = false;
         for (SecurityPrice p : prices)
         {
-            if (!p.getDate().isAfter(now))
+            if (p.getDate().isBefore(now))
             {
-                boolean doOverwrite = (p.getDate().equals(last) || p.getDate().equals(lastStoredDate)
-                                || p.getDate().equals(previousStoredDate));
+                boolean doOverwrite = p.getDate().equals(previousStoredDate);
                 boolean isAdded = addPrice(p, doOverwrite);
                 isUpdated = isUpdated || isAdded;
             }
