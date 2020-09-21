@@ -120,24 +120,28 @@ public class EarningsPerYearChartTab extends AbstractChartTab
     {
         updateCategorySeries();
 
-        int startYear = model.getStartYear();
-        double[] series = new double[LocalDate.now().getYear() - startYear + 1];
-
         for (int index = 0; index < model.getNoOfMonths(); index += 12)
         {
-            int year = (index / 12);
+            int year = model.getStartYear() + (index / 12);
+            IBarSeries barSeries = (IBarSeries) getChart().getSeriesSet().createSeries(SeriesType.BAR, String.valueOf(year));
+            double[] series = new double[Math.min(12, model.getNoOfMonths() - index)];
 
             long total = 0;
 
-            int months = Math.min(12, model.getNoOfMonths() - index);
-            for (int ii = 0; ii < months; ii++)
-                total += model.getSum().getValue(index + ii);
+//            int months = Math.min(12, model.getNoOfMonths() - index);
+//            for (int ii = 0; ii < months; ii++)
+                for (int ii = 0; ii < series.length; ii++)
+                {
+                    series[(int) ii / 12 + index / 12] = series[ii / 12 + index / 12] + model.getSum().getValue(index + ii) / Values.Amount.divider();
+                }
+//                total += model.getSum().getValue(index + ii);
 
-            series[year] = total / Values.Amount.divider();
+//            series[index/12] = total / Values.Amount.divider();
+
+            barSeries.setYSeries(series);
+            
+            barSeries.setBarColor(getColor(year));
+            barSeries.setBarPadding(25);
         }
-
-        IBarSeries barSeries = (IBarSeries) getChart().getSeriesSet().createSeries(SeriesType.BAR, getLabel());
-        barSeries.setYSeries(series);
-        barSeries.setBarColor(Colors.DARK_BLUE);
     }
 }
