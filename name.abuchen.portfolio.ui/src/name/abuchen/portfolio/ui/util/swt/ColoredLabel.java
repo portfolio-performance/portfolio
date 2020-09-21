@@ -74,7 +74,7 @@ public class ColoredLabel extends Canvas // NOSONAR
         if (text != null)
         {
             e.gc.setFont(getFont());
-            e.gc.setForeground(Colors.getTextColor(color));
+            e.gc.setForeground(color != null ? Colors.getTextColor(color) : Colors.BLACK);
 
             int offset = MARGIN_HORIZONTAL;
             if ((style & SWT.RIGHT) == SWT.RIGHT || (style & SWT.CENTER) == SWT.CENTER)
