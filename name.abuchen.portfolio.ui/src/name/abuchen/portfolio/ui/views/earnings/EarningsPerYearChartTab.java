@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.swtchart.Chart;
@@ -40,7 +41,14 @@ public class EarningsPerYearChartTab extends AbstractChartTab
             final int year = (Integer) getFocusedObject();
             int totalNoOfMonths = model.getNoOfMonths();
 
+            Color barColor = Colors.DARK_BLUE;
+
             IBarSeries barSeries = (IBarSeries) getChart().getSeriesSet().getSeries()[0];
+            if (barSeries.isStackEnabled())
+            {
+                barSeries = (IBarSeries) getChart().getSeriesSet().getSeries()[year];
+                barColor = barSeries.getBarColor();
+            }
 
             List<Line> lines = model.getLines().stream() //
                             .filter(line -> {
@@ -62,7 +70,7 @@ public class EarningsPerYearChartTab extends AbstractChartTab
             topLeft.setText(Messages.ColumnSecurity);
 
             ColoredLabel label = new ColoredLabel(container, SWT.CENTER);
-            label.setHightlightColor(barSeries.getBarColor());
+            label.setHightlightColor(barColor);
             label.setText(String.valueOf(model.getStartYear() + year));
             GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(label);
 
@@ -87,7 +95,7 @@ public class EarningsPerYearChartTab extends AbstractChartTab
                 value += model.getSum().getValue(m);
 
             ColoredLabel cl = new ColoredLabel(container, SWT.RIGHT);
-            cl.setHightlightColor(barSeries.getBarColor());
+            cl.setHightlightColor(barColor);
             cl.setText(Values.Amount.format(value));
             GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(cl);
         }
@@ -121,7 +129,10 @@ public class EarningsPerYearChartTab extends AbstractChartTab
         updateCategorySeries();
 
         int startYear = model.getStartYear();
+
         double[] series = new double[LocalDate.now().getYear() - startYear + 1];
+
+        boolean hasNegativeNumber = false;
 
         for (int index = 0; index < model.getNoOfMonths(); index += 12)
         {
@@ -134,10 +145,34 @@ public class EarningsPerYearChartTab extends AbstractChartTab
                 total += model.getSum().getValue(index + ii);
 
             series[year] = total / Values.Amount.divider();
+
+            if (total < 0L)
+                hasNegativeNumber = true;
         }
 
-        IBarSeries barSeries = (IBarSeries) getChart().getSeriesSet().createSeries(SeriesType.BAR, getLabel());
-        barSeries.setYSeries(series);
-        barSeries.setBarColor(Colors.DARK_BLUE);
+        if (hasNegativeNumber)
+        {
+            IBarSeries barSeries = (IBarSeries) getChart().getSeriesSet().createSeries(SeriesType.BAR, getLabel());
+            barSeries.setYSeries(series);
+            barSeries.setBarColor(Colors.DARK_BLUE);
+        }
+        else
+        {
+            for (int i = 0; i < series.length; i++)
+            {
+                int year = model.getStartYear() + i;
+                IBarSeries barSeries = (IBarSeries) getChart().getSeriesSet().createSeries(SeriesType.BAR,
+                                String.valueOf(year));
+
+                double[] seriesX = new double[LocalDate.now().getYear() - startYear + 1];
+                seriesX[i] = series[i];
+
+                barSeries.setYSeries(seriesX);
+
+                barSeries.setBarColor(getColor(year));
+                barSeries.setBarPadding(25);
+                barSeries.enableStack(true);
+            }
+        }
     }
 }
