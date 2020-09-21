@@ -22,7 +22,7 @@ public class ColoredLabel extends Canvas // NOSONAR
     private static final int MARGIN_VERTICAL = 1;
 
     private String text; // $NON-NLS-1$
-    private Color color;
+    private Color color = Colors.WHITE;
 
     public ColoredLabel(Composite parent, int style)
     {
@@ -65,28 +65,25 @@ public class ColoredLabel extends Canvas // NOSONAR
 
         int style = getStyle();
 
-        if (color != null)
-        {
-            e.gc.setBackground(color);
-            e.gc.fillRectangle(bounds.x, bounds.y, bounds.width, bounds.height);
-        }
+        e.gc.setBackground(color);
+        e.gc.fillRectangle(bounds.x, bounds.y, bounds.width, bounds.height);
 
         if (text != null)
         {
             e.gc.setFont(getFont());
             e.gc.setForeground(Colors.getTextColor(color));
 
-            int offset = MARGIN_HORIZONTAL;
-            if ((style & SWT.RIGHT) == SWT.RIGHT || (style & SWT.CENTER) == SWT.CENTER)
-            {
-                int width = e.gc.stringExtent(text).x;
-                if ((style & SWT.RIGHT) == SWT.RIGHT)
-                    offset = bounds.width - width - MARGIN_HORIZONTAL;
-                else if ((style & SWT.CENTER) == SWT.CENTER)
-                    offset = (bounds.width - width) / 2 + MARGIN_HORIZONTAL;
-            }
+            Point extent = e.gc.stringExtent(text);
 
-            e.gc.drawText(text, offset, MARGIN_VERTICAL, true);
+            int offsetX = MARGIN_HORIZONTAL;
+            if ((style & SWT.RIGHT) == SWT.RIGHT)
+                offsetX = bounds.width - extent.x - MARGIN_HORIZONTAL;
+            else if ((style & SWT.CENTER) == SWT.CENTER)
+                offsetX = (bounds.width - extent.x) / 2;
+
+            int offsetY = (bounds.height - extent.y) / 2;
+
+            e.gc.drawText(text, offsetX, offsetY, true);
         }
 
         e.type = SWT.None;

@@ -54,6 +54,8 @@ public class ColorAndFontProviderImpl implements IColorAndFontProvider, EventHan
 
         fonts.clear();
 
+        fonts.put("org.eclipse.ui.workbench.TAB_TEXT_FONT", Display.getDefault().getSystemFont().getFontData()); //$NON-NLS-1$
+
         for (String symbolicName : extension.getFonts())
         {
             FontDefinition definition = new FontDefinition(symbolicName);

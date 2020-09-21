@@ -81,18 +81,26 @@ public abstract class AbstractHeatmapWidget<N extends Number> extends WidgetDele
                 InfoToolTip.attach(label, row.getToolTip());
 
             row.getData().forEach(data -> {
-                ColoredLabel dataLabel = new ColoredLabel(table, SWT.CENTER);
+
+                Control lbl = null;
 
                 if (data != null)
                 {
+                    ColoredLabel dataLabel = new ColoredLabel(table, SWT.CENTER);
                     dataLabel.setFont(resources.getSmallFont());
                     dataLabel.setText(formatter.format(data));
                     if (coloring != null)
                         dataLabel.setHightlightColor(coloring.apply((double) data));
+
+                    lbl = dataLabel;
+                }
+                else
+                {
+                    lbl = new Label(table, SWT.LEFT);
                 }
 
                 if (model.getCellToolTip() != null)
-                    InfoToolTip.attach(dataLabel, model.getCellToolTip().apply(data));
+                    InfoToolTip.attach(lbl, model.getCellToolTip().apply(data));
             });
         });
 

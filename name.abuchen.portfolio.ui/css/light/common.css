@@ -52,7 +52,8 @@ CTabItem:selected {
 }
 
 .tooltip Label,
-.tooltip Composite {
+.tooltip Composite,
+.tooltip Text {
 	color: black;
 	background-color: #ECECEC;
 }

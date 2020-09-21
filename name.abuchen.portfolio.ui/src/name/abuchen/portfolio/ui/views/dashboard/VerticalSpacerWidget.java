@@ -20,7 +20,6 @@ import org.eclipse.swt.widgets.Label;
 import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.util.TextUtil;
@@ -120,22 +119,20 @@ public class VerticalSpacerWidget extends WidgetDelegate<Object>
         GridLayoutFactory.fillDefaults().applyTo(container);
 
         title = new Label(container, SWT.CENTER);
-        title.setText(TextUtil.tooltip(getWidget().getLabel()));
-        title.setForeground(container.getBackground());
-        title.setBackground(container.getBackground());
+        title.setText(""); //$NON-NLS-1$
 
         title.addMouseTrackListener(new MouseTrackAdapter()
         {
             @Override
             public void mouseExit(MouseEvent e)
             {
-                title.setForeground(container.getBackground());
+                title.setText(""); //$NON-NLS-1$
             }
 
             @Override
             public void mouseEnter(MouseEvent e)
             {
-                title.setForeground(Colors.INFO_TOOLTIP_BACKGROUND);
+                title.setText(TextUtil.tooltip(getWidget().getLabel()));
             }
         });
 
@@ -166,7 +163,7 @@ public class VerticalSpacerWidget extends WidgetDelegate<Object>
         int newHeight = get(SpacerConfig.class).getHeight();
 
         data.heightHint = newHeight;
-        title.setText(TextUtil.tooltip(getWidget().getLabel()));
+        title.setText(""); //$NON-NLS-1$
 
         if (oldHeight != newHeight)
         {
