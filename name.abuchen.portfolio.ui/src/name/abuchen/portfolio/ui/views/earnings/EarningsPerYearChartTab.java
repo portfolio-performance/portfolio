@@ -15,7 +15,6 @@ import org.swtchart.ISeries.SeriesType;
 
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
 import name.abuchen.portfolio.ui.util.swt.ColoredLabel;
 import name.abuchen.portfolio.ui.views.earnings.EarningsViewModel.Line;
@@ -120,28 +119,28 @@ public class EarningsPerYearChartTab extends AbstractChartTab
     {
         updateCategorySeries();
 
+        int startYear = model.getStartYear();
+
         for (int index = 0; index < model.getNoOfMonths(); index += 12)
         {
             int year = model.getStartYear() + (index / 12);
-            IBarSeries barSeries = (IBarSeries) getChart().getSeriesSet().createSeries(SeriesType.BAR, String.valueOf(year));
-            double[] series = new double[Math.min(12, model.getNoOfMonths() - index)];
+            IBarSeries barSeries = (IBarSeries) getChart().getSeriesSet().createSeries(SeriesType.BAR,
+                            String.valueOf(year));
+            double[] series = new double[LocalDate.now().getYear() - startYear + 1];
 
             long total = 0;
 
-//            int months = Math.min(12, model.getNoOfMonths() - index);
-//            for (int ii = 0; ii < months; ii++)
-                for (int ii = 0; ii < series.length; ii++)
-                {
-                    series[(int) ii / 12 + index / 12] = series[ii / 12 + index / 12] + model.getSum().getValue(index + ii) / Values.Amount.divider();
-                }
-//                total += model.getSum().getValue(index + ii);
+            int months = Math.min(12, model.getNoOfMonths() - index);
+            for (int ii = 0; ii < months; ii++)
+                total += model.getSum().getValue(index + ii);
 
-//            series[index/12] = total / Values.Amount.divider();
+            series[index / 12] = total / Values.Amount.divider();
 
             barSeries.setYSeries(series);
-            
+
             barSeries.setBarColor(getColor(year));
             barSeries.setBarPadding(25);
+            barSeries.enableStack(true);
         }
     }
 }
