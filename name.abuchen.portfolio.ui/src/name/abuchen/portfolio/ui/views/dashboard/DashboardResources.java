@@ -23,7 +23,7 @@ public final class DashboardResources
         boldFont = resourceManager.createFont(FontDescriptor
                         .createFrom(JFaceResources.getFont(JFaceResources.HEADER_FONT)).setStyle(SWT.BOLD));
 
-        smallFont = resourceManager.createFont(FontDescriptor.createFrom(container.getFont()).increaseHeight(-2));
+        smallFont = resourceManager.createFont(FontDescriptor.createFrom(container.getFont()).increaseHeight(-1));
 
         container.addDisposeListener(e -> resourceManager.dispose());
     }
