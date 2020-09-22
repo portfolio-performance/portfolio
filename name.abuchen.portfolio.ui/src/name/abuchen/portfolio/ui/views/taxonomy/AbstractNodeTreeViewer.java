@@ -14,15 +14,11 @@ import java.util.function.Predicate;
 
 import javax.inject.Inject;
 
-import org.eclipse.e4.core.contexts.ContextInjectionFactory;
-import org.eclipse.e4.core.contexts.EclipseContextFactory;
-import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
@@ -34,7 +30,6 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerDropAdapter;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.ToolTip;
-import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSourceAdapter;
@@ -77,14 +72,10 @@ import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
-import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
 
 @SuppressWarnings("restriction")
 /* package */abstract class AbstractNodeTreeViewer extends Page implements ModificationListener
 {
-    @Inject
-    private IEclipseContext context;
-
     private static class ItemContentProvider implements ITreeContentProvider
     {
         private TaxonomyModel model;
@@ -809,28 +800,6 @@ import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
             {
                 manager.add(new Separator());
                 manager.add(new BookmarkMenu(part, security));
-                
-                manager.add(new Action(Messages.SecurityMenuEditSecurity)
-                {
-                    @Override
-                    public void run()
-                    {
-                        IEclipseContext c2 = EclipseContextFactory.create();
-                        c2.set(security.getClass().getName(), security);
-                        Dialog dialog = ContextInjectionFactory.make(EditSecurityDialog.class, context, c2);
-                        
-                        if (dialog.open() == Window.OK)
-                        {
-                            
-                            TaxonomyNode root = getModel().getClassificationRootNode();
-                            
-                            getModel().recalculate();
-                            getModel().fireTaxonomyModelChange(null);
-                            getModel().markDirty();
-                        }
-                    }
-                });
-
             }
         }
     }
