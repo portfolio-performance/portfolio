@@ -140,7 +140,8 @@ public class EarningsPerYearChartTab extends AbstractChartTab
 
             barSeries.setBarColor(getColor(year));
             barSeries.setBarPadding(25);
-            barSeries.enableStack(true);
+            if (total >= 0.0)
+                barSeries.enableStack(true);
         }
     }
 }
