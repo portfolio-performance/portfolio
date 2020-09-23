@@ -32,7 +32,7 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
     private static final String regexAmountAndCurrency = "Konto-Nr. \\w* (?<amount>(\\d+\\.)?\\d+(,\\d+)?) (?<currency>\\w{3}+)"; //$NON-NLS-1$
     private static final String regexDate = "Schlusstag( / Handelszeit)? (?<date>\\d{2}.\\d{2}.\\d{4})( / (?<time>\\d{2}:\\d{2}:\\d{2}))?"; //$NON-NLS-1$
     private static final String regexTime = "(Schlusstag / )?Handelszeit ((?<date>\\d{2}.\\d{2}.\\d{4}) / )?(?<time>\\d{2}:\\d{2}:\\d{2})"; //$NON-NLS-1$
-    private static final String regexShares = "St.ck (?<shares>\\d+(,\\d+)?)"; //$NON-NLS-1$
+    private static final String regexShares = "St.ck (?<shares>(\\d+.)?\\d+(,\\d+)?)"; //$NON-NLS-1$
     private static final String regexFees = "Provision (?<fee>(\\d+\\.)?\\d+(,\\d+)?) (?<currency>\\w{3}+)"; //$NON-NLS-1$
     private static final String regexTaxes = "Gesamtsumme Steuern (?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)$"; //$NON-NLS-1$
     private static final String regexWithholdingTaxDivDoc = ".*Ausl.ndische Quellensteuer .* (?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)$"; //$NON-NLS-1$
