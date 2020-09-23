@@ -81,7 +81,7 @@ public class TargobankPDFExtractorTest
     @Test
     public void testWertpapierKauf01()
     {
-        String testCaseFilename = "Kauf (WPX007) TARGO 000000kontonummer am 2020-01-04.txt";
+        String testCaseFilename = "Kauf_01_(WPX007).txt";
         int numberOfMatchingFiles = 2;
         String actualShareName = "FanCy shaRe. nAmE X0-X0";
         String actualWkn = "ABC123";
@@ -93,6 +93,26 @@ public class TargobankPDFExtractorTest
         String actualCurrency = "EUR";
         double actualShares = 987.654;
         double actualFees = 8.9;
+        runWertpapierOrderTest(testCaseFilename, numberOfMatchingFiles, actualShareName, actualWkn, actualIsin,
+                        actualPortfolioTransactionType, actualAccountTransactionType, actualDateTime, actualAmount,
+                        actualCurrency, actualShares, actualFees);
+    }
+
+    @Test
+    public void testWertpapierKauf02()
+    {
+        String testCaseFilename = "Kauf_02_(WPX007).txt";
+        int numberOfMatchingFiles = 2;
+        String actualShareName = "Muster AG";
+        String actualWkn = "ABC123";
+        String actualIsin = "DE0000ABC123";
+        Object actualPortfolioTransactionType = PortfolioTransaction.Type.BUY;
+        Object actualAccountTransactionType = AccountTransaction.Type.BUY;
+        String actualDateTime = "2020-09-21T19:27:00";
+        double actualAmount = 1187.94;
+        String actualCurrency = "EUR";
+        double actualShares = 1710;
+        double actualFees = 0.0;
         runWertpapierOrderTest(testCaseFilename, numberOfMatchingFiles, actualShareName, actualWkn, actualIsin,
                         actualPortfolioTransactionType, actualAccountTransactionType, actualDateTime, actualAmount,
                         actualCurrency, actualShares, actualFees);
