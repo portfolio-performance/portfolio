@@ -15,6 +15,7 @@ import org.swtchart.ISeries.SeriesType;
 
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
 import name.abuchen.portfolio.ui.util.swt.ColoredLabel;
 import name.abuchen.portfolio.ui.views.earnings.EarningsViewModel.Line;
@@ -121,12 +122,13 @@ public class EarningsPerYearChartTab extends AbstractChartTab
 
         int startYear = model.getStartYear();
 
+        double[] series = new double[LocalDate.now().getYear() - startYear + 1];
+
+        boolean hasNegativeNumber = false;
+        
         for (int index = 0; index < model.getNoOfMonths(); index += 12)
         {
-            int year = model.getStartYear() + (index / 12);
-            IBarSeries barSeries = (IBarSeries) getChart().getSeriesSet().createSeries(SeriesType.BAR,
-                            String.valueOf(year));
-            double[] series = new double[LocalDate.now().getYear() - startYear + 1];
+            int year = (index / 12);
 
             long total = 0;
 
@@ -134,14 +136,35 @@ public class EarningsPerYearChartTab extends AbstractChartTab
             for (int ii = 0; ii < months; ii++)
                 total += model.getSum().getValue(index + ii);
 
-            series[index / 12] = total / Values.Amount.divider();
+            series[year] = total / Values.Amount.divider();
+            
+            if (total < 0L)
+                hasNegativeNumber = true;
+        }
 
+        if (hasNegativeNumber) 
+        {
+            IBarSeries barSeries = (IBarSeries) getChart().getSeriesSet().createSeries(SeriesType.BAR, getLabel());
             barSeries.setYSeries(series);
+            barSeries.setBarColor(Colors.DARK_BLUE);
+        }
+        else
+        {
+            for (int i = 0; i < series.length; i++)
+            {
+                int year = model.getStartYear() + i;
+                IBarSeries barSeries = (IBarSeries) getChart().getSeriesSet().createSeries(SeriesType.BAR,
+                                String.valueOf(year));
+                
+                double[] seriesX = new double[LocalDate.now().getYear() - startYear + 1];
+                seriesX[i]  = series[i];
+                
+                barSeries.setYSeries(seriesX);
 
-            barSeries.setBarColor(getColor(year));
-            barSeries.setBarPadding(25);
-            if (total >= 0.0)
+                barSeries.setBarColor(getColor(year));
+                barSeries.setBarPadding(25);
                 barSeries.enableStack(true);
+            }
         }
     }
 }
