@@ -359,7 +359,10 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
                             .substract(startTrail);
         }
 
-        if (PortfolioTransaction.Type.SHORT.toString().equals(startTrail.getLabel()))
+        if (PortfolioTransaction.Type.SHORT.toString().equals(startTrail.getLabel())
+            || (Messages.LabelTrailWithoutTaxesAndFees.equals(startTrail.getLabel()) &&
+                startTrail.getInputs().stream().map(TrailRecord::getLabel)
+                        .allMatch(label->PortfolioTransaction.Type.SHORT.toString().equals(label))))
         {
             unrealizedCapitalGains.addCapitalGains(Money.of(termCurrency, end + start));
             unrealizedCapitalGains.addCapitalGainsTrail(endTrail.add(startTrail));
