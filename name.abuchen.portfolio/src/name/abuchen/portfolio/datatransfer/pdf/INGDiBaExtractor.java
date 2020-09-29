@@ -77,10 +77,13 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                             return entry;
                         })
 
-                        .section("wkn", "isin", "name")
-                        //
+                        .section("wkn", "isin", "name", "name1") //
                         .match("^ISIN \\(WKN\\) (?<isin>[^ ]*) \\((?<wkn>.*)\\)$")
-                        .match("Wertpapierbezeichnung (?<name>.*)").assign((t, v) -> {
+                        .match("Wertpapierbezeichnung (?<name>.*)")
+                        .match("(?<name1>.*)")
+                        .assign((t, v) -> {
+                            if (!v.get("name1").startsWith("Nominale"))
+                                v.put("name", v.get("name") + " " + v.get("name1"));
                             t.setSecurity(getOrCreateSecurity(v));
                         })
 
@@ -153,12 +156,15 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                             entry.setType(PortfolioTransaction.Type.SELL);
                             return entry;
                         })
-
-                        .section("wkn", "isin", "name")
-                        //
+                        .section("wkn", "isin", "name", "name1") //
                         .match("^ISIN \\(WKN\\) (?<isin>[^ ]*) \\((?<wkn>.*)\\)$")
                         .match("Wertpapierbezeichnung (?<name>.*)")
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                        .match("(?<name1>.*)")
+                        .assign((t, v) -> {
+                            if (!v.get("name1").startsWith("Nominale"))
+                                v.put("name", v.get("name") + " " + v.get("name1"));
+                            t.setSecurity(getOrCreateSecurity(v));
+                        })
 
                         .section("shares")
                         //

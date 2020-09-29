@@ -49,7 +49,7 @@ public class INGDiBaPDFExtractorTest
         Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
         assertThat(security.getIsin(), is("DE0002635307"));
         assertThat(security.getWkn(), is("263530"));
-        assertThat(security.getName(), is("iSh.STOXX Europe 600 U.ETF DE"));
+        assertThat(security.getName(), is("iSh.STOXX Europe 600 U.ETF DE Inhaber-Anteile"));
 
         // check buy sell transaction
         Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
@@ -83,7 +83,7 @@ public class INGDiBaPDFExtractorTest
         Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
         assertThat(security.getIsin(), is("DE0002635307"));
         assertThat(security.getWkn(), is("263530"));
-        assertThat(security.getName(), is("iSh.STOXX Europe 600 U.ETF DE"));
+        assertThat(security.getName(), is("iSh.STOXX Europe 600 U.ETF DE Inhaber-Anteile"));
 
         // check buy sell transaction
         BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst()
@@ -115,7 +115,7 @@ public class INGDiBaPDFExtractorTest
         Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
         assertThat(security.getIsin(), is("XS0138973010"));
         assertThat(security.getWkn(), is("778998"));
-        assertThat(security.getName(), is("7,125 % Aareal Bank Capital Fdg Trust"));
+        assertThat(security.getName(), is("7,125 % Aareal Bank Capital Fdg Trust EO-Trust.Pref.Sec. 01(06/Und.)"));
 
         // check buy sell transaction
         BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst()
@@ -147,7 +147,7 @@ public class INGDiBaPDFExtractorTest
         Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
         assertThat(security.getIsin(), is("DE000A0F5UF5"));
         assertThat(security.getWkn(), is("A0F5UF"));
-        assertThat(security.getName(), is("iShare.NASDAQ-100 UCITS ETF DE"));
+        assertThat(security.getName(), is("iShare.NASDAQ-100 UCITS ETF DE Inhaber-Anteile"));
 
         // check buy sell transaction
         BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst()
@@ -209,7 +209,7 @@ public class INGDiBaPDFExtractorTest
         Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
         assertThat(security.getIsin(), is("GB0002771383"));
         assertThat(security.getWkn(), is("987665"));
-        assertThat(security.getName(), is("Threadn.Inv.Fds-Euro.Sm.Cos Fd"));
+        assertThat(security.getName(), is("Threadn.Inv.Fds-Euro.Sm.Cos Fd Thesaurierungsant. Klasse 1 oN"));
 
         // check buy sell transaction
         BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst()
@@ -272,7 +272,7 @@ public class INGDiBaPDFExtractorTest
         Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
         assertThat(security.getIsin(), is("GB0030934490"));
         assertThat(security.getWkn(), is("797739"));
-        assertThat(security.getName(), is("M&G Inv.(1)-M&G Global Leaders"));
+        assertThat(security.getName(), is("M&G Inv.(1)-M&G Global Leaders Reg. Shares Euro-Class A o.N."));
 
         // check buy sell transaction
         BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst()
@@ -334,7 +334,7 @@ public class INGDiBaPDFExtractorTest
         Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
         assertThat(security.getIsin(), is("DE0002635281"));
         assertThat(security.getWkn(), is("263528"));
-        assertThat(security.getName(), is("iSh.EO ST.Sel.Div.30 U.ETF DE"));
+        assertThat(security.getName(), is("iSh.EO ST.Sel.Div.30 U.ETF DE Inhaber-Anteile"));
 
         // check buy sell transaction
         BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst()
@@ -379,6 +379,38 @@ public class INGDiBaPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2013-06-21T17:04:26")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(11)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of("EUR", 9_90L)));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX), is(Money.of("EUR", 0)));
+    }
+
+    @Test
+    public void testWertpapierVerkauf4() throws IOException
+    {
+        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+    
+        List<Exception> errors = new ArrayList<Exception>();
+    
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "INGDiBa_Verkauf4.txt"), errors);
+    
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+    
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
+        assertThat(security.getIsin(), is("DE000MA03JY5"));
+        assertThat(security.getWkn(), is("MA03JY"));
+        assertThat(security.getName(), is("Morgan Stanley & Co. Intl PLC FaktL O.End DAX 11476,96"));
+    
+        // check buy sell transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst()
+                        .get().getSubject();
+    
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+    
+        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(393.10)));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-09-24T08:14:25")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(70)));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of("EUR", 5_90L)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX), is(Money.of("EUR", 0)));
     }
 
