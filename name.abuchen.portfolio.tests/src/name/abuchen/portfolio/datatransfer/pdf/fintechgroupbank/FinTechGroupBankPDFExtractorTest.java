@@ -665,7 +665,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.orElseThrow(IllegalArgumentException::new)
                         .getSubject();
         
-        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST_CHARGE));
+        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2014-12-31T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 7_89L)));
     }
