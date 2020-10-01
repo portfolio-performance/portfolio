@@ -193,7 +193,7 @@ public class EarningsView extends AbstractFinanceView
 
     private void createTab(CTabFolder folder, Images image, Class<? extends EarningsTab> tabClass)
     {
-        EarningsTab tab = this.make(tabClass, model);
+        EarningsTab tab = this.make(tabClass, this, model);
         Control control = tab.createControl(folder);
         CTabItem item = new CTabItem(folder, SWT.NONE);
         item.setText(tab.getLabel());

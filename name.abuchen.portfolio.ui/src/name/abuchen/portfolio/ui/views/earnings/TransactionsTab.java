@@ -16,6 +16,8 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -31,15 +33,18 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.selection.SelectionService;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.views.TransactionContextMenu;
 import name.abuchen.portfolio.util.TextUtil;
 
 public class TransactionsTab implements EarningsTab
@@ -55,6 +60,9 @@ public class TransactionsTab implements EarningsTab
 
     @Inject
     private IPreferenceStore preferences;
+
+    @Inject
+    private AbstractFinanceView view;
 
     private TableViewer tableViewer;
 
@@ -109,7 +117,24 @@ public class TransactionsTab implements EarningsTab
 
         model.addUpdateListener(() -> tableViewer.setInput(model.getTransactions()));
 
+        new ContextMenu(tableViewer.getControl(), this::fillContextMenu).hook();
+        tableViewer.getControl().addKeyListener(new KeyAdapter()
+        {
+            @Override
+            public void keyPressed(KeyEvent e)
+            {
+                new TransactionContextMenu(view).handleEditKey(e, tableViewer.getStructuredSelection());
+            }
+        });
+
         return container;
+    }
+
+    protected void fillContextMenu(IMenuManager manager)
+    {
+        IStructuredSelection selection = tableViewer.getStructuredSelection();
+
+        new TransactionContextMenu(view).menuAboutToShow(manager, true, selection);
     }
 
     private void addColumns(ShowHideColumnHelper support)

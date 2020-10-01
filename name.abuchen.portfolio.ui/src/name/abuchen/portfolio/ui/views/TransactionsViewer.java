@@ -1,9 +1,6 @@
 package name.abuchen.portfolio.ui.views;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -11,10 +8,8 @@ import java.util.function.Function;
 
 import javax.inject.Inject;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -33,13 +28,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 
-import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
-import name.abuchen.portfolio.model.AccountTransferEntry;
-import name.abuchen.portfolio.model.BuySellEntry;
-import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionPair;
@@ -47,18 +37,11 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionDialog;
-import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransferDialog;
-import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
-import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
-import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransferDialog;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.selection.SelectionService;
-import name.abuchen.portfolio.ui.util.BookmarkMenu;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.LogoManager;
-import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
@@ -70,8 +53,6 @@ import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.TransactionOwnerListEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.TransactionTypeEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
-import name.abuchen.portfolio.ui.views.actions.ConvertBuySellToDeliveryAction;
-import name.abuchen.portfolio.ui.views.actions.ConvertDeliveryToBuySellAction;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.SymbolColumn;
 import name.abuchen.portfolio.ui.views.columns.WknColumn;
@@ -476,16 +457,7 @@ public final class TransactionsViewer implements ModificationListener
             @Override
             public void keyPressed(KeyEvent e)
             {
-                if (e.keyCode == 'e' && e.stateMask == SWT.MOD1)
-                {
-                    IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
-                    if (selection.isEmpty())
-                        return;
-
-                    TransactionPair<?> tx = (TransactionPair<?>) selection.getFirstElement();
-                    tx.withAccountTransaction().ifPresent(t -> createEditAccountTransactionAction(t).run());
-                    tx.withPortfolioTransaction().ifPresent(t -> createEditPortfolioTransactionAction(t).run());
-                }
+                new TransactionContextMenu(owner).handleEditKey(e, tableViewer.getStructuredSelection());
             }
         });
     }
@@ -500,150 +472,6 @@ public final class TransactionsViewer implements ModificationListener
     {
         IStructuredSelection selection = tableViewer.getStructuredSelection();
 
-        if (selection.isEmpty() && fullContextMenu)
-        {
-            new SecurityContextMenu(owner).menuAboutToShow(manager, null, null);
-        }
-
-        if (selection.size() == 1)
-        {
-            TransactionPair<?> tx = (TransactionPair<?>) selection.getFirstElement();
-
-            tx.withAccountTransaction().ifPresent(t -> fillContextMenuAccountTx(manager, t));
-            tx.withPortfolioTransaction().ifPresent(t -> fillContextMenuPortfolioTx(manager, t));
-
-            manager.add(new Separator());
-        }
-
-        if (!selection.isEmpty())
-        {
-            if (fullContextMenu)
-                fillContextMenuPortfolioTxList(manager, selection);
-
-            manager.add(new SimpleAction(Messages.MenuTransactionDelete, a -> {
-                for (Object tx : selection.toArray())
-                    ((TransactionPair<?>) tx).deleteTransaction(owner.getClient());
-
-                owner.markDirty();
-            }));
-        }
-    }
-
-    private void fillContextMenuPortfolioTxList(IMenuManager manager, IStructuredSelection selection)
-    {
-        Collection<TransactionPair<PortfolioTransaction>> txCollection = new ArrayList<>(selection.size());
-        Iterator<?> it = selection.iterator();
-        while (it.hasNext())
-        {
-            TransactionPair<?> foo = (TransactionPair<?>) it.next();
-            foo.withPortfolioTransaction().ifPresent(txCollection::add);
-        }
-
-        if (txCollection.isEmpty())
-            return;
-
-        boolean allBuyOrSellType = true;
-        boolean allDelivery = true;
-
-        for (TransactionPair<PortfolioTransaction> tx : txCollection)
-        {
-            PortfolioTransaction ptx = tx.getTransaction();
-
-            allBuyOrSellType &= ptx.getType() == PortfolioTransaction.Type.BUY
-                            || ptx.getType() == PortfolioTransaction.Type.SELL;
-
-            allDelivery &= ptx.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND
-                            || ptx.getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND;
-        }
-
-        if (allBuyOrSellType)
-        {
-            manager.add(new ConvertBuySellToDeliveryAction(owner.getClient(), txCollection));
-            manager.add(new Separator());
-        }
-
-        if (allDelivery)
-        {
-            manager.add(new ConvertDeliveryToBuySellAction(owner.getClient(), txCollection));
-            manager.add(new Separator());
-        }
-    }
-
-    private void fillContextMenuAccountTx(IMenuManager manager, TransactionPair<AccountTransaction> tx)
-    {
-        Action action = createEditAccountTransactionAction(tx);
-        action.setAccelerator(SWT.MOD1 | 'E');
-        manager.add(action);
-
-        if (fullContextMenu)
-        {
-            manager.add(new Separator());
-            new AccountContextMenu(owner).menuAboutToShow(manager, (Account) tx.getOwner(),
-                            tx.getTransaction().getSecurity());
-        }
-    }
-
-    private void fillContextMenuPortfolioTx(IMenuManager manager, TransactionPair<PortfolioTransaction> tx)
-    {
-        PortfolioTransaction ptx = tx.getTransaction();
-
-        Action editAction = createEditPortfolioTransactionAction(tx);
-        editAction.setAccelerator(SWT.MOD1 | 'E');
-        manager.add(editAction);
-        manager.add(new Separator());
-
-        if (fullContextMenu)
-            new SecurityContextMenu(owner).menuAboutToShow(manager, ptx.getSecurity(), (Portfolio) tx.getOwner());
-        else
-            manager.add(new BookmarkMenu(owner.getPart(), ptx.getSecurity()));
-    }
-
-    private Action createEditAccountTransactionAction(TransactionPair<AccountTransaction> tx)
-    {
-        // buy / sell
-        if (tx.getTransaction().getCrossEntry() instanceof BuySellEntry)
-        {
-            BuySellEntry entry = (BuySellEntry) tx.getTransaction().getCrossEntry();
-            return new OpenDialogAction(this.owner, Messages.MenuEditTransaction)
-                            .type(SecurityTransactionDialog.class, d -> d.setBuySellEntry(entry))
-                            .parameters(entry.getPortfolioTransaction().getType());
-        }
-        else if (tx.getTransaction().getCrossEntry() instanceof AccountTransferEntry)
-        {
-            AccountTransferEntry entry = (AccountTransferEntry) tx.getTransaction().getCrossEntry();
-            return new OpenDialogAction(this.owner, Messages.MenuEditTransaction) //
-                            .type(AccountTransferDialog.class, d -> d.setEntry(entry));
-        }
-        else
-        {
-            return new OpenDialogAction(this.owner, Messages.MenuEditTransaction) //
-                            .type(AccountTransactionDialog.class,
-                                            d -> d.setTransaction((Account) tx.getOwner(), tx.getTransaction())) //
-                            .parameters(tx.getTransaction().getType());
-        }
-    }
-
-    private Action createEditPortfolioTransactionAction(TransactionPair<PortfolioTransaction> tx)
-    {
-        // buy / sell
-        if (tx.getTransaction().getCrossEntry() instanceof BuySellEntry)
-        {
-            BuySellEntry entry = (BuySellEntry) tx.getTransaction().getCrossEntry();
-            return new OpenDialogAction(this.owner, Messages.MenuEditTransaction)
-                            .type(SecurityTransactionDialog.class, d -> d.setBuySellEntry(entry))
-                            .parameters(entry.getPortfolioTransaction().getType());
-        }
-        else if (tx.getTransaction().getCrossEntry() instanceof PortfolioTransferEntry)
-        {
-            PortfolioTransferEntry entry = (PortfolioTransferEntry) tx.getTransaction().getCrossEntry();
-            return new OpenDialogAction(this.owner, Messages.MenuEditTransaction) //
-                            .type(SecurityTransferDialog.class, d -> d.setEntry(entry));
-        }
-        else
-        {
-            return new OpenDialogAction(this.owner, Messages.MenuEditTransaction) //
-                            .type(SecurityTransactionDialog.class, d -> d.setDeliveryTransaction(tx)) //
-                            .parameters(tx.getTransaction().getType());
-        }
+        new TransactionContextMenu(owner).menuAboutToShow(manager, fullContextMenu, selection);
     }
 }
