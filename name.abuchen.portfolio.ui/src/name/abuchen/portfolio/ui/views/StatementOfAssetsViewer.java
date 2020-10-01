@@ -112,6 +112,7 @@ public class StatementOfAssetsViewer
     private SelectionService selectionService;
 
     private boolean useIndirectQuotation = false;
+    private int sharesPrecision;
 
     private TableViewer assets;
 
@@ -139,6 +140,16 @@ public class StatementOfAssetsViewer
                     @Preference(value = UIConstants.Preferences.USE_INDIRECT_QUOTATION) boolean useIndirectQuotation)
     {
         this.useIndirectQuotation = useIndirectQuotation;
+
+        if (assets != null)
+            assets.refresh();
+    }
+
+    @Inject
+    public void setSharesPrecision(
+                    @Preference(value = UIConstants.Preferences.FORMAT_SHARES_DIGITS) int sharesPrecision)
+    {
+        this.sharesPrecision = sharesPrecision;
 
         if (assets != null)
             assets.refresh();
@@ -198,6 +209,12 @@ public class StatementOfAssetsViewer
         Column column = new Column("0", Messages.ColumnSharesOwned, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setLabelProvider(new SharesLabelProvider() // NOSONAR
         {
+            @Override
+            public int getPrecision()
+            {
+                return sharesPrecision;
+            }
+
             @Override
             public Long getValue(Object e)
             {

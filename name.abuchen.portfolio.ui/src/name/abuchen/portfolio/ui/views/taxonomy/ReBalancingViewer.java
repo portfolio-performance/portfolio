@@ -4,10 +4,12 @@ import java.time.LocalDate;
 
 import javax.inject.Inject;
 
+import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
@@ -23,6 +25,7 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.AssetPosition;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.swt.ActiveShell;
@@ -33,6 +36,8 @@ import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
 
 public class ReBalancingViewer extends AbstractNodeTreeViewer
 {
+    private int sharesPrecision;
+
     @Inject
     public ReBalancingViewer(TaxonomyModel model, TaxonomyNodeRenderer renderer)
     {
@@ -49,6 +54,17 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
     protected void storeExpansionState(String expanded)
     {
         getModel().setExpansionStateRebalancing(expanded);
+    }
+
+    @Inject
+    public void setSharesPrecision(
+                    @Preference(value = UIConstants.Preferences.FORMAT_SHARES_DIGITS) int sharesPrecision)
+    {
+        this.sharesPrecision = sharesPrecision;
+
+        TreeViewer nodeViewer = getNodeViewer();
+        if (nodeViewer != null)
+            nodeViewer.refresh();
     }
 
     @Override
@@ -192,6 +208,12 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
         column = new Column("shares", Messages.ColumnSharesOwned, SWT.RIGHT, 60); //$NON-NLS-1$
         column.setLabelProvider(new SharesLabelProvider()
         {
+            @Override
+            public int getPrecision()
+            {
+                return sharesPrecision;
+            }
+
             @Override
             public Long getValue(Object element)
             {
