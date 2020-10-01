@@ -683,6 +683,7 @@ public class Messages extends NLS
     public static String LabelTrades;
     public static String LabelTradesBasicStatistics;
     public static String LabelTradesProfitLoss;
+    public static String LabelTradesTurnoverRate;
     public static String LabelTradingActivityChart;
     public static String LabelTransactions;
     public static String LabelTransferals;
@@ -1027,6 +1028,7 @@ public class Messages extends NLS
     public static String TooltipQuoteAtDate;
     public static String TooltipRebalancingIndicator;
     public static String TooltipSemiVolatility;
+    public static String TooltipTurnoverRate;
     public static String TooltipVolatility;
     public static String WatchlistDelete;
     public static String WatchlistEditDialog;

@@ -51,6 +51,8 @@ public class PerformanceIndex
     protected long[] dividends;
     protected long[] interest;
     protected long[] interestCharge;
+    protected long[] buys;
+    protected long[] sells;
     protected double[] accumulated;
     protected double[] delta;
 
@@ -269,6 +271,16 @@ public class PerformanceIndex
     public long[] getInterestCharge()
     {
         return interestCharge;
+    }
+
+    public long[] getBuys()
+    {
+        return buys;
+    }
+
+    public long[] getSells()
+    {
+        return sells;
     }
 
     /**
