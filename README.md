@@ -28,7 +28,7 @@ Optionally, install via the Eclipse Marketplace
 
 ### Setup
 
-Clone the git repository.
+Clone the git repository by cmd or by download also.
 
 Import projects by
 * selecting "Import Projects..." on the Git repository in the Git perspective
