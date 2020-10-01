@@ -11,6 +11,7 @@ import name.abuchen.portfolio.online.impl.DivvyDiaryDividendFeed;
 import name.abuchen.portfolio.online.impl.FinnhubQuoteFeed;
 import name.abuchen.portfolio.online.impl.QuandlQuoteFeed;
 import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.util.FormatHelper;
 import name.abuchen.portfolio.util.TradeCalendarManager;
 
 @SuppressWarnings("restriction")
@@ -65,4 +66,9 @@ public class Preference2EnvAddon
         TradeCalendarManager.setDefaultCalendarCode(defaultCalendarCode);
     }
 
+    @Inject
+    public void setSharesPrecision(@Preference(value = UIConstants.Preferences.FORMAT_SHARES_DIGITS) int sharesPrecision)
+    {
+        FormatHelper.setSharesDisplayPrecision(sharesPrecision);
+    }
 }

@@ -910,6 +910,7 @@ public class Messages extends NLS
     public static String PrefLabelNote;
     public static String PrefLabelProxyHost;
     public static String PrefLabelProxyPort;
+    public static String PrefLabelSharesDigits;
     public static String PrefLabelUseIndirectQuotation;
     public static String PrefMsgConfigureUpdates;
     public static String PrefMsgLanguageConfig;
@@ -923,6 +924,7 @@ public class Messages extends NLS
     public static String PrefTitle;
     public static String PrefTitleAlphaVantage;
     public static String PrefTitleAPIKeys;
+    public static String PrefTitleFormatting;
     public static String PrefTitleGeneral;
     public static String PrefTitleLanguage;
     public static String PrefTitlePresentation;

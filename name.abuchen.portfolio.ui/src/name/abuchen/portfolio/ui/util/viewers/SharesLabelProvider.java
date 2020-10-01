@@ -1,8 +1,6 @@
 package name.abuchen.portfolio.ui.util.viewers;
 
-import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
 
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.OwnerDrawLabelProvider;
@@ -18,12 +16,11 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.widgets.Widget;
 
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.util.FormatHelper;
 
 public abstract class SharesLabelProvider extends OwnerDrawLabelProvider
 {
-    private static final char POINT = new DecimalFormatSymbols().getDecimalSeparator();
-
-    private final NumberFormat format = new DecimalFormat("#,##0.###"); //$NON-NLS-1$
+    private static final String POINT = String.valueOf(new DecimalFormatSymbols().getDecimalSeparator());
 
     private ColumnViewer viewer;
     private TextLayout cachedTextLayout;
@@ -67,13 +64,17 @@ public abstract class SharesLabelProvider extends OwnerDrawLabelProvider
 
     private Rectangle getSize(Event event, String text)
     {
-        String s = text;
-        int p = s.indexOf(POINT);
+        StringBuilder builder = new StringBuilder(text);
+        int p = builder.indexOf(POINT);
         if (p >= 0)
-            s = s.substring(0, p);
+            builder.delete(p, builder.length());
+
+        builder.append(',');
+        builder.append(FormatHelper.getSharesDecimalPartPlaceholder());
+        builder.append(' ');
 
         TextLayout textLayout = getSharedTextLayout(event.display);
-        textLayout.setText(s + ",000 "); //$NON-NLS-1$
+        textLayout.setText(builder.toString());
 
         return textLayout.getBounds();
     }
@@ -94,7 +95,7 @@ public abstract class SharesLabelProvider extends OwnerDrawLabelProvider
         Long value = getValue(element);
         if (value != null)
         {
-            String text = format.format(value / Values.Share.divider());
+            String text = FormatHelper.getSharesFormat().format(value / Values.Share.divider());
             Rectangle size = getSize(event, text);
             event.setBounds(new Rectangle(event.x, event.y, size.width, event.height));
         }
@@ -121,7 +122,7 @@ public abstract class SharesLabelProvider extends OwnerDrawLabelProvider
             event.gc.setForeground(newForeground);
         }
 
-        String text = format.format(value / Values.Share.divider());
+        String text = FormatHelper.getSharesFormat().format(value / Values.Share.divider());
         Rectangle size = getSize(event, text);
 
         TextLayout textLayout = getSharedTextLayout(event.display);
