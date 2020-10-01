@@ -403,9 +403,11 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             return t;
                         })
 
-                        .section("valuta", "amount")
+                        .section("valuta", "amount", "isin")
                         .match("\\d+.\\d+.[ ]+(?<valuta>\\d+.\\d+.)[ ]+Geb.hr Kapitaltransaktion Ausland[ ]+(?<amount>[\\d.-]+,\\d+)[-]")
+                        .match("\\s*(?<isin>\\w{12})")
                         .assign((t, v) -> {
+                            t.setSecurity(getOrCreateSecurity(v));
                             Map<String, String> context = type.getCurrentContext();
                             String date = v.get("valuta");
                             if (date != null)
@@ -416,6 +418,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             }
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                            t.setNote("Gebühr Kapitaltransaktion Ausland");
                         }).wrap(TransactionItem::new));
     }
 
