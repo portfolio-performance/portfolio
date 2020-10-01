@@ -12,6 +12,7 @@ import java.time.temporal.TemporalAmount;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
@@ -129,6 +130,7 @@ public class SecuritiesChart
         INVESTMENT(Messages.LabelChartDetailMarkerInvestments), //
         DIVIDENDS(Messages.LabelChartDetailMarkerDividends), //
         EVENTS(Messages.LabelChartDetailMarkerSplits), //
+        EXTREMES(Messages.LabelChartDetailMarkerHighLow), //
         FIFOPURCHASE(Messages.LabelChartDetailMarkerPurchaseFIFO), //
         FLOATINGAVGPURCHASE(Messages.LabelChartDetailMarkerPurchaseMovingAverage), //
         BOLLINGERBANDS(Messages.LabelChartDetailIndicatorBollingerBands), //
@@ -237,35 +239,38 @@ public class SecuritiesChart
         }
     }
 
-    private Color colorQuote = Colors.getColor(52, 70, 235);
+    private static final Color colorQuote = Colors.getColor(52, 70, 235);
 
-    private Color colorEventPurchase = Colors.getColor(26, 173, 33);
-    private Color colorEventSale = Colors.getColor(232, 51, 69);
-    private Color colorEventDividend = Colors.getColor(128, 0, 128);
+    private static final Color colorEventPurchase = Colors.getColor(26, 173, 33);
+    private static final Color colorEventSale = Colors.getColor(232, 51, 69);
+    private static final Color colorEventDividend = Colors.getColor(128, 0, 128);
 
-    private Color colorFifoPurchasePrice = Colors.getColor(226, 122, 121);
-    private Color colorMovingAveragePurchasePrice = Colors.getColor(150, 82, 81);
-    private Color colorBollingerBands = Colors.getColor(201, 141, 68);
-    private Color colorSMA1 = Colors.getColor(179, 107, 107); // #B36B6B
-    private Color colorSMA2 = Colors.getColor(179, 167, 107); // #B3A76B
-    private Color colorSMA3 = Colors.getColor(131, 179, 107); // #83B36B
-    private Color colorSMA4 = Colors.getColor(107, 179, 143); // #6BB38F
-    private Color colorSMA5 = Colors.getColor(107, 155, 179); // #6B9BB3
-    private Color colorSMA6 = Colors.getColor(119, 107, 179); // #776BB3
-    private Color colorSMA7 = Colors.getColor(179, 107, 179); // #B36BB3
+    private static final Color colorHigh = Colors.getColor(0, 102, 0);
+    private static final Color colorLow = Colors.getColor(128, 0, 0);
 
-    private Color colorEMA1 = Colors.getColor(200, 107, 107); // #C86B6B
-    private Color colorEMA2 = Colors.getColor(200, 167, 107); // #C8A76B
-    private Color colorEMA3 = Colors.getColor(131, 200, 107); // #83C86B
-    private Color colorEMA4 = Colors.getColor(107, 200, 143); // #6BC88F
-    private Color colorEMA5 = Colors.getColor(107, 155, 200); // #6B9BC8
-    private Color colorEMA6 = Colors.getColor(119, 107, 200); // #776BC8
-    private Color colorEMA7 = Colors.getColor(200, 107, 200); // #C86BB3
+    private static final Color colorFifoPurchasePrice = Colors.getColor(226, 122, 121);
+    private static final Color colorMovingAveragePurchasePrice = Colors.getColor(150, 82, 81);
+    private static final Color colorBollingerBands = Colors.getColor(201, 141, 68);
+    private static final Color colorSMA1 = Colors.getColor(179, 107, 107); // #B36B6B
+    private static final Color colorSMA2 = Colors.getColor(179, 167, 107); // #B3A76B
+    private static final Color colorSMA3 = Colors.getColor(131, 179, 107); // #83B36B
+    private static final Color colorSMA4 = Colors.getColor(107, 179, 143); // #6BB38F
+    private static final Color colorSMA5 = Colors.getColor(107, 155, 179); // #6B9BB3
+    private static final Color colorSMA6 = Colors.getColor(119, 107, 179); // #776BB3
+    private static final Color colorSMA7 = Colors.getColor(179, 107, 179); // #B36BB3
 
-    private Color colorAreaPositive = Colors.getColor(90, 114, 226);
-    private Color colorAreaNegative = Colors.getColor(226, 91, 90);
+    private static final Color colorEMA1 = Colors.getColor(200, 107, 107); // #C86B6B
+    private static final Color colorEMA2 = Colors.getColor(200, 167, 107); // #C8A76B
+    private static final Color colorEMA3 = Colors.getColor(131, 200, 107); // #83C86B
+    private static final Color colorEMA4 = Colors.getColor(107, 200, 143); // #6BC88F
+    private static final Color colorEMA5 = Colors.getColor(107, 155, 200); // #6B9BC8
+    private static final Color colorEMA6 = Colors.getColor(119, 107, 200); // #776BC8
+    private static final Color colorEMA7 = Colors.getColor(200, 107, 200); // #C86BB3
 
-    private Color colorNonTradingDay = Colors.getColor(255, 137, 89);
+    private static final Color colorAreaPositive = Colors.getColor(90, 114, 226);
+    private static final Color colorAreaNegative = Colors.getColor(226, 91, 90);
+
+    private static final Color colorNonTradingDay = Colors.getColor(255, 137, 89);
 
     private static final String PREF_KEY = "security-chart-details"; //$NON-NLS-1$
 
@@ -325,14 +330,22 @@ public class SecuritiesChart
             return new ChartInterval(now.minus(temporalAmount), now);
         };
 
-        addButton(buttons, Messages.SecurityTabChart1M, Messages.SecurityTabChart1MToolTip, s -> nowMinus.apply(Period.ofMonths(1)));
-        addButton(buttons, Messages.SecurityTabChart2M, Messages.SecurityTabChart2MToolTip, s -> nowMinus.apply(Period.ofMonths(2)));
-        addButton(buttons, Messages.SecurityTabChart6M, Messages.SecurityTabChart6MToolTip, s -> nowMinus.apply(Period.ofMonths(6)));
-        addButton(buttons, Messages.SecurityTabChart1Y, Messages.SecurityTabChart1YToolTip, s -> nowMinus.apply(Period.ofYears(1)));
-        addButton(buttons, Messages.SecurityTabChart2Y, Messages.SecurityTabChart2YToolTip, s -> nowMinus.apply(Period.ofYears(2)));
-        addButton(buttons, Messages.SecurityTabChart3Y, Messages.SecurityTabChart3YToolTip, s -> nowMinus.apply(Period.ofYears(3)));
-        addButton(buttons, Messages.SecurityTabChart5Y, Messages.SecurityTabChart5YToolTip, s -> nowMinus.apply(Period.ofYears(5)));
-        addButton(buttons, Messages.SecurityTabChart10Y, Messages.SecurityTabChart10YToolTip, s -> nowMinus.apply(Period.ofYears(10)));
+        addButton(buttons, Messages.SecurityTabChart1M, Messages.SecurityTabChart1MToolTip,
+                        s -> nowMinus.apply(Period.ofMonths(1)));
+        addButton(buttons, Messages.SecurityTabChart2M, Messages.SecurityTabChart2MToolTip,
+                        s -> nowMinus.apply(Period.ofMonths(2)));
+        addButton(buttons, Messages.SecurityTabChart6M, Messages.SecurityTabChart6MToolTip,
+                        s -> nowMinus.apply(Period.ofMonths(6)));
+        addButton(buttons, Messages.SecurityTabChart1Y, Messages.SecurityTabChart1YToolTip,
+                        s -> nowMinus.apply(Period.ofYears(1)));
+        addButton(buttons, Messages.SecurityTabChart2Y, Messages.SecurityTabChart2YToolTip,
+                        s -> nowMinus.apply(Period.ofYears(2)));
+        addButton(buttons, Messages.SecurityTabChart3Y, Messages.SecurityTabChart3YToolTip,
+                        s -> nowMinus.apply(Period.ofYears(3)));
+        addButton(buttons, Messages.SecurityTabChart5Y, Messages.SecurityTabChart5YToolTip,
+                        s -> nowMinus.apply(Period.ofYears(5)));
+        addButton(buttons, Messages.SecurityTabChart10Y, Messages.SecurityTabChart10YToolTip,
+                        s -> nowMinus.apply(Period.ofYears(10)));
         addButton(buttons, Messages.SecurityTabChartYTD, Messages.SecurityTabChartYTDToolTip,
                         s -> nowMinus.apply(Period.ofDays(LocalDate.now().getDayOfYear() - 1)));
 
@@ -519,6 +532,7 @@ public class SecuritiesChart
         subMenuChartMarker.add(addMenuAction(ChartDetails.INVESTMENT));
         subMenuChartMarker.add(addMenuAction(ChartDetails.DIVIDENDS));
         subMenuChartMarker.add(addMenuAction(ChartDetails.EVENTS));
+        subMenuChartMarker.add(addMenuAction(ChartDetails.EXTREMES));
         subMenuChartMarker.add(addMenuAction(ChartDetails.FIFOPURCHASE));
         subMenuChartMarker.add(addMenuAction(ChartDetails.FLOATINGAVGPURCHASE));
         subMenuChartIndicator.add(addMenuAction(ChartDetails.BOLLINGERBANDS));
@@ -875,6 +889,9 @@ public class SecuritiesChart
 
         if (chartConfig.contains(ChartDetails.EVENTS))
             addEventMarkerLines(chartInterval);
+
+        if (chartConfig.contains(ChartDetails.EXTREMES))
+            addExtremesMarkerLines(chartInterval);
     }
 
     private void addSMAMarkerLines(ChartInterval chartInterval, String smaSeries, String smaDaysWording, int smaDays,
@@ -1115,6 +1132,62 @@ public class SecuritiesChart
                         .filter(e -> e.getType() != SecurityEvent.Type.DIVIDEND_PAYMENT) //
                         .forEach(e -> chart.addMarkerLine(e.getDate(),
                                         Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY), e.getDetails()));
+    }
+
+    private void addExtremesMarkerLines(ChartInterval chartInterval)
+    {
+        Optional<SecurityPrice> max = security.getPricesIncludingLatest().stream() //
+                        .filter(p -> chartInterval.contains(p.getDate())) //
+                        .max(Comparator.comparing(SecurityPrice::getValue));
+
+        Optional<SecurityPrice> min = security.getPricesIncludingLatest().stream() //
+                        .filter(p -> chartInterval.contains(p.getDate())) //
+                        .min(Comparator.comparing(SecurityPrice::getValue));
+
+        max.ifPresent(high -> addExtremeMarker(high, PlotSymbolType.TRIANGLE, 10, //
+                        Messages.LabelChartDetailMarkerHigh, colorHigh));
+        min.ifPresent(low -> addExtremeMarker(low, PlotSymbolType.INVERTED_TRIANGLE, -25,
+                        Messages.LabelChartDetailMarkerLow, colorLow));
+    }
+
+    private void addExtremeMarker(SecurityPrice price, PlotSymbolType plotSymbolType, int labelOffset,
+                    String seriesLabel, Color color)
+    {
+        LocalDate eventDate = price.getDate();
+        String valueFormat = Values.Quote.format(price.getValue());
+        double value = price.getValue() / Values.Quote.divider();
+
+        if (chartConfig.contains(ChartDetails.SHOW_MARKER_LINES))
+        {
+            chart.addMarkerLine(eventDate, color, valueFormat);
+        }
+        else
+        {
+            Date zonedDate = Date.from(eventDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+
+            ILineSeries inner = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, seriesLabel);
+            inner.setYAxisId(0);
+            inner.setSymbolType(plotSymbolType);
+            inner.setSymbolSize(6);
+            inner.setSymbolColor(color);
+            configureSeriesPainter(inner, new Date[] { zonedDate }, new double[] { value }, color, 0, LineStyle.NONE,
+                            false, true);
+
+            if (chartConfig.contains(ChartDetails.SHOW_DATA_LABELS))
+            {
+                customPaintListeners.add(event -> {
+                    IAxis xAxis = chart.getAxisSet().getXAxis(0);
+                    IAxis yAxis = chart.getAxisSet().getYAxis(0);
+
+                    int x = xAxis.getPixelCoordinate(zonedDate.getTime());
+                    int y = yAxis.getPixelCoordinate(value);
+                    Point textExtent = event.gc.textExtent(valueFormat);
+
+                    event.gc.setForeground(Colors.BLACK);
+                    event.gc.drawText(valueFormat, x - (textExtent.x / 2), y + labelOffset, true);
+                });
+            }
+        }
     }
 
     private void addBollingerBandsMarkerLines(ChartInterval chartInterval, int bollingerBandsDays,
