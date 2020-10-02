@@ -1,8 +1,6 @@
 package name.abuchen.portfolio.ui.util.viewers;
 
-import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
 
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.OwnerDrawLabelProvider;
@@ -17,15 +15,12 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.widgets.Widget;
 
-import com.google.common.base.Strings;
-
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.util.FormatHelper;
 
 public abstract class SharesLabelProvider extends OwnerDrawLabelProvider
 {
     private static final String POINT = String.valueOf(new DecimalFormatSymbols().getDecimalSeparator());
-
-    private final NumberFormat format = new DecimalFormat("#,##0.###"); //$NON-NLS-1$
 
     private ColumnViewer viewer;
     private TextLayout cachedTextLayout;
@@ -41,8 +36,6 @@ public abstract class SharesLabelProvider extends OwnerDrawLabelProvider
     }
 
     public abstract Long getValue(Object element);
-
-    public abstract int getPrecision();
 
     @Override
     public String getToolTipText(Object element)
@@ -77,7 +70,7 @@ public abstract class SharesLabelProvider extends OwnerDrawLabelProvider
             builder.delete(p, builder.length());
 
         builder.append(',');
-        builder.append(Strings.repeat("0", getPrecision())); //$NON-NLS-1$
+        builder.append(FormatHelper.getSharesDecimalPartPlaceholder());
         builder.append(' ');
 
         TextLayout textLayout = getSharedTextLayout(event.display);
@@ -102,7 +95,7 @@ public abstract class SharesLabelProvider extends OwnerDrawLabelProvider
         Long value = getValue(element);
         if (value != null)
         {
-            String text = numberFormat().format(value / Values.Share.divider());
+            String text = FormatHelper.getSharesFormat().format(value / Values.Share.divider());
             Rectangle size = getSize(event, text);
             event.setBounds(new Rectangle(event.x, event.y, size.width, event.height));
         }
@@ -129,7 +122,7 @@ public abstract class SharesLabelProvider extends OwnerDrawLabelProvider
             event.gc.setForeground(newForeground);
         }
 
-        String text = numberFormat().format(value / Values.Share.divider());
+        String text = FormatHelper.getSharesFormat().format(value / Values.Share.divider());
         Rectangle size = getSize(event, text);
 
         TextLayout textLayout = getSharedTextLayout(event.display);
@@ -155,12 +148,6 @@ public abstract class SharesLabelProvider extends OwnerDrawLabelProvider
             event.gc.fillRectangle(bounds.x, bounds.y, bounds.width, bounds.height);
             event.gc.setBackground(oldBackground);
         }
-    }
-
-    private NumberFormat numberFormat()
-    {
-        format.setMaximumFractionDigits(getPrecision());
-        return format;
     }
 
     @Override

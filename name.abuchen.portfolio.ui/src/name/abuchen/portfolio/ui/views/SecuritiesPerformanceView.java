@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuListener;
@@ -64,7 +63,6 @@ import name.abuchen.portfolio.snapshot.trades.TradeCollectorException;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.selection.SecuritySelection;
@@ -219,8 +217,6 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
     private SecuritiesChart chart;
     private SecurityDetailsViewer latest;
 
-    private int sharesPrecision;
-
     @Override
     protected String getDefaultTitle()
     {
@@ -239,18 +235,6 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
 
         toolBar.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE,
                         manager -> recordColumns.menuAboutToShow(manager)));
-    }
-
-    @Inject
-    public void setSharesPrecision(
-                    @Preference(value = UIConstants.Preferences.FORMAT_SHARES_DIGITS) int sharesPrecision)
-    {
-        this.sharesPrecision = sharesPrecision;
-
-        if (records != null)
-            records.refresh();
-        if (transactions != null)
-            transactions.refresh();
     }
 
     private void addExportButton(ToolBarManager manager)
@@ -376,12 +360,6 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         Column column = new Column("shares", Messages.ColumnSharesOwned, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setLabelProvider(new SharesLabelProvider() // NOSONAR
         {
-            @Override
-            public int getPrecision()
-            {
-                return sharesPrecision;
-            }
-
             @Override
             public Long getValue(Object e)
             {
@@ -1081,12 +1059,6 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         column = new Column(Messages.ColumnShares, SWT.None, 80);
         column.setLabelProvider(new SharesLabelProvider() // NOSONAR
         {
-            @Override
-            public int getPrecision()
-            {
-                return sharesPrecision;
-            }
-
             @Override
             public Long getValue(Object e)
             {

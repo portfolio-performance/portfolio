@@ -14,7 +14,6 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -53,7 +52,6 @@ import name.abuchen.portfolio.money.Quote;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransferDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
@@ -90,8 +88,6 @@ public class AccountListView extends AbstractListView implements ModificationLis
 {
     private static final String FILTER_INACTIVE_ACCOUNTS = "filter-redired-accounts"; //$NON-NLS-1$
 
-    private int sharesPrecision;
-
     private TableViewer accounts;
     private TableViewer transactions;
     private AccountBalanceChart accountBalanceChart;
@@ -123,16 +119,6 @@ public class AccountListView extends AbstractListView implements ModificationLis
     public void setup()
     {
         isFiltered = getPreferenceStore().getBoolean(FILTER_INACTIVE_ACCOUNTS);
-    }
-
-    @Inject
-    public void setSharesPrecision(
-                    @Preference(value = UIConstants.Preferences.FORMAT_SHARES_DIGITS) int sharesPrecision)
-    {
-        this.sharesPrecision = sharesPrecision;
-
-        if (transactions != null)
-            transactions.refresh();
     }
 
     @Override
@@ -536,12 +522,6 @@ public class AccountListView extends AbstractListView implements ModificationLis
         column = new Column("5", Messages.ColumnShares, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setLabelProvider(new SharesLabelProvider()
         {
-            @Override
-            public int getPrecision()
-            {
-                return sharesPrecision;
-            }
-
             @Override
             public Long getValue(Object e)
             {

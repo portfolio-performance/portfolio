@@ -5,7 +5,6 @@ import java.util.function.Function;
 
 import javax.inject.Inject;
 
-import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -32,7 +31,6 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.selection.SelectionService;
 import name.abuchen.portfolio.ui.util.Colors;
@@ -59,18 +57,6 @@ public class TransactionsTab implements EarningsTab
     private IPreferenceStore preferences;
 
     private TableViewer tableViewer;
-
-    private int sharesPrecision;
-
-    @Inject
-    public void setSharesPrecision(
-                    @Preference(value = UIConstants.Preferences.FORMAT_SHARES_DIGITS) int sharesPrecision)
-    {
-        this.sharesPrecision = sharesPrecision;
-
-        if (tableViewer != null)
-            tableViewer.refresh();
-    }
 
     @Override
     public String getLabel()
@@ -192,12 +178,6 @@ public class TransactionsTab implements EarningsTab
         column = new Column(Messages.ColumnShares, SWT.RIGHT, 80);
         column.setLabelProvider(new SharesLabelProvider()
         {
-            @Override
-            public int getPrecision()
-            {
-                return sharesPrecision;
-            }
-
             @Override
             public Long getValue(Object element)
             {

@@ -11,7 +11,6 @@ import java.util.function.Function;
 
 import javax.inject.Inject;
 
-import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -48,7 +47,6 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransferDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
@@ -155,7 +153,6 @@ public final class TransactionsViewer implements ModificationListener
     private TableViewer tableViewer;
     private ShowHideColumnHelper support;
 
-    private int sharesPrecision;
     private boolean fullContextMenu = true;
     private Menu contextMenu;
 
@@ -204,16 +201,6 @@ public final class TransactionsViewer implements ModificationListener
     public void setFullContextMenu(boolean fullContextMenu)
     {
         this.fullContextMenu = fullContextMenu;
-    }
-
-    @Inject
-    public void setSharesPrecision(
-                    @Preference(value = UIConstants.Preferences.FORMAT_SHARES_DIGITS) int sharesPrecision)
-    {
-        this.sharesPrecision = sharesPrecision;
-
-        if (tableViewer != null)
-            tableViewer.refresh();
     }
 
     public Control getControl()
@@ -336,12 +323,6 @@ public final class TransactionsViewer implements ModificationListener
         column.setLabelProvider(new SharesLabelProvider() // NOSONAR
         {
             private TransactionLabelProvider colors = new TransactionLabelProvider(t -> null);
-
-            @Override
-            public int getPrecision()
-            {
-                return sharesPrecision;
-            }
 
             @Override
             public Long getValue(Object element)

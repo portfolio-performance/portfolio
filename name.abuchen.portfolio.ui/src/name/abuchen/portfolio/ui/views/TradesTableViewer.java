@@ -5,9 +5,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
-
-import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -24,7 +21,6 @@ import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.trades.Trade;
 import name.abuchen.portfolio.ui.Images;
-import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.Colors;
@@ -48,21 +44,9 @@ public class TradesTableViewer
     private TableViewer trades;
     private ShowHideColumnHelper support;
 
-    private int sharesPrecision;
-
     public TradesTableViewer(AbstractFinanceView view)
     {
         this.view = view;
-    }
-
-    @Inject
-    public void setSharesPrecision(
-                    @Preference(value = UIConstants.Preferences.FORMAT_SHARES_DIGITS) int sharesPrecision)
-    {
-        this.sharesPrecision = sharesPrecision;
-
-        if (trades != null)
-            trades.refresh();
     }
 
     public Control createViewControl(Composite parent, ViewMode viewMode)
@@ -157,12 +141,6 @@ public class TradesTableViewer
         column = new Column("shares", Messages.ColumnShares, SWT.None, 80); //$NON-NLS-1$
         column.setLabelProvider(new SharesLabelProvider() // NOSONAR
         {
-            @Override
-            public int getPrecision()
-            {
-                return sharesPrecision;
-            }
-
             @Override
             public Long getValue(Object e)
             {

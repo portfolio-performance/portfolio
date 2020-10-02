@@ -12,7 +12,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.eclipse.e4.core.di.annotations.Optional;
-import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ControlContribution;
 import org.eclipse.jface.action.IMenuListener;
@@ -327,7 +326,6 @@ public class SecurityListView extends AbstractListView implements ModificationLi
     private Watchlist watchlist;
 
     private Pattern filterPattern;
-    private int sharesPrecision;
 
     @Override
     protected String getDefaultTitle()
@@ -397,16 +395,6 @@ public class SecurityListView extends AbstractListView implements ModificationLi
     public void setup(@Named(UIConstants.Parameter.VIEW_PARAMETER) Watchlist parameter)
     {
         this.watchlist = parameter;
-    }
-
-    @Inject
-    public void setSharesPrecision(
-                    @Preference(value = UIConstants.Preferences.FORMAT_SHARES_DIGITS) int sharesPrecision)
-    {
-        this.sharesPrecision = sharesPrecision;
-
-        if (transactions != null)
-            transactions.refresh();
     }
 
     @Override
@@ -839,12 +827,6 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         column = new Column(Messages.ColumnShares, SWT.RIGHT, 80);
         column.setLabelProvider(new SharesLabelProvider() // NOSONAR
         {
-            @Override
-            public int getPrecision()
-            {
-                return sharesPrecision;
-            }
-
             @Override
             public Long getValue(Object element)
             {
