@@ -403,9 +403,11 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             return t;
                         })
 
-                        .section("valuta", "amount")
+                        .section("valuta", "amount", "isin")
                         .match("\\d+.\\d+.[ ]+(?<valuta>\\d+.\\d+.)[ ]+Geb.hr Kapitaltransaktion Ausland[ ]+(?<amount>[\\d.-]+,\\d+)[-]")
+                        .match("\\s*(?<isin>\\w{12})")
                         .assign((t, v) -> {
+                            t.setSecurity(getOrCreateSecurity(v));
                             Map<String, String> context = type.getCurrentContext();
                             String date = v.get("valuta");
                             if (date != null)
@@ -416,6 +418,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             }
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                            t.setNote("Gebühr Kapitaltransaktion Ausland");
                         }).wrap(TransactionItem::new));
     }
 
@@ -1051,8 +1054,8 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             return t;
                         })
 
-                        .section("valuta", "amount")
-                        .match("\\d+.\\d+.[ ]+(?<valuta>\\d+.\\d+.)[ ]+Zinsabschluss[ ]+(\\d+.\\d+.\\d{4})(\\s+)-(\\s+)(\\d+.\\d+.\\d{4})(\\s+)(?<amount>[\\d.-]+,\\d+[+-])")
+                        .section("valuta", "amount", "sign")
+                        .match("\\d+.\\d+.[ ]+(?<valuta>\\d+.\\d+.)[ ]+Zinsabschluss[ ]+(\\d+.\\d+.\\d{4})(\\s+)-(\\s+)(\\d+.\\d+.\\d{4})(\\s+)(?<amount>[\\d.-]+,\\d+)(?<sign>[+-])")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
                             String date = v.get("valuta");
@@ -1065,6 +1068,13 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             t.setNote(v.get("text"));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                            String sign = v.get("sign");
+                            if ("+".equals(sign))
+                            {
+                                // change type for payed Taxes
+                                t.setType(AccountTransaction.Type.INTEREST);
+                            }
+
                         }).wrap(t -> {
                             if (t.getAmount() != 0)
                                 return new TransactionItem(t);
