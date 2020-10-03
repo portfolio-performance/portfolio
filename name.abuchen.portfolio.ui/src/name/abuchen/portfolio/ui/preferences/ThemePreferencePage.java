@@ -27,7 +27,6 @@ public class ThemePreferencePage extends PreferencePage
 {
     private IThemeEngine engine;
     private ComboViewer themeIdCombo;
-    private ControlDecoration themeComboDecorator;
     private ITheme currentTheme;
     private String defaultTheme = "name.abuchen.portfolio.light"; //$NON-NLS-1$
 
@@ -65,7 +64,7 @@ public class ThemePreferencePage extends PreferencePage
         {
             themeIdCombo.setSelection(new StructuredSelection(currentTheme));
         }
-        themeComboDecorator = new ControlDecoration(themeIdCombo.getCombo(), SWT.TOP | SWT.LEFT);
+        ControlDecoration themeComboDecorator = new ControlDecoration(themeIdCombo.getCombo(), SWT.TOP | SWT.LEFT);
         themeIdCombo.addSelectionChangedListener(event -> {
             ITheme selection = getSelectedTheme();
             if (!selection.equals(currentTheme))
@@ -99,7 +98,10 @@ public class ThemePreferencePage extends PreferencePage
 
     private ITheme getSelectedTheme()
     {
-        return (ITheme) (themeIdCombo.getStructuredSelection().getFirstElement());
+        if (themeIdCombo == null)
+            return null;
+        else
+            return (ITheme) (themeIdCombo.getStructuredSelection().getFirstElement());
     }
 
     @Override
