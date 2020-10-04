@@ -1,12 +1,12 @@
 
 /* Common LIGHT styles */
 
-Composite,
-Label {
+.MPart Composite,
+.MPart Label {
 	background-color: white;
 }
 
-ToolBar {
+.MPart ToolBar {
 	background-color:inherit;
 }
 
