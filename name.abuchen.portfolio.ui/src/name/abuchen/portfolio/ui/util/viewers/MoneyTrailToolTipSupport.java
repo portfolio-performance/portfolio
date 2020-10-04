@@ -13,6 +13,7 @@ import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseTrackListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
@@ -129,6 +130,8 @@ public class MoneyTrailToolTipSupport extends ColumnViewerToolTipSupport
 
         outputs.forEach(label -> label.addMouseTrackListener(new MouseTrackListener()
         {
+            private Color background = Colors.INFO_TOOLTIP_BACKGROUND;
+
             @Override
             public void mouseHover(MouseEvent e)
             {
@@ -137,13 +140,17 @@ public class MoneyTrailToolTipSupport extends ColumnViewerToolTipSupport
             @Override
             public void mouseExit(MouseEvent e)
             {
-                outputs.forEach(l -> l.setBackground(Colors.INFO_TOOLTIP_BACKGROUND));
-                inputs.forEach(l -> l.setBackground(Colors.INFO_TOOLTIP_BACKGROUND));
+                outputs.forEach(l -> l.setBackground(this.background));
+                inputs.forEach(l -> l.setBackground(this.background));
             }
 
             @Override
             public void mouseEnter(MouseEvent e)
             {
+                // background color is theme dependent -> save color to restore
+                // during mouseExit
+                this.background = outputs.get(0).getBackground();
+
                 outputs.forEach(l -> l.setBackground(Colors.ICON_ORANGE));
                 inputs.forEach(l -> l.setBackground(Colors.ICON_GREEN));
             }
