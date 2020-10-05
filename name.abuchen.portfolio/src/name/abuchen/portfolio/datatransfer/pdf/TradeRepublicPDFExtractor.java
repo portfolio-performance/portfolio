@@ -23,6 +23,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         addBuyTransaction();
         addSellTransaction();
+        addLiquidationTransaction();
         addAccountStatementTransaction();
     }
 
@@ -211,6 +212,88 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                             t.setDateTime(asDate(v.get("date")));
                         }).wrap(t -> new TransactionItem(t)));
 
+    }
+
+    @SuppressWarnings("nls")
+    private void addLiquidationTransaction()
+    {
+        DocumentType type = new DocumentType("TILGUNG");
+        this.addDocumentTyp(type);
+    
+        Block block = new Block("TILGUNG");
+        type.addBlock(block);
+        block.set(new Transaction<BuySellEntry>()
+    
+                        .subject(() -> {
+                            BuySellEntry entry = new BuySellEntry();
+                            entry.setType(PortfolioTransaction.Type.SELL);
+                            return entry;
+                        })
+    
+                        .section("name", "isin", "shares") //
+                        .find("NR. BUCHUNG WERTPAPIER ANZAHL.*") //
+                        .match(".* Tilgung (?<name>.*) (?<shares>[\\d+,.]*) Stk.$") //
+                        .match(".*") //
+                        .match("(ISIN:)?(?<isin>\\w{12})").assign((t, v) -> {
+                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setShares(asShares(v.get("shares")));
+                        })
+                        
+                        .section("amount", "currency")//
+                        .match("NR. POSITION SUMME") //
+                        .match("1 Kurswert .*") //
+                        .match("SUMME (?<amount>[\\d+,.]*) (?<currency>\\w{3})") //
+                        .assign((t, v) -> {
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
+    
+                        .section("date") //
+                        .match("VERRECHNUNGSKONTO VALUTA BETRAG")
+                        .match("\\w* (?<date>\\d+.\\d+.\\d{4}+) .*")
+                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+    
+                        .wrap(BuySellEntryItem::new));
+    
+        Block taxBlock = new Block(".*Kapitalertragssteuer Optimierung.*");
+        type.addBlock(taxBlock);
+        taxBlock.set(new Transaction<AccountTransaction>().subject(() -> {
+            AccountTransaction t = new AccountTransaction();
+            t.setType(AccountTransaction.Type.TAX_REFUND);
+            return t;
+        })
+    
+                        // check for negative tax (optimization)
+                        .section("tax", "currency", "date").optional() //
+                        .match(".*Kapitalertragssteuer Optimierung (?<tax>[\\d+,.]*) (?<currency>\\w{3}+)")
+                        .match("VERRECHNUNGSKONTO VALUTA BETRAG")
+                        .match(".* (?<date>\\d+.\\d+.\\d{4}+) ([\\d+,.]*) (\\w{3}+)")
+                        .assign((t, v) -> {
+                            t.setAmount(asAmount(v.get("tax")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setDateTime(asDate(v.get("date")));
+                        })
+    
+                        .section("tax", "currency", "date").optional() //
+                        .match("Solidaritätszuschlag Optimierung (?<tax>[\\d+,.]*) (?<currency>\\w{3}+)")
+                        .match("VERRECHNUNGSKONTO VALUTA BETRAG")
+                        .match(".* (?<date>\\d+.\\d+.\\d{4}+) ([\\d+,.]*) (\\w{3}+)")
+                        .assign((t, v) -> {
+                            t.setAmount(t.getAmount() + asAmount(v.get("tax")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setDateTime(asDate(v.get("date")));
+                        })
+    
+                        .section("tax", "currency", "date").optional() //
+                        .match("Kirchensteuer Optimierung (?<tax>[\\d+,.]*) (?<currency>\\w{3}+)")
+                        .match("VERRECHNUNGSKONTO VALUTA BETRAG")
+                        .match(".* (?<date>\\d+.\\d+.\\d{4}+) ([\\d+,.]*) (\\w{3}+)")
+                        .assign((t, v) -> {
+                            t.setAmount(t.getAmount() + asAmount(v.get("tax")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setDateTime(asDate(v.get("date")));
+                        }).wrap(t -> new TransactionItem(t)));
+    
     }
 
     @SuppressWarnings("nls")

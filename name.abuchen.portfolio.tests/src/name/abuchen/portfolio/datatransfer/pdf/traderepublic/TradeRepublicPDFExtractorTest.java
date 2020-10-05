@@ -384,4 +384,48 @@ public class TradeRepublicPDFExtractorTest
         assertThat(tx.getShares(), is(Values.Share.factorize(0.0068)));
     
     }
+
+    @Test
+    public void testTilgung01()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+    
+        List<Exception> errors = new ArrayList<>();
+    
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Tilgung01.txt"), errors);
+    
+        assertThat(errors, empty());
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+    
+        // check security
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
+        assertThat(security.getIsin(), is("DE000TT22GS8"));
+        assertThat(security.getName(), is("HSBC Trinkaus & Burkhardt AG"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+    
+        // check transaction
+        item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
+        PortfolioTransaction tx = entry.getPortfolioTransaction();
+    
+        assertThat(tx.getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+    
+        assertThat(tx.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.70))));
+        assertThat(tx.getDateTime(), is(LocalDateTime.parse("2020-10-02T00:00")));
+        assertThat(tx.getShares(), is(Values.Share.factorize(700)));
+    
+        // check transaction
+        AccountTransaction t = results.stream() //
+                        .filter(i -> i instanceof TransactionItem)
+                        .map(i -> (AccountTransaction) ((TransactionItem) i).getSubject()) //
+                        .findAny().get();
+        
+        assertThat(t.getType(), is(AccountTransaction.Type.TAX_REFUND));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2020-10-02T00:00")));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(33.19))));
+        
+    }
 }
