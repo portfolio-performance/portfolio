@@ -420,6 +420,33 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(context.get("currency")));
                             t.setNote("Gebühr Kapitaltransaktion Ausland");
                         }).wrap(TransactionItem::new));
+
+        // account fees 
+        block = new Block("\\d+.\\d+.[ ]+\\d+.\\d+.[ ]+Depotgeb.hren[ ]+\\d{2}.\\d{2}.\\d{4}[ -]+\\d{2}.\\d{2}.\\d{4},[ ]+[\\d.-]+,\\d+[-]");
+        type.addBlock(block);
+        block.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction t = new AccountTransaction();
+                            t.setType(AccountTransaction.Type.FEES);
+                            return t;
+                        })
+
+                        .section("valuta", "amount", "text")
+                        .match("\\d+.\\d+.[ ]+(?<valuta>\\d+.\\d+.)[ ]+(?<text>Depotgeb.hren[ ]+\\d{2}.\\d{2}.\\d{4}[ -]+\\d{2}.\\d{2}.\\d{4}),[ ]+(?<amount>[\\d.-]+,\\d+)[-]")
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+                            String date = v.get("valuta");
+                            if (date != null)
+                            {
+                                // create a long date from the year in the
+                                // context
+                                t.setDateTime(asDate(date + context.get("year")));
+                            }
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                            t.setNote(v.get("text"));
+                        }).wrap(TransactionItem::new));
     }
 
     @SuppressWarnings("nls")
