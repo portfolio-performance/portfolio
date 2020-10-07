@@ -495,6 +495,43 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         .match("Valuta * : *(?<date>\\d+.\\d+.\\d{4}+).*")
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
+                        // Devisenkurs     :         1,173000   *Einbeh. Steuer     :           12,99 EUR
+                        // Quellenst.-satz :            15,00 %  Gez. Quellensteuer :           18,28 USD
+                        .section("amountFx", "currencyFx", "exchangeRate").optional() //
+                        .match(".*Devisenkurs *: *(?<exchangeRate>[.\\d]+,\\d+).*") //
+                        .match(".*Gez. Quellenst.*: *(?<amountFx>[.\\d]+,\\d{2}) (?<currencyFx>\\w{3})") //
+                        .assign((t, v) -> {
+
+                            Money tax = Money.of(asCurrencyCode(v.get("currencyFx")), asAmount(v.get("amountFx")));
+
+                            if (tax.getCurrencyCode().equals(t.getCurrencyCode()))
+                            {
+                                t.addUnit(new Unit(Unit.Type.TAX, tax));
+                            }
+                            else 
+                            {
+                                BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                                BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
+                                                RoundingMode.HALF_DOWN);
+
+                                Money txTax = Money.of(t.getCurrencyCode(),
+                                                BigDecimal.valueOf(tax.getAmount()).multiply(inverseRate)
+                                                                .setScale(0, RoundingMode.HALF_UP).longValue());
+
+                                // store tax value in both currencies, if
+                                // security's currency
+                                // is different to transaction currency
+                                if (t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
+                                {
+                                    t.addUnit(new Unit(Unit.Type.TAX, txTax));
+                                }
+                                else
+                                {
+                                    t.addUnit(new Unit(Unit.Type.TAX, txTax, tax, inverseRate));
+                                }
+                            }
+                        })
+                        
                         .wrap(TransactionItem::new));
     }
 
@@ -600,7 +637,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
                         // Quellenst.-satz : 30,00 % Gez. Quellenst. : 7,88 USD
                         .section("amountFx", "currencyFx").optional() //
-                        .match(".* Gez. Quellenst. *: *(?<amountFx>[.\\d]+,\\d{2}) (?<currencyFx>\\w{3})") //
+                        .match(".*Gez. Quellenst.*: *(?<amountFx>[.\\d]+,\\d{2}) (?<currencyFx>\\w{3})") //
                         .assign((t, v) -> {
 
                             Money tax = Money.of(asCurrencyCode(v.get("currencyFx")), asAmount(v.get("amountFx")));
