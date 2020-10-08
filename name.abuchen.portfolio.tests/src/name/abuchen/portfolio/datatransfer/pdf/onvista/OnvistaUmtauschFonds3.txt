@@ -1,0 +1,71 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=012345670
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Umtausch ADRESSZEILE1=Herr
+Durchführungsanzeige ADRESSZEILE2=Max Mustermann
+ADRESSZEILE3=Straße 12
+ADRESSZEILE4=12345 Stadt
+Herr ADRESSZEILE5=
+Max Mustermann ADRESSZEILE6=
+Depot-Nr. Ausführungs-Nr.
+Straße 12 BELEGNUMMER=1327
+12345 Stadt 012345670 12345678 / 08.09.2020 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Max Mustermann
+Frankfurt am Main, 10.09.2020
+Ausbuchung:
+Gattungsbezeichnung ISIN
+ComStage-S&P 500 UCITS ETF Inhaber-Anteile I o.N. LU0488316133
+Nominal Ex-Tag
+STK 14,0369 04.09.2020
+Verwahrart
+Girosammelverwahrung
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+onvista bank ist eine Marke der comdirekt bank AG Wildunger Straße 6a 60487 Frankfurt am Main
+Kundenservice: +49 (0)69-7107-530 T: +49 (0)69-7107-0 F: +49 (0)69-7107-100 info@onvista-bank.de www.onvista-bank.de
+Sitz der comdirect bank AG: Pascalkehre 15 25451 Quickborn (AG Pinneberg HRB 4889) T: +49 (0)4106-704-0 F: +49 (0)4106-708-258-5 www.comdirect.de
+Vorstand: Frauke Hegemann (Vorsitzende), Matthias Hach Vorsitzender des Aufsichtsrates: Dr. Jochen Sutor
+3.18/DUANDEREEREIABSTUM/GDBVKAPU/001327/110920/002905
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=012345670
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Umtausch ADRESSZEILE1=Herr
+Durchführungsanzeige ADRESSZEILE2=Max Mustermann
+ADRESSZEILE3=Straße 12
+ADRESSZEILE4=12345 Stadt
+Herr ADRESSZEILE5=
+Max Mustermann ADRESSZEILE6=
+Depot-Nr. Ausführungs-Nr.
+Straße 12 BELEGNUMMER=3194
+12345 Stadt 012345670 12345679 / 09.09.2020 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Max Mustermann
+Frankfurt am Main, 10.09.2020
+Einbuchung:
+Gattungsbezeichnung ISIN
+MUL-LYXOR S&P 500 UCITS ETF Inhaber-Anteile Dist USD o.N. LU0496786657
+Nominal
+STK 154,018
+Verwahrart
+Girosammelverwahrung
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+onvista bank ist eine Marke der comdirekt bank AG Wildunger Straße 6a 60487 Frankfurt am Main
+Kundenservice: +49 (0)69-7107-530 T: +49 (0)69-7107-0 F: +49 (0)69-7107-100 info@onvista-bank.de www.onvista-bank.de
+Sitz der comdirect bank AG: Pascalkehre 15 25451 Quickborn (AG Pinneberg HRB 4889) T: +49 (0)4106-704-0 F: +49 (0)4106-708-258-5 www.comdirect.de
+Vorstand: Frauke Hegemann (Vorsitzende), Matthias Hach Vorsitzender des Aufsichtsrates: Dr. Jochen Sutor
+3.18/DUANDEREEREIEBSTUM/GDBVKAPU/003194/110920/002905

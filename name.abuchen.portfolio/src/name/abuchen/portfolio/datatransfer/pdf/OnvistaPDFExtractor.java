@@ -804,14 +804,14 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
         
         // variant if only one date exits in document, then remember it here...
         final DocumentType type = new DocumentType("Umtausch", (context, lines) -> {
-            Pattern pDate = Pattern.compile("^(?<contextDate>\\d+\\.\\d+\\.\\d{4}+) [\\d+].*");
+            Pattern pDate = Pattern.compile("(^|.* / )(?<contextDate>\\d{2}\\.\\d{2}\\.\\d{4}) .*");
             // read the current context here
             for (String line : lines)
             {
                 Matcher m = pDate.matcher(line);
                 if (m.matches())
                 {
-                    context.put("contextDate", m.group(1));
+                    context.put("contextDate", m.group(2));
                 }
             }
         });
@@ -858,9 +858,10 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
                         .section("date").optional() //
                         .find("(.*)(Schlusstag|Ex-Tag|Wert Konto-Nr.*)")
-                        .match("(.*)(^|\\s+)(?<date>\\d+\\.\\d+\\.\\d{4}+)") //
+                        .match("(.*)(^|\\s+)(?<date>\\d+\\.\\d+\\.\\d{4}+).*") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
+                            type.getCurrentContext().put("contextDate", v.get("date"));
                         })
 
                         .section("notation", "shares") //
@@ -881,7 +882,6 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                             if (t.getDateTime() == null)
                             {
                                 t.setDateTime(asDate(type.getCurrentContext().get("contextDate")));
-                                
                             }
                         })
 
