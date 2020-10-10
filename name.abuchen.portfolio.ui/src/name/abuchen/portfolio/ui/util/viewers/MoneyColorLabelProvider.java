@@ -41,7 +41,7 @@ public final class MoneyColorLabelProvider extends ColumnLabelProvider
         if (money == null || money.isZero())
             return null;
 
-        return money.getAmount() >= 0 ? Colors.DARK_GREEN : Colors.DARK_RED;
+        return money.getAmount() >= 0 ? Colors.theme().greenForeground() : Colors.theme().redForeground();
     }
 
     @Override

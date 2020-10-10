@@ -34,3 +34,12 @@ CTabFolder {
 	grid-color: #606060;
 	highlight-color: white;
 }
+
+CustomColors {
+	warning-background: #6F6345;
+	red-background: #960000;
+	green-background: #004B00;
+
+	red-foreground: #FE2B05;
+	green-foreground: #02F500;
+}

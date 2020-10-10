@@ -712,7 +712,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
             }
             catch (ParseException e)
             {
-                return column.getField().isOptional() ? Colors.WARNING : ERROR;
+                return column.getField().isOptional() ? Colors.theme().warningBackground() : ERROR;
             }
         }
     }

@@ -51,6 +51,25 @@
                name="highlight-color">
          </property-name>
       </handler>
+      <handler
+            adapter="name.abuchen.portfolio.ui.theme.ColorsThemeElementAdapter"
+            handler="name.abuchen.portfolio.ui.theme.ColorsThemeCSSHandler">
+         <property-name
+               name="warning-background">
+         </property-name>
+         <property-name
+               name="red-background">
+         </property-name>
+         <property-name
+               name="green-background">
+         </property-name>
+         <property-name
+               name="red-foreground">
+         </property-name>
+         <property-name
+               name="green-foreground">
+         </property-name>
+      </handler>
    </extension>
    <extension
          point="org.eclipse.e4.ui.css.core.elementProvider">
@@ -70,6 +89,9 @@
          </widget>
          <widget
                class="org.swtchart.Chart">
+         </widget>
+         <widget
+               class="name.abuchen.portfolio.ui.util.Colors$Theme">
          </widget>
       </provider>
    </extension>

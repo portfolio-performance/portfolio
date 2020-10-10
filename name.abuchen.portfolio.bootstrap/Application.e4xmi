@@ -245,4 +245,5 @@
   <addons xmi:id="_SBOEgLdnEeO0acAVfaNMbA" elementId="name.abuchen.portfolio.ui.addons.OSXStartupAddon" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.OSXStartupAddon"/>
   <addons xmi:id="_czmqcPl_EeWALp6nnaAZRw" elementId="name.abuchen.portfolio.ui.addons.CopyMenuToNewWindowAddon" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.CopyMenuToNewWindowAddon"/>
   <addons xmi:id="_ITGS4MGeEeeACft0IXqMbg" elementId="name.abuchen.portfolio.ui.addons.Preference2EnvAddon" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.Preference2EnvAddon"/>
+  <addons xmi:id="_7uSaEArLEeuW1fd9YKaYaw" elementId="name.abuchen.portfolio.ui.addons.ThemeAddon" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.theme.ThemeAddon"/>
 </application:Application>

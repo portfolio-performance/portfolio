@@ -87,11 +87,11 @@ public class AttributeColumn extends Column
 
             Attributes attributes = attributable.getAttributes();
 
-            Object value = attributes.get(attribute);     
+            Object value = attributes.get(attribute);
             return attribute.getConverter().toString(value);
         }
     }
-    
+
     private static final class ImageLabelProvider extends ColumnLabelProvider
     {
         private final AttributeType attribute;
@@ -106,11 +106,11 @@ public class AttributeColumn extends Column
         {
             return ""; //$NON-NLS-1$
         }
-        
+
         @Override
-        public Image getImage(Object element) 
+        public Image getImage(Object element)
         {
-            if(attribute.getConverter() instanceof ImageConverter) 
+            if (attribute.getConverter() instanceof ImageConverter)
             {
                 Attributable attributable = Adaptor.adapt(Attributable.class, element);
                 return ImageManager.instance().getImage(attributable, attribute);
@@ -195,13 +195,13 @@ public class AttributeColumn extends Column
             switch (limit.getRelationalOperator())
             {
                 case GREATER_OR_EQUAL:
-                    return latestSecurityPrice.getValue() >= limit.getValue() ? Colors.GREEN : null;
+                    return latestSecurityPrice.getValue() >= limit.getValue() ? Colors.theme().greenBackground() : null;
                 case SMALLER_OR_EQUAL:
-                    return latestSecurityPrice.getValue() <= limit.getValue() ? Colors.RED : null;
+                    return latestSecurityPrice.getValue() <= limit.getValue() ? Colors.theme().redBackground() : null;
                 case GREATER:
-                    return latestSecurityPrice.getValue() > limit.getValue() ? Colors.GREEN : null;
+                    return latestSecurityPrice.getValue() > limit.getValue() ? Colors.theme().greenBackground() : null;
                 case SMALLER:
-                    return latestSecurityPrice.getValue() < limit.getValue() ? Colors.RED : null;
+                    return latestSecurityPrice.getValue() < limit.getValue() ? Colors.theme().redBackground() : null;
                 default:
                     return null;
             }

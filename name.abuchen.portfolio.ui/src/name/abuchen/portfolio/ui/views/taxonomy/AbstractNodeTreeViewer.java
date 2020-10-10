@@ -480,7 +480,8 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
             public Color getBackground(Object element)
             {
                 TaxonomyNode node = (TaxonomyNode) element;
-                return node.isAssignment() && getModel().hasWeightError(node) ? Colors.WARNING : null;
+                return node.isAssignment() && getModel().hasWeightError(node) ? Colors.theme().warningBackground()
+                                : null;
             }
 
             @Override

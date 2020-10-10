@@ -4,12 +4,76 @@ import org.eclipse.jface.resource.ColorRegistry;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.graphics.RGBA;
 import org.eclipse.swt.widgets.Display;
 
 import name.abuchen.portfolio.util.ColorConversion;
 
 public final class Colors
 {
+    /**
+     * Theme holds the colors that a themed via CSS. Because Eclipse 4.16
+     * disposes (still) disposes colors upon theme change, we just inject the
+     * RGB values and cache the colors here.
+     */
+    public static class Theme
+    {
+        private Color warningBackground = getColor(254, 223, 107); // FEDF6B
+        private Color redBackground = Colors.GREEN;
+        private Color greenBackground = Colors.RED;
+        private Color redForeground = Colors.DARK_RED;
+        private Color greenForeground = Colors.DARK_GREEN;
+
+        public Color warningBackground()
+        {
+            return warningBackground;
+        }
+
+        public void setWarningBackground(RGBA color)
+        {
+            this.warningBackground = getColor(color.rgb);
+        }
+
+        public Color redBackground()
+        {
+            return redBackground;
+        }
+
+        public void setRedBackground(RGBA color)
+        {
+            this.redBackground = getColor(color.rgb);
+        }
+
+        public Color greenBackground()
+        {
+            return greenBackground;
+        }
+
+        public void setGreenBackground(RGBA color)
+        {
+            this.greenBackground = getColor(color.rgb);
+        }
+
+        public Color redForeground()
+        {
+            return redForeground;
+        }
+
+        public void setRedForeground(RGBA color)
+        {
+            this.redForeground = getColor(color.rgb);
+        }
+
+        public Color greenForeground()
+        {
+            return greenForeground;
+        }
+
+        public void setGreenForeground(RGBA color)
+        {
+            this.greenForeground = getColor(color.rgb);
+        }
+    }
 
     public static final Color GRAY = Display.getDefault().getSystemColor(SWT.COLOR_GRAY);
     public static final Color WHITE = Display.getDefault().getSystemColor(SWT.COLOR_WHITE);
@@ -40,16 +104,20 @@ public final class Colors
     public static final Color OTHER_CATEGORY = getColor(180, 180, 180);
     public static final Color INFO_TOOLTIP_BACKGROUND = getColor(236, 235, 236);
 
-    public static final Color WARNING = getColor(254, 223, 107); // FEDF6B
-    public static final Color WARNING_RED = getColor(209, 29, 29); // D11D1D
-
     public static final Color SIDEBAR_TEXT = getColor(57, 62, 66); // 393E42
     public static final Color SIDEBAR_BACKGROUND = getColor(249, 250, 250); // F9FAFA
     public static final Color SIDEBAR_BACKGROUND_SELECTED = getColor(228, 230, 233); // E4E6E9
     public static final Color SIDEBAR_BORDER = getColor(244, 245, 245); // F4F5F5
 
+    private static final Theme theme = new Theme();
+
     private Colors()
     {
+    }
+
+    public static Theme theme()
+    {
+        return theme;
     }
 
     public static Color getColor(RGB rgb)

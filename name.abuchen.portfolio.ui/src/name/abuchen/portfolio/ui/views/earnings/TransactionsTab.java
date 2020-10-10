@@ -350,13 +350,14 @@ public class TransactionsTab implements EarningsTab
         TransactionPair<?> tx = (TransactionPair<?>) element;
         if (tx.getTransaction() instanceof AccountTransaction)
         {
-            return ((AccountTransaction) tx.getTransaction()).getType().isCredit() ? Colors.DARK_GREEN
-                            : Colors.DARK_RED;
+            return ((AccountTransaction) tx.getTransaction()).getType().isCredit() ? Colors.theme().greenForeground()
+                            : Colors.theme().redForeground();
         }
         else
         {
-            return ((PortfolioTransaction) tx.getTransaction()).getType().isPurchase() ? Colors.DARK_GREEN
-                            : Colors.DARK_RED;
+            return ((PortfolioTransaction) tx.getTransaction()).getType().isPurchase()
+                            ? Colors.theme().greenForeground()
+                            : Colors.theme().redForeground();
         }
     }
 }

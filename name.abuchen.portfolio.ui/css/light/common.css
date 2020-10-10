@@ -71,3 +71,13 @@ CTabItem:selected {
 .dashboard ImageHyperlink {
 	background-color: white;
 }
+
+CustomColors {
+	warning-background: #FEDF6B;
+	red-background: #FE2B05;
+	green-background: #02F500;
+
+	red-foreground: #800000;
+	green-foreground: #008000;
+
+}

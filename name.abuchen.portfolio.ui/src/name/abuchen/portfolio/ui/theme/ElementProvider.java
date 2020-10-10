@@ -12,6 +12,7 @@ import org.swtchart.Chart;
 import org.w3c.dom.Element;
 
 import name.abuchen.portfolio.ui.editor.Sidebar;
+import name.abuchen.portfolio.ui.util.Colors;
 
 @SuppressWarnings("restriction")
 public class ElementProvider implements IElementProvider
@@ -29,6 +30,8 @@ public class ElementProvider implements IElementProvider
             return new SidebarElementAdapter((Sidebar<?>) element, engine);
         if (element instanceof Chart)
             return new ChartElementAdapter((Chart) element, engine);
+        if (element instanceof Colors.Theme)
+            return new ColorsThemeElementAdapter((Colors.Theme) element, engine);
 
         return null;
     }

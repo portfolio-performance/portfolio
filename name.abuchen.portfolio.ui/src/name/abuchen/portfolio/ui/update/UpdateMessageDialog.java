@@ -79,7 +79,7 @@ import name.abuchen.portfolio.ui.util.swt.StyledLabel;
         StyledLabel label = new StyledLabel(container, SWT.WRAP);
         GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.END).applyTo(label);
         label.setText(newVersion.get32BitWarning());
-        label.setBackground(Colors.WARNING);
+        label.setBackground(Colors.theme().warningBackground());
     }
 
     private void createHeader(Composite container)

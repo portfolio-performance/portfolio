@@ -429,7 +429,7 @@ public final class SecuritiesTable implements ModificationListener
                     return null;
 
                 LocalDate sevenDaysAgo = LocalDate.now().minusDays(7);
-                return latest.getDate().isBefore(sevenDaysAgo) ? Colors.WARNING : null;
+                return latest.getDate().isBefore(sevenDaysAgo) ? Colors.theme().warningBackground() : null;
             }
         });
         column.setSorter(ColumnViewerSorter.create((o1, o2) -> {
@@ -477,7 +477,7 @@ public final class SecuritiesTable implements ModificationListener
 
                 SecurityPrice latest = prices.get(prices.size() - 1);
                 if (!((Security) element).isRetired() && latest.getDate().isBefore(LocalDate.now().minusDays(7)))
-                    return Colors.WARNING;
+                    return Colors.theme().warningBackground();
                 else
                     return null;
             }
@@ -1101,9 +1101,9 @@ public final class SecuritiesTable implements ModificationListener
                 return null;
 
             if (value.doubleValue() < 0)
-                return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED);
+                return Colors.theme().redForeground();
             else if (value.doubleValue() > 0)
-                return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);
+                return Colors.theme().greenForeground();
             else
                 return null;
         }

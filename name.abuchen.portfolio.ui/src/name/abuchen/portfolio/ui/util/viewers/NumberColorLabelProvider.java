@@ -35,7 +35,7 @@ public final class NumberColorLabelProvider<N extends Number> extends ColumnLabe
         if (value == null)
             return null;
 
-        return value.doubleValue() >= 0 ? Colors.DARK_GREEN : Colors.DARK_RED;
+        return value.doubleValue() >= 0 ? Colors.theme().greenForeground() : Colors.theme().redForeground();
     }
 
     @Override

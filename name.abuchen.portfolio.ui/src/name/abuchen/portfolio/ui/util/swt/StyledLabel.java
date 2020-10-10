@@ -102,11 +102,13 @@ public class StyledLabel extends Canvas // NOSONAR
 
             if ("red".equals(qName)) //$NON-NLS-1$
             {
-                styleRanges.add(new StyleRange(tag.start, plainText.length() - tag.start, Colors.DARK_RED, null));
+                styleRanges.add(new StyleRange(tag.start, plainText.length() - tag.start,
+                                Colors.theme().redForeground(), null));
             }
             else if ("green".equals(qName)) //$NON-NLS-1$
             {
-                styleRanges.add(new StyleRange(tag.start, plainText.length() - tag.start, Colors.DARK_GREEN, null));
+                styleRanges.add(new StyleRange(tag.start, plainText.length() - tag.start,
+                                Colors.theme().greenForeground(), null));
             }
             else if ("strong".equals(qName)) //$NON-NLS-1$
             {

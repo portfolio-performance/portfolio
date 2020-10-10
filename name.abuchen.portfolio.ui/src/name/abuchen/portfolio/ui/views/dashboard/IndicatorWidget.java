@@ -138,6 +138,7 @@ public class IndicatorWidget<N extends Number> extends AbstractIndicatorWidget<N
         indicator.setText(formatter.format(value));
 
         if (isValueColored)
-            indicator.setForeground(value.doubleValue() < 0 ? Colors.DARK_RED : Colors.DARK_GREEN);
+            indicator.setForeground(value.doubleValue() < 0 ? Colors.theme().redForeground()
+                            : Colors.theme().greenForeground());
     }
 }

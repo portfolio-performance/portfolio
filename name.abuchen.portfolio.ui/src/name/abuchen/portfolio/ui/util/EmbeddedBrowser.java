@@ -23,7 +23,6 @@ import org.eclipse.swt.SWTError;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Text;
 import org.osgi.framework.Bundle;
@@ -80,8 +79,6 @@ public class EmbeddedBrowser
 
             Text text = new Text(container, SWT.WRAP);
             GridDataFactory.fillDefaults().grab(true, true).applyTo(text);
-            text.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
-            text.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_RED));
             text.setText(MessageFormat.format(Messages.MsgEmbeddedBrowserError, stacktrace));
         }
 
