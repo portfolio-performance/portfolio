@@ -452,7 +452,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private void addDividendTransaction()
     {
-        DocumentType type1 = new DocumentType("[^ ]Dividendengutschrift für inländische Wertpapiere");
+        DocumentType type1 = new DocumentType("([^ ]Dividendengutschrift für inländische Wertpapiere)|(Dividendengutschrift[^ ])");
         DocumentType type2 = new DocumentType("Ertragsmitteilung");
         DocumentType type3 = new DocumentType("Zinsgutschrift");
         this.addDocumentTyp(type1);
