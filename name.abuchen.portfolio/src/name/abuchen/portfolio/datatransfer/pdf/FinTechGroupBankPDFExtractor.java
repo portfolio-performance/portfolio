@@ -452,7 +452,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private void addDividendTransaction()
     {
-        DocumentType type1 = new DocumentType("Dividendengutschrift für inländische Wertpapiere");
+        DocumentType type1 = new DocumentType("([^ ]Dividendengutschrift für inländische Wertpapiere)|(Dividendengutschrift[^ ])");
         DocumentType type2 = new DocumentType("Ertragsmitteilung");
         DocumentType type3 = new DocumentType("Zinsgutschrift");
         this.addDocumentTyp(type1);
@@ -538,7 +538,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private void addForeignDividendTransaction()
     {
-        DocumentType type = new DocumentType("Dividendengutschrift für ausländische Wertpapiere", (context, lines) -> {
+        DocumentType type = new DocumentType("[^ ](Dividendengutschrift für ausländische Wertpapiere)", (context, lines) -> {
             Pattern pCurrencyFx = Pattern.compile(".* Bruttodividende *: *[.\\d]+,\\d{2} (?<currencyFx>\\w{3})");
             Pattern pExchangeRate = Pattern.compile(".*Devisenkurs *: *(?<exchangeRate>[.\\d]+,\\d+).*");
             // read the current context here
