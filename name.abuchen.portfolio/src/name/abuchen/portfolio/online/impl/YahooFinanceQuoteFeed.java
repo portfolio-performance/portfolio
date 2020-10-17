@@ -206,7 +206,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         else if (days < 1500)
             range = "5y"; //$NON-NLS-1$
 
-        return new WebAccess("query1.finance.yahoo.com", "/v7/finance/spark") //
+        return new WebAccess("query1.finance.yahoo.com", "/v7/finance/chart") //
                         .addParameter("symbols", security.getTickerSymbol()).addParameter("range", range)
                         .addParameter("interval", "1d").get();
 
@@ -222,9 +222,9 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
             if (responseData == null)
                 throw new IOException("responseBody"); //$NON-NLS-1$
 
-            JSONObject resultSet = (JSONObject) responseData.get("spark"); //$NON-NLS-1$
+            JSONObject resultSet = (JSONObject) responseData.get("chart"); //$NON-NLS-1$
             if (resultSet == null)
-                throw new IOException("spark"); //$NON-NLS-1$
+                throw new IOException("chart"); //$NON-NLS-1$
 
             JSONArray result = (JSONArray) resultSet.get("result"); //$NON-NLS-1$
             if (result == null || result.isEmpty())
