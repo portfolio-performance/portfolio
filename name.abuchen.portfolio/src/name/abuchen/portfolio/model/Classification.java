@@ -355,13 +355,18 @@ public class Classification implements Named
         List<Classification> answer = new ArrayList<>();
 
         LinkedList<Classification> stack = new LinkedList<>();
-        stack.addAll(getChildren());
+
+        List<Classification> list = new ArrayList<>(getChildren());
+        list.sort((r, l) -> Integer.compare(r.getRank(), l.getRank()));
+        stack.addAll(list);
 
         while (!stack.isEmpty())
         {
             Classification c = stack.pop();
             answer.add(c);
-            stack.addAll(0, c.getChildren());
+            list = new ArrayList<>(c.getChildren());
+            list.sort((r, l) -> Integer.compare(r.getRank(), l.getRank()));
+            stack.addAll(0, list);
         }
 
         return answer;

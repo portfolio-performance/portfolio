@@ -1,0 +1,16 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Zusammenfassung
+Zu Beginn € 0
+Max Mustermann
+Einzahlungen € 200,11
+Datum 24.08.2020 - 07.09.2020 Auszahlungen € 0
+Referenznummer GG123456 Ergebnis € 200,11
+Sparbuch
+Datum Zahlungsart Eingänge Ausgänge Guthaben
+04.09.2020 Überweisen € 200 € 200
+05.09.2020 Go & Grow Zinsen € 0,04 € 200,04
+06.09.2020 Go & Grow Zinsen € 0,03 € 200,07
+07.09.2020 Go & Grow Zinsen € 0,04 € 200,11
+Gesamt € 200,11

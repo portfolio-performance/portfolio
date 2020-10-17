@@ -1,12 +1,12 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: %Bundle-Name
+Bundle-Name: Portfolio Platform UI
 Bundle-SymbolicName: name.abuchen.portfolio.ui;singleton:=true
-Bundle-Version: 0.48.1
+Bundle-Version: 0.48.2.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: name.abuchen.portfolio.ui.PortfolioPlugin
-Bundle-Vendor: %Bundle-Vendor
+Bundle-Vendor: Andreas Buchen
 Import-Package: com.google.common.base,
  com.google.common.collect,
  com.google.common.primitives,

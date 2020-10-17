@@ -19,6 +19,7 @@ import name.abuchen.portfolio.ui.preferences.AlphaVantagePreferencePage;
 import name.abuchen.portfolio.ui.preferences.CalendarPreferencePage;
 import name.abuchen.portfolio.ui.preferences.DivvyDiaryPreferencePage;
 import name.abuchen.portfolio.ui.preferences.FinnhubPreferencePage;
+import name.abuchen.portfolio.ui.preferences.FormattingPreferencePage;
 import name.abuchen.portfolio.ui.preferences.GeneralPreferencePage;
 import name.abuchen.portfolio.ui.preferences.LanguagePreferencePage;
 import name.abuchen.portfolio.ui.preferences.PresentationPreferencePage;
@@ -47,8 +48,9 @@ public class OpenPreferenceDialogHandler
     {
         PreferenceManager pm = new PreferenceManager('/');
         pm.addToRoot(new PreferenceNode("general", new GeneralPreferencePage())); //$NON-NLS-1$
-        pm.addToRoot(new PreferenceNode("language", new LanguagePreferencePage())); //$NON-NLS-1$
         pm.addToRoot(new PreferenceNode("presentation", new PresentationPreferencePage())); //$NON-NLS-1$
+        pm.addTo("presentation", new PreferenceNode("language", new LanguagePreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
+        pm.addTo("presentation", new PreferenceNode("formatting", new FormattingPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
         pm.addToRoot(new PreferenceNode("calendar", new CalendarPreferencePage())); //$NON-NLS-1$
 
         pm.addToRoot(new PreferenceNode("api", new APIKeyPreferencePage())); //$NON-NLS-1$

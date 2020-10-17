@@ -4,11 +4,14 @@ import java.text.MessageFormat;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.OptionalDouble;
 import java.util.function.BiFunction;
+import java.util.stream.LongStream;
 
 import name.abuchen.portfolio.math.Risk.Drawdown;
 import name.abuchen.portfolio.math.Risk.Volatility;
 import name.abuchen.portfolio.model.Dashboard;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.ui.Messages;
@@ -175,6 +178,35 @@ public enum WidgetFactory
     TRADES_PROFIT_LOSS(Messages.LabelTradesProfitLoss, Messages.LabelTrades, TradesProfitLossWidget::new),
 
     TRADES_AVERAGE_HOLDING_PERIOD(Messages.LabelAverageHoldingPeriod, Messages.LabelTrades, TradesAverageHoldingPeriodWidget::new),
+
+    TRADES_TURNOVER_RATIO(Messages.LabelTradesTurnoverRate, Messages.LabelTrades, //
+                    (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
+                                    .with(Values.Percent2) //
+                                    .with((ds, period) -> {
+                                        PerformanceIndex index = data.calculate(ds, period);
+                                        OptionalDouble average = LongStream.of(index.getTotals()).average();
+                                        if (!average.isPresent() || average.getAsDouble() <= 0)
+                                            return 0.0;
+                                        long buy = LongStream.of(index.getBuys()).sum();
+                                        long sell = LongStream.of(index.getSells()).sum();
+                                        return Long.min(buy, sell) / average.getAsDouble();
+                                    }) //
+                                    .withTooltip((ds, period) -> {
+                                        PerformanceIndex index = data.calculate(ds, period);
+                                        String currency = data.getCurrencyConverter().getTermCurrency();
+                                        OptionalDouble average = LongStream.of(index.getTotals()).average();
+                                        long buy = LongStream.of(index.getBuys()).sum();
+                                        long sell = LongStream.of(index.getSells()).sum();
+                                        return MessageFormat.format(Messages.TooltipTurnoverRate,
+                                                        Values.Money.format(Money.of(currency, buy)),
+                                                        Values.Money.format(Money.of(currency, sell)),
+                                                        Values.Money.format(Money.of(currency, (long)average.orElse(0))),
+                                                        Values.Percent2.format(average.isPresent() && average.getAsDouble() > 0
+                                                                        ? Long.min(buy, sell) / average.getAsDouble()
+                                                                        : 0));
+                                    }) //
+                                    .withColoredValues(false)
+                                    .build()),
 
     CURRENT_DATE(Messages.LabelCurrentDate, Messages.LabelCommon, CurrentDateWidget::new),
 

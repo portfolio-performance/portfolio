@@ -345,7 +345,8 @@ public class AccountTransactionModel extends AbstractModel
         if (sourceTransaction != null)
             return;
 
-        if (getAccountCurrencyCode().equals(getSecurityCurrencyCode()))
+        // set exchange rate to 1, if account and security have the same currency or no security is selected
+        if (getAccountCurrencyCode().equals(getSecurityCurrencyCode()) || getSecurityCurrencyCode().isEmpty())
         {
             setExchangeRate(BigDecimal.ONE);
         }

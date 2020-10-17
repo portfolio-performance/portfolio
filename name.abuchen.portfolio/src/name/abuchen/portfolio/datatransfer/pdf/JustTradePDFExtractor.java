@@ -10,6 +10,8 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.money.Money;
 
 public class JustTradePDFExtractor extends AbstractPDFExtractor
 {
@@ -24,7 +26,7 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("justTRADE"); //$NON-NLS-1$
 
         addBuyTransactionOld();
-        addBuyTransaction();
+        addBuySellTransaction();
     }
 
     private String stripTrailing(String value)
@@ -87,11 +89,11 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
     }
 
     @SuppressWarnings("nls")
-    private void addBuyTransaction()
+    private void addBuySellTransaction()
     {
 
         // layout of pdf changed
-        DocumentType newType = new DocumentType("Transaktionsart: Kauf");
+        DocumentType newType = new DocumentType("Transaktionsart: (Kauf|Verkauf)");
         this.addDocumentTyp(newType);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -101,7 +103,7 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("Produktbezeichnung - .*");
+        Block firstRelevantLine = new Block("Produktbezeichnung - .*", "Ausmachender Betrag:.*");
         newType.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
         pdfTransaction
@@ -121,7 +123,17 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
                                             String.format("%s %s", stripTrailing(v.get("date")), v.get("time")), DATE_TIME_FORMAT);
                             t.setDate(dateTime);
                         })
-
+                        
+                        // if type is "Verkauf" change from BUY to SELL
+                        .section("type") //
+                        .match("Transaktionsart: (?<type>\\w*)") //
+                        .assign((t, v) -> {
+                            if (v.get("type").equals("Verkauf")) 
+                            {
+                                t.setType(PortfolioTransaction.Type.SELL);
+                            }
+                        })
+                        
                         .section("shares") //
                         .match("Stück\\/Nominale: (?<shares>[0-9.]+(\\,[0-9]{2})).*")
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
@@ -132,7 +144,36 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(newType.getCurrentContext().get("currency")));
                         })
 
+                        .section("tax").optional() //
+                        .match("Kapitalertragssteuer: (\\W{1})(?<tax>([0-9.]+)\\,([0-9]{2}))") //
+                        .assign((t, v) -> {
+                            t.getPortfolioTransaction()
+                                            .addUnit(new Unit(Unit.Type.TAX, Money.of(
+                                                            asCurrencyCode(newType.getCurrentContext().get("currency")),
+                                                            asAmount(v.get("tax")))));
+                        })
+
+                        .section("tax").optional() //
+                        .match("Solidaritätszuschlag: (\\W{1})(?<tax>([0-9.]+)\\,([0-9]{2}))") //
+                        .assign((t, v) -> {
+                            t.getPortfolioTransaction()
+                                            .addUnit(new Unit(Unit.Type.TAX, Money.of(
+                                                            asCurrencyCode(newType.getCurrentContext().get("currency")),
+                                                            asAmount(v.get("tax")))));
+                        })
+
+                        .section("tax").optional() //
+                        .match("Kirchensteuer: (\\W{1})(?<tax>([0-9.]+)\\,([0-9]{2}))") //
+                        .assign((t, v) -> {
+                            t.getPortfolioTransaction()
+                                            .addUnit(new Unit(Unit.Type.TAX, Money.of(
+                                                            asCurrencyCode(newType.getCurrentContext().get("currency")),
+                                                            asAmount(v.get("tax")))));
+                        })
+
                         .wrap(BuySellEntryItem::new);
+        
+        
     }
 
     @Override

@@ -28,6 +28,7 @@ import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
@@ -545,8 +546,13 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
             tableViewer.setInput(input);
             tableViewer.refresh();
             tableViewer.getTable().pack();
-            for (TableColumn column : tableViewer.getTable().getColumns())
-                column.pack();
+
+            // see #1723 and #1536: under Linux, the first column is extended to
+            // the full size of the table
+
+            if (!Platform.getWS().equals(Platform.WS_GTK))
+                for (TableColumn column : tableViewer.getTable().getColumns())
+                    column.pack();
 
             doUpdateErrorMessages();
         }

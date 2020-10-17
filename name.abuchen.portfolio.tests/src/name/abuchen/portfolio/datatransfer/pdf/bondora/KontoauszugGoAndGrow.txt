@@ -216,4 +216,5 @@ Datum Zahlungsart Eingänge Ausgänge Guthaben
 05.08.2020 Go & Grow Zinsen 0,3 € 1.722,8 €
 06.08.2020 Überweisen 200 € 1.922,8 €
 06.08.2020 Go & Grow Zinsen 0,31 € 1.923,11 €
-Gesamt 1.923,11 €
+07.08.2020 Abheben 203 € 1.720,11 €
+Gesamt 1.723,11 €

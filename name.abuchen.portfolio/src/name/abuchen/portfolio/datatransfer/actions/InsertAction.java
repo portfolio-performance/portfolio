@@ -108,7 +108,9 @@ public class InsertAction implements ImportAction
 
             // search for a match in existing investment plan transactions
             List<InvestmentPlan> plans = client.getPlans();
-            Iterator<InvestmentPlan> i = plans.stream().filter(p -> p.getSecurity().equals(t.getSecurity())).iterator();
+            Iterator<InvestmentPlan> i = plans.stream()
+                            .filter(p -> p.getSecurity() != null && p.getSecurity().equals(t.getSecurity())).iterator();
+
             while (i.hasNext())
             {
                 List<Transaction> transactions = i.next().getTransactions();

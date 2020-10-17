@@ -188,6 +188,7 @@ public final class SecuritiesTable implements ModificationListener
         addMasterDataColumns();
         addColumnLatestPrice();
         addDeltaColumn();
+        addDeltaAmountColumn();
         addColumnDateOfLatestPrice();
         addColumnDateOfLatestHistoricalPrice();
         addQuoteDeltaColumn();
@@ -344,14 +345,14 @@ public final class SecuritiesTable implements ModificationListener
     private void addDeltaColumn() // NOSONAR
     {
         Column column;
-        column = new Column("5", Messages.ColumnChangeOnPrevious, SWT.RIGHT, 60); //$NON-NLS-1$
+        column = new Column("5", Messages.ColumnChangeOnPrevious, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setMenuLabel(Messages.ColumnChangeOnPrevious_MenuLabel);
         column.setLabelProvider(new NumberColorLabelProvider<>(Values.Percent2, element -> {
             Optional<Pair<SecurityPrice, SecurityPrice>> previous = ((Security) element).getLatestTwoSecurityPrices();
             if (previous.isPresent())
             {
-                double latestQuote = previous.get().getLeft().getValue() / Values.Quote.divider();
-                double previousQuote = previous.get().getRight().getValue() / Values.Quote.divider();
+                double latestQuote = previous.get().getLeft().getValue();
+                double previousQuote = previous.get().getRight().getValue();
                 return (latestQuote - previousQuote) / previousQuote;
             }
             else
@@ -389,13 +390,74 @@ public final class SecuritiesTable implements ModificationListener
             if (previous1.isPresent() && !previous2.isPresent())
                 return 1;
 
-            double latestQuote1 = previous1.get().getLeft().getValue() / Values.Quote.divider();
-            double previousQuote1 = previous1.get().getRight().getValue() / Values.Quote.divider();
-            double v1 = (latestQuote1 - previousQuote1) / previousQuote1 * 100;
+            double latestQuote1 = previous1.get().getLeft().getValue();
+            double previousQuote1 = previous1.get().getRight().getValue();
+            double v1 = (latestQuote1 - previousQuote1) / previousQuote1;
 
-            double latestQuote2 = previous2.get().getLeft().getValue() / Values.Quote.divider();
-            double previousQuote2 = previous2.get().getRight().getValue() / Values.Quote.divider();
-            double v2 = (latestQuote2 - previousQuote2) / previousQuote2 * 100;
+            double latestQuote2 = previous2.get().getLeft().getValue();
+            double previousQuote2 = previous2.get().getRight().getValue();
+            double v2 = (latestQuote2 - previousQuote2) / previousQuote2;
+
+            return Double.compare(v1, v2);
+        }));
+        support.addColumn(column);
+    }
+
+    private void addDeltaAmountColumn() // NOSONAR
+    {
+        Column column;
+        column = new Column("changeonpreviousamount", Messages.ColumnChangeOnPreviousAmount, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setMenuLabel(Messages.ColumnChangeOnPrevious_MenuLabelAmount);
+        column.setLabelProvider(new NumberColorLabelProvider<>(Values.Quote, element -> {
+            Optional<Pair<SecurityPrice, SecurityPrice>> previous = ((Security) element).getLatestTwoSecurityPrices();
+            if (previous.isPresent())
+            {
+                double latestQuote = previous.get().getLeft().getValue();
+                double previousQuote = previous.get().getRight().getValue();
+                return (long) (latestQuote - previousQuote);
+            }
+            else
+            {
+                return null;
+            }
+        }, element -> {
+            Optional<Pair<SecurityPrice, SecurityPrice>> previous = ((Security) element).getLatestTwoSecurityPrices();
+            if (previous.isPresent())
+            {
+                return Messages.ColumnLatestPrice + ": " //$NON-NLS-1$
+                                + MessageFormat.format(Messages.TooltipQuoteAtDate,
+                                                Values.Quote.format(previous.get().getLeft().getValue()),
+                                                Values.Date.format(previous.get().getLeft().getDate()))
+                                + "\n" // //$NON-NLS-1$
+                                + Messages.ColumnPreviousPrice + ": " //$NON-NLS-1$
+                                + MessageFormat.format(Messages.TooltipQuoteAtDate,
+                                                Values.Quote.format(previous.get().getRight().getValue()),
+                                                Values.Date.format(previous.get().getRight().getDate()));
+            }
+            else
+            {
+                return null;
+            }
+        }));
+        column.setSorter(ColumnViewerSorter.create((o1, o2) -> { // NOSONAR
+
+            Optional<Pair<SecurityPrice, SecurityPrice>> previous1 = ((Security) o1).getLatestTwoSecurityPrices();
+            Optional<Pair<SecurityPrice, SecurityPrice>> previous2 = ((Security) o2).getLatestTwoSecurityPrices();
+
+            if (!previous1.isPresent() && !previous2.isPresent())
+                return 0;
+            if (!previous1.isPresent() && previous2.isPresent())
+                return -1;
+            if (previous1.isPresent() && !previous2.isPresent())
+                return 1;
+
+            double latestQuote1 = previous1.get().getLeft().getValue();
+            double previousQuote1 = previous1.get().getRight().getValue();
+            double v1 = latestQuote1 - previousQuote1;
+
+            double latestQuote2 = previous2.get().getLeft().getValue();
+            double previousQuote2 = previous2.get().getRight().getValue();
+            double v2 = latestQuote2 - previousQuote2;
 
             return Double.compare(v1, v2);
         }));

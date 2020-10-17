@@ -2,6 +2,8 @@ package name.abuchen.portfolio.ui.views.taxonomy;
 
 import javax.inject.Inject;
 
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Composite;
@@ -16,6 +18,9 @@ import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel.TaxonomyModelUpdat
 
     @Inject
     private IPreferenceStore preferenceStore;
+
+    @Inject
+    private IEclipseContext context;
 
     protected Page(TaxonomyModel model, TaxonomyNodeRenderer renderer)
     {
@@ -56,5 +61,10 @@ import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel.TaxonomyModelUpdat
 
     public void dispose()
     {
+    }
+
+    protected <T> T make(Class<T> type)
+    {
+        return ContextInjectionFactory.make(type, this.context);
     }
 }

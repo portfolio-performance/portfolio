@@ -30,21 +30,29 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.TableColumn;
 
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.selection.SelectionService;
+import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.views.AccountContextMenu;
+import name.abuchen.portfolio.ui.views.SecurityContextMenu;
 import name.abuchen.portfolio.ui.views.earnings.EarningsViewModel.Line;
 import name.abuchen.portfolio.util.TextUtil;
 
 public class EarningsPerMonthMatrixTab implements EarningsTab
 {
+    @Inject
+    private AbstractFinanceView view;
+
     @Inject
     private SelectionService selectionService;
 
@@ -127,7 +135,28 @@ public class EarningsPerMonthMatrixTab implements EarningsTab
 
         model.addUpdateListener(() -> updateColumns(tableViewer, tableLayout));
 
+        new ContextMenu(tableViewer.getControl(), this::fillContextMenu).hook();
+
         return container;
+    }
+
+    protected void fillContextMenu(IMenuManager manager)
+    {
+        IStructuredSelection selection = tableViewer.getStructuredSelection();
+
+        if (selection.isEmpty() || selection.size() > 1)
+            return;
+
+        Line line = (Line) selection.getFirstElement();
+        InvestmentVehicle vehicle = line.getVehicle();
+        if (vehicle instanceof Account)
+        {
+            new AccountContextMenu(view).menuAboutToShow(manager, (Account) vehicle, null);
+        }
+        else if (vehicle instanceof Security)
+        {
+            new SecurityContextMenu(view).menuAboutToShow(manager, (Security) vehicle);
+        }
     }
 
     protected void createColumns(TableViewer records, TableColumnLayout layout)

@@ -284,8 +284,8 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
         StackLayout layout = new StackLayout();
         container.setLayout(layout);
 
-        Page[] pages = new Page[] { make(DefinitionViewer.class, model, renderer), //
-                        make(ReBalancingViewer.class, model, renderer), //
+        Page[] pages = new Page[] { make(DefinitionViewer.class, this, model, renderer), //
+                        make(ReBalancingViewer.class, this, model, renderer), //
                         make(PieChartViewer.class, model, renderer), //
                         make(DonutViewer.class, model, renderer), //
                         make(TreeMapViewer.class, model, renderer), //

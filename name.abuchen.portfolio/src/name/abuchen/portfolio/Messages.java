@@ -204,6 +204,7 @@ public class Messages extends NLS
     public static String MsgErrorEncrypting;
     public static String MsgErrorIllegalForexUnit;
     public static String MsgErrorInvalidURL;
+    public static String MsgErrorInvestmentPlanMissingSecurityPricesToGenerateTransaction;
     public static String MsgErrorMissingDate;
     public static String MsgErrorMissingKeyValueInJSON;
     public static String MsgErrorMissingOnlineId;

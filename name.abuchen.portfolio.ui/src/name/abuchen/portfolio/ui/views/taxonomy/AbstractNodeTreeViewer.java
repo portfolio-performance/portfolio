@@ -53,10 +53,10 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
+import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.selection.SelectionService;
-import name.abuchen.portfolio.ui.util.BookmarkMenu;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.SimpleAction;
@@ -67,6 +67,7 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationL
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
+import name.abuchen.portfolio.ui.views.SecurityContextMenu;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
@@ -283,14 +284,16 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 
     private boolean useIndirectQuotation = false;
 
+    private final AbstractFinanceView view;
     private TreeViewer nodeViewer;
     private ShowHideColumnHelper support;
 
     private boolean isFirstView = true;
 
-    public AbstractNodeTreeViewer(TaxonomyModel model, TaxonomyNodeRenderer renderer)
+    public AbstractNodeTreeViewer(AbstractFinanceView view, TaxonomyModel model, TaxonomyNodeRenderer renderer)
     {
         super(model, renderer);
+        this.view = view;
     }
 
     @Inject
@@ -799,7 +802,7 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
             if (security != null)
             {
                 manager.add(new Separator());
-                manager.add(new BookmarkMenu(part, security));
+                new SecurityContextMenu(this.view).menuAboutToShow(manager, security);
             }
         }
     }

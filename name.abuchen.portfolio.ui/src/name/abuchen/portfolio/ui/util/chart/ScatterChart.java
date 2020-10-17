@@ -2,13 +2,16 @@ package name.abuchen.portfolio.ui.util.chart;
 
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.swtchart.Chart;
 import org.swtchart.IAxis;
 import org.swtchart.IAxis.Position;
+import org.swtchart.ICustomPaintListener;
 import org.swtchart.ILineSeries;
+import org.swtchart.IPlotArea;
 import org.swtchart.ISeries.SeriesType;
 import org.swtchart.LineStyle;
 
@@ -36,6 +39,27 @@ public class ScatterChart extends Chart // NOSONAR
         yAxis.getTitle().setForeground(backColor);
         yAxis.getTick().setForeground(backColor);
         yAxis.setPosition(Position.Secondary);
+
+        ((IPlotArea) getPlotArea()).addCustomPaintListener(new ICustomPaintListener()
+        {
+            @Override
+            public void paintControl(PaintEvent e)
+            {
+                IAxis xAxis = getAxisSet().getXAxes()[0];
+                int y = xAxis.getPixelCoordinate(0);
+                e.gc.drawLine(y, 0, y, e.height);
+
+                IAxis yAxis = getAxisSet().getYAxes()[0];
+                int x = yAxis.getPixelCoordinate(0);
+                e.gc.drawLine(0, x, e.width, x);
+            }
+
+            @Override
+            public boolean drawBehindSeries()
+            {
+                return true;
+            }
+        });
 
         new ScatterChartToolTip(this);
 

@@ -32,9 +32,11 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
     private static final String regexAmountAndCurrency = "Konto-Nr. \\w* (?<amount>(\\d+\\.)?\\d+(,\\d+)?) (?<currency>\\w{3}+)"; //$NON-NLS-1$
     private static final String regexDate = "Schlusstag( / Handelszeit)? (?<date>\\d{2}.\\d{2}.\\d{4})( / (?<time>\\d{2}:\\d{2}:\\d{2}))?"; //$NON-NLS-1$
     private static final String regexTime = "(Schlusstag / )?Handelszeit ((?<date>\\d{2}.\\d{2}.\\d{4}) / )?(?<time>\\d{2}:\\d{2}:\\d{2})"; //$NON-NLS-1$
-    private static final String regexShares = "St.ck (?<shares>\\d+(,\\d+)?)"; //$NON-NLS-1$
+    private static final String regexShares = "St.ck (?<shares>(\\d+.)?\\d+(,\\d+)?)"; //$NON-NLS-1$
     private static final String regexFees = "Provision (?<fee>(\\d+\\.)?\\d+(,\\d+)?) (?<currency>\\w{3}+)"; //$NON-NLS-1$
     private static final String regexTaxes = "Gesamtsumme Steuern (?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)$"; //$NON-NLS-1$
+    private static final String regexWithholdingTaxDivDoc = ".*Ausl.ndische Quellensteuer .* (?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)$"; //$NON-NLS-1$
+    private static final String regexWithholdingTaxTaxDoc = "Anrechenbare ausl.ndische Quellensteuer (?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)$"; //$NON-NLS-1$
 
     private static final String TO_BE_DELETED = "to_be_deleted"; //$NON-NLS-1$
     private static final String ATTRIBUTE_PAY_DATE = "pay_date"; //$NON-NLS-1$
@@ -244,6 +246,13 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                             t.getSecurity().getAttributes().put(new AttributeType(ATTRIBUTE_PAY_DATE),
                                             asDate(v.get("date")));
                         })
+                        
+                        .section("tax", "currency").optional() //
+                        .match(regexWithholdingTaxDivDoc) //
+                        .assign((t, v) -> {
+                            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                            t.addUnit(new Unit(Unit.Type.TAX, tax));
+                        })
 
                         .section("exchangeRate", "fxAmount", "fxCurrency", "amount", "currency").optional() //
                         .match("Bruttoertrag (?<fxAmount>[\\d.]+,\\d+) (?<fxCurrency>\\w{3}+)") //
@@ -312,6 +321,14 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
 
                         .section("tax", "currency") //
                         .match(regexTaxes) //
+                        .assign((t, v) -> {
+                            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                            t.addUnit(new Unit(Unit.Type.TAX, tax));
+                            t.setAmount(t.getAmount() - asAmount(v.get("tax")));
+                        })
+                        
+                        .section("tax", "currency").optional() //
+                        .match(regexWithholdingTaxTaxDoc) //
                         .assign((t, v) -> {
                             Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
