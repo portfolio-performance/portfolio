@@ -234,17 +234,9 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
             if (result0 == null)
                 throw new IOException("result[0]"); //$NON-NLS-1$
 
-            JSONArray response = (JSONArray) result0.get("response"); //$NON-NLS-1$
-            if (response == null || response.isEmpty())
-                throw new IOException("response"); //$NON-NLS-1$
+            JSONArray timestamp = (JSONArray) result0.get("timestamp"); //$NON-NLS-1$
 
-            JSONObject response0 = (JSONObject) response.get(0);
-            if (response0 == null)
-                throw new IOException("response[0]"); //$NON-NLS-1$
-
-            JSONArray timestamp = (JSONArray) response0.get("timestamp"); //$NON-NLS-1$
-
-            JSONObject indicators = (JSONObject) response0.get("indicators"); //$NON-NLS-1$
+            JSONObject indicators = (JSONObject) result0.get("indicators"); //$NON-NLS-1$
             if (indicators == null)
                 throw new IOException("indicators"); //$NON-NLS-1$
 
