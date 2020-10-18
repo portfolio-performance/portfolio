@@ -206,8 +206,8 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         else if (days < 1500)
             range = "5y"; //$NON-NLS-1$
 
-        return new WebAccess("query1.finance.yahoo.com", "/v7/finance/chart") //
-                        .addParameter("symbols", security.getTickerSymbol()).addParameter("range", range)
+        return new WebAccess("query1.finance.yahoo.com", "/v7/finance/chart" + security.getTickerSymbol()) //
+                        .addParameter("range", range)
                         .addParameter("interval", "1d").get();
 
     }
