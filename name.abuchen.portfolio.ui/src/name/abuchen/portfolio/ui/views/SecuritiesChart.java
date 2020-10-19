@@ -430,8 +430,9 @@ public class SecuritiesChart
     private void addDividendTooltip(Composite composite, AccountTransaction t)
     {
         Label label = new Label(composite, SWT.NONE);
+        String amount = t.getMonetaryAmount().toString();
         label.setText(MessageFormat.format(Messages.LabelToolTipTransactionSummary, t.getType().toString(),
-                        dateTimeFormatter.format(t.getDateTime().toLocalDate()), t.getMonetaryAmount().toString()));
+                        dateTimeFormatter.format(t.getDateTime().toLocalDate()), amount));
 
         if (t.getShares() == 0L)
         {
@@ -442,11 +443,36 @@ public class SecuritiesChart
         {
             Optional<Unit> grossValue = t.getUnit(Unit.Type.GROSS_VALUE);
             long gross = grossValue.isPresent() ? grossValue.get().getForex().getAmount() : t.getGrossValueAmount();
+            String currency = grossValue.isPresent() ? grossValue.get().getForex().getCurrencyCode()
+                            : t.getCurrencyCode();
 
+            // gross value in either forex currency or transaction currency
+            String grossAmount = Money.of(currency, gross).toString();
+
+            // gross value in transaction currency
+            String grossValueAmount = Money.of(t.getCurrencyCode(), t.getGrossValueAmount()).toString();
+
+            // display gross value in transaction currency, different gross
+            // value in security currency exists
+            if (!grossValueAmount.equals(grossAmount))
+            {
+                label = new Label(composite, SWT.NONE);
+                label.setText(MessageFormat.format(Messages.LabelToolTipDividendDetailsGross, grossValueAmount));
+            }
+
+            // display gross value, if different to net amount
+            if (!grossAmount.equals(amount))
+            {
+                label = new Label(composite, SWT.NONE);
+                label.setText(MessageFormat.format(Messages.LabelToolTipDividendDetailsGross, grossAmount));
+            }
+
+            // display dividend per share in security currency
             label = new Label(composite, SWT.NONE);
             label.setText(MessageFormat.format(Messages.LabelToolTipDividendDetails, Values.Share.format(t.getShares()),
-                            Values.Quote.format(Math.round(gross * Values.Share.divider() * Values.Quote.factorToMoney()
-                                            / t.getShares()))));
+                            currency, Values.Quote.format(Math.round(gross * Values.Share.divider()
+                                            * Values.Quote.factorToMoney() / t.getShares()))));
+
         }
     }
 
