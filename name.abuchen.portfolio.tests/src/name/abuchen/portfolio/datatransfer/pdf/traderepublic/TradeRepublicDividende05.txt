@@ -1,0 +1,34 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KASTANIENALLEE 32  10435 BERLIN
+X X SEITE 1 von 1
+X X DATUM 28.09.2020
+D X X DEPOT X
+DIVIDENDE
+ÜBERSICHT
+Dividende mit dem Ex-Tag 13.08.2020.
+POSITION ANZAHL ERTRÄGNIS BETRAG
+Royal Dutch Shell 500 Stk. 0,16 USD 80,00 USD
+Reg. Shares Class A EO -,07
+ISIN: GB00B03MLX29
+GESAMT 80,00 USD
+ABRECHNUNG
+POSITION BETRAG
+Quellensteuer -12,00 USD
+Zwischensumme 68,00 USD
+Zwischensumme 1,182557 EUR/USD 57,60 EUR
+Kapitalertragssteuer -6,90 EUR
+Solidaritätszuschlag -0,40 EUR
+GESAMT 50,30 EUR
+BUCHUNG
+VERRECHNUNGSKONTO VALUTA BETRAG
+X 21.09.2020 50,30 EUR
+Royal Dutch Shell Reg. Shares Class A EO -,07 in Girosammelverwahrung.
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie 
+Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Düsseldorf Geschäftsführer
+Kastanienallee 32 service@traderepublic.com AG Düsseldorf HRB 85864 Andreas Willius
+10435 Berlin USt-ID DE307510626 Karsten Müller
+ABRE / X / X / X
