@@ -182,8 +182,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                         .oneOf( //
                                         section -> section.attributes("date") //
                                                         .match("VERK. TEIL-/BEZUGSR. AM (?<date>\\d{2}\\.\\d{2}\\.\\d{4}) .*")
-                                                        .assign((t, v) -> t
-                                                                        .setDate(asDate(v.get("date")))),
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date")))),
                                         section -> section.attributes("date", "time") //
                                                         .match("VERKAUF AM (?<date>\\d{2}\\.\\d{2}\\.\\d{4}) *UM (?<time>\\d{2}:\\d{2}:\\d{2}) .*")
                                                         .assign((t, v) -> t
@@ -391,8 +390,8 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private void addFeesSectionsTransaction(Transaction<BuySellEntry> pdfTransaction)
     {
-        pdfTransaction.section("currency", "stockfees").optional().match(
-                        "(^.*)(B\\Drsenplatzgeb\\Dhr) (?<currency>\\w{3}+) (?<stockfees>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)")
+        pdfTransaction.section("currency", "stockfees").optional() //
+                        .match("(^.*)(B\\Drsenplatzgeb\\Dhr) (?<currency>\\w{3}+) (?<stockfees>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)")
                         .assign((t, v) -> t.getPortfolioTransaction()
                                         .addUnit(new Unit(Unit.Type.FEE,
                                                         Money.of(asCurrencyCode(v.get("currency")),
@@ -616,7 +615,8 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("tax", "currency").optional() //
-                        .match("abzgl. Kirchensteuer.* (?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)$").assign((t, v) -> {
+                        .match("abzgl. Kirchensteuer.* (?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)$") //
+                        .assign((t, v) -> {
                             Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
                             PDFExtractorUtils.checkAndSetTax(tax, t, type);
                         })
@@ -649,7 +649,8 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
                         .section("tax", "currency", "date").optional()
                         .match("Netto zulasten .* (?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)")
-                        .match("Valuta (?<date>\\d+\\.\\d+\\.\\d{4}+) .*").assign((t, v) -> {
+                        .match("Valuta (?<date>\\d+\\.\\d+\\.\\d{4}+) .*") //
+                        .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("tax")));
                             t.setDateTime(asDate(v.get("date")));
