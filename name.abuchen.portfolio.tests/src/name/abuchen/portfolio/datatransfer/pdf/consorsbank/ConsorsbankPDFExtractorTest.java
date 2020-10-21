@@ -6,6 +6,7 @@ import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
+import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -767,6 +768,36 @@ public class ConsorsbankPDFExtractorTest
         assertThat(t.getDateTime(), is(LocalDateTime.of(2008, 5, 16, 5, 0, 0)));
         assertThat(t.getShares(), is(Values.Share.factorize(334)));
         assertThat(t.getGrossPricePerShare(), is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(9.9296))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf6_Teilrechte() throws IOException
+    {
+        PDFImportAssistant assistant = new PDFImportAssistant(new Client(), new ArrayList<>());
+    
+        List<Exception> errors = new ArrayList<>();
+    
+        List<Item> results = assistant.runWithInputFile(
+                        PDFInputFile.loadSingleTestCase(getClass(), "ConsorsbankVerkauf6_Teilrechte.txt"), errors);
+    
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+    
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
+        assertThat(security.getWkn(), is("ENER6Y"));
+        assertThat(security.getIsin(), is("DE000ENER6Y0"));
+        assertThat(security.getName(), is("SIEMENS ENERGY AG NA O.N."));
+    
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+    
+        // check buy sell transaction
+        Item item = results.get(0);
+        BuySellEntry entry = (BuySellEntry) item.getSubject();
+        PortfolioTransaction t = entry.getPortfolioTransaction();
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 9_96L)));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2020-10-20T00:00")));
+        assertThat(t.getShares(), is(Values.Share.factorize(0.46370)));
     }
 
     @Test
