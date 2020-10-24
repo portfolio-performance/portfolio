@@ -14,7 +14,7 @@
 					"context": "SECURITY",
 					"pattern": [
 						"POSITION ANZAHL ERTRÄGNIS BETRAG",
-						"(?<name>.*) ([\\d+,.]*) Stk. ([\\d+,.]*) (?<currency>\\w{3}+) ([\\d+,.]*) (\\w{3}+)$",
+						"(?<name>.*) ([\\d+,.]*) Stk. ([\\d+,.]*) (?<currency>\\w{3}) ([\\d+,.]*) (\\w{3})$",
 						".*",
 						"(ISIN: )?(?<isin>.*)"
 					]
@@ -22,21 +22,21 @@
 				{
 					"pattern": [
 						"VERRECHNUNGSKONTO VALUTA BETRAG",
-						".* (?<date>\\d+.\\d+.\\d{4}+) (?<amount>[\\d+,.]*) (?<currency>\\w{3}+)"
+						".* (?<date>\\d+.\\d+.\\d{4}+) (?<amount>[\\d+,.]*) (?<currency>\\w{3})"
 					]
 				},
 				{
 					"pattern": [
 						"POSITION ANZAHL ERTRÄGNIS BETRAG",
-						"(.*) (?<shares>[\\d+,.]*) Stk. ([\\d+,.]*) (\\w{3}+) ([\\d+,.]*) (\\w{3}+)$"
+						"(.*) (?<shares>[\\d+,.]*) Stk. ([\\d+,.]*) (\\w{3}) ([\\d+,.]*) (\\w{3})$"
 					]
 				},
 				{
 					"context": "UNIT",
 					"isOptional": true,
 					"pattern": [
-						"GESAMT (?<fxAmount>[\\d+,.]*) (?<fxCurrency>\\w{3}+)",
-						"Zwischensumme (?<fxRateToBase>[\\d.,]+) \\w{3}+/\\w{3}+ [\\d.,]+ \\w{3}+"
+						"GESAMT (?<fxAmount>[\\d+,.]*) (?<fxCurrency>\\w{3})",
+						"Zwischensumme (?<fxRateToBase>[\\d.,]+) \\w{3}/\\w{3} [\\d.,]+ \\w{3}"
 					],
 					"attributes": {
 						"type": "GROSS_VALUE"
@@ -46,7 +46,7 @@
 					"context": "UNIT",
 					"isOptional": true,
 					"pattern": [
-						"Kapitalertragssteuer -(?<amount>[\\d.,]+) (?<currency>\\w{3}+)"
+						"Kapitalertragssteuer -(?<amount>[\\d.,]+) (?<currency>\\w{3})"
 					],
 					"attributes": {
 						"type": "TAX"
@@ -56,7 +56,7 @@
 					"context": "UNIT",
 					"isOptional": true,
 					"pattern": [
-						"Solidaritätszuschlag -(?<amount>[\\d.,]+) (?<currency>\\w{3}+)"
+						"Solidaritätszuschlag -(?<amount>[\\d.,]+) (?<currency>\\w{3})"
 					],
 					"attributes": {
 						"type": "TAX"
@@ -66,7 +66,7 @@
 					"context": "UNIT",
 					"isOptional": true,
 					"pattern": [
-						"Kirchensteuer -(?<amount>[\\d.,]+) (?<currency>\\w{3}+)"
+						"Kirchensteuer -(?<amount>[\\d.,]+) (?<currency>\\w{3})"
 					],
 					"attributes": {
 						"type": "TAX"
@@ -76,8 +76,8 @@
 					"context": "UNIT",
 					"isOptional": true,
 					"pattern": [
-						"Quellensteuer DE für US-Emittent -(?<fxAmount>[\\d.,]+) (?<fxCurrency>\\w{3}+)",
-						"Zwischensumme (?<fxRateToBase>[\\d.,]+) \\w{3}+/\\w{3}+ [\\d.,]+ \\w{3}+"
+						"Quellensteuer([\\D]*)(?<fxAmount>[\\d.,]+) (?<fxCurrency>\\w{3})",
+						"Zwischensumme (?<fxRateToBase>[\\d.,]+) \\w{3}/\\w{3} [\\d.,]+ \\w{3}"
 					],
 					"attributes": {
 						"type": "TAX"
