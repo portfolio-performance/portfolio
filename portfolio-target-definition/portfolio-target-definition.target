@@ -9,6 +9,7 @@
 		<unit id="org.eclipse.equinox.executable" version="3.8.800.v20200514-1529"/>
 		<unit id="org.eclipse.equinox.executable.feature.group" version="3.8.800.v20200514-1529"/>
 		<unit id="org.eclipse.platform.feature.group" version="4.16.0.v20200604-0951"/>
+		<unit id="org.eclipse.pde.feature.group" version="3.14.400.v20200604-0540"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<repository location="https://download.eclipse.org/tools/orbit/downloads/drops/R20200529191137/repository"/>
