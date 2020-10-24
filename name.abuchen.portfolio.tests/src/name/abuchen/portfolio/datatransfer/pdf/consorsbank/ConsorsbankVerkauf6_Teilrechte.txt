@@ -1,0 +1,56 @@
+PDF Autor: 'Consorsbank'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Consorsbank • 90318 Nürnberg
+Depotnummer XXX
+XXX
+XXX
+XXX
+XXX Vermerk der Bank 100002
+ORDERABRECHNUNG
+VERK. TEIL-/BEZUGSR. AM 20.10.2020 AUSSERBOERSLICH CA NR. 178661418.001
+Bezeichnung WKN ISIN
+SIEMENS ENERGY AG NA O.N. ENER6Y DE000ENER6Y0
+Einheit Umsatz
+ST 0,46370
+Kurs 21,485888 EUR P.ST. FRANCO COURTAGE  
+Kurswert EUR 9,96
+Wert 20.10.2020 EUR 9,96
+zugunsten Konto-Nr. 0870186721
+Bestand zulasten Girosammelverwahrung 
+CBF 2126
+VERKAUF TEILRECHTE NACH SPIN-OFF I.V. 2:1 AUS WKN 723610
+PER EX-TAG 28.09.2020
+Hinweis für Orderabrechnungen und Depotbuchungsanzeigen:
+Einwendungen wegen Unrichtigkeit oder Unvollständigkeit dieser Mitteilung müssen unverzüglich erhoben werden, vgl. Nummer B. Ziffer I. 11 (4) und (5) der
+Allgemeinen Geschäftsbedingungen (AGB Banken).
+Machen Sie Ihre Einwendungen in Textform geltend, genügt die Absendung innerhalb der Sechs-Wochen-Frist an die Consorsbank oder per Fax oder Mail an die
+unten angegebenen Adressen. Das Unterlassen rechtzeitiger Einwendungen gilt als Genehmigung.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+Président du Conseil d‘Administration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur Général (Generaldirektor): Jean-Laurent Bonnafé
+Seite 2 zu Orderabrechnung Nr. 178661418.001 vom 20.10.2020 Depotnummer XXX
+Infos bei Verlust bei Aktien
+Veräusserungsverlust nach Differenzmethode EUR - 26,22
+In den Verrechnungstopf Aktien eingestellt EUR 26,22
+Summe ergibt
+KAPST-pflichtige Kapitalerträge EUR 0,00
+Mit Sparerpauschbetrag verrechnet EUR 0,00
+Bemessungsgrundlage für KAPST vor QUST EUR 0,00
+An Kapitalertrag anrechenbare. ausl. QUST 0,00*4 EUR 0,00
+Bemessungsgrundlage für KAPST EUR 0,00
+Bemessungsgrundlage für KAPST anteilig 100,00% EUR 0,00
+Salden nach dem Geschäft
+Verrechnungstopf Aktien nach dem Geschäft EUR 70,15
+Verrechnungstopf Allg. nach dem Geschäft EUR 0,00
+Verrechnungstopf QUST nach dem Geschäft EUR 5,04
+Sparerpauschbetrag nach dem Geschäft EUR 191,26
+Es wurde keine Kirchensteuer einbehalten.
+ 
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+Président du Conseil d‘Administration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur Général (Generaldirektor): Jean-Laurent Bonnafé
