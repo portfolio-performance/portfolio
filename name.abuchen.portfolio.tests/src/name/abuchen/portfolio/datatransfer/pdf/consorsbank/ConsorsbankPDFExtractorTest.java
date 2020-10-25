@@ -770,6 +770,36 @@ public class ConsorsbankPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierVerkauf6_Teilrechte() throws IOException
+    {
+        PDFImportAssistant assistant = new PDFImportAssistant(new Client(), new ArrayList<>());
+    
+        List<Exception> errors = new ArrayList<>();
+    
+        List<Item> results = assistant.runWithInputFile(
+                        PDFInputFile.loadSingleTestCase(getClass(), "ConsorsbankVerkauf6_Teilrechte.txt"), errors);
+    
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+    
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
+        assertThat(security.getWkn(), is("ENER6Y"));
+        assertThat(security.getIsin(), is("DE000ENER6Y0"));
+        assertThat(security.getName(), is("SIEMENS ENERGY AG NA O.N."));
+    
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+    
+        // check buy sell transaction
+        Item item = results.get(0);
+        BuySellEntry entry = (BuySellEntry) item.getSubject();
+        PortfolioTransaction t = entry.getPortfolioTransaction();
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 9_96L)));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2020-10-20T00:00")));
+        assertThat(t.getShares(), is(Values.Share.factorize(0.46370)));
+    }
+
+    @Test
     public void testWertpapierKauf1() throws IOException
     {
         ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(new Client());

@@ -1190,7 +1190,6 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                 // context
                                 t.setDateTime(asDate(date + context.get("year")));
                             }
-                            t.setNote(v.get("text"));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(context.get("currency")));
                             String sign = v.get("sign");
