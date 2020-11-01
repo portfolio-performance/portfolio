@@ -18,11 +18,22 @@ public final class Colors
      */
     public static class Theme
     {
+        private Color defaultBackground = Colors.WHITE;
         private Color warningBackground = getColor(254, 223, 107); // FEDF6B
         private Color redBackground = Colors.GREEN;
         private Color greenBackground = Colors.RED;
         private Color redForeground = Colors.DARK_RED;
         private Color greenForeground = Colors.DARK_GREEN;
+
+        public Color defaultBackground()
+        {
+            return defaultBackground;
+        }
+
+        public void setDefaultBackground(RGBA color)
+        {
+            this.defaultBackground = getColor(color.rgb);
+        }
 
         public Color warningBackground()
         {
@@ -193,5 +204,14 @@ public final class Colors
     public static Color brighter(Color base)
     {
         return getColor(ColorConversion.brighter(base.getRGB()));
+    }
+
+    public static RGB interpolate(RGB first, RGB second, float factor)
+    {
+        int red = Math.round(first.red + factor * (second.red - first.red));
+        int green = Math.round(first.green + factor * (second.green - first.green));
+        int blue = Math.round(first.blue + factor * (second.blue - first.blue));
+
+        return new RGB(red, green, blue);
     }
 }

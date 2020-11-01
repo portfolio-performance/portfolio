@@ -55,6 +55,9 @@
             adapter="name.abuchen.portfolio.ui.theme.ColorsThemeElementAdapter"
             handler="name.abuchen.portfolio.ui.theme.ColorsThemeCSSHandler">
          <property-name
+               name="default-background">
+         </property-name>
+         <property-name
                name="warning-background">
          </property-name>
          <property-name

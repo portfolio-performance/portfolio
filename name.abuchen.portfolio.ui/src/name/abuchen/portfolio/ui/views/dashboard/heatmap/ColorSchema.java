@@ -7,6 +7,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
 
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.Colors;
 
 enum ColorSchema
 {
@@ -46,12 +47,16 @@ enum ColorSchema
                 };
             case GREEN_WHITE_RED:
                 return performance -> {
-                    double max = 0.07;
-                    double p = Math.min(max, Math.abs(performance));
-                    int colorValue = (int) (255 * (1 - p / max));
-                    RGB color = performance > 0d ? new RGB(colorValue, 255, colorValue)
-                                    : new RGB(255, colorValue, colorValue);
-                    return resourceManager.createColor(color);
+
+                    final double max = 0.07f;
+
+                    double p = performance;
+                    p = Math.min(max, Math.abs(p));
+                    p = p / max;
+
+                    RGB color = performance > 0f ? Colors.GREEN.getRGB() : Colors.RED.getRGB();
+                    return resourceManager.createColor(
+                                    Colors.interpolate(Colors.theme().defaultBackground().getRGB(), color, (float) p));
                 };
             default:
                 throw new IllegalArgumentException();
