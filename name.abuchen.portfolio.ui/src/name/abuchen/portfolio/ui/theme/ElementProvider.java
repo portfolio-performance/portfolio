@@ -8,6 +8,8 @@ import org.eclipse.e4.ui.css.swt.dom.definition.ThemesExtensionElement;
 import org.eclipse.e4.ui.internal.css.swt.definition.IColorDefinitionOverridable;
 import org.eclipse.e4.ui.internal.css.swt.definition.IFontDefinitionOverridable;
 import org.eclipse.e4.ui.internal.css.swt.definition.IThemesExtension;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.Tree;
 import org.swtchart.Chart;
 import org.w3c.dom.Element;
 
@@ -32,6 +34,10 @@ public class ElementProvider implements IElementProvider
             return new ChartElementAdapter((Chart) element, engine);
         if (element instanceof Colors.Theme)
             return new ColorsThemeElementAdapter((Colors.Theme) element, engine);
+        if (element instanceof Table)
+            return new TableElementAdapter((Table) element, engine);
+        if (element instanceof Tree)
+            return new TreeElementAdapter((Tree) element, engine);
 
         return null;
     }

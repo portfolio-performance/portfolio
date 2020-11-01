@@ -73,6 +73,20 @@
                name="green-foreground">
          </property-name>
       </handler>
+      <handler
+            adapter="name.abuchen.portfolio.ui.theme.TableElementAdapter"
+            handler="name.abuchen.portfolio.ui.theme.ColumnViewerCSSHandler">
+         <property-name
+               name="swt-lines-visible">
+         </property-name>
+      </handler>
+      <handler
+            adapter="name.abuchen.portfolio.ui.theme.TreeElementAdapter"
+            handler="name.abuchen.portfolio.ui.theme.ColumnViewerCSSHandler">
+         <property-name
+               name="swt-lines-visible">
+         </property-name>
+      </handler>
    </extension>
    <extension
          point="org.eclipse.e4.ui.css.core.elementProvider">
@@ -95,6 +109,12 @@
          </widget>
          <widget
                class="name.abuchen.portfolio.ui.util.Colors$Theme">
+         </widget>
+         <widget
+               class="org.eclipse.swt.widgets.Table">
+         </widget>
+         <widget
+               class="org.eclipse.swt.widgets.Tree">
          </widget>
       </provider>
    </extension>

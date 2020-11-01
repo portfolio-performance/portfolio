@@ -2,3 +2,8 @@
 @import url("platform:/plugin/org.eclipse.ui.themes/css/e4-dark_win.css");
 
 @import url("platform:/plugin/name.abuchen.portfolio.ui/css/dark/common.css");
+
+.MPart Table,
+.MPart Tree {
+	swt-lines-visible: false;
+}
