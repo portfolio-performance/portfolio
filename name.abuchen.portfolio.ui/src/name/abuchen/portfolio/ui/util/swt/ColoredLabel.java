@@ -22,11 +22,14 @@ public class ColoredLabel extends Canvas // NOSONAR
     private static final int MARGIN_VERTICAL = 1;
 
     private String text; // $NON-NLS-1$
+    private int textStyle = SWT.LEFT;
     private Color color = Colors.WHITE;
 
     public ColoredLabel(Composite parent, int style)
     {
-        super(parent, style);
+        super(parent, SWT.NONE);
+
+        this.textStyle = style;
 
         addListener(SWT.Paint, this::handlePaint);
     }
@@ -63,8 +66,6 @@ public class ColoredLabel extends Canvas // NOSONAR
     {
         Rectangle bounds = getClientArea();
 
-        int style = getStyle();
-
         e.gc.setBackground(color);
         e.gc.fillRectangle(bounds.x, bounds.y, bounds.width, bounds.height);
 
@@ -76,9 +77,9 @@ public class ColoredLabel extends Canvas // NOSONAR
             Point extent = e.gc.stringExtent(text);
 
             int offsetX = MARGIN_HORIZONTAL;
-            if ((style & SWT.RIGHT) == SWT.RIGHT)
+            if ((this.textStyle & SWT.RIGHT) == SWT.RIGHT)
                 offsetX = bounds.width - extent.x - MARGIN_HORIZONTAL;
-            else if ((style & SWT.CENTER) == SWT.CENTER)
+            else if ((this.textStyle & SWT.CENTER) == SWT.CENTER)
                 offsetX = (bounds.width - extent.x) / 2;
 
             int offsetY = (bounds.height - extent.y) / 2;
