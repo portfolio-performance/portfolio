@@ -1050,7 +1050,7 @@ public class SecuritiesChart
                         String label = Values.Share.format(t.getType().isPurchase() ? t.getShares() : -t.getShares());
                         Point textExtent = event.gc.textExtent(label);
 
-                        event.gc.setForeground(Colors.BLACK);
+                        event.gc.setForeground(Colors.theme().defaultForeground());
                         event.gc.drawText(label, x - (textExtent.x / 2), y + 10, true);
                     }
                 });
@@ -1126,7 +1126,7 @@ public class SecuritiesChart
                         String label = getDividendLabel(dividends.get(index));
                         Point textExtent = event.gc.textExtent(label);
 
-                        event.gc.setForeground(Colors.BLACK);
+                        event.gc.setForeground(Colors.theme().defaultForeground());
                         event.gc.drawText(label, x - (textExtent.x / 2), y - 22, true);
                     }
                 });
@@ -1209,7 +1209,7 @@ public class SecuritiesChart
                     int y = yAxis.getPixelCoordinate(value);
                     Point textExtent = event.gc.textExtent(valueFormat);
 
-                    event.gc.setForeground(Colors.BLACK);
+                    event.gc.setForeground(Colors.theme().defaultForeground());
                     event.gc.drawText(valueFormat, x - (textExtent.x / 2), y + labelOffset, true);
                 });
             }
