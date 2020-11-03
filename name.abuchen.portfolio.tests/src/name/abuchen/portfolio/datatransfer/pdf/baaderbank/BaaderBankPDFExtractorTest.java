@@ -383,6 +383,44 @@ public class BaaderBankPDFExtractorTest
     }
 
     @Test
+    public void testGratisbrokerWertpapierVerkauf02()
+    {
+        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+    
+        List<Exception> errors = new ArrayList<>();
+    
+        List<Item> results = extractor
+                        .extract(PDFInputFile.loadTestCase(getClass(), "BaaderBankGratisbrokerVerkauf02.txt"), errors);
+    
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+    
+        Optional<Item> item;
+    
+        // get security
+        item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
+    
+        // assert security
+        assertThat(security.getIsin(), is("US30212P3038"));
+        assertThat(security.getWkn(), is("A1JRLJ"));
+        assertThat(security.getName(), is("Expedia Group Inc."));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+    
+        // get transaction
+        item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
+    
+        // assert transaction
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(1454.56)));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-10-30T16:34")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(20)));
+    }
+
+    @Test
     public void testSteuerausgleichsrechnung1()
     {
         BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
