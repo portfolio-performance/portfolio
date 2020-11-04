@@ -121,6 +121,7 @@ public class InsertAction implements ImportAction
                     existingTransaction.setDateTime(t.getDateTime());
                     existingTransaction.setNote(t.getNote());
                     existingTransaction.setShares(t.getShares());
+                    existingTransaction.setAmount(t.getAmount());
                     existingTransaction.clearUnits();
                     t.getUnits().forEach(existingTransaction::addUnit);
 
@@ -129,6 +130,7 @@ public class InsertAction implements ImportAction
                         Transaction crossTransaction = existingTransaction.getCrossEntry()
                                         .getCrossTransaction(existingTransaction);
                         crossTransaction.setDateTime(t.getDateTime());
+                        crossTransaction.setAmount(t.getAmount());
                         crossTransaction.setNote(t.getNote());
                     }
                     return Status.OK_STATUS;
