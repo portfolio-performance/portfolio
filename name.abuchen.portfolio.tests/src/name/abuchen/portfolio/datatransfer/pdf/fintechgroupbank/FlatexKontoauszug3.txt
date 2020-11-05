@@ -24,7 +24,7 @@ Buchungs-  Valuta  Buchungstext                                         Betrag
 datum                                                                   in EUR
 11.11.     12.11.  Dividendenzahlung ISIN12345678                        1,23+
 11.11.     12.11.  Gebühr Kapitaltransaktion Ausland                     4,56-
-                   ISIN12345678
+                   ISIN12345678                                       
 30.12.     31.12.  Zinsabschluss   01.10.2014 - 31.12.2014               7,89+
                    Bitte beachten Sie, dass es sich bei den
                    Quartalskontoauszügen um einen
