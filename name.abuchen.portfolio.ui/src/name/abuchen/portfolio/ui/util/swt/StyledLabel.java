@@ -26,7 +26,6 @@ import org.eclipse.swt.graphics.TextLayout;
 import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -123,7 +122,8 @@ public class StyledLabel extends Canvas // NOSONAR
                 StyleRange style = new StyleRange();
                 style.underline = true;
                 style.underlineStyle = SWT.UNDERLINE_LINK;
-                style.underlineColor = Display.getDefault().getSystemColor(SWT.COLOR_DARK_BLUE);
+                style.underlineColor = Colors.theme().hyperlink();
+                style.foreground = Colors.theme().hyperlink();
                 style.data = tag.attributes.get("href"); //$NON-NLS-1$
                 style.start = tag.start;
                 style.length = plainText.length() - tag.start;

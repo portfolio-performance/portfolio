@@ -75,6 +75,9 @@
          <property-name
                name="green-foreground">
          </property-name>
+         <property-name
+               name="hyperlink">
+         </property-name>
       </handler>
       <handler
             adapter="name.abuchen.portfolio.ui.theme.TableElementAdapter"

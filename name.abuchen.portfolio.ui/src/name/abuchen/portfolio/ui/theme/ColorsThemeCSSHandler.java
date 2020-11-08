@@ -41,6 +41,9 @@ public class ColorsThemeCSSHandler implements ICSSPropertyHandler
                 case "green-foreground": //$NON-NLS-1$
                     theme.setGreenForeground(CSSSWTColorHelper.getRGBA(value));
                     break;
+                case "hyperlink": //$NON-NLS-1$
+                    theme.setHyperlink(CSSSWTColorHelper.getRGBA(value));
+                    break;
                 default:
             }
         }

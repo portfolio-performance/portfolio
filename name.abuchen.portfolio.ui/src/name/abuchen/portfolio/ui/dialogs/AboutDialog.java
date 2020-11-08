@@ -42,6 +42,7 @@ import org.osgi.framework.Bundle;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.DesktopAPI;
 import name.abuchen.portfolio.util.BuildInfo;
 
@@ -188,7 +189,8 @@ public class AboutDialog extends Dialog
             StyleRange styleRange = new StyleRange();
             styleRange.underline = true;
             styleRange.underlineStyle = SWT.UNDERLINE_LINK;
-            styleRange.underlineColor = Display.getDefault().getSystemColor(SWT.COLOR_DARK_BLUE);
+            styleRange.underlineColor = Colors.theme().hyperlink();
+            styleRange.foreground = Colors.theme().hyperlink();
             styleRange.data = link;
             styleRange.start = answer.length();
             styleRange.length = text.length();

@@ -25,6 +25,7 @@ public final class Colors
         private Color greenBackground = Colors.RED;
         private Color redForeground = Colors.DARK_RED;
         private Color greenForeground = Colors.DARK_GREEN;
+        private Color hyperlink = Display.getDefault().getSystemColor(SWT.COLOR_LINK_FOREGROUND);
 
         public Color defaultForeground()
         {
@@ -94,6 +95,16 @@ public final class Colors
         public void setGreenForeground(RGBA color)
         {
             this.greenForeground = getColor(color.rgb);
+        }
+
+        public Color hyperlink()
+        {
+            return hyperlink;
+        }
+
+        public void setHyperlink(RGBA color)
+        {
+            this.hyperlink = getColor(color.rgb);
         }
     }
 
