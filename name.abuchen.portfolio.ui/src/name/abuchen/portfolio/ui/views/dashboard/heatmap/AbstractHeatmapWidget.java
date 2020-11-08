@@ -90,7 +90,7 @@ public abstract class AbstractHeatmapWidget<N extends Number> extends WidgetDele
                     dataLabel.setFont(resources.getSmallFont());
                     dataLabel.setText(formatter.format(data));
                     if (coloring != null)
-                        dataLabel.setHightlightColor(coloring.apply((double) data));
+                        dataLabel.setBackdropColor(coloring.apply((double) data));
 
                     lbl = dataLabel;
                 }

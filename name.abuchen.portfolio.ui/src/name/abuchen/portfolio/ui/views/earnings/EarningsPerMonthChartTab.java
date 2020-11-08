@@ -61,7 +61,7 @@ public class EarningsPerMonthChartTab extends AbstractChartTab
             for (int year = 0; year < noOfYears; year++)
             {
                 ColoredLabel label = new ColoredLabel(container, SWT.CENTER);
-                label.setHightlightColor(((IBarSeries) getChart().getSeriesSet().getSeries()[year]).getBarColor());
+                label.setBackdropColor(((IBarSeries) getChart().getSeriesSet().getSeries()[year]).getBarColor());
                 label.setText(String.valueOf(model.getStartYear() + year));
                 GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(label);
             }
@@ -84,7 +84,7 @@ public class EarningsPerMonthChartTab extends AbstractChartTab
             for (int m = month; m < totalNoOfMonths; m += 12)
             {
                 ColoredLabel cl = new ColoredLabel(container, SWT.RIGHT);
-                cl.setHightlightColor(((IBarSeries) getChart().getSeriesSet().getSeries()[m / 12]).getBarColor());
+                cl.setBackdropColor(((IBarSeries) getChart().getSeriesSet().getSeries()[m / 12]).getBarColor());
                 cl.setText(Values.Amount.format(model.getSum().getValue(m)));
                 GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(cl);
             }

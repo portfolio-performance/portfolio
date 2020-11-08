@@ -8,12 +8,14 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
 import name.abuchen.portfolio.model.Dashboard.Widget;
+import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.swt.ColoredLabel;
 import name.abuchen.portfolio.util.TextUtil;
 
 public abstract class AbstractIndicatorWidget<D> extends WidgetDelegate<D>
 {
     protected Label title;
-    protected Label indicator;
+    protected ColoredLabel indicator;
 
     public AbstractIndicatorWidget(Widget widget, DashboardData dashboardData, boolean supportsBenchmarks)
     {
@@ -29,18 +31,18 @@ public abstract class AbstractIndicatorWidget<D> extends WidgetDelegate<D>
         Composite container = new Composite(parent, SWT.NONE);
         container.setBackground(parent.getBackground());
         GridLayoutFactory.fillDefaults().numColumns(1).margins(5, 5).applyTo(container);
-    
+
         title = new Label(container, SWT.NONE);
         title.setText(TextUtil.tooltip(getWidget().getLabel()));
-        title.setBackground(container.getBackground());
+        title.setBackground(Colors.theme().defaultBackground());
         GridDataFactory.fillDefaults().grab(true, false).applyTo(title);
-    
-        indicator = new Label(container, SWT.NONE);
+
+        indicator = new ColoredLabel(container, SWT.NONE);
         indicator.setFont(resources.getKpiFont());
-        indicator.setBackground(container.getBackground());
+        indicator.setBackground(Colors.theme().defaultBackground());
         indicator.setText(""); //$NON-NLS-1$
         GridDataFactory.fillDefaults().grab(true, false).applyTo(indicator);
-    
+
         return container;
     }
 

@@ -12,9 +12,11 @@ import org.eclipse.swt.widgets.Event;
 import name.abuchen.portfolio.ui.util.Colors;
 
 /**
- * Displays a label with the given background color and a readable text color
- * calculated based on the brightness of the background color. Most importantly,
- * the widget is not styled via CSS and therefore retains the colors.
+ * Displays a label with given colors. The widget is not styled by CSS and
+ * therefore retains the colors (which are typically based on a calculation). If
+ * neither text nor background color is given, the default colors are used. If
+ * only the backdrop color is given, a readable text color is picked. If only
+ * the text color is given, the default background is used.
  */
 public class ColoredLabel extends Canvas // NOSONAR
 {
@@ -23,7 +25,9 @@ public class ColoredLabel extends Canvas // NOSONAR
 
     private String text; // $NON-NLS-1$
     private int textStyle = SWT.LEFT;
-    private Color color = Colors.WHITE;
+
+    private Color textColor;
+    private Color backdropColor;
 
     public ColoredLabel(Composite parent, int style)
     {
@@ -42,9 +46,14 @@ public class ColoredLabel extends Canvas // NOSONAR
         redraw();
     }
 
-    public void setHightlightColor(Color color)
+    public void setTextColor(Color color)
     {
-        this.color = color;
+        this.textColor = color;
+    }
+
+    public void setBackdropColor(Color color)
+    {
+        this.backdropColor = color;
     }
 
     @Override
@@ -66,14 +75,22 @@ public class ColoredLabel extends Canvas // NOSONAR
     {
         Rectangle bounds = getClientArea();
 
-        e.gc.setBackground(color);
+        Color background = backdropColor != null ? backdropColor : getBackground();
+
+        e.gc.setBackground(background);
         e.gc.fillRectangle(bounds.x, bounds.y, bounds.width, bounds.height);
 
         if (text != null)
         {
             e.gc.setFont(getFont());
-            e.gc.setForeground(Colors.getTextColor(color));
 
+            Color foreground = getForeground();
+            if (textColor != null)
+                foreground = textColor;
+            else if (backdropColor != null)
+                foreground = Colors.getTextColor(backdropColor);
+
+            e.gc.setForeground(foreground);
             Point extent = e.gc.stringExtent(text);
 
             int offsetX = MARGIN_HORIZONTAL;

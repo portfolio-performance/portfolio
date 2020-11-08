@@ -204,7 +204,7 @@ public class TimelineChartToolTip extends AbstractChartToolTip
                             : ((IBarSeries) series).getBarColor();
 
             ColoredLabel cl = new ColoredLabel(data, SWT.NONE);
-            cl.setHightlightColor(color);
+            cl.setBackdropColor(color);
             cl.setText(TextUtil.tooltip(series.getId()));
             GridDataFactory.fillDefaults().grab(true, false).applyTo(cl);
 

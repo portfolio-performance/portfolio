@@ -73,7 +73,7 @@ public class ScatterChartToolTip extends AbstractChartToolTip
         // values
 
         ColoredLabel cl = new ColoredLabel(container, SWT.NONE);
-        cl.setHightlightColor(closest.getSymbolColor());
+        cl.setBackdropColor(closest.getSymbolColor());
         cl.setText(TextUtil.tooltip(closest.getId()));
 
         middle = new Label(container, SWT.RIGHT);
