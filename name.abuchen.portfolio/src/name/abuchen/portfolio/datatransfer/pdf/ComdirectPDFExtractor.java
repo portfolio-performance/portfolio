@@ -31,7 +31,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("comdirect bank"); //$NON-NLS-1$
+        addBankIdentifier("comdirect"); //$NON-NLS-1$
 
         addBuyTransaction();
         addDividendTransaction();
@@ -39,6 +39,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
         addExpireTransaction();
         addVorabsteuerTransaction();
         addDividendTransactionFromSteuermitteilungPDF();
+        addFeesFromVerwahrentgeltPDF();
     }
 
     @SuppressWarnings("nls")
@@ -639,6 +640,42 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         .section("date") //
                         .match("^(Die Gutschrift erfolgt mit Valuta) (?<date>\\d+.\\d+.\\d{4}+).*")
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        
+                        .wrap(TransactionItem::new));
+    }
+
+    @SuppressWarnings("nls")
+    private void addFeesFromVerwahrentgeltPDF()
+    {
+        
+        DocumentType type = new DocumentType("Verwahrentgelt");
+
+        this.addDocumentTyp(type);
+        Block block = new Block("^.*Verwahrentgelt.*");        
+        
+        type.addBlock(block);
+        block.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction t = new AccountTransaction();
+                            t.setType(AccountTransaction.Type.FEES);
+                            return t;
+                        })
+
+                        .section("wkn", "date").optional()
+                        .match("^.*Verwahrentgelt .*, WKN (?<wkn>\\S+) (?<date>\\d+.\\d+.\\d{4}).*$")
+                        .assign((t, v) -> {
+                            v.put("wkn", stripBlanks(v.get("wkn")));
+                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setDateTime(asDate(v.get("date")));
+                        })
+
+                        .section("currency", "amount")
+                        .match("^.* Buchung von (?<amount>\\d+,\\d+) (?<currency>\\w+) .*$")
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(stripBlanks(v.get("amount"))));
+                        })
                         
                         .wrap(TransactionItem::new));
     }

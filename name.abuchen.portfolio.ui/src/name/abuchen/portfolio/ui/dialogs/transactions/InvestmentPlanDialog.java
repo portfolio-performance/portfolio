@@ -210,7 +210,9 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
 
         WarningMessages warnings = new WarningMessages(this);
         warnings.add(() -> model().getStart().isAfter(LocalDate.now()) ? Messages.MsgDateIsInTheFuture : null);
-        warnings.add(() -> model().getSecurity().getPrices().size() == 0 ? Messages.MsgSecurityHasNoQuotes  : null);
+        warnings.add(() -> model().getSecurity() != null && model().getSecurity().getPrices().isEmpty()
+                        ? Messages.MsgSecurityHasNoQuotes
+                        : null);
         model.addPropertyChangeListener(Properties.start.name(), e -> warnings.check());
         model.addPropertyChangeListener(Properties.security.name(), e -> warnings.check());
     }

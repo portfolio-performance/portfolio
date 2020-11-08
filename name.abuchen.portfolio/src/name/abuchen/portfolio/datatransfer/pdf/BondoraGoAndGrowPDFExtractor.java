@@ -56,10 +56,16 @@ public class BondoraGoAndGrowPDFExtractor extends AbstractPDFExtractor
                                     case "Überweisen":
                                         t.setType(AccountTransaction.Type.DEPOSIT);
                                         break;
+                                    case "Transfer":
+                                        t.setType(AccountTransaction.Type.DEPOSIT);
+                                        break;
                                     case "Abheben":
                                         t.setType(AccountTransaction.Type.REMOVAL);
                                         break;
                                     case "Go & Grow Zinsen":
+                                        t.setType(AccountTransaction.Type.INTEREST);
+                                        break;
+                                    case "Go & Grow returns":
                                         t.setType(AccountTransaction.Type.INTEREST);
                                         break;
                                     default:

@@ -168,7 +168,9 @@ public class DetectDuplicatesAction implements ImportAction
         if (!Objects.equals(other.getSecurity(), subject.getSecurity())) // NOSONAR
             return false;
 
-        if (other.getAmount() != subject.getAmount())
+        // amount might differ due to rounding - accept a difference of 1%
+        long amount = subject.getAmount();
+        if (amount * 1.01 < other.getAmount() || amount * 0.99 > other.getAmount())
             return false;
 
         LocalDateTime date = subject.getDateTime();
