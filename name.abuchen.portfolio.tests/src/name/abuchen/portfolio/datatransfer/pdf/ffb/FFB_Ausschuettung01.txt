@@ -1,0 +1,60 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Depotführung: Ihr der FFB benannte Vermittler:
+vaamo
+Sciuridae Vermögensverwaltungs GmbH
+Mainzer Landstraße 250-254
+60326 Frankfurt am Main
+Telefon: 069 3807 6632
+Herrn E-Mail: service@vaamo.de
+X
+X
+X
+Es schreibt Ihnen:
+FFB Kundenbetreuung
+Kronberg im Taunus, 27. Juli 2018 
+Ausschüttungsanzeige
+Auszug  4 Blatt 1
+Depotinhaber X X
+Depotnummer 0000000000 (Privatvermögen)
+Fondsname iShs S&P SmallCap 600 UCITS ET Datum der Ausschüttung 25.07.2018
+WKN / ISIN A0Q1YY / IE00B2QWCY14 Turnus halbjährlich
+Fondsgesellschaft iShares Anteilsbestand per 12.07.2018 0,0930 St.
+je Anteil gesamt*
+Ausschüttung               0,289000000 USD 0,03 EUR
+Berechnung der steuerlichen Bemessungsgrundlage
+steuerpflichtiger Ertrag nach Teilfreistellung               0,202300000 USD               0,02 EUR
+abzüglich Verlustverrechnungstopf               0,00 EUR
+abzüglich verrechneter Freistellungsauftrag               0,02 EUR
+abzüglich verrechneter Quellensteuertopf               0,00 EUR
+steuerliche Bemessungsgrundlage               0,00 EUR
+Abgeführte Steuern (auf Basis der steuerlichen Bemessungsgrundlage)
+Kapitalertragsteuer               0,00 EUR
+Solidaritätszuschlag               0,00 EUR
+Folgender Betrag wurde zugunsten Ihrer Referenzbankverbindung überwiesen 0,03 EUR
+Bank Deutsche Kreditbank Berlin
+BIC BYLADEM1001
+IBAN DE69120300001016368480
+* auf Basis Devisen-Umrechnungskurs am Buchungstag:                1,162500 USD
+Steuerliche Informationen
+Freistellungsauftrag 000,00 EUR gültig: unbefristet
+Freistellungsauftrag vorher 62,74 EUR Freistellungsauftrag nachher 62,72 EUR
+Verlustverrechnungstopf vorher 0,00 EUR Verlustverrechnungstopf nachher 0,00 EUR
+Quellensteuertopf vorher 0,00 EUR Quellensteuertopf nachher 0,00 EUR
+Hinweis: Bei einer Ausschüttung werden die Erträge der abgelaufenen Periode an die Anteilsinhaber ausgekehrt. Diese sind im Privatvermögen steuerpflichtig. Steht 
+ein Verlustverrechnungstopf, ein ausreichender Freistellungsauftrag bzw. eine Nichtveranlagungsbescheinigung oder anrechenbare Quellensteuer zur Verfügung, 
+kann die Ausschüttung zzgl. der erstatteten Steuern wieder angelegt werden. Ist dies nicht der Fall, müssen Kapitalertragsteuern zzgl. Solidaritätszuschlag und ggf. 
+Kirchensteuer von dem Ausschüttungsbetrag abgezogen werden. 
+Seit Januar 2018 wird bei Ausschüttungen eines Fonds eine sogenannte Teilfreistellung gewährt. Die Höhe der Teilfreistellung ist abhängig von der Fondskategorie 
+sowie der Art des Anlegers und wird automatisch bei der Berechnung der steuerlichen Bemessungsgrundlage für den Steuerabzug berücksichtigt. Für Zwecke 
+des Steuerabzugs wird dabei immer die Kategorie "Privatanleger" zugrundegelegt. Betriebliche Anleger bzw. Körperschaften erreichen die Freistellung, die darüber 
+hinaus geht, im Rahmen ihrer Steuerveranlagung.
+Einwendungen gegen diese Anzeige wegen Unrichtigkeit oder Unvollständigkeit richten Sie bitte schriftlich spätestens einen Monat nach Zugang an:
+FIL Fondsbank GmbH, Revision, Postfach 11 06 63, 60041 Frankfurt am Main, Telefax (069) 7 70 60 - 444.
+FIL Fondsbank GmbH Postanschrift: Vorsitzender Geschäftsführung: Sitz: Kronberg im Taunus
+Kastanienhöhe 1 Postfach 11 06 63 des Aufsichtsrats: Gerhard Oehne (Sprecher) Amtsgericht
+61476 Kronberg im Taunus 60041 Frankfurt am Main Jon Skillman Peter Nonner Königstein HRB 8336
+info@ffb.de Telefon (069) 7 70 60 - 200 Dr. Andreas Prechtel Umsatzsteuer-ID Nr.
+www.ffb.de Telefax (069) 7 70 60 - 555 Gerald Rink DE213709602
+EM_V1.0

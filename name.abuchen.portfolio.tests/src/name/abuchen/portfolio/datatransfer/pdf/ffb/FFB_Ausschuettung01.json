@@ -1,0 +1,28 @@
+{
+	"version": 1,
+	"transactions": [
+		{
+			"type": "DIVIDEND",
+			"date": "2018-07-25",
+			"currency": "EUR",
+			"amount": 0.03,
+			"shares": 0.093,
+			"security": {
+				"name": "iShs S&P SmallCap 600 UCITS ET",
+				"isin": "IE00B2QWCY14",
+				"wkn": "A0Q1YY",
+				"currency": "EUR"
+			},
+			"units": [
+				{
+					"type": "TAX",
+					"amount": 0.0
+				},
+				{
+					"type": "TAX",
+					"amount": 0.0
+				}
+			]
+		}
+	]
+}

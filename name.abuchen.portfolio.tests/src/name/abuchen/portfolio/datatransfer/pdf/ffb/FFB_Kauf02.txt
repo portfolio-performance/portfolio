@@ -1,0 +1,135 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Depotführung: Ihr der FFB benannte Vermittler:
+FIL Finance Services GmbH
+Postfach 11 01 11
+60036 Frankfurt am Main
+Tel.: 06173 / 509 1968
+Fax: 06173 / 509 4199
+Herrn per Mail: info@fidelity-direkt.de
+Max Mustermann
+Kölner Strasse 1234
+50670 Köln
+Es schreibt Ihnen:
+FFB Kundenbetreuung
+Kronberg im Taunus, 17. Oktober 2019
+Fondsabrechnung
+Auszug  9 Blatt 1
+Depotinhaber Max Mustermann
+Depotnummer 1011111111 (Privatvermögen)
+Transaktion Fondsname Betrag Preis Anteile
+Auftrags-Nr. WKN / ISIN Wechselkurs Preisdatum Bestand alt
+Fondsgesellschaft Währungsbetrag Zwischengewinn Bestand neu
+Verwahrart, Lagerland Rücknahmepreis
+Kauf UBS-MSCI WLD.SOC.RESP.A.D.E. 209,48 EUR 95,0136 USD 2,417
+2539808855 A1JA1R / LU0629459743 1,096243 USD 03.09.2019 12,361
+UBS (Luxembourg) S.A. 229,64 USD 0,0000 EUR 14,778
+Girosammelverwahrung, Luxemburg 95,0136 USD
+Abrechnungsbetrag 210,00 EUR
+Ausgabeaufschlag / Provision (0,00 %) 0,00 EUR
+ETF Transaktionskosten FFB 0,00 EUR
+Additional Trading Costs 0,52 EUR
+Kauf UBS Emer.Mkt.Soc.Resp.UETFADIS 89,56 EUR 12,4642 USD 7,877
+2539808856 A110QD / LU1048313891 1,096243 USD 03.09.2019 37,517
+UBS (Luxembourg) S.A. 98,18 USD 0,0000 EUR 45,394
+Girosammelverwahrung, Luxemburg 12,4642 USD
+Abrechnungsbetrag 90,00 EUR
+Ausgabeaufschlag / Provision (0,00 %) 0,00 EUR
+ETF Transaktionskosten FFB 0,00 EUR
+Additional Trading Costs 0,44 EUR
+Kauf UBS-MSCI WLD.SOC.RESP.A.D.E. 209,48 EUR 94,8450 USD 2,409
+2540401210 A1JA1R / LU0629459743 1,090667 USD 02.10.2019 14,778
+UBS (Luxembourg) S.A. 228,47 USD 0,0000 EUR 17,187
+Girosammelverwahrung, Luxemburg 94,8450 USD
+Abrechnungsbetrag 210,00 EUR
+Ausgabeaufschlag / Provision (0,00 %) 0,00 EUR
+ETF Transaktionskosten FFB 0,00 EUR
+Additional Trading Costs 0,52 EUR
+FIL Fondsbank GmbH Postanschrift: Vorsitzender Geschäftsführung: Sitz: Kronberg im Taunus
+Kastanienhöhe 1 Postfach 11 06 63 des Aufsichtsrats: Gerhard Oehne (Sprecher) Amtsgericht
+61476 Kronberg im Taunus 60041 Frankfurt am Main Ferdinand-Alexander Leisten Peter Nonner Königstein HRB 8336
+info@ffb.de Telefon (069) 7 70 60 - 200 Gerald Rink Umsatzsteuer-ID Nr.
+www.ffb.de Telefax (069) 7 70 60 - 555 DE213709602
+ABGST_V1.0
+Depotführung: Ihr der FFB benannte Vermittler:
+FIL Finance Services GmbH
+Postfach 11 01 11
+60036 Frankfurt am Main
+Tel.: 06173 / 509 1968
+Fax: 06173 / 509 4199
+Herrn per Mail: info@fidelity-direkt.de
+Max Mustermann
+Kölner Strasse 1234
+50670 Köln
+Es schreibt Ihnen:
+FFB Kundenbetreuung
+Kronberg im Taunus, 17. Oktober 2019
+Fondsabrechnung
+Auszug  9 Blatt 2
+Depotinhaber Max Mustermann
+Depotnummer 111111111 (Privatvermögen)
+Transaktion Fondsname Betrag Preis Anteile
+Auftrags-Nr. WKN / ISIN Wechselkurs Preisdatum Bestand alt
+Fondsgesellschaft Währungsbetrag Zwischengewinn Bestand neu
+Verwahrart, Lagerland Rücknahmepreis
+Kauf UBS Emer.Mkt.Soc.Resp.UETFADIS 89,56 EUR 12,6399 USD 7,728
+2540401213 A110QD / LU1048313891 1,090667 USD 02.10.2019 45,394
+UBS (Luxembourg) S.A. 97,68 USD 0,0000 EUR 53,122
+Girosammelverwahrung, Luxemburg 12,6399 USD
+Abrechnungsbetrag 90,00 EUR
+Ausgabeaufschlag / Provision (0,00 %) 0,00 EUR
+ETF Transaktionskosten FFB 0,00 EUR
+Additional Trading Costs 0,44 EUR
+Entgeltbelastung UBS-MSCI WLD.SOC.RESP.A.D.E. 1,01 EUR 98,1753 USD -0,011
+2540818151 A1JA1R / LU0629459743 1,113832 USD 15.10.2019 17,187
+UBS (Luxembourg) S.A. 1,12 USD 0,0000 EUR 17,176
+Girosammelverwahrung, Luxemburg 98,1753 USD
+Auszahlungsbetrag 0,00 EUR
+abgeführte Kapitalertragsteuer 0,01 EUR
+abgeführter Solidaritätszuschlag 0,00 EUR
+Verwahrentgelt Fonds ohne Abschlussfolgeprovision 2019 1,00 EUR
+darin enthalten 19 % gesetzl. MwSt 0,16 EUR
+FIL Fondsbank GmbH Postanschrift: Vorsitzender Geschäftsführung: Sitz: Kronberg im Taunus
+Kastanienhöhe 1 Postfach 11 06 63 des Aufsichtsrats: Gerhard Oehne (Sprecher) Amtsgericht
+61476 Kronberg im Taunus 60041 Frankfurt am Main Ferdinand-Alexander Leisten Peter Nonner Königstein HRB 8336
+info@ffb.de Telefon (069) 7 70 60 - 200 Gerald Rink Umsatzsteuer-ID Nr.
+www.ffb.de Telefax (069) 7 70 60 - 555 DE213709602
+ABGST_V1.0
+Depotführung: Ihr der FFB benannte Vermittler:
+FIL Finance Services GmbH
+Postfach 11 01 11
+60036 Frankfurt am Main
+Tel.: 06173 / 509 1968
+Fax: 06173 / 509 4199
+Herrn per Mail: info@fidelity-direkt.de
+Max Mustermann
+Kölner Strasse 1234
+50670 Köln
+Es schreibt Ihnen:
+FFB Kundenbetreuung
+Kronberg im Taunus, 17. Oktober 2019
+Fondsabrechnung
+Auszug  9 Blatt 3
+Depotinhaber Max Mustermann
+Depotnummer 11111111 (Privatvermögen)
+Anlagen in Investmentfonds können erst nach Kenntnisnahme der gesetzlichen Verkaufsunterlagen (aktueller Verkaufsprospekt, wesentliche 
+Anlegerinformationen, Halb-/Jahresbericht) erfolgen. Diese Unterlagen haben Sie direkt von Ihrem Vermittler erhalten. Sofern Sie keine 
+elektronischen Orderwege nutzen, verwenden Sie bitte für Investmentfonds-Aufträge ausschließlich die Serviceformulare der FFB, die Sie 
+online oder über Ihren Vermittler erhalten.
+Steuerliche Informationen
+Erteilter Freistellungsauftrag 50,00 EUR gültig bis: unbefristet Verlustverrechnungstopf neu 0,00 EUR
+davon noch verfügbar 0,00 EUR Quellensteuertopf neu 0,00 EUR
+Hinweise:
+Auslandzahlungen, die 12.500 EUR übersteigen, sind gemäß der Außenwirtschaftsverordnung (AWV) durch Sie meldepflichtig. Weitergehende Informationen zur 
+Meldepflicht nach AWV erhalten Sie direkt von der Deutschen Bundesbank, unter www.bundesbank.de oder unter der Rufnummer 0800 1234 111.
+Einwendungen gegen diese Fondsabrechnung wegen Unrichtigkeit oder Unvollständigkeit richten Sie bitte schriftlich spätestens einen Monat nach Zugang an:
+FIL Fondsbank GmbH, Revision, Postfach 11 06 63, 60041 Frankfurt am Main, Telefax (069) 7 70 60 - 444.
+Aufgrund der Regelungen des Einkommensteuergesetzes (EStG) sowie des Investmentsteuergesetzes (InvStG) sind wir verpflichtet, im Rahmen der von Ihnen getätigten Transaktion
+Steuern an das Finanzamt abzuführen.
+FIL Fondsbank GmbH Postanschrift: Vorsitzender Geschäftsführung: Sitz: Kronberg im Taunus
+Kastanienhöhe 1 Postfach 11 06 63 des Aufsichtsrats: Gerhard Oehne (Sprecher) Amtsgericht
+61476 Kronberg im Taunus 60041 Frankfurt am Main Ferdinand-Alexander Leisten Peter Nonner Königstein HRB 8336
+info@ffb.de Telefon (069) 7 70 60 - 200 Gerald Rink Umsatzsteuer-ID Nr.
+www.ffb.de Telefax (069) 7 70 60 - 555 DE213709602
+ABGST_V1.0
