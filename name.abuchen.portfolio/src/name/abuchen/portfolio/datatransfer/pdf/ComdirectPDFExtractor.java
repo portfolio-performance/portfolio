@@ -82,15 +82,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         .section("isin", "name", "wkn", "nameContinued") //
                         .find("Wertpapier-Bezeichnung *WPKNR/ISIN *") //
                         .match("^(?<name>(\\S{1,} )*) *(?<wkn>\\S*) *$") //
-                        .match("^(?<nameContinued>.*?)\\s{3,} *(?<isin>\\S*) *$") // assume
-                                                                                  // 3
-                                                                                  // whitespaces
-                                                                                  // as
-                                                                                  // separator
-                                                                                  // between
-                                                                                  // name
-                                                                                  // and
-                                                                                  // isin
+                        // assume 3 whitespaces as seperator
+                        .match("^(?<nameContinued>.*?)\\s{3,} *(?<isin>\\S*) *$")
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         .section("shares").optional() //
@@ -297,11 +290,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         .section("isin", "name", "wkn", "nameContinued") //
                         .find("Wertpapier-Bezeichnung *WPKNR/ISIN *") //
                         .match("^(?<name>(\\S{1,} )*) *(?<wkn>\\S*) *$") //
-                        .match("^(?<nameContinued>.*?)\\s{3,} *(?<isin>\\S*) *$") // assume
-                                                                                  // 3
-                                                                                  // whitespaces
-                                                                                  // as
-                                                                                  // separator
+                        // assume 3 whitespaces as separator
+                        .match("^(?<nameContinued>.*?)\\s{3,} *(?<isin>\\S*) *$")
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         .section("shares").optional() //
@@ -432,8 +422,10 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
                         .section("fee", "currency").optional()
                         .match(".*Variable B.rsenspesen *: *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)-? *") //
-                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))));
+                        .assign((t, v) -> t.getPortfolioTransaction() //
+                                        .addUnit(new Unit(Unit.Type.FEE, //
+                                                        Money.of(asCurrencyCode(v.get("currency")), //
+                                                                        asAmount(v.get("fee"))))));
     }
 
     @SuppressWarnings("nls")
@@ -492,11 +484,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date", "name", "nameContinued", "wkn", "shares", "isin")
-                        .match("^ *p *e *r *(?<date> \\d *\\d *\\. *\\d *\\d *\\. *\\d *\\d *\\d *\\d)\\s{3,}(?<name>.*)\\s{3,}(?<wkn>.*) *$") // assume
-                                                                                                                                               // 3
-                                                                                                                                               // whitespaces
-                                                                                                                                               // as
-                                                                                                                                               // separator
+                        // assume 3 whitespaces as separator
+                        .match("^ *p *e *r *(?<date> \\d *\\d *\\. *\\d *\\d *\\. *\\d *\\d *\\d *\\d)\\s{3,}(?<name>.*)\\s{3,}(?<wkn>.*) *$")
                         .match("^ *S *T *K *(?<shares>[\\d. ]+(,[\\d ]+)?) *(?<nameContinued>(\\S{1,} {1,2})*) *(?<isin>[\\S ]*) *$")
                         .assign((t, v) -> {
                             v.put("isin", stripBlanksAndUnderscores(v.get("isin")));
@@ -511,7 +500,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("amount", "currency") //
-                        .match("^Kurswert Einl.sung *(?<currency>\\w{3}+) *(?<amount>[\\d,]*) *$").assign((t, v) -> {
+                        .match("^Kurswert Einl.sung *(?<currency>\\w{3}+) *(?<amount>[\\d,]*) *$") //
+                        .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                         })
@@ -643,11 +633,11 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                             long tax = 0;
 
                             if (gross1 > gross2)
-                                tax = gross1 - amount; // Betrag vor Steuern >
-                                                       // Steuerbemessungsgrundlage
+                                // vor Steuern > Steuerbemessungsgrundlage
+                                tax = gross1 - amount;
                             else
-                                tax = gross2 - amount; // Betrag vor Steuern <
-                                                       // Steuerbemessungsgrundlage
+                                // vor Steuern < Steuerbemessungsgrundlage
+                                tax = gross2 - amount;
 
                             if (tax > 0)
                                 t.addUnit(new Unit(Unit.Type.TAX, Money.of(asCurrencyCode(v.get("currency")), tax)));
@@ -679,14 +669,16 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("wkn", "date").optional()
-                        .match("^.*Verwahrentgelt .*, WKN (?<wkn>\\S+) (?<date>\\d+.\\d+.\\d{4}).*$").assign((t, v) -> {
+                        .match("^.*Verwahrentgelt .*, WKN (?<wkn>\\S+) (?<date>\\d+.\\d+.\\d{4}).*$") //
+                        .assign((t, v) -> {
                             v.put("wkn", stripBlanks(v.get("wkn")));
                             t.setSecurity(getOrCreateSecurity(v));
                             t.setDateTime(asDate(v.get("date")));
                         })
 
                         .section("currency", "amount")
-                        .match("^.* Buchung von (?<amount>\\d+,\\d+) (?<currency>\\w+) .*$").assign((t, v) -> {
+                        .match("^.* Buchung von (?<amount>\\d+,\\d+) (?<currency>\\w+) .*$") //
+                        .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(stripBlanks(v.get("amount"))));
                         })
@@ -698,7 +690,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
     public List<Item> postProcessing(List<Item> items)
     {
 
-        // collect dividends-items by date and stock
+        // group dividends into tax + nontax
         Map<LocalDateTime, Map<Security, List<Item>>> dividends = items.stream()
                         .filter(TransactionItem.class::isInstance) //
                         .map(TransactionItem.class::cast) //
