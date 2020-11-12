@@ -3,7 +3,6 @@ package name.abuchen.portfolio.datatransfer.pdf;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
