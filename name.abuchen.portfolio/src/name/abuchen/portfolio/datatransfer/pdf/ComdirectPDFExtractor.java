@@ -727,7 +727,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                     if (a2.getUnit(Type.TAX).isPresent())
                     {
                         // if tax of a1 < tax of a2
-                        if (a1.getUnit(Type.TAX).isEmpty() || a2.getUnit(Type.TAX).get().getAmount()
+                        if (!a1.getUnit(Type.TAX).isPresent() || a2.getUnit(Type.TAX).get().getAmount()
                                         .isGreaterOrEqualThan(a1.getUnit(Type.TAX).get().getAmount()))
                         {
 
