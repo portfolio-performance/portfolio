@@ -3,7 +3,6 @@ package name.abuchen.portfolio.datatransfer.pdf;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -17,11 +16,13 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.Annotated;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.model.Transaction.Unit.Type;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MutableMoney;
 
@@ -63,7 +64,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             type.getCurrentContext().put("time", v.get("time"));
                         })
-                        
+
                         .section("date") //
                         .match("Geschäftstag *: (?<date>\\d+.\\d+.\\d{4}+) .*") //
                         .assign((t, v) -> {
@@ -76,11 +77,12 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                 t.setDate(asDate(v.get("date")));
                             }
                         })
-                        
+
                         .section("isin", "name", "wkn", "nameContinued") //
                         .find("Wertpapier-Bezeichnung *WPKNR/ISIN *") //
                         .match("^(?<name>(\\S{1,} )*) *(?<wkn>\\S*) *$") //
-                        .match("^(?<nameContinued>.*?)\\s{3,} *(?<isin>\\S*) *$") //assume 3 whitespaces as separator between name and isin
+                        // assume 3 whitespaces as seperator
+                        .match("^(?<nameContinued>.*?)\\s{3,} *(?<isin>\\S*) *$")
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         .section("shares").optional() //
@@ -248,8 +250,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
     }
-    
-    
+
     @SuppressWarnings("nls")
     private void addSellTransaction()
     {
@@ -271,7 +272,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             type.getCurrentContext().put("time", v.get("time"));
                         })
-                        
+
                         .section("date") //
                         .match("Geschäftstag *: (?<date>\\d+.\\d+.\\d{4}+) .*") //
                         .assign((t, v) -> {
@@ -288,7 +289,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         .section("isin", "name", "wkn", "nameContinued") //
                         .find("Wertpapier-Bezeichnung *WPKNR/ISIN *") //
                         .match("^(?<name>(\\S{1,} )*) *(?<wkn>\\S*) *$") //
-                        .match("^(?<nameContinued>.*?)\\s{3,} *(?<isin>\\S*) *$") //assume 3 whitespaces as separator
+                        // assume 3 whitespaces as separator
+                        .match("^(?<nameContinued>.*?)\\s{3,} *(?<isin>\\S*) *$")
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         .section("shares").optional() //
@@ -308,7 +310,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                             {
                                 t.setAmount(-asAmount(v.get("amount").substring(0, v.get("amount").length() - 1)));
                             }
-                            else 
+                            else
                             {
                                 t.setAmount(asAmount(v.get("amount")));
                             }
@@ -414,14 +416,14 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         .match(".*Umschreibeentgelt *: *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)-? *") //
                         .assign((t, v) -> t.getPortfolioTransaction()
                                         .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")), 
+                                                        Money.of(asCurrencyCode(v.get("currency")),
                                                                         asAmount(v.get("fee"))))))
-                        
+
                         .section("fee", "currency").optional()
                         .match(".*Variable B.rsenspesen *: *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)-? *") //
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")), 
+                        .assign((t, v) -> t.getPortfolioTransaction() //
+                                        .addUnit(new Unit(Unit.Type.FEE, //
+                                                        Money.of(asCurrencyCode(v.get("currency")), //
                                                                         asAmount(v.get("fee"))))));
     }
 
@@ -462,11 +464,12 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(t -> t.getAmount() == 0L ? null : new TransactionItem(t)));
     }
-    
+
     @SuppressWarnings("nls")
     private void addExpireTransaction()
     {
-        DocumentType type = new DocumentType("A *b *r *e *c *h *n *u *n *g *f *ä *l *l *i *g *e *r *W *e *r *t *p *a *p *i *e *r *e *");
+        DocumentType type = new DocumentType(
+                        "A *b *r *e *c *h *n *u *n *g *f *ä *l *l *i *g *e *r *W *e *r *t *p *a *p *i *e *r *e *");
         this.addDocumentTyp(type);
 
         Block block = new Block("^Einlösung *");
@@ -480,7 +483,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date", "name", "nameContinued", "wkn", "shares", "isin")
-                        .match("^ *p *e *r *(?<date> \\d *\\d *\\. *\\d *\\d *\\. *\\d *\\d *\\d *\\d)\\s{3,}(?<name>.*)\\s{3,}(?<wkn>.*) *$") //assume 3 whitespaces as separator
+                        // assume 3 whitespaces as separator
+                        .match("^ *p *e *r *(?<date> \\d *\\d *\\. *\\d *\\d *\\. *\\d *\\d *\\d *\\d)\\s{3,}(?<name>.*)\\s{3,}(?<wkn>.*) *$")
                         .match("^ *S *T *K *(?<shares>[\\d. ]+(,[\\d ]+)?) *(?<nameContinued>(\\S{1,} {1,2})*) *(?<isin>[\\S ]*) *$")
                         .assign((t, v) -> {
                             v.put("isin", stripBlanksAndUnderscores(v.get("isin")));
@@ -495,7 +499,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("amount", "currency") //
-                        .match("^Kurswert Einl.sung *(?<currency>\\w{3}+) *(?<amount>[\\d,]*) *$")
+                        .match("^Kurswert Einl.sung *(?<currency>\\w{3}+) *(?<amount>[\\d,]*) *$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -507,7 +511,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
         block.set(pdfTransaction);
     }
-    
+
     @SuppressWarnings("nls")
     private void addVorabsteuerTransaction()
     {
@@ -582,18 +586,17 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
     }
-    
-    
 
     @SuppressWarnings("nls")
     private void addDividendTransactionFromSteuermitteilungPDF()
     {
-        
-        DocumentType type = new DocumentType("Steuerliche Behandlung: (Aus|In)ländische (Dividende|Investment-Aussch.ttung)");
+
+        DocumentType type = new DocumentType(
+                        "Steuerliche Behandlung: (Aus|In)ländische (Dividende|Investment-Aussch.ttung)");
 
         this.addDocumentTyp(type);
-        Block block = new Block("^\\s*Steuerliche Behandlung:.*");        
-        
+        Block block = new Block("^\\s*Steuerliche Behandlung:.*");
+
         type.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
 
@@ -627,32 +630,34 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                             long gross1 = asAmount(stripBlanks(v.get("gross1")));
                             long gross2 = asAmount(stripBlanks(v.get("gross2")));
                             long tax = 0;
-                            
+
                             if (gross1 > gross2)
-                                tax = gross1 - amount; // Betrag vor Steuern > Steuerbemessungsgrundlage
-                            else 
-                                tax = gross2 - amount; // Betrag vor Steuern < Steuerbemessungsgrundlage
+                                // vor Steuern > Steuerbemessungsgrundlage
+                                tax = gross1 - amount;
+                            else
+                                // vor Steuern < Steuerbemessungsgrundlage
+                                tax = gross2 - amount;
 
                             if (tax > 0)
                                 t.addUnit(new Unit(Unit.Type.TAX, Money.of(asCurrencyCode(v.get("currency")), tax)));
                         })
-                        
+
                         .section("date") //
                         .match("^(Die Gutschrift erfolgt mit Valuta) (?<date>\\d+.\\d+.\\d{4}+).*")
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
-                        
+
                         .wrap(TransactionItem::new));
     }
 
     @SuppressWarnings("nls")
     private void addFeesFromVerwahrentgeltPDF()
     {
-        
+
         DocumentType type = new DocumentType("Verwahrentgelt");
 
         this.addDocumentTyp(type);
-        Block block = new Block("^.*Verwahrentgelt.*");        
-        
+        Block block = new Block("^.*Verwahrentgelt.*");
+
         type.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
 
@@ -663,7 +668,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("wkn", "date").optional()
-                        .match("^.*Verwahrentgelt .*, WKN (?<wkn>\\S+) (?<date>\\d+.\\d+.\\d{4}).*$")
+                        .match("^.*Verwahrentgelt .*, WKN (?<wkn>\\S+) (?<date>\\d+.\\d+.\\d{4}).*$") //
                         .assign((t, v) -> {
                             v.put("wkn", stripBlanks(v.get("wkn")));
                             t.setSecurity(getOrCreateSecurity(v));
@@ -671,12 +676,12 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("currency", "amount")
-                        .match("^.* Buchung von (?<amount>\\d+,\\d+) (?<currency>\\w+) .*$")
+                        .match("^.* Buchung von (?<amount>\\d+,\\d+) (?<currency>\\w+) .*$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(stripBlanks(v.get("amount"))));
                         })
-                        
+
                         .wrap(TransactionItem::new));
     }
 
@@ -693,28 +698,22 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                         .equals(((AccountTransaction) i.getSubject()).getType()))
                         .collect(Collectors.groupingBy(Item::getDate, Collectors.groupingBy(Item::getSecurity)));
 
-        if (dividends.isEmpty())
-            return items;
-
-        // only remove non-tax-dividends, where additional tax-dividend exists
-        // bugfix for tax-files without taxes (or both entries will be deleted)
-
-        Map<LocalDateTime, Security> deleted = new HashMap<>();
         Iterator<Item> iterator = items.iterator();
         while (iterator.hasNext())
         {
             Item i = iterator.next();
-            List<Item> similarTransactions = dividends.get(i.getDate()).get(i.getSecurity());
-            if (similarTransactions.size() == 2)
-            {
-                // already deleted once?
-                if (!(deleted.containsKey(i.getDate()) && i.getSecurity().equals(deleted.get(i.getDate()))))
-                {
 
+            if (isDividendTransaction(i))
+            {
+                List<Item> similarTransactions = dividends.get(i.getDate()).get(i.getSecurity());
+
+                // exist multiple div transactions?
+                if (similarTransactions.size() == 2)
+                {
                     AccountTransaction a1 = (AccountTransaction) similarTransactions.get(0).getSubject();
                     AccountTransaction a2;
 
-                    // copy potential gross unit
+                    // a1 = self, a2 = other
                     if (i.equals(similarTransactions.get(0)))
                     {
                         a2 = (AccountTransaction) similarTransactions.get(1).getSubject();
@@ -725,20 +724,45 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         a2 = (AccountTransaction) similarTransactions.get(0).getSubject();
                     }
 
-                    Optional<Unit> unitGross = a1.getUnit(Unit.Type.GROSS_VALUE);
-                    if (unitGross.isPresent())
+                    if (a2.getUnit(Type.TAX).isPresent())
                     {
-                        a2.addUnit(unitGross.get());
-                    }
+                        // if tax of a1 < tax of a2
+                        if (!a1.getUnit(Type.TAX).isPresent() || a2.getUnit(Type.TAX).get().getAmount()
+                                        .isGreaterOrEqualThan(a1.getUnit(Type.TAX).get().getAmount()))
+                        {
 
-                    // mark in hashMap and delete it
-                    deleted.put(i.getDate(), i.getSecurity());
-                    iterator.remove();
+                            // store potential gross unit
+                            Optional<Unit> unitGross = a1.getUnit(Unit.Type.GROSS_VALUE);
+                            if (unitGross.isPresent())
+                            {
+                                a2.addUnit(unitGross.get());
+                            }
+
+                            // remove self
+                            iterator.remove();
+                        }
+
+                    } // else wait for a2's round
+
                 }
             }
         }
 
         return items;
+    }
+
+    private boolean isDividendTransaction(Item i)
+    {
+        if (i instanceof TransactionItem)
+        {
+            Annotated s = ((TransactionItem) i).getSubject();
+            if (s instanceof AccountTransaction)
+            {
+                AccountTransaction a = (AccountTransaction) s;
+                return AccountTransaction.Type.DIVIDENDS.equals(a.getType());
+            }
+        }
+        return false;
     }
 
     @SuppressWarnings("nls")
