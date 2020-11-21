@@ -1,0 +1,204 @@
+{
+	"version": 1,
+	"name": "Frankfurter Fondsbank (FFB) - Fondsabrechnung",
+	"locale": "de",
+	"pattern": [
+		"FFB Kundenbetreuung"
+	],
+	"transactions": [
+		{
+			"type": "PURCHASE",
+			"startsWith": "^(Kauf|Splittkauf) .*",
+			"sections": [
+				{
+					"context": "SECURITY",
+					"pattern": [
+						"^(Kauf|Splittkauf)( Betrag)? (?<name>.*) [\\d.,]+ \\w{3} [\\d.,]+ (?<currency>\\w{3}) [\\d.,]+$",
+						"^[\\d]* (?<wkn>[^ ]+) / (?<isin>[^ ]+) .*"
+					]
+				},
+				{
+					"pattern": [
+						"^(Kauf|Splittkauf) .* (?<shares>[\\d.,]+)$"
+					]
+				},
+				{
+					"pattern": [
+						"^(Kauf|Splittkauf) .*",
+						".* (?<date>\\d+.\\d+.\\d{4}) [\\d.,]+$"
+					]
+				},
+				{
+					"pattern": [
+						"^Abrechnungsbetrag (?<amount>[\\d.,]+) (?<currency>\\w{3})"
+					]
+				},
+				{
+					"context": "UNIT",
+					"isOptional": true,
+					"pattern": [
+						"^Kauf .* (?<amount>[\\d.,]+) \\w{3} [\\d.,]+ (?<currency>\\w{3}) [\\d.,]+$",
+						"^[\\d]* [^ ]+ / [^ ]+ (?<fxRateToBase>[\\d.,]+) (?<fxCurrency>\\w{3}) .*",
+						"^.* (?<fxAmount>[\\d.,]+) \\w{3} [\\d.,]+ \\w{3} [\\d.,]+$"
+					],
+					"attributes": {
+						"type": "GROSS_VALUE"
+					}
+				},
+				{
+					"context": "UNIT",
+					"isOptional": true,
+					"pattern": [
+						"^Splittkauf .*",
+						"^[\\d]* [^ ]+ / [^ ]+ (?<fxRateToBase>[\\d.,]+) (?<fxCurrency>\\w{3}) .*",
+						"^.* (?<fxAmount>[\\d.,]+) \\w{3} [\\d.,]+ \\w{3} [\\d.,]+$",
+						"^Abrechnungsbetrag (?<amount>[\\d.,]+) \\w{3}"
+					],
+					"attributes": {
+						"type": "GROSS_VALUE"
+					}
+				},
+				{
+					"context": "UNIT",
+					"isOptional": true,
+					"pattern": [
+						"^Ausgabeaufschlag / Provision .* (?<amount>[\\d.,]+) (?<currency>\\w{3})"
+					],
+					"attributes": {
+						"type": "FEE"
+					}
+				},
+				{
+					"context": "UNIT",
+					"isOptional": true,
+					"pattern": [
+						"^ETF Transaktionskosten FFB (?<amount>[\\d.,]+) (?<currency>\\w{3})"
+					],
+					"attributes": {
+						"type": "FEE"
+					}
+				},
+				{
+					"context": "UNIT",
+					"isOptional": true,
+					"pattern": [
+						"^Additional Trading Costs (?<amount>[\\d.,]+) (?<currency>\\w{3})"
+					],
+					"attributes": {
+						"type": "FEE"
+					}
+				}
+			]
+		},
+		{
+			"type": "PURCHASE",
+			"startsWith": "^Wiederanlage .*",
+			"sections": [
+				{
+					"context": "SECURITY",
+					"pattern": [
+						"^Wiederanlage( Betrag)? (?<name>.*) [\\d.,]+ \\w{3} [\\d.,]+ \\w{3} [\\d.,]+$",
+						"^[\\d]* (?<wkn>[^ ]+) / (?<isin>[^ ]+) .*"
+					]
+				},
+				{
+					"pattern": [
+						"^Wiederanlage .* (?<shares>[\\d.,]+)$"
+					]
+				},
+				{
+					"pattern": [
+						"^Wiederanlage .*",
+						".* (?<date>\\d+.\\d+.\\d{4}) [\\d.,]+$"
+					]
+				},
+				{
+					"pattern": [
+						"^Abrechnungsbetrag (?<amount>[\\d.,]+) (?<currency>\\w{3})"
+					]
+				},
+				{
+					"context": "UNIT",
+					"isOptional": true,
+					"pattern": [
+						"^Wiederanlage .*",
+						"^[\\d]* [^ ]+ / [^ ]+ (?<fxRateToBase>[\\d.,]+) (?<fxCurrency>\\w{3}) .*",
+						"^.* (?<fxAmount>[\\d.,]+) \\w{3} [\\d.,]+ \\w{3} [\\d.,]+$",
+						"^Abrechnungsbetrag (?<amount>[\\d.,]+) \\w{3}"
+					],
+					"attributes": {
+						"type": "GROSS_VALUE"
+					}
+				},
+				{
+					"context": "UNIT",
+					"isOptional": true,
+					"pattern": [
+						"^Ausgabeaufschlag / Provision .* (?<amount>[\\d.,]+) (?<currency>\\w{3})"
+					],
+					"attributes": {
+						"type": "FEE"
+					}
+				}
+			]
+		},
+		{
+			"type": "DIVIDEND",
+			"startsWith": "^Fondsname .*",
+			"sections": [
+				{
+					"context": "SECURITY",
+					"pattern": [
+						"^Fondsname (?<name>.*) Datum der Aussch.ttung [\\d.,]+$",
+						"^WKN / ISIN (?<wkn>[^ ]+) / (?<isin>[^ ]+) .*"
+					]
+				},
+				{
+					"pattern": [
+						"^Fondsgesellschaft [\\w]* Anteilsbestand per \\d{2}.\\d{2}.\\d{4} (?<shares>[\\d.,]+) St.$"
+					]
+				},
+				{
+					"pattern": [
+						"^Fondsname .* Datum der Aussch.ttung (?<date>\\d+.\\d+.\\d{4})$"
+					]
+				},
+				{
+					"pattern": [
+						"^Folgender Betrag wurde zugunsten Ihrer Referenzbankverbindung .berwiesen (?<amount>[\\d.,]+) (?<currency>\\w{3})$"
+					]
+				},
+				{
+					"context": "UNIT",
+					"isOptional": true,
+					"pattern": [
+						"^Kapitalertragsteuer \\s* (?<amount>[\\d.,]+) (?<currency>\\w{3})$"
+					],
+					"attributes": {
+						"type": "TAX"
+					}
+				},
+				{
+					"context": "UNIT",
+					"isOptional": true,
+					"pattern": [
+						"^Solidarit.tszuschlag \\s* (?<amount>[\\d.,]+) (?<currency>\\w{3})$"
+					],
+					"attributes": {
+						"type": "TAX"
+					}
+				},
+				{
+					"context": "UNIT",
+					"isOptional": true,
+					"pattern": [
+						"^Kirchensteuer \\s* (?<amount>[\\d.,]+) (?<currency>\\w{3})$"
+					],
+					"attributes": {
+						"type": "TAX"
+					}
+				}
+			]
+		}
+	]
+}
