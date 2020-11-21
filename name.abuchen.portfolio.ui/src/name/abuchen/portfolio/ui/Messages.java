@@ -857,6 +857,7 @@ public class Messages extends NLS
     public static String MsgSecurityHasNoQuotes;
     public static String MsgThemeRestartRequired;
     public static String MsgUpdateNewInVersionX;
+    public static String MsgUpdateNoWritePermissions;
     public static String MsgUpdateRequiresLatestJavaVersion;
     public static String MsgUpdateRunning32BitOn64BitOS;
     public static String MsgUpdatingDashboardData;
