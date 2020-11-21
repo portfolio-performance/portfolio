@@ -444,8 +444,9 @@ public class Classification implements Named
     {
         visitor.visit(this);
 
-        for (Classification child : new ArrayList<Classification>(children))
-            child.accept(visitor);
+        getChildren().stream() //
+                        .sorted((r, l) -> Integer.compare(r.getRank(), l.getRank()))
+                        .forEach(child -> child.accept(visitor));
 
         for (Assignment assignment : new ArrayList<Assignment>(assignments))
             visitor.visit(this, assignment);
