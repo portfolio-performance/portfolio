@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuListener;
@@ -204,6 +205,9 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
     @Inject
     private ExchangeRateProviderFactory factory;
 
+    @Inject
+    private IStylingEngine stylingEngine;
+
     private ShowHideColumnHelper recordColumns;
 
     private TableViewer records;
@@ -352,6 +356,8 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
                 return true;
             }
         });
+
+        stylingEngine.style(records.getTable());
     }
 
     private void createCommonColumns()
