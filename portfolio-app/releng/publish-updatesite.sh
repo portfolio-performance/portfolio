@@ -11,6 +11,7 @@ BASE=$(pwd)/../../portfolio-product/target/repository
 rm -rf updatesite
 mkdir updatesite
 mkdir updatesite/portfolio
+mkdir updatesite/portfolio-x86
 cp -R ${BASE}/* updatesite/portfolio
 cp ${BASE}/index.html updatesite
 sed -i -e 's/css\/styles.css/portfolio\/css\/styles.css/g' updatesite/index.html
@@ -28,10 +29,3 @@ git add -A
 git commit -m "Version ${PCK_VERSION}"
 git branch -m master gh-pages
 git remote add origin https://github.com/buchen/portfolio-updatesite.git
-
-read -p "Force push to Github? " -n 1 -r
-echo
-if [[ $REPLY =~ ^[Yy]$ ]]
-then
-   git push --force --set-upstream origin gh-pages
-fi

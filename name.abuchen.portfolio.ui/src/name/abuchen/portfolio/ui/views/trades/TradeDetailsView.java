@@ -11,8 +11,10 @@ import javax.inject.Named;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -28,9 +30,11 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
+import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
+import name.abuchen.portfolio.ui.views.SecurityContextMenu;
 import name.abuchen.portfolio.ui.views.TradesTableViewer;
 import name.abuchen.portfolio.util.Interval;
 
@@ -149,7 +153,20 @@ public class TradeDetailsView extends AbstractFinanceView
 
         updateFrom(input != null ? input : collectAllTrades());
 
+        new ContextMenu(table.getTableViewer().getControl(), this::fillContextMenu).hook();
+
         return control;
+    }
+
+    private void fillContextMenu(IMenuManager manager)
+    {
+        IStructuredSelection selection = table.getTableViewer().getStructuredSelection();
+
+        if (selection.isEmpty() || selection.size() > 1)
+            return;
+
+        Trade trade = (Trade) selection.getFirstElement();
+        new SecurityContextMenu(this).menuAboutToShow(manager, trade.getSecurity(), trade.getPortfolio());
     }
 
     private void updateFrom(Input data)

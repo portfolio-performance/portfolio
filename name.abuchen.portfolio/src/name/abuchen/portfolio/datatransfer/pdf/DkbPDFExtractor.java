@@ -96,7 +96,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Wertpapier Abrechnung (Verkauf|Rücknahme Investmentfonds)");
         this.addDocumentTyp(type);
 
-        Block block = new Block("Wertpapier Abrechnung (Verkauf|Rücknahme Investmentfonds)");
+        Block block = new Block("Wertpapier Abrechnung (Verkauf|Rücknahme Investmentfonds).*");
         type.addBlock(block);
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
         pdfTransaction.subject(() -> {
@@ -122,14 +122,25 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             t.setSecurity(getOrCreateSecurity(v));
                         })
 
-                        .section("date", "amount").match("(^Schlusstag)(/-Zeit)? (?<date>\\d+.\\d+.\\d{4}+) (.*)")
+                        .section("amount", "currency") //
                         .match("(^Ausmachender Betrag) (?<amount>\\d{1,3}(\\.\\d{3})*(,\\d{2})?) (?<currency>\\w{3}+)(.*)")
                         .assign((t, v) -> {
-                            t.setDate(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
+                        .section("date").optional() //
+                        .match("^Den Gegenwert buchen wir mit Valuta (?<date>\\d+.\\d+.\\d{4}+) (.*)")
+                        .assign((t, v) -> {
+                            t.setDate(asDate(v.get("date")));
+                        })
+
+                        .section("date").optional() //
+                        .match("(^Schlusstag)(/-Zeit)? (?<date>\\d+.\\d+.\\d{4}+) (.*)")
+                        .assign((t, v) -> {
+                            t.setDate(asDate(v.get("date")));
+                        })
+                        
                         .wrap(BuySellEntryItem::new);
 
         addTaxesSectionsTransaction(type, pdfTransaction);

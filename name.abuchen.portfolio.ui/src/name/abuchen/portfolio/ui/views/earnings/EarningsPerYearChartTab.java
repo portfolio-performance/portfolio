@@ -9,7 +9,6 @@ import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.swtchart.Chart;
 import org.swtchart.IBarSeries;
@@ -19,6 +18,7 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
+import name.abuchen.portfolio.ui.util.swt.ColoredLabel;
 import name.abuchen.portfolio.ui.views.earnings.EarningsViewModel.Line;
 import name.abuchen.portfolio.util.TextUtil;
 
@@ -41,7 +41,14 @@ public class EarningsPerYearChartTab extends AbstractChartTab
             final int year = (Integer) getFocusedObject();
             int totalNoOfMonths = model.getNoOfMonths();
 
+            Color barColor = Colors.DARK_BLUE;
+
             IBarSeries barSeries = (IBarSeries) getChart().getSeriesSet().getSeries()[0];
+            if (barSeries.isStackEnabled())
+            {
+                barSeries = (IBarSeries) getChart().getSeriesSet().getSeries()[year];
+                barColor = barSeries.getBarColor();
+            }
 
             List<Line> lines = model.getLines().stream() //
                             .filter(line -> {
@@ -59,23 +66,16 @@ public class EarningsPerYearChartTab extends AbstractChartTab
             container.setBackgroundMode(SWT.INHERIT_FORCE);
             GridLayoutFactory.swtDefaults().numColumns(2).applyTo(container);
 
-            Color foregroundColor = Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
-            container.setForeground(foregroundColor);
-            container.setBackground(Colors.INFO_TOOLTIP_BACKGROUND);
-
             Label topLeft = new Label(container, SWT.NONE);
-            topLeft.setForeground(foregroundColor);
             topLeft.setText(Messages.ColumnSecurity);
 
-            Label label = new Label(container, SWT.CENTER);
-            label.setBackground(barSeries.getBarColor());
-            label.setForeground(Colors.getTextColor(barSeries.getBarColor()));
-            label.setText(TextUtil.pad(String.valueOf(model.getStartYear() + year)));
+            ColoredLabel label = new ColoredLabel(container, SWT.CENTER);
+            label.setBackdropColor(barColor);
+            label.setText(String.valueOf(model.getStartYear() + year));
             GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(label);
 
             lines.forEach(line -> {
                 Label l = new Label(container, SWT.NONE);
-                l.setForeground(foregroundColor);
                 l.setText(TextUtil.tooltip(line.getVehicle().getName()));
 
                 long value = 0;
@@ -83,23 +83,21 @@ public class EarningsPerYearChartTab extends AbstractChartTab
                     value += line.getValue(m);
 
                 l = new Label(container, SWT.RIGHT);
-                l.setForeground(foregroundColor);
-                l.setText(TextUtil.pad(Values.Amount.format(value)));
+                l.setText(Values.Amount.format(value));
                 GridDataFactory.fillDefaults().align(SWT.END, SWT.FILL).applyTo(l);
             });
 
             Label l = new Label(container, SWT.NONE);
-            l.setForeground(foregroundColor);
             l.setText(Messages.ColumnSum);
 
             long value = 0;
             for (int m = year * 12; m < (year + 1) * 12 && m < totalNoOfMonths; m += 1)
                 value += model.getSum().getValue(m);
 
-            l = new Label(container, SWT.RIGHT);
-            l.setBackground(barSeries.getBarColor());
-            l.setForeground(Colors.getTextColor(barSeries.getBarColor()));
-            l.setText(TextUtil.pad(Values.Amount.format(value)));
+            ColoredLabel cl = new ColoredLabel(container, SWT.RIGHT);
+            cl.setBackdropColor(barColor);
+            cl.setText(Values.Amount.format(value));
+            GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(cl);
         }
     }
 
@@ -131,7 +129,10 @@ public class EarningsPerYearChartTab extends AbstractChartTab
         updateCategorySeries();
 
         int startYear = model.getStartYear();
+
         double[] series = new double[LocalDate.now().getYear() - startYear + 1];
+
+        boolean hasNegativeNumber = false;
 
         for (int index = 0; index < model.getNoOfMonths(); index += 12)
         {
@@ -144,10 +145,34 @@ public class EarningsPerYearChartTab extends AbstractChartTab
                 total += model.getSum().getValue(index + ii);
 
             series[year] = total / Values.Amount.divider();
+
+            if (total < 0L)
+                hasNegativeNumber = true;
         }
 
-        IBarSeries barSeries = (IBarSeries) getChart().getSeriesSet().createSeries(SeriesType.BAR, getLabel());
-        barSeries.setYSeries(series);
-        barSeries.setBarColor(Colors.DARK_BLUE);
+        if (hasNegativeNumber)
+        {
+            IBarSeries barSeries = (IBarSeries) getChart().getSeriesSet().createSeries(SeriesType.BAR, getLabel());
+            barSeries.setYSeries(series);
+            barSeries.setBarColor(Colors.DARK_BLUE);
+        }
+        else
+        {
+            for (int i = 0; i < series.length; i++)
+            {
+                int year = model.getStartYear() + i;
+                IBarSeries barSeries = (IBarSeries) getChart().getSeriesSet().createSeries(SeriesType.BAR,
+                                String.valueOf(year));
+
+                double[] seriesX = new double[LocalDate.now().getYear() - startYear + 1];
+                seriesX[i] = series[i];
+
+                barSeries.setYSeries(seriesX);
+
+                barSeries.setBarColor(getColor(year));
+                barSeries.setBarPadding(25);
+                barSeries.enableStack(true);
+            }
+        }
     }
 }

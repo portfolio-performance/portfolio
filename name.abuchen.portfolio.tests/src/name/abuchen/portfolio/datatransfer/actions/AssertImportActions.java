@@ -3,12 +3,15 @@ package name.abuchen.portfolio.datatransfer.actions;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.util.Arrays;
 import java.util.List;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.ImportAction;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.Money;
 
 public class AssertImportActions
 {
@@ -57,7 +60,7 @@ public class AssertImportActions
     private static final ImportAction[] actions = new ImportAction[] { //
                     new CheckValidTypesAction(), new CheckSecurityRelatedValuesAction(), new CheckCurrenciesAction() };
 
-    public void check(List<Extractor.Item> items, ImportAction.Context context)
+    private void check(List<Extractor.Item> items, ImportAction.Context context)
     {
         for (Extractor.Item item : items)
         {
@@ -72,5 +75,15 @@ public class AssertImportActions
     public void check(List<Extractor.Item> items, String currencyCode)
     {
         check(items, new TestContext(currencyCode));
+    }
+
+    public void check(List<Extractor.Item> items)
+    {
+        for (Extractor.Item item : items)
+        {
+            Money money = item.getAmount();
+            String currencyCode = money != null ? money.getCurrencyCode() : CurrencyUnit.EUR;
+            check(Arrays.asList(item), new TestContext(currencyCode));
+        }
     }
 }

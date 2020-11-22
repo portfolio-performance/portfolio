@@ -39,6 +39,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 
 import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.Colors;
 
 public final class Sidebar<I> extends Composite
@@ -62,7 +63,9 @@ public final class Sidebar<I> extends Composite
 
     public static final int STEP = 10;
 
-    private Font regularFont;
+    private Color selectionForeground = Colors.SIDEBAR_TEXT;
+    private Color selectionBackground = Colors.SIDEBAR_BACKGROUND_SELECTED;
+
     private Font boldFont;
     private Font sectionFont;
 
@@ -78,10 +81,11 @@ public final class Sidebar<I> extends Composite
         super(parent, SWT.NONE);
         this.model = model;
 
-        setBackground(Colors.getColor(249, 250, 250));
-        setLayout(new FormLayout());
+        this.setData(UIConstants.CSS.CLASS_NAME, "sidebar"); //$NON-NLS-1$
 
-        createColorsAndFonts(parent);
+        setLayout(new FormLayout());
+        setFont(getFont());
+
         registerListeners();
 
         rebuild();
@@ -120,6 +124,7 @@ public final class Sidebar<I> extends Composite
         data.top = targetList.isEmpty() ? new FormAttachment(0, 5)
                         : new FormAttachment(targetList.get(targetList.size() - 1), offset);
         entry.setLayoutData(data);
+        entry.redraw();
 
         existingList.remove(entry);
         targetList.add(entry);
@@ -233,7 +238,6 @@ public final class Sidebar<I> extends Composite
 
     private void widgetDisposed()
     {
-        regularFont.dispose();
         boldFont.dispose();
         sectionFont.dispose();
     }
@@ -265,11 +269,17 @@ public final class Sidebar<I> extends Composite
         }
     }
 
-    private void createColorsAndFonts(Composite parent)
+    @Override
+    public void setFont(Font font)
     {
-        FontData fontData = parent.getFont().getFontData()[0];
-        regularFont = new Font(Display.getDefault(), fontData);
+        super.setFont(font);
 
+        if (boldFont != null && !boldFont.isDisposed())
+            boldFont.dispose();
+        if (sectionFont != null && !sectionFont.isDisposed())
+            sectionFont.dispose();
+
+        FontData fontData = font.getFontData()[0];
         fontData.setStyle(SWT.BOLD);
         boldFont = new Font(Display.getDefault(), fontData);
 
@@ -277,6 +287,26 @@ public final class Sidebar<I> extends Composite
             fontData.setHeight(fontData.getHeight() + 1);
 
         sectionFont = new Font(Display.getDefault(), fontData);
+    }
+
+    public Color getSelectionForeground()
+    {
+        return selectionForeground;
+    }
+
+    public void setSelectionForeground(Color selectionForeground)
+    {
+        this.selectionForeground = selectionForeground;
+    }
+
+    public Color getSelectionBackground()
+    {
+        return selectionBackground;
+    }
+
+    public void setSelectionBackground(Color selectionBackground)
+    {
+        this.selectionBackground = selectionBackground;
     }
 
     //
@@ -300,7 +330,7 @@ public final class Sidebar<I> extends Composite
 
         public Entry(Composite parent, I subject)
         {
-            super(parent, SWT.NO_BACKGROUND | SWT.NO_FOCUS);
+            super(parent, SWT.NO_FOCUS);
             this.subject = Objects.requireNonNull(subject);
 
             this.image = model.getImage(subject).map(Images::image).orElse(null);
@@ -399,6 +429,7 @@ public final class Sidebar<I> extends Composite
             if (label != null)
             {
                 GC gc = new GC(this);
+                gc.setFont(Sidebar.this.getFont());
                 Point extent = gc.stringExtent(label);
                 gc.dispose();
                 height = Math.max(height, extent.y);
@@ -420,25 +451,25 @@ public final class Sidebar<I> extends Composite
 
             if (Objects.equals(Sidebar.this.selection, this))
             {
-                gc.setBackground(Colors.SIDEBAR_BACKGROUND_SELECTED);
+                gc.setBackground(Sidebar.this.selectionBackground);
                 gc.fillRectangle(bounds.x, bounds.y, bounds.width, bounds.height);
 
-                gc.setForeground(Colors.SIDEBAR_TEXT);
+                gc.setForeground(Sidebar.this.selectionForeground);
                 gc.setFont(boldFont);
             }
             else
             {
-                gc.setBackground(Colors.SIDEBAR_BACKGROUND);
+                gc.setBackground(Sidebar.this.getBackground());
                 gc.fillRectangle(bounds.x, bounds.y, bounds.width, bounds.height);
 
                 if (indent > 0)
                 {
-                    gc.setForeground(Colors.SIDEBAR_TEXT);
-                    gc.setFont(isDragTarget ? boldFont : regularFont);
+                    gc.setForeground(Sidebar.this.getForeground());
+                    gc.setFont(isDragTarget ? boldFont : Sidebar.this.getFont());
                 }
                 else
                 {
-                    gc.setForeground(isDragTarget ? Colors.ICON_ORANGE : Colors.SIDEBAR_TEXT);
+                    gc.setForeground(isDragTarget ? Colors.ICON_ORANGE : Sidebar.this.getForeground());
                     gc.setFont(sectionFont);
                 }
             }

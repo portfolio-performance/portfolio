@@ -1323,6 +1323,63 @@ public class OnvistaPDFExtractorTest
     }
 
     @Test
+    public void testUmtauschFonds3() throws IOException
+    {
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+    
+        List<Exception> errors = new ArrayList<Exception>();
+    
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "OnvistaUmtauschFonds3.txt"),
+                        errors);
+    
+        assertThat(errors, empty());
+        assertThat(results.size(), is(4));
+    
+        // check security
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getIsin(), is("LU0488316133"));
+        assertThat(security.getName(), is("ComStage-S&P 500 UCITS ETF Inhaber-Anteile I o.N."));
+    
+        // check transaction (target security, in)
+        item = results.stream() //
+                        .filter(i -> i.getSubject() instanceof PortfolioTransaction)
+                        .filter(i -> ((PortfolioTransaction) i.getSubject())
+                                        .getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND)
+                        .findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(PortfolioTransaction.class));
+        PortfolioTransaction transaction = (PortfolioTransaction) item.get().getSubject();
+        assertThat(transaction.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-09-04T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(14.0369)));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+    
+        // check security (original)
+        security = ((SecurityItem)results.stream().filter(i -> i instanceof SecurityItem).collect(Collectors.toList()).get(1)).getSecurity();
+        assertThat(security.getIsin(), is("LU0496786657"));
+        assertThat(security.getName(), is("MUL-LYXOR S&P 500 UCITS ETF Inhaber-Anteile Dist USD o.N."));
+    
+        Item targetItem = results.stream() //
+                        .filter(i -> i.getSubject() instanceof PortfolioTransaction)
+                        .filter(i -> ((PortfolioTransaction) i.getSubject())
+                                        .getType() == PortfolioTransaction.Type.DELIVERY_INBOUND)
+                        .findFirst().get();
+    
+        // check transaction (original security, out)
+        PortfolioTransaction entry2 = (PortfolioTransaction) targetItem.getSubject();
+        assertThat(entry2.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
+        assertThat(entry2.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(entry2.getDateTime(), is(LocalDateTime.parse("2020-09-04T00:00")));
+        assertThat(entry2.getShares(), is(Values.Share.factorize(154.018)));
+    }
+
+    @Test
     public void testWertpapierVerkaufSpitzeMitSteuerrückerstattung() throws IOException
     {
         OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());

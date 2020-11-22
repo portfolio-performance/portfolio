@@ -135,7 +135,12 @@ public final class ImportExtractedItemsWizard extends Wizard
                 {
                     if (entry.isImported())
                     {
+                        if (entry.getItem().isInvestmentPlanItem())
+                        {
+                            action.setInvestmentPlanItem(true);
+                        }
                         entry.getItem().apply(action, page);
+                        action.setInvestmentPlanItem(false);
                         isDirty = true;
                     }
                 }

@@ -1,0 +1,46 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+TARGOBANK AG
+Postfach 10 02 30
+47002 Duisburg
+TARGOBANK AG - Postfach 10 02 30 - 47002 Duisburg www.targobank.de
+HERR MYVORNAME1 MYNAME1
+FRAU MYVORNAME2 MYNAME2
+MYSTRASSE MYNR
+MYPLZ MYSTADT
+Depotnummer MYDEPOTNUMMER
+........................................................................................................................................................................................................
+Effektenabrechnung 27.05.2020
+Rechnungsnummer: BOE-2020-0223620168-0003824
+MYVORNAME1 MYNAME1 & MYVORNAME2 MYNAME2
+Restausführung
+Transaktionstyp Verkauf
+Stück 300
+Wertpapier PowerCell Sweden AB (publ) - Namn-Aktier SK-,022
+WKN / ISIN A14TK6 / SE0006425815
+Handelsplatz Außerbörs. Limithandel
+Handelspartner TRADEGATE
+Schlusstag / Handelszeit 26.05.2020 / 20:32:00
+Kurs 24,86 EUR
+Auftragsart Limitauftrag
+Verwahrart WR Schweden
+Neuer Bestand 200
+Geschäftsnummer 14720B024746O001
+Referenznummer 2005262032215246
+Kurswert 7.458,00 EUR
+Provision 18,65 EUR
+Gutschrift auf Ihrem Konto mit Wertstellung zum 28. Mai 2020
+Konto-Nr. MYKONTONUMMER 7.439,35 EUR
+Kommissionsgeschäft
+Finanzdienstleistungen mit Leistungsort in der Europäischen Union sind umsatzsteuerfrei nach § 4 Nr. 8 UStG.
+Finanzdienstleistungen mit Leistungsort in einem Drittland sind nicht umsatzsteuerbar.
+Dieses Produkt ist keine Bankeinlage. Es unterliegt nicht der Einlagensicherung. Die vergangene Performance lässt
+keine Rückschlüsse auf die zukünftige Wertentwicklung zu. Der Wert der Anlage kann schwanken. Ein teilweiser oder
+ganzer Verlust ist möglich. Dieser Beleg wurde maschinell erstellt und wird nicht unterschrieben. Irrtum vorbehalten.
+Seite 1
+TARGOBANK AG | Vorstand: Pascal Laugel (Vorsitzender); Berthold Rüsing; Maria Topaler
+Vorsitzender des Aufsichtsrates:  René Dangel | Sitz der Gesellschaft: Düsseldorf
+Handelsregister Amtsgericht Düsseldorf HRB 83351 | USt-ID-Nr.: DE 811 285 485
+USt-ID-Nr. des umsatzsteuerlichen Organträgers: DE 811 623 326
+GH.20200528.020905.5013.0013.4510 X 0 R

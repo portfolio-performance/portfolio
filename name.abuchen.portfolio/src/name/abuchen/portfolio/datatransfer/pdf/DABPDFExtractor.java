@@ -2,7 +2,7 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Map;
+import java.util.Optional;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -96,7 +96,21 @@ public class DABPDFExtractor extends AbstractPDFExtractor
 
                         .section("date") //
                         .match("^Handelstag (?<date>\\d+.\\d+.\\d{4}+) .*$")
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                        .assign((t, v) ->  t.setDate(asDate(v.get("date"))))
+
+                        .section("date", "time").optional() //
+                        .match("^Handelstag (?<date>\\d+.\\d+.\\d{4}+) .*$")
+                        .match("^Handelszeit (?<time>\\d+:\\d+).*$")
+                        .assign((t, v) -> {
+                            if (v.get("time") != null) 
+                            {
+                                t.setDate(asDate(v.get("date"), v.get("time")));   
+                            } 
+                            else 
+                            {
+                                t.setDate(asDate(v.get("date")));
+                            }
+                        })
 
                         .section("fees", "currency") //
                         .optional().match("^.* Provision (?<currency>\\w{3}+) (?<fees>[\\d.]+,\\d+)-$")
@@ -172,7 +186,18 @@ public class DABPDFExtractor extends AbstractPDFExtractor
 
                         .section("date") //
                         .match("^Handelstag (?<date>\\d+.\\d+.\\d{4}+) .*$")
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                        .assign((t, v) -> 
+                                t.setDate(asDate(v.get("date"))))
+
+                        .section("date", "time").optional() //
+                        .match("^Handelstag (?<date>\\d+.\\d+.\\d{4}+) .*$")
+                        .match("^Handelszeit (?<time>\\d+:\\d+).*$")
+                        .assign((t, v) -> {
+                            if (v.get("time") != null) 
+                            {
+                                t.setDate(asDate(v.get("date"), v.get("time")));   
+                            } 
+                        })
 
                         .section("fees", "currency").optional()
                         .match("^.*Provision (?<currency>\\w{3}+) (?<fees>[\\d.]+,\\d+)-$").assign((t, v) -> {
@@ -192,6 +217,24 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                         });
 
         addTaxesSectionsTransaction(type, pdfTransaction);
+
+        Block taxBlock = new Block("zu versteuern \\(negativ\\).*");
+        type.addBlock(taxBlock);
+        taxBlock.set(new Transaction<AccountTransaction>().subject(() -> {
+            AccountTransaction t = new AccountTransaction();
+            t.setType(AccountTransaction.Type.TAX_REFUND);
+            return t;
+        })
+
+                        .section("amount", "currency", "date") //
+                        .match("Wert Konto-Nr. Abrechnungs-Nr. Betrag zu Ihren Gunsten")
+                        .match("^(?<date>\\d+.\\d+.\\d{4}+) ([0-9]*) ([0-9]*) (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)$")
+                        .assign((t, v) -> {
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setDateTime(asDate(v.get("date")));
+                        }).wrap(t -> new TransactionItem(t)));
+
     }
 
     @SuppressWarnings("nls")
@@ -200,7 +243,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Dividende");
         this.addDocumentTyp(type);
 
-        Block block = new Block("^Dividendengutschrift .*$");
+        Block block = new Block("^Dividendengutschrift.*$");
         type.addBlock(block);
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
         pdfTransaction.subject(() -> {
@@ -270,6 +313,49 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                                 t.addUnit(unit);
                         })
 
+                        // if gross dividend is given in document, we need to
+                        // fix the unit, if security currency and transaction
+                        // currency differ
+                        .section("fxCurrency", "fxAmount", "currency", "exchangeRate") //
+                        .optional() //
+                        // this line seems to give the gross dividend always in EUR
+                        .match("ausl.ndische Dividende \\w{3} (?<fxAmount>[\\d.]+,\\d+)")
+                        .match("Devisenkurs: (?<fxCurrency>\\w{3}+)/(?<currency>\\w{3}+) (?<exchangeRate>[\\d.]+,\\d+)")
+                        .assign((t, v) -> {
+
+                            if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
+                            {
+                                BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+
+                                // check, if forex currency is transaction
+                                // currency or not and swap amount, if necessary
+                                Unit grossValue;
+                                if (!asCurrencyCode(v.get("fxCurrency")).equals(t.getCurrencyCode()))
+                                {
+                                    Money fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")),
+                                                    asAmount(v.get("fxAmount")));
+                                    long localAmount = exchangeRate.multiply(BigDecimal.valueOf(fxAmount.getAmount())).longValue();
+                                    Money amount = Money.of(asCurrencyCode(v.get("currency")), localAmount);
+                                    grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, exchangeRate);
+                                } 
+                                else 
+                                {
+                                    Money amount = Money.of(asCurrencyCode(v.get("fxCurrency")),
+                                                    asAmount(v.get("fxAmount")));
+                                    long forexAmount = exchangeRate.multiply(BigDecimal.valueOf(amount.getAmount())).longValue();
+                                    Money fxAmount = Money.of(asCurrencyCode(v.get("currency")), forexAmount);
+                                    grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, exchangeRate);
+                                }
+                                // remove existing unit to replace with new one
+                                Optional<Unit> grossUnit = t.getUnit(Unit.Type.GROSS_VALUE);
+                                if (grossUnit.isPresent())
+                                {
+                                    t.removeUnit(grossUnit.get());
+                                }
+                                t.addUnit(grossValue);
+                            }
+                        })
+
                         .wrap(t -> {
                             if (t.getAmount() == 0)
                                 throw new IllegalArgumentException("No dividend amount found.");
@@ -336,33 +422,57 @@ public class DABPDFExtractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(DocumentType documentType, T pdfTransaction)
     {
-        pdfTransaction.section("tax", "currency", "label").optional()
-                        .match("^(?<label>.*)Kapitalertragsteuer (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)-?$")
-                        .assign((t, v) -> addTax(documentType, t, v))
+        // if we have a tax return, we set a flag and don't book tax below
+        pdfTransaction.section("n").optional() //
+                        .match("zu versteuern \\(negativ\\) (?<n>.*)").assign((t, v) -> {
+                            documentType.getCurrentContext().put("negative", "X");
+                        });
 
-                        .section("tax", "currency", "label").optional()
-                        .match("^(?<label>.*)Solidaritätszuschlag (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)-?$")
-                        .assign((t, v) -> addTax(documentType, t, v))
+        pdfTransaction.section("exchangeRate", "fxCurrency").optional() //
+                        .match("Devisenkurs: (\\w{3}+)/(?<fxCurrency>\\w{3}+) (?<exchangeRate>[\\d.]+,\\d+)")
+                        .assign((t, v) -> {
 
-                        .section("tax", "currency", "label").optional()
-                        .match("^(?<label>.*)Kirchensteuer (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)-?$")
-                        .assign((t, v) -> addTax(documentType, t, v));
-    }
+                            BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                            if (getTransaction(t).getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
+                            {
+                                exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+                            }
+                            documentType.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
+                        })
 
-    @SuppressWarnings("nls")
-    private void addTax(DocumentType documentType, Object t, Map<String, String> v)
-    {
-        if (v.get("label").contains("im laufenden Jahr einbehaltene"))
-            return;
+                        .section("tax", "currency").optional()
+                        .match("^.*US-Quellensteuer.* (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)-?$").assign((t, v) -> {
+                            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                            PDFExtractorUtils.checkAndSetTax(tax, getTransaction(t), documentType);
+                        })
 
-        name.abuchen.portfolio.model.Transaction tx = getTransaction(t);
+                        .section("tax", "currency").optional()
+                        .match("^.*Kapitalertragsteuer (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)-?$").assign((t, v) -> {
+                            if (!"X".equals(documentType.getCurrentContext().get("negative")))
+                            {
+                                Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                                PDFExtractorUtils.checkAndSetTax(tax, getTransaction(t), documentType);
+                            }
+                        })
 
-        String currency = asCurrencyCode(v.get("currency"));
-        long amount = asAmount(v.get("tax"));
+                        .section("tax", "currency").optional()
+                        .match("^.*Solidaritätszuschlag (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)-?$")
+                        .assign((t, v) -> {
+                            if (!"X".equals(documentType.getCurrentContext().get("negative")))
+                            {
+                                Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                                PDFExtractorUtils.checkAndSetTax(tax, getTransaction(t), documentType);
+                            }
+                        })
 
-        // FIXME forex fees must update gross value
-        if (currency.equals(tx.getCurrencyCode()))
-            tx.addUnit(new Unit(Unit.Type.TAX, Money.of(currency, amount)));
+                        .section("tax", "currency").optional()
+                        .match("^.*Kirchensteuer (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)-?$").assign((t, v) -> {
+                            if (!"X".equals(documentType.getCurrentContext().get("negative")))
+                            {
+                                Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                                PDFExtractorUtils.checkAndSetTax(tax, getTransaction(t), documentType);
+                            }
+                        });
     }
 
     private name.abuchen.portfolio.model.Transaction getTransaction(Object t)

@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>name.abuchen.portfolio</groupId>
 		<artifactId>portfolio-app</artifactId>
-		<version>0.46.4-SNAPSHOT</version>
+		<version>0.49.3-SNAPSHOT</version>
 		<relativePath>../portfolio-app</relativePath>
 	</parent>
 
@@ -30,6 +30,15 @@
 		</resources>
 
 		<plugins>
+			<plugin>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>enforce-versions</id>
+						<phase>none</phase>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-p2-plugin</artifactId>

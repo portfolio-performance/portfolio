@@ -59,12 +59,10 @@ import name.abuchen.portfolio.util.TextUtil;
 
         title = new Label(container, SWT.NONE);
         title.setText(TextUtil.tooltip(getWidget().getLabel()));
-        title.setBackground(container.getBackground());
         GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(title);
 
         indicator = new StyledLabel(container, SWT.NONE);
         indicator.setFont(resources.getKpiFont());
-        indicator.setBackground(container.getBackground());
         indicator.setText(""); //$NON-NLS-1$
         GridDataFactory.fillDefaults().grab(true, false).applyTo(indicator);
 
@@ -78,6 +76,8 @@ import name.abuchen.portfolio.util.TextUtil;
                 part.activateView(TradeDetailsView.class, getUpdateTask().get());
             }
         });
+
+        getDashboardData().getStylingEngine().style(container);
 
         return container;
     }

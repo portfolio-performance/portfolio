@@ -32,7 +32,8 @@ import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
     @Override
     public Control createControl(Composite container)
     {
-        browser = new EmbeddedBrowser("/META-INF/html/pie.html"); //$NON-NLS-1$
+        browser = make(EmbeddedBrowser.class);
+        browser.setHtmlpage("/META-INF/html/pie.html"); //$NON-NLS-1$
         return browser.createControl(container, b -> new LoadDataFunction(b, "loadData")); //$NON-NLS-1$
     }
 
@@ -174,7 +175,7 @@ import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
         /**
          * Format the {@link Classification} of the given {@link TaxonomyNode}
          * to a {@link String}.
-         * 
+         *
          * @param taxn
          *            {@link TaxonomyNode} (can be null)
          * @param total
@@ -200,7 +201,7 @@ import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
         /**
          * Gets the {@link Classification} node for the given node (or from its
          * parents if the node has none).
-         * 
+         *
          * @param node
          *            {@link TaxonomyNode}
          * @return {@link Classification} on success, else null
@@ -220,7 +221,7 @@ import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
 
         /**
          * Gets the root {@link Classification} node for the given node.
-         * 
+         *
          * @param node
          *            {@link TaxonomyNode}
          * @return {@link Classification} on success, else null

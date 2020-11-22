@@ -1,0 +1,35 @@
+{
+	"version": 1,
+	"transactions": [
+		{
+			"type": "DIVIDEND",
+			"date": "2020-07-30",
+			"currency": "USD",
+			"amount": 10.25,
+			"shares": 37.327232,
+			"security": {
+				"name": "iShs III-MSCI Jap.Sm.Cap U.ETF Registered Shares o.N.",
+				"isin": "IE00B2QWDY88",
+				"currency": "USD"
+			},
+			"units": [
+				{
+					"type": "TAX",
+					"amount": 3.69
+				}
+			]
+		},
+		{
+			"type": "PURCHASE",
+			"date": "2020-07-31",
+			"currency": "USD",
+			"amount": 10.25,
+			"shares": 0.278245,
+			"security": {
+				"name": "iShs III-MSCI Jap.Sm.Cap U.ETF Registered Shares o.N.",
+				"isin": "IE00B2QWDY88",
+				"currency": "USD"
+			}
+		}
+	]
+}

@@ -171,6 +171,11 @@ public class Trade implements Adaptable
         return irr;
     }
 
+    public double getReturn()
+    {
+        return (exitValue.getAmount() / (double) entryValue.getAmount()) - 1;
+    }
+
     @Override
     public <T> T adapt(Class<T> type)
     {

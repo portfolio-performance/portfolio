@@ -12,6 +12,7 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.ColorDialog;
 
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.viewers.Column;
@@ -21,9 +22,9 @@ import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 {
 
     @Inject
-    public DefinitionViewer(TaxonomyModel model, TaxonomyNodeRenderer renderer)
+    public DefinitionViewer(AbstractFinanceView view, TaxonomyModel model, TaxonomyNodeRenderer renderer)
     {
-        super(model, renderer);
+        super(view, model, renderer);
     }
 
     @Override

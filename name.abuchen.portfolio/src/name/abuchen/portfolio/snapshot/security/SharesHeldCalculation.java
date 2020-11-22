@@ -8,15 +8,15 @@ import name.abuchen.portfolio.money.CurrencyConverter;
     private long sharesHeld;
 
     @Override
-    public void visit(CurrencyConverter converter, DividendInitialTransaction t)
+    public void visit(CurrencyConverter converter, CalculationLineItem.ValuationAtStart item)
     {
-        // there can be multiple DividendInitialTransaction if the same security
-        // is held in multiple portfolios --> plus
-        sharesHeld += t.getPosition().getShares();
+        // there can be multiple CalculationLineItem.ValuationAtStart if the
+        // same security is held in multiple portfolios --> addition
+        sharesHeld += item.getSecurityPosition().orElseThrow(IllegalArgumentException::new).getShares();
     }
 
     @Override
-    public void visit(CurrencyConverter converter, PortfolioTransaction t)
+    public void visit(CurrencyConverter converter, CalculationLineItem.TransactionItem item, PortfolioTransaction t)
     {
         switch (t.getType())
         {

@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.wizards.security;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -8,6 +9,9 @@ import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.conversion.IConverter;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
+import org.eclipse.core.databinding.validation.IValidator;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -16,16 +20,21 @@ import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Text;
 
 import name.abuchen.portfolio.model.AttributeType;
+import name.abuchen.portfolio.model.AttributeType.ImageConverter;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
@@ -33,6 +42,7 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
 import name.abuchen.portfolio.ui.util.IValidatingConverter;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityModel.AttributeDesignation;
+import name.abuchen.portfolio.util.ImageUtil;
 
 public class AttributesPage extends AbstractPage implements IMenuListener
 {
@@ -159,6 +169,94 @@ public class AttributesPage extends AbstractPage implements IMenuListener
             @SuppressWarnings("unchecked")
             IObservableValue<Button> attributeTarget = WidgetProperties.selection().observe(value);
             binding = bindings.getBindingContext().bindValue(attributeTarget, attributeModel);
+        }
+        else if (attribute.getType().getConverter() instanceof ImageConverter)
+        {
+            value = new Composite(container, SWT.PUSH);
+            GridLayoutFactory.fillDefaults().numColumns(1).applyTo((Composite) value);
+            final Button preview = new Button((Composite) value, SWT.PUSH);
+            final String previewPlaceholderText = "..."; //$NON-NLS-1$
+            preview.setText(previewPlaceholderText);
+
+            ImageConverter conv = (ImageConverter) attribute.getType().getConverter();
+            Image img = ImageUtil.toImage(conv.toString(attribute.getValue()), 16, 16);
+            if (img != null)
+                preview.setImage(img);
+
+            GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(value);
+
+            ToAttributeObjectConverter input2model = new ToAttributeObjectConverter(attribute);
+            @SuppressWarnings("unchecked")
+            IObservableValue<Object> attributeModel = BeanProperties.value("value").observe(attribute); //$NON-NLS-1$
+            @SuppressWarnings("unchecked")
+            IObservableValue<String> attributeTarget = WidgetProperties.tooltipText().observe(preview);
+            binding = bindings.getBindingContext().bindValue( //
+                            attributeTarget, attributeModel,
+                            new UpdateValueStrategy<String, Object>().setAfterGetValidator(input2model)
+                                            .setConverter(input2model),
+                            new UpdateValueStrategy<Object, String>()
+                                            .setConverter(new ToAttributeStringConverter(attribute))
+                                            .setBeforeSetValidator(new IValidator<Object>()
+                                            {
+                                                @Override
+                                                public IStatus validate(Object value)
+                                                {
+                                                    String s = conv.toString(value);
+                                                    if (s == null || s.length() == 0)
+                                                    {
+                                                        updatePreview(null);
+                                                        return Status.OK_STATUS;
+                                                    }
+
+                                                    Image img = ImageUtil.toImage(s, 16, 16);
+
+                                                    updatePreview(img);
+                                                    return img == null ? Status.CANCEL_STATUS : Status.OK_STATUS;
+                                                }
+
+                                                private void updatePreview(Image img)
+                                                {
+                                                    preview.setImage(img);
+                                                    if (img == null)
+                                                        preview.setText(previewPlaceholderText);
+                                                    else
+                                                        preview.setText(""); //$NON-NLS-1$
+                                                    value.getParent().getParent().layout(true);
+                                                }
+                                            }));
+
+            preview.addMouseListener(new MouseListener()
+            {
+                @Override
+                public void mouseDoubleClick(MouseEvent e)
+                {
+                }
+
+                @Override
+                public void mouseUp(MouseEvent e)
+                {
+                }
+
+                @Override
+                public void mouseDown(MouseEvent e)
+                {
+                    FileDialog dial = new FileDialog(container.getShell());
+                    String filename = dial.open();
+                    if (filename != null)
+                    {
+                        try
+                        {
+                            String b64 = ImageUtil.loadAndPrepare(filename, ImageConverter.MAXIMUM_SIZE_EMBEDDED_IMAGE,
+                                            ImageConverter.MAXIMUM_SIZE_EMBEDDED_IMAGE);
+                            attributeModel.setValue(b64);
+                        }
+                        catch (IOException ex)
+                        {
+                        }
+                    }
+                }
+
+            });
         }
         else
         {

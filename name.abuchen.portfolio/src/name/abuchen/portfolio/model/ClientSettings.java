@@ -4,10 +4,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.AttributeType.AmountPlainConverter;
+import name.abuchen.portfolio.model.AttributeType.ImageConverter;
 import name.abuchen.portfolio.model.AttributeType.PercentConverter;
 import name.abuchen.portfolio.model.AttributeType.StringConverter;
 
@@ -62,12 +65,31 @@ public class ClientSettings
                         "https://extraetf.com/etf-profile/{isin}")); //$NON-NLS-1$
         answer.add(new Bookmark("Alle Aktien Kennzahlen", //$NON-NLS-1$
                         "https://www.alleaktien.de/quantitativ/{isin}/")); //$NON-NLS-1$
+        answer.add(new Bookmark("Comdirect (Aktien)", //$NON-NLS-1$
+                        "https://www.comdirect.de/inf/aktien/{isin}")); //$NON-NLS-1$
+        answer.add(new Bookmark("DivvyDiary", //$NON-NLS-1$
+                        "https://divvydiary.com/symbols/{isin}")); //$NON-NLS-1$
 
         return answer;
     }
 
     private void addDefaultAttributeTypes()
     {
+        Function<Class<? extends Attributable>, AttributeType> factory = target -> {
+            AttributeType logoType = new AttributeType("logo"); //$NON-NLS-1$
+            logoType.setName(Messages.AttributesLogoName);
+            logoType.setColumnLabel(Messages.AttributesLogoColumn);
+            logoType.setTarget(target);
+            logoType.setType(String.class);
+            logoType.setConverter(ImageConverter.class);
+            return logoType;
+        };
+
+        attributeTypes.add(factory.apply(Security.class));
+        attributeTypes.add(factory.apply(Account.class));
+        attributeTypes.add(factory.apply(Portfolio.class));
+        attributeTypes.add(factory.apply(InvestmentPlan.class));
+
         AttributeType ter = new AttributeType("ter"); //$NON-NLS-1$
         ter.setName(Messages.AttributesTERName);
         ter.setColumnLabel(Messages.AttributesTERColumn);
@@ -168,5 +190,13 @@ public class ClientSettings
     public ConfigurationSet getConfigurationSet(String key)
     {
         return configurationSets.computeIfAbsent(key, k -> new ConfigurationSet());
+    }
+
+    @SuppressWarnings("unchecked")
+    public Optional<AttributeType> getOptionalLogoAttributeType(Class<? extends Object> type)
+    {
+        return getAttributeTypes().filter(t -> t.getConverter() instanceof AttributeType.ImageConverter
+                        && t.getName().equalsIgnoreCase("logo") //$NON-NLS-1$
+                        && t.supports((Class<? extends Attributable>) type)).findFirst();
     }
 }

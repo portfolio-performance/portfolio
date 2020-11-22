@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
@@ -53,6 +54,7 @@ import com.thoughtworks.xstream.converters.reflection.ReflectionProvider;
 import com.thoughtworks.xstream.mapper.Mapper;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.model.AttributeType.ImageConverter;
 import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.money.CurrencyUnit;
@@ -573,12 +575,17 @@ public class ClientFactory
             case 41:
                 // added tax units to interest transaction
             case 42:
-                // added data map to classification and assignemnt
+                // added data map to classification and assignment
             case 43:
                 // added LimitPrice as attribute type
             case 44:
                 // added weights to dashboard columns
                 fixDashboardColumnWeights(client);
+            case 45:
+                // added custom security type NOTE
+            case 46:
+                // added dividend payment security event
+                addDefaultLogoAttributes(client);
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
@@ -1066,6 +1073,24 @@ public class ClientFactory
         client.getDashboards().flatMap(d -> d.getColumns().stream()).forEach(c -> c.setWeight(1));
     }
 
+    private static void addDefaultLogoAttributes(Client client)
+    {
+        Function<Class<? extends Attributable>, AttributeType> factory = target -> {
+            AttributeType type = new AttributeType("logo"); //$NON-NLS-1$
+            type.setName(Messages.AttributesLogoName);
+            type.setColumnLabel(Messages.AttributesLogoColumn);
+            type.setTarget(target);
+            type.setType(String.class);
+            type.setConverter(ImageConverter.class);
+            return type;
+        };
+
+        client.getSettings().addAttributeType(factory.apply(Security.class));
+        client.getSettings().addAttributeType(factory.apply(Account.class));
+        client.getSettings().addAttributeType(factory.apply(Portfolio.class));
+        client.getSettings().addAttributeType(factory.apply(InvestmentPlan.class));
+    }
+
     @SuppressWarnings("nls")
     private static synchronized XStream xstream()
     {
@@ -1132,6 +1157,7 @@ public class ClientFactory
             xstream.useAttributeFor(Dashboard.Widget.class, "type");
 
             xstream.alias("event", SecurityEvent.class);
+            xstream.alias("dividendEvent", SecurityEvent.DividendEvent.class);
             xstream.alias("config-set", ConfigurationSet.class);
             xstream.alias("config", ConfigurationSet.Configuration.class);
 

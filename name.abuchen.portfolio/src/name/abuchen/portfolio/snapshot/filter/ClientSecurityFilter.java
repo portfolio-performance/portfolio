@@ -113,19 +113,19 @@ public class ClientSecurityFilter implements ClientFilter
                                 t.getDateTime(), t.getCurrencyCode(), amount + taxes, t.getSecurity(), t.getType()));
                 getAccount.apply((Account) pair.getOwner())
                                 .internalAddTransaction(new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
-                                                amount + taxes, t.getSecurity(), AccountTransaction.Type.REMOVAL));
+                                                amount + taxes, null, AccountTransaction.Type.REMOVAL));
                 break;
             case FEES:
                 getAccount.apply((Account) pair.getOwner()).internalAddTransaction(t);
                 getAccount.apply((Account) pair.getOwner())
                                 .internalAddTransaction(new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
-                                                t.getAmount(), t.getSecurity(), AccountTransaction.Type.DEPOSIT));
+                                                t.getAmount(), null, AccountTransaction.Type.DEPOSIT));
                 break;
             case FEES_REFUND:
                 getAccount.apply((Account) pair.getOwner()).internalAddTransaction(t);
                 getAccount.apply((Account) pair.getOwner())
                                 .internalAddTransaction(new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
-                                                t.getAmount(), t.getSecurity(), AccountTransaction.Type.REMOVAL));
+                                                t.getAmount(), null, AccountTransaction.Type.REMOVAL));
                 break;
             case TAXES:
             case TAX_REFUND:

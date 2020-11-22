@@ -2,6 +2,7 @@ package name.abuchen.portfolio.snapshot.trail;
 
 import java.time.LocalDate;
 
+import name.abuchen.portfolio.model.TransactionOwner;
 import name.abuchen.portfolio.money.Money;
 
 /* package */ final class EmptyTrail implements TrailRecord
@@ -44,6 +45,12 @@ import name.abuchen.portfolio.money.Money;
 
     @Override
     public TrailRecord fraction(Money money, long numerator, long denominator)
+    {
+        return this;
+    }
+
+    @Override
+    public TrailRecord transfer(LocalDate date, TransactionOwner<?> source, TransactionOwner<?> target)
     {
         return this;
     }

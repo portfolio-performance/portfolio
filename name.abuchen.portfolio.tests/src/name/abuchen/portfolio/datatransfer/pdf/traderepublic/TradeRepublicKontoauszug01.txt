@@ -1,0 +1,66 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+
+TRADE REPUBLIC BANK GMBH KASTANIENALLEE 32 10435 BERLIN
+xxxxxxxxx SEITE 1 von 2
+xxxxxx 17 DATUM 11.07.2020
+D xxxxx xxxxxxx DEPOT xxxxx
+KONTOAUSZUG
+zum 30.06.2020
+BUCHUNGEN
+Aufstellung über die Buchungen in Deinem Verrechnungskonto xxxxxxxxx.
+BUCHUNGSTAG / BUCHUNGSTEXT BETRAG IN EUR
+WERTSTELLUNG
+15.04.2020 Accepted PayIn:DE00000000000000 to DE0000000000000000 150,00
+15.04.2020
+15.04.2020 Ereignisausführung Ertrag GB0002374006 DIAGEO PLC LS-,28935185 0,62
+09.04.2020 9320538720200415 Bruttoertrag
+16.04.2020 Ausführung Handel Direktkauf Kauf DE0008232125 LUFTHANSA AG VNA O. -41,88
+20.04.2020 N. 4867729820200416
+16.04.2020 Ausführung Handel Direktkauf Kauf IE00B0M62Q58 ISHS-MSCI WORLD DL -39,35
+20.04.2020 D 6504194020200416
+23.04.2020 Ausführung Handel Direktkauf Kauf US87165B1035 SYNCHRONY FIN. DL-, -31,60
+27.04.2020 001 1693403420200423
+23.04.2020 Ausführung Handel Direktkauf Kauf NL0011375019 STEINHOFF INT.HLDG. -3,90
+27.04.2020 EO-,50 7031097620200423
+27.04.2020 Accepted PayIn:DE00000000 to DE00000000000000 50,00
+27.04.2020
+30.04.2020 Ausführung Handel Direktkauf Kauf DE000A2DAM03 AUMANN AG INH O.N. -22,08
+05.05.2020 8931580820200430
+04.05.2020 Ausführung Handel Direktkauf Kauf IE00B0M62Q58 ISHS-MSCI WORLD DL -25,00
+06.05.2020 D 2747934720200504 KW
+11.05.2020 Accepted PayIn:DE00000000 to DE000000 50,00
+11.05.2020
+14.05.2020 Ereignisausführung Ertrag US87165B1035 SYNCHRONY FIN. DL-,001 0,86
+14.05.2020 7133936520200514
+18.05.2020 Ausführung Handel Direktkauf Kauf IE00B0M62Q58 ISHS-MSCI WORLD DL -25,00
+20.05.2020 D 6664329420200518 KW
+19.05.2020 Ausführung Handel Direktkauf Kauf DE0007100000 DAIMLER AG NA O.N. -32,45
+21.05.2020 7828573120200519
+02.06.2020 Accepted PayIn:DE0000000 to DE0000000000 50,00
+02.06.2020
+03.06.2020 Ausführung Handel Direktkauf Kauf IE00B0M62Q58 ISHS-MSCI WORLD DL -25,00
+04.06.2020 D 9810121820200603 KW
+10.06.2020 Accepted PayIn:DE0000000000 to DE000000000 50,00
+10.06.2020
+16.06.2020 Ausführung Handel Direktkauf Kauf IE00B0M62Q58 ISHS-MSCI WORLD DL -25,00
+18.06.2020 D 6484415420200616 KW
+19.06.2020 Ereignisausführung Ertrag US8807701029 TERADYNE INC. DL-,125 0,23
+19.06.2020 1880578820200619
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Düsseldorf Geschäftsführer
+Kastanienallee 32 service@traderepublic.com AG Düsseldorf HRB 85864 Andreas Willius
+10435 Berlin USt-ID DE307510626 Karsten Müller
+SEITE 2 von 2
+DATUM 11.07.2020
+DEPOT xxxxxxx
+26.06.2020 Ereignisausführung Ertrag IE00B0M62Q58 ISHS-MSCI WORLD DL D 1,14
+24.06.2020 9633979220200626 Bruttoertrag
+KONTOSTAND AM 30.06.2020: 98,07 EUR
+Empowered by solarisBank AG
+HINWEIS ZUR EINLAGENSICHERUNG
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere
+Informationen kannst Du dem Informationsbogen für den Einleger der solarisBank entnehmen. Diesen findest
+Du im Dokumenten-Center in der App.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Düsseldorf Geschäftsführer
+Kastanienallee 32 service@traderepublic.com AG Düsseldorf HRB 85864 Andreas Willius
+10435 Berlin USt-ID DE307510626 Karsten Müller

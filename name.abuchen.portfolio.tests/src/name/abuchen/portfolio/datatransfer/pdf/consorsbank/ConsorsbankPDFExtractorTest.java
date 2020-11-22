@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.pdf.consorsbank;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
@@ -23,6 +24,7 @@ import name.abuchen.portfolio.datatransfer.ImportAction.Status.Code;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
 import name.abuchen.portfolio.datatransfer.pdf.ConsorsbankPDFExtractor;
+import name.abuchen.portfolio.datatransfer.pdf.PDFImportAssistant;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -422,6 +424,11 @@ public class ConsorsbankPDFExtractorTest
                         .map(i -> (AccountTransaction) ((TransactionItem) i).getSubject()) //
                         .findAny().get();
 
+        CheckCurrenciesAction c = new CheckCurrenciesAction();
+        Account account = new Account();
+        Status s = c.process(t, account);
+        assertThat(s, is(Status.OK_STATUS));
+
         assertThat(t.getSecurity().getName(), is("SAMSUNG ELECTRONICS CO. LTD. R.Shs(NV)Pf(GDR144A)/25 SW 100"));
         assertThat(t.getSecurity().getIsin(), is("US7960502018"));
         assertThat(t.getSecurity().getWkn(), is("881823"));
@@ -430,8 +437,149 @@ public class ConsorsbankPDFExtractorTest
         assertThat(t.getDateTime(), is(LocalDateTime.parse("2019-11-27T00:00")));
         assertThat(t.getShares(), is(Values.Share.factorize(3)));
         assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(13.80))));
+        assertThat(t.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.52 + 2.06 + 0.10))));
+        assertThat(t.getUnit(Unit.Type.GROSS_VALUE).get().getForex(), is(Money.of("USD", 22_65)));
+    }
 
-        assertThat(t.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.52 + 2.06 + 0.10))));
+    @Test
+    public void testErtragsgutschrift12withSecurity() throws IOException
+    {
+        Client client = new Client();
+        ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(client);
+
+        Security existingSecurity = new Security("SAMSUNG ELECTRONICS CO. LTD. R.Shs(NV)Pf(GDR144A)/25 SW 100",
+                        CurrencyUnit.EUR);
+        existingSecurity.setIsin("US7960502018");
+        existingSecurity.setWkn("881823");
+        client.addSecurity(existingSecurity);
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor
+                        .extract(PDFInputFile.loadTestCase(getClass(), "ConsorsbankErtragsgutschrift12.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+
+        AccountTransaction t = results.stream() //
+                        .filter(i -> i instanceof TransactionItem)
+                        .map(i -> (AccountTransaction) ((TransactionItem) i).getSubject()) //
+                        .findAny().get();
+
+        CheckCurrenciesAction c = new CheckCurrenciesAction();
+        Account account = new Account();
+        Status s = c.process(t, account);
+        assertThat(s, is(Status.OK_STATUS));
+
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2019-11-27T00:00")));
+        assertThat(t.getShares(), is(Values.Share.factorize(3)));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(13.80))));
+        assertThat(t.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.52 + 2.06 + 0.10))));
+    }
+
+    @Test
+    public void testErtragsgutschrift13withUSDAccount() throws IOException
+    {
+        Client client = new Client();
+        ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor
+                        .extract(PDFInputFile.loadTestCase(getClass(), "ConsorsbankErtragsgutschrift13.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        AccountTransaction t = results.stream() //
+                        .filter(i -> i instanceof TransactionItem)
+                        .map(i -> (AccountTransaction) ((TransactionItem) i).getSubject()) //
+                        .findAny().get();
+
+        assertThat(t.getSecurity().getName(), is("iShs-MSCI World UCITS ETF Registered Shares USD (Dist)oN"));
+        assertThat(t.getSecurity().getIsin(), is("IE00B0M62Q58"));
+        assertThat(t.getSecurity().getWkn(), is("A0HGV0"));
+        assertThat(t.getSecurity().getCurrencyCode(), is(CurrencyUnit.USD));
+
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2020-01-01T00:00")));
+        assertThat(t.getShares(), is(Values.Share.factorize(20)));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(6.46))));
+        assertThat(t.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(2.50 + 0.90 + 0.13))));
+
+        CheckCurrenciesAction c = new CheckCurrenciesAction();
+        Account account = new Account();
+        account.setCurrencyCode(CurrencyUnit.USD);
+        Status s = c.process(t, account);
+        assertThat(s, is(Status.OK_STATUS));
+    }
+
+    @Test
+    public void testErtragsgutschrift13withUSDAccountAndSecurityInEUR() throws IOException
+    {
+        Client client = new Client();
+        ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(client);
+
+        Security existingSecurity = new Security("iShs-MSCI World UCITS ETF Registered Shares USD (Dist)oN",
+                        CurrencyUnit.EUR);
+        existingSecurity.setIsin("IE00B0M62Q58");
+        existingSecurity.setWkn("A0HGV0");
+        client.addSecurity(existingSecurity);
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor
+                        .extract(PDFInputFile.loadTestCase(getClass(), "ConsorsbankErtragsgutschrift13.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+
+        AccountTransaction t = results.stream() //
+                        .filter(i -> i instanceof TransactionItem)
+                        .map(i -> (AccountTransaction) ((TransactionItem) i).getSubject()) //
+                        .findAny().get();
+
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2020-01-01T00:00")));
+        assertThat(t.getShares(), is(Values.Share.factorize(20)));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(6.46))));
+        assertThat(t.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(2.50 + 0.90 + 0.13))));
+        assertThat(t.getUnit(Unit.Type.GROSS_VALUE).get().getForex(), is(Money.of(CurrencyUnit.EUR, 8_93)));
+
+        CheckCurrenciesAction c = new CheckCurrenciesAction();
+        Account account = new Account();
+        account.setCurrencyCode(CurrencyUnit.USD);
+        Status s = c.process(t, account);
+        assertThat(s, is(Status.OK_STATUS));
+    }
+
+    @Test
+    public void testErtragsgutschrift14() throws IOException
+    {
+        ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(new Client());
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor
+                        .extract(PDFInputFile.loadTestCase(getClass(), "ConsorsbankErtragsgutschrift14.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        AccountTransaction t = results.stream() //
+                        .filter(i -> i instanceof TransactionItem)
+                        .map(i -> (AccountTransaction) ((TransactionItem) i).getSubject()) //
+                        .findAny().get();
+
+        assertThat(t.getSecurity().getName(), is("Vonovia SE Dividende Cash"));
+        assertThat(t.getSecurity().getIsin(), is("DE000A2888C9"));
+        assertThat(t.getSecurity().getWkn(), is("A2888C"));
+        assertThat(t.getSecurity().getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2020-07-28T00:00")));
+        assertThat(t.getShares(), is(Values.Share.factorize(125)));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(196.25))));
     }
 
     @Test
@@ -526,6 +674,129 @@ public class ConsorsbankPDFExtractorTest
         assertThat(t.getDateTime(), is(LocalDateTime.of(2020, 3, 2, 14, 51, 46)));
         assertThat(t.getShares(), is(Values.Share.factorize(100)));
         assertThat(t.getGrossPricePerShare(), is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(13.88))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf3_2001() throws IOException
+    {
+        PDFImportAssistant assistant = new PDFImportAssistant(new Client(), new ArrayList<>());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = assistant.runWithInputFile(
+                        PDFInputFile.loadSingleTestCase(getClass(), "ConsorsbankVerkauf3_2001.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
+        assertThat(security.getWkn(), is("915771"));
+        assertThat(security.getName(), is("CYBERIAN OUTPOST INC."));
+
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check buy sell transaction
+        Item item = results.get(0);
+        BuySellEntry entry = (BuySellEntry) item.getSubject();
+        PortfolioTransaction t = entry.getPortfolioTransaction();
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 56_68L)));
+        assertThat(t.getUnitSum(Type.FEE), is(Money.of(CurrencyUnit.EUR, 9_90L)));
+        assertThat(t.getDateTime(), is(LocalDateTime.of(2001, 11, 19, 5, 0, 0)));
+        assertThat(t.getShares(), is(Values.Share.factorize(200)));
+        assertThat(t.getGrossPricePerShare(), is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(0.3329))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf4() throws IOException
+    {
+        PDFImportAssistant assistant = new PDFImportAssistant(new Client(), new ArrayList<>());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = assistant.runWithInputFile(
+                        PDFInputFile.loadSingleTestCase(getClass(), "ConsorsbankVerkauf4_2005.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
+        assertThat(security.getWkn(), is("974433"));
+        assertThat(security.getName(), is("GARTMORE CSF-CONTIN.EUROPE FD"));
+
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check buy sell transaction
+        Item item = results.get(0);
+        BuySellEntry entry = (BuySellEntry) item.getSubject();
+        PortfolioTransaction t = entry.getPortfolioTransaction();
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 691_31L)));
+        assertThat(t.getUnitSum(Type.FEE), is(Money.of(CurrencyUnit.EUR, 0L)));
+        assertThat(t.getDateTime(), is(LocalDateTime.of(2005, 3, 24, 5, 0, 0)));
+        assertThat(t.getShares(), is(Values.Share.factorize(52.77908)));
+        assertThat(t.getGrossPricePerShare(), is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(13.0982))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf5() throws IOException
+    {
+        PDFImportAssistant assistant = new PDFImportAssistant(new Client(), new ArrayList<>());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = assistant.runWithInputFile(
+                        PDFInputFile.loadSingleTestCase(getClass(), "ConsorsbankVerkauf5_2008.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
+        assertThat(security.getWkn(), is("A0MZBE"));
+        assertThat(security.getName(), is("AHOLD, KON. EO-,30"));
+
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check buy sell transaction
+        Item item = results.get(0);
+        BuySellEntry entry = (BuySellEntry) item.getSubject();
+        PortfolioTransaction t = entry.getPortfolioTransaction();
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 3303_26L)));
+        assertThat(t.getUnitSum(Type.FEE), is(Money.of(CurrencyUnit.EUR, 13_21L)));
+        assertThat(t.getDateTime(), is(LocalDateTime.of(2008, 5, 16, 5, 0, 0)));
+        assertThat(t.getShares(), is(Values.Share.factorize(334)));
+        assertThat(t.getGrossPricePerShare(), is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(9.9296))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf6_Teilrechte() throws IOException
+    {
+        PDFImportAssistant assistant = new PDFImportAssistant(new Client(), new ArrayList<>());
+    
+        List<Exception> errors = new ArrayList<>();
+    
+        List<Item> results = assistant.runWithInputFile(
+                        PDFInputFile.loadSingleTestCase(getClass(), "ConsorsbankVerkauf6_Teilrechte.txt"), errors);
+    
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+    
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
+        assertThat(security.getWkn(), is("ENER6Y"));
+        assertThat(security.getIsin(), is("DE000ENER6Y0"));
+        assertThat(security.getName(), is("SIEMENS ENERGY AG NA O.N."));
+    
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+    
+        // check buy sell transaction
+        Item item = results.get(0);
+        BuySellEntry entry = (BuySellEntry) item.getSubject();
+        PortfolioTransaction t = entry.getPortfolioTransaction();
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 9_96L)));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2020-10-20T00:00")));
+        assertThat(t.getShares(), is(Values.Share.factorize(0.46370)));
     }
 
     @Test
@@ -738,6 +1009,121 @@ public class ConsorsbankPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf7_2001() throws IOException
+    {
+        PDFImportAssistant assistant = new PDFImportAssistant(new Client(), new ArrayList<>());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = assistant.runWithInputFile(
+                        PDFInputFile.loadSingleTestCase(getClass(), "ConsorsbankKauf7_2001.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findAny()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security.getIsin()); // not in PDF, manual lookup:
+                                        // "US3696041033"
+        assertThat(security.getWkn(), is("851144"));
+        assertThat(security.getName(), is("GENERAL ELECTRIC CO."));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check buy sell transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem).findAny()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 1917_50L)));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.of(2001, 9, 18, 5, 0, 0)));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(50_000000L));
+
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, 1_53L + 5_11L + 4_60L)));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, 0_00L)));
+    }
+
+    @Test
+    public void testWertpapierKauf8() throws IOException
+    {
+        PDFImportAssistant assistant = new PDFImportAssistant(new Client(), new ArrayList<>());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = assistant.runWithInputFile(
+                        PDFInputFile.loadSingleTestCase(getClass(), "ConsorsbankKauf8_2005.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findAny()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security.getIsin()); // not in PDF, manual lookup:
+                                        // "US3696041033"
+        assertThat(security.getWkn(), is("625952"));
+        assertThat(security.getName(), is("GARTMORE - CONT. EUROP. FUND"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check buy sell transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem).findAny()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 76_83L)));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.of(2005, 10, 17, 5, 0, 0)));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(15_752430L));
+
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 0_00L)));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, 0_00L)));
+    }
+
+    @Test
+    public void testWertpapierKauf9() throws IOException
+    {
+        PDFImportAssistant assistant = new PDFImportAssistant(new Client(), new ArrayList<>());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = assistant.runWithInputFile(
+                        PDFInputFile.loadSingleTestCase(getClass(), "ConsorsbankKauf9_2008.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findAny()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security.getIsin()); // not in PDF, manual lookup:
+                                        // "US3696041033"
+        assertThat(security.getWkn(), is("625952"));
+        assertThat(security.getName(), is("GARTMORE-CONT. EUROP. A"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check buy sell transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem).findAny()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 75_00L)));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.of(2008, 1, 15, 5, 0, 0)));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(11_878910L));
+
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 0_00L)));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, 0_00L)));
+    }
+
+    @Test
     public void testWertpapierKaufSparplan() throws IOException
     {
         ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(new Client());
@@ -874,8 +1260,7 @@ public class ConsorsbankPDFExtractorTest
         ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(
-                        PDFInputFile.loadTestCase(getClass(), "ConsorsbankVorabpauschale01.txt"),
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ConsorsbankVorabpauschale01.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -897,7 +1282,6 @@ public class ConsorsbankPDFExtractorTest
         assertThat(t.getDateTime(), is(LocalDateTime.parse("2020-01-02T00:00")));
     }
 
-    
     private void checkCurrency(final String accountCurrency, AccountTransaction transaction)
     {
         Account account = new Account();

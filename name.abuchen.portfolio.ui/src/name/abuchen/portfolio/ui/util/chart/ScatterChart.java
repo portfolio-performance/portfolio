@@ -2,40 +2,63 @@ package name.abuchen.portfolio.ui.util.chart;
 
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.swtchart.Chart;
 import org.swtchart.IAxis;
 import org.swtchart.IAxis.Position;
+import org.swtchart.ICustomPaintListener;
 import org.swtchart.ILineSeries;
+import org.swtchart.IPlotArea;
 import org.swtchart.ISeries.SeriesType;
 import org.swtchart.LineStyle;
+
+import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.util.Colors;
 
 public class ScatterChart extends Chart // NOSONAR
 {
     private ChartContextMenu contextMenu;
+    private Color highlightColor = Colors.BLACK;
 
     public ScatterChart(Composite parent)
     {
         super(parent, SWT.NONE);
 
-        Color backColor = Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
+        setData(UIConstants.CSS.CLASS_NAME, "chart"); //$NON-NLS-1$
 
-        setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
-        getTitle().setForeground(backColor);
         getLegend().setVisible(false);
-
-        // x axis
-        IAxis xAxis = getAxisSet().getXAxis(0);
-        xAxis.getTitle().setForeground(backColor);
-        xAxis.getTick().setForeground(backColor);
 
         // y axis
         IAxis yAxis = getAxisSet().getYAxis(0);
-        yAxis.getTitle().setForeground(backColor);
-        yAxis.getTick().setForeground(backColor);
         yAxis.setPosition(Position.Secondary);
+
+        ((IPlotArea) getPlotArea()).addCustomPaintListener(new ICustomPaintListener()
+        {
+            @Override
+            public void paintControl(PaintEvent e)
+            {
+                Color oldForebround = e.gc.getForeground();
+                e.gc.setForeground(highlightColor);
+
+                IAxis xAxis = getAxisSet().getXAxes()[0];
+                int y = xAxis.getPixelCoordinate(0);
+                e.gc.drawLine(y, 0, y, e.height);
+
+                IAxis yAxis = getAxisSet().getYAxes()[0];
+                int x = yAxis.getPixelCoordinate(0);
+                e.gc.drawLine(0, x, e.width, x);
+
+                e.gc.setForeground(oldForebround);
+            }
+
+            @Override
+            public boolean drawBehindSeries()
+            {
+                return true;
+            }
+        });
 
         new ScatterChartToolTip(this);
 
@@ -45,6 +68,16 @@ public class ScatterChart extends Chart // NOSONAR
         getPlotArea().addTraverseListener(event -> event.doit = true);
 
         this.contextMenu = new ChartContextMenu(this);
+    }
+
+    public Color getHighlightColor()
+    {
+        return highlightColor;
+    }
+
+    public void setHighlightColor(Color color)
+    {
+        this.highlightColor = color;
     }
 
     public ILineSeries addScatterSeries(double[] xSeries, double[] ySeries, String label)

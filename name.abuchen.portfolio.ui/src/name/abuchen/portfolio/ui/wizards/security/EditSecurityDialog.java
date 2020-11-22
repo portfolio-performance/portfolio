@@ -28,7 +28,6 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -40,6 +39,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.BindingHelper;
+import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
 
 public class EditSecurityDialog extends Dialog
@@ -141,7 +141,7 @@ public class EditSecurityDialog extends Dialog
         name.setBackground(header.getBackground());
 
         errorMessage = new Label(header, SWT.NONE);
-        errorMessage.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_RED));
+        errorMessage.setForeground(Colors.theme().redForeground());
         errorMessage.setBackground(header.getBackground());
 
         Label imageLabel = new Label(header, SWT.NONE);

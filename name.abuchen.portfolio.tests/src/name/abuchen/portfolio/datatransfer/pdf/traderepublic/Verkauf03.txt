@@ -1,0 +1,36 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KASTANIENALLEE 32  10435 BERLIN
+xxxxxx xxxx SEITE 1 von 1
+xxxx 1 DATUM 21.07.2020
+D xxxxxx xxxxx ORDER c17d-baea
+AUSFÜHRUNG 6415-fd77
+DEPOT 1xxxxxxxxx
+WERTPAPIERABRECHNUNG
+ÜBERSICHT
+Limit-Order Verkauf am 21.07.2020, um 09:30 Uhr an der Lang & Schwarz Exchange.
+Der Kontrahent der Transaktion ist Lang & Schwarz TradeCenter AG & Co. KG.
+POSITION ANZAHL KURS BETRAG
+Daimler AG 30 Stk. 40,00 EUR 1.200,00 EUR
+Namens-Aktien o.N.
+ISIN: DE0007100000
+GESAMT 1.200,00 EUR
+ABRECHNUNG
+POSITION BETRAG
+Fremdkostenzuschlag -1,00 EUR
+Kapitalertragssteuer Optimierung 122,98 EUR
+Solidaritätszuschlag Optimierung 6,76 EUR
+Kirchensteuer Optimierung 9,84 EUR
+GESAMT 1.338,58 EUR
+BUCHUNG
+VERRECHNUNGSKONTO VALUTA BETRAG
+DExxxxxxxxxxxxx 23.07.2020 1.338,58 EUR
+Daimler AG Namens-Aktien o.N. in Girosammelverwahrung.
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie 
+Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Düsseldorf Geschäftsführer
+Kastanienallee 32 service@traderepublic.com AG Düsseldorf HRB 85864 Andreas Willius
+10435 Berlin USt-ID DE307510626 Karsten Müller
+ABRE / 2020-07-21 / 32838682 / 4b17-d56a

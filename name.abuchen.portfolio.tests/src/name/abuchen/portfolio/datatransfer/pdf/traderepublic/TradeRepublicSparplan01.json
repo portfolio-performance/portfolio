@@ -3,7 +3,7 @@
 	"transactions": [
 		{
 			"type": "PURCHASE",
-			"date": "2019-11-20",
+			"date": "2019-11-18",
 			"currency": "EUR",
 			"amount": 25.0,
 			"shares": 0.4534,

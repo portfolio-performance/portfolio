@@ -107,6 +107,7 @@
         <setEntry value="org.eclipse.e4.ui.css.swt.theme@default:default"/>
         <setEntry value="org.eclipse.e4.ui.css.swt@default:default"/>
         <setEntry value="org.eclipse.e4.ui.di@default:default"/>
+        <setEntry value="org.eclipse.e4.ui.dialogs@default:default"/>
         <setEntry value="org.eclipse.e4.ui.model.workbench@default:default"/>
         <setEntry value="org.eclipse.e4.ui.services@default:default"/>
         <setEntry value="org.eclipse.e4.ui.widgets@default:default"/>
@@ -152,6 +153,7 @@
         <setEntry value="org.eclipse.ui.forms@default:default"/>
         <setEntry value="org.eclipse.ui.workbench@default:default"/>
         <setEntry value="org.eclipse.ui@default:default"/>
+        <setEntry value="org.eclipse.urischeme@default:default"/>
         <setEntry value="org.hamcrest.core*1.1.0.v20090501071000@default:default"/>
         <setEntry value="org.hamcrest.core*1.3.0.v20180420-1519@default:default"/>
         <setEntry value="org.hamcrest.integration@default:default"/>
@@ -159,8 +161,6 @@
         <setEntry value="org.jsoup@default:default"/>
         <setEntry value="org.junit@default:default"/>
         <setEntry value="org.mockito@default:default"/>
-        <setEntry value="net.bytebuddy@default:default"/>
-        <setEntry value="org.objenesis@default:default"/>
         <setEntry value="org.objectweb.asm@default:default"/>
         <setEntry value="org.objenesis@default:default"/>
         <setEntry value="org.sat4j.core@default:default"/>

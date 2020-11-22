@@ -55,6 +55,7 @@ import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.PartPersistedState;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ConfirmAction;
@@ -106,13 +107,15 @@ public class DashboardView extends AbstractHistoricView
 
     private static final class WidgetDropTargetAdapter extends DropTargetAdapter
     {
+        private final DashboardView dashboardView;
         private final LocalSelectionTransfer transfer;
         private final Composite dropTarget;
         private final Consumer<Dashboard.Widget> listener;
 
-        private WidgetDropTargetAdapter(LocalSelectionTransfer transfer, Composite dropTarget,
-                        Consumer<Dashboard.Widget> listener)
+        private WidgetDropTargetAdapter(DashboardView dashboardView, LocalSelectionTransfer transfer,
+                        Composite dropTarget, Consumer<Dashboard.Widget> listener)
         {
+            this.dashboardView = dashboardView;
             this.transfer = transfer;
             this.dropTarget = dropTarget;
             this.listener = listener;
@@ -180,15 +183,14 @@ public class DashboardView extends AbstractHistoricView
         public void dragEnter(DropTargetEvent event)
         {
             Composite filler = (Composite) dropTarget.getData(FILLER_KEY);
-            (filler != null ? filler : dropTarget)
-                            .setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
+            (filler != null ? filler : dropTarget).setBackground(Colors.DARK_GRAY);
         }
 
         @Override
         public void dragLeave(DropTargetEvent event)
         {
             Composite filler = (Composite) dropTarget.getData(FILLER_KEY);
-            (filler != null ? filler : dropTarget).setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+            (filler != null ? filler : dropTarget).setBackground(dashboardView.getControl().getBackground());
         }
     }
 
@@ -407,7 +409,7 @@ public class DashboardView extends AbstractHistoricView
 
         container = new Composite(scrolledComposite, SWT.NONE);
         container.setLayout(new DashboardLayout());
-        container.setBackground(Colors.WHITE);
+        container.setData(UIConstants.CSS.CLASS_NAME, "dashboard"); //$NON-NLS-1$
 
         selectDashboard(dashboard);
 
@@ -460,12 +462,13 @@ public class DashboardView extends AbstractHistoricView
     {
         for (Dashboard.Column column : dashboard.getColumns())
             buildColumn(container, column);
+
+        this.dashboardData.getStylingEngine().style(container);
     }
 
     private Composite buildColumn(Composite composite, Dashboard.Column column)
     {
         Composite columnControl = new Composite(composite, SWT.NONE);
-        columnControl.setBackground(composite.getBackground());
         columnControl.setData(column);
 
         GridLayoutFactory.fillDefaults().numColumns(1).spacing(0, 0).applyTo(columnControl);
@@ -476,7 +479,6 @@ public class DashboardView extends AbstractHistoricView
         // for the column context menu. A separate composite is needed because
         // *all* context menus attached to nested composites are always shown.
         Composite filler = new Composite(columnControl, SWT.NONE);
-        filler.setBackground(columnControl.getBackground());
         GridDataFactory.fillDefaults().hint(SWT.DEFAULT, 10).grab(true, true).applyTo(filler);
         columnControl.setData(FILLER_KEY, filler);
 
@@ -639,7 +641,7 @@ public class DashboardView extends AbstractHistoricView
     {
         LocalSelectionTransfer transfer = LocalSelectionTransfer.getTransfer();
 
-        DropTargetAdapter dragAdapter = new WidgetDropTargetAdapter(transfer, parent, w -> markDirty());
+        DropTargetAdapter dragAdapter = new WidgetDropTargetAdapter(this, transfer, parent, w -> markDirty());
 
         DropTarget dropTarget = new DropTarget(parent, DND.DROP_MOVE | DND.DROP_COPY);
         dropTarget.setTransfer(transfer);

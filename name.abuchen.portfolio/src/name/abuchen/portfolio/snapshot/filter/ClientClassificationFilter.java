@@ -481,19 +481,19 @@ public class ClientClassificationFilter implements ClientFilter
                     readOnlyAccount.internalAddTransaction(new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
                                     amount + taxes, t.getSecurity(), t.getType()));
                     readOnlyAccount.internalAddTransaction(new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
-                                    amount + taxes, t.getSecurity(), AccountTransaction.Type.REMOVAL));
+                                    amount + taxes, null, AccountTransaction.Type.REMOVAL));
                     break;
                 case FEES:
                     readOnlyAccount.internalAddTransaction(new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
                                     value(t.getAmount(), weight), t.getSecurity(), t.getType()));
                     readOnlyAccount.internalAddTransaction(new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
-                                    value(t.getAmount(), weight), t.getSecurity(), AccountTransaction.Type.DEPOSIT));
+                                    value(t.getAmount(), weight), null, AccountTransaction.Type.DEPOSIT));
                     break;
                 case FEES_REFUND:
                     readOnlyAccount.internalAddTransaction(new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
                                     value(t.getAmount(), weight), t.getSecurity(), t.getType()));
                     readOnlyAccount.internalAddTransaction(new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
-                                    value(t.getAmount(), weight), t.getSecurity(), AccountTransaction.Type.REMOVAL));
+                                    value(t.getAmount(), weight), null, AccountTransaction.Type.REMOVAL));
                     break;
                 case TAXES:
                 case TAX_REFUND:

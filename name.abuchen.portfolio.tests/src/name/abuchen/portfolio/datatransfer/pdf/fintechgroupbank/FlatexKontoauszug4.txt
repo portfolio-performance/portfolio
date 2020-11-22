@@ -1,0 +1,104 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+flatex Bank AG
+Postfach 100551
+41405 Neuss
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 (0)9221 - 7035898
+E-Mail: kunden@flatex.de
+flatex Bank AG -  Rotfeder-Ring 7 - 60327 Frankfurt am Main
+             Frankfurt, 01.10.2020
+0101011000001111111110
+Herrn
+Max Mustermann
+Musterstraße Str. 3
+01234 Musterhausen
+Kontoauszug Nr:    003/2020                              Seite 1 von 3
+Kontonummer :      1234567890      IBAN: DE86 1011 0100 1011 1111 11
+Kontenart   :      Kontokorrentkonto
+Kontowährung:      EUR
+Alter Saldo vom    30.06.2020                     in EUR                 0,00+
+Buchungs-  Valuta  Buchungstext                                         Betrag
+datum                                                                   in EUR
+01.07.     30.06.  Zinsabschluss  01.04.2020 - 30.06.2020                0,05-
+07.07.     07.07.  Überweisung                                         250,00+
+                   -                                                          
+                   DEUTDEDBCHE                                                
+                   DE78870700240876543210                                     
+                   Max Mustermann                                              
+16.07.     20.07.  Ausführung ORDER Kauf DE0002635307                   50,00-
+                   149485773                                                  
+16.07.     20.07.  Ausführung ORDER Kauf IE00B5BMR087                   50,00-
+                   149485812
+17.07.     21.07.  Ausführung ORDER Kauf IE00B3VVMM84                   50,00-
+                   149498647                                                  
+17.07.     21.07.  Ausführung ORDER Kauf IE00B4L5Y983                   50,00-
+                   149485690
+19.07.     20.07.  Depotgebühren 01.04.2020 - 30.04.2020,                0,26-
+                   Depot-Nr. 0987654321, inkl. MwSt.                          
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Jörn Engelmann, Steffen Jentsch
+2000001111111110 0111101010000101
+Kontoauszug Nr:    003/2020                              Seite 2 von 3
+Buchungs-  Valuta  Buchungstext                                         Betrag
+datum                                                                   in EUR
+18.08.     20.08.  Ausführung ORDER Kauf IE00B5BMR087                   50,00-
+                   150907694                                                  
+18.08.     20.08.  Ausführung ORDER Kauf DE0002635307                   50,00-
+                   150907654
+19.08.     17.08.  Erträgnisausschüttung IE00B9CQXS71                    9,72+
+19.08.     21.08.  Ausführung ORDER Kauf IE00B3VVMM84                   50,00-
+                   150920514
+19.08.     21.08.  Ausführung ORDER Kauf IE00B4L5Y983                   50,00-
+                   150907570                                                  
+04.09.     08.09.  Ausführung ORDER Kauf IE00B8GKDB10                   50,00-
+                   151582511                                                  
+04.09.     08.09.  Ausführung ORDER Kauf IE00B9CQXS71                   50,00-
+                   151582371
+15.09.     15.09.  Erträgnisausschüttung DE0002635307                    2,90+
+16.09.     18.09.  Ausführung ORDER Kauf IE00B5BMR087                   50,00-
+                   152244998
+17.09.     21.09.  Ausführung ORDER Kauf IE00B3VVMM84                   50,00-
+                   152257592                                                  
+17.09.     21.09.  Ausführung ORDER Kauf IE00BKM4H312                   50,00-
+                   152257801
+17.09.     21.09.  Ausführung ORDER Kauf DE0002635307                   50,00-
+                   152244961                                                  
+18.09.     22.09.  Ausführung ORDER Kauf IE00B4L5Y983                   50,00-
+                   152244888
+Neuer Saldo 30.09.2020 Nr. 003/2020         Währung EUR                711,57+
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Jörn Engelmann, Steffen Jentsch
+2000001665648980
+Kontoauszug Nr:    003/2020                              Seite 3 von 3
+Der ausgewiesene Kontosaldo kann durch abweichende Wertstellung (Valuta) vom
+wertmäßigen Kontostand abweichen. Die Wertstellung von Buchungen ist auch
+relevant für die Berechnung von Zinsen.
+Gemäß § 11 Außenwirtschaftsgesetz (AWG) in Verbindung mit §§ 67 ff. Außen-
+wirtschaftsverordnung (AWV) haben Inländer (in Deutschland ansässige
+natürliche und juristische Personen) Zahlungen von mehr als 12 500 Euro oder
+Gegenwert zu melden, die sie von Ausländern (im Ausland ansässige natürliche
+und juristische Personen) oder für deren Rechnung von Inländern entgegennehmen
+(eingehende Zahlungen) oder an Ausländer oder für deren Rechnung an Inländer
+leisten (ausgehende Zahlungen). Die Deutsche Bundesbank und ihre Filialen
+erteilen dazu gern die notwendigen Auskünfte.
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes
+entschädigungsfähig. Nähere Informationen können dem "Informationsbogen für
+den Einleger" entnommen werden.
+Der Rechnungsabschluss wird Ihnen als separates Dokument zur Verfügung
+gestellt.
+Beanstandungen  gegen Rechnungsabschlüsse sind unverzüglich und schriftlich zu
+senden an:
+      flatex Bank AG
+      Revision
+      Postfach 100551
+      41405 Neuss
+Der Abschlusssaldo gilt als genehmigt, wenn ihm nicht innerhalb von 6 Wochen
+ab Zugang schriftlich widersprochen  wird. Zur Fristwahrung genügt die
+rechtzeitige Absendung der Einwendung.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Jörn Engelmann, Steffen Jentsch
+2000001665648980

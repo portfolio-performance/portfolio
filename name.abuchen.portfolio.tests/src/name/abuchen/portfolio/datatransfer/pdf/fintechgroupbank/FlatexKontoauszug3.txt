@@ -1,0 +1,71 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+biw AG
+Hausbroicher Str. 222
+47877 Willich
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 (0)9221 - 7035898
+E-Mail: kunden@flatex.de
+biw AG -  Hausbroicher Str. 222 -  47877 Willich
+               Willich, 02.01.2015
+0000000000000000000000
+Herr Max Muster oder
+Frau Mux Master
+Strasse 1
+12345 Stadt
+Kontoauszug Nr:    004/2014                              Seite 1 von 2
+Kontonummer :      0000000000  dazugehörige IBAN:  DE00 0000 0000 0000 0000 00
+Kontenart   :      Kontokorrentkonto
+Kontowährung:      EUR
+Alter Saldo vom    30.09.2014                     in EUR               1,23+
+Buchungs-  Valuta  Buchungstext                                         Betrag
+datum                                                                   in EUR
+11.11.     12.11.  Dividendenzahlung ISIN12345678                        1,23+
+11.11.     12.11.  Gebühr Kapitaltransaktion Ausland                     4,56-
+                   ISIN12345678
+30.12.     31.12.  Zinsabschluss   01.10.2014 - 31.12.2014               7,89+
+                   Bitte beachten Sie, dass es sich bei den
+                   Quartalskontoauszügen um einen
+                   offiziellen Rechnungsabschluss handelt.
+                   Den Quartalskontoauszug erkennen Sie an
+                   dem gebuchten Zinsabschluss, der auf
+                   dem Quartalskontoauszug mit angegeben
+                   wird.
+Neuer Saldo 31.12.2014 Nr. 004/2014         Währung EUR                9,87+
+Der ausgewiesene Kontosaldo kann durch abweichende Wertstellung (Valuta) vom
+wertmäßigen Kontostand abweichen. Die Wertstellung von Buchungen ist auch
+relevant für die Berechnung von Zinsen.
+Bei Geldeingängen aus dem Ausland beachten Sie bitte eventuelle Meldungen nach
+der Außenwirtschaftsverordnung (AWV). Die Deutsche Bundesbank und ihre
+Filialen erteilen dazu gern die notwendigen Auskünfte.
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Willich  -  Amtsgericht Krefeld  (HRB 10867)
+Vorsitzender des Aufsichtsrats: Dr. Ulrich Ivo von Trotha   -  Vorstand: Dirk Franzmeyer, Andreas Wolf
+2000000000000000 0000000000000001
+Kontoauszug Nr:    004/2014                              Seite 2 von 2
+Widerspruch gegen den Abruf des Kirchensteuerabzugsmerkmals (Sperrvermerk)
+Für Kirchenmitglieder führen wir ab 2015 die Kirchensteuer auf Kapitalertrag-
+steuer automatisch an das Finanzamt ab, sofern die Kapitalerträge den Sparer-
+pauschbetrag  (Ledige: 801 EUR,  Zusammenveranlagte: 1.602 EUR)  übersteigen.
+Zur  Vereinfachung  fragen  wir  Ihre  Religionszugehörigkeit  jährlich  beim
+Bundeszentralamt für Steuern (BZSt) ab.
+Möchten  Sie  nicht,  dass das BZSt Ihre Religionszugehörigkeit verschlüsselt
+übermittelt,  können  Sie der Datenweitergabe bis zum 30.06. eines Jahres wi-
+dersprechen (www.formulare-bfinv.de, "Kirchensteuer").  Ein bereits beantrag-
+ter  Sperrvermerk gilt bis zu seinem Widerruf, wir führen dann keine Kirchen-
+steuer ab.  Im  Folgejahr  sind Sie dann zur Abgabe einer Steuererklärung zur
+Erhebung der Kirchensteuer verpflichtet.
+Beanstandungen  gegen Rechnungsabschlüsse sind unverzüglich und schriftlich zu
+senden an:
+      biw AG
+      Revision
+      Hausbroicher Str. 222
+      47877 Willich.
+Der Abschlusssaldo gilt als genehmigt, wenn ihm nicht innerhalb von 6 Wochen
+ab Zugang schriftlich widersprochen  wird. Zur Fristwahrung genügt die
+rechtzeitige Absendung der Einwendung.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Willich  -  Amtsgericht Krefeld  (HRB 10867)
+Vorsitzender des Aufsichtsrats: Dr. Ulrich Ivo von Trotha   -  Vorstand: Dirk Franzmeyer, Andreas Wolf
+2000000000000000

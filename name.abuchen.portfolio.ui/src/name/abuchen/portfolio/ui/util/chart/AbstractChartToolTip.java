@@ -12,6 +12,8 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.swtchart.Chart;
 
+import name.abuchen.portfolio.ui.UIConstants;
+
 public abstract class AbstractChartToolTip implements Listener
 {
     public static final int PADDING = 5;
@@ -103,6 +105,7 @@ public abstract class AbstractChartToolTip implements Listener
 
         tip = new Shell(Display.getDefault().getActiveShell(), SWT.ON_TOP | SWT.TOOL);
         tip.setLayout(new FillLayout());
+        tip.setData(UIConstants.CSS.CLASS_NAME, "tooltip"); //$NON-NLS-1$
 
         Point size = createAndMeasureTooltip();
         Rectangle bounds = calculateBounds(event, size);

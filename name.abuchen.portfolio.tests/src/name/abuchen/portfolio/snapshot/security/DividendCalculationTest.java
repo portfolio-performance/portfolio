@@ -1,30 +1,35 @@
 package name.abuchen.portfolio.snapshot.security;
 
 import static org.junit.Assert.assertEquals;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.Test;
+
 import name.abuchen.portfolio.TestCurrencyConverter;
+import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord.Periodicity;
-
-import org.junit.Before;
-import org.junit.Test;
 
 @SuppressWarnings("nls")
 public class DividendCalculationTest
 {
+    Account account;
     Security security;
     CurrencyConverter converter;
 
     @Before
     public void setup()
     {
+        this.account = new Account();
         this.security = new Security("ADIDAS ORD", "EUR");
         this.converter = new TestCurrencyConverter();
     }
@@ -35,22 +40,23 @@ public class DividendCalculationTest
      * @param date
      * @return
      */
-    public DividendTransaction createDividendTransaction(LocalDateTime date)
+    public CalculationLineItem createDividendTransaction(LocalDateTime date)
     {
-        DividendTransaction dt = new DividendTransaction();
-        dt.setAmount(100L);
-        dt.setSecurity(security);
-        dt.setCurrencyCode(security.getCurrencyCode());
-        dt.setShares(10);
-        dt.setDateTime(date);
+        AccountTransaction t = new AccountTransaction();
+        t.setType(AccountTransaction.Type.DIVIDENDS);
+        t.setSecurity(security);
+        t.setDateTime(date);
+        t.setAmount(100L);
+        t.setShares(10);
+        t.setCurrencyCode(security.getCurrencyCode());
 
-        return dt;
+        return CalculationLineItem.of(account, t);
     }
 
     @Test
     public void noTransactionTest()
     {
-        List<Transaction> transactions = new ArrayList<>();
+        List<CalculationLineItem> transactions = new ArrayList<>();
 
         DividendCalculation dc = Calculation.perform(DividendCalculation.class, converter, security, transactions);
 
@@ -63,7 +69,7 @@ public class DividendCalculationTest
     public void oneTransactionTest()
     {
 
-        List<Transaction> transactions = new ArrayList<>();
+        List<CalculationLineItem> transactions = new ArrayList<>();
         transactions.add(createDividendTransaction(LocalDateTime.of(2019, 01, 15, 12, 00)));
 
         DividendCalculation dividends = Calculation.perform(DividendCalculation.class, converter, security,
@@ -79,7 +85,7 @@ public class DividendCalculationTest
     public void periodicityAnualTest()
     {
 
-        List<Transaction> transactions = new ArrayList<>();
+        List<CalculationLineItem> transactions = new ArrayList<>();
         transactions.add(createDividendTransaction(LocalDateTime.of(2019, 01, 15, 12, 00)));
         transactions.add(createDividendTransaction(LocalDateTime.of(2020, 01, 15, 12, 00)));
 
@@ -93,7 +99,7 @@ public class DividendCalculationTest
     public void periodicityAnnualWithGap()
     {
 
-        List<Transaction> transactions = new ArrayList<>();
+        List<CalculationLineItem> transactions = new ArrayList<>();
         transactions.add(createDividendTransaction(LocalDateTime.of(2015, 01, 15, 12, 00)));
         transactions.add(createDividendTransaction(LocalDateTime.of(2016, 01, 15, 12, 00)));
         transactions.add(createDividendTransaction(LocalDateTime.of(2017, 01, 15, 12, 00)));
@@ -110,7 +116,7 @@ public class DividendCalculationTest
     public void periodicityTransitionToQuaterly()
     {
 
-        List<Transaction> transactions = new ArrayList<>();
+        List<CalculationLineItem> transactions = new ArrayList<>();
         transactions.add(createDividendTransaction(LocalDateTime.of(2016, 01, 15, 12, 00)));
         transactions.add(createDividendTransaction(LocalDateTime.of(2017, 01, 15, 12, 00)));
         transactions.add(createDividendTransaction(LocalDateTime.of(2017, 04, 15, 12, 00)));
@@ -131,7 +137,7 @@ public class DividendCalculationTest
     public void periodicitySemiAnnualTest()
     {
 
-        List<Transaction> transactions = new ArrayList<>();
+        List<CalculationLineItem> transactions = new ArrayList<>();
         transactions.add(createDividendTransaction(LocalDateTime.of(2019, 01, 15, 12, 00)));
         transactions.add(createDividendTransaction(LocalDateTime.of(2019, 07, 15, 12, 00)));
 
@@ -145,7 +151,7 @@ public class DividendCalculationTest
     public void periodicityQuarterlyTest()
     {
 
-        List<Transaction> transactions = new ArrayList<>();
+        List<CalculationLineItem> transactions = new ArrayList<>();
         transactions.add(createDividendTransaction(LocalDateTime.of(2019, 01, 15, 12, 00)));
         transactions.add(createDividendTransaction(LocalDateTime.of(2019, 04, 15, 12, 00)));
 
@@ -159,7 +165,7 @@ public class DividendCalculationTest
     public void periodicityMonthlyTest()
     {
 
-        List<Transaction> transactions = new ArrayList<>();
+        List<CalculationLineItem> transactions = new ArrayList<>();
         transactions.add(createDividendTransaction(LocalDateTime.of(2019, 01, 15, 12, 00)));
         transactions.add(createDividendTransaction(LocalDateTime.of(2019, 02, 15, 12, 00)));
 
@@ -173,10 +179,12 @@ public class DividendCalculationTest
     public void rateOfReturnCalculationTest()
     {
 
-        List<Transaction> transactions = new ArrayList<>();
+        List<CalculationLineItem> transactions = new ArrayList<>();
         // We buy some shares, 1000$, 10 Shares -> 100/Share
-        transactions.add(new PortfolioTransaction(LocalDateTime.of(2019, 01, 14, 12, 00), security.getCurrencyCode(),
-                        1000L, security, 10L, Type.BUY, 0L, 0L));
+
+        transactions.add(CalculationLineItem.of(new Portfolio(),
+                        new PortfolioTransaction(LocalDateTime.of(2019, 01, 14, 12, 00), security.getCurrencyCode(),
+                                        1000L, security, 10L, Type.BUY, 0L, 0L)));
         transactions.add(createDividendTransaction(LocalDateTime.of(2019, 01, 15, 12, 00)));
         transactions.add(createDividendTransaction(LocalDateTime.of(2020, 01, 15, 12, 00)));
 

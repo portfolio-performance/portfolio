@@ -89,7 +89,9 @@ public enum Images
     GREEN_ARROW("green_arrow.png"), //$NON-NLS-1$
 
     HANDLE_NS("handle_ns.png"), //$NON-NLS-1$
-    HANDLE_WE("handle_we.png"); //$NON-NLS-1$
+    HANDLE_WE("handle_we.png"), //$NON-NLS-1$
+
+    DIVVYDIARY_LOGO("divvydiary.com-logo.png"); //$NON-NLS-1$
 
     static
     {

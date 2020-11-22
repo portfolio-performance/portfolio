@@ -1,0 +1,43 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Seite 1/1
+München
+26.06.2020
+DonauCapital Wertpapier GmbH
+GRATISBROKER GmbH 
+wg. GRATISBROKER GmbH service@gratisbroker.de
+Passauer Str. 5
+xx yy
+94161 Ruderting Stamm-Nr.: 1111111    Portfolio: 1
+Vorgangs-Nr.: 11111
+Referenz-Nr.: 222222
+Steuerausgleichsrechnung KOPIE
+Sehr geehrte Damen und Herren,
+wir haben für Sie eine Steuerausgleichsrechnung durchgeführt, die der Optimierung der Steuerbelastung 
+dient. Dadurch haben sich folgende Anpassungen ergeben:
+Rückerstattung bereits gezahlter:
+Kapitalertragsteuer EUR 27,55
+Solidaritätszuschlag EUR 1,51
+Erstattung EUR 29,06
+Den Betrag in Höhe von 29,06 EUR erstatten wir dem Konto 4444444.
+Grundlage für die Steuerausgleichsrechnung waren folgende Bestände und Anpassungen in den 
+Verrechnungstöpfen, die zu einer neuen Berechnungsgrundlage geführt haben:
+Verrechnungstöpfe Saldo vorher Anpassung Saldo nachher
+Aktienverlustverrechnungstopf EUR 100 EUR 10 - EUR 90
+Ausgleich der Steuerlast
+Aufgrund der neuen Bemessungsgrundlage wird gemäß den gesetzlichen Vorgaben bereits gezahlte 
+Kapitalertragsteuer wie folgt umgebucht und korrigiert:
+Bezahlte Kapitalertragsteuer Saldo vorher Anpassung Saldo nachher
+bezahlte Kapitalertragsteuer EUR 27,55 EUR 27,55 - EUR 0,00
+Bitte prüfen Sie diese Mitteilung. Etwaige Einwendungen bitten wir unverzüglich zu erheben. 
+Mit freundlichen Grüßen
+GRATISBROKER GmbH
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+GRATISBROKER GmbH | Geschäftsführer: Malte Rubruck, Stefan Mross, Philipp Röben | HRB 242583 Amtsgericht München | USt-IdNr. DE319411410
+GRATISBROKER GmbH erbringt Anlagevermittlung als vertraglich gebundener Vermittler der DonauCapital Wertpapier GmbH
+Baader Bank Aktiengesellschaft Weihenstephaner Straße 4 85716 Unterschleißheim Deutschland T 00800 00 222 337* F +49 89 5150 2442
+service@baaderbank.de www.baaderbank.de 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft. TOPF-024.017
+

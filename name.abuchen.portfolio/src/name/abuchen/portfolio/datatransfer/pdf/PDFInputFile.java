@@ -37,15 +37,18 @@ public class PDFInputFile extends Extractor.InputFile
         List<Extractor.InputFile> answer = new ArrayList<>();
 
         for (String filename : filenames)
-        {
-            try (Scanner scanner = new Scanner(testCase.getResourceAsStream(filename), StandardCharsets.UTF_8.name()))
-            {
-                String extractedText = scanner.useDelimiter("\\A").next(); //$NON-NLS-1$
-                answer.add(new PDFInputFile(new File(filename), extractedText));
-            }
-        }
+            answer.add(loadSingleTestCase(testCase, filename));
 
         return answer;
+    }
+
+    public static PDFInputFile loadSingleTestCase(Class<?> testCase, String filename)
+    {
+        try (Scanner scanner = new Scanner(testCase.getResourceAsStream(filename), StandardCharsets.UTF_8.name()))
+        {
+            String extractedText = scanner.useDelimiter("\\A").next(); //$NON-NLS-1$
+            return new PDFInputFile(new File(filename), extractedText);
+        }
     }
 
     public static List<Extractor.InputFile> createTestCase(String filename, String text)

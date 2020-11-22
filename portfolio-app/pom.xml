@@ -5,7 +5,7 @@
 
 	<groupId>name.abuchen.portfolio</groupId>
 	<artifactId>portfolio-app</artifactId>
-	<version>0.46.4-SNAPSHOT</version>
+	<version>0.49.3-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Portfolio Performance</name>
@@ -38,11 +38,6 @@
 
 	<repositories>
 		<repository>
-			<id>portfolio-jre8</id>
-			<layout>p2</layout>
-			<url>http://buchen.github.io/bundled-jre/8.30.0.1-patch1</url>
-		</repository>
-		<repository>
 			<id>portfolio-jre11</id>
 			<layout>p2</layout>
 			<url>http://buchen.github.io/bundled-jre/11.0.4</url>
@@ -69,6 +64,22 @@
 								<requireJavaVersion>
 									<version>1.8</version>
 								</requireJavaVersion>
+								<evaluateBeanshell>
+									<condition>String version = "${project.version}".replace("-SNAPSHOT", ".qualifier");
+												new String(java.nio.file.Files.readAllBytes(
+												java.nio.file.Paths.get("${project.basedir}/",
+																		new String[]{"releng/x86/x86-distro.product"})))
+												.contains("version=\"" + version + "\"")</condition>
+									<message>releng/x86/x86-distro.product does not contain the correct version</message>
+								</evaluateBeanshell>
+								<evaluateBeanshell>
+									<condition>String version = "${project.version}".replace("-SNAPSHOT", ".qualifier");
+												new String(java.nio.file.Files.readAllBytes(
+												java.nio.file.Paths.get("${project.basedir}/",
+																		new String[]{"releng/x86/x86-product.product"})))
+												.contains("version=\"" + version + "\"")</condition>
+									<message>releng/x86/x86-product.product does not contain the correct version</message>
+								</evaluateBeanshell>
 							</rules>
 						</configuration>
 					</execution>
@@ -110,19 +121,9 @@
 							<arch>x86_64</arch>
 						</environment>
 						<environment>
-							<os>linux</os>
-							<ws>gtk</ws>
-							<arch>x86</arch>
-						</environment>
-						<environment>
 							<os>macosx</os>
 							<ws>cocoa</ws>
 							<arch>x86_64</arch>
-						</environment>
-						<environment>
-							<os>win32</os>
-							<ws>win32</ws>
-							<arch>x86</arch>
 						</environment>
 						<environment>
 							<os>win32</os>
@@ -158,6 +159,11 @@
 						</filter>
 						<filter>
 							<type>eclipse-plugin</type>
+							<id>org.eclipse.pde.ds.lib.nl_fr</id>
+							<removeAll />
+						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
 							<id>org.eclipse.e4.ui.swt.gtk.nl_de</id>
 							<removeAll />
 						</filter>
@@ -174,6 +180,11 @@
 						<filter>
 							<type>eclipse-plugin</type>
 							<id>org.eclipse.e4.ui.swt.gtk.nl_pt</id>
+							<removeAll />
+						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
+							<id>org.eclipse.e4.ui.swt.gtk.nl_fr</id>
 							<removeAll />
 						</filter>
 					</filters>

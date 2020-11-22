@@ -24,7 +24,7 @@ public class AccountSnapshot
 
         for (AccountTransaction t : account.getTransactions())
         {
-            if (t.getDateTime().isBefore(reference))
+            if (!t.getDateTime().isAfter(reference))
             {
                 if (t.getType().isDebit())
                     funds -= t.getAmount();

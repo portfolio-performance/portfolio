@@ -1,0 +1,29 @@
+body {
+	background-color: #2F2F2F;
+	color: #eeeeee;
+	font-family: Lucida Grande, Segoe UI, Arial;
+	font-size: 11px;
+	margin: 0px 0px 0px 0px;
+	overflow: hidden;
+}
+
+div.tooltip {
+	position: absolute;
+	padding: 2px;
+	font-size: 11px;
+	color: #eeeeee;
+	background-color: #515658;
+	border: 0px;
+	border-radius: 2px;
+	pointer-events: none;
+}
+
+path {
+  stroke: #15171A;
+  fill-rule: evenodd;
+}
+
+text {
+  cursor: default;
+  fill: #eeeeee;
+}

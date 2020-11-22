@@ -8,7 +8,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.swtchart.Chart;
 import org.swtchart.IAxis;
 import org.swtchart.IAxis.Position;
@@ -20,9 +19,10 @@ import org.swtchart.ISeries.SeriesType;
 import org.swtchart.LineStyle;
 import org.swtchart.Range;
 
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.util.Dates;
 
-public class StackedTimelineChart extends Chart
+public class StackedTimelineChart extends Chart // NOSONAR
 {
     private TimelineChartToolTip toolTip;
 
@@ -32,10 +32,10 @@ public class StackedTimelineChart extends Chart
     {
         super(parent, SWT.NONE);
 
+        setData(UIConstants.CSS.CLASS_NAME, "chart"); //$NON-NLS-1$
+
         this.dates = dates;
 
-        setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
-        getTitle().setForeground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
         getLegend().setVisible(false);
 
         // x axis
@@ -53,7 +53,6 @@ public class StackedTimelineChart extends Chart
         // y axis
         IAxis yAxis = getAxisSet().getYAxis(0);
         yAxis.getTitle().setVisible(false);
-        yAxis.getTick().setForeground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
         yAxis.setPosition(Position.Secondary);
 
         ((IPlotArea) getPlotArea()).addCustomPaintListener(new ICustomPaintListener()
@@ -109,6 +108,8 @@ public class StackedTimelineChart extends Chart
         final LocalDate end = dates.get(dates.size() - 1);
 
         int totalDays = Dates.daysBetween(start, end) + 1;
+
+        e.gc.setForeground(getAxisSet().getAxes()[0].getGrid().getForeground());
 
         LocalDate current = start.plusYears(1).withDayOfYear(1);
         while (current.isBefore(end))

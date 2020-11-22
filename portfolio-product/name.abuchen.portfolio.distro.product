@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Portfolio Performance" uid="name.abuchen.portfolio.distro.product" id="name.abuchen.portfolio.bootstrap.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="0.46.4.qualifier" useFeatures="true" includeLaunchers="true">
+<product name="Portfolio Performance" uid="name.abuchen.portfolio.distro.product" id="name.abuchen.portfolio.bootstrap.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="0.49.3.qualifier" useFeatures="true" includeLaunchers="true">
 
    <configIni use="default">
    </configIni>
@@ -44,9 +44,9 @@
       <feature id="org.eclipse.babel.nls_eclipse_es"/>
       <feature id="org.eclipse.babel.nls_eclipse_nl"/>
       <feature id="org.eclipse.babel.nls_eclipse_pt"/>
-      <feature id="org.eclipse.ecf.filetransfer.httpclient4.feature"/>
+      <feature id="org.eclipse.babel.nls_eclipse_fr"/>
+      <feature id="org.eclipse.ecf.filetransfer.httpclient45.feature"/>
       <feature id="org.eclipse.ecf.core.ssl.feature"/>
-      <feature id="org.eclipse.ecf.filetransfer.httpclient4.ssl.feature"/>
       <feature id="org.eclipse.ecf.filetransfer.ssl.feature"/>
       <feature id="org.eclipse.ecf.core.feature"/>
       <feature id="org.eclipse.ecf.filetransfer.feature"/>
@@ -58,9 +58,9 @@
 
    <configurations>
       <plugin id="name.abuchen.portfolio.ui" autoStart="false" startLevel="5" />
+      <plugin id="org.apache.felix.scr" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="4" />
       <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="2" />
-      <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
       <plugin id="org.eclipse.osgi" autoStart="true" startLevel="-1" />
       <property name="osgi.instance.area.default" value="$LOCALAPPDATA$/PortfolioPerformance/workspace" os="win32" />

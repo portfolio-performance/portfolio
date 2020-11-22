@@ -49,6 +49,7 @@ import name.abuchen.portfolio.ui.dialogs.PasswordDialog;
 import name.abuchen.portfolio.ui.jobs.AutoSaveJob;
 import name.abuchen.portfolio.ui.jobs.CreateInvestmentPlanTxJob;
 import name.abuchen.portfolio.ui.jobs.SyncOnlineSecuritiesJob;
+import name.abuchen.portfolio.ui.jobs.UpdateDividendsJob;
 import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
 import name.abuchen.portfolio.ui.wizards.client.ClientMigrationDialog;
 
@@ -504,6 +505,7 @@ public class ClientInput
             regularJobs.add(job);
 
             new SyncOnlineSecuritiesJob(client).schedule(2000);
+            new UpdateDividendsJob(getClient()).schedule(5000);
         }
     }
 

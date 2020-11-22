@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>name.abuchen.portfolio</groupId>
 		<artifactId>portfolio-app</artifactId>
-		<version>0.46.4-SNAPSHOT</version>
+		<version>0.49.3-SNAPSHOT</version>
 		<relativePath>../portfolio-app</relativePath>
 	</parent>
 
@@ -20,6 +20,15 @@
 	
 	<build>
 		<plugins>
+			<plugin>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>enforce-versions</id>
+						<phase>none</phase>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-p2-repository-plugin</artifactId>
@@ -100,7 +109,7 @@
 						</property>
 						<property>
 							<name>CFBundleLocalizations</name>
-							<value><![CDATA[<array><string>en</string><string>de</string><string>es</string><string>nl</string><string>pt</string></array>]]></value>
+							<value><![CDATA[<array><string>en</string><string>de</string><string>es</string><string>nl</string><string>pt</string><string>fr</string></array>]]></value>
 						</property>
 					</properties>
 				</configuration>
@@ -183,6 +192,23 @@
 						<artifactId>exec-maven-plugin</artifactId>
 						<version>1.6.0</version>
 						<executions>
+							<execution>
+								<id>check-p2-inf-files</id>
+								<phase>validate</phase>
+								<!-- check that both p2.inf files are identical because both must 
+									have the same release notes. Unfortunately, Tycho seems to require that the 
+									files exist at the beginning of the build. -->
+								<goals>
+									<goal>exec</goal>
+								</goals>
+								<configuration>
+									<executable>diff</executable>
+									<arguments>
+										<argument>${project.basedir}/name.abuchen.portfolio.p2.inf</argument>
+										<argument>${project.basedir}/name.abuchen.portfolio.distro.p2.inf</argument>
+									</arguments>
+								</configuration>
+							</execution>
 							<execution>
 								<id>sign-macos-distro</id>
 								<phase>package</phase>

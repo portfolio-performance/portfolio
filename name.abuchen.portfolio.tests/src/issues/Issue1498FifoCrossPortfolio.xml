@@ -1,0 +1,323 @@
+<client>
+  <version>45</version>
+  <baseCurrency>EUR</baseCurrency>
+  <securities>
+    <security>
+      <uuid>06179b70-563f-497a-8caf-0331100ce645</uuid>
+      <name>Deutsche Lufthansa AG</name>
+      <currencyCode>EUR</currencyCode>
+      <feed>MANUAL</feed>
+      <prices>
+        <price t="2019-01-01" v="100000"/>
+      </prices>
+      <attributes>
+        <map/>
+      </attributes>
+      <events/>
+      <isRetired>false</isRetired>
+    </security>
+  </securities>
+  <watchlists/>
+  <consumerPriceIndeces/>
+  <accounts>
+    <account>
+      <uuid>56f552ff-0993-49b2-9933-07e423acd56f</uuid>
+      <name>Ref1</name>
+      <currencyCode>EUR</currencyCode>
+      <isRetired>false</isRetired>
+      <transactions>
+        <account-transaction>
+          <date>2019-01-01T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>100000</amount>
+          <shares>0</shares>
+          <type>DEPOSIT</type>
+        </account-transaction>
+        <account-transaction>
+          <date>2019-02-15T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>100000</amount>
+          <security reference="../../../../../securities/security"/>
+          <crossEntry class="buysell">
+            <portfolio>
+              <uuid>f9befeb1-0fc5-424c-8d77-e0f125f1f5bc</uuid>
+              <name>Port1</name>
+              <isRetired>false</isRetired>
+              <referenceAccount reference="../../../../.."/>
+              <transactions>
+                <portfolio-transaction>
+                  <date reference="../../../../../date"/>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100000</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell" reference="../../../.."/>
+                  <shares>50000000</shares>
+                  <type>BUY</type>
+                </portfolio-transaction>
+              </transactions>
+            </portfolio>
+            <portfolioTransaction reference="../portfolio/transactions/portfolio-transaction"/>
+            <account reference="../../../.."/>
+            <accountTransaction reference="../.."/>
+          </crossEntry>
+          <shares>0</shares>
+          <type>BUY</type>
+        </account-transaction>
+      </transactions>
+    </account>
+    <account>
+      <uuid>d2d2dcc5-a0bc-401c-9da9-870c2001b3c6</uuid>
+      <name>Ref2</name>
+      <currencyCode>EUR</currencyCode>
+      <isRetired>false</isRetired>
+      <transactions>
+        <account-transaction>
+          <date>2019-01-01T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>50000</amount>
+          <shares>0</shares>
+          <type>DEPOSIT</type>
+        </account-transaction>
+        <account-transaction>
+          <date>2019-04-15T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>17460</amount>
+          <security reference="../../../../../securities/security"/>
+          <crossEntry class="buysell">
+            <portfolio>
+              <uuid>7a466ef6-913d-4f8e-8e3a-7a4389d0970c</uuid>
+              <name>Port2</name>
+              <isRetired>false</isRetired>
+              <referenceAccount reference="../../../../.."/>
+              <transactions>
+                <portfolio-transaction>
+                  <date reference="../../../../../date"/>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>17460</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell" reference="../../../.."/>
+                  <shares>20000000</shares>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <date>2019-05-15T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>18800</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <date reference="../../../date"/>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>18800</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <type>SELL</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>20000000</shares>
+                  <type>SELL</type>
+                </portfolio-transaction>
+              </transactions>
+            </portfolio>
+            <portfolioTransaction reference="../portfolio/transactions/portfolio-transaction"/>
+            <account reference="../../../.."/>
+            <accountTransaction reference="../.."/>
+          </crossEntry>
+          <shares>0</shares>
+          <type>BUY</type>
+        </account-transaction>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[2]/crossEntry/accountTransaction"/>
+      </transactions>
+    </account>
+    <account>
+      <uuid>01129778-d05f-4d46-8f1b-5c7859104149</uuid>
+      <name>Ref3</name>
+      <currencyCode>EUR</currencyCode>
+      <isRetired>false</isRetired>
+      <transactions>
+        <account-transaction>
+          <date>2019-01-01T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>15000</amount>
+          <shares>0</shares>
+          <type>DEPOSIT</type>
+        </account-transaction>
+        <account-transaction>
+          <date>2019-01-15T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>15000</amount>
+          <security reference="../../../../../securities/security"/>
+          <crossEntry class="buysell">
+            <portfolio>
+              <uuid>6b54a2a7-d2e8-4304-bcbf-72fdf04ee9e9</uuid>
+              <name>Port3</name>
+              <isRetired>false</isRetired>
+              <referenceAccount reference="../../../../.."/>
+              <transactions>
+                <portfolio-transaction>
+                  <date reference="../../../../../date"/>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>15000</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell" reference="../../../.."/>
+                  <shares>10000000</shares>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <date>2019-03-15T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>10000</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="portfolio-transfer">
+                    <portfolioFrom reference="../../../.."/>
+                    <transactionFrom reference="../.."/>
+                    <portfolioTo>
+                      <uuid>8a36bdbc-5f2c-4842-b8fb-20646848a8aa</uuid>
+                      <name>Port4</name>
+                      <isRetired>false</isRetired>
+                      <referenceAccount>
+                        <uuid>bdcf78d6-1b9b-4502-b822-93b1e8a25a37</uuid>
+                        <name>Ref4</name>
+                        <currencyCode>EUR</currencyCode>
+                        <isRetired>false</isRetired>
+                        <transactions/>
+                      </referenceAccount>
+                      <transactions>
+                        <portfolio-transaction>
+                          <date reference="../../../../../date"/>
+                          <currencyCode>EUR</currencyCode>
+                          <amount>10000</amount>
+                          <security reference="../../../../../../../../../../../../../securities/security"/>
+                          <crossEntry class="portfolio-transfer" reference="../../../.."/>
+                          <shares>5000000</shares>
+                          <type>TRANSFER_IN</type>
+                        </portfolio-transaction>
+                      </transactions>
+                    </portfolioTo>
+                    <transactionTo reference="../portfolioTo/transactions/portfolio-transaction"/>
+                  </crossEntry>
+                  <shares>5000000</shares>
+                  <type>TRANSFER_OUT</type>
+                </portfolio-transaction>
+              </transactions>
+            </portfolio>
+            <portfolioTransaction reference="../portfolio/transactions/portfolio-transaction"/>
+            <account reference="../../../.."/>
+            <accountTransaction reference="../.."/>
+          </crossEntry>
+          <shares>0</shares>
+          <type>BUY</type>
+        </account-transaction>
+      </transactions>
+    </account>
+    <account reference="../account[3]/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[2]/crossEntry/portfolioTo/referenceAccount"/>
+  </accounts>
+  <portfolios>
+    <portfolio reference="../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio"/>
+    <portfolio reference="../../accounts/account[2]/transactions/account-transaction[2]/crossEntry/portfolio"/>
+    <portfolio reference="../../accounts/account[3]/transactions/account-transaction[2]/crossEntry/portfolio"/>
+    <portfolio reference="../../accounts/account[3]/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[2]/crossEntry/portfolioTo"/>
+  </portfolios>
+  <plans/>
+  <taxonomies/>
+  <dashboards>
+    <dashboard name="Dashboard">
+      <configuration>
+        <entry>
+          <string>REPORTING_PERIOD</string>
+          <string>L1Y0</string>
+        </entry>
+      </configuration>
+      <columns>
+        <column>
+          <weight>1</weight>
+          <widgets>
+            <widget type="HEADING">
+              <label>Portfolio 1</label>
+            </widget>
+            <widget type="CALCULATION">
+              <label>Performance-Berechnung, Port1 + Ref1</label>
+              <configuration>
+                <entry>
+                  <string>DATA_SERIES</string>
+                  <string>[+]Portfoliof9befeb1-0fc5-424c-8d77-e0f125f1f5bc</string>
+                </entry>
+              </configuration>
+            </widget>
+            <widget type="HEADING">
+              <label>Portfolio 3</label>
+              <configuration/>
+            </widget>
+            <widget type="CALCULATION">
+              <label>Performance-Berechnung, Port3 + Ref3</label>
+              <configuration>
+                <entry>
+                  <string>DATA_SERIES</string>
+                  <string>[+]Portfolio6b54a2a7-d2e8-4304-bcbf-72fdf04ee9e9</string>
+                </entry>
+              </configuration>
+            </widget>
+          </widgets>
+        </column>
+        <column>
+          <weight>1</weight>
+          <widgets>
+            <widget type="HEADING">
+              <label>Portfolio 2</label>
+              <configuration/>
+            </widget>
+            <widget type="CALCULATION">
+              <label>Performance-Berechnung, Port2 + Ref2</label>
+              <configuration>
+                <entry>
+                  <string>DATA_SERIES</string>
+                  <string>[+]Portfolio7a466ef6-913d-4f8e-8e3a-7a4389d0970c</string>
+                </entry>
+              </configuration>
+            </widget>
+            <widget type="HEADING">
+              <label>Portfolio 4</label>
+              <configuration/>
+            </widget>
+            <widget type="CALCULATION">
+              <label>Performance-Berechnung, Port4 + Ref4</label>
+              <configuration>
+                <entry>
+                  <string>DATA_SERIES</string>
+                  <string>[+]Portfolio8a36bdbc-5f2c-4842-b8fb-20646848a8aa</string>
+                </entry>
+              </configuration>
+            </widget>
+          </widgets>
+        </column>
+        <column>
+          <weight>1</weight>
+          <widgets>
+            <widget type="HEADING">
+              <label>Berechnung</label>
+            </widget>
+            <widget type="CALCULATION">
+              <label>Performance-Berechnung, Gesamtportfolio</label>
+              <configuration>
+                <entry>
+                  <string>DATA_SERIES</string>
+                  <string>Client-totals</string>
+                </entry>
+              </configuration>
+            </widget>
+          </widgets>
+        </column>
+      </columns>
+    </dashboard>
+  </dashboards>
+  <properties/>
+  <settings>
+    <bookmarks/>
+    <attributeTypes/>
+    <configurationSets/>
+  </settings>
+</client>

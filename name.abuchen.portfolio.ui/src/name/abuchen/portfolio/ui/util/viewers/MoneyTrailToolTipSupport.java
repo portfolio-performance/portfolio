@@ -1,5 +1,8 @@
 package name.abuchen.portfolio.ui.util.viewers;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.jface.layout.GridDataFactory;
@@ -8,6 +11,9 @@ import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseTrackListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
@@ -34,6 +40,9 @@ public class MoneyTrailToolTipSupport extends ColumnViewerToolTipSupport
     @Override
     protected Composite createViewerToolTipContentArea(Event event, ViewerCell cell, Composite parent)
     {
+        if (cell == null)
+            return super.createViewerToolTipContentArea(event, cell, parent);
+
         Object element = cell.getElement();
 
         if (!(element instanceof TrailProvider))
@@ -55,7 +64,7 @@ public class MoneyTrailToolTipSupport extends ColumnViewerToolTipSupport
 
     private Composite createTrailTable(Composite parent, Trail trail)
     {
-        int depth = depth(1, trail.getRecord());
+        int depth = trail.getDepth();
 
         Composite composite = new Composite(parent, SWT.NONE);
         composite.setBackground(Colors.INFO_TOOLTIP_BACKGROUND);
@@ -71,10 +80,12 @@ public class MoneyTrailToolTipSupport extends ColumnViewerToolTipSupport
         return composite;
     }
 
-    private void addRow(Composite composite, TrailRecord trail, int level, int depth)
+    private Label addRow(Composite composite, TrailRecord trail, int level, int depth)
     {
+        List<Label> inputs = new ArrayList<>();
+
         for (TrailRecord child : trail.getInputs())
-            addRow(composite, child, level - 1, depth);
+            inputs.add(addRow(composite, child, level - 1, depth));
 
         Label date = new Label(composite, SWT.NONE);
         date.setBackground(composite.getBackground());
@@ -91,6 +102,8 @@ public class MoneyTrailToolTipSupport extends ColumnViewerToolTipSupport
         if (trail.getShares() != null)
             shares.setText(Values.Share.format(trail.getShares()));
 
+        Label answer = null;
+
         for (int index = 0; index < depth; index++)
         {
             Label column = new Label(composite, SWT.RIGHT);
@@ -98,21 +111,49 @@ public class MoneyTrailToolTipSupport extends ColumnViewerToolTipSupport
             GridDataFactory.fillDefaults().applyTo(column);
 
             if (index == level)
+            {
+                answer = column;
                 column.setText(trail.getValue() != null ? Values.Money.format(trail.getValue())
                                 : Messages.LabelNotAvailable);
+
+                highlight(Arrays.asList(label, column), inputs);
+            }
         }
+
+        return answer;
     }
 
-    private int depth(int level, TrailRecord t)
+    private void highlight(List<Label> outputs, List<Label> inputs)
     {
-        if (t.getInputs().isEmpty())
-            return level;
+        if (inputs.isEmpty())
+            return;
 
-        int d = level;
+        outputs.forEach(label -> label.addMouseTrackListener(new MouseTrackListener()
+        {
+            private Color background = Colors.INFO_TOOLTIP_BACKGROUND;
 
-        for (TrailRecord child : t.getInputs())
-            d = Math.max(d, depth(level + 1, child));
+            @Override
+            public void mouseHover(MouseEvent e)
+            {
+            }
 
-        return d;
+            @Override
+            public void mouseExit(MouseEvent e)
+            {
+                outputs.forEach(l -> l.setBackground(this.background));
+                inputs.forEach(l -> l.setBackground(this.background));
+            }
+
+            @Override
+            public void mouseEnter(MouseEvent e)
+            {
+                // background color is theme dependent -> save color to restore
+                // during mouseExit
+                this.background = outputs.get(0).getBackground();
+
+                outputs.forEach(l -> l.setBackground(Colors.ICON_ORANGE));
+                inputs.forEach(l -> l.setBackground(Colors.ICON_GREEN));
+            }
+        }));
     }
 }

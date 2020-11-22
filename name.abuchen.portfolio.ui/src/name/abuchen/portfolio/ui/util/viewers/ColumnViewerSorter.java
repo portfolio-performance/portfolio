@@ -254,6 +254,39 @@ public final class ColumnViewerSorter
         }
     }
 
+    private static final class StringValueProviderComparator implements Comparator<Object>
+    {
+        private final Function<Object, String> valueProvider;
+
+        public StringValueProviderComparator(Function<Object, String> valueProvider)
+        {
+            this.valueProvider = valueProvider;
+        }
+
+        @Override
+        public int compare(Object o1, Object o2)
+        {
+            if (o1 == null && o2 == null)
+                return 0;
+            else if (o1 == null)
+                return -1;
+            else if (o2 == null)
+                return 1;
+
+            String v1 = valueProvider.apply(o1);
+            String v2 = valueProvider.apply(o2);
+
+            if (v1 == null && v2 == null)
+                return 0;
+            else if (v1 == null)
+                return -1;
+            else if (v2 == null)
+                return 1;
+
+            return v1.compareToIgnoreCase(v2);
+        }
+    }
+
     private static final class ViewerSorter extends ViewerComparator
     {
         private ColumnViewer columnViewer;
@@ -387,6 +420,11 @@ public final class ColumnViewerSorter
     public static ColumnViewerSorter create(Function<Object, Comparable<?>> valueProvider)
     {
         return create(new ValueProviderComparator(valueProvider));
+    }
+
+    public static ColumnViewerSorter createIgnoreCase(Function<Object, String> valueProvider)
+    {
+        return create(new StringValueProviderComparator(valueProvider));
     }
 
     @SuppressWarnings("unchecked")

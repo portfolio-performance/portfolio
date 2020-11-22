@@ -1,0 +1,15 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Zusammenfassung
+Zu Beginn 5'629,99 €
+Hans Musert
+Einzahlungen 315,45 €
+Datum 25.10.2020 - 08.11.2020 Auszahlungen 0 €
+Referenznummer GGxxxxx Ergebnis 5'945,44 €
+Muster Konto
+Datum Zahlungsart Eingänge Ausgänge Guthaben
+25.10.2020 Go & Grow Zinsen 1 € 5'630,99 €
+26.10.2020 Go & Grow Zinsen 1,01 € 5'632 €
+02.11.2020 Überweisen 300 € 5'938,05 €
+Gesamt 5'945,44 €

@@ -26,7 +26,6 @@ import org.eclipse.swt.graphics.TextLayout;
 import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -102,11 +101,13 @@ public class StyledLabel extends Canvas // NOSONAR
 
             if ("red".equals(qName)) //$NON-NLS-1$
             {
-                styleRanges.add(new StyleRange(tag.start, plainText.length() - tag.start, Colors.DARK_RED, null));
+                styleRanges.add(new StyleRange(tag.start, plainText.length() - tag.start,
+                                Colors.theme().redForeground(), null));
             }
             else if ("green".equals(qName)) //$NON-NLS-1$
             {
-                styleRanges.add(new StyleRange(tag.start, plainText.length() - tag.start, Colors.DARK_GREEN, null));
+                styleRanges.add(new StyleRange(tag.start, plainText.length() - tag.start,
+                                Colors.theme().greenForeground(), null));
             }
             else if ("strong".equals(qName)) //$NON-NLS-1$
             {
@@ -121,7 +122,8 @@ public class StyledLabel extends Canvas // NOSONAR
                 StyleRange style = new StyleRange();
                 style.underline = true;
                 style.underlineStyle = SWT.UNDERLINE_LINK;
-                style.underlineColor = Display.getDefault().getSystemColor(SWT.COLOR_DARK_BLUE);
+                style.underlineColor = Colors.theme().hyperlink();
+                style.foreground = Colors.theme().hyperlink();
                 style.data = tag.attributes.get("href"); //$NON-NLS-1$
                 style.start = tag.start;
                 style.length = plainText.length() - tag.start;
@@ -223,6 +225,7 @@ public class StyledLabel extends Canvas // NOSONAR
     @Override
     public Point computeSize(int wHint, int hHint, boolean changed)
     {
+        this.textLayout.setWidth(wHint == SWT.DEFAULT ? SWT.DEFAULT : Math.max(wHint - 4, 1));
         Rectangle bounds = this.textLayout.getBounds();
         return new Point(bounds.width + 4, bounds.height + 1);
     }

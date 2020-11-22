@@ -20,15 +20,12 @@ import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.swtchart.IAxis;
-import org.swtchart.ICustomPaintListener;
 import org.swtchart.ILineSeries;
-import org.swtchart.IPlotArea;
 import org.swtchart.ISeries;
 
 import com.google.common.collect.Lists;
@@ -194,25 +191,6 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
         IAxis yAxis = chart.getAxisSet().getYAxis(0);
         yAxis.getTitle().setText(useIRR ? Messages.LabelPerformanceIRR : Messages.LabelPerformanceTTWROR);
         yAxis.getTick().setFormat(new DecimalFormat("0.##%")); //$NON-NLS-1$
-
-        ((IPlotArea) chart.getPlotArea()).addCustomPaintListener(new ICustomPaintListener()
-        {
-            @Override
-            public void paintControl(PaintEvent e)
-            {
-                int y = xAxis.getPixelCoordinate(0);
-                e.gc.drawLine(y, 0, y, e.height);
-
-                int x = yAxis.getPixelCoordinate(0);
-                e.gc.drawLine(0, x, e.width, x);
-            }
-
-            @Override
-            public boolean drawBehindSeries()
-            {
-                return true;
-            }
-        });
 
         configurator = new DataSeriesConfigurator(this, DataSeries.UseCase.RETURN_VOLATILITY);
         configurator.addListener(this::updateChart);

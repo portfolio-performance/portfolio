@@ -13,7 +13,10 @@ import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHeader;
@@ -85,6 +88,12 @@ import org.apache.http.util.EntityUtils;
 //@formatter:on
 public class WebAccess
 {
+    @FunctionalInterface
+    private interface Request
+    {
+        HttpRequestBase create(URI uri) throws IOException;
+    }
+
     public static final RequestConfig defaultRequestConfig = RequestConfig.custom().setSocketTimeout(20000)
                     .setConnectTimeout(2000).setConnectionRequestTimeout(20000).setCookieSpec(CookieSpecs.STANDARD)
                     .build();
@@ -144,6 +153,22 @@ public class WebAccess
 
     public String get() throws IOException
     {
+        CloseableHttpResponse response = executeWith(HttpGet::new);
+        return EntityUtils.toString(response.getEntity());
+    }
+
+    public void post(String body) throws IOException
+    {
+        executeWith(uri -> {
+            HttpPost request = new HttpPost(uri);
+            StringEntity userEntity = new StringEntity(body);
+            request.setEntity(userEntity);
+            return request;
+        });
+    }
+
+    private CloseableHttpResponse executeWith(Request function) throws IOException
+    {
         CloseableHttpResponse response = null;
 
         try
@@ -155,21 +180,21 @@ public class WebAccess
                             .useSystemProperties() //
                             .build();
 
-
             URI uri = builder.build();
-            response = client.execute(new HttpGet(uri));
+            HttpRequestBase request = function.create(uri);
+            response = client.execute(request);
 
             if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK)
                 throw new IOException(uri.toString() + " --> " + response.getStatusLine().getStatusCode()); //$NON-NLS-1$
 
-            return EntityUtils.toString(response.getEntity());
+            return response;
         }
         catch (URISyntaxException e)
         {
             throw new IOException(e);
         }
     }
-    
+
     public String getURL() throws URISyntaxException
     {
         return builder.build().toASCIIString();

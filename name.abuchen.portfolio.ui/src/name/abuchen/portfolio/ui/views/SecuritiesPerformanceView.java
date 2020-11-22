@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -12,6 +13,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuListener;
@@ -41,20 +43,20 @@ import org.eclipse.swt.widgets.ToolBar;
 
 import com.ibm.icu.text.MessageFormat;
 
-import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.model.TransactionOwner;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.snapshot.filter.ClientFilter;
-import name.abuchen.portfolio.snapshot.security.DividendFinalTransaction;
-import name.abuchen.portfolio.snapshot.security.DividendInitialTransaction;
-import name.abuchen.portfolio.snapshot.security.DividendTransaction;
+import name.abuchen.portfolio.snapshot.security.CalculationLineItem;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.trades.TradeCollector;
@@ -69,6 +71,7 @@ import name.abuchen.portfolio.ui.selection.SelectionService;
 import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LabelOnly;
+import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown;
 import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown.ReportingPeriodListener;
 import name.abuchen.portfolio.ui.util.SWTHelper;
@@ -92,6 +95,7 @@ import name.abuchen.portfolio.ui.views.columns.SymbolColumn;
 import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
 import name.abuchen.portfolio.ui.views.columns.WknColumn;
 import name.abuchen.portfolio.util.Interval;
+import name.abuchen.portfolio.util.Pair;
 import name.abuchen.portfolio.util.TextUtil;
 
 public class SecuritiesPerformanceView extends AbstractListView implements ReportingPeriodListener
@@ -201,6 +205,9 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
     @Inject
     private ExchangeRateProviderFactory factory;
 
+    @Inject
+    private IStylingEngine stylingEngine;
+
     private ShowHideColumnHelper recordColumns;
 
     private TableViewer records;
@@ -271,6 +278,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         createCommonColumns();
         createDividendColumns();
         addPerformanceColumns();
+        addCapitalGainsColumns();
         createRiskColumns();
         createAdditionalColumns();
 
@@ -293,7 +301,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
 
             if (record != null)
             {
-                transactions.setInput(record.getTransactions());
+                transactions.setInput(record.getLineItems());
                 transactions.refresh();
                 chart.updateChart(record.getSecurity());
                 Client filteredClient = clientFilter.filter(getClient());
@@ -348,6 +356,8 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
                 return true;
             }
         });
+
+        stylingEngine.style(records.getTable());
     }
 
     private void createCommonColumns()
@@ -366,7 +376,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         recordColumns.addColumn(column);
 
         // security name
-        column = new NameColumn();
+        column = new NameColumn(getClient());
         column.getEditingSupport().addListener(new TouchClientListener(getClient()));
         recordColumns.addColumn(column);
 
@@ -472,6 +482,131 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
             }
         });
         column.setSorter(ColumnViewerSorter.create(e -> ((SecurityPerformanceRecord) e).getQuote()));
+        recordColumns.addColumn(column);
+
+        // change to previous day percent value
+        column = new Column("5", Messages.ColumnChangeOnPrevious, SWT.RIGHT, 60); //$NON-NLS-1$
+        column.setMenuLabel(Messages.ColumnChangeOnPrevious_MenuLabel);
+        column.setLabelProvider(new NumberColorLabelProvider<>(Values.Percent2, element -> {
+            Optional<Pair<SecurityPrice, SecurityPrice>> previous = ((SecurityPerformanceRecord) element).getSecurity()
+                            .getLatestTwoSecurityPrices();
+            if (previous.isPresent())
+            {
+                double latestQuote = previous.get().getLeft().getValue();
+                double previousQuote = previous.get().getRight().getValue();
+                return (latestQuote - previousQuote) / previousQuote;
+            }
+            else
+            {
+                return null;
+            }
+        }, element -> {
+            Optional<Pair<SecurityPrice, SecurityPrice>> previous = ((SecurityPerformanceRecord) element).getSecurity()
+                            .getLatestTwoSecurityPrices();
+            if (previous.isPresent())
+            {
+                return Messages.ColumnLatestPrice + ": " //$NON-NLS-1$
+                                + MessageFormat.format(Messages.TooltipQuoteAtDate,
+                                                Values.Quote.format(previous.get().getLeft().getValue()),
+                                                Values.Date.format(previous.get().getLeft().getDate()))
+                                + "\n" // //$NON-NLS-1$
+                                + Messages.ColumnPreviousPrice + ": " //$NON-NLS-1$
+                                + MessageFormat.format(Messages.TooltipQuoteAtDate,
+                                                Values.Quote.format(previous.get().getRight().getValue()),
+                                                Values.Date.format(previous.get().getRight().getDate()));
+            }
+            else
+            {
+                return null;
+            }
+        }));
+        column.setSorter(ColumnViewerSorter.create((o1, o2) -> { // NOSONAR
+
+            Optional<Pair<SecurityPrice, SecurityPrice>> previous1 = ((SecurityPerformanceRecord) o1).getSecurity()
+                            .getLatestTwoSecurityPrices();
+            Optional<Pair<SecurityPrice, SecurityPrice>> previous2 = ((SecurityPerformanceRecord) o2).getSecurity()
+                            .getLatestTwoSecurityPrices();
+
+            if (!previous1.isPresent() && !previous2.isPresent())
+                return 0;
+            if (!previous1.isPresent() && previous2.isPresent())
+                return -1;
+            if (previous1.isPresent() && !previous2.isPresent())
+                return 1;
+
+            double latestQuote1 = previous1.get().getLeft().getValue();
+            double previousQuote1 = previous1.get().getRight().getValue();
+            double v1 = (latestQuote1 - previousQuote1) / previousQuote1;
+
+            double latestQuote2 = previous2.get().getLeft().getValue();
+            double previousQuote2 = previous2.get().getRight().getValue();
+            double v2 = (latestQuote2 - previousQuote2) / previousQuote2;
+
+            return Double.compare(v1, v2);
+        }));
+        recordColumns.addColumn(column);
+
+        // change to previous day absolute value
+        column = new Column("changeonpreviousamount", Messages.ColumnChangeOnPreviousAmount, SWT.RIGHT, 60); //$NON-NLS-1$
+        column.setMenuLabel(Messages.ColumnChangeOnPrevious_MenuLabelAmount);
+
+        column.setLabelProvider(new NumberColorLabelProvider<>(Values.Quote, element -> {
+            Optional<Pair<SecurityPrice, SecurityPrice>> previous = ((SecurityPerformanceRecord) element).getSecurity()
+                            .getLatestTwoSecurityPrices();
+            if (previous.isPresent())
+            {
+                double latestQuote = previous.get().getLeft().getValue();
+                double previousQuote = previous.get().getRight().getValue();
+                return (long) (latestQuote - previousQuote);
+            }
+            else
+            {
+                return null;
+            }
+        }, element -> {
+            Optional<Pair<SecurityPrice, SecurityPrice>> previous = ((SecurityPerformanceRecord) element).getSecurity()
+                            .getLatestTwoSecurityPrices();
+            if (previous.isPresent())
+            {
+                return Messages.ColumnLatestPrice + ": " //$NON-NLS-1$
+                                + MessageFormat.format(Messages.TooltipQuoteAtDate,
+                                                Values.Quote.format(previous.get().getLeft().getValue()),
+                                                Values.Date.format(previous.get().getLeft().getDate()))
+                                + "\n" // //$NON-NLS-1$
+                                + Messages.ColumnPreviousPrice + ": " //$NON-NLS-1$
+                                + MessageFormat.format(Messages.TooltipQuoteAtDate,
+                                                Values.Quote.format(previous.get().getRight().getValue()),
+                                                Values.Date.format(previous.get().getRight().getDate()));
+            }
+            else
+            {
+                return null;
+            }
+        }));
+        column.setSorter(ColumnViewerSorter.create((o1, o2) -> { // NOSONAR
+
+            Optional<Pair<SecurityPrice, SecurityPrice>> previous1 = ((SecurityPerformanceRecord) o1).getSecurity()
+                            .getLatestTwoSecurityPrices();
+            Optional<Pair<SecurityPrice, SecurityPrice>> previous2 = ((SecurityPerformanceRecord) o2).getSecurity()
+                            .getLatestTwoSecurityPrices();
+
+            if (!previous1.isPresent() && !previous2.isPresent())
+                return 0;
+            if (!previous1.isPresent() && previous2.isPresent())
+                return -1;
+            if (previous1.isPresent() && !previous2.isPresent())
+                return 1;
+
+            double latestQuote1 = previous1.get().getLeft().getValue();
+            double previousQuote1 = previous1.get().getRight().getValue();
+            double v1 = latestQuote1 - previousQuote1;
+
+            double latestQuote2 = previous2.get().getLeft().getValue();
+            double previousQuote2 = previous2.get().getRight().getValue();
+            double v2 = latestQuote2 - previousQuote2;
+
+            return Double.compare(v1, v2);
+        }));
         recordColumns.addColumn(column);
 
         // market value
@@ -621,6 +756,55 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
                         r -> ((SecurityPerformanceRecord) r).getDeltaPercent()));
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "deltaPercent")); //$NON-NLS-1$
         column.setVisible(false);
+        recordColumns.addColumn(column);
+    }
+
+    private void addCapitalGainsColumns()
+    {
+        Column column = new Column("cg", //$NON-NLS-1$
+                        Messages.ColumnRealizedCapitalGains, SWT.RIGHT, 80);
+        column.setGroupLabel(Messages.LabelCapitalGains);
+        column.setLabelProvider(new MoneyColorLabelProvider(
+                        element -> ((SecurityPerformanceRecord) element).getRealizedCapitalGains().getCapitalGains(),
+                        element -> SecurityPerformanceRecord.Trails.REALIZED_CAPITAL_GAINS, getClient()));
+        column.setVisible(false);
+        column.setSorter(ColumnViewerSorter.create(
+                        element -> ((SecurityPerformanceRecord) element).getRealizedCapitalGains().getCapitalGains()));
+        recordColumns.addColumn(column);
+
+        column = new Column("cgforex", //$NON-NLS-1$
+                        Messages.ColumnCurrencyGains + " / " + Messages.ColumnRealizedCapitalGains, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setGroupLabel(Messages.LabelCapitalGains);
+        column.setLabelProvider(new MoneyColorLabelProvider(
+                        element -> ((SecurityPerformanceRecord) element).getRealizedCapitalGains()
+                                        .getForexCaptialGains(),
+                        element -> SecurityPerformanceRecord.Trails.REALIZED_CAPITAL_GAINS_FOREX, getClient()));
+        column.setVisible(false);
+        column.setSorter(ColumnViewerSorter.create(
+                        element -> ((SecurityPerformanceRecord) element).getRealizedCapitalGains().getCapitalGains()));
+        recordColumns.addColumn(column);
+
+        column = new Column("ucg", //$NON-NLS-1$
+                        Messages.ColumnUnrealizedCapitalGains, SWT.RIGHT, 80);
+        column.setGroupLabel(Messages.LabelCapitalGains);
+        column.setLabelProvider(new MoneyColorLabelProvider(
+                        element -> ((SecurityPerformanceRecord) element).getUnrealizedCapitalGains().getCapitalGains(),
+                        element -> SecurityPerformanceRecord.Trails.UNREALIZED_CAPITAL_GAINS, getClient()));
+        column.setVisible(false);
+        column.setSorter(ColumnViewerSorter.create(element -> ((SecurityPerformanceRecord) element)
+                        .getUnrealizedCapitalGains().getCapitalGains()));
+        recordColumns.addColumn(column);
+
+        column = new Column("ucgforex", //$NON-NLS-1$
+                        Messages.ColumnCurrencyGains + " / " + Messages.ColumnUnrealizedCapitalGains, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setGroupLabel(Messages.LabelCapitalGains);
+        column.setLabelProvider(new MoneyColorLabelProvider(
+                        element -> ((SecurityPerformanceRecord) element).getUnrealizedCapitalGains()
+                                        .getForexCaptialGains(),
+                        element -> SecurityPerformanceRecord.Trails.UNREALIZED_CAPITAL_GAINS_FOREX, getClient()));
+        column.setVisible(false);
+        column.setSorter(ColumnViewerSorter.create(element -> ((SecurityPerformanceRecord) element)
+                        .getUnrealizedCapitalGains().getCapitalGains()));
         recordColumns.addColumn(column);
     }
 
@@ -918,11 +1102,16 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
             @Override
             public String getText(Object e)
             {
-                Transaction t = (Transaction) e;
-                return Values.DateTime.format(t.getDateTime());
+                return Values.DateTime.format(((CalculationLineItem) e).getDateTime());
             }
         });
-        column.setSorter(ColumnViewerSorter.create(Transaction.class, "dateTime"), SWT.DOWN); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create((o1, o2) -> {
+
+            CalculationLineItem c1 = (CalculationLineItem) o1;
+            CalculationLineItem c2 = (CalculationLineItem) o2;
+
+            return c1.getDateTime().compareTo(c2.getDateTime());
+        }));
         support.addColumn(column);
 
         // transaction type
@@ -930,16 +1119,9 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
-            public String getText(Object t)
+            public String getText(Object e)
             {
-                if (t instanceof PortfolioTransaction)
-                    return ((PortfolioTransaction) t).getType().toString();
-                else if (t instanceof AccountTransaction)
-                    return ((AccountTransaction) t).getType().toString();
-                else if (t instanceof DividendTransaction)
-                    return AccountTransaction.Type.DIVIDENDS.toString();
-                else
-                    return Messages.LabelQuote;
+                return ((CalculationLineItem) e).getLabel();
             }
         });
         support.addColumn(column);
@@ -949,18 +1131,19 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         column.setLabelProvider(new SharesLabelProvider() // NOSONAR
         {
             @Override
-            public Long getValue(Object t) // NOSONAR
+            public Long getValue(Object e)
             {
-                if (t instanceof PortfolioTransaction)
-                    return ((PortfolioTransaction) t).getShares();
-                else if (t instanceof DividendInitialTransaction)
-                    return ((DividendInitialTransaction) t).getPosition().getShares();
-                else if (t instanceof DividendFinalTransaction)
-                    return ((DividendFinalTransaction) t).getPosition().getShares();
-                else if (t instanceof DividendTransaction)
-                    return ((DividendTransaction) t).getShares() != 0L ? ((DividendTransaction) t).getShares() : null;
-                else
-                    return null;
+                CalculationLineItem data = (CalculationLineItem) e;
+
+                Optional<SecurityPosition> position = data.getSecurityPosition();
+                if (position.isPresent())
+                    return position.get().getShares();
+
+                Optional<Transaction> transaction = data.getTransaction();
+                if (transaction.isPresent() && transaction.get().getShares() != 0L)
+                    return transaction.get().getShares();
+
+                return null;
             }
         });
         support.addColumn(column);
@@ -971,10 +1154,11 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
-            public String getText(Object t)
+            public String getText(Object e)
             {
-                if (t instanceof DividendTransaction)
-                    return Values.Money.format(((DividendTransaction) t).getGrossValue(),
+                CalculationLineItem item = (CalculationLineItem) e;
+                if (item instanceof CalculationLineItem.DividendPayment)
+                    return Values.Money.format(((CalculationLineItem.DividendPayment) item).getGrossValue(),
                                     getClient().getBaseCurrency());
                 else
                     return null;
@@ -987,10 +1171,12 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
-            public String getText(Object t)
+            public String getText(Object e)
             {
-                if (t instanceof DividendTransaction)
-                    return Values.AmountFraction.formatNonZero(((DividendTransaction) t).getDividendPerShare());
+                CalculationLineItem item = (CalculationLineItem) e;
+                if (item instanceof CalculationLineItem.DividendPayment)
+                    return Values.AmountFraction
+                                    .formatNonZero(((CalculationLineItem.DividendPayment) item).getDividendPerShare());
                 else
                     return null;
             }
@@ -1003,10 +1189,12 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
-            public String getText(Object t)
+            public String getText(Object e)
             {
-                if (t instanceof DividendTransaction)
-                    return Values.Percent2.formatNonZero(((DividendTransaction) t).getPersonalDividendYield());
+                CalculationLineItem item = (CalculationLineItem) e;
+                if (item instanceof CalculationLineItem.DividendPayment)
+                    return Values.Percent2.formatNonZero(
+                                    ((CalculationLineItem.DividendPayment) item).getPersonalDividendYield());
                 else
                     return null;
             }
@@ -1019,11 +1207,12 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
-            public String getText(Object t)
+            public String getText(Object e)
             {
-                if (t instanceof DividendTransaction)
-                    return Values.Percent2
-                                    .formatNonZero(((DividendTransaction) t).getPersonalDividendYieldMovingAverage());
+                CalculationLineItem item = (CalculationLineItem) e;
+                if (item instanceof CalculationLineItem.DividendPayment)
+                    return Values.Percent2.formatNonZero(((CalculationLineItem.DividendPayment) item)
+                                    .getPersonalDividendYieldMovingAverage());
                 else
                     return null;
             }
@@ -1035,12 +1224,13 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
-            public String getText(Object t)
+            public String getText(Object e)
             {
-                if (t instanceof DividendTransaction)
+                CalculationLineItem item = (CalculationLineItem) e;
+                if (item instanceof CalculationLineItem.DividendPayment)
                     return null;
                 else
-                    return Values.Money.format(((Transaction) t).getMonetaryAmount(), getClient().getBaseCurrency());
+                    return Values.Money.format(item.getValue(), getClient().getBaseCurrency());
             }
         });
         support.addColumn(column);
@@ -1050,15 +1240,19 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
-            public String getText(Object t)
+            public String getText(Object e)
             {
-                if (t instanceof PortfolioTransaction)
+                Optional<Transaction> tx = ((CalculationLineItem) e).getTransaction();
+
+                if (tx.isPresent() && tx.get() instanceof PortfolioTransaction)
                 {
-                    PortfolioTransaction p = (PortfolioTransaction) t;
-                    return Values.Quote.format(p.getGrossPricePerShare(), getClient().getBaseCurrency());
+                    PortfolioTransaction ptx = (PortfolioTransaction) tx.get();
+                    return Values.Quote.format(ptx.getGrossPricePerShare(), getClient().getBaseCurrency());
                 }
                 else
+                {
                     return null;
+                }
             }
         });
         support.addColumn(column);
@@ -1068,22 +1262,18 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
-            public String getText(Object t)
+            public String getText(Object e)
             {
-                if (t instanceof PortfolioTransaction)
-                {
-                    PortfolioTransaction p = (PortfolioTransaction) t;
-                    return p.getCrossEntry() != null ? p.getCrossEntry().getCrossOwner(p).toString() : null;
-                }
-                else if (t instanceof DividendTransaction)
-                {
-                    return ((DividendTransaction) t).getAccount().getName();
-                }
-                else
-                {
-                    return null;
-                }
+                return String.valueOf(((CalculationLineItem) e).getOwner());
             }
+
+            @Override
+            public Image getImage(Object e)
+            {
+                TransactionOwner<?> owner = ((CalculationLineItem) e).getOwner();
+                return LogoManager.instance().getDefaultColumnImage(owner, getClient().getSettings());
+            }
+
         });
         support.addColumn(column);
 
@@ -1092,19 +1282,33 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
-            public String getText(Object r)
+            public String getText(Object e)
             {
-                return ((Transaction) r).getNote();
+                Optional<Transaction> transaction = ((CalculationLineItem) e).getTransaction();
+                return transaction.isPresent() ? transaction.get().getNote() : null;
             }
 
             @Override
-            public Image getImage(Object r)
+            public Image getImage(Object e)
             {
-                String note = ((Transaction) r).getNote();
+                String note = getText(e);
                 return note != null && note.length() > 0 ? Images.NOTE.image() : null;
             }
         });
-        column.setSorter(ColumnViewerSorter.create(Transaction.class, "note")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create((o1, o2) -> {
+
+            Optional<Transaction> t1 = ((CalculationLineItem) o1).getTransaction();
+            String s1 = t1.isPresent() ? t1.get().getNote() : ""; //$NON-NLS-1$
+            Optional<Transaction> t2 = ((CalculationLineItem) o2).getTransaction();
+            String s2 = t2.isPresent() ? t2.get().getNote() : ""; //$NON-NLS-1$
+            // notes can be null
+            if (s1 == null)
+                s1 = ""; //$NON-NLS-1$
+            if (s2 == null)
+                s2 = ""; //$NON-NLS-1$
+
+            return s1.compareTo(s2);
+        }));
         support.addColumn(column);
     }
 

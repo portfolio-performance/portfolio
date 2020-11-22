@@ -41,7 +41,6 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 
@@ -82,6 +81,7 @@ import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.selection.SelectionService;
 import name.abuchen.portfolio.ui.util.AttributeComparator;
+import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
@@ -209,8 +209,8 @@ public class StatementOfAssetsViewer
                         e -> ((Element) e).isSecurity() ? ((Element) e).getSecurityPosition().getShares() : null)));
         support.addColumn(column);
 
-        column = new NameColumn("1"); //$NON-NLS-1$
-        column.setLabelProvider(new NameColumnLabelProvider() // NOSONAR
+        column = new NameColumn(client, "1"); //$NON-NLS-1$
+        column.setLabelProvider(new NameColumnLabelProvider(client) // NOSONAR
         {
             @Override
             public String getText(Object e)
@@ -456,8 +456,7 @@ public class StatementOfAssetsViewer
             public Color getForeground(Object e)
             {
                 Money profitLoss = ((Element) e).getProfitLoss();
-                return Display.getCurrent()
-                                .getSystemColor(profitLoss.isNegative() ? SWT.COLOR_DARK_RED : SWT.COLOR_DARK_GREEN);
+                return profitLoss.isNegative() ? Colors.theme().redForeground() : Colors.theme().greenForeground();
             }
 
             @Override
@@ -818,7 +817,7 @@ public class StatementOfAssetsViewer
         }
         else if (element.isSecurity())
         {
-            Portfolio portfolio = portfolioSnapshot != null ? portfolioSnapshot.getPortfolio() : null;
+            Portfolio portfolio = portfolioSnapshot != null ? portfolioSnapshot.unwrapPortfolio() : null;
             new SecurityContextMenu(view).menuAboutToShow(manager, element.getSecurity(), portfolio);
         }
     }
@@ -1352,7 +1351,7 @@ public class StatementOfAssetsViewer
             if (value instanceof Money)
                 return Values.Money.format((Money) value, client.getBaseCurrency());
             else if (value instanceof Double)
-                return Values.Percent.format((Double) value);
+                return Values.Percent2.format((Double) value);
 
             return null;
         }
@@ -1374,9 +1373,9 @@ public class StatementOfAssetsViewer
                 doubleValue = (Double) value;
 
             if (doubleValue < 0)
-                return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED);
+                return Colors.theme().redForeground();
             else if (doubleValue > 0)
-                return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);
+                return Colors.theme().greenForeground();
             else
                 return null;
         }

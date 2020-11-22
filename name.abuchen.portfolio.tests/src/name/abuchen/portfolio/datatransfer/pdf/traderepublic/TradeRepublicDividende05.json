@@ -1,0 +1,41 @@
+{
+	"version": 1,
+	"transactions": [
+		{
+			"type": "DIVIDEND",
+			"date": "2020-09-21",
+			"currency": "EUR",
+			"amount": 50.30,
+			"shares": 500.0,
+			"security": {
+				"name": "Royal Dutch Shell",
+				"isin": "GB00B03MLX29",
+				"currency": "USD"
+			},
+			"units": [
+				{
+					"type": "GROSS_VALUE",
+					"amount": 67.65,
+					"fxAmount": 80.00,
+					"fxCurrency": "USD",
+					"fxRateToBase": 1.182557
+				},
+								{
+					"type": "TAX",
+					"amount": 6.90
+				},
+								{
+					"type": "TAX",
+					"amount": 0.40
+				},
+				{
+					"type": "TAX",
+					"amount": 10.15,
+					"fxAmount": 12.00,
+					"fxCurrency": "USD",
+					"fxRateToBase": 1.182557
+				}
+			]
+		}
+	]
+}

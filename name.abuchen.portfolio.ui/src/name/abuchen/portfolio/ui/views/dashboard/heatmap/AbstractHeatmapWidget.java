@@ -20,6 +20,7 @@ import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.util.InfoToolTip;
 import name.abuchen.portfolio.ui.util.SWTHelper;
+import name.abuchen.portfolio.ui.util.swt.ColoredLabel;
 import name.abuchen.portfolio.ui.views.dashboard.DashboardData;
 import name.abuchen.portfolio.ui.views.dashboard.DashboardResources;
 import name.abuchen.portfolio.ui.views.dashboard.ReportingPeriodConfig;
@@ -80,19 +81,26 @@ public abstract class AbstractHeatmapWidget<N extends Number> extends WidgetDele
                 InfoToolTip.attach(label, row.getToolTip());
 
             row.getData().forEach(data -> {
-                CLabel dataLabel = new CLabel(table, SWT.CENTER);
-                dataLabel.setBackground(table.getBackground());
+
+                Control lbl = null;
 
                 if (data != null)
                 {
+                    ColoredLabel dataLabel = new ColoredLabel(table, SWT.CENTER);
+                    dataLabel.setFont(resources.getSmallFont());
                     dataLabel.setText(formatter.format(data));
                     if (coloring != null)
-                        dataLabel.setBackground(coloring.apply((double) data));
-                    dataLabel.setFont(resources.getSmallFont());
+                        dataLabel.setBackdropColor(coloring.apply((double) data));
+
+                    lbl = dataLabel;
+                }
+                else
+                {
+                    lbl = new Label(table, SWT.LEFT);
                 }
 
                 if (model.getCellToolTip() != null)
-                    InfoToolTip.attach(dataLabel, model.getCellToolTip().apply(data));
+                    InfoToolTip.attach(lbl, model.getCellToolTip().apply(data));
             });
         });
 

@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.views;
 
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ import org.eclipse.swt.widgets.Composite;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.Attributable;
 import name.abuchen.portfolio.model.InvestmentPlan;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
@@ -36,9 +38,12 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.dialogs.transactions.InvestmentPlanDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
+import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.util.DropDown;
+import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.viewers.BooleanEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
@@ -60,6 +65,9 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
 
     @Inject
     private ExchangeRateProviderFactory factory;
+
+    @Inject
+    private PortfolioPart part;
 
     @Override
     protected String getDefaultTitle()
@@ -157,9 +165,14 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
         hookContextMenu(plans.getTable(), this::fillPlansContextMenu);
     }
 
+    private Image MaybeGetLogo(Attributable object)
+    {
+        return LogoManager.instance().getDefaultColumnImage(object, getClient().getSettings());
+    }
+
     private void addColumns(ShowHideColumnHelper support)
     {
-        Column column = new NameColumn("0", Messages.ColumnName, SWT.None, 100); //$NON-NLS-1$
+        Column column = new NameColumn("0", Messages.ColumnName, SWT.None, 100, part.getClient()); //$NON-NLS-1$
         column.getEditingSupport().addListener(this);
         support.addColumn(column);
 
@@ -177,7 +190,7 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
             public Image getImage(Object e)
             {
                 InvestmentPlan plan = (InvestmentPlan) e;
-                return (plan.getSecurity() != null ? Images.SECURITY.image() : null);
+                return MaybeGetLogo(plan.getSecurity());
             }
         });
         ColumnViewerSorter.create(Security.class, "name").attachTo(column); //$NON-NLS-1$
@@ -198,7 +211,7 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
             public Image getImage(Object e)
             {
                 InvestmentPlan plan = (InvestmentPlan) e;
-                return plan.getPortfolio() != null ? Images.PORTFOLIO.image() : null;
+                return MaybeGetLogo(plan.getPortfolio());
             }
         });
         ColumnViewerSorter.create(InvestmentPlan.class, "portfolio").attachTo(column); //$NON-NLS-1$
@@ -218,7 +231,7 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
             public Image getImage(Object e)
             {
                 InvestmentPlan plan = (InvestmentPlan) e;
-                return plan.getAccount() != null ? Images.ACCOUNT.image() : null;
+                return MaybeGetLogo(plan.getAccount());
             }
         });
         ColumnViewerSorter.create(Account.class, "name").attachTo(column); //$NON-NLS-1$
@@ -350,21 +363,29 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
             @Override
             public void run()
             {
-                CurrencyConverterImpl converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
-                List<TransactionPair<?>> latest = plan.generateTransactions(converter);
+                try
+                {
+                    CurrencyConverterImpl converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
+                    List<TransactionPair<?>> latest = plan.generateTransactions(converter);
 
-                if (latest.isEmpty())
-                {
-                    MessageDialog.openInformation(getActiveShell(), Messages.LabelInfo,
-                                    MessageFormat.format(Messages.InvestmentPlanInfoNoTransactionsGenerated,
-                                                    Values.Date.format(plan.getDateOfNextTransactionToBeGenerated())));
+                    if (latest.isEmpty())
+                    {
+                        MessageDialog.openInformation(getActiveShell(), Messages.LabelInfo, MessageFormat.format(
+                                        Messages.InvestmentPlanInfoNoTransactionsGenerated,
+                                        Values.Date.format(plan.getDateOfNextTransactionToBeGenerated())));
+                    }
+                    else
+                    {
+                        markDirty();
+                        plans.refresh();
+                        transactions.markTransactions(latest);
+                        transactions.setInput(plan.getTransactions(getClient()));
+                    }
                 }
-                else
+                catch (IOException e)
                 {
-                    markDirty();
-                    plans.refresh();
-                    transactions.markTransactions(latest);
-                    transactions.setInput(plan.getTransactions(getClient()));
+                    MessageDialog.openError(getActiveShell(), Messages.LabelError, e.getMessage());
+                    PortfolioPlugin.log(e);
                 }
             }
         });

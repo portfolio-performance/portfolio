@@ -7,9 +7,11 @@ import org.eclipse.e4.core.di.extensions.Preference;
 
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.impl.AlphavantageQuoteFeed;
+import name.abuchen.portfolio.online.impl.DivvyDiaryDividendFeed;
 import name.abuchen.portfolio.online.impl.FinnhubQuoteFeed;
 import name.abuchen.portfolio.online.impl.QuandlQuoteFeed;
 import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.util.FormatHelper;
 import name.abuchen.portfolio.util.TradeCalendarManager;
 
 @SuppressWarnings("restriction")
@@ -48,6 +50,14 @@ public class Preference2EnvAddon
 
     @Inject
     @Optional
+    public void setDivvyDiaryApiKey(
+                    @Preference(value = UIConstants.Preferences.DIVVYDIARY_API_KEY) String divvyDiaryApiKey)
+    {
+        Factory.getDividendFeed(DivvyDiaryDividendFeed.class).setApiKey(divvyDiaryApiKey);
+    }
+
+    @Inject
+    @Optional
     public void setDefaultCalendar(@Preference(value = UIConstants.Preferences.CALENDAR) String defaultCalendarCode)
     {
         // pass calendar preferences into TradeCalendarManager (which is
@@ -56,4 +66,9 @@ public class Preference2EnvAddon
         TradeCalendarManager.setDefaultCalendarCode(defaultCalendarCode);
     }
 
+    @Inject
+    public void setSharesPrecision(@Preference(value = UIConstants.Preferences.FORMAT_SHARES_DIGITS) int sharesPrecision)
+    {
+        FormatHelper.setSharesDisplayPrecision(sharesPrecision);
+    }
 }

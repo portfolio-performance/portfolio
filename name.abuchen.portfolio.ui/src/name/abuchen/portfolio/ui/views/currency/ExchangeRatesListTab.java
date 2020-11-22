@@ -9,6 +9,7 @@ import java.util.Optional;
 import javax.inject.Inject;
 
 import org.eclipse.e4.ui.di.UIEventTopic;
+import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -42,6 +43,9 @@ public class ExchangeRatesListTab implements AbstractTabbedView.Tab
 
     @Inject
     private IPreferenceStore preferences;
+
+    @Inject
+    private IStylingEngine stylingEngine;
 
     private TableViewer indeces;
     private TimelineChart chart;
@@ -161,6 +165,7 @@ public class ExchangeRatesListTab implements AbstractTabbedView.Tab
     protected void createBottomTable(Composite parent)
     {
         chart = new TimelineChart(parent);
+        stylingEngine.style(chart);
         chart.getToolTip().setValueFormat(new DecimalFormat("0.0000")); //$NON-NLS-1$
         refreshChart(null);
     }
@@ -199,7 +204,7 @@ public class ExchangeRatesListTab implements AbstractTabbedView.Tab
                             provider.isPresent() ? provider.get().getName() : "-"); //$NON-NLS-1$
 
             chart.getTitle().setText(title);
-            chart.addDateSeries(dates, values, Colors.TOTALS, title);
+            chart.addDateSeries(dates, values, Colors.ICON_BLUE, title);
 
             chart.adjustRange();
         }

@@ -75,7 +75,7 @@ public class TradesTableViewer
     private void createTradesColumns(ShowHideColumnHelper support, ViewMode viewMode)
     {
         if (viewMode == ViewMode.MULTIPLE_SECURITES)
-            support.addColumn(new NameColumn());
+            support.addColumn(new NameColumn(view.getClient()));
 
         Column column = new Column("start", Messages.ColumnStartDate, SWT.None, 80); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
@@ -103,12 +103,12 @@ public class TradesTableViewer
             @Override
             public Color getBackground(Object e)
             {
-                return ((Trade) e).getEnd().isPresent() ? null : Colors.WARNING;
+                return ((Trade) e).getEnd().isPresent() ? null : Colors.theme().warningBackground();
             }
         });
         column.setSorter(ColumnViewerSorter.create(e -> {
             Optional<LocalDateTime> date = ((Trade) e).getEnd();
-            return date.isPresent() ? date.get() : null;
+            return date.isPresent() ? date.get() : LocalDateTime.now().plusYears(1);
         }));
         support.addColumn(column);
 
@@ -200,6 +200,12 @@ public class TradesTableViewer
         column.setMenuLabel(Messages.ColumnIRR_MenuLabel);
         column.setLabelProvider(new NumberColorLabelProvider<>(Values.Percent2, t -> ((Trade) t).getIRR()));
         column.setSorter(ColumnViewerSorter.create(e -> ((Trade) e).getIRR()));
+        support.addColumn(column);
+
+        column = new Column("return", Messages.ColumnReturn, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setLabelProvider(new NumberColorLabelProvider<>(Values.Percent2, t -> ((Trade) t).getReturn()));
+        column.setSorter(ColumnViewerSorter.create(e -> ((Trade) e).getReturn()));
+        column.setVisible(false);
         support.addColumn(column);
 
         column = new Column("portfolio", Messages.ColumnPortfolio, SWT.LEFT, 100); //$NON-NLS-1$

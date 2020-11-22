@@ -379,19 +379,19 @@ public final class Security implements Attributable, InvestmentVehicle
      * some quote provider include the latest security price in the list of
      * historical prices.
      */
-    public boolean addAllPrices(List<SecurityPrice> prices)
+    public boolean addAllPrices(List<SecurityPrice> newPrices)
     {
-        if (prices.isEmpty())
+        if (newPrices.isEmpty())
             return false;
 
         LocalDate now = LocalDate.now();
 
         LocalDate last = null;
-        if (!prices.isEmpty())
-            last = prices.get(prices.size() - 1).getDate();
+        if (!this.prices.isEmpty())
+            last = this.prices.get(this.prices.size() - 1).getDate();
 
         boolean isUpdated = false;
-        for (SecurityPrice p : prices)
+        for (SecurityPrice p : newPrices)
         {
             if (!p.getDate().isAfter(now))
             {
@@ -552,6 +552,21 @@ public final class Security implements Attributable, InvestmentVehicle
         if (this.events == null)
             this.events = new ArrayList<>();
         this.events.add(event);
+    }
+
+    public void removeEvent(SecurityEvent event)
+    {
+        if (this.events == null)
+            this.events = new ArrayList<>();
+        this.events.remove(event);
+    }
+
+    public boolean removeEventIf(Predicate<SecurityEvent> filter)
+    {
+        if (events != null)
+            return events.removeIf(filter);
+        else
+            return false;
     }
 
     public Stream<SecurityProperty> getProperties()

@@ -355,13 +355,18 @@ public class Classification implements Named
         List<Classification> answer = new ArrayList<>();
 
         LinkedList<Classification> stack = new LinkedList<>();
-        stack.addAll(getChildren());
+
+        List<Classification> list = new ArrayList<>(getChildren());
+        list.sort((r, l) -> Integer.compare(r.getRank(), l.getRank()));
+        stack.addAll(list);
 
         while (!stack.isEmpty())
         {
             Classification c = stack.pop();
             answer.add(c);
-            stack.addAll(0, c.getChildren());
+            list = new ArrayList<>(c.getChildren());
+            list.sort((r, l) -> Integer.compare(r.getRank(), l.getRank()));
+            stack.addAll(0, list);
         }
 
         return answer;
@@ -439,8 +444,9 @@ public class Classification implements Named
     {
         visitor.visit(this);
 
-        for (Classification child : new ArrayList<Classification>(children))
-            child.accept(visitor);
+        getChildren().stream() //
+                        .sorted((r, l) -> Integer.compare(r.getRank(), l.getRank()))
+                        .forEach(child -> child.accept(visitor));
 
         for (Assignment assignment : new ArrayList<Assignment>(assignments))
             visitor.visit(this, assignment);

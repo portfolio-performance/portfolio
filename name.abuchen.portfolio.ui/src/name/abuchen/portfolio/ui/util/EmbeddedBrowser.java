@@ -10,9 +10,12 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.function.Consumer;
 
+import javax.inject.Inject;
+
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.e4.ui.css.swt.theme.IThemeEngine;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
@@ -20,7 +23,6 @@ import org.eclipse.swt.SWTError;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Text;
 import org.osgi.framework.Bundle;
@@ -33,10 +35,17 @@ import name.abuchen.portfolio.util.TokenReplacingReader;
 
 public class EmbeddedBrowser
 {
-    private final String htmlpage;
+    private String htmlpage;
     private Browser browser;
+    private IThemeEngine themeEngine;
 
-    public EmbeddedBrowser(String htmlpage)
+    @Inject
+    public EmbeddedBrowser(IThemeEngine engine)
+    {
+        this.themeEngine = engine;
+    }
+
+    public void setHtmlpage(String htmlpage)
     {
         this.htmlpage = htmlpage;
     }
@@ -70,8 +79,6 @@ public class EmbeddedBrowser
 
             Text text = new Text(container, SWT.WRAP);
             GridDataFactory.fillDefaults().grab(true, true).applyTo(text);
-            text.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
-            text.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_RED));
             text.setText(MessageFormat.format(Messages.MsgEmbeddedBrowserError, stacktrace));
         }
 
@@ -92,8 +99,10 @@ public class EmbeddedBrowser
         {
             try // NOSONAR
             {
+                boolean isDark = themeEngine.getActiveTheme().getId().contains("dark"); //$NON-NLS-1$
+
                 scanner = new Scanner(new TokenReplacingReader(new InputStreamReader(h, StandardCharsets.UTF_8),
-                                new PathResolver()));
+                                new PathResolver(isDark ? "dark" : "light"))); //$NON-NLS-1$ //$NON-NLS-2$
                 return scanner.useDelimiter("\\Z").next(); //$NON-NLS-1$
             }
             finally
@@ -120,12 +129,19 @@ public class EmbeddedBrowser
     private static final class PathResolver implements TokenReplacingReader.ITokenResolver
     {
         private Bundle bundle = PortfolioPlugin.getDefault().getBundle();
+        private String cssTheme;
+
+        public PathResolver(String cssTheme)
+        {
+            this.cssTheme = cssTheme;
+        }
 
         @Override
         public String resolveToken(String tokenName) throws IOException
         {
             try
             {
+                tokenName = tokenName.replace("THEME", cssTheme); //$NON-NLS-1$
                 URL fileURL = FileLocator.toFileURL(bundle.getEntry(tokenName));
                 return Platform.OS_WIN32.equals(Platform.getOS()) ? fileURL.getPath().substring(1) : fileURL.getPath();
             }

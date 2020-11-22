@@ -19,7 +19,7 @@ import name.abuchen.portfolio.snapshot.AccountSnapshot;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 
-public class AccountBalanceChart extends TimelineChart
+public class AccountBalanceChart extends TimelineChart // NOSONAR
 {
 
     public AccountBalanceChart(Composite parent)

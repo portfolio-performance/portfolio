@@ -21,11 +21,18 @@ public class ViacPDFExtractor extends SwissBasedPDFExtractor
         addBankIdentifier("Terzo"); //$NON-NLS-1$
 
         addDepositTransaction();
+        addDepositTransactionEnglish();
         addBuyTransaction();
+        addBuyTransactionEnglish();
         addSellTransaction();
+        addSellTransactionEnglish();
         addInterestTransaction();
+        addInterestTransactionEnglish();
         addFeeTransaction();
+        addFeeTransactionEnglish();
         addDividendsTransaction();
+        addDividendsTransactionEnglish();
+        addTaxRefundTransaction();
     }
 
     @SuppressWarnings("nls")
@@ -51,14 +58,39 @@ public class ViacPDFExtractor extends SwissBasedPDFExtractor
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        }).wrap(TransactionItem::new));
+    }
+
+    @SuppressWarnings("nls")
+    private void addDepositTransactionEnglish()
+    {
+        DocumentType type = new DocumentType("Deposit 3a");
+        this.addDocumentTyp(type);
+
+        Block block = new Block("Deposit 3a");
+        type.addBlock(block);
+        block.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction transaction = new AccountTransaction();
+                            transaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return transaction;
                         })
-                        .wrap(TransactionItem::new));
+
+                        .section("date", "amount", "currency") //
+                        .find("Deposit 3a") //
+                        .match("Credit: Value date (?<date>\\d+.\\d+.\\d{4}+) (?<currency>\\w{3}+) (?<amount>-?[\\d+',.]*)") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        }).wrap(TransactionItem::new));
     }
 
     @SuppressWarnings("nls")
     private void addBuyTransaction()
     {
-        DocumentType type = new DocumentType("abrechnung - Kauf");
+        DocumentType type = new DocumentType("B.rsenabrechnung - Kauf");
         this.addDocumentTyp(type);
 
         Block block = new Block("B.rsenabrechnung - Kauf");
@@ -121,7 +153,74 @@ public class ViacPDFExtractor extends SwissBasedPDFExtractor
 
                         .wrap(BuySellEntryItem::new));
     }
-    
+
+    @SuppressWarnings("nls")
+    private void addBuyTransactionEnglish()
+    {
+        DocumentType type = new DocumentType("Exchange Settlement - Buy");
+        this.addDocumentTyp(type);
+
+        Block block = new Block("Exchange Settlement - Buy");
+        type.addBlock(block);
+        block.set(new Transaction<BuySellEntry>()
+
+                        .subject(() -> {
+                            BuySellEntry entry = new BuySellEntry();
+                            entry.setType(PortfolioTransaction.Type.BUY);
+                            return entry;
+                        })
+
+                        .section("isin", "name", "currency", "shares") //
+                        .find("Order: Buy") //
+                        .match("(?<shares>[\\d+,.]*) Qty (?<name>.*)$") //
+                        .match("ISIN: (?<isin>\\S*)") //
+                        .match("Price: (?<currency>\\w{3}+) .*") //
+                        .assign((t, v) -> {
+                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setShares(asShares(v.get("shares")));
+                        })
+
+                        .section("date", "amount", "currency") //
+                        .match("Charged amount: Value date (?<date>\\d+.\\d+.\\d{4}+) (?<currency>\\w{3}+) (?<amount>[\\d+',.]*)")
+                        .assign((t, v) -> {
+                            t.setDate(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
+
+                        .section("tax", "currency").optional() //
+                        .match("Stamp duty (?<currency>\\w{3}+) (?<tax>[\\d+',.]*)") //
+                        .assign((t, v) -> {
+                            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                            if (tax.getCurrencyCode().equals(t.getAccountTransaction().getCurrencyCode()))
+                                t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX, tax));
+
+                        })
+
+                        .section("forex", "forexCurrency", "amount", "currency", "exchangeRate").optional() //
+                        .match("Amount (?<forexCurrency>\\w{3}+) (?<forex>[\\d+',.]*)")
+                        .match("Exchange rate CHF/\\w{3}+ (?<exchangeRate>[\\d+',.]*) (?<currency>\\w{3}+) (?<amount>[\\d+',.]*)")
+                        .assign((t, v) -> {
+
+                            Money forex = Money.of(asCurrencyCode(v.get("forexCurrency")), asAmount(v.get("forex")));
+                            BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                            Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
+
+                            // only add gross value with forex if the security
+                            // is actually denoted in the foreign currency
+                            // (often users actually have the quotes in their
+                            // home country currency)
+                            if (forex.getCurrencyCode()
+                                            .equals(t.getPortfolioTransaction().getSecurity().getCurrencyCode()))
+                            {
+                                t.getPortfolioTransaction()
+                                                .addUnit(new Unit(Unit.Type.GROSS_VALUE, gross, forex, exchangeRate));
+                            }
+                        })
+
+                        .wrap(BuySellEntryItem::new));
+    }
+
     @SuppressWarnings("nls")
     private void addSellTransaction()
     {
@@ -179,7 +278,65 @@ public class ViacPDFExtractor extends SwissBasedPDFExtractor
 
                         .wrap(BuySellEntryItem::new));
     }
-    
+
+    @SuppressWarnings("nls")
+    private void addSellTransactionEnglish()
+    {
+        DocumentType type = new DocumentType("Exchange Settlement - Sell");
+        this.addDocumentTyp(type);
+
+        Block block = new Block("Exchange Settlement - Sell");
+        type.addBlock(block);
+        block.set(new Transaction<BuySellEntry>()
+
+                        .subject(() -> {
+                            BuySellEntry entry = new BuySellEntry();
+                            entry.setType(PortfolioTransaction.Type.SELL);
+                            return entry;
+                        })
+
+                        .section("isin", "name", "currency", "shares") //
+                        .find("Order: Sell") //
+                        .match("(?<shares>[\\d+,.]*) Qty (?<name>.*)$") //
+                        .match("ISIN: (?<isin>\\S*)") //
+                        .match("Price: (?<currency>\\w{3}+) .*") //
+                        .assign((t, v) -> {
+                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setShares(asShares(v.get("shares")));
+                        })
+
+                        .section("date", "amount", "currency") //
+                        .match("Charged amount: Value date (?<date>\\d+.\\d+.\\d{4}+) (?<currency>\\w{3}+) (?<amount>[\\d+',.]*)")
+                        .assign((t, v) -> {
+                            t.setDate(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
+
+                        .section("forex", "forexCurrency", "amount", "currency", "exchangeRate").optional() //
+                        .match("Amount (?<forexCurrency>\\w{3}+) (?<forex>[\\d+',.]*)")
+                        .match("Exchange rate CHF/\\w{3}+ (?<exchangeRate>[\\d+',.]*) (?<currency>\\w{3}+) (?<amount>[\\d+',.]*)")
+                        .assign((t, v) -> {
+
+                            Money forex = Money.of(asCurrencyCode(v.get("forexCurrency")), asAmount(v.get("forex")));
+                            BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                            Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
+
+                            // only add gross value with forex if the security
+                            // is actually denoted in the foreign currency
+                            // (often users actually have the quotes in their
+                            // home country currency)
+                            if (forex.getCurrencyCode()
+                                            .equals(t.getPortfolioTransaction().getSecurity().getCurrencyCode()))
+                            {
+                                t.getPortfolioTransaction()
+                                                .addUnit(new Unit(Unit.Type.GROSS_VALUE, gross, forex, exchangeRate));
+                            }
+                        })
+
+                        .wrap(BuySellEntryItem::new));
+    }
+
     @SuppressWarnings("nls")
     private void addInterestTransaction()
     {
@@ -204,8 +361,34 @@ public class ViacPDFExtractor extends SwissBasedPDFExtractor
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        }).wrap(TransactionItem::new));
+    }
+
+    @SuppressWarnings("nls")
+    private void addInterestTransactionEnglish()
+    {
+        DocumentType type = new DocumentType("Interest");
+        this.addDocumentTyp(type);
+
+        Block block = new Block("Interest");
+        type.addBlock(block);
+        block.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction transaction = new AccountTransaction();
+                            transaction.setType(AccountTransaction.Type.INTEREST);
+                            return transaction;
                         })
-                        .wrap(TransactionItem::new));
+
+                        .section("date", "amount", "currency") //
+                        .find("Interest") //
+                        .match("On (?<date>\\d+.\\d+.\\d{4}+) we have credited your account:") //
+                        .match("Interest credit: (?<currency>\\w{3}+) (?<amount>[\\d+',.]*)") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        }).wrap(TransactionItem::new));
     }
 
     @SuppressWarnings("nls")
@@ -231,8 +414,33 @@ public class ViacPDFExtractor extends SwissBasedPDFExtractor
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        }).wrap(TransactionItem::new));
+    }
+
+    @SuppressWarnings("nls")
+    private void addFeeTransactionEnglish()
+    {
+        DocumentType type = new DocumentType("Commission");
+        this.addDocumentTyp(type);
+
+        Block block = new Block("Commission");
+        type.addBlock(block);
+        block.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction transaction = new AccountTransaction();
+                            transaction.setType(AccountTransaction.Type.FEES);
+                            return transaction;
                         })
-                        .wrap(TransactionItem::new));
+
+                        .section("date", "amount", "currency") //
+                        .find("Commission") //
+                        .match("Charged amount: Value date (?<date>\\d+.\\d+.\\d{4}+) (?<currency>\\w{3}+) (?<amount>-?[\\d+',.]*)") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        }).wrap(TransactionItem::new));
     }
 
     @SuppressWarnings("nls")
@@ -241,7 +449,7 @@ public class ViacPDFExtractor extends SwissBasedPDFExtractor
         DocumentType type = new DocumentType("Dividendenaussch");
         this.addDocumentTyp(type);
 
-        Block block = new Block("Dividendenaussch.ttung");
+        Block block = new Block("Dividendenart: Ordentliche Dividende");
         type.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
 
@@ -252,10 +460,9 @@ public class ViacPDFExtractor extends SwissBasedPDFExtractor
                         })
 
                         .section("shares", "name", "isin", "currency") //
-                        .find("Dividendenart: Ordentliche Dividende") //
                         .match("(?<shares>[\\d+,.]*) Ant (?<name>.*)$") //
                         .match("ISIN: (?<isin>\\S*)") //
-                        .match("Aussch.ttung: (?<currency>\\w{3}+) .*")
+                        .match("Aussch.ttung: (?<currency>\\w{3}+) .*") //
                         .assign((t, v) -> {
                             t.setSecurity(getOrCreateSecurity(v));
                             t.setShares(asShares(v.get("shares")));
@@ -282,8 +489,7 @@ public class ViacPDFExtractor extends SwissBasedPDFExtractor
                             // is actually denoted in the foreign currency
                             // (often users actually have the quotes in their
                             // home country currency)
-                            if (forex.getCurrencyCode()
-                                            .equals(t.getSecurity().getCurrencyCode()))
+                            if (forex.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
                             {
                                 t.addUnit(new Unit(Unit.Type.GROSS_VALUE, gross, forex, exchangeRate));
                             }
@@ -291,6 +497,106 @@ public class ViacPDFExtractor extends SwissBasedPDFExtractor
 
                         .wrap(TransactionItem::new));
     }
+
+    @SuppressWarnings("nls")
+    private void addDividendsTransactionEnglish()
+    {
+        DocumentType type = new DocumentType("Dividend Payment");
+        this.addDocumentTyp(type);
+
+        Block block = new Block("Type of dividend: Ordinary dividend");
+        type.addBlock(block);
+        block.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction transaction = new AccountTransaction();
+                            transaction.setType(AccountTransaction.Type.DIVIDENDS);
+                            return transaction;
+                        })
+
+                        .section("shares", "name", "isin", "currency") //
+                        .match("(?<shares>[\\d+,.]*) Qty (?<name>.*)$") //
+                        .match("ISIN: (?<isin>\\S*)") //
+                        .match("Dividend payment: (?<currency>\\w{3}+) .*") //
+                        .assign((t, v) -> {
+                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setShares(asShares(v.get("shares")));
+                        })
+
+                        .section("date", "amount", "currency") //
+                        .match("Amount credited: Value date (?<date>\\d+.\\d+.\\d{4}+) (?<currency>\\w{3}+) (?<amount>-?[\\d+',.]*)") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
+
+                        .section("forex", "forexCurrency", "amount", "currency", "exchangeRate").optional() //
+                        .match("Amount (?<forexCurrency>\\w{3}+) (?<forex>[\\d+',.]*)")
+                        .match("Exchange rate CHF/\\w{3}+ (?<exchangeRate>[\\d+',.]*) (?<currency>\\w{3}+) (?<amount>[\\d+',.]*)")
+                        .assign((t, v) -> {
+
+                            Money forex = Money.of(asCurrencyCode(v.get("forexCurrency")), asAmount(v.get("forex")));
+                            BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                            Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
+
+                            // only add gross value with forex if the security
+                            // is actually denoted in the foreign currency
+                            // (often users actually have the quotes in their
+                            // home country currency)
+                            if (forex.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
+                            {
+                                t.addUnit(new Unit(Unit.Type.GROSS_VALUE, gross, forex, exchangeRate));
+                            }
+                        })
+
+                        .wrap(TransactionItem::new));
+    }
+
+    
+    @SuppressWarnings("nls")
+    private void addTaxRefundTransaction()
+    {
+        DocumentType type = new DocumentType("Dividendenaussch");
+        this.addDocumentTyp(type);
+
+        Block block = new Block("Dividendenart: R.ckerstattung Quellensteuer");
+        type.addBlock(block);
+        block.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction transaction = new AccountTransaction();
+                            transaction.setType(AccountTransaction.Type.TAX_REFUND);
+                            return transaction;
+                        })
+
+                        .section("shares", "name", "isin", "currency") //
+                        .match("(?<shares>[\\d+,.]*) Ant (?<name>.*)$") //
+                        .match("ISIN: (?<isin>\\S*)") //
+                        .match("Aussch.ttung: (?<currency>\\w{3}+) .*") //
+                        .assign((t, v) -> {
+                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setShares(asShares(v.get("shares")));
+                        })
+
+                        .section("date", "amount", "currency") //
+                        .match("Gutgeschriebener Betrag: Valuta (?<date>\\d+.\\d+.\\d{4}+) (?<currency>\\w{3}+) (?<amount>-?[\\d+',.]*)") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
+                            {
+                                t.setNote(t.getSecurity().getName());
+                                t.setSecurity(null);
+                                t.setShares(0L);
+                            }
+                        })
+
+                        .wrap(TransactionItem::new));
+    }
+
 
     @Override
     public String getLabel()

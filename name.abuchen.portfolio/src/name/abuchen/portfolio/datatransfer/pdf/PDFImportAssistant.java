@@ -35,34 +35,38 @@ public class PDFImportAssistant
 
         extractors.add(new BaaderBankPDFExtractor(client));
         extractors.add(new BankSLMPDFExtractor(client));
+        extractors.add(new BondoraGoAndGrowPDFExtractor(client));
         extractors.add(new ComdirectPDFExtractor(client));
         extractors.add(new CommerzbankPDFExtractor(client));
         extractors.add(new ConsorsbankPDFExtractor(client));
+        extractors.add(new ConsorsbankPre2009PDFExtractor(client));
         extractors.add(new DABPDFExtractor(client));
         extractors.add(new DegiroPDFExtractor(client));
         extractors.add(new DeutscheBankPDFExtractor(client));
         extractors.add(new DkbPDFExtractor(client));
+        extractors.add(new DZBankPDFExtractor(client));
         extractors.add(new FinTechGroupBankPDFExtractor(client));
-        extractors.add(new INGDiBaExtractor(client));
-        extractors.add(new OnvistaPDFExtractor(client));
-        extractors.add(new SBrokerPDFExtractor(client));
-        extractors.add(new UnicreditPDFExtractor(client));
         extractors.add(new HelloBankPDFExtractor(client));
-        extractors.add(new ViacPDFExtractor(client));
-        extractors.add(new TargobankPDFExtractor(client));
-        extractors.add(new TradeRepublicPDFExtractor(client));
+        extractors.add(new INGDiBaExtractor(client));
+        extractors.add(new JustTradePDFExtractor(client));
+        extractors.add(new OnvistaPDFExtractor(client));
         extractors.add(new PostfinancePDFExtractor(client));
+        extractors.add(new SBrokerPDFExtractor(client));
         extractors.add(new SutorPDFExtractor(client));
         extractors.add(new SwissquotePDFExtractor(client));
-        extractors.add(new DZBankPDFExtractor(client));
+        extractors.add(new TargobankPDFExtractor(client));
+        extractors.add(new TradeRepublicPDFExtractor(client));
+        extractors.add(new UnicreditPDFExtractor(client));
+        extractors.add(new ViacPDFExtractor(client));
 
         extractors.add(new JSONPDFExtractor(client, "deutsche-bank-purchase.json")); //$NON-NLS-1$
         extractors.add(new JSONPDFExtractor(client, "deutsche-bank-sale.json")); //$NON-NLS-1$
-        extractors.add(new JSONPDFExtractor(client, "ffb-purchase.json")); //$NON-NLS-1$
+        extractors.add(new JSONPDFExtractor(client, "ffb.json")); //$NON-NLS-1$
         extractors.add(new JSONPDFExtractor(client, "trade-republic-dividends.json")); //$NON-NLS-1$
         extractors.add(new JSONPDFExtractor(client, "trade-republic-investmentplan.json")); //$NON-NLS-1$
         extractors.add(new JSONPDFExtractor(client, "ebase.json")); //$NON-NLS-1$
         extractors.add(new JSONPDFExtractor(client, "postbank-purchase.json")); //$NON-NLS-1$
+        extractors.add(new JSONPDFExtractor(client, "weberbank-dividends.json")); //$NON-NLS-1$
     }
 
     public Map<Extractor, List<Item>> run(IProgressMonitor monitor, Map<File, List<Exception>> errors)
@@ -134,13 +138,18 @@ public class PDFImportAssistant
         }
         PDFInputFile inputFile = new PDFInputFile(file, extractedText);
 
+        return runWithInputFile(inputFile, errors);
+    }
+
+    public List<Item> runWithInputFile(PDFInputFile file, List<Exception> errors) throws FileNotFoundException
+    {
         SecurityCache securityCache = new SecurityCache(client);
 
         List<Item> items = null;
         for (Extractor extractor : extractors)
         {
             List<Exception> warnings = new ArrayList<>();
-            items = extractor.extract(securityCache, inputFile, warnings);
+            items = extractor.extract(securityCache, file, warnings);
 
             if (!items.isEmpty())
             {
@@ -149,9 +158,9 @@ public class PDFImportAssistant
                 // did not find any transactions in this text
                 errors.clear();
                 errors.addAll(warnings);
-                
+
                 items = extractor.postProcessing(items);
-                
+
                 break;
             }
 
@@ -160,7 +169,7 @@ public class PDFImportAssistant
 
         if (items == null || items.isEmpty())
             return Collections.emptyList();
-        
+
         Map<Extractor, List<Item>> itemsByExtractor = new HashMap<>();
         itemsByExtractor.put(extractors.get(0), items);
         securityCache.addMissingSecurityItems(itemsByExtractor);

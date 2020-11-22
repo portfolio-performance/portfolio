@@ -331,8 +331,8 @@ public class IBFlexStatementExtractor implements Extractor
             // transaction currency
             String currency = asCurrencyUnit(element.getAttribute("currency"));
 
-            // Set the Amount which is "cost"
-            Double amount = Math.abs(Double.parseDouble(element.getAttribute("cost")));
+            // Set the Amount which is "netCash"
+            Double amount = Math.abs(Double.parseDouble(element.getAttribute("netCash")));
             setAmount(element, transaction.getPortfolioTransaction(), amount, currency);
             setAmount(element, transaction.getAccountTransaction(), amount, currency, false);
 
