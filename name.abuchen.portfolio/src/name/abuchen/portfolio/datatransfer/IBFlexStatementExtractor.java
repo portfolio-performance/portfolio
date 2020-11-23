@@ -52,7 +52,26 @@ public class IBFlexStatementExtractor implements Extractor
     private final Client client;
     private List<Security> allSecurities;
 
-    private Map<String, String> exchanges;
+    private final Map<String, String> exchanges;
+    private static final Map<String, String> CFD_MAPPING;
+
+    static
+    {
+        Map<String, String> m = new HashMap<String, String>();
+        m.put("IBUS500", "^GSPC");
+        m.put("IBUS30", "^DJI");
+        m.put("IBUST100", "^IXIC");
+
+        m.put("IBGB100", "^FTSE");
+        m.put("IBEU50", "^STOXX50E");
+        m.put("IBDE30", "^GDAXI");
+        m.put("IBFR40", "^FCHI");
+        m.put("IBNL25", "^AEX");
+
+        m.put("IBJP225", "^N225");
+        m.put("IBAU200", "^AXJO");
+        CFD_MAPPING = Collections.unmodifiableMap(m);
+    }
 
     public IBFlexStatementExtractor(Client client)
     {
@@ -183,8 +202,8 @@ public class IBFlexStatementExtractor implements Extractor
             //New Format dateTime has now also Time [YYYYMMDD;HHMMSS], I cut Date from string [YYYYMMDD]
             //Checks for old format [YYYY-MM-DD, HH:MM:SS], too. Quapla 11.1.20
             //Changed from dateTime to reportDate + Check for old Data-Formats, Quapla 14.2.20
-            
-            if (element.hasAttribute("reportDate")) 
+
+            if (element.hasAttribute("reportDate"))
             {
                 if (element.getAttribute("reportDate").length() == 15)
                 {
@@ -206,7 +225,7 @@ public class IBFlexStatementExtractor implements Extractor
                     transaction.setDateTime(convertDate(element.getAttribute("dateTime")));
                 }
             }
-                     
+
             Double amount = Double.parseDouble(element.getAttribute("amount"));
             String currency = asCurrencyUnit(element.getAttribute("currency"));
 
@@ -289,7 +308,7 @@ public class IBFlexStatementExtractor implements Extractor
         private Function<Element, Item> buildPortfolioTransaction = element -> {
             String assetCategory = element.getAttribute("assetCategory");
 
-            if (!Arrays.asList("STK", "OPT").contains(assetCategory))
+            if (!Arrays.asList("STK", "OPT", "CFD").contains(assetCategory))
                 return null;
 
             // Unused Information from Flexstatement Trades, to be used in the
@@ -310,8 +329,8 @@ public class IBFlexStatementExtractor implements Extractor
                 throw new IllegalArgumentException();
             }
 
-            // Sometimes IB-FlexStatement doesn't include "tradeDate" - in this case tradeDate will be replaced by "000000". 
-            // New format is stored in dateTime, take care for double imports). 
+            // Sometimes IB-FlexStatement doesn't include "tradeDate" - in this case tradeDate will be replaced by "000000".
+            // New format is stored in dateTime, take care for double imports).
             if (element.hasAttribute("dateTime"))
             {
                 transaction.setDate(convertDate(element.getAttribute("dateTime").substring(0,8), element.getAttribute("dateTime").substring(9,15)));
@@ -327,11 +346,14 @@ public class IBFlexStatementExtractor implements Extractor
                     transaction.setDate(convertDate(element.getAttribute("tradeDate"), "000000"));
                 }
             }
-            
+
             // transaction currency
             String currency = asCurrencyUnit(element.getAttribute("currency"));
 
-            // Set the Amount which is "netCash"
+            // Set the Amount:
+            //      cost = quantity * tradePrice + fee
+            //      netCash = -cost
+            //      tradeMoney = quantity * tradePrice
             Double amount = Math.abs(Double.parseDouble(element.getAttribute("netCash")));
             setAmount(element, transaction.getPortfolioTransaction(), amount, currency);
             setAmount(element, transaction.getAccountTransaction(), amount, currency, false);
@@ -559,14 +581,17 @@ public class IBFlexStatementExtractor implements Extractor
         {
             // Lookup the Exchange Suffix for Yahoo
             Optional<String> tickerSymbol = Optional.ofNullable(element.getAttribute("symbol"));
+            Optional<String> underlyingSymbol = Optional.ofNullable(element.getAttribute("underlyingSymbol"));
+            Optional<String> underlyingSecurityID = Optional.ofNullable(element.getAttribute("underlyingSecurityID"));
             String assetCategory = element.getAttribute("assetCategory");
             String exchange = element.getAttribute("exchange");
             String quoteFeed = QuoteFeed.MANUAL;
 
-            // yahoo uses '-' instead of ' '
             String currency = asCurrencyUnit(element.getAttribute("currency"));
             String isin = element.getAttribute("isin");
             String cusip = element.getAttribute("cusip");
+
+            // yahoo uses '-' instead of ' '
             Optional<String> computedTickerSymbol = tickerSymbol.map(t -> t.replaceAll(" ", "-"));
 
             // Store cusip in isin if isin is not available
@@ -583,8 +608,7 @@ public class IBFlexStatementExtractor implements Extractor
                 if (computedTickerSymbol.filter(p -> p.matches(".*\\d{6}[CP]\\d{8}")).isPresent())
                     quoteFeed = YahooFinanceQuoteFeed.ID;
             }
-
-            if ("STK".equals(assetCategory))
+            else if ("STK".equals(assetCategory))
             {
                 computedTickerSymbol = tickerSymbol;
                 if (!"USD".equals(currency))
@@ -611,9 +635,41 @@ public class IBFlexStatementExtractor implements Extractor
                 // For Stock, lets use Alphavante quote feed by default
                 quoteFeed = AlphavantageQuoteFeed.ID;
             }
+            else if ("CFD".equals(assetCategory))
+            {
+                // For CFD, lets use Alphavante quote feed by default
+                quoteFeed = AlphavantageQuoteFeed.ID;
+
+                if (underlyingSecurityID.isPresent())
+                    isin = underlyingSecurityID.get();
+
+                if (underlyingSymbol.isPresent())
+                {
+
+                    // use underlyingSymbol instead of symbol for CFD
+                    if (CFD_MAPPING.containsKey(underlyingSymbol.get()))
+                    {
+                        computedTickerSymbol = Optional.of(CFD_MAPPING.get(underlyingSymbol.get()));
+                        quoteFeed = YahooFinanceQuoteFeed.ID;
+                    }
+                    else
+                    {
+                        computedTickerSymbol = underlyingSymbol;
+                    }
+                }
+                else
+                {
+
+                    // some symbols in IB included the exchange as lower key
+                    // without "." at the end, e.g. BMWd for BMW trading at d
+                    // (Xetra, DE), so we'll get rid of this
+                    computedTickerSymbol = tickerSymbol.map(t -> t.replaceAll("[a-z]*$", ""));
+                }
+
+            }
 
             Security s2 = null;
-            
+
             for (Security s : allSecurities)
             {
                 // Find security with same conID or isin & currency or yahooSymbol
@@ -630,7 +686,7 @@ public class IBFlexStatementExtractor implements Extractor
 
             if (s2 != null)
                 return s2;
-            
+
             if (!doCreate)
                 return null;
 
