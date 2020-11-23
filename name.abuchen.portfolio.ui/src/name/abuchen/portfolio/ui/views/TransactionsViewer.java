@@ -457,7 +457,7 @@ public final class TransactionsViewer implements ModificationListener
             @Override
             public void keyPressed(KeyEvent e)
             {
-                new TransactionContextMenu(owner).handleEditKey(e, tableViewer.getStructuredSelection());
+                new TransactionContextMenu(owner).handleEditKey(e, tableViewer);
             }
         });
     }

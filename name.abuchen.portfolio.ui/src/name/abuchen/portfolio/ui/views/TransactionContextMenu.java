@@ -8,6 +8,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 
@@ -71,16 +72,21 @@ public class TransactionContextMenu
         }
     }
 
-    public void handleEditKey(KeyEvent e, IStructuredSelection selection)
+    public void handleEditKey(KeyEvent e, TableViewer tableViewer)
     {
         if (e.keyCode == 'e' && e.stateMask == SWT.MOD1)
         {
-            if (selection.isEmpty())
+            if (tableViewer.getStructuredSelection().isEmpty())
                 return;
 
-            TransactionPair<?> tx = (TransactionPair<?>) selection.getFirstElement();
+            TransactionPair<?> tx = (TransactionPair<?>) tableViewer.getStructuredSelection().getFirstElement();
             tx.withAccountTransaction().ifPresent(t -> createEditAccountTransactionAction(t).run());
             tx.withPortfolioTransaction().ifPresent(t -> createEditPortfolioTransactionAction(t).run());
+        }
+        else if (e.stateMask == SWT.MOD1 && e.keyCode == 'a')
+        {
+            tableViewer.getTable().selectAll();
+            e.doit = false;
         }
     }
 
