@@ -350,11 +350,25 @@ public class IBFlexStatementExtractor implements Extractor
             // transaction currency
             String currency = asCurrencyUnit(element.getAttribute("currency"));
 
-            // Set the Amount:
-            //      cost = quantity * tradePrice + fee
-            //      netCash = -cost
-            //      tradeMoney = quantity * tradePrice
-            Double amount = Math.abs(Double.parseDouble(element.getAttribute("netCash")));
+            // Set the Amount (from a real life example):
+            //  * For STK (and OPT?)
+            //      quantity
+            //      tradePrice = 95
+            //      closePrice = 95.84
+            //      commission = fee (-5.8)
+            //      cost = quantity * tradePrice - commission (955.8)
+            //      netCash = -cost                          (-955.8)
+            //      tradeMoney = quantity * tradePrice        (950)
+
+            //  * For CFD
+            //      quantity = 3
+            //      tradePrice = 409.75
+            //      closePrice = 409.75
+            //      commission = fee (-5.8)
+            //      cost = quantity * tradePrice - commission (1235.05)
+            //      netCash = commission                        (-5.8)
+            //      tradeMoney = quantity * tradePrice        (1229.25)
+            Double amount = Math.abs(Double.parseDouble(element.getAttribute("cost")));
             setAmount(element, transaction.getPortfolioTransaction(), amount, currency);
             setAmount(element, transaction.getAccountTransaction(), amount, currency, false);
 
