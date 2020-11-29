@@ -45,15 +45,18 @@ public final class InfoToolTip extends ToolTip
         parent.setData(UIConstants.CSS.CLASS_NAME, "tooltip"); //$NON-NLS-1$
 
         Composite result = new Composite(parent, SWT.NONE);
-        result.setLayout(new GridLayout());
+        GridLayout layout = new GridLayout();
+        result.setLayout(layout);
 
         // create tool tip with a reasonable width
-        int width = SWTHelper.stringWidth(result, "ABCDEFGHIJK") * 5; //$NON-NLS-1$
+        int maximumWidth = SWTHelper.stringWidth(result, "ABCDEFGHIJK") * 5; //$NON-NLS-1$
+        int actualWidth = SWTHelper.stringWidth(result, message.get()) + layout.marginWidth * 2;
+        int widthHint = Math.min(maximumWidth, actualWidth);
 
         Text text = new Text(result, SWT.WRAP);
         text.setText(message.get());
         GridData gridData = new GridData();
-        gridData.widthHint = width;
+        gridData.widthHint = widthHint;
         text.setLayoutData(gridData);
         Dialog.applyDialogFont(result);
         return result;
