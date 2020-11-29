@@ -164,6 +164,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                             t.setAmount(t.getPortfolioTransaction().getAmount() - asAmount(v.get("tax")));
                         })
 
+                        .section("tax", "currency").optional() //
+                        .match("Kirchensteuer -(?<tax>[\\d+,.]*) (?<currency>\\w{3}+)")
+                        .assign((t, v) -> t.getPortfolioTransaction()
+                                        .addUnit(new Unit(Unit.Type.TAX,
+                                                        Money.of(asCurrencyCode(v.get("currency")),
+                                                                        asAmount(v.get("tax"))))))
+
                         // check for negative tax (optimization)
                         .section("tax", "currency").optional() //
                         .match("Kirchensteuer Optimierung (?<tax>[\\d+,.]*) (?<currency>\\w{3}+)")
