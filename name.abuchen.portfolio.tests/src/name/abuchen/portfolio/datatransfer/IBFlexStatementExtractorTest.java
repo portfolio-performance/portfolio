@@ -3,7 +3,7 @@ package name.abuchen.portfolio.datatransfer;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -55,11 +55,11 @@ public class IBFlexStatementExtractorTest
         List<Item> securityItems = results.stream().filter( i -> i instanceof SecurityItem).collect(Collectors.toList());
         List<Item> buySellTransactions = results.stream().filter( i -> i instanceof BuySellEntryItem).collect(Collectors.toList());
         
-        assertThat(securityItems.size(), is(5)); 
+        assertThat(securityItems.size(), is(6)); 
         
         // 14 Trade item and one corporate transaction
-        assertThat(buySellTransactions.size(), is(15));
-        assertThat(results.size(), is(31));
+        assertThat(buySellTransactions.size(), is(16));
+        assertThat(results.size(), is(33));
 
         assertFirstSecurity(results.stream().filter(i -> i instanceof SecurityItem).findFirst());
         assertFirstTransaction(results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst());
@@ -70,6 +70,7 @@ public class IBFlexStatementExtractorTest
         
         
         assertOptionBuyTransaction(buySellTransactions.get(13));
+        assertCFDBuyTransaction(buySellTransactions.get(14));
 
         assertInterestCharge(results.stream().filter(i -> i instanceof TransactionItem)
                         .filter(i -> i.getSubject() instanceof AccountTransaction
@@ -170,6 +171,8 @@ public class IBFlexStatementExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getSecurity().getName(), is("GRAN COLOMBIA GOLD CORP"));
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of("CAD", 1356_75L)));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("CAD", 1350_00L)));
+        assertThat(entry.getPortfolioTransaction().getGrossValueAmount(), is(1350_00L));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2013-04-01T09:34")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(5000_000000L));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of("CAD", 6_75L)));
@@ -193,7 +196,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getShares(), is(100_000000L));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of("CAD", 1_00L)));
     }
-    
+
     private void assertOptionBuyTransaction(Item item)
     {
         assertThat(item.getSubject(), instanceOf(BuySellEntry.class));
@@ -203,6 +206,22 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getSecurity().getTickerSymbol(), is("FB180921C00200000"));
+    }
+    
+    private void assertCFDBuyTransaction(Item item)
+    {
+        assertThat(item.getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry entry = (BuySellEntry) item.getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getSecurity().getTickerSymbol(), is("QQQX"));
+        assertThat(entry.getPortfolioTransaction().getAmount(), is(1255_00L));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(50_000_000L));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of("USD",1255_00L)));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("USD",1250_00L)));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of("USD", 5_00L)));
     }
 
     @Test

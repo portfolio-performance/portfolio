@@ -50,7 +50,7 @@ import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
 public class IBFlexStatementExtractor implements Extractor
 {
     private final Client client;
-    private List<Security> allSecurities;
+    private final List<Security> allSecurities;
 
     private final Map<String, String> exchanges;
     private static final Map<String, String> CFD_MAPPING;
@@ -176,27 +176,24 @@ public class IBFlexStatementExtractor implements Extractor
         }
     }
 
-    private class IBFlexStatementExtractorResult
-    {
+    private class IBFlexStatementExtractorResult {
         private Document document;
-        private List<Exception> errors = new ArrayList<>();
-        private List<Item> results = new ArrayList<>();
+        private final List<Exception> errors = new ArrayList<>();
+        private final List<Item> results = new ArrayList<>();
         private String ibAccountCurrency = null;
 
-        private Function<Element, Item> importAccountInformation = element -> {
+        private final Function<Element, Item> importAccountInformation = element -> {
             String currency = asCurrencyUnit(element.getAttribute("currency"));
-            if (currency != null && !currency.isEmpty())
-            {
+            if (currency != null && !currency.isEmpty()) {
                 CurrencyUnit currencyUnit = CurrencyUnit.getInstance(currency);
-                if (currencyUnit != null)
-                {
+                if (currencyUnit != null) {
                     ibAccountCurrency = currency;
                 }
             }
             return null;
         };
 
-        private Function<Element, Item> buildAccountTransaction = element -> {
+        private final Function<Element, Item> buildAccountTransaction = element -> {
             AccountTransaction transaction = new AccountTransaction();
 
             //New Format dateTime has now also Time [YYYYMMDD;HHMMSS], I cut Date from string [YYYYMMDD]
@@ -295,7 +292,10 @@ public class IBFlexStatementExtractor implements Extractor
             }
 
             amount = Math.abs(amount);
-            setAmount(element, transaction, amount, currency);
+            transaction.setMonetaryAmount(convertAmountToMoney(element, amount, currency));
+            if (ibAccountCurrency != null && !ibAccountCurrency.equals(currency)) {
+                transaction.addUnit(createUnit(element, Unit.Type.GROSS_VALUE, amount, currency));
+            }
 
             transaction.setNote(element.getAttribute("description"));
 
@@ -305,7 +305,7 @@ public class IBFlexStatementExtractor implements Extractor
         /**
          * Construct a BuySellEntry based on Trade object defined in eElement
          */
-        private Function<Element, Item> buildPortfolioTransaction = element -> {
+        private final Function<Element, Item> buildPortfolioTransaction = element -> {
             String assetCategory = element.getAttribute("assetCategory");
 
             if (!Arrays.asList("STK", "OPT", "CFD").contains(assetCategory))
@@ -351,7 +351,7 @@ public class IBFlexStatementExtractor implements Extractor
             String currency = asCurrencyUnit(element.getAttribute("currency"));
 
             // Set the Amount (from a real life example):
-            //  * For STK (and OPT?)
+            //  * For STK (and OPT?) BUY
             //      quantity
             //      tradePrice = 95
             //      closePrice = 95.84
@@ -359,8 +359,9 @@ public class IBFlexStatementExtractor implements Extractor
             //      cost = quantity * tradePrice - commission (955.8)
             //      netCash = -cost                          (-955.8)
             //      tradeMoney = quantity * tradePrice        (950)
+            //      proceeds = -tradeMoney                   (-950)
 
-            //  * For CFD
+            //  * For CFD BUY
             //      quantity = 3
             //      tradePrice = 409.75
             //      closePrice = 409.75
@@ -368,25 +369,43 @@ public class IBFlexStatementExtractor implements Extractor
             //      cost = quantity * tradePrice - commission (1235.05)
             //      netCash = commission                        (-5.8)
             //      tradeMoney = quantity * tradePrice        (1229.25)
-            Double amount = Math.abs(Double.parseDouble(element.getAttribute("cost")));
-            setAmount(element, transaction.getPortfolioTransaction(), amount, currency);
-            setAmount(element, transaction.getAccountTransaction(), amount, currency, false);
+            //      proceeds = -tradeMoney                   (-1229.25)
 
-            // Share Quantity
-            Double qty = Math.abs(Double.parseDouble(element.getAttribute("quantity")));
-            Double multiplier = Double.parseDouble(Optional.ofNullable(element.getAttribute("multiplier")).orElse("1"));
-            transaction.setShares(Math.round(qty.doubleValue() * Values.Share.factor() * multiplier.doubleValue()));
+            // Warnings:
+            // for SELL-transaction the cost attribute == cost attribute of the BUY-transaction!
+            // for CFD the netCash == commission
+            Double gross = Math.abs(Double.parseDouble(element.getAttribute("tradeMoney"))); // gross
+            Double fees = Math.abs(Double.parseDouble(element.getAttribute("ibCommission")));
+            Double taxes = Math.abs(Double.parseDouble(element.getAttribute("taxes")));
+
+            Double total;
+            if (transaction.getPortfolioTransaction().getType().isPurchase()) {
+                total = gross + fees + taxes;
+            }
+            else
+            {
+                total = gross - fees - taxes;
+            }
+            Money totalMoney = convertAmountToMoney(element, total, currency);
+            transaction.getPortfolioTransaction().setMonetaryAmount(totalMoney);
+            if (ibAccountCurrency != null && !ibAccountCurrency.equals(currency)) {
+                transaction.getPortfolioTransaction().addUnit(createUnit(element, Unit.Type.GROSS_VALUE, gross, currency));
+            }
+            transaction.getAccountTransaction().setMonetaryAmount(totalMoney);
 
             // fees
-            double fees = Math.abs(Double.parseDouble(element.getAttribute("ibCommission")));
             String feesCurrency = asCurrencyUnit(element.getAttribute("ibCommissionCurrency"));
             Unit feeUnit = createUnit(element, Unit.Type.FEE, fees, feesCurrency);
             transaction.getPortfolioTransaction().addUnit(feeUnit);
 
             // taxes
-            double taxes = Math.abs(Double.parseDouble(element.getAttribute("taxes")));
             Unit taxUnit = createUnit(element, Unit.Type.TAX, taxes, currency);
             transaction.getPortfolioTransaction().addUnit(taxUnit);
+
+            // Share Quantity
+            Double qty = Math.abs(Double.parseDouble(element.getAttribute("quantity")));
+            Double multiplier = Double.parseDouble(Optional.ofNullable(element.getAttribute("multiplier")).orElse("1"));
+            transaction.setShares(Math.round(qty.doubleValue() * Values.Share.factor() * multiplier.doubleValue()));
 
             transaction.setSecurity(this.getOrCreateSecurity(element, true));
 
@@ -399,9 +418,9 @@ public class IBFlexStatementExtractor implements Extractor
          * Constructs a Transaction object for a Corporate Transaction defined
          * in eElement.
          */
-        private Function<Element, Item> buildCorporateTransaction = eElement -> {
+        private final Function<Element, Item> buildCorporateTransaction = eElement -> {
             Money proceeds = Money.of(asCurrencyUnit(eElement.getAttribute("currency")),
-                            Values.Amount.factorize(Double.parseDouble(eElement.getAttribute("proceeds"))));
+                    Values.Amount.factorize(Double.parseDouble(eElement.getAttribute("proceeds"))));
 
             if (!proceeds.isZero())
             {
@@ -477,58 +496,42 @@ public class IBFlexStatementExtractor implements Extractor
                 BigDecimal inverseRate = BigDecimal.ONE.divide(fxRateToBase, 10, RoundingMode.HALF_DOWN);
 
                 BigDecimal baseCurrencyMoney = BigDecimal.valueOf(amount.doubleValue())
-                                .setScale(2, RoundingMode.HALF_DOWN).divide(inverseRate, RoundingMode.HALF_DOWN);
+                        .setScale(2, RoundingMode.HALF_DOWN).divide(inverseRate, RoundingMode.HALF_DOWN);
 
                 unit = new Unit(unitType,
-                                Money.of(ibAccountCurrency,
-                                                Math.round(baseCurrencyMoney.doubleValue() * Values.Amount.factor())),
-                                Money.of(currency, Values.Amount.factorize(amount)), fxRateToBase);
+                        Money.of(ibAccountCurrency,
+                                Math.round(baseCurrencyMoney.doubleValue() * Values.Amount.factor())),
+                        Money.of(currency, Values.Amount.factorize(amount)), fxRateToBase);
             }
             return unit;
         }
 
-        private void setAmount(Element element, Transaction transaction, Double amount, String currency)
-        {
-            setAmount(element, transaction, amount, currency, true);
+        Money convertAmountToMoney(Element element, Double amount, String currency) {
+            if (ibAccountCurrency != null && !ibAccountCurrency.equals(currency)) {
+                // only required when a account currency is available
+                return convertCurrencies(element, Values.Amount.factorize(amount));
+            } else {
+                return Money.of(currency, Values.Amount.factorize(amount));
+            }
         }
 
-        private void setAmount(Element element, Transaction transaction, Double amount, String currency,
-                        boolean addUnit)
-        {
-            if (ibAccountCurrency != null && !ibAccountCurrency.equals(currency))
-            {
-                // only required when a account currency is available
-                String fxRateToBaseString = element.getAttribute("fxRateToBase");
-                BigDecimal fxRateToBase;
-                if (fxRateToBaseString != null && !fxRateToBaseString.isEmpty())
-                {
-                    fxRateToBase = BigDecimal.valueOf(Double.parseDouble(fxRateToBaseString));
-                }
-                else
-                {
-                    fxRateToBase = new BigDecimal(1);
-                }
-                BigDecimal inverseRate = BigDecimal.ONE.divide(fxRateToBase, 10, RoundingMode.HALF_DOWN);
+        private Money convertCurrencies(Element element, Long amount) {
+            return convertCurrencies(element, amount, ibAccountCurrency);
+        }
 
-                BigDecimal baseCurrencyMoney = BigDecimal.valueOf(amount.doubleValue() * Values.Amount.factor())
-                                .divide(inverseRate, RoundingMode.HALF_DOWN);
-                transaction.setAmount(Math.round(baseCurrencyMoney.doubleValue()));
-                transaction.setCurrencyCode(ibAccountCurrency);
-                if (addUnit)
-                {
-                    Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, transaction.getMonetaryAmount(),
-                                    Money.of(currency, Math.round(amount.doubleValue() * Values.Amount.factor())),
-                                    fxRateToBase);
-
-                    transaction.addUnit(grossValue);
-                }
+        private Money convertCurrencies(Element element, Long amount, String targetCurrencyCode) {
+            String fxRateToBaseString = element.getAttribute("fxRateToBase");
+            BigDecimal fxRateToBase;
+            if (fxRateToBaseString != null && !fxRateToBaseString.isEmpty()) {
+                fxRateToBase = BigDecimal.valueOf(Double.parseDouble(fxRateToBaseString));
+            } else {
+                fxRateToBase = new BigDecimal(1);
             }
-            else
+            BigDecimal inverseRate = BigDecimal.ONE.divide(fxRateToBase, 10, RoundingMode.HALF_DOWN);
 
-            {
-                transaction.setAmount(Math.round(amount.doubleValue() * Values.Amount.factor()));
-                transaction.setCurrencyCode(currency);
-            }
+            BigDecimal baseCurrencyMoney = BigDecimal.valueOf(amount).divide(inverseRate, RoundingMode.HALF_DOWN);
+
+            return Money.of(targetCurrencyCode, baseCurrencyMoney.longValue());
         }
 
         /**
