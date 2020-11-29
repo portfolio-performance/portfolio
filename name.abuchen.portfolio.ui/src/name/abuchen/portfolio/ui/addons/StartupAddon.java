@@ -155,7 +155,7 @@ public class StartupAddon
 
             };
             job.setSystem(true);
-            job.schedule(500);
+            job.schedule(3000);
         }
     }
 
