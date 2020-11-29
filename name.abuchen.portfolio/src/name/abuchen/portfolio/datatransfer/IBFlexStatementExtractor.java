@@ -176,7 +176,8 @@ public class IBFlexStatementExtractor implements Extractor
         }
     }
 
-    private class IBFlexStatementExtractorResult {
+    private class IBFlexStatementExtractorResult
+    {
         private Document document;
         private final List<Exception> errors = new ArrayList<>();
         private final List<Item> results = new ArrayList<>();
@@ -184,9 +185,11 @@ public class IBFlexStatementExtractor implements Extractor
 
         private final Function<Element, Item> importAccountInformation = element -> {
             String currency = asCurrencyUnit(element.getAttribute("currency"));
-            if (currency != null && !currency.isEmpty()) {
+            if (currency != null && !currency.isEmpty())
+            {
                 CurrencyUnit currencyUnit = CurrencyUnit.getInstance(currency);
-                if (currencyUnit != null) {
+                if (currencyUnit != null)
+                {
                     ibAccountCurrency = currency;
                 }
             }
@@ -196,9 +199,11 @@ public class IBFlexStatementExtractor implements Extractor
         private final Function<Element, Item> buildAccountTransaction = element -> {
             AccountTransaction transaction = new AccountTransaction();
 
-            //New Format dateTime has now also Time [YYYYMMDD;HHMMSS], I cut Date from string [YYYYMMDD]
-            //Checks for old format [YYYY-MM-DD, HH:MM:SS], too. Quapla 11.1.20
-            //Changed from dateTime to reportDate + Check for old Data-Formats, Quapla 14.2.20
+            // New Format dateTime has now also Time [YYYYMMDD;HHMMSS], I cut
+            // Date from string [YYYYMMDD]
+            // Checks for old format [YYYY-MM-DD, HH:MM:SS], too. Quapla 11.1.20
+            // Changed from dateTime to reportDate + Check for old Data-Formats,
+            // Quapla 14.2.20
 
             if (element.hasAttribute("reportDate"))
             {
@@ -293,7 +298,8 @@ public class IBFlexStatementExtractor implements Extractor
 
             amount = Math.abs(amount);
             transaction.setMonetaryAmount(convertAmountToMoney(element, amount, currency));
-            if (ibAccountCurrency != null && !ibAccountCurrency.equals(currency)) {
+            if (ibAccountCurrency != null && !ibAccountCurrency.equals(currency))
+            {
                 transaction.addUnit(createUnit(element, Unit.Type.GROSS_VALUE, amount, currency));
             }
 
@@ -329,17 +335,20 @@ public class IBFlexStatementExtractor implements Extractor
                 throw new IllegalArgumentException();
             }
 
-            // Sometimes IB-FlexStatement doesn't include "tradeDate" - in this case tradeDate will be replaced by "000000".
+            // Sometimes IB-FlexStatement doesn't include "tradeDate" - in this
+            // case tradeDate will be replaced by "000000".
             // New format is stored in dateTime, take care for double imports).
             if (element.hasAttribute("dateTime"))
             {
-                transaction.setDate(convertDate(element.getAttribute("dateTime").substring(0,8), element.getAttribute("dateTime").substring(9,15)));
+                transaction.setDate(convertDate(element.getAttribute("dateTime").substring(0, 8),
+                                element.getAttribute("dateTime").substring(9, 15)));
             }
             else
             {
                 if (element.hasAttribute("tradeTime"))
                 {
-                    transaction.setDate(convertDate(element.getAttribute("tradeDate"), element.getAttribute("tradeTime")));
+                    transaction.setDate(
+                                    convertDate(element.getAttribute("tradeDate"), element.getAttribute("tradeTime")));
                 }
                 else
                 {
@@ -350,36 +359,38 @@ public class IBFlexStatementExtractor implements Extractor
             // transaction currency
             String currency = asCurrencyUnit(element.getAttribute("currency"));
 
-            // Set the Amount (from a real life example):
-            //  * For STK (and OPT?) BUY
-            //      quantity
-            //      tradePrice = 95
-            //      closePrice = 95.84
-            //      commission = fee (-5.8)
-            //      cost = quantity * tradePrice - commission (955.8)
-            //      netCash = -cost                          (-955.8)
-            //      tradeMoney = quantity * tradePrice        (950)
-            //      proceeds = -tradeMoney                   (-950)
-
-            //  * For CFD BUY
-            //      quantity = 3
-            //      tradePrice = 409.75
-            //      closePrice = 409.75
-            //      commission = fee (-5.8)
-            //      cost = quantity * tradePrice - commission (1235.05)
-            //      netCash = commission                        (-5.8)
-            //      tradeMoney = quantity * tradePrice        (1229.25)
-            //      proceeds = -tradeMoney                   (-1229.25)
-
-            // Warnings:
-            // for SELL-transaction the cost attribute == cost attribute of the BUY-transaction!
-            // for CFD the netCash == commission
+            /* Set the Amount (from a real life example):
+             *  * For STK (and OPT?) BUY
+             *      quantity
+             *      tradePrice = 95
+             *      closePrice = 95.84
+             *      commission = fee (-5.8)
+             *      cost = quantity * tradePrice - commission (955.8)
+             *      netCash = -cost                          (-955.8)
+             *      tradeMoney = quantity * tradePrice        (950)
+             *      proceeds = -tradeMoney                   (-950)
+             *
+             *  * For CFD BUY
+             *      quantity = 3
+             *      tradePrice = 409.75
+             *      closePrice = 409.75
+             *      commission = fee (-5.8)
+             *      cost = quantity * tradePrice - commission (1235.05)
+             *      netCash = commission                        (-5.8)
+             *      tradeMoney = quantity * tradePrice        (1229.25)
+             *      proceeds = -tradeMoney                   (-1229.25)
+             *
+             * Warnings:
+             * for SELL-transaction the cost attribute == cost attribute of the BUY-transaction!
+             * for CFD the netCash == commission
+             */
             Double gross = Math.abs(Double.parseDouble(element.getAttribute("tradeMoney"))); // gross
             Double fees = Math.abs(Double.parseDouble(element.getAttribute("ibCommission")));
             Double taxes = Math.abs(Double.parseDouble(element.getAttribute("taxes")));
 
             Double total;
-            if (transaction.getPortfolioTransaction().getType().isPurchase()) {
+            if (transaction.getPortfolioTransaction().getType().isPurchase())
+            {
                 total = gross + fees + taxes;
             }
             else
@@ -388,8 +399,10 @@ public class IBFlexStatementExtractor implements Extractor
             }
             Money totalMoney = convertAmountToMoney(element, total, currency);
             transaction.getPortfolioTransaction().setMonetaryAmount(totalMoney);
-            if (ibAccountCurrency != null && !ibAccountCurrency.equals(currency)) {
-                transaction.getPortfolioTransaction().addUnit(createUnit(element, Unit.Type.GROSS_VALUE, gross, currency));
+            if (ibAccountCurrency != null && !ibAccountCurrency.equals(currency))
+            {
+                transaction.getPortfolioTransaction()
+                                .addUnit(createUnit(element, Unit.Type.GROSS_VALUE, gross, currency));
             }
             transaction.getAccountTransaction().setMonetaryAmount(totalMoney);
 
@@ -420,7 +433,7 @@ public class IBFlexStatementExtractor implements Extractor
          */
         private final Function<Element, Item> buildCorporateTransaction = eElement -> {
             Money proceeds = Money.of(asCurrencyUnit(eElement.getAttribute("currency")),
-                    Values.Amount.factorize(Double.parseDouble(eElement.getAttribute("proceeds"))));
+                            Values.Amount.factorize(Double.parseDouble(eElement.getAttribute("proceeds"))));
 
             if (!proceeds.isZero())
             {
@@ -496,35 +509,44 @@ public class IBFlexStatementExtractor implements Extractor
                 BigDecimal inverseRate = BigDecimal.ONE.divide(fxRateToBase, 10, RoundingMode.HALF_DOWN);
 
                 BigDecimal baseCurrencyMoney = BigDecimal.valueOf(amount.doubleValue())
-                        .setScale(2, RoundingMode.HALF_DOWN).divide(inverseRate, RoundingMode.HALF_DOWN);
+                                .setScale(2, RoundingMode.HALF_DOWN).divide(inverseRate, RoundingMode.HALF_DOWN);
 
                 unit = new Unit(unitType,
-                        Money.of(ibAccountCurrency,
-                                Math.round(baseCurrencyMoney.doubleValue() * Values.Amount.factor())),
-                        Money.of(currency, Values.Amount.factorize(amount)), fxRateToBase);
+                                Money.of(ibAccountCurrency,
+                                                Math.round(baseCurrencyMoney.doubleValue() * Values.Amount.factor())),
+                                Money.of(currency, Values.Amount.factorize(amount)), fxRateToBase);
             }
             return unit;
         }
 
-        Money convertAmountToMoney(Element element, Double amount, String currency) {
-            if (ibAccountCurrency != null && !ibAccountCurrency.equals(currency)) {
+        Money convertAmountToMoney(Element element, Double amount, String currency)
+        {
+            if (ibAccountCurrency != null && !ibAccountCurrency.equals(currency))
+            {
                 // only required when a account currency is available
                 return convertCurrencies(element, Values.Amount.factorize(amount));
-            } else {
+            }
+            else
+            {
                 return Money.of(currency, Values.Amount.factorize(amount));
             }
         }
 
-        private Money convertCurrencies(Element element, Long amount) {
+        private Money convertCurrencies(Element element, Long amount)
+        {
             return convertCurrencies(element, amount, ibAccountCurrency);
         }
 
-        private Money convertCurrencies(Element element, Long amount, String targetCurrencyCode) {
+        private Money convertCurrencies(Element element, Long amount, String targetCurrencyCode)
+        {
             String fxRateToBaseString = element.getAttribute("fxRateToBase");
             BigDecimal fxRateToBase;
-            if (fxRateToBaseString != null && !fxRateToBaseString.isEmpty()) {
+            if (fxRateToBaseString != null && !fxRateToBaseString.isEmpty())
+            {
                 fxRateToBase = BigDecimal.valueOf(Double.parseDouble(fxRateToBaseString));
-            } else {
+            }
+            else
+            {
                 fxRateToBase = new BigDecimal(1);
             }
             BigDecimal inverseRate = BigDecimal.ONE.divide(fxRateToBase, 10, RoundingMode.HALF_DOWN);
@@ -689,7 +711,8 @@ public class IBFlexStatementExtractor implements Extractor
 
             for (Security s : allSecurities)
             {
-                // Find security with same conID or isin & currency or yahooSymbol
+                // Find security with same conID or isin & currency or
+                // yahooSymbol
                 if (conID != null && conID.length() > 0 && conID.equals(s.getWkn()))
                     return s;
                 if (isin.length() > 0 && isin.equals(s.getIsin()))
