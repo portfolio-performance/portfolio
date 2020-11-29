@@ -1,8 +1,11 @@
 package name.abuchen.portfolio.ui.update;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Locale;
@@ -11,8 +14,10 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
+import org.eclipse.equinox.internal.p2.core.helpers.URLUtil;
 import org.eclipse.equinox.p2.core.IProvisioningAgent;
 import org.eclipse.equinox.p2.core.ProvisionException;
 import org.eclipse.equinox.p2.engine.IProfile;
@@ -28,6 +33,7 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.osgi.service.datalocation.Location;
 import org.eclipse.swt.widgets.Display;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -142,8 +148,7 @@ public final class UpdateHelper
             if (updateNumber >= 101)
                 return;
 
-            CoreException exception = new CoreException(new Status(IStatus.ERROR,
-                            PortfolioPlugin.PLUGIN_ID,
+            CoreException exception = new CoreException(new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID,
                             MessageFormat.format(Messages.MsgJavaVersionTooOldForLetsEncrypt, javaVersion)));
 
             if (silent)
@@ -293,6 +298,8 @@ public final class UpdateHelper
         if (operation == null)
             checkForUpdates(monitor);
 
+        checkWritePermissions();
+
         ProvisioningJob job = operation.getProvisioningJob(null);
         IStatus status = job.runModal(monitor);
 
@@ -300,6 +307,61 @@ public final class UpdateHelper
             throw new OperationCanceledException();
         if (status.getSeverity() != IStatus.OK)
             throw new CoreException(status);
+    }
+
+    /**
+     * Check that update process has correct permissions to update the
+     * installation. Particularly on Windows, we might have to prompt users to
+     * run PP as administrator.
+     */
+    private void checkWritePermissions() throws CoreException
+    {
+        Location installLocation = Platform.getInstallLocation();
+        if (installLocation == null)
+            return;
+
+        URL url = installLocation.getURL();
+        if (url == null)
+            return;
+
+        File installDir = URLUtil.toFile(url);
+
+        boolean canWrite = canWrite(installDir);
+
+        PortfolioPlugin.log(MessageFormat.format("Pre-update check. Write permissions on {0} = {1}", //$NON-NLS-1$
+                        installDir.getAbsolutePath(), canWrite));
+
+        if (!canWrite)
+            throw new CoreException(new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID,
+                            MessageFormat.format(Messages.MsgUpdateNoWritePermissions, installDir.getAbsolutePath())));
+
+    }
+
+    private boolean canWrite(File installDir)
+    {
+        // https://stackoverflow.com/a/18633628/1158146
+
+        if (!installDir.canWrite())
+            return false;
+
+        if (!installDir.isDirectory())
+            return false;
+
+        File fileTest = null;
+        try
+        {
+            fileTest = File.createTempFile("writeableArea", ".dll", installDir); //$NON-NLS-1$ //$NON-NLS-2$
+        }
+        catch (IOException e)
+        {
+            return false;
+        }
+        finally
+        {
+            if (fileTest != null)
+                fileTest.delete(); // NOSONAR
+        }
+        return true;
     }
 
     private <T> T getService(Class<T> type, String name)

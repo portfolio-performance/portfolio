@@ -1,0 +1,141 @@
+{
+	"version": 1,
+	"transactions": [
+		{
+			"type": "PURCHASE",
+			"date": "2019-09-03",
+			"currency": "EUR",
+			"amount": 210,
+			"shares": 2.417,
+			"security": {
+				"name": "UBS-MSCI WLD.SOC.RESP.A.D.E.",
+				"isin": "LU0629459743",
+				"wkn": "A1JA1R",
+				"currency": "USD"
+			},
+			"units": [
+				{
+					"type": "GROSS_VALUE",
+					"amount": 209.48,
+					"fxAmount": 229.64,
+					"fxCurrency": "USD",
+					"fxRateToBase": 1.096243
+				},
+				{
+					"type": "FEE",
+					"amount": 0.0
+				},
+				{
+					"type": "FEE",
+					"amount": 0.0
+				},
+				{
+					"type": "FEE",
+					"amount": 0.52
+				}
+			]
+		},
+		{
+			"type": "PURCHASE",
+			"date": "2019-09-03",
+			"currency": "EUR",
+			"amount": 90,
+			"shares": 7.877,
+			"security": {
+				"name": "UBS Emer.Mkt.Soc.Resp.UETFADIS",
+				"isin": "LU1048313891",
+				"wkn": "A110QD",
+				"currency": "USD"
+			},
+			"units": [
+				{
+					"type": "GROSS_VALUE",
+					"amount": 89.56,
+					"fxAmount": 98.18,
+					"fxCurrency": "USD",
+					"fxRateToBase": 1.096243
+				},
+				{
+					"type": "FEE",
+					"amount": 0.0
+				},
+				{
+					"type": "FEE",
+					"amount": 0.0
+				},
+				{
+					"type": "FEE",
+					"amount": 0.44
+				}
+			]
+		},
+		{
+			"type": "PURCHASE",
+			"date": "2019-10-02",
+			"currency": "EUR",
+			"amount": 210,
+			"shares": 2.409,
+			"security": {
+				"name": "UBS-MSCI WLD.SOC.RESP.A.D.E.",
+				"isin": "LU0629459743",
+				"wkn": "A1JA1R",
+				"currency": "USD"
+			},
+			"units": [
+				{
+					"type": "GROSS_VALUE",
+					"amount": 209.48,
+					"fxAmount": 228.47,
+					"fxCurrency": "USD",
+					"fxRateToBase": 1.090667
+				},
+				{
+					"type": "FEE",
+					"amount": 0.0
+				},
+				{
+					"type": "FEE",
+					"amount": 0.0
+				},
+				{
+					"type": "FEE",
+					"amount": 0.52
+				}
+			]
+		},
+		{
+			"type": "PURCHASE",
+			"date": "2019-10-02",
+			"currency": "EUR",
+			"amount": 90,
+			"shares": 7.728,
+			"security": {
+				"name": "UBS Emer.Mkt.Soc.Resp.UETFADIS",
+				"isin": "LU1048313891",
+				"wkn": "A110QD",
+				"currency": "USD"
+			},
+			"units": [
+				{
+					"type": "GROSS_VALUE",
+					"amount": 89.56,
+					"fxAmount": 97.68,
+					"fxCurrency": "USD",
+					"fxRateToBase": 1.090667
+				},
+				{
+					"type": "FEE",
+					"amount": 0.0
+				},
+				{
+					"type": "FEE",
+					"amount": 0.0
+				},
+				{
+					"type": "FEE",
+					"amount": 0.44
+				}
+			]
+		}
+	]
+}

@@ -506,15 +506,11 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private void addPortfolioTransactions()
     {
-        DocumentType type = new DocumentType("Transaktionsübersicht");
+        DocumentType type = new DocumentType("Transaktionsübersicht|Transacciones|Transacties");
         this.addDocumentTyp(type);
         
-        DocumentType typeNL = new DocumentType("Transacties"); 
-        this.addDocumentTyp(typeNL);
-
         Block blockBuy = new Block("^\\d+-\\d+-\\d{4} \\d+:\\d+ .* \\w{12}+ .* \\w{3}+ .*[.\\d]+,\\d{2}$"); 
         type.addBlock(blockBuy);
-        typeNL.addBlock(blockBuy);
 
         blockBuy.set(new Transaction<BuySellEntry>()
 

@@ -155,6 +155,7 @@
   <handlers xmi:id="_nh13gJl3EemdcMPaSHoNPw" elementId="name.abuchen.portfolio.ui.handler.showHideSidebar" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.ShowHideSidebarHandler" command="_kGDGEJl3EemdcMPaSHoNPw"/>
   <handlers xmi:id="_VFcfMBM9EeqsXLK6ns2Lug" elementId="name.abuchen.portfolio.ui.handler.saveErrorLog" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.SaveErrorLogHandler" command="_PZoy8BM9EeqsXLK6ns2Lug"/>
   <handlers xmi:id="_QjA2cL3OEeqoTtTaIzseTQ" elementId="name.abuchen.portfolio.ui.handler.uploadToDivvyDiary" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.UploadToDivvyDiaryHandler" command="_ZWCyUL3OEeqoTtTaIzseTQ"/>
+  <handlers xmi:id="_YLz7IDFOEeuGXeKVI3KJtQ" elementId="name.abuchen.portfolio.handler.selectAll" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.SelectAllHandler" command="_gxx18DFPEeuGXeKVI3KJtQ"/>
   <bindingTables xmi:id="_uK6dcBiSEeO8gYEHAOvLsA" elementId="" bindingContext="_7d8q4RjAEeO8gYEHAOvLsA">
     <bindings xmi:id="_yNkakBiSEeO8gYEHAOvLsA" elementId="" keySequence="M1+O" command="_3CjQwBfHEeOders_POVQHQ"/>
     <bindings xmi:id="_0WsqQBiSEeO8gYEHAOvLsA" elementId="" keySequence="M1+N" command="_LiZuIBiOEeOR1rNFCzC82A"/>
@@ -172,6 +173,7 @@
     <bindings xmi:id="_3vDC0IUnEemwCoP93IFEYw" elementId="" keySequence="M1+G" command="_xMacQIUnEemwCoP93IFEYw"/>
     <bindings xmi:id="_3fTasJowEemdcMPaSHoNPw" elementId="" keySequence="M1+K" command="_kGDGEJl3EemdcMPaSHoNPw"/>
     <bindings xmi:id="_OEzOoKHiEeq-w_-gdNqxzA" elementId="" keySequence="M1+M2+S" command="_lcgCQBfWEeOders_POVQHQ"/>
+    <bindings xmi:id="_oqXi0DFPEeuGXeKVI3KJtQ" elementId="name.abuchen.portfolio.bootstrap.keybinding.0" keySequence="M1+A" command="_gxx18DFPEeuGXeKVI3KJtQ"/>
   </bindingTables>
   <bindingTables xmi:id="_mbUm4KBzEemgtous_Qs3nA" elementId="" bindingContext="_7d8q4hjAEeO8gYEHAOvLsA"/>
   <rootContext xmi:id="_7d8q4BjAEeO8gYEHAOvLsA" elementId="org.eclipse.ui.contexts.dialogAndWindow" name="In Dialog and Windows">
@@ -233,6 +235,7 @@
   <commands xmi:id="_kGDGEJl3EemdcMPaSHoNPw" elementId="name.abuchen.portfolio.ui.command.showHideSidebar" commandName="showHideSidebar"/>
   <commands xmi:id="_PZoy8BM9EeqsXLK6ns2Lug" elementId="name.abuchen.portfolio.ui.command.saveErrorLog" commandName="saveErrorLog"/>
   <commands xmi:id="_ZWCyUL3OEeqoTtTaIzseTQ" elementId="name.abuchen.portfolio.ui.command.uploadToDivvyDiary" commandName="uploadToDivvyDiary"/>
+  <commands xmi:id="_gxx18DFPEeuGXeKVI3KJtQ" elementId="name.abuchen.portfolio.ui.command.selectAll" commandName="selectAll"/>
   <addons xmi:id="_4SwvYLOQEeWe1a5u3oOf1Q" elementId="name.abuchen.portfolio.ui.addon.proxy" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.ProxyAddon"/>
   <addons xmi:id="_B_-6cKH7EeO9F5tUX5UqjQ" elementId="name.abuchen.portfolio.ui.addon.log" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.StartupAddon"/>
   <addons xmi:id="_D8SDoRfFEeOders_POVQHQ" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>

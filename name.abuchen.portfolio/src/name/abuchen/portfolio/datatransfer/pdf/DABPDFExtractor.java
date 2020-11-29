@@ -113,6 +113,11 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("fees", "currency") //
+                        .optional().match("^.* Registrierungsspesen (?<currency>\\w{3}+) (?<fees>[\\d.]+,\\d+)-$")
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(
+                                                new Unit(Unit.Type.FEE, Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fees"))))))
+                        
+                        .section("fees", "currency") //
                         .optional().match("^.* Provision (?<currency>\\w{3}+) (?<fees>[\\d.]+,\\d+)-$")
                         .assign((t, v) -> {
                             String currency = asCurrencyCode(v.get("currency"));

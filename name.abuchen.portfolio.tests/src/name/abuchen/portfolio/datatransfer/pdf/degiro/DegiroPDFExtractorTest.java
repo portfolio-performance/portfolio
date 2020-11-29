@@ -1017,6 +1017,51 @@ public class DegiroPDFExtractorTest
     }
 
     @Test
+    public void testTransaktionsuebersicht8()
+    {
+        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+    
+        List<Exception> errors = new ArrayList<>();
+    
+        List<Item> results = extractor
+                        .extract(PDFInputFile.loadTestCase(getClass(), "DegiroTransaktionsuebersicht8.txt"), errors);
+    
+        assertThat(errors, empty());
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+    
+        // 09-01-2020 09:31 TURBOC O.END GOLD 1109,22 DE000VA5DDR3 FRA -55 EUR 42,46 EUR 2.335,30 EUR 2.335,30 EUR -4,76 EUR 2.330,54
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getName(), is("TURBOC O.END GOLD 1109,22"));
+        assertThat(security.getIsin(), is("DE000VA5DDR3"));
+        assertThat(security.getCurrencyCode(), is("EUR"));
+    
+        // check first transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)
+                        .collect(Collectors.toList()).get(0).getSubject();
+    
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2330.54))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.76))));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-01-09T09:31")));
+        
+        // check 2nd transaction
+        entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem).collect(Collectors.toList())
+                        .get(1).getSubject();
+        
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2342.61))));
+    
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-01-08T09:30")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(25)));
+
+    }
+
+    @Test
     public void testTransacties1()
     {
         DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
@@ -1097,5 +1142,64 @@ public class DegiroPDFExtractorTest
         assertThat(entry3.getPortfolioTransaction().getShares(), is(Values.Share.factorize(20)));
         assertThat(entry3.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.57))));
+    }
+
+    @Test
+    public void testTransacciones1()
+    {
+        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+    
+        List<Exception> errors = new ArrayList<>();
+    
+        List<Item> results = extractor
+                        .extract(PDFInputFile.loadTestCase(getClass(), "DegiroTransaktionsuebersicht9.txt"), errors);
+    
+        assertThat(errors, empty());
+        assertThat(results.size(), is(6));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+    
+        // 09-01-2020 09:31 TURBOC O.END GOLD 1109,22 DE000VA5DDR3 FRA -55 EUR 42,46 EUR 2.335,30 EUR 2.335,30 EUR -4,76 EUR 2.330,54
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getName(), is("MACYS INC COMMON STOC"));
+        assertThat(security.getIsin(), is("US55616P1049"));
+        assertThat(security.getCurrencyCode(), is("USD"));
+    
+        // check first transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)
+                        .collect(Collectors.toList()).get(0).getSubject();
+    
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(269.10))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.60))));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-27T16:27")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(30)));
+        
+        // check 2nd transaction
+        entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem).collect(Collectors.toList())
+                        .get(1).getSubject();
+        
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(606.04))));
+    
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-27T15:49")));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.68))));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(55)));
+    
+        // check 3rd transaction
+        entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem).collect(Collectors.toList())
+                        .get(2).getSubject();
+        
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(486.18))));
+    
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.24))));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(247)));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-09T13:07")));
+    
     }
 }

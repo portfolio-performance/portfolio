@@ -9,10 +9,9 @@ import name.abuchen.portfolio.model.Client;
 @SuppressWarnings("nls")
 public class BondoraGoAndGrowPDFExtractor extends AbstractPDFExtractor
 {
-    static String ACCOUNT_STATEMENT_DOCUMENT_TYPE = "Zusammenfassung"; //$NON-NLS-1$
-    static String ACCOUNT_STATEMENT_TRANSACTION_REGEX = "^(?<date>\\d{2}.\\d{2}.\\d{4})\\s(?<kind>[^€\\d]*)(\\D[€]\\D|\\D)(?<amount>[\\d.]+(,\\d+)*)(\\D*)([\\d.]+(,\\d+)*)(.{2})?$"; //$NON-NLS-1$
+    static String ACCOUNT_STATEMENT_DOCUMENT_TYPE = "(Zusammenfassung|Summary)"; //$NON-NLS-1$
+    static String ACCOUNT_STATEMENT_TRANSACTION_REGEX = "^(?<date>\\d{2}.\\d{2}.\\d{4})\\s(?<kind>[^€\\d]*)(\\s[€]\\D|\\D)(?<amount>[\\d.']+(,\\d+)*)(\\D*)([\\d.']+(,\\d+)*)(.{2})?$"; //$NON-NLS-1$
 
-    
     static String BANK_IDENTIFIER = "Go & Grow";
 
     public BondoraGoAndGrowPDFExtractor(Client client)
@@ -49,22 +48,22 @@ public class BondoraGoAndGrowPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode("EUR");
 
                             String kind = v.get("kind");
+                            // remove space at the end. could be done using kind.stripTrailing() as well
+                            if (kind.endsWith(" "))
+                                kind = kind.substring(0, kind.length() - 1);
                             if (kind != null)
                             {
                                 switch (kind)
                                 {
                                     case "Überweisen":
-                                        t.setType(AccountTransaction.Type.DEPOSIT);
-                                        break;
                                     case "Transfer":
                                         t.setType(AccountTransaction.Type.DEPOSIT);
                                         break;
                                     case "Abheben":
+                                    case "Withdrawal":
                                         t.setType(AccountTransaction.Type.REMOVAL);
                                         break;
                                     case "Go & Grow Zinsen":
-                                        t.setType(AccountTransaction.Type.INTEREST);
-                                        break;
                                     case "Go & Grow returns":
                                         t.setType(AccountTransaction.Type.INTEREST);
                                         break;

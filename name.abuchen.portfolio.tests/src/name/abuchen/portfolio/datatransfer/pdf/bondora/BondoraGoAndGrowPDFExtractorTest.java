@@ -22,6 +22,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
 public class BondoraGoAndGrowPDFExtractorTest
@@ -111,6 +112,92 @@ public class BondoraGoAndGrowPDFExtractorTest
         assertThat(interestTransaction.getDateTime(), is(LocalDateTime.parse("2020-09-06T00:00")));
         assertThat(interestTransaction.getMonetaryAmount(), is(Money.of("EUR", 0_03)));
 
+    }
+
+    @Test
+    public void testImportKontoauszug03() throws IOException
+    {
+        BondoraGoAndGrowPDFExtractor extractor = new BondoraGoAndGrowPDFExtractor(new Client());
+    
+        List<Exception> errors = new ArrayList<Exception>();
+    
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KontoauszugGoAndGrow03.txt"),
+                        errors);
+    
+        assertThat(errors, empty());
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+    
+        // check interest
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-10-25T00:00")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 1_00L)));
+    
+        // check interest
+        item = results.stream().filter(i -> i instanceof TransactionItem).skip(1).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        transaction = (AccountTransaction) item.get().getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-10-26T00:00")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 1_01L)));
+    
+        // check deposit
+        item = results.stream().filter(i -> i instanceof TransactionItem).skip(2).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        transaction = (AccountTransaction) item.get().getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-02T00:00")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 300_00L)));
+    
+    }
+
+    @Test
+    public void testImportKontoauszug04() throws IOException
+    {
+        BondoraGoAndGrowPDFExtractor extractor = new BondoraGoAndGrowPDFExtractor(new Client());
+    
+        List<Exception> errors = new ArrayList<Exception>();
+    
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KontoauszugGoAndGrow04.txt"),
+                        errors);
+    
+        assertThat(errors, empty());
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+    
+        // check interest
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-18T00:00")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.31))));
+    
+        // check interest
+        item = results.stream().filter(i -> i instanceof TransactionItem).skip(1).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        transaction = (AccountTransaction) item.get().getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-19T00:00")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.3))));
+    
+        // check removal
+        item = results.stream().filter(i -> i instanceof TransactionItem).skip(2).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        transaction = (AccountTransaction) item.get().getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-20T00:00")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1))));
+    
     }
 
 }
