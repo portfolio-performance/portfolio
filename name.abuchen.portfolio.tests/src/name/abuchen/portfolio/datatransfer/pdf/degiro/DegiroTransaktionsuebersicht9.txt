@@ -1,0 +1,13 @@
+Autor PDF: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Transacciones de 10-01-2016 a 28-11-2020
+Fecha Hora Producto ISIN Bolsa Número Precio Valor local Valor Tipo de Comisiócambio n Total
+27-11-2020 16:27 MACYS INC COMMON STOC US55616P1049 NSY 30 USD 10,69 USD -320,70 EUR -268,50 1,1932 EUR -0,60 EUR -269,10
+27-11-2020 15:49 TUSCAN HOLDINGS CORP. - US90069K1043 NDQ -55 USD 13,20 USD 726,00 EUR 606,72 1,1954 EUR -0,68 EUR 606,04
+COMMON STOCK
+09-11-2020 13:07 SANTANDER ES0113900J37 MAD -247 EUR 1,9774 EUR 488,42 EUR 488,42 EUR -2,24 EUR 486,18
+DEGIRO B.V. DEGIRO B.V. es una empresa de
+Amstelplein 1 E clientes@degiro.es servicios de inversión regulada por la
+1096 HA Amsterdam I www.degiro.es Autoridad Financiera de los Mercados Página 1 / 8
+Holandeses. Estado de cuenta 2020-11-28
