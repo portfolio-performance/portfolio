@@ -1,10 +1,12 @@
 package name.abuchen.portfolio.snapshot.security;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
@@ -140,7 +142,17 @@ public class SecurityPerformanceSnapshot
     {
         portfolio.getTransactions().stream() //
                         .filter(t -> interval.contains(t.getDateTime())) //
-                        .forEach(t -> records.get(t.getSecurity()).addLineItem(CalculationLineItem.of(portfolio, t)));
+                        .forEach(t -> records.computeIfAbsent(t.getSecurity(), s -> {
+
+                            // must not happen because the records map is filled
+                            // with _all_ securities of the client. However,
+                            // #1836 reports a NPE exception here. Create a
+                            // builder object to collect the transaction anyway.
+
+                            PortfolioLog.warning(MessageFormat.format("Unidentified security ''{0}'' with UUID {1}", //$NON-NLS-1$
+                                            s.getName(), s.getUUID()));
+                            return new SecurityPerformanceRecord.Builder(s);
+                        }).addLineItem(CalculationLineItem.of(portfolio, t)));
     }
 
     private static void addPseudoValuationTansactions(Portfolio portfolio, CurrencyConverter converter,
