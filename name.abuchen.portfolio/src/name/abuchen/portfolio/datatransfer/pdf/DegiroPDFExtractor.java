@@ -596,7 +596,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
 
                             section -> section.attributes("date", "name", "isin", "shares", "currency", "amountFx", "exchangeRate", "currencyFee", "fee", "currencyAccount", "amount")     //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$//$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$
                             .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) (?<name>.*) (?<isin>\\w{12}+) \\w{3} (?<shares>[-]?[.\\d]+[,\\d]*)" 
-                                            + " \\w{3} -?[.\\d]+,\\d{2,3}" 
+                                            + " \\w{3} -?[.\\d]+,\\d{2,4}" 
                                             + " (?<currency>\\w{3}) -?(?<amountFx>[.\\d]+,\\d{2}).*" 
                                             + " \\w{3} -?[.\\d]+,\\d{2}" 
                                             + " (?<exchangeRate>[.\\d]+,\\d{1,6})" 
