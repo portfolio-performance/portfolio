@@ -39,6 +39,9 @@ public class ColorAndFontProviderImpl implements IColorAndFontProvider, EventHan
         colors.put("org.eclipse.ui.workbench.ACTIVE_TAB_BG_END", //$NON-NLS-1$
                         Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND).getRGB());
 
+        colors.put("org.eclipse.ui.workbench.INACTIVE_TAB_BG_END", //$NON-NLS-1$
+                        Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND).getRGB());
+
         colors.put("org.eclipse.ui.workbench.ACTIVE_TAB_TEXT_COLOR", //$NON-NLS-1$
                         Display.getDefault().getSystemColor(SWT.COLOR_TITLE_FOREGROUND).getRGB());
 
