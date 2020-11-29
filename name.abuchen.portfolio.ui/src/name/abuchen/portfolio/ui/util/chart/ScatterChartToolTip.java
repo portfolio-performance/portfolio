@@ -13,7 +13,6 @@ import org.swtchart.ILineSeries;
 import org.swtchart.ISeries;
 
 import name.abuchen.portfolio.ui.util.swt.ColoredLabel;
-import name.abuchen.portfolio.util.TextUtil;
 
 public class ScatterChartToolTip extends AbstractChartToolTip
 {
@@ -74,7 +73,7 @@ public class ScatterChartToolTip extends AbstractChartToolTip
 
         ColoredLabel cl = new ColoredLabel(container, SWT.NONE);
         cl.setBackdropColor(closest.getSymbolColor());
-        cl.setText(TextUtil.tooltip(closest.getId()));
+        cl.setText(closest.getId());
 
         middle = new Label(container, SWT.RIGHT);
         middle.setText(xAxis.getTick().getFormat().format(closest.getXSeries()[0]));

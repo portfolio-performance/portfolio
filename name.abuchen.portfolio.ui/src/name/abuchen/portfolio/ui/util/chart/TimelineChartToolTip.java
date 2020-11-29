@@ -34,7 +34,6 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.swt.ColoredLabel;
 import name.abuchen.portfolio.util.Pair;
-import name.abuchen.portfolio.util.TextUtil;
 
 public class TimelineChartToolTip extends AbstractChartToolTip
 {
@@ -205,7 +204,7 @@ public class TimelineChartToolTip extends AbstractChartToolTip
 
             ColoredLabel cl = new ColoredLabel(data, SWT.NONE);
             cl.setBackdropColor(color);
-            cl.setText(TextUtil.tooltip(series.getId()));
+            cl.setText(series.getId());
             GridDataFactory.fillDefaults().grab(true, false).applyTo(cl);
 
             right = new Label(data, SWT.RIGHT);
