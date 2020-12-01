@@ -14,8 +14,8 @@ public class SutorPDFExtractor extends AbstractPDFExtractor
 
     private static final String REGEX_AMOUNT = "^(\\d+.\\d+.\\d{4}+) (\\d+.\\d+.\\d{4}+) -?(?<amount>[\\.\\d]+[,\\d]*) .*"; //$NON-NLS-1$
     private static final String REGEX_AMOUNT_AND_SHARES = "^(\\d+.\\d+.\\d{4}+) (\\d+.\\d+.\\d{4}+) (?<sign>[-])?(?<amount>[\\.\\d]+[,\\d]*) .* -?(?<shares>[\\.\\d]+[,\\d]*)$"; //$NON-NLS-1$
-    private static final String REGEX_DATE = "^(\\d+.\\d+.\\d{4}+) (?<date>\\d+.\\d+.\\d{4}+) .*"; //$NON-NLS-1$
     private static final String REGEX_AMOUNT_AND_SHARES_NEW_FORMAT = "^(\\d+.\\d+.\\d{4}+) (\\d+.\\d+.\\d{4}+)[^,]* -?(?<shares>[\\.\\d]+,\\d{4}) ([\\.\\d]+,\\d{4}\\s)?(?<sign>[-])?(?<amount>[\\.\\d]+,\\d{2})$"; //$NON-NLS-1$
+    private static final String REGEX_DATE = "^(\\d+.\\d+.\\d{4}+) (?<date>\\d+.\\d+.\\d{4}+) .*"; //$NON-NLS-1$
 
     public SutorPDFExtractor(Client client)
     {
