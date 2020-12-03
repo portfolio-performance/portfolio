@@ -1,0 +1,55 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=xxxxxx
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Erträgnisgutschrift aus Wertpapieren ADRESSZEILE1=Herr
+ADRESSZEILE2=xxxxxxx
+ADRESSZEILE3=xxxxxxxxx
+ADRESSZEILE4=xxxxxxxxxxx
+Dividende für
+Herr ADRESSZEILE5=01.01.2019 - 31.12.2019
+xxxxxxxx ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+xxxxxxx BELEGNUMMER=xxxxxx
+xxxxxxx xxxxxxx xxxxxxx / 21.01.2020 SEITENNUMMER=1STEUERERSTATTUNG=N
+ERSTATTUNGSFÄHIGE
+Depotinhaber
+xxxxxxxxxxx
+Frankfurt am Main, 21.01.2020
+Dividendengutschrift
+Gattungsbezeichnung ISIN
+UBS-ETF-UBS-ETF MSCI Wld U.ETF Inhaber-Anteile (USD) A-dis LU0340285161
+oN
+Nominal Ex-Tag Zahltag Dividenden-Betrag pro Stück
+STK 32,000 19.12.2019 16.01.2020 USD 1,420100
+Wert Konto-Nr. Devisenkurs Betrag zu Ihren Gunsten
+16.01.2020 000000000 EUR/USD 1,1474 EUR 39,60
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+ausländische Dividende EUR 39,60
+ausländische Quellensteuer 21% USD 9,54
+anrechenbare Quellensteuer 10% USD 4,54
+erstattungsfähige Quellensteuer 11% USD 4,59
+Aktienverlusttopf EUR xxx xxx
+allgemeiner Verlusttopf EUR xxx xxx
+Freistellungsauftrag (eingereicht: EUR xxxx) EUR xxx xxx
+Quellensteuertopf EUR xxx xxx
+zu versteuern EUR 12,32
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 12,34
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 0,12
+Steuerlicher Stichtag: 16.01.2020
+Jahressteuerbescheinigung folgt
+Verwahrart: Wertpapierrechnung Lagerland: USA
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+onvista bank Wildunger Straße 6a 60487 Frankfurt am Main T: +49 (0)69-7107-0 F: +49 (0)69-7107-100 info@onvista-bank.de www.onvista-bank.de
+onvista bank ist eine Marke der comdirect bank AG
+Sitz der comdirect bank AG: Pascalkehre 15 25451 Quickborn (AG Pinneberg HRB 4889) T: +49 (0)4106-704-0 F: +49 (0)4106-708-258-5 www.comdirect.de
+Vorstand: Frauke Hegemann (Vorsitzende), Dietmar von Blücher, Matthias Hach Vorsitzender des Aufsichtsrates: Dr. Jochen Sutor
+3.20/ABREEREIERTR/GDBERTRG/010433/210120/024136
