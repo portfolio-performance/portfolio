@@ -484,11 +484,11 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
         
         pdfTransaction
                         .section("tax", "currency").optional() //
-                        .match("^davon anrechenbare US-Quellensteuer [0-9]+% (?<currency>\\w{3}+)\\s+(?<tax>[\\d.,]*)")
+                        .match("^davon anrechenbare US-Quellensteuer [0-9,]+% (?<currency>\\w{3}+)\\s+(?<tax>[\\d.,]*)")
                         .assign(taxAssignment)
 
                         .section("tax", "currency").optional() //
-                        .match("^ausländische Quellensteuer [0-9]+% (?<currency>\\w{3}+)\\s+(?<tax>[\\d.,]+)")
+                        .match("^ausländische Quellensteuer [0-9,]+% (?<currency>\\w{3}+)\\s+(?<tax>[\\d.,]+)")
                         .assign(taxAssignment)
 
                         .wrap(TransactionItem::new);
@@ -1459,7 +1459,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("soli", "withheld", "sign").optional()
-                        .match("(?<withheld>\\w+|^)(\\s*)Solidaritätszuschlag(\\s*)(?<currency>\\w{3}+)(\\s+)(?<soli>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(?<sign>-|\\s+|$)?")
+                        .match("(?<withheld>\\w+|^|.*)(\\s*)Solidaritätszuschlag(\\s*)(?<currency>\\w{3}+)(\\s+)(?<soli>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(?<sign>-|\\s+|$)?")
                         .assign((t, v) -> {
                             if ("-".equalsIgnoreCase(v.get("sign"))
                                             || "einbehaltener".equalsIgnoreCase(v.get("withheld")))
