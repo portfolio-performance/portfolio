@@ -1,0 +1,80 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=123456789
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Erträgnisgutschrift aus Wertpapieren ADRESSZEILE1=Herr
+ADRESSZEILE2=Vorname Nachname
+ADRESSZEILE3=Straße Nr. 00
+ADRESSZEILE4=12345 Stadt
+Ausschüttung für
+Herr ADRESSZEILE5=01.01.2020 - 31.12.2020
+Vorname Nachname ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+Straße Nr. 00 BELEGNUMMER=10176
+12345 Stadt 123456789 23344420 / 13.11.2020 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Vorname Nachname
+Frankfurt am Main, 13.11.2020
+Erträgnisgutschrift
+Gattungsbezeichnung ISIN
+Global X SuperDividend ETF Registered Shares o.N. US37950E5490
+Nominal Ex-Tag Zahltag Ausschüttungsbetrag pro Stück
+STK 500,000 04.11.2020 12.11.2020 USD 0,075000
+Wert Konto-Nr. Devisenkurs Betrag zu Ihren Gunsten
+12.11.2020 987654321 EUR/USD 1,1859 EUR 23,53
+Ertrag für 2020 USD 37,50
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Steuerpflichtiger Ausschüttungsbetrag EUR 31,62
+US-Quellensteuer 15% USD 5,63
+davon anrechenbare US-Quellensteuer EUR 4,74
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern EUR 12,66
+einbehaltene Kapitalertragsteuer EUR 3,16
+einbehaltener Solidaritätszuschlag EUR 0,18
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 673,31
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 37,03
+Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer nach gemeldetem Kirchensteuersatz verrechnet mit dem
+Finanzamt Itzehoe, Steuernummer 18/297/13562.
+Steuerlicher Stichtag: 12.11.2020
+Jahressteuerbescheinigung folgt
+Es folgt Seite 2
+onvista bank - eine Marke der Commerzbank AG Wildunger Straße 6a 60487 Frankfurt am Main
+Kundenservice: +49 (0)69-7107-530 T: +49 (0)69-7107-0 F: +49 (0)69-7107-100 E: info@onvista-bank.de W: www.onvista-bank.de
+Commerzbank AG 60261 Frankfurt am Main AG Frankfurt am Main HRB 32000 Vorstand: Martin Zielke (Vorsitzender), Roland Boekhout, Marcus Chromik,
+Jörg Hessenmüller, Bettina Orlopp, Sabine Schmittroth Vorsitzender des Aufsichtsrates: Hans-Jörg Vetter
+3.20/ABREEREIERTR/GDBERTRG/010176/141120/003021
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=123456789
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+ADRESSZEILE1=Herr
+Depot-Nr. Abrechnungs-Nr. Seite-Nr. ADRESSZEILE2=Vorname Nachname
+123456789 23344420 2 ADRESSZEILE3=Straße Nr. 00
+ADRESSZEILE4=12345 Stadt
+ADRESSZEILE5=
+ADRESSZEILE6=
+BELEGNUMMER=10176
+Fondsart: Sonstiger Investmentfonds SEITENNUMMER=2
+Angewendete Teilfreistellungsquote: 0% STEUERERSTATTUNG=N
+Im Steuerabzugsverfahren werden generell - auch bei betrieblichen Anlegern - die Teilfreistellungsquoten (TFQ) für
+Privatanleger herangezogen.
+Verwahrart: Wertpapierrechnung Lagerland: USA
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+onvista bank - eine Marke der Commerzbank AG Wildunger Straße 6a 60487 Frankfurt am Main
+Kundenservice: +49 (0)69-7107-530 T: +49 (0)69-7107-0 F: +49 (0)69-7107-100 E: info@onvista-bank.de W: www.onvista-bank.de
+Commerzbank AG 60261 Frankfurt am Main AG Frankfurt am Main HRB 32000 Vorstand: Martin Zielke (Vorsitzender), Roland Boekhout, Marcus Chromik,
+Jörg Hessenmüller, Bettina Orlopp, Sabine Schmittroth Vorsitzender des Aufsichtsrates: Hans-Jörg Vetter
+3.20/ABREEREIERTR/GDBERTRG/010176/141120/003021
