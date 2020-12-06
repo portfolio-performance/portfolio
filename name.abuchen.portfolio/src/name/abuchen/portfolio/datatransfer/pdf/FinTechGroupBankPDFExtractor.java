@@ -156,12 +156,36 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                         Money.of(asCurrencyCode(v.get("currency")),
                                                                         asAmount(v.get("fee"))))))
 
+                        // read exchange rate and store in context
+                        .section("exchangeRate").optional() //
+                        .match("^Devisenkurs\\s*:\\s*(?<exchangeRate>\\d+,\\d+).*") //
+                        .assign((t, v) -> {
+                            type.getCurrentContext().put("exchangeRate", v.get("exchangeRate"));
+                        })
+
                         .section("tax", "currency").optional() //
                         .match(".* \\*\\*Einbeh. Steuer *: *(?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)")
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.TAX,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("tax"))))))
+                        .assign((t, v) -> {
+
+                            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+
+                            // tax is given in EUR - if transaction currency is
+                            // different, we need to calculate the value
+                            if (!t.getPortfolioTransaction().getCurrencyCode().equals(tax.getCurrencyCode()))
+                            {
+                                BigDecimal exchangeRate = asExchangeRate(type.getCurrentContext().get("exchangeRate"));
+
+                                Money txTax = Money.of(t.getPortfolioTransaction().getCurrencyCode(),
+                                                BigDecimal.valueOf(tax.getAmount()).multiply(exchangeRate)
+                                                                .setScale(0, RoundingMode.HALF_UP).longValue());
+
+                                t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX, txTax));
+                            }
+                            else
+                            {
+                                t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX, tax));
+                            }
+                        })
 
                         .section("taxreturn", "currency").optional()
                         .match(".* \\*\\*Einbeh. Steuer *: *(?<taxreturn>-[\\d.]+,\\d+) (?<currency>\\w{3}+)")
@@ -187,15 +211,13 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             entry.setType(PortfolioTransaction.Type.BUY);
                             return entry;
                         })
-                        
-                        .section("time").optional()
-                        .match(".*Ausführungszeit[\\s:]*(?<time>\\d+:\\d+).+") //
+
+                        .section("time").optional().match(".*Ausführungszeit[\\s:]*(?<time>\\d+:\\d+).+") //
                         .assign((t, v) -> {
                             type.getCurrentContext().put("time", v.get("time"));
                         })
 
-                        .section("date")
-                        .match(".*[Schlusstag|Handelstag]\\s*(?<date>\\d+.\\d+.\\d{4}).*") //
+                        .section("date").match(".*[Schlusstag|Handelstag]\\s*(?<date>\\d+.\\d+.\\d{4}).*") //
                         .assign((t, v) -> {
                             if (type.getCurrentContext().get("time") != null)
                             {
@@ -273,7 +295,6 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         .wrap(BuySellEntryItem::new));
     }
 
-    
     @SuppressWarnings("nls")
     private void addBuyfromSavingsplanTransaction()
     {
@@ -289,11 +310,9 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             entry.setType(PortfolioTransaction.Type.BUY);
                             return entry;
                         })
-                        
-                        .section("isin", "name")
-                        .match("ISIN *: (?<isin>[^/]*)") //
-                        .match("Bezeichnung *: (?<name>.*)")
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                        .section("isin", "name").match("ISIN *: (?<isin>[^/]*)") //
+                        .match("Bezeichnung *: (?<name>.*)").assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         .section("date", "shares", "amount") //
                         .match("^Kauf *(\\d+.\\d+.\\d{4}) *(?<date>\\d+.\\d+.\\d{4}) *(?<shares>[\\.\\d]+(,\\d*)?) *([\\d.-]+,\\d+) *(\\w{3}+) *(?<amount>[\\d.-]+,\\d+) *(?<currency>\\w{3}+)") //
@@ -306,7 +325,6 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         .wrap(BuySellEntryItem::new));
     }
 
-    
     @SuppressWarnings("nls")
     private void addDepositAndWithdrawalTransaction()
     {
@@ -405,8 +423,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
                         .section("valuta", "amount", "isin")
                         .match("\\d+.\\d+.[ ]+(?<valuta>\\d+.\\d+.)[ ]+Geb.hr Kapitaltransaktion Ausland[ ]+(?<amount>[\\d.-]+,\\d+)[-]")
-                        .match("\\s*(?<isin>\\w{12})")
-                        .assign((t, v) -> {
+                        .match("\\s*(?<isin>\\w{12})").assign((t, v) -> {
                             t.setSecurity(getOrCreateSecurity(v));
                             Map<String, String> context = type.getCurrentContext();
                             String date = v.get("valuta");
@@ -421,8 +438,9 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             t.setNote("Gebühr Kapitaltransaktion Ausland");
                         }).wrap(TransactionItem::new));
 
-        // account fees 
-        block = new Block("\\d+.\\d+.[ ]+\\d+.\\d+.[ ]+Depotgeb.hren[ ]+\\d{2}.\\d{2}.\\d{4}[ -]+\\d{2}.\\d{2}.\\d{4},[ ]+[\\d.-]+,\\d+[-]");
+        // account fees
+        block = new Block(
+                        "\\d+.\\d+.[ ]+\\d+.\\d+.[ ]+Depotgeb.hren[ ]+\\d{2}.\\d{2}.\\d{4}[ -]+\\d{2}.\\d{2}.\\d{4},[ ]+[\\d.-]+,\\d+[-]");
         type.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
 
@@ -452,7 +470,8 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private void addDividendTransaction()
     {
-        DocumentType type1 = new DocumentType("([^ ]Dividendengutschrift für inländische Wertpapiere)|(Dividendengutschrift[^ ])");
+        DocumentType type1 = new DocumentType(
+                        "([^ ]Dividendengutschrift für inländische Wertpapiere)|(Dividendengutschrift[^ ])");
         DocumentType type2 = new DocumentType("Ertragsmitteilung");
         DocumentType type3 = new DocumentType("Zinsgutschrift");
         this.addDocumentTyp(type1);
@@ -495,8 +514,9 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         .match("Valuta * : *(?<date>\\d+.\\d+.\\d{4}+).*")
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
-                        // Devisenkurs     :         1,173000   *Einbeh. Steuer     :           12,99 EUR
-                        // Quellenst.-satz :            15,00 %  Gez. Quellensteuer :           18,28 USD
+                        // Devisenkurs : 1,173000 *Einbeh. Steuer : 12,99 EUR
+                        // Quellenst.-satz : 15,00 % Gez. Quellensteuer : 18,28
+                        // USD
                         .section("amountFx", "currencyFx", "exchangeRate").optional() //
                         .match(".*Devisenkurs *: *(?<exchangeRate>[.\\d]+,\\d+).*") //
                         .match(".*Gez. Quellenst.*: *(?<amountFx>[.\\d]+,\\d{2}) (?<currencyFx>\\w{3})") //
@@ -508,15 +528,14 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             {
                                 t.addUnit(new Unit(Unit.Type.TAX, tax));
                             }
-                            else 
+                            else
                             {
                                 BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                                 BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
                                                 RoundingMode.HALF_DOWN);
 
-                                Money txTax = Money.of(t.getCurrencyCode(),
-                                                BigDecimal.valueOf(tax.getAmount()).multiply(inverseRate)
-                                                                .setScale(0, RoundingMode.HALF_UP).longValue());
+                                Money txTax = Money.of(t.getCurrencyCode(), BigDecimal.valueOf(tax.getAmount())
+                                                .multiply(inverseRate).setScale(0, RoundingMode.HALF_UP).longValue());
 
                                 // store tax value in both currencies, if
                                 // security's currency
@@ -531,31 +550,34 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                 }
                             }
                         })
-                        
+
                         .wrap(TransactionItem::new));
     }
 
     @SuppressWarnings("nls")
     private void addForeignDividendTransaction()
     {
-        DocumentType type = new DocumentType("[^ ](Dividendengutschrift für ausländische Wertpapiere)", (context, lines) -> {
-            Pattern pCurrencyFx = Pattern.compile(".* Bruttodividende *: *[.\\d]+,\\d{2} (?<currencyFx>\\w{3})");
-            Pattern pExchangeRate = Pattern.compile(".*Devisenkurs *: *(?<exchangeRate>[.\\d]+,\\d+).*");
-            // read the current context here
-            for (String line : lines)
-            {
-                Matcher m = pCurrencyFx.matcher(line);
-                if (m.matches())
-                {
-                    context.put("currencyFx", m.group(1));
-                }
-                m = pExchangeRate.matcher(line);
-                if (m.matches())
-                {
-                    context.put("exchangeRate", m.group(1));
-                }
-            }
-        });
+        DocumentType type = new DocumentType("[^ ](Dividendengutschrift für ausländische Wertpapiere)",
+                        (context, lines) -> {
+                            Pattern pCurrencyFx = Pattern
+                                            .compile(".* Bruttodividende *: *[.\\d]+,\\d{2} (?<currencyFx>\\w{3})");
+                            Pattern pExchangeRate = Pattern
+                                            .compile(".*Devisenkurs *: *(?<exchangeRate>[.\\d]+,\\d+).*");
+                            // read the current context here
+                            for (String line : lines)
+                            {
+                                Matcher m = pCurrencyFx.matcher(line);
+                                if (m.matches())
+                                {
+                                    context.put("currencyFx", m.group(1));
+                                }
+                                m = pExchangeRate.matcher(line);
+                                if (m.matches())
+                                {
+                                    context.put("exchangeRate", m.group(1));
+                                }
+                            }
+                        });
         this.addDocumentTyp(type);
 
         Block block = new Block("Ihre Depotnummer.*");
@@ -622,8 +644,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                     RoundingMode.HALF_DOWN);
 
                                     // get gross amount and calculate equivalent
-                                    // in
-                                    // EUR
+                                    // in EUR
                                     Money mAmountGrossFx = Money.of(currencyCodeFx, asAmount(v.get("amountGrossFx")));
                                     BigDecimal amountGrossFxInEUR = BigDecimal.valueOf(mAmountGrossFx.getAmount())
                                                     .divide(exchangeRate, 10, RoundingMode.HALF_DOWN)
@@ -652,9 +673,8 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                 BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
                                                 RoundingMode.HALF_DOWN);
 
-                                Money txTax = Money.of(t.getCurrencyCode(),
-                                                BigDecimal.valueOf(tax.getAmount()).multiply(inverseRate)
-                                                                .setScale(0, RoundingMode.HALF_UP).longValue());
+                                Money txTax = Money.of(t.getCurrencyCode(), BigDecimal.valueOf(tax.getAmount())
+                                                .multiply(inverseRate).setScale(0, RoundingMode.HALF_UP).longValue());
 
                                 // store tax value in both currencies, if
                                 // security's currency
@@ -670,10 +690,29 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             }
                         })
 
-                        .section("tax", "currency").optional() //
-                        .match("(.*)Einbeh. Steuer(.*):(\\s*)(?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)") //
-                        .assign((t, v) -> t.addUnit(new Unit(Unit.Type.TAX,
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))))
+                        .section("amount", "currency").optional() //
+                        .match("(.*)Einbeh. Steuer(.*):(\\s*)(?<amount>[\\d.]+,\\d+) (?<currency>\\w{3}+)") //
+                        .assign((t, v) -> {
+
+                            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
+
+                            // tax is given in EUR - if transaction currency is
+                            // different, we need to calculate the value
+                            if (!t.getCurrencyCode().equals(tax.getCurrencyCode()))
+                            {
+                                BigDecimal exchangeRate = asExchangeRate(type.getCurrentContext().get("exchangeRate"));
+
+                                Money txTax = Money.of(t.getCurrencyCode(), BigDecimal.valueOf(tax.getAmount())
+                                                .multiply(exchangeRate).setScale(0, RoundingMode.HALF_UP).longValue());
+
+                                t.addUnit(new Unit(Unit.Type.TAX, txTax));
+                            }
+                            else
+                            {
+                                t.addUnit(new Unit(Unit.Type.TAX, tax));
+                            }
+
+                        })
 
                         .section("date") //
                         .match("Valuta * : *(?<date>\\d+.\\d+.\\d{4}+).*") //
@@ -1241,7 +1280,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             return null;
                         }));
     }
-    
+
     @SuppressWarnings("nls")
     private void addVorabpauschaleTransaction()
     {
@@ -1277,10 +1316,9 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode("currency"));
                         })
-                        
+
                         .section("date") //
-                        .match("Gesamtbestand .*zum +(?<date>\\d+.\\d+.\\d{4}+) *")
-                        .assign((t,v) -> {
+                        .match("Gesamtbestand .*zum +(?<date>\\d+.\\d+.\\d{4}+) *").assign((t, v) -> {
                             // prefer "buchungsdatum" over "date" if available
                             String buchungsdatum = type.getCurrentContext().get("buchungsdatum");
                             t.setDateTime(asDate(buchungsdatum != null ? buchungsdatum : v.get("date")));

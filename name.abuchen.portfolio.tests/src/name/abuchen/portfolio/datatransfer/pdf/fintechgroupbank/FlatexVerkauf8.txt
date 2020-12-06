@@ -1,0 +1,87 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+flatex Bank AG
+Postfach 100551
+41405 Neuss
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 (0)9221 - 7035898
+E-Mail: kunden@flatex.de
+flatex Bank AG -  Rotfeder-Ring 7 - 60327 Frankfurt am Main
+123456789123456789
+
+Sammelabrechnung (Wertpapierkauf/-verkauf)
+Ihre Depotnummer: 12345
+Depotinhaber:     Horst Meier
+Nr.156156719/1    Verkauf      INTEL CORP.       DL-,001 (US4581401001/855681)
+Ordervolumen  : 120,00 St.              Handelsplatz  :                 NASDAQ
+davon ausgef. : 100,00 St.              Schlusstag    :  30.11.2020, 18:09 Uhr
+Kurs          : 47,8050 USD             Kurswert      :           4.780,50 USD
+Devisenkurs   : 1,192200(x)             Provision     :               7,03 USD
+Bew-Faktor    : 1,0000                  Eigene Spesen :
+Verwahrart    : Wertpapierrechnung     *Fremde Spesen :               0,11 USD
+Lagerstelle   : International
+Lagerland     : USA                     Bemessungs-
+Gewinn/Verlust: -248,19 EUR             grundlage     :            -260,08 EUR
+Valuta        : 02.12.2020            **Einbeh. Steuer:               0,00 EUR
+                                        Endbetrag     :           4.773,36 USD
+*   Enthalten sind folgende Gebühren
+                                Courtage                :             0,00 USD
+                                Tradinggebühr           :             0,00 USD
+                                Regulierung             :             0,00 USD
+                                Schlussnoten            :             0,00 USD
+                                Finanztransaktionssteuer:             0,00 USD
+                                Sonstige                :             0,11 USD
+**  Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+                                Kapitalertragsteuer   :               0,00 EUR
+                                Solidaritätszuschlag  :               0,00 EUR
+                                Kirchensteuer         :               0,00 EUR
+    Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+    2101694078.
+______________________________________________________________________________
+                                                                     Seite 1/2
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Jörn Engelmann, Steffen Jentsch
+2000001733655100 0113303500000101
+Nr.156156719/2    Verkauf      INTEL CORP.       DL-,001 (US4581401001/855681)
+Ordervolumen  : 120,00 St.              Handelsplatz  :                 NASDAQ
+davon ausgef. : 20,00 St.               Schlusstag    :  30.11.2020, 18:09 Uhr
+Kurs          : 47,8000 USD             Kurswert      :             956,00 USD
+Devisenkurs   : 1,192200(x)             Provision     :
+Bew-Faktor    : 1,0000                  Eigene Spesen :
+Verwahrart    : Wertpapierrechnung     *Fremde Spesen :               0,02 USD
+Lagerstelle   : International
+Lagerland     : USA                     Bemessungs-
+Gewinn/Verlust: -49,72 EUR              grundlage     :             -49,74 EUR
+Valuta        : 02.12.2020            **Einbeh. Steuer:               0,84 EUR
+                                        Endbetrag     :             955,98 USD
+*   Enthalten sind folgende Gebühren
+                                Courtage                :             0,00 USD
+                                Tradinggebühr           :             0,00 USD
+                                Regulierung             :             0,00 USD
+                                Schlussnoten            :             0,00 USD
+                                Finanztransaktionssteuer:             0,00 USD
+                                Sonstige                :             0,02 USD
+**  Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+                                Kapitalertragsteuer   :               0,00 EUR
+                                Solidaritätszuschlag  :               0,00 EUR
+                                Kirchensteuer         :               0,00 EUR
+    Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+    2101694102.
+Die Verrechnung der Endbeträge erfolgt über Ihr Konto Nr.: 12345
+(x) Indikativer Kurs zur Konvertierung der Provision und zur Berechnung der
+    steuerrelevanten Informationen.
+Die Wertpapiere sowie den Gegenwert werden wir entsprechend der Abrechnung mit
+dem angegebenen Valutatag buchen. Bitte prüfen Sie diese Abrechnung auf
+Richtigkeit und Vollständigkeit. Etwaige Einwendungen gegen diese Abrechnung
+müssen unverzüglich nach Zugang bei der Bank erhoben werden. Die
+Unterlassung rechtzeitiger Einwendung gilt als Genehmigung. Bitte beachten
+Sie mögliche Hinweise des Emittenten hinsichtlich vorzeitiger Fälligstellung,
+beispielsweise wegen Knock-Out, in den jeweiligen Optionsscheinbedingungen und
+informieren Sie sich rechtzeitig, welche spezielle Fälligkeitsregelung auf die
+von Ihnen gehaltenen Wertpapiere zutreffen. Kapitalerträge sind ESt-pflichtig.
+Diese Mitteilung ist maschinell erstellt und wird nicht unterschrieben.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+______________________________________________________________________________
+                                                                     Seite 2/2
