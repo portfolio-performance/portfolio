@@ -1047,6 +1047,7 @@ public class Messages extends NLS
     public static String FilterValuationNonZero;
     public static String ForceClearPersistedStateDialogTitle;
     public static String ForceClearPersistedStateMessage;
+    public static String HeatmapOrnamentAverage;
     public static String HeatmapOrnamentGeometricMean;
     public static String HeatmapOrnamentStandardDeviation;
     public static String HeatmapOrnamentSum;
