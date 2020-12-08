@@ -2,9 +2,9 @@ package name.abuchen.portfolio.datatransfer.pdf.consorsbank;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -800,6 +800,37 @@ public class ConsorsbankPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierVerkauf7() throws IOException
+    {
+        PDFImportAssistant assistant = new PDFImportAssistant(new Client(), new ArrayList<>());
+    
+        List<Exception> errors = new ArrayList<>();
+    
+        List<Item> results = assistant.runWithInputFile(
+                        PDFInputFile.loadSingleTestCase(getClass(), "ConsorsbankVerkauf7.txt"), errors);
+    
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+    
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
+        assertThat(security.getWkn(), is("A28890"));
+        assertThat(security.getIsin(), is("DE000A288904"));
+        assertThat(security.getName(), is("COMPUGROUP MED. NA O.N."));
+    
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+    
+        // check buy sell transaction
+        Item item = results.get(0);
+        BuySellEntry entry = (BuySellEntry) item.getSubject();
+        PortfolioTransaction t = entry.getPortfolioTransaction();
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 1590_05L)));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2020-12-07T19:18:29")));
+        assertThat(t.getShares(), is(Values.Share.factorize(20)));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 9_95L)));
+    }
+
+    @Test
     public void testWertpapierKauf1() throws IOException
     {
         ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(new Client());
@@ -1121,6 +1152,41 @@ public class ConsorsbankPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 0_00L)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, 0_00L)));
+    }
+
+    @Test
+    public void testWertpapierKauf10() throws IOException
+    {
+        PDFImportAssistant assistant = new PDFImportAssistant(new Client(), new ArrayList<>());
+    
+        List<Exception> errors = new ArrayList<>();
+    
+        List<Item> results = assistant.runWithInputFile(
+                        PDFInputFile.loadSingleTestCase(getClass(), "ConsorsbankKauf10.txt"), errors);
+    
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+    
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findAny()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("DE0002635307"));
+        assertThat(security.getWkn(), is("263530"));
+        assertThat(security.getName(), is("ISH.STOX.EUROPE 600 U.ETF"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+    
+        // check buy sell transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem).findAny()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+    
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+    
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 7659_37L)));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-07T13:57")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(197)));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 3_95L)));
     }
 
     @Test
