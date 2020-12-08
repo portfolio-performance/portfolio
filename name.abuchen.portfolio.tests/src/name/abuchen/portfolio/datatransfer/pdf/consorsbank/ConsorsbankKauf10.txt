@@ -1,0 +1,37 @@
+PDF Autor: 'Registered to: CORTCON '
+PDFBox Version: 1.8.16
+-----------------------------------------
+Consorsbank  90318 Nürnberg
+Depotnummer: 0868 101 
+1114869394/00
+Vermerk der Bank: 1000
+2
+Stefan 
+Str. 6 Datum: 08.12.2020
+Seite: 1 von 1
+Ordernummer 183282190.001
+Orderdatum 07.12.2020
+ORDERABRECHNUNG
+KAUF AM 07.12.2020 UM 13:57:45 TRADEGATE EXCHANGE NR. 183282190.001
+Bezeichnung WKN ISIN
+ISH.STOX.EUROPE 600 U.ETF 263530 DE0002635307
+Einheit Umsatz
+ST 197,00000
+Preis pro Anteil 38,860000 EUR FRANCO COURTAGE
+Kurswert 7.655,42 EUR
+Grundgebühr 3,95 EUR
+zulasten Konto-Nr. 0860101888 7.659,37 EUR
+Bestand zugunsten Girosammelverwahrung
+CBF 2126
+Limitkurs 38,860000 EUR
+Beratungsfreies Geschäft
+Hinweis für Orderabrechnungen und Depotbuchungsanzeigen:
+Einwendungen wegen Unrichtigkeit oder Unvollständigkeit dieser Mitteilung müssen unverzüglich erhoben werden, vgl. Nummer B. Ziffer I. 11 (4) und (5) der
+Allgemeinen Geschäftsbedingungen (AGB Banken).
+Machen Sie Ihre Einwendungen in Textform geltend, genügt die Absendung innerhalb der Sechs-Wochen-Frist an die Consorsbank oder per Fax oder Mail an die
+unten angegebenen Adressen. Das Unterlassen rechtzeitiger Einwendungen gilt als Genehmigung.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+PrØsident du Conseil dAdministration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur GØnØral (Generaldirektor): Jean-Laurent BonnafØ
