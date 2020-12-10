@@ -2,6 +2,7 @@ package name.abuchen.portfolio.model;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 
 import name.abuchen.portfolio.money.Values;
@@ -15,11 +16,12 @@ public class SecurityPrice implements Comparable<SecurityPrice>
         @Override
         public int compare(SecurityPrice p1, SecurityPrice p2)
         {
-            return p1.date.compareTo(p2.date);
+            return p1.getDateTime().compareTo(p2.getDateTime());
         }
     }
 
     private LocalDate date;
+    private LocalDateTime dateTime;
     private long value;
 
     public SecurityPrice()
@@ -42,6 +44,16 @@ public class SecurityPrice implements Comparable<SecurityPrice>
         this.date = date;
     }
 
+    public LocalDateTime getDateTime()
+    {
+        return dateTime != null ? dateTime : date == null ? null : date.atStartOfDay();
+    }
+
+    public void setDateTime(LocalDateTime dateTime)
+    {
+        this.dateTime = dateTime;
+    }
+    
     public long getValue()
     {
         return value;

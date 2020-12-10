@@ -10,6 +10,7 @@ import java.text.DecimalFormatSymbols;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.Year;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
@@ -151,6 +152,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
                             DateTimeFormatter.ofPattern("MMM dd, y", Locale.ENGLISH), //$NON-NLS-1$
                             DateTimeFormatter.ofPattern("MMM dd y", Locale.ENGLISH), //$NON-NLS-1$
                             DateTimeFormatter.ofPattern("EEEE, MMMM dd, yEEE, MMM dd, y", Locale.ENGLISH) //$NON-NLS-1$
+
             };
         }
 
@@ -175,6 +177,49 @@ public class HTMLTableQuoteFeed implements QuoteFeed
             throw new ParseException(text, 0);
         }
     }
+    
+    protected static class TimeColumn extends DateColumn
+    {
+        private DateTimeFormatter[] formatters;
+
+        @SuppressWarnings("nls")
+        public TimeColumn()
+        {
+            this(new String[] { "Zeit.*" });
+        }
+
+        @SuppressWarnings("nls")
+        public TimeColumn(String[] patterns)
+        {
+            super(patterns);
+
+            formatters = new DateTimeFormatter[] { 
+                            DateTimeFormatter.ISO_LOCAL_TIME, //$NON-NLS-1$
+            };
+        }
+
+        @Override
+        void setValue(Element value, LatestSecurityPrice price, String languageHint) throws ParseException
+        {
+            String text = TextUtil.strip(value.text());
+            for (DateTimeFormatter formatter : formatters)
+            {
+                try
+                {
+                    LocalTime time = LocalTime.parse(text, formatter);
+                    price.setDateTime(time.atDate(LocalDate.now()));
+                    return;
+                }
+                catch (DateTimeParseException e) // NOSONAR
+                {
+                    // continue with next pattern
+                }
+
+            }
+
+            throw new ParseException(text, 0);
+        }
+    }
 
     protected static class CloseColumn extends Column
     {
@@ -182,7 +227,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         public CloseColumn()
         {
             super(new String[] { "Schluss.*", "Schluß.*", "Rücknahmepreis.*", "Close.*", "Zuletzt", "Price",
-                            "akt. Kurs", "Dernier" });
+                            "akt. Kurs", "Dernier", "Kurs" });
         }
 
         public CloseColumn(String[] patterns)
@@ -269,7 +314,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 
     public static final String ID = "GENERIC_HTML_TABLE"; //$NON-NLS-1$
 
-    private static final Column[] COLUMNS = new Column[] { new DateColumn(), new CloseColumn(), new HighColumn(),
+    private static final Column[] COLUMNS = new Column[] { new DateColumn(), new TimeColumn(), new CloseColumn(), new HighColumn(),
                     new LowColumn() };
 
     private final PageCache<Pair<String, List<LatestSecurityPrice>>> cache = new PageCache<>();
@@ -301,8 +346,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 
         QuoteFeedData data = internalGetQuotes(security, feedURL, false, false);
 
-        if (!data.getErrors().isEmpty())
-            PortfolioLog.error(data.getErrors());
+        logErrors(data);
 
         List<LatestSecurityPrice> prices = data.getLatestPrices();
         if (prices.isEmpty())
@@ -311,6 +355,12 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         Collections.sort(prices, new SecurityPrice.ByDate());
 
         return Optional.of(prices.get(prices.size() - 1));
+    }
+
+    void logErrors(QuoteFeedData data)
+    {
+        if (!data.getErrors().isEmpty())
+            PortfolioLog.error(data.getErrors());
     }
 
     @Override
@@ -392,9 +442,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
     {
         try
         {
-            String html = new WebAccess(url) //
-                            .addUserAgent(getUserAgent()) //
-                            .get();
+            String html = getHtml(url);
 
             Document document = Jsoup.parse(html);
             List<LatestSecurityPrice> prices = parse(url, document, data);
@@ -406,6 +454,13 @@ public class HTMLTableQuoteFeed implements QuoteFeed
             data.addError(new IOException(url + '\n' + e.getMessage(), e));
             return new Pair<>(String.valueOf(e.getMessage()), Collections.emptyList());
         }
+    }
+
+    String getHtml(String url) throws IOException, URISyntaxException
+    {
+        return new WebAccess(url) //
+                        .addUserAgent(getUserAgent()) //
+                        .get();
     }
 
     protected List<LatestSecurityPrice> parseFromHTML(String html, QuoteFeedData data)
