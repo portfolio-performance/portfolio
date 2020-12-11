@@ -15,6 +15,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy.Visitor;
 import name.abuchen.portfolio.model.Transaction.Unit;
@@ -170,8 +171,12 @@ public class ClientClassificationFilter implements ClientFilter
                     break;
 
                 case TRANSFER_OUT:
+                    // handled via TRANSFER_IN
+                    break;
                 case TRANSFER_IN:
-                    // nothing to do - transfers must add up within the client
+                    PortfolioTransferEntry entry = (PortfolioTransferEntry) t.getCrossEntry();
+                    ClientFilterHelper.recreateTransfer(entry, state.asReadOnly(entry.getSourcePortfolio()),
+                                    state.asReadOnly(entry.getTargetPortfolio()), state.getWeight(t.getSecurity()));
                     break;
                 default:
                     throw new UnsupportedOperationException();

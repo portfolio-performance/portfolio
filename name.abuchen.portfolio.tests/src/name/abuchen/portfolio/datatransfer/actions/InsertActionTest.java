@@ -1,12 +1,13 @@
 package name.abuchen.portfolio.datatransfer.actions;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsCollectionContaining.hasItem;
-import static org.junit.Assert.assertThat;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Set;
@@ -31,7 +32,7 @@ public class InsertActionTest
 {
     private Client client;
     private BuySellEntry entry;
-    
+
     private LocalDateTime transactionDate = LocalDateTime.now().withSecond(0).withNano(0);
 
     @Before
@@ -112,7 +113,7 @@ public class InsertActionTest
         BeanInfo info = Introspector.getBeanInfo(PortfolioTransaction.class);
 
         Set<String> properties = Arrays.stream(info.getPropertyDescriptors()).filter(p -> p.getWriteMethod() != null)
-                        .map(p -> p.getName()).collect(Collectors.toSet());
+                        .map(PropertyDescriptor::getName).collect(Collectors.toSet());
 
         assertThat(properties, hasItem("security"));
         assertThat(properties, hasItem("monetaryAmount"));
