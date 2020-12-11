@@ -234,7 +234,7 @@ public abstract class Transaction implements Annotated, Adaptable
         return crossEntry;
     }
 
-    /* package */void setCrossEntry(CrossEntry crossEntry)
+    public void setCrossEntry(CrossEntry crossEntry)
     {
         this.crossEntry = crossEntry;
     }

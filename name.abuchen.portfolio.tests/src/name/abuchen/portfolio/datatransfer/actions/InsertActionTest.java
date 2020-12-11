@@ -2,7 +2,7 @@ package name.abuchen.portfolio.datatransfer.actions;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.IsCollectionContaining.hasItem;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -122,7 +122,8 @@ public class InsertActionTest
         assertThat(properties, hasItem("dateTime"));
         assertThat(properties, hasItem("type"));
         assertThat(properties, hasItem("note"));
+        assertThat(properties, hasItem("crossEntry"));
 
-        assertThat(properties.size(), is(8));
+        assertThat(properties.size(), is(9));
     }
 }

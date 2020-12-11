@@ -15,6 +15,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy.Visitor;
 import name.abuchen.portfolio.model.Transaction.Unit;
@@ -171,7 +172,7 @@ public class ClientClassificationFilter implements ClientFilter
 
                 case TRANSFER_OUT:
                 case TRANSFER_IN:
-                    // nothing to do - transfers must add up within the client
+                    addTransferT(state, portfolio, t, t.getType(), state.getWeight(t.getSecurity()));
                     break;
                 default:
                     throw new UnsupportedOperationException();
@@ -244,6 +245,42 @@ public class ClientClassificationFilter implements ClientFilter
                             .forEach(u -> tp.addUnit(value(u, securityWeight - commonWeight)));
 
             state.asReadOnly(portfolio).internalAddTransaction(tp);
+        }
+    }
+
+    private void addTransferT(CalculationState state, Portfolio portfolio, PortfolioTransaction t,
+                    PortfolioTransaction.Type targetType, int weight)
+    {
+        // create new transaction instances and add them to the read-only
+        // portfolio - this is done only once covering transfer in and out
+        if (targetType.equals(PortfolioTransaction.Type.TRANSFER_IN))
+        {
+            PortfolioTransaction copySource = new PortfolioTransaction();
+            copySource.setDateTime(t.getDateTime());
+            copySource.setCurrencyCode(t.getCurrencyCode());
+            copySource.setSecurity(t.getSecurity());
+            copySource.setShares(value(t.getShares(), weight));
+            copySource.setType(PortfolioTransaction.Type.TRANSFER_OUT);
+
+            PortfolioTransferEntry entry = (PortfolioTransferEntry) t.getCrossEntry();
+
+            PortfolioTransaction copyTarget = new PortfolioTransaction();
+            copyTarget.setDateTime(entry.getCrossTransaction(t).getDateTime());
+            copyTarget.setCurrencyCode(entry.getCrossTransaction(t).getCurrencyCode());
+            copyTarget.setSecurity(entry.getCrossTransaction(t).getSecurity());
+            copyTarget.setShares(value(entry.getCrossTransaction(t).getShares(), weight));
+            copyTarget.setType(PortfolioTransaction.Type.TRANSFER_IN);
+
+            PortfolioTransferEntry entryCopy = new PortfolioTransferEntry(state.asReadOnly(entry.getSourcePortfolio()),
+                            state.asReadOnly(entry.getTargetPortfolio()));
+
+            entryCopy.setSourceTransaction(copySource);
+            entryCopy.setTargetTransaction(copyTarget);
+            copySource.setCrossEntry(entryCopy);
+            copyTarget.setCrossEntry(entryCopy);
+
+            state.asReadOnly(portfolio).internalAddTransaction(entryCopy.getSourceTransaction());
+            state.asReadOnly(portfolio).internalAddTransaction(entryCopy.getTargetTransaction());
         }
     }
 
