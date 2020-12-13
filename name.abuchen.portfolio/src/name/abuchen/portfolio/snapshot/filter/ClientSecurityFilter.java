@@ -11,6 +11,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.model.TransactionPair;
@@ -90,8 +91,9 @@ public class ClientSecurityFilter implements ClientFilter
                                 convertToDelivery(pair.getTransaction(), PortfolioTransaction.Type.DELIVERY_OUTBOUND));
                 break;
             case TRANSFER_IN:
+                convertTransfer(getPortfolio, pair);
             case TRANSFER_OUT:
-                // ignore: transfers are internal to the client file
+                // handled via TRANSFER_IN
                 break;
             default:
                 throw new IllegalArgumentException();
@@ -167,5 +169,16 @@ public class ClientSecurityFilter implements ClientFilter
         t.getUnits().filter(u -> u.getType() != Unit.Type.TAX).forEach(pseudo::addUnit);
 
         return pseudo;
+    }
+
+    private void convertTransfer(Function<Portfolio, ReadOnlyPortfolio> getPortfolio,
+                    TransactionPair<PortfolioTransaction> pair)
+    {
+        PortfolioTransferEntry entry = (PortfolioTransferEntry) pair.getTransaction().getCrossEntry();
+
+        ReadOnlyPortfolio source = getPortfolio.apply(entry.getSourcePortfolio());
+        ReadOnlyPortfolio target = getPortfolio.apply(entry.getTargetPortfolio());
+        
+        ClientFilterHelper.recreateTransfer(entry, source, target);
     }
 }

@@ -1,0 +1,62 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Consorsbank  90318 Nürnberg
+Depotnummer: 0868 101 
+1114869394/00
+Vermerk der Bank: 1000
+2
+Max Mustermann
+Neustr 10 Datum: 08.12.2020
+12345 Musterstadt Seite: 1 von 2
+Ordernummer 123282999.001
+Orderdatum 07.12.2020
+ORDERABRECHNUNG
+VERKAUF AM 07.12.2020 UM 19:18:29 TRADEGATE EXCHANGE NR. 123282999.001
+Bezeichnung WKN ISIN
+COMPUGROUP MED. NA O.N. A28890 DE000A288904
+Einheit Umsatz
+ST 20,00000
+Preis pro Anteil 80,000000 EUR FRANCO COURTAGE
+Kurswert 1.600,00 EUR
+abzgl. Provision 5,00 EUR
+abzgl. Grundgebühr 4,95 EUR
+zugunsten Konto-Nr. 1234567890 1.590,05 EUR
+Bestand zulasten Girosammelverwahrung
+CBF 2126
+JAHRESSTEUERBESCHEINIGUNG FOLGT
+Limitkurs Trailing Stop proz. 80,376000 EUR
+Beratungsfreies Geschäft
+Hinweis für Orderabrechnungen und Depotbuchungsanzeigen:
+Einwendungen wegen Unrichtigkeit oder Unvollständigkeit dieser Mitteilung müssen unverzüglich erhoben werden, vgl. Nummer B. Ziffer I. 11 (4) und (5) der
+Allgemeinen Geschäftsbedingungen (AGB Banken).
+Machen Sie Ihre Einwendungen in Textform geltend, genügt die Absendung innerhalb der Sechs-Wochen-Frist an die Consorsbank oder per Fax oder Mail an die
+unten angegebenen Adressen. Das Unterlassen rechtzeitiger Einwendungen gilt als Genehmigung.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+PrØsident du Conseil dAdministration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur GØnØral (Generaldirektor): Jean-Laurent BonnafØ
+Depotnummer: 0458 721 041
+1505848759/00
+Vermerk der Bank: 2100
+2
+Datum: 08.12.2020
+Seite: 2 von 2
+Ordernummer 193282999.001
+Orderdatum 07.12.2020
+Informationen bei Gewinn Aktien / Wertpapiere ungleich Aktien
+Veräusserungsgewinn nach Differenzmethode 2,20 EUR
+mit Verrechnungstopf „Aktien“ verrechnet  0,0 EUR
+Bemessungsgrundlage für Kapitalertragsteuer 0,00 EUR
+Stand Ihrer Töpfe und Freibeträge nach dem Geschäft
+Sparerpauschbetrag nach dem Geschäft 0,00 EUR
+Verrechnungstopf Aktien nach dem Geschäft 0,00 EUR
+Verrechnungstopf Allg. nach dem Geschäft 0,00 EUR
+Verrechnungstopf QUST nach dem Geschäft 0,00 EUR
+Der Verkaufserlös unterliegt nicht dem Kapitalertragssteuerabzug.
+Es wurde keine Kirchensteuer einbehalten.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+PrØsident du Conseil dAdministration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur GØnØral (Generaldirektor): Jean-Laurent BonnafØ

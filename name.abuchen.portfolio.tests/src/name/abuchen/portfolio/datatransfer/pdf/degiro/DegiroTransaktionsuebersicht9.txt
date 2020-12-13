@@ -7,6 +7,7 @@ Fecha Hora Producto ISIN Bolsa Número Precio Valor local Valor Tipo de Comisió
 27-11-2020 15:49 TUSCAN HOLDINGS CORP. - US90069K1043 NDQ -55 USD 13,20 USD 726,00 EUR 606,72 1,1954 EUR -0,68 EUR 606,04
 COMMON STOCK
 09-11-2020 13:07 SANTANDER ES0113900J37 MAD -247 EUR 1,9774 EUR 488,42 EUR 488,42 EUR -2,24 EUR 486,18
+17-03-2020 17:15 FACEBOOK INC. - CLASS US30303M1027 NDQ -3 USD 152,7901 USD 458,37 EUR 416,51 1,0994 EUR -0,51 EUR 416,00
 DEGIRO B.V. DEGIRO B.V. es una empresa de
 Amstelplein 1 E clientes@degiro.es servicios de inversión regulada por la
 1096 HA Amsterdam I www.degiro.es Autoridad Financiera de los Mercados Página 1 / 8

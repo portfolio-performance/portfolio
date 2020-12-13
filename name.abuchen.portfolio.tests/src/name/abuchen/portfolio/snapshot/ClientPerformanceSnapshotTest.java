@@ -1,9 +1,9 @@
 package name.abuchen.portfolio.snapshot;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -705,7 +705,7 @@ public class ClientPerformanceSnapshotTest
                         .getPosition().getShares(), is(Values.Share.factorize(-1)));
     }
 
-    private void assertThatCalculationWorksOut(ClientPerformanceSnapshot snapshot, CurrencyConverter converter)
+    public static void assertThatCalculationWorksOut(ClientPerformanceSnapshot snapshot, CurrencyConverter converter)
     {
         MutableMoney valueAtEndOfPeriod = MutableMoney.of(converter.getTermCurrency());
         valueAtEndOfPeriod.add(snapshot.getValue(CategoryType.INITIAL_VALUE));

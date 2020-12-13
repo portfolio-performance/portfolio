@@ -26,7 +26,7 @@ public final class Dashboard
         {
             if (weight <= 0)
                 throw new IllegalArgumentException();
-            
+
             this.weight = weight;
         }
 

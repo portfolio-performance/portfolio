@@ -6,7 +6,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -1126,6 +1126,45 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
+    public void testDividendeAusland5WithSecurityAndAccountUSD()
+    {
+        Client client = new Client();
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(client);
+    
+        Security existingSecurity = new Security("MICROSOFT    DL-,00000625", CurrencyUnit.USD);
+        existingSecurity.setIsin("US5949181045");
+        existingSecurity.setWkn("870747");
+        client.addSecurity(existingSecurity);
+        
+        List<Exception> errors = new ArrayList<>();
+    
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "FinTechGroupBankDividendeAusland5.txt"), errors);
+    
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+    
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        AccountTransaction transaction = (AccountTransaction) item.orElseThrow(IllegalArgumentException::new)
+                        .getSubject();
+        
+        CheckCurrenciesAction c = new CheckCurrenciesAction();
+        Account account = new Account();
+        account.setCurrencyCode(CurrencyUnit.USD);
+        Status s = c.process(transaction, account);
+        assertThat(s, is(Status.OK_STATUS));
+    
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getSecurity(), is(existingSecurity));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-11T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(18.99)));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(6.51))));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(50)));
+    }
+
+    @Test
     public void testZinsgutschriftInland()
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
@@ -1354,6 +1393,48 @@ public class FinTechGroupBankPDFExtractorTest
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9529.81)))))));
         assertThat(tx.get(0).getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(8.41))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf8()
+    {
+        Client client = new Client();
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(client);
+        List<Exception> errors = new ArrayList<>();
+        
+        Security existingSecurity = new Security("INTEL CORP.       DL-,001",
+                        CurrencyUnit.EUR);
+        existingSecurity.setIsin("US4581401001");
+        existingSecurity.setWkn("855681");
+        client.addSecurity(existingSecurity);
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexVerkauf8.txt"), errors);
+    
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+    
+        List<PortfolioTransaction> tx = results.stream() //
+                        .filter(i -> i instanceof BuySellEntryItem)
+                        .map(i -> ((BuySellEntry) i.getSubject()).getPortfolioTransaction())
+                        .collect(Collectors.toList());
+    
+        assertThat(tx.size(), is(2));
+    
+        assertThat(tx, hasItem(allOf( //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2020-11-30T18:09"))), //
+                        hasProperty("type", is(PortfolioTransaction.Type.SELL)), //
+                        hasProperty("monetaryAmount",
+                                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(4773.36)))))));
+        assertThat(tx.get(0).getUnitSum(Unit.Type.FEE), is(Money.of("USD", Values.Amount.factorize(7.14))));
+        assertThat(tx.get(0).getUnitSum(Unit.Type.TAX), is(Money.of("USD", Values.Amount.factorize(0.00))));
+
+        assertThat(tx, hasItem(allOf( //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2020-11-30T18:09"))), //
+                        hasProperty("type", is(PortfolioTransaction.Type.SELL)), //
+                        hasProperty("monetaryAmount",
+                                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(955.98)))))));
+        assertThat(tx.get(1).getUnitSum(Unit.Type.FEE), is(Money.of("USD", Values.Amount.factorize(0.02))));
+        assertThat(tx.get(1).getUnitSum(Unit.Type.TAX), is(Money.of("USD", Values.Amount.factorize(1.00))));
     }
 
     @Test

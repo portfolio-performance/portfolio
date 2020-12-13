@@ -74,12 +74,19 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                         .match("KAUF AM (?<date>\\d+\\.\\d+\\.\\d{4}+)\\s+UM (?<time>\\d+:\\d+):\\d+.*")
                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
 
-                        .section("amount", "currency")
-                        .match("Wert \\d+.\\d+.\\d{4}+ (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)") //
-                        .assign((t, v) -> {
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                        })
+                        .oneOf( //
+                                        section -> section.attributes("amount", "currency") //
+                                                        .match("^Wert \\d+.\\d+.\\d{4} (?<currency>\\w{3}) (?<amount>[\\d\\.]+,\\d+)$") //
+                                                        .assign((t, v) -> {
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                        }),
+                                        section -> section.attributes("amount", "currency") //
+                                                        .match("^zulasten Konto-Nr. \\d+ (?<amount>[\\d\\.]+,\\d+) (?<currency>\\w{3}+)$") //
+                                                        .assign((t, v) -> {
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                        }))
 
                         .section("forex", "exchangeRate", "currency", "amount").optional()
                         .match("umger. zum Devisenkurs *(?<forex>\\w{3}+) *(?<exchangeRate>[\\d.]+,\\d+) *(?<currency>\\w{3}+) *(?<amount>[\\d.]+,\\d+) *") //
@@ -188,12 +195,19 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> t
                                                                         .setDate(asDate(v.get("date"), v.get("time")))))
 
-                        .section("amount", "currency")
-                        .match("Wert \\d+.\\d+.\\d{4}+ (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)") //
-                        .assign((t, v) -> {
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                        })
+                        .oneOf( //
+                                        section -> section.attributes("amount", "currency") //
+                                                        .match("Wert \\d+.\\d+.\\d{4} (?<currency>\\w{3}) (?<amount>[\\d\\.]+,\\d+)") //
+                                                        .assign((t, v) -> {
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                        }),
+                                        section -> section.attributes("amount", "currency") //
+                                                        .match("zugunsten Konto-Nr. \\d+ (?<amount>[\\d\\.]+,\\d+) (?<currency>\\w{3})$") //
+                                                        .assign((t, v) -> {
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                        }))
 
                         .wrap(BuySellEntryItem::new);
 
@@ -441,8 +455,25 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
                         .section("currency", "tax").optional()
                         .match("^Franzoesische Finanztransaktionssteuer .* (?<currency>\\w{3}) (?<tax>[\\d,.]+)$")
-                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX,
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))));
+                        .assign((t, v) -> t.getPortfolioTransaction()
+                                        .addUnit(new Unit(Unit.Type.TAX,
+                                                        Money.of(asCurrencyCode(v.get("currency")),
+                                                                        asAmount(v.get("tax"))))))
+
+                        .section("currency", "fee").optional()
+                        .match("^(abzgl. )?Grundgeb.hr (?<fee>[\\d,\\.]+) (?<currency>\\w{3})$")
+                        .assign((t, v) -> t.getPortfolioTransaction()
+                                        .addUnit(new Unit(Unit.Type.FEE,
+                                                        Money.of(asCurrencyCode(v.get("currency")),
+                                                                        asAmount(v.get("fee"))))))
+
+                        .section("currency", "fee").optional()
+                        .match("^abzgl. Provision (?<fee>[\\d,\\.]+) (?<currency>\\w{3})$")
+                        .assign((t, v) -> t.getPortfolioTransaction()
+                                        .addUnit(new Unit(Unit.Type.FEE,
+                                                        Money.of(asCurrencyCode(v.get("currency")),
+                                                                        asAmount(v.get("fee"))))));
+
     }
 
     @SuppressWarnings("nls")

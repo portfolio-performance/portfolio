@@ -11,6 +11,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.IJobManager;
 import org.eclipse.core.runtime.jobs.Job;
@@ -188,6 +189,10 @@ public class StartupAddon
     @PostConstruct
     public void setMultipleWindowImages()
     {
+        // do not update on macOS b/c ICNS file contains all images
+        if (Platform.OS_MACOSX.equals(Platform.getOS()))
+            return;
+
         // setting window images
         // http://www.eclipse.org/forums/index.php/t/440442/
 

@@ -82,8 +82,7 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
         title = new Label(container, SWT.NONE);
         title.setText(TextUtil.tooltip(getWidget().getLabel()));
         title.setBackground(container.getBackground());
-        GridDataFactory.fillDefaults().span(3, 1).hint(SWT.DEFAULT, title.getFont().getFontData()[0].getHeight() + 10)
-                        .grab(true, false).applyTo(title);
+        GridDataFactory.fillDefaults().span(3, 1).grab(true, false).applyTo(title);
 
         TableLayout layout = get(LayoutConfig.class).getValue();
 
