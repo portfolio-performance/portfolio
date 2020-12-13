@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.views.dashboard.heatmap;
 
 import java.time.LocalDate;
 import java.time.Year;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -119,8 +120,7 @@ public class EarningsHeatmapWidget extends AbstractHeatmapWidget<Long>
     {
         public AverageConfig(WidgetDelegate<?> delegate)
         {
-            super(delegate, Messages.HeatmapOrnamentAverage, Average.class, Dashboard.Config.AVERAGE,
-                            Policy.MULTIPLE);
+            super(delegate, Messages.HeatmapOrnamentAverage, Average.class, Dashboard.Config.LAYOUT, Policy.MULTIPLE);
         }
     }
 
@@ -196,8 +196,12 @@ public class EarningsHeatmapWidget extends AbstractHeatmapWidget<Long>
         model.getRows().forEach(row -> row.addData(row.getData().mapToLong(l -> l == null ? 0L : l.longValue()).sum()));
 
         // average
-        model.getRows().forEach(row -> row.addData((long) row.getDataSubList(0, 12).stream().filter(v -> v != null)
-                        .mapToLong(l -> l == null ? 0L : l.longValue()).average().getAsDouble()));
+        if (showAverage)
+        {
+            model.getRows().forEach(
+                            row -> row.addData((long) row.getDataSubList(0, 12).stream().filter(Objects::nonNull)
+                                            .mapToLong(l -> l == null ? 0L : l.longValue()).average().getAsDouble()));
+        }
 
         return model;
     }

@@ -9,7 +9,7 @@ public final class Dashboard
 {
     public enum Config
     {
-        REPORTING_PERIOD, DATA_SERIES, SECONDARY_DATA_SERIES, CONFIG_UUID, AGGREGATION, EXCHANGE_RATE_SERIES, COLOR_SCHEMA, LAYOUT, HEIGHT, EARNING_TYPE, NET_GROSS, AVERAGE, CLIENT_FILTER, CALCULATION_METHOD, METRIC;
+        REPORTING_PERIOD, DATA_SERIES, SECONDARY_DATA_SERIES, CONFIG_UUID, AGGREGATION, EXCHANGE_RATE_SERIES, COLOR_SCHEMA, LAYOUT, HEIGHT, EARNING_TYPE, NET_GROSS, CLIENT_FILTER, CALCULATION_METHOD, METRIC;
     }
 
     public static final class Column
@@ -26,7 +26,7 @@ public final class Dashboard
         {
             if (weight <= 0)
                 throw new IllegalArgumentException();
-            
+
             this.weight = weight;
         }
 
