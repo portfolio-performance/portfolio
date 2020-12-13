@@ -36,7 +36,7 @@ public class SecurityPrice implements Comparable<SecurityPrice>
 
     public LocalDate getDate()
     {
-        return date;
+        return date != null ? date : dateTime != null ? dateTime.toLocalDate() : null;
     }
 
     public void setDate(LocalDate date)
