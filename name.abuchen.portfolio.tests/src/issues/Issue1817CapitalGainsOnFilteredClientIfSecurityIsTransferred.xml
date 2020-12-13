@@ -1,0 +1,442 @@
+<client>
+  <version>47</version>
+  <baseCurrency>EUR</baseCurrency>
+  <securities>
+    <security>
+      <uuid>b23ec5dd-c899-4f45-90f9-bfd83ed971ad</uuid>
+      <onlineId>32877218877048ed8cadff71747b7e6a</onlineId>
+      <name>Adidas AG</name>
+      <currencyCode>EUR</currencyCode>
+      <isin>DE000A1EWWW0</isin>
+      <tickerSymbol>ADS.DE</tickerSymbol>
+      <wkn>A1EWWW</wkn>
+      <feed>PORTFOLIO-REPORT</feed>
+      <prices/>
+      <latest t="2020-04-16" v="2117000">
+        <high>2159000</high>
+        <low>2096000</low>
+        <volume>821745</volume>
+        <previousClose>2143000</previousClose>
+      </latest>
+      <attributes>
+        <map/>
+      </attributes>
+      <events/>
+      <property type="MARKET" name="XFRA">ADS</property>
+      <property type="MARKET" name="XNAS">ADDDF</property>
+      <property type="FEED" name="PORTFOLIO-REPORT-MARKET">XETR</property>
+      <property type="FEED" name="PORTFOLIO-REPORT-MARKETS">[{&quot;marketCode&quot;:&quot;XETR&quot;,&quot;currencyCode&quot;:&quot;EUR&quot;,&quot;firstPriceDate&quot;:{&quot;year&quot;:2000,&quot;month&quot;:1,&quot;day&quot;:3},&quot;lastPriceDate&quot;:{&quot;year&quot;:2020,&quot;month&quot;:12,&quot;day&quot;:10}}]</property>
+      <isRetired>false</isRetired>
+    </security>
+  </securities>
+  <watchlists/>
+  <consumerPriceIndeces/>
+  <accounts>
+    <account>
+      <uuid>d18cef06-ebb6-4e14-8cad-fe7410d2e6b6</uuid>
+      <name>Konto 1</name>
+      <currencyCode>EUR</currencyCode>
+      <isRetired>false</isRetired>
+      <transactions>
+        <account-transaction>
+          <date>2018-01-01T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>3500000</amount>
+          <shares>0</shares>
+          <type>DEPOSIT</type>
+        </account-transaction>
+        <account-transaction>
+          <date>2018-01-02T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>101290</amount>
+          <security reference="../../../../../securities/security"/>
+          <crossEntry class="buysell">
+            <portfolio>
+              <uuid>c8676f98-3337-4c64-a6c2-0974788790bb</uuid>
+              <name>Depot 1</name>
+              <isRetired>false</isRetired>
+              <referenceAccount reference="../../../../.."/>
+              <transactions>
+                <portfolio-transaction>
+                  <date reference="../../../../../date"/>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>101290</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell" reference="../../../.."/>
+                  <shares>6000000</shares>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <date>2019-08-01T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>177810</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="portfolio-transfer">
+                    <portfolioFrom reference="../../../.."/>
+                    <transactionFrom reference="../.."/>
+                    <portfolioTo>
+                      <uuid>8b801a3c-600e-406e-a2c3-c5203898345a</uuid>
+                      <name>Depot 2</name>
+                      <isRetired>false</isRetired>
+                      <referenceAccount reference="../../../../../../../../.."/>
+                      <transactions>
+                        <portfolio-transaction>
+                          <date>2019-10-15T00:00</date>
+                          <currencyCode>EUR</currencyCode>
+                          <amount>154000</amount>
+                          <security reference="../../../../../../../../../../../../../securities/security"/>
+                          <crossEntry class="buysell">
+                            <portfolio reference="../../../.."/>
+                            <portfolioTransaction reference="../.."/>
+                            <account reference="../../../../../../../../../../../.."/>
+                            <accountTransaction>
+                              <date reference="../../../date"/>
+                              <currencyCode>EUR</currencyCode>
+                              <amount>154000</amount>
+                              <security reference="../../../../../../../../../../../../../../../securities/security"/>
+                              <crossEntry class="buysell" reference="../.."/>
+                              <shares>0</shares>
+                              <type>SELL</type>
+                            </accountTransaction>
+                          </crossEntry>
+                          <shares>6000000</shares>
+                          <units>
+                            <unit type="FEE">
+                              <amount currency="EUR" amount="1000"/>
+                            </unit>
+                            <unit type="TAX">
+                              <amount currency="EUR" amount="100"/>
+                            </unit>
+                          </units>
+                          <type>SELL</type>
+                        </portfolio-transaction>
+                        <portfolio-transaction>
+                          <date reference="../../../../../date"/>
+                          <currencyCode>EUR</currencyCode>
+                          <amount>177810</amount>
+                          <security reference="../../../../../../../../../../../../../securities/security"/>
+                          <crossEntry class="portfolio-transfer" reference="../../../.."/>
+                          <shares>6000000</shares>
+                          <type>TRANSFER_IN</type>
+                        </portfolio-transaction>
+                      </transactions>
+                      <attributes>
+                        <map/>
+                      </attributes>
+                    </portfolioTo>
+                    <transactionTo reference="../portfolioTo/transactions/portfolio-transaction[2]"/>
+                  </crossEntry>
+                  <shares>6000000</shares>
+                  <type>TRANSFER_OUT</type>
+                </portfolio-transaction>
+              </transactions>
+              <attributes>
+                <map/>
+              </attributes>
+            </portfolio>
+            <portfolioTransaction reference="../portfolio/transactions/portfolio-transaction"/>
+            <account reference="../../../.."/>
+            <accountTransaction reference="../.."/>
+          </crossEntry>
+          <shares>0</shares>
+          <type>BUY</type>
+        </account-transaction>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[2]/crossEntry/portfolioTo/transactions/portfolio-transaction/crossEntry/accountTransaction"/>
+      </transactions>
+      <attributes>
+        <map/>
+      </attributes>
+    </account>
+  </accounts>
+  <portfolios>
+    <portfolio reference="../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio"/>
+    <portfolio reference="../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[2]/crossEntry/portfolioTo"/>
+  </portfolios>
+  <plans/>
+  <taxonomies>
+    <taxonomy>
+      <id>assetclasses</id>
+      <name>Anlagekategorien</name>
+      <dimensions class="java.util.Arrays$ArrayList">
+        <a class="string-array">
+          <string>Anlagekategorie</string>
+        </a>
+      </dimensions>
+      <root>
+        <id>assetclasses</id>
+        <name>Anlagekategorien</name>
+        <color>#a4b4c3</color>
+        <children>
+          <classification>
+            <id>CASH</id>
+            <name>Barvermögen</name>
+            <color>#c437c2</color>
+            <parent reference="../../.."/>
+            <children/>
+            <assignments>
+              <assignment>
+                <investmentVehicle class="account" reference="../../../../../../../../accounts/account"/>
+                <weight>10000</weight>
+                <rank>1</rank>
+              </assignment>
+            </assignments>
+            <weight>10000</weight>
+            <rank>0</rank>
+          </classification>
+          <classification>
+            <id>EQUITY</id>
+            <name>Eigenkapital</name>
+            <color>#5757ff</color>
+            <parent reference="../../.."/>
+            <children/>
+            <assignments>
+              <assignment>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security"/>
+                <weight>10000</weight>
+                <rank>0</rank>
+              </assignment>
+            </assignments>
+            <weight>10000</weight>
+            <rank>0</rank>
+          </classification>
+          <classification>
+            <id>DEBT</id>
+            <name>Fremdkapital</name>
+            <color>#dca122</color>
+            <parent reference="../../.."/>
+            <children/>
+            <assignments/>
+            <weight>10000</weight>
+            <rank>0</rank>
+          </classification>
+          <classification>
+            <id>REAL_ESTATE</id>
+            <name>Immobilien</name>
+            <color>#fd6a0e</color>
+            <parent reference="../../.."/>
+            <children/>
+            <assignments/>
+            <weight>10000</weight>
+            <rank>0</rank>
+          </classification>
+          <classification>
+            <id>COMMODITY</id>
+            <name>Rohstoffe</name>
+            <color>#579f57</color>
+            <parent reference="../../.."/>
+            <children/>
+            <assignments/>
+            <weight>10000</weight>
+            <rank>0</rank>
+          </classification>
+        </children>
+        <assignments/>
+        <weight>10000</weight>
+        <rank>0</rank>
+      </root>
+    </taxonomy>
+  </taxonomies>
+  <dashboards>
+    <dashboard name="Dashboard">
+      <configuration>
+        <entry>
+          <string>REPORTING_PERIOD</string>
+          <string>L1Y0</string>
+        </entry>
+      </configuration>
+      <columns>
+        <column>
+          <weight>1</weight>
+          <widgets>
+            <widget type="HEADING">
+              <label>Calculation</label>
+            </widget>
+            <widget type="CALCULATION">
+              <label>Performance-Berechnung, Eigenkapital</label>
+              <configuration>
+                <entry>
+                  <string>DATA_SERIES</string>
+                  <string>ClassificationEQUITY</string>
+                </entry>
+              </configuration>
+            </widget>
+          </widgets>
+        </column>
+        <column>
+          <weight>1</weight>
+          <widgets/>
+        </column>
+        <column>
+          <weight>1</weight>
+          <widgets/>
+        </column>
+      </columns>
+    </dashboard>
+  </dashboards>
+  <properties/>
+  <settings>
+    <bookmarks>
+      <bookmark>
+        <label>Yahoo Finance</label>
+        <pattern>http://de.finance.yahoo.com/q?s={tickerSymbol}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>OnVista</label>
+        <pattern>http://www.onvista.de/suche.html?SEARCH_VALUE={isin}&amp;SELECTED_TOOL=ALL_TOOLS</pattern>
+      </bookmark>
+      <bookmark>
+        <label>Finanzen.net</label>
+        <pattern>http://www.finanzen.net/suchergebnis.asp?frmAktiensucheTextfeld={isin}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>finanztreff.de</label>
+        <pattern>http://www.finanztreff.de/kurse_einzelkurs_suche.htn?suchbegriff={isin}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>Ariva.de Fundamentaldaten</label>
+        <pattern>http://www.ariva.de/{isin}/bilanz-guv</pattern>
+      </bookmark>
+      <bookmark>
+        <label>justETF</label>
+        <pattern>https://www.justetf.com/de/etf-profile.html?isin={isin}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>fondsweb.de</label>
+        <pattern>http://www.fondsweb.de/{isin}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>Morningstar.de</label>
+        <pattern>http://www.morningstar.de/de/funds/SecuritySearchResults.aspx?type=ALL&amp;search={isin}</pattern>
+      </bookmark>
+    </bookmarks>
+    <attributeTypes>
+      <attribute-type>
+        <id>ter</id>
+        <name>Gesamtkostenquote (TER)</name>
+        <columnLabel>TER</columnLabel>
+        <target>name.abuchen.portfolio.model.Security</target>
+        <type>java.lang.Double</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$PercentConverter</converterClass>
+      </attribute-type>
+      <attribute-type>
+        <id>aum</id>
+        <name>Fondsgröße</name>
+        <columnLabel>Fondsgröße</columnLabel>
+        <target>name.abuchen.portfolio.model.Security</target>
+        <type>java.lang.Long</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$AmountPlainConverter</converterClass>
+      </attribute-type>
+      <attribute-type>
+        <id>logo</id>
+        <name>Logo</name>
+        <columnLabel>Logo</columnLabel>
+        <target>name.abuchen.portfolio.model.Security</target>
+        <type>java.lang.String</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$ImageConverter</converterClass>
+      </attribute-type>
+      <attribute-type>
+        <id>logo</id>
+        <name>Logo</name>
+        <columnLabel>Logo</columnLabel>
+        <target>name.abuchen.portfolio.model.Account</target>
+        <type>java.lang.String</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$ImageConverter</converterClass>
+      </attribute-type>
+      <attribute-type>
+        <id>logo</id>
+        <name>Logo</name>
+        <columnLabel>Logo</columnLabel>
+        <target>name.abuchen.portfolio.model.Portfolio</target>
+        <type>java.lang.String</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$ImageConverter</converterClass>
+      </attribute-type>
+      <attribute-type>
+        <id>logo</id>
+        <name>Logo</name>
+        <columnLabel>Logo</columnLabel>
+        <target>name.abuchen.portfolio.model.InvestmentPlan</target>
+        <type>java.lang.String</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$ImageConverter</converterClass>
+      </attribute-type>
+    </attributeTypes>
+    <configurationSets>
+      <entry>
+        <string>StatementOfAssetsHistoryView-PICKER</string>
+        <config-set>
+          <configurations>
+            <config>
+              <uuid>9f2e7a38-f29e-425d-88d5-b250b81e83ae</uuid>
+              <name>Standard</name>
+              <data>Client-totals;#000000;SOLID;false,Client-transferals;#808080;SOLID;false,Classification45;#0080ff;DOT;false</data>
+            </config>
+          </configurations>
+        </config-set>
+      </entry>
+      <entry>
+        <string>ReturnsVolatilityChartView-PICKER</string>
+        <config-set>
+          <configurations>
+            <config>
+              <uuid>d8f9a906-314e-4fd4-afdb-c7092f7cd996</uuid>
+              <name>Standard</name>
+              <data>Client-totals;#000000;SOLID;false,Classification45;#0080ff;SOLID;false,Classification40;#ff8000;SOLID;false,Classification25;#80ff00;SOLID;false</data>
+            </config>
+          </configurations>
+        </config-set>
+      </entry>
+      <entry>
+        <string>name.abuchen.portfolio.ui.views.SecuritiesPerformanceView</string>
+        <config-set>
+          <configurations>
+            <config>
+              <uuid>2271e833-b19a-49d3-b6cc-28176accf000</uuid>
+              <name>Standard</name>
+              <data>shares=80;name=300;pv=75;pp=75;quote=75;mv=75;sumdiv=80;twror=80;izf=80;delta=80;</data>
+            </config>
+          </configurations>
+        </config-set>
+      </entry>
+      <entry>
+        <string>name.abuchen.portfolio.ui.views.SecuritiesTable</string>
+        <config-set>
+          <configurations>
+            <config>
+              <uuid>71fc34d6-8299-4098-a552-6993df19be82</uuid>
+              <name>Standard</name>
+              <data>0=1024$400;note=33;1=100;2=80;4=60;5=95;9=88;10=154;</data>
+            </config>
+          </configurations>
+        </config-set>
+      </entry>
+      <entry>
+        <string>PerformanceChartView-PICKER</string>
+        <config-set>
+          <configurations>
+            <config>
+              <uuid>5d156594-69fb-49c3-853b-7162652f7523</uuid>
+              <name>Standard</name>
+              <data>Client-totals;#000000;SOLID;false,Client-delta_percentage;#808080;SOLID;false,Classification45;#0080ff;DOT;false</data>
+            </config>
+          </configurations>
+        </config-set>
+      </entry>
+      <entry>
+        <string>name.abuchen.portfolio.ui.views.StatementOfAssetsViewer</string>
+        <config-set>
+          <configurations>
+            <config>
+              <uuid>51cc333a-aa70-46b0-9961-a24b54531c7c</uuid>
+              <name>Standard</name>
+              <data>0=80;1=300;2=60;4=60;5=80;6=80;note=1066;</data>
+            </config>
+          </configurations>
+        </config-set>
+      </entry>
+    </configurationSets>
+  </settings>
+</client>
