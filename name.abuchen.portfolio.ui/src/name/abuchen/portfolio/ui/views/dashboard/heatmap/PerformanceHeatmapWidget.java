@@ -77,7 +77,7 @@ public class PerformanceHeatmapWidget extends AbstractHeatmapWidget<Double>
 
         // add header
 
-        addMonthlyHeader(model, numDashboardColumns, showSum, showStandardDeviation);
+        addMonthlyHeader(model, numDashboardColumns, showSum, showStandardDeviation, false);
 
         // build row for each year
 
