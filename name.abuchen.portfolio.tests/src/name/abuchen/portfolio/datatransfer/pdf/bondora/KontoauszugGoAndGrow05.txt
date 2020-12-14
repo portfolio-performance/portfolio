@@ -1,0 +1,13 @@
+Datum 14.05.2020 - 28.11.2020
+Referenznummer 
+Zusammenfassung
+Zu Beginn € 0
+Einzahlungen € 1 522,17
+Auszahlungen € 0
+Ergebnis € 1 522,17
+Go&Grow
+Datum Zahlungsart Eingänge Ausgänge Guthaben
+07.09.2020 Überweisen € 1 500 € 1 500
+08.09.2020 Go & Grow Zinsen € 0,27 € 1 500,27
+09.09.2020 Go & Grow Zinsen € 0,27 € 1 500,54
+Gesamt € 1 522,17
