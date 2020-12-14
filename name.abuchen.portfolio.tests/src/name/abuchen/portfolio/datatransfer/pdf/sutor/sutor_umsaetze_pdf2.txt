@@ -79,4 +79,6 @@ datum Handelsplatz ISIN Kurs / Preis Währung (brutto) (netto) SolZ
 13:20 OTC IE00BL25JN58 32,3064 US$
 02.07.2020 02.07.2020 Kauf Kauf Vanguard EUR Eurozone Gov Bond ETF 25,3618 -683,50
 15:20 OTC IE00BH04GL39 26,9500 EUR
-
+11.06.2020 11.06.2020 Gebühren Kontoführungs-u.Depotgebühren 1. Hj. 2020 - -18,00
+08.01.2020 08.01.2020 Gebühr anteil.Verwaltgebühr/Vertriebskosten2.Hj.2019 - -0,92
+02.03.2020 02.03.2020 Einzahlung automatischer Lastschrifteinzug - 175,00
