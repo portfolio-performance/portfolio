@@ -60,7 +60,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date", "time") //
-                        .match(".*Order Kauf am (?<date>\\d+.\\d+.\\d{4}+), um (?<time>\\d+:\\d+) Uhr.*")
+                        .match(".*Order Kauf am (?<date>\\d+\\.\\d+\\.\\d{4}|\\d{4}-\\d+-\\d+), um (?<time>\\d+:\\d+) Uhr.*")
                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
 
                         .section("fee", "currency") //
@@ -124,7 +124,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date", "time") //
-                        .match(".*Order Verkauf am (?<date>\\d+.\\d+.\\d{4}+), um (?<time>\\d+:\\d+) Uhr.*")
+                        .match(".*Order Verkauf am (?<date>\\d+\\.\\d+\\.\\d{4}|\\d{4}-\\d+-\\d+), um (?<time>\\d+:\\d+) Uhr.*")
                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
 
                         .section("fee", "currency") //
@@ -192,7 +192,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         .section("tax", "currency", "date").optional() //
                         .match("Kapitalertragssteuer Optimierung (?<tax>[\\d+,.]*) (?<currency>\\w{3}+)")
                         .match("VERRECHNUNGSKONTO VALUTA BETRAG")
-                        .match(".* (?<date>\\d+.\\d+.\\d{4}+) (?<amount>[\\d+,.]*) (\\w{3}+)")
+                        .match(".* (?<date>\\d+\\.\\d+\\.\\d{4}|\\d{4}-\\d+-\\d+) (?<amount>[\\d+,.]*) (\\w{3}+)")
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("tax")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -202,7 +202,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         .section("tax", "currency", "date").optional() //
                         .match("Solidaritätszuschlag Optimierung (?<tax>[\\d+,.]*) (?<currency>\\w{3}+)")
                         .match("VERRECHNUNGSKONTO VALUTA BETRAG")
-                        .match(".* (?<date>\\d+.\\d+.\\d{4}+) (?<amount>[\\d+,.]*) (\\w{3}+)")
+                        .match(".* (?<date>\\d+\\.\\d+\\.\\d{4}|\\d{4}-\\d+-\\d+) (?<amount>[\\d+,.]*) (\\w{3}+)")
                         .assign((t, v) -> {
                             t.setAmount(t.getAmount() + asAmount(v.get("tax")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -212,7 +212,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         .section("tax", "currency", "date").optional() //
                         .match("Kirchensteuer Optimierung (?<tax>[\\d+,.]*) (?<currency>\\w{3}+)")
                         .match("VERRECHNUNGSKONTO VALUTA BETRAG")
-                        .match(".* (?<date>\\d+.\\d+.\\d{4}+) (?<amount>[\\d+,.]*) (\\w{3}+)")
+                        .match(".* (?<date>\\d+\\.\\d+\\.\\d{4}|\\d{4}-\\d+-\\d+) (?<amount>[\\d+,.]*) (\\w{3}+)")
                         .assign((t, v) -> {
                             t.setAmount(t.getAmount() + asAmount(v.get("tax")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -257,7 +257,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
     
                         .section("date") //
                         .match("VERRECHNUNGSKONTO VALUTA BETRAG")
-                        .match("\\w* (?<date>\\d+.\\d+.\\d{4}+) .*")
+                        .match("\\w* (?<date>\\d+\\.\\d+\\.\\d{4}|\\d{4}-\\d+-\\d+) .*")
                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
     
                         .wrap(BuySellEntryItem::new));
@@ -274,7 +274,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         .section("tax", "currency", "date").optional() //
                         .match(".*Kapitalertragssteuer Optimierung (?<tax>[\\d+,.]*) (?<currency>\\w{3}+)")
                         .match("VERRECHNUNGSKONTO VALUTA BETRAG")
-                        .match(".* (?<date>\\d+.\\d+.\\d{4}+) ([\\d+,.]*) (\\w{3}+)")
+                        .match(".* (?<date>\\d+\\.\\d+\\.\\d{4}|\\d{4}-\\d+-\\d+) ([\\d+,.]*) (\\w{3}+)")
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("tax")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -284,7 +284,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         .section("tax", "currency", "date").optional() //
                         .match("Solidaritätszuschlag Optimierung (?<tax>[\\d+,.]*) (?<currency>\\w{3}+)")
                         .match("VERRECHNUNGSKONTO VALUTA BETRAG")
-                        .match(".* (?<date>\\d+.\\d+.\\d{4}+) ([\\d+,.]*) (\\w{3}+)")
+                        .match(".* (?<date>\\d+\\.\\d+\\.\\d{4}|\\d{4}-\\d+-\\d+) ([\\d+,.]*) (\\w{3}+)")
                         .assign((t, v) -> {
                             t.setAmount(t.getAmount() + asAmount(v.get("tax")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -294,7 +294,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         .section("tax", "currency", "date").optional() //
                         .match("Kirchensteuer Optimierung (?<tax>[\\d+,.]*) (?<currency>\\w{3}+)")
                         .match("VERRECHNUNGSKONTO VALUTA BETRAG")
-                        .match(".* (?<date>\\d+.\\d+.\\d{4}+) ([\\d+,.]*) (\\w{3}+)")
+                        .match(".* (?<date>\\d+\\.\\d+\\.\\d{4}|\\d{4}-\\d+-\\d+) ([\\d+,.]*) (\\w{3}+)")
                         .assign((t, v) -> {
                             t.setAmount(t.getAmount() + asAmount(v.get("tax")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -332,7 +332,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date", "amount")
-                        .match("(?<date>\\d+.\\d+.\\d{4}+) Accepted PayIn:.* to .* (?<amount>[\\d+,.]*)")
+                        .match("(?<date>\\d+\\.\\d+\\.\\d{4}|\\d{4}-\\d+-\\d+) Accepted PayIn:.* to .* (?<amount>[\\d+,.]*)")
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
