@@ -607,7 +607,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("wkn", "name", "isin", "shares").optional() //
-                        .match("^(Stk.)\\W*(?<shares>\\d[\\d .,]*)(?<name>.*),\\W*(WKN / ISIN:)(?<wkn>.*)/(?<isin>.*)$") //
+                        .match("^(Stk.)\\W*(?<shares>\\d[\\d.,]*)\\W+(?<name>.*),\\W*(WKN / ISIN:)(?<wkn>.*)/(?<isin>.*)$") //
                         .assign((t, v) -> {
                             v.put("isin", stripBlanks(v.get("isin")));
                             v.put("wkn", stripBlanks(v.get("wkn")));
