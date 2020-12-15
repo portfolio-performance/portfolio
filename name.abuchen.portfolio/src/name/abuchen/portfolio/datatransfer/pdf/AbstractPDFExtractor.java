@@ -252,7 +252,6 @@ public abstract class AbstractPDFExtractor implements Extractor
         catch (DateTimeParseException e)
         {
             date = LocalDate.parse(value, DATE_FORMAT_DASHES).atStartOfDay();
-            
         }
         return date;
     }
