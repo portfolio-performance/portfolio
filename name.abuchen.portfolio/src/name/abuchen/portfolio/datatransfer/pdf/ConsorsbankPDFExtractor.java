@@ -404,96 +404,77 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private void addFeesSectionsTransaction(Transaction<BuySellEntry> pdfTransaction)
     {
-        pdfTransaction.section("currency", "stockfees").optional() //
-                        .match("(^.*)(B.rsenplatzgeb.hr) (?<currency>\\w{3}) (?<stockfees>[\\d\\.]*(,\\d{2})?)")
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("stockfees"))))))
+        pdfTransaction.section("currency", "currency1", "fee").optional()
+                        .match("(^.*)(B.rsenplatzgeb.hr)(?<currency>\\s\\w{3}\\s|\\s)?(?<fee>[\\d\\.]+(,\\d{2})?)(?<currency1>\\s\\w{3}|$)?")
+                        .assign((t, v) -> {
+                            String currency = v.get("currency").trim().length() > 0 ? asCurrencyCode(v.get("currency"))
+                                            : asCurrencyCode(v.get("currency1"));
+                            t.getPortfolioTransaction().addUnit(
+                                            new Unit(Unit.Type.FEE, Money.of(currency, asAmount(v.get("fee")))));
+                        })
 
-                        .section("currency", "stockfees").optional() //
-                        .match("(^.*)(B.rsenplatzgeb.hr) (?<stockfees>[\\d\\.]*(,\\d{2})?) (?<currency>\\w{3})")
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("stockfees"))))))
+                        .section("currency", "currency1", "fee").optional()
+                        .match("(^.*)(Provision)(?<currency>\\s\\w{3}\\s|\\s)?(?<fee>[\\d\\.]+(,\\d{2})?)(?<currency1>\\s\\w{3}|$)?")
+                        .assign((t, v) -> {
+                            String currency = v.get("currency").trim().length() > 0 ? asCurrencyCode(v.get("currency"))
+                                            : asCurrencyCode(v.get("currency1"));
+                            t.getPortfolioTransaction().addUnit(
+                                            new Unit(Unit.Type.FEE, Money.of(currency, asAmount(v.get("fee")))));
+                        })
 
-                        .section("currency", "brokerage").optional()
-                        .match("(^.*)(Provision) (?<currency>\\w{3}) (?<brokerage>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)")
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("brokerage"))))))
+                        .section("currency", "currency1", "fee").optional()
+                        .match("(^.*)(Handelsentgelt)(?<currency>\\s\\w{3}\\s|\\s)?(?<fee>[\\d\\.]+(,\\d{2})?)(?<currency1>\\s\\w{3}|$)?")
+                        .assign((t, v) -> {
+                            String currency = v.get("currency").trim().length() > 0 ? asCurrencyCode(v.get("currency"))
+                                            : asCurrencyCode(v.get("currency1"));
+                            t.getPortfolioTransaction().addUnit(
+                                            new Unit(Unit.Type.FEE, Money.of(currency, asAmount(v.get("fee")))));
+                        })
 
-                        .section("currency", "fee").optional()
-                        .match("(^.*)(Handelsentgelt) (?<currency>\\w{3}) (?<fee>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)")
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("fee"))))))
+                        .section("currency", "currency1", "fee").optional()
+                        .match("(^.*)(Transaktionsentgelt)(?<currency>\\s\\w{3}\\s|\\s)?(?<fee>[\\d\\.]+(,\\d{2})?)(?<currency1>\\s\\w{3}|$)?")
+                        .assign((t, v) -> {
+                            String currency = v.get("currency").trim().length() > 0 ? asCurrencyCode(v.get("currency"))
+                                            : asCurrencyCode(v.get("currency1"));
+                            t.getPortfolioTransaction().addUnit(
+                                            new Unit(Unit.Type.FEE, Money.of(currency, asAmount(v.get("fee")))));
+                        })
 
-                        .section("currency", "fee").optional()
-                        .match("(^.*)(Handelsentgelt) (?<fee>\\d{1,3}(\\.\\d{3})*(,\\d{2})?) (?<currency>\\w{3})")
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("fee"))))))
+                        .section("currency", "currency1", "fee").optional()
+                        .match("(^.*)(Grundgeb.hr)(?<currency>\\s\\w{3}\\s|\\s)?(?<fee>[\\d\\.]+(,\\d{2})?)(?<currency1>\\s\\w{3}|$)?")
+                        .assign((t, v) -> {
+                            String currency = v.get("currency").trim().length() > 0 ? asCurrencyCode(v.get("currency"))
+                                            : asCurrencyCode(v.get("currency1"));
+                            t.getPortfolioTransaction().addUnit(
+                                            new Unit(Unit.Type.FEE, Money.of(currency, asAmount(v.get("fee")))));
+                        })
 
-                        .section("currency", "fee").optional()
-                        .match("(^.*)(Transaktionsentgelt) (?<currency>\\w{3}) (?<fee>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)")
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("fee"))))))
+                        .section("currency", "currency1", "fee").optional()
+                        .match("(^.*)(Eig\\. Spesen)(?<currency>\\s\\w{3}\\s|\\s)?(?<fee>[\\d\\.]+(,\\d{2})?)(?<currency1>\\s\\w{3}|$)?")
+                        .assign((t, v) -> {
+                            String currency = v.get("currency").trim().length() > 0 ? asCurrencyCode(v.get("currency"))
+                                            : asCurrencyCode(v.get("currency1"));
+                            t.getPortfolioTransaction().addUnit(
+                                            new Unit(Unit.Type.FEE, Money.of(currency, asAmount(v.get("fee")))));
+                        })
 
-                        .section("currency", "fee").optional()
-                        .match("(^.*)(Transaktionsentgelt) (?<fee>\\d{1,3}(\\.\\d{3})*(,\\d{2})?) (?<currency>\\w{3})")
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("fee"))))))
+                        .section("currency", "currency1", "tax").optional()
+                        .match("(^.*)(Franzoesische Finanztransaktionssteuer [\\d\\,]+%)(?<currency>\\s\\w{3}\\s|\\s)?(?<tax>[\\d\\.]+(,\\d{2})?)(?<currency1>\\s\\w{3}|$)?")
+                        .assign((t, v) -> {
+                            String currency = v.get("currency").trim().length() > 0 ? asCurrencyCode(v.get("currency"))
+                                            : asCurrencyCode(v.get("currency1"));
+                            t.getPortfolioTransaction().addUnit(
+                                            new Unit(Unit.Type.TAX, Money.of(currency, asAmount(v.get("tax")))));
+                        })
 
-                        .section("currency", "basicfees").optional()
-                        .match("(^.*)(Grundgeb\\Dhr) (?<currency>\\w{3}+) (?<basicfees>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)")
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("basicfees"))))))
-
-                        .section("currency", "assetbasedfees").optional()
-                        .match("(^.*)(Consorsbank Ausgabegeb.hr.*%) (?<currency>\\w{3}+) (?<assetbasedfees>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)")
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("assetbasedfees"))))))
-
-                        .section("currency", "expenses").optional()
-                        .match("(^.*)(Eig. Spesen) (?<currency>\\w{3}+) (?<expenses>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)")
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("expenses"))))))
-
-                        .section("currency", "tax").optional()
-                        .match("^Franzoesische Finanztransaktionssteuer .* (?<currency>\\w{3}) (?<tax>[\\d,.]+)$")
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.TAX,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("tax"))))))
-
-                        .section("currency", "fee").optional()
-                        .match("^(abzgl. )?Grundgeb.hr (?<fee>[\\d,\\.]+) (?<currency>\\w{3})$")
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("fee"))))))
-
-                        .section("currency", "fee").optional()
-                        .match("^(abzgl. )?Provision (?<fee>[\\d,\\.]+) (?<currency>\\w{3})$")
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("fee"))))));
+                        .section("currency", "currency1", "fee").optional()
+                        .match("(^.*)(Consorsbank Ausgabegeb.hr [\\d\\,]+%)(?<currency>\\s\\w{3}\\s|\\s)?(?<fee>[\\d\\.]+(,\\d{2})?)(?<currency1>\\s\\w{3}|$)?")
+                        .assign((t, v) -> {
+                            String currency = v.get("currency").trim().length() > 0 ? asCurrencyCode(v.get("currency"))
+                                            : asCurrencyCode(v.get("currency1"));
+                            t.getPortfolioTransaction().addUnit(
+                                            new Unit(Unit.Type.FEE, Money.of(currency, asAmount(v.get("fee")))));
+                        });
 
     }
 
