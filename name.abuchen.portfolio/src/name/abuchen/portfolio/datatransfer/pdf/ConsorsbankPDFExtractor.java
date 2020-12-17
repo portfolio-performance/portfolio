@@ -2,6 +2,7 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Map;
 import java.util.Optional;
 
 import name.abuchen.portfolio.Messages;
@@ -212,7 +213,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                         .wrap(BuySellEntryItem::new);
 
         addFeesSectionsTransaction(pdfTransaction);
-        addTaxesSectionsTransaction(pdfTransaction);
+        addTaxesSectionsTransaction(pdfTransaction, type);
     }
 
     @SuppressWarnings("nls")
@@ -350,62 +351,72 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
     }
 
     @SuppressWarnings("nls")
-    private <T extends Transaction<?>> void addTaxesSectionsTransaction(T pdfTransaction)
+    private <T extends Transaction<?>> void addTaxesSectionsTransaction(T pdfTransaction, DocumentType type)
     {
         pdfTransaction.section("tax", "currency").optional().multipleTimes()
-                        .match("KAPST .*(?<currency>\\w{3}+) *(?<tax>[\\d.]+,\\d+) *") //
+                        .match("^KAPST .*(?<currency>\\w{3}) *(?<tax>[\\d\\.]+,\\d+) *") //
                         .assign((t, v) -> {
-                            if (t instanceof name.abuchen.portfolio.model.Transaction)
-                            {
-                                ((name.abuchen.portfolio.model.Transaction) t).addUnit(new Unit(Unit.Type.TAX,
-                                                Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")))));
-                            }
-                            else
-                            {
-                                ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction().addUnit(
-                                                new Unit(Unit.Type.TAX, Money.of(asCurrencyCode(v.get("currency")),
-                                                                asAmount(v.get("tax")))));
-                            }
+                            processTaxEntries(t, v, type);
                         })
 
-                        .section("solz", "currency").optional().multipleTimes()
-                        .match("SOLZ .*(?<currency>\\w{3}+) *(?<solz>[\\d.]+,\\d+) *") //
+                        .section("tax", "currency").optional().multipleTimes()
+                        .match("^SOLZ .*(?<currency>\\w{3}) *(?<tax>[\\d\\.]+,\\d+) *") //
                         .assign((t, v) -> {
-                            if (t instanceof name.abuchen.portfolio.model.Transaction)
-                            {
-                                ((name.abuchen.portfolio.model.Transaction) t).addUnit(new Unit(Unit.Type.TAX,
-                                                Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("solz")))));
-                            }
-                            else
-                            {
-                                ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction().addUnit(
-                                                new Unit(Unit.Type.TAX, Money.of(asCurrencyCode(v.get("currency")),
-                                                                asAmount(v.get("solz")))));
-                            }
+                            processTaxEntries(t, v, type);
                         })
 
-                        .section("kirchenst", "currency").optional().multipleTimes()
-                        .match("KIST .*(?<currency>\\w{3}+) *(?<kirchenst>[\\d.]+,\\d+) *") //
+                        .section("tax", "currency").optional().multipleTimes()
+                        .match("^KIST .*(?<currency>\\w{3}) *(?<tax>[\\d\\.]+,\\d+) *") //
                         .assign((t, v) -> {
-                            if (t instanceof name.abuchen.portfolio.model.Transaction)
-                            {
-                                ((name.abuchen.portfolio.model.Transaction) t).addUnit(new Unit(Unit.Type.TAX, Money
-                                                .of(asCurrencyCode(v.get("currency")), asAmount(v.get("kirchenst")))));
-                            }
-                            else
-                            {
-                                ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction().addUnit(
-                                                new Unit(Unit.Type.TAX, Money.of(asCurrencyCode(v.get("currency")),
-                                                                asAmount(v.get("kirchenst")))));
-                            }
+                            processTaxEntries(t, v, type);
+                        })
+
+                        .section("tax", "currency").optional() //
+                        .match("^abzgl. Quellensteuer .* (\\w{3}) (?<tax>[\\d\\.]+,\\d+) (?<currency>\\w{3})$")
+                        .assign((t, v) -> {
+                            processTaxEntries(t, v, type);
+                        })
+
+                        .section("tax", "currency").optional().multipleTimes() //
+                        .match("^abzgl. Kapitalertrags(s)?teuer.* (?<tax>[\\d\\.]+,\\d+) (?<currency>\\w{3})$")
+                        .assign((t, v) -> {
+                            processTaxEntries(t, v, type);
+                        })
+
+                        .section("tax", "currency").optional().multipleTimes() //
+                        .match("^abzgl. Solidaritätszuschlag.* (?<tax>[\\d\\.]+,\\d+) (?<currency>\\w{3})$")
+                        .assign((t, v) -> {
+                            processTaxEntries(t, v, type);
+                        })
+
+                        .section("tax", "currency").optional().multipleTimes() //
+                        .match("^abzgl. Kirchensteuer.* (?<tax>[\\d\\.]+,\\d{2}) (?<currency>\\w{3})$") //
+                        .assign((t, v) -> {
+                            processTaxEntries(t, v, type);
                         });
+    }
+
+    @SuppressWarnings("nls")
+    private void processTaxEntries(Object t, Map<String, String> v, DocumentType type)
+    {
+        if (t instanceof name.abuchen.portfolio.model.Transaction)
+        {
+            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+            PDFExtractorUtils.checkAndSetTax(tax, (name.abuchen.portfolio.model.Transaction) t, type);
+        }
+        else
+        {
+            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+            PDFExtractorUtils.checkAndSetTax(tax,
+                            ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
+        }
     }
 
     @SuppressWarnings("nls")
     private void addFeesSectionsTransaction(Transaction<BuySellEntry> pdfTransaction)
     {
-        pdfTransaction.section("currency", "currency1", "fee").optional()
-                        .match("(^.*)(B.rsenplatzgeb.hr)(?<currency>\\s\\w{3}\\s|\\s)?(?<fee>[\\d\\.]+(,\\d{2})?)(?<currency1>\\s\\w{3}|$)?")
+        pdfTransaction.section("currency", "currency1", "fee").optional().match(
+                        "(^.*)(B.rsenplatzgeb.hr)(?<currency>\\s\\w{3}\\s|\\s)?(?<fee>[\\d\\.]+(,\\d{2})?)(?<currency1>\\s\\w{3}|$)?")
                         .assign((t, v) -> {
                             String currency = v.get("currency").trim().length() > 0 ? asCurrencyCode(v.get("currency"))
                                             : asCurrencyCode(v.get("currency1"));
@@ -549,15 +560,16 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
         Block block = new Block("(Dividendengutschrift|Ertragsgutschrift).*");
         type.addBlock(block);
 
-        block.set(new Transaction<AccountTransaction>()
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        block.set(pdfTransaction);
 
-                        .subject(() -> {
-                            AccountTransaction t = new AccountTransaction();
-                            t.setType(AccountTransaction.Type.DIVIDENDS);
-                            return t;
-                        })
+        pdfTransaction.subject(() -> {
+            AccountTransaction t = new AccountTransaction();
+            t.setType(AccountTransaction.Type.DIVIDENDS);
+            return t;
+        });
 
-                        .section("name", "wkn", "isin", "currency") //
+        pdfTransaction.section("name", "wkn", "isin", "currency") //
                         .find("Wertpapierbezeichnung WKN ISIN") //
                         .match("(?<name>.*) (?<wkn>[^ ]*) (?<isin>[^ ]*)$") //
                         .match(".*(Dividende pro St.ck|Ertragsaussch.ttung je Anteil) ([\\d.]+,\\d+) (?<currency>\\w{3}+).*") //
@@ -626,35 +638,9 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                             }
                         })
 
-                        .section("tax", "currency").optional() //
-                        .match("abzgl. Quellensteuer .* (\\w{3}+) (?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)")
-                        .assign((t, v) -> {
-                            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-                            PDFExtractorUtils.checkAndSetTax(tax, t, type);
-                        })
+                        .wrap(t -> t.getAmount() != 0 ? new TransactionItem(t) : null);
 
-                        .section("tax", "currency").optional() //
-                        .match("abzgl. Kapitalertragsteuer.* (?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)$")
-                        .assign((t, v) -> {
-                            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-                            PDFExtractorUtils.checkAndSetTax(tax, t, type);
-                        })
-
-                        .section("tax", "currency").optional() //
-                        .match("abzgl. Solidaritätszuschlag.* (?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)$")
-                        .assign((t, v) -> {
-                            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-                            PDFExtractorUtils.checkAndSetTax(tax, t, type);
-                        })
-
-                        .section("tax", "currency").optional() //
-                        .match("abzgl. Kirchensteuer.* (?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)$") //
-                        .assign((t, v) -> {
-                            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-                            PDFExtractorUtils.checkAndSetTax(tax, t, type);
-                        })
-
-                        .wrap(t -> t.getAmount() != 0 ? new TransactionItem(t) : null));
+        addTaxesSectionsTransaction(pdfTransaction, type);
 
     }
 
