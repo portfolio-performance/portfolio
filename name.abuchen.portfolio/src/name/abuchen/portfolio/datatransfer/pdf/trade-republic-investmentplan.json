@@ -27,7 +27,7 @@
 				},
 				{
 					"pattern": [
-						"Sparplanausführung am (?<date>\\d+.\\d+.\\d{4}+) .*"
+						"Sparplanausführung am (?<date>\\d+\\.\\d+\\.\\d{4}|\\d{4}-\\d+-\\d+) .*"
 					]
 				},
 				{
