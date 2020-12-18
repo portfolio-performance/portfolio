@@ -260,18 +260,18 @@ public class DABPDFExtractor extends AbstractPDFExtractor
         pdfTransaction.section("isin", "name", "currency") //
                         .find("Gattungsbezeichnung ISIN") //
                         .match("^(?<name>.*) (?<isin>[^ ]*)$") //
-                        .match("STK ([\\d.]+(,\\d+)?) (\\d+.\\d+.\\d{4}+) (\\d+.\\d+.\\d{4}+) (?<currency>\\w{3}+) (\\d+,\\d+)")
+                        .match("STK ([\\d\\.]+(,\\d+)?) (\\d{2}\\.\\d{2}\\.\\d{4}) (\\d{2}\\.\\d{2}\\.\\d{4}) (?<currency>\\w{3}) (\\d+,\\d+)")
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         .section("shares") //
                         .find("Nominal Ex-Tag Zahltag .*") //
-                        .match("^STK (?<shares>[\\d.]+(,\\d+)?) .*$")
+                        .match("^STK (?<shares>[\\d\\.]+(,\\d+)?) .*$")
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         .section("date", "amount", "currency") //
                         .optional() //
                         .find("Wert *Konto-Nr. *Betrag *zu *Ihren *Gunsten")
-                        .match("^(?<date>\\d+.\\d+.\\d{4}+) ([0-9]*) (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)$")
+                        .match("^(?<date>\\d{2}\\.\\d{2}\\.\\d{4}) ([0-9]*) (?<currency>\\w{3}) (?<amount>[\\d\\.]+,\\d+)$")
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -281,7 +281,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                         .section("date", "amount", "currency", "forexCurrency", "exchangeRate") //
                         .optional() //
                         .find("Wert Konto-Nr. Devisenkurs Betrag zu Ihren Gunsten")
-                        .match("^(?<date>\\d+.\\d+.\\d{4}+) ([0-9]*) \\w{3}+/(?<forexCurrency>\\w{3}+) (?<exchangeRate>[\\d.]+,\\d+) (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)$")
+                        .match("^(?<date>\\d{2}\\.\\d{2}\\.\\d{4}) ([0-9]*) \\w{3}/(?<forexCurrency>\\w{3}) (?<exchangeRate>[\\d\\.]+,\\d+) (?<currency>\\w{3}) (?<amount>[\\d\\.]+,\\d+)$")
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -289,9 +289,11 @@ public class DABPDFExtractor extends AbstractPDFExtractor
 
                             BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate")).setScale(10,
                                             RoundingMode.HALF_DOWN);
+                            BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+
                             Money forex = Money.of(asCurrencyCode(v.get("forexCurrency")),
-                                            Math.round(t.getAmount() / exchangeRate.doubleValue()));
-                            Unit unit = new Unit(Unit.Type.GROSS_VALUE, t.getMonetaryAmount(), forex, exchangeRate);
+                                            Math.round(t.getAmount() / inverseRate.doubleValue()));
+                            Unit unit = new Unit(Unit.Type.GROSS_VALUE, t.getMonetaryAmount(), forex, inverseRate);
                             if (unit.getForex().getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
                                 t.addUnit(unit);
                         })
@@ -302,8 +304,8 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                         .section("forex", "localCurrency", "forexCurrency", "exchangeRate") //
                         .optional() //
                         .find("Wert Konto-Nr. Betrag zu Ihren Gunsten")
-                        .match("^(\\d+.\\d+.\\d{4}+) ([0-9]*) (\\w{3}+) (?<forex>[\\d.]+,\\d+)$")
-                        .match("Devisenkurs: (?<localCurrency>\\w{3}+)/(?<forexCurrency>\\w{3}+) (?<exchangeRate>[\\d.]+,\\d+)")
+                        .match("^(\\d{2}.\\d{2}\\.\\d{4}) ([0-9]*) (\\w{3}) (?<forex>[\\d\\.]+,\\d+)$")
+                        .match("Devisenkurs: (?<localCurrency>\\w{3})/(?<forexCurrency>\\w{3}) (?<exchangeRate>[\\d\\.]+,\\d+)")
                         .assign((t, v) -> {
                             BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate")).setScale(10,
                                             RoundingMode.HALF_DOWN);
@@ -324,8 +326,8 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                         .optional() //
                         // this line seems to give the gross dividend always in
                         // EUR
-                        .match("ausl.ndische Dividende \\w{3} (?<fxAmount>[\\d.]+,\\d+)")
-                        .match("Devisenkurs: (?<fxCurrency>\\w{3}+)/(?<currency>\\w{3}+) (?<exchangeRate>[\\d.]+,\\d+)")
+                        .match("ausl.ndische Dividende \\w{3} (?<fxAmount>[\\d\\.]+,\\d+)")
+                        .match("Devisenkurs: (?<fxCurrency>\\w{3})/(?<currency>\\w{3}) (?<exchangeRate>[\\d\\.]+,\\d+)")
                         .assign((t, v) -> {
 
                             if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
@@ -447,10 +449,25 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                             documentType.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
                         })
 
-                        .section("tax", "currency").optional()
-                        .match("^.*US-Quellensteuer.* (?<currency>\\w{3}) (?<tax>[\\d\\.]+,\\d+)-?$").assign((t, v) -> {
-                            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-                            PDFExtractorUtils.checkAndSetTax(tax, getTransaction(t), documentType);
+                        .section("exchangeRate", "fxCurrency").optional() //
+                        .match("^Wert Konto-Nr. Devisenkurs Betrag zu Ihren Gunsten$")
+                        .match("\\d{2}\\.\\d{2}\\.\\d{4} \\d+ (\\w{3})/(?<fxCurrency>\\w{3}) (?<exchangeRate>[\\d\\.]+,\\d+) .*")
+                        .assign((t, v) -> {
+                            BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                            if (getTransaction(t).getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
+                            {
+                                exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+                            }
+                            documentType.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
+                        })
+
+                        .section("tax", "currency", "label").optional()
+                        .match("^(?<label>.*)US-Quellensteuer.* (?<currency>\\w{3}) (?<tax>[\\d\\.]+,\\d+)-?$").assign((t, v) -> {
+                            if (!"davon anrechenbare".equals(v.get("label").trim()))
+                            {
+                                Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                                PDFExtractorUtils.checkAndSetTax(tax, getTransaction(t), documentType);
+                            }    
                         })
 
                         .section("tax", "currency", "label").optional()
