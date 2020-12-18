@@ -1190,6 +1190,76 @@ public class ConsorsbankPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf11() throws IOException
+    {
+        PDFImportAssistant assistant = new PDFImportAssistant(new Client(), new ArrayList<>());
+    
+        List<Exception> errors = new ArrayList<>();
+    
+        List<Item> results = assistant.runWithInputFile(
+                        PDFInputFile.loadSingleTestCase(getClass(), "ConsorsbankKauf11.txt"), errors);
+    
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+    
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findAny()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("US9168961038"));
+        assertThat(security.getWkn(), is("A0JDRR"));
+        assertThat(security.getName(), is("URANIUM ENERGY DL-,001"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+    
+        // check buy sell transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem).findAny()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+    
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+    
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 5441_15L)));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-07T14:09")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4974)));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 26_95L)));
+    }
+
+    @Test
+    public void testWertpapierKauf12() throws IOException
+    {
+        PDFImportAssistant assistant = new PDFImportAssistant(new Client(), new ArrayList<>());
+    
+        List<Exception> errors = new ArrayList<>();
+    
+        List<Item> results = assistant.runWithInputFile(
+                        PDFInputFile.loadSingleTestCase(getClass(), "ConsorsbankKauf12.txt"), errors);
+    
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+    
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findAny()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("DE0008404005"));
+        assertThat(security.getWkn(), is("840400"));
+        assertThat(security.getName(), is("ALLIANZ SE NA O.N."));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+    
+        // check buy sell transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem).findAny()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+    
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+    
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 25_00L)));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-15T09:30")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.12804)));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 37L)));
+    }
+
+    @Test
     public void testWertpapierKaufSparplan() throws IOException
     {
         ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(new Client());
