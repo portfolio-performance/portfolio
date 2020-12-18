@@ -1212,7 +1212,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
                 CalculationLineItem item = (CalculationLineItem) e;
                 if (item instanceof CalculationLineItem.DividendPayment)
                     return Values.Percent2.formatNonZero(((CalculationLineItem.DividendPayment) item)
-                                    .getPersonalDividendYieldMovingAverage());
+                                    .getPersonalDividendYieldMovingAverage(true));
                 else
                     return null;
             }

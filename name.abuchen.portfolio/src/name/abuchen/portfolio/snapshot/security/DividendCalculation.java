@@ -61,7 +61,7 @@ import name.abuchen.portfolio.util.Dates;
             if (security != null)
             {
                 // try to get moving average/fifo price
-                rr = t.getPersonalDividendYieldMovingAverage();
+                rr = t.getPersonalDividendYieldMovingAverage(false);
                 // check if it is valid (non 0)
                 if (rr == 0)
                 {

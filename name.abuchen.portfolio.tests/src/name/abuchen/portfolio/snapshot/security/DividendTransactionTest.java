@@ -176,7 +176,7 @@ public class DividendTransactionTest
                                                                     // 1800
         t1.setMovingAverageCost(movingAverageCost);
 
-        double result = t1.getPersonalDividendYieldMovingAverage(); // hence
+        double result = t1.getPersonalDividendYieldMovingAverage(true); // hence
                                                                     // 5.5556%
                                                                     // yield
 
@@ -190,7 +190,7 @@ public class DividendTransactionTest
                         LocalDateTime.of(2019, 01, 15, 12, 00));
         // Transaction has no movingAverageCosts
 
-        double result = t1.getPersonalDividendYieldMovingAverage();
+        double result = t1.getPersonalDividendYieldMovingAverage(true);
 
         assertEquals(0.0, result, 0.001d);
     }
@@ -209,7 +209,7 @@ public class DividendTransactionTest
                                                                     // 1800
         t1.setMovingAverageCost(movingAverageCost);
 
-        double result = t1.getPersonalDividendYieldMovingAverage(); // hence
+        double result = t1.getPersonalDividendYieldMovingAverage(true); // hence
                                                                     // 6.66666%
                                                                     // yield
 

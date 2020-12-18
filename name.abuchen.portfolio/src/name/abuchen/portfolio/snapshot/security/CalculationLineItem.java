@@ -126,14 +126,14 @@ public interface CalculationLineItem
             return getGrossValueAmount() / cost;
         }
 
-        public double getPersonalDividendYieldMovingAverage()
+        public double getPersonalDividendYieldMovingAverage(boolean checkPartialPosition)
         {
             if ((movingAverageCost == null) || (movingAverageCost.getAmount() <= 0))
                 return 0;
 
             double cost = movingAverageCost.getAmount();
 
-            if (tx().getShares() > 0)
+            if (checkPartialPosition && tx().getShares() > 0)
                 cost = movingAverageCost.getAmount() * (tx().getShares() / (double) totalShares);
 
             return getGrossValueAmount() / cost;
