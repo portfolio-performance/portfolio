@@ -2,8 +2,8 @@ package name.abuchen.portfolio.datatransfer.pdf.dab;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -666,6 +666,70 @@ public class DABPDFExtractorTest
 
     }
     
+    @Test
+    public void testDividend8() throws IOException
+    {
+        Client client = new Client();
+        DABPDFExtractor extractor = new DABPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABDividend8.txt"), errors);
+    
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+    
+        // check security
+        Security security = getSecurity(results);
+        assertThat(security.getIsin(), is("US92826C8394"));
+        assertThat(security.getName(), is("VISA Inc. Reg. Shares Class A DL -,0001"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+    
+        // check buy sell transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+    
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.76))));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-09-01T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(4)));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.25))));
+    }
+
+    @Test
+    public void testDividend8withSecurityinEUR() throws IOException
+    {
+        Client client = new Client();
+        DABPDFExtractor extractor = new DABPDFExtractor(client);
+    
+        Security existingSecurity = new Security("VISA Inc. Reg. Shares Class A DL -,0001",
+                        CurrencyUnit.EUR);
+        existingSecurity.setIsin("US92826C8394");
+        client.addSecurity(existingSecurity);
+    
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABDividend8.txt"), errors);
+    
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+    
+        // check buy sell transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+    
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.76))));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-09-01T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(4)));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.25))));
+    }
+
     @Test
     public void testProceeds1() throws IOException
     {
