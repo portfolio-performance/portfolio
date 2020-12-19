@@ -1,7 +1,7 @@
 package name.abuchen.portfolio.util;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.time.LocalDate;
 import java.util.concurrent.ThreadLocalRandom;
@@ -141,7 +141,6 @@ public class TradeCalendarTest
         assertThat(calendar.isHoliday(LocalDate.parse("2019-12-26")), is(true));
     }
 
-
     @Test
     public void testEmptyCalendar()
     {
@@ -152,8 +151,8 @@ public class TradeCalendarTest
         long maxDay = LocalDate.of(2020, 12, 31).toEpochDay();
         long randomDay = ThreadLocalRandom.current().nextLong(minDay, maxDay);
         LocalDate randomDate = LocalDate.ofEpochDay(randomDay);
-        
-        // in the empty calendar, every day is a holiday
-        assertThat(calendar.isHoliday(randomDate), is(true));
+
+        // in the empty calendar, every day is a (potential) trading day
+        assertThat(calendar.isHoliday(randomDate), is(false));
     }
 }
