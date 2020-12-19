@@ -102,6 +102,23 @@ public final class TextUtil
     }
 
     /**
+     * Strips all whitespace and space characters using {@link #strip} from all
+     * values of the array.
+     */
+    public static String[] strip(String[] values)
+    {
+        if (values == null)
+            return new String[0];
+
+        String[] answer = new String[values.length];
+
+        for (int i = 0; i < values.length; i++)
+            answer[i] = TextUtil.strip(values[i]);
+
+        return answer;
+    }
+
+    /**
      * Removes unwanted characters before and after any number characters. Used
      * when importing data from CSV files.
      */
