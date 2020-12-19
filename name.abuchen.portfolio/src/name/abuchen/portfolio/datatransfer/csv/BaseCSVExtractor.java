@@ -73,6 +73,7 @@ import name.abuchen.portfolio.money.Money;
         int lineNo = 1 + skipLines; // +1 because of end user
         for (String[] strings : rawValues)
         {
+            trimStringArrayStrings(strings);
             try
             {
                 extract(result, strings, field2column);
@@ -121,6 +122,16 @@ import name.abuchen.portfolio.money.Money;
         }
 
         return security;
+    }
+    
+    private void trimStringArrayStrings(String[] values)
+    {
+        if(values == null) return;
+        for(int i = 0; i < values.length; i++)
+        {
+            if(values[i] != null)
+                values[i] = values[i].trim();
+        }
     }
 
     private String constructName(String isin, String tickerSymbol, String wkn, String name)
