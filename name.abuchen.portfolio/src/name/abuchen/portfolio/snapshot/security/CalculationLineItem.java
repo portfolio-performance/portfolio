@@ -85,30 +85,39 @@ public interface CalculationLineItem
             return amountFractionPerShare(getGrossValueAmount(), tx().getShares());
         }
 
-        public Money getFifoCost()
+        /**
+         * Returns the FIFO costs. It is the cost of the total position of the
+         * given security. However, a dividend payment may only be about partial
+         * holdings, for example if the security is held in multiple securities
+         * accounts.
+         */
+        /* package */ Money getFifoCost()
         {
             return fifoCost;
         }
 
-        /* package */
-        void setFifoCost(Money fifoCost)
+        /* package */ void setFifoCost(Money fifoCost)
         {
             this.fifoCost = fifoCost;
         }
 
-        public Money getMovingAverageCost()
+        /**
+         * Returns the costs based on moving average. It is the cost of the
+         * total position of the given security. However, a dividend payment may
+         * only be about partial holdings, for example if the security is held
+         * in multiple securities accounts.
+         */
+        /* package */ Money getMovingAverageCost()
         {
             return movingAverageCost;
         }
 
-        /* package */
-        void setMovingAverageCost(Money movingAverageCost)
+        /* package */ void setMovingAverageCost(Money movingAverageCost)
         {
             this.movingAverageCost = movingAverageCost;
         }
 
-        /* package */
-        void setTotalShares(long totalShares)
+        /* package */ void setTotalShares(long totalShares)
         {
             this.totalShares = totalShares;
         }
