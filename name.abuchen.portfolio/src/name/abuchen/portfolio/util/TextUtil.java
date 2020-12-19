@@ -2,6 +2,8 @@ package name.abuchen.portfolio.util;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -10,6 +12,8 @@ public final class TextUtil
     public static final String PARAGRAPH_BREAK = "\n\n"; //$NON-NLS-1$
 
     private static final String VALID_NUM_CHARACTERS = "0123456789,.'-"; //$NON-NLS-1$
+
+    public static final char DECIMAL_SEPERATOR = new DecimalFormatSymbols().getDecimalSeparator();
 
     private TextUtil()
     {
@@ -113,5 +117,15 @@ public final class TextUtil
             len--;
 
         return ((start > 0) || (len < value.length())) ? value.substring(start, len) : value;
+    }
+
+    public static char getListSeparatorChar()
+    {
+        // handle Switzerland differently because it uses a point as decimal
+        // separator but a semicolon as a list separator
+
+        if ("CH".equals(Locale.getDefault().getCountry())) //$NON-NLS-1$
+            return ';';
+        return DECIMAL_SEPERATOR == ',' ? ';' : ',';
     }
 }

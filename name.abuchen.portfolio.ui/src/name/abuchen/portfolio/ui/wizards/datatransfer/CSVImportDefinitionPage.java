@@ -362,7 +362,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
 
     private void onColumnSelected(int columnIndex)
     {
-        ColumnConfigDialog dialog = new ColumnConfigDialog(client, getShell(), importer.getExtractor(),
+        ColumnConfigDialog dialog = new ColumnConfigDialog(client, getShell(), importer,
                         importer.getColumns()[columnIndex]);
         dialog.open();
 
@@ -721,17 +721,17 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
     {
         private static final Field EMPTY = new Field("#", "---"); //$NON-NLS-1$ //$NON-NLS-2$
 
-        private CSVExtractor definition;
+        private CSVImporter importer;
         private Column column;
         private final Client client;
 
-        protected ColumnConfigDialog(Client client, Shell parentShell, CSVExtractor definition, Column column)
+        protected ColumnConfigDialog(Client client, Shell parentShell, CSVImporter importer, Column column)
         {
             super(parentShell);
             setShellStyle(getShellStyle() | SWT.SHEET);
 
             this.client = client;
-            this.definition = definition;
+            this.importer = importer;
             this.column = column;
         }
 
@@ -763,7 +763,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
             mappedTo.setContentProvider(ArrayContentProvider.getInstance());
             List<Field> fields = new ArrayList<>();
             fields.add(EMPTY);
-            fields.addAll(definition.getFields());
+            fields.addAll(importer.getExtractor().getFields());
             mappedTo.setInput(fields);
             GridDataFactory.fillDefaults().grab(true, false).applyTo(mappedTo.getControl());
 
@@ -850,7 +850,8 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
                         if (column.getFormat() != null)
                             dateFormats.setSelection(new StructuredSelection(column.getFormat()));
                         else
-                            dateFormats.setSelection(new StructuredSelection(dateFormats.getElementAt(0)));
+                            dateFormats.setSelection(new StructuredSelection(
+                                            field.guessFormat(client, importer.getFirstNonEmptyValue(column))));
                     }
                     else if (field instanceof AmountField)
                     {
@@ -859,11 +860,12 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
                         if (column.getFormat() != null)
                             valueFormats.setSelection(new StructuredSelection(column.getFormat()));
                         else
-                            valueFormats.setSelection(new StructuredSelection(valueFormats.getElementAt(0)));
+                            valueFormats.setSelection(new StructuredSelection(
+                                            field.guessFormat(client, importer.getFirstNonEmptyValue(column))));
                     }
                     else if (field instanceof ISINField)
                     {
-                        column.setFormat(field.guessFormat(client, null));
+                        column.setFormat(field.guessFormat(client, importer.getFirstNonEmptyValue(column)));
                     }
                     else if (field instanceof EnumField)
                     {
