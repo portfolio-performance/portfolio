@@ -13,3 +13,4 @@ Verwahrart Wertpapierrechnung
 Lagerland USA
 Wert Konto-Nr. Devisenkurs Betrag zu Ihren Lasten
 03.08.2015 0000000000 EUR/USD 1,100297 EUR 4.798,86
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.

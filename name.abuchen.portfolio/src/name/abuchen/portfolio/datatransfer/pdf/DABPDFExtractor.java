@@ -47,7 +47,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Kauf");
         this.addDocumentTyp(type);
 
-        Block block = new Block("^Kauf .*$");
+        Block block = new Block("^Kauf .*$", "Dieser Beleg wird .*$");
         type.addBlock(block);
         block.set(new Transaction<BuySellEntry>()
 
@@ -144,7 +144,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Verkauf");
         this.addDocumentTyp(type);
 
-        Block block = new Block("^Verkauf .*$");
+        Block block = new Block("^Verkauf .*$", "Dieser Beleg wird .*$");
         type.addBlock(block);
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
         pdfTransaction.subject(() -> {
