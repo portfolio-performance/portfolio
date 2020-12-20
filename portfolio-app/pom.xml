@@ -224,6 +224,7 @@
 					<artifactId>tycho-surefire-plugin</artifactId>
 					<version>${tycho-version}</version>
 					<configuration>
+						<argLine>-Duser.country=US -Duser.language=en</argLine>
 						<trimStackTrace>false</trimStackTrace>
 					</configuration>
 				</plugin>
