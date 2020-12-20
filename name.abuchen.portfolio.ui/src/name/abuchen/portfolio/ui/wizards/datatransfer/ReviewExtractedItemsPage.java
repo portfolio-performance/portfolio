@@ -65,6 +65,7 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
@@ -715,7 +716,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     }
 
     private void setResults(List<ExtractedEntry> entries, List<Exception> errors)
-    {
+    {       
         checkEntries(entries);
 
         allEntries.addAll(entries);
@@ -746,6 +747,34 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
 
     private void checkEntries(List<ExtractedEntry> entries)
     {
+        // update dynamic currency if any
+        for (ExtractedEntry entry : entries)
+        {
+            if(entry.getItem() instanceof Extractor.TransactionItem)
+            {
+                Transaction t = (Transaction)entry.getItem().getSubject();
+                maybeUpdateDynamicCurrencyCode(t);
+            }
+            else if(entry.getItem() instanceof Extractor.BuySellEntryItem)
+            {
+                BuySellEntry bse = (BuySellEntry)entry.getItem().getSubject();
+                maybeUpdateDynamicCurrencyCode(bse.getAccountTransaction());
+                maybeUpdateDynamicCurrencyCode(bse.getPortfolioTransaction());
+            }
+            else if(entry.getItem() instanceof Extractor.AccountTransferItem)
+            {
+                AccountTransferEntry ate = (AccountTransferEntry)entry.getItem().getSubject();
+                maybeUpdateDynamicCurrencyCode(ate.getSourceTransaction());
+                maybeUpdateDynamicCurrencyCode(ate.getTargetTransaction());
+            }
+            else if(entry.getItem() instanceof Extractor.PortfolioTransferItem)
+            {
+                PortfolioTransferEntry pte = (PortfolioTransferEntry)entry.getItem().getSubject();
+                maybeUpdateDynamicCurrencyCode(pte.getSourceTransaction());
+                maybeUpdateDynamicCurrencyCode(pte.getTargetTransaction());
+            }
+        }
+        
         List<ImportAction> actions = new ArrayList<>();
         actions.add(new CheckValidTypesAction());
         actions.add(new CheckSecurityRelatedValuesAction());
@@ -770,6 +799,12 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         }
 
         errorTableViewer.setInput(allErrors);
+    }
+    
+    private void maybeUpdateDynamicCurrencyCode(Transaction t)
+    {
+        if(t.getIsDynamicCurrencyCode())
+            t.setCurrencyCode(getAccount().getCurrencyCode());
     }
 
     abstract static class FormattedLabelProvider extends StyledCellLabelProvider // NOSONAR

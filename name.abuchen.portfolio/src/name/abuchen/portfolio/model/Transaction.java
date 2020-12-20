@@ -145,6 +145,7 @@ public abstract class Transaction implements Annotated, Adaptable
 
     private LocalDateTime date;
     private String currencyCode;
+    private boolean isDynamicCurrencyCode;
     private long amount;
 
     private Security security;
@@ -188,10 +189,24 @@ public abstract class Transaction implements Annotated, Adaptable
     {
         return currencyCode;
     }
-
+    
     public void setCurrencyCode(String currencyCode)
     {
         this.currencyCode = currencyCode;
+        
+        if("DYNAMIC".equals(currencyCode)) //$NON-NLS-1$
+            this.isDynamicCurrencyCode = true; // do not reset this to false if we get another currency code
+    }
+    
+    public boolean getIsDynamicCurrencyCode()
+    {
+        return isDynamicCurrencyCode;
+    }
+    
+    public void resetIsDyamicCurrencyCode(String finalCurrencyCode)
+    {
+        this.currencyCode = finalCurrencyCode;
+        this.isDynamicCurrencyCode = false;
     }
 
     public long getAmount()

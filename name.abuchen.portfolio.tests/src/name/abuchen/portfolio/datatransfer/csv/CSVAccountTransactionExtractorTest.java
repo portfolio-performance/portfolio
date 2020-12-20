@@ -437,7 +437,7 @@ public class CSVAccountTransactionExtractorTest
                         field2column, errors);
 
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "DYNAMIC");
 
         AccountTransaction t1 = (AccountTransaction) results.stream() //
                         .filter(i -> i instanceof TransactionItem) //
@@ -445,7 +445,7 @@ public class CSVAccountTransactionExtractorTest
                                         .getType() == AccountTransaction.Type.FEES_REFUND)
                         .findAny().get().getSubject();
 
-        assertThat(t1.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10))));
+        assertThat(t1.getMonetaryAmount(), is(Money.of("DYNAMIC", Values.Amount.factorize(10))));
 
         AccountTransaction t2 = (AccountTransaction) results.stream() //
                         .filter(i -> i instanceof TransactionItem) //
@@ -453,6 +453,6 @@ public class CSVAccountTransactionExtractorTest
                                         .getType() == AccountTransaction.Type.FEES)
                         .findAny().get().getSubject();
 
-        assertThat(t2.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(20))));
+        assertThat(t2.getMonetaryAmount(), is(Money.of("DYNAMIC", Values.Amount.factorize(20))));
     }
 }

@@ -143,7 +143,7 @@ import name.abuchen.portfolio.util.TextUtil;
     {
         String value = getText(name, rawValues, field2column);
         if (value == null)
-            return client.getBaseCurrency();
+            return "DYNAMIC"; //$NON-NLS-1$ if not defined in CSV, mark to be dependend on target currency dynamically
 
         CurrencyUnit unit = CurrencyUnit.getInstance(value.trim());
         return unit == null ? client.getBaseCurrency() : unit.getCurrencyCode();
