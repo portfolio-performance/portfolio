@@ -13,7 +13,7 @@ public final class TextUtil
 
     private static final String VALID_NUM_CHARACTERS = "0123456789,.'-"; //$NON-NLS-1$
 
-    public static final char DECIMAL_SEPERATOR = new DecimalFormatSymbols().getDecimalSeparator();
+    public static final char DECIMAL_SEPARATOR = new DecimalFormatSymbols().getDecimalSeparator();
 
     private TextUtil()
     {
@@ -126,6 +126,6 @@ public final class TextUtil
 
         if ("CH".equals(Locale.getDefault().getCountry())) //$NON-NLS-1$
             return ';';
-        return DECIMAL_SEPERATOR == ',' ? ';' : ',';
+        return DECIMAL_SEPARATOR == ',' ? ';' : ',';
     }
 }
