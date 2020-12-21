@@ -36,8 +36,10 @@ import name.abuchen.portfolio.util.WebAccess;
 public class GenericJSONQuoteFeed implements QuoteFeed
 {
     public static final String ID = "GENERIC-JSON"; //$NON-NLS-1$
-    public static final String DATE_PROPERTY_NAME = "GENERIC-JSON-DATE"; //$NON-NLS-1$
-    public static final String CLOSE_PROPERTY_NAME = "GENERIC-JSON-CLOSE"; //$NON-NLS-1$
+    public static final String DATE_PROPERTY_NAME_HISTORIC = "GENERIC-JSON-DATE"; //$NON-NLS-1$
+    public static final String CLOSE_PROPERTY_NAME_HISTORIC = "GENERIC-JSON-CLOSE"; //$NON-NLS-1$
+    public static final String DATE_PROPERTY_NAME_LATEST = "GENERIC-JSON-DATE-LATEST"; //$NON-NLS-1$
+    public static final String CLOSE_PROPERTY_NAME_LATEST = "GENERIC-JSON-CLOSE-LATEST"; //$NON-NLS-1$
 
     private final PageCache<String> cache = new PageCache<>();
 
@@ -79,9 +81,21 @@ public class GenericJSONQuoteFeed implements QuoteFeed
     private QuoteFeedData getHistoricalQuotes(Security security, String feedURL, boolean collectRawResponse,
                     boolean isPreview)
     {
-        Optional<String> dateProperty = security.getPropertyValue(SecurityProperty.Type.FEED, DATE_PROPERTY_NAME);
-        Optional<String> closeProperty = security.getPropertyValue(SecurityProperty.Type.FEED, CLOSE_PROPERTY_NAME);
+        return getHistoricalQuotes(security, feedURL, collectRawResponse,
+                        isPreview, false);
 
+    }
+        private QuoteFeedData getHistoricalQuotes(Security security, String feedURL, boolean collectRawResponse,
+                    boolean isPreview, boolean isLatest)
+    {
+        Optional<String> dateProperty = security.getPropertyValue(SecurityProperty.Type.FEED, DATE_PROPERTY_NAME_HISTORIC);
+        Optional<String> closeProperty = security.getPropertyValue(SecurityProperty.Type.FEED, CLOSE_PROPERTY_NAME_HISTORIC);
+
+        if (isLatest) {
+            dateProperty = security.getPropertyValue(SecurityProperty.Type.FEED, DATE_PROPERTY_NAME_LATEST);
+            closeProperty = security.getPropertyValue(SecurityProperty.Type.FEED, CLOSE_PROPERTY_NAME_LATEST);
+        }
+        
         if (!dateProperty.isPresent() || !closeProperty.isPresent())
         {
             return QuoteFeedData.withError(new IOException(
@@ -151,7 +165,7 @@ public class GenericJSONQuoteFeed implements QuoteFeed
         // as historic quotes'
         String feedURL = security.getLatestFeed() == null ? security.getFeedURL() : security.getLatestFeedURL();
 
-        QuoteFeedData data = getHistoricalQuotes(security, feedURL, false, false);
+        QuoteFeedData data = getHistoricalQuotes(security, feedURL, false, false, true);
 
         if (!data.getErrors().isEmpty())
             PortfolioLog.error(data.getErrors());
