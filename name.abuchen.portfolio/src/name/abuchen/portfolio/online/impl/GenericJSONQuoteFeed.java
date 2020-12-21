@@ -91,7 +91,8 @@ public class GenericJSONQuoteFeed implements QuoteFeed
         Optional<String> dateProperty = security.getPropertyValue(SecurityProperty.Type.FEED, DATE_PROPERTY_NAME_HISTORIC);
         Optional<String> closeProperty = security.getPropertyValue(SecurityProperty.Type.FEED, CLOSE_PROPERTY_NAME_HISTORIC);
 
-        if (isLatest) {
+        if (isLatest) 
+        {
             dateProperty = security.getPropertyValue(SecurityProperty.Type.FEED, DATE_PROPERTY_NAME_LATEST);
             closeProperty = security.getPropertyValue(SecurityProperty.Type.FEED, CLOSE_PROPERTY_NAME_LATEST);
         }
