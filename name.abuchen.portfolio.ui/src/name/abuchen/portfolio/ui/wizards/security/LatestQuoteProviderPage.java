@@ -32,6 +32,7 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.QuoteFeedData;
+import name.abuchen.portfolio.online.impl.GenericJSONQuoteFeed;
 import name.abuchen.portfolio.online.impl.PortfolioReportQuoteFeed;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -181,6 +182,18 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
     protected void setStatus(String status)
     {
         getModel().setStatusLatestQuotesProvider(status);
+    }
+
+    @Override
+    protected String getJSONDatePropertyName()
+    {
+        return GenericJSONQuoteFeed.DATE_PROPERTY_NAME_LATEST;
+    }
+
+    @Override
+    protected String getJSONClosePropertyName()
+    {
+        return GenericJSONQuoteFeed.CLOSE_PROPERTY_NAME_LATEST;
     }
 
     @Override

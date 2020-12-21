@@ -37,9 +37,9 @@ public class GenericJSONQuoteFeedTest
         security = new Security();
         security.setTickerSymbol("AAPL");
         security.setFeedURL(feedUrl);
-        security.setPropertyValue(SecurityProperty.Type.FEED, GenericJSONQuoteFeed.DATE_PROPERTY_NAME,
+        security.setPropertyValue(SecurityProperty.Type.FEED, GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC,
                         "$.data[*].date");
-        security.setPropertyValue(SecurityProperty.Type.FEED, GenericJSONQuoteFeed.CLOSE_PROPERTY_NAME,
+        security.setPropertyValue(SecurityProperty.Type.FEED, GenericJSONQuoteFeed.CLOSE_PROPERTY_NAME_HISTORIC,
                         "$.data[*].close");
     }
 
@@ -84,8 +84,8 @@ public class GenericJSONQuoteFeedTest
     {
         GenericJSONQuoteFeed feed = new GenericJSONQuoteFeed();
         security.setFeedURL(null);
-        security.setPropertyValue(SecurityProperty.Type.FEED, GenericJSONQuoteFeed.DATE_PROPERTY_NAME, null);
-        security.setPropertyValue(SecurityProperty.Type.FEED, GenericJSONQuoteFeed.CLOSE_PROPERTY_NAME, null);
+        security.setPropertyValue(SecurityProperty.Type.FEED, GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC, null);
+        security.setPropertyValue(SecurityProperty.Type.FEED, GenericJSONQuoteFeed.CLOSE_PROPERTY_NAME_HISTORIC, null);
 
         QuoteFeedData data = feed.getHistoricalQuotes(security, false);
 
@@ -118,7 +118,7 @@ public class GenericJSONQuoteFeedTest
         String json = "{\"data\":[{\"date\":1586174400,\"close\":\"123.00\"}],\"info\":\"Json Feed for APPLE ORD\"}";
         GenericJSONQuoteFeed feed = new GenericJSONQuoteFeed();
 
-        Object object = this.readJson(json, security, GenericJSONQuoteFeed.DATE_PROPERTY_NAME);
+        Object object = this.readJson(json, security, GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC);
         LocalDate date = feed.extractDate(object);
 
         assertEquals(LocalDate.of(2020, 4, 06), date);
@@ -131,7 +131,7 @@ public class GenericJSONQuoteFeedTest
         String json = "{\"data\":[{\"date\":1586174400000,\"close\":\"123.00\"}],\"info\":\"Json Feed for APPLE ORD\"}";
         GenericJSONQuoteFeed feed = new GenericJSONQuoteFeed();
 
-        Object object = this.readJson(json, security, GenericJSONQuoteFeed.DATE_PROPERTY_NAME);
+        Object object = this.readJson(json, security, GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC);
         LocalDate date = feed.extractDate(object);
 
         assertEquals(LocalDate.of(2020, 4, 06), date);
@@ -144,7 +144,7 @@ public class GenericJSONQuoteFeedTest
         String json = "{\"data\":[{\"date\":18358,\"close\":\"123.00\"}],\"info\":\"Json Feed for APPLE ORD\"}";
         GenericJSONQuoteFeed feed = new GenericJSONQuoteFeed();
 
-        Object object = this.readJson(json, security, GenericJSONQuoteFeed.DATE_PROPERTY_NAME);
+        Object object = this.readJson(json, security, GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC);
         LocalDate date = feed.extractDate(object);
 
         assertEquals(LocalDate.of(2020, 4, 06), date);
@@ -157,7 +157,7 @@ public class GenericJSONQuoteFeedTest
         String json = "{\"data\":[{\"date\":1586174400.00,\"close\":\"123.00\"}],\"info\":\"Json Feed for APPLE ORD\"}";
         GenericJSONQuoteFeed feed = new GenericJSONQuoteFeed();
 
-        Object object = this.readJson(json, security, GenericJSONQuoteFeed.DATE_PROPERTY_NAME);
+        Object object = this.readJson(json, security, GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC);
         LocalDate date = feed.extractDate(object);
 
         assertEquals(LocalDate.of(2020, 4, 06), date);
@@ -170,7 +170,7 @@ public class GenericJSONQuoteFeedTest
         String json = "{\"data\":[{\"date\":[],\"close\":\"123.00\"}],\"info\":\"Json Feed for APPLE ORD\"}";
         GenericJSONQuoteFeed feed = new GenericJSONQuoteFeed();
 
-        Object object = this.readJson(json, security, GenericJSONQuoteFeed.DATE_PROPERTY_NAME);
+        Object object = this.readJson(json, security, GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC);
         LocalDate date = feed.extractDate(object);
 
         assertEquals(null, date);
@@ -183,7 +183,7 @@ public class GenericJSONQuoteFeedTest
         long expected = 1232340l;
         GenericJSONQuoteFeed feed = new GenericJSONQuoteFeed();
 
-        Object object = this.readJson(json, security, GenericJSONQuoteFeed.CLOSE_PROPERTY_NAME);
+        Object object = this.readJson(json, security, GenericJSONQuoteFeed.CLOSE_PROPERTY_NAME_HISTORIC);
         long result = feed.extractValue(object);
 
         assertEquals(expected, result);
@@ -196,7 +196,7 @@ public class GenericJSONQuoteFeedTest
         String json = "{\"data\":[{\"date\":1586174400,\"close\":[]}],\"info\":\"Json Feed for APPLE ORD\"}";
         GenericJSONQuoteFeed feed = new GenericJSONQuoteFeed();
 
-        Object object = this.readJson(json, security, GenericJSONQuoteFeed.CLOSE_PROPERTY_NAME);
+        Object object = this.readJson(json, security, GenericJSONQuoteFeed.CLOSE_PROPERTY_NAME_HISTORIC);
         long result = feed.extractValue(object);
 
         assertEquals(0, result);
