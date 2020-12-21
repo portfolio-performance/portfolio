@@ -21,6 +21,7 @@ import com.jayway.jsonpath.Option;
 import com.jayway.jsonpath.ReadContext;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
@@ -141,6 +142,29 @@ public class GenericJSONQuoteFeed implements QuoteFeed
         data.addAllPrices(newPricesByDate);
         return data;
     }
+
+    
+    @Override
+    public Optional<LatestSecurityPrice> getLatestQuote(Security security)
+    {
+        // if latestFeed is null, then the policy is 'use same configuration
+        // as historic quotes'
+        String feedURL = security.getLatestFeed() == null ? security.getFeedURL() : security.getLatestFeedURL();
+
+        QuoteFeedData data = getHistoricalQuotes(security, feedURL, false, false);
+
+        if (!data.getErrors().isEmpty())
+            PortfolioLog.error(data.getErrors());
+
+        List<LatestSecurityPrice> prices = data.getLatestPrices();
+        if (prices.isEmpty())
+            return Optional.empty();
+
+        Collections.sort(prices, new SecurityPrice.ByDate());
+
+        return Optional.of(prices.get(prices.size() - 1));
+    }
+
 
     protected List<LatestSecurityPrice> parse(String url, String json, String datePath, String closePath,
                     QuoteFeedData data)
