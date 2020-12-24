@@ -286,6 +286,18 @@ public class PortfolioReportNet
 
             return isDirty || !remote.isEmpty();
         }
+
+        @Override
+        public String getProvider()
+        {
+            return "Portfolio-Report.com"; //$NON-NLS-1$
+        }
+
+        @Override
+        public String getExtraAttributeNames()
+        {
+            return "";  //$NON-NLS-1$
+        }
     }
 
     private static final String TYPE_SHARE = "share"; //$NON-NLS-1$

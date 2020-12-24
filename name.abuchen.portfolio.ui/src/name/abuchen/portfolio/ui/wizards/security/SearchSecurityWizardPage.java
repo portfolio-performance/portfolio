@@ -79,6 +79,10 @@ public class SearchSecurityWizardPage extends WizardPage
         GridDataFactory.fillDefaults().span(3, 1).grab(true, true).applyTo(resultTable.getControl());
 
         TableColumn column = new TableColumn(resultTable.getTable(), SWT.NONE);
+        column.setText(Messages.LabelQuoteFeedProvider);
+        column.setWidth(100);
+
+        column = new TableColumn(resultTable.getTable(), SWT.NONE);
         column.setText(Messages.ColumnName);
         column.setWidth(250);
 
@@ -101,6 +105,10 @@ public class SearchSecurityWizardPage extends WizardPage
         column = new TableColumn(resultTable.getTable(), SWT.NONE);
         column.setText(Messages.ColumnSecurityExchange);
         column.setWidth(80);
+
+        column = new TableColumn(resultTable.getTable(), SWT.NONE);
+        column.setText(Messages.EditWizardAttributesTitle);
+        column.setWidth(250);
 
         resultTable.getTable().setHeaderVisible(true);
         resultTable.getTable().setLinesVisible(true);
@@ -192,7 +200,7 @@ public class SearchSecurityWizardPage extends WizardPage
         @Override
         public Image getColumnImage(Object element, int columnIndex)
         {
-            if (columnIndex != 0)
+            if (columnIndex != 1)
                 return null;
 
             ResultItem item = (ResultItem) element;
@@ -212,17 +220,21 @@ public class SearchSecurityWizardPage extends WizardPage
             switch (columnIndex)
             {
                 case 0:
-                    return item.getName();
+                    return item.getProvider();
                 case 1:
-                    return item.getSymbol();
+                    return item.getName();
                 case 2:
-                    return item.getIsin();
+                    return item.getSymbol();
                 case 3:
-                    return item.getWkn();
+                    return item.getIsin();
                 case 4:
-                    return item.getType();
+                    return item.getWkn();
                 case 5:
+                    return item.getType();
+                case 6:
                     return item.getExchange();
+                case 7:
+                    return item.getExtraAttributeNames();
                 default:
                     throw new IllegalArgumentException(String.valueOf(columnIndex));
             }

@@ -10,6 +10,8 @@ public interface SecuritySearchProvider
 {
     public interface ResultItem
     {
+        String getProvider();
+
         String getName();
 
         String getSymbol();
@@ -22,6 +24,8 @@ public interface SecuritySearchProvider
 
         String getExchange();
 
+        String getExtraAttributeNames();
+
         default String getOnlineId()
         {
             return null;
@@ -33,6 +37,7 @@ public interface SecuritySearchProvider
         }
 
         Security create();
+
     }
 
     public enum Type

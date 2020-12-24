@@ -89,6 +89,18 @@ import name.abuchen.portfolio.util.WebAccess;
             security.setFeed(YahooFinanceQuoteFeed.ID);
             return security;
         }
+
+        @Override
+        public String getProvider()
+        {
+            return "Yahoo Finance"; //$NON-NLS-1$
+        }
+
+        @Override
+        public String getExtraAttributeNames()
+        {
+            return ""; //$NON-NLS-1$
+        }
     }
 
     public Stream<Result> search(String query) throws IOException
