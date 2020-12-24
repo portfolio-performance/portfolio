@@ -3,6 +3,7 @@ package name.abuchen.portfolio.snapshot.trades;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -77,6 +78,13 @@ public class Trade implements Adaptable
                             .sum() / (double) shares);
         }
 
+        // let's sort again because the list might not be sorted anymore due to transfers
+        Collections.sort(transactions,
+                        (p1, p2) -> p1.getTransaction().getDateTime().compareTo(p2.getTransaction().getDateTime()));
+        
+        // re-set start date from first entry after sorting
+        this.setStart(transactions.get(0).getTransaction().getDateTime());
+        
         calculateIRR(converter);
     }
 

@@ -113,6 +113,10 @@ public class TradeCollector
                             pair.getTransaction().getSecurity(), pair.getOwner(), pair));
 
         long sharesToDistribute = pair.getTransaction().getShares();
+        
+        // sort open to get fifo
+        Collections.sort(open,
+                        (p1, p2) -> p1.getTransaction().getDateTime().compareTo(p2.getTransaction().getDateTime()));
 
         for (TransactionPair<PortfolioTransaction> candidate : new ArrayList<>(open))
         {
