@@ -145,4 +145,26 @@ public final class TextUtil
             return ';';
         return DECIMAL_SEPARATOR == ',' ? ';' : ',';
     }
+
+    /**
+     * Create a readable name from a camel case string, e.g. converts
+     * "replicationMethod" into "Replication Method"
+     */
+    public static String fromCamelCase(String camelCase)
+    {
+        if (camelCase == null)
+            return null;
+
+        String[] parts = camelCase.split("(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])"); //$NON-NLS-1$
+
+        StringBuilder buffer = new StringBuilder();
+        for (String string : parts)
+        {
+            if (buffer.length() > 0)
+                buffer.append(' ');
+            buffer.append(Character.toUpperCase(string.charAt(0)));
+            buffer.append(string.substring(1));
+        }
+        return buffer.toString();
+    }
 }

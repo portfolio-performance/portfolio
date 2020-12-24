@@ -356,6 +356,7 @@ public class AttributeType
     private final String id;
     private String name;
     private String columnLabel;
+    private String source;
     private Class<? extends Attributable> target;
     private Class<?> type;
 
@@ -394,6 +395,16 @@ public class AttributeType
     public void setColumnLabel(String columnLabel)
     {
         this.columnLabel = columnLabel;
+    }
+
+    public String getSource()
+    {
+        return source;
+    }
+
+    public void setSource(String source)
+    {
+        this.source = source;
     }
 
     public Class<?> getType()
