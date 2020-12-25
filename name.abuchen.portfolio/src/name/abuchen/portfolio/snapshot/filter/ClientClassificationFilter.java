@@ -385,8 +385,10 @@ public class ClientClassificationFilter implements ClientFilter
         long taxes = value(t.getUnitSum(Unit.Type.TAX).getAmount(), securityWeight);
         long amount = value(t.getAmount(), securityWeight);
 
-        state.asReadOnly(account).internalAddTransaction(new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
-                        amount + taxes, t.getSecurity(), t.getType()));
+        AccountTransaction copy = new AccountTransaction(t.getDateTime(), t.getCurrencyCode(), amount + taxes,
+                        t.getSecurity(), t.getType());
+        t.getUnits().filter(u -> u.getType() != Unit.Type.TAX).forEach(u -> copy.addUnit(value(u, securityWeight)));
+        state.asReadOnly(account).internalAddTransaction(copy);
 
         long accountAmount = value(t.getAmount(), accountWeight);
 
@@ -483,8 +485,12 @@ public class ClientClassificationFilter implements ClientFilter
                     long taxes = value(t.getUnitSum(Unit.Type.TAX).getAmount(), weight);
                     long amount = value(t.getAmount(), weight);
 
-                    readOnlyAccount.internalAddTransaction(new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
-                                    amount + taxes, t.getSecurity(), t.getType()));
+                    AccountTransaction copy = new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
+                                    amount + taxes, t.getSecurity(), t.getType());
+
+                    t.getUnits().filter(u -> u.getType() != Unit.Type.TAX).forEach(u -> copy.addUnit(value(u, weight)));
+
+                    readOnlyAccount.internalAddTransaction(copy);
                     readOnlyAccount.internalAddTransaction(new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
                                     amount + taxes, null, AccountTransaction.Type.REMOVAL));
                     break;
