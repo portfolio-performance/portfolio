@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.InvestmentVehicle;
+import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.Security;
@@ -106,38 +107,64 @@ public class SecurityPosition
 
         private void calculatePurchaseValuePriceFIFO(CurrencyConverter converter, List<PortfolioTransaction> input)
         {
-            long sharesSold = input.stream().filter(t -> t.getType().isLiquidation())
-                            .mapToLong(PortfolioTransaction::getShares).sum();
+            // create a list of existing portfolios
+            List<Portfolio> portfolios = new ArrayList<Portfolio>();
 
+            for (PortfolioTransaction t : input)
+            {
+                if (portfolios.contains(t.getCrossEntry().getOwner(t)))
+                    continue;
+                else
+                    portfolios.add((Portfolio) t.getCrossEntry().getOwner(t));
+            }
+
+            // calculate fifo per portfolio and sum up in the end
             long sharesBought = 0;
             long grossInvestment = 0;
             long netInvestment = 0;
 
-            for (PortfolioTransaction t : input)
+            for (Portfolio p : portfolios)
             {
-                if (t.getType().isLiquidation())
-                    continue;
+                long sharesSold = input.stream().filter(t -> t.getType().isLiquidation())
+                                .filter(t -> t.getCrossEntry().getOwner(t).equals(p))
+                                .mapToLong(PortfolioTransaction::getShares).sum();
 
-                long bought = t.getShares();
+                long sharesBoughtP = 0;
+                long grossInvestmentP = 0;
+                long netInvestmentP = 0;
 
-                if (sharesSold > 0)
+                for (PortfolioTransaction t : input)
                 {
-                    sharesSold -= bought;
+                    if (t.getType().isLiquidation())
+                        continue;
 
-                    if (sharesSold < 0)
-                        bought = -sharesSold;
-                    else
-                        bought = 0;
-                }
+                    if (!t.getCrossEntry().getOwner(t).equals(p))
+                        continue;
 
-                if (bought > 0)
-                {
-                    sharesBought += bought;
-                    grossInvestment += Math.round(
-                                    t.getMonetaryAmount(converter).getAmount() / (double) t.getShares() * bought);
-                    netInvestment += Math
-                                    .round(t.getGrossValue(converter).getAmount() / (double) t.getShares() * bought);
+                    long bought = t.getShares();
+
+                    if (sharesSold > 0)
+                    {
+                        sharesSold -= bought;
+
+                        if (sharesSold < 0)
+                            bought = -sharesSold;
+                        else
+                            bought = 0;
+                    }
+
+                    if (bought > 0)
+                    {
+                        sharesBoughtP += bought;
+                        grossInvestmentP += Math.round(
+                                        t.getMonetaryAmount(converter).getAmount() / (double) t.getShares() * bought);
+                        netInvestmentP += Math.round(
+                                        t.getGrossValue(converter).getAmount() / (double) t.getShares() * bought);
+                    }
                 }
+                sharesBought += sharesBoughtP;
+                grossInvestment += grossInvestmentP;
+                netInvestment += netInvestmentP;
             }
 
             this.purchasePrice = Money.of(converter.getTermCurrency(), sharesBought > 0
