@@ -111,8 +111,12 @@ public class ClientSecurityFilter implements ClientFilter
                 long taxes = t.getUnitSum(Unit.Type.TAX).getAmount();
                 long amount = t.getAmount();
 
-                getAccount.apply((Account) pair.getOwner()).internalAddTransaction(new AccountTransaction(
-                                t.getDateTime(), t.getCurrencyCode(), amount + taxes, t.getSecurity(), t.getType()));
+                AccountTransaction copy = new AccountTransaction(t.getDateTime(), t.getCurrencyCode(), amount + taxes,
+                                t.getSecurity(), t.getType());
+
+                t.getUnits().filter(u -> u.getType() != Unit.Type.TAX).forEach(copy::addUnit);
+
+                getAccount.apply((Account) pair.getOwner()).internalAddTransaction(copy);
                 getAccount.apply((Account) pair.getOwner())
                                 .internalAddTransaction(new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
                                                 amount + taxes, null, AccountTransaction.Type.REMOVAL));
@@ -178,7 +182,7 @@ public class ClientSecurityFilter implements ClientFilter
 
         ReadOnlyPortfolio source = getPortfolio.apply(entry.getSourcePortfolio());
         ReadOnlyPortfolio target = getPortfolio.apply(entry.getTargetPortfolio());
-        
+
         ClientFilterHelper.recreateTransfer(entry, source, target);
     }
 }

@@ -1,0 +1,178 @@
+<client>
+  <version>48</version>
+  <baseCurrency>EUR</baseCurrency>
+  <securities>
+    <security>
+      <uuid>d9e5c54e-6251-443e-97cd-c5a745add072</uuid>
+      <onlineId>f3b3d4e9d6204bc0b05146eb05f88fc4</onlineId>
+      <name>ALLIANZ SE NA O.N.</name>
+      <currencyCode>EUR</currencyCode>
+      <isin>DE0008404005</isin>
+      <tickerSymbol>ALV</tickerSymbol>
+      <wkn>840400</wkn>
+      <feed>PORTFOLIO-REPORT</feed>
+      <prices>
+        <price t="2020-10-30" v="1510600"/>
+      </prices>
+      <attributes>
+        <map/>
+      </attributes>
+      <events/>
+      <property type="MARKET" name="XFRA">ALV</property>
+      <property type="MARKET" name="XNAS">ALIZF</property>
+      <property type="FEED" name="PORTFOLIO-REPORT-MARKET">XETR</property>
+      <property type="FEED" name="PORTFOLIO-REPORT-MARKETS">[{&quot;marketCode&quot;:&quot;XETR&quot;,&quot;currencyCode&quot;:&quot;EUR&quot;,&quot;firstPriceDate&quot;:{&quot;year&quot;:2000,&quot;month&quot;:1,&quot;day&quot;:3},&quot;lastPriceDate&quot;:{&quot;year&quot;:2020,&quot;month&quot;:12,&quot;day&quot;:23}}]</property>
+      <isRetired>false</isRetired>
+    </security>
+  </securities>
+  <watchlists/>
+  <consumerPriceIndeces/>
+  <accounts>
+    <account>
+      <uuid>4f9a5551-03c6-4b85-ae21-2e45fe12c3b2</uuid>
+      <name>Account</name>
+      <currencyCode>EUR</currencyCode>
+      <isRetired>false</isRetired>
+      <transactions>
+        <account-transaction>
+          <date>2020-11-02T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>156160</amount>
+          <security reference="../../../../../securities/security"/>
+          <crossEntry class="buysell">
+            <portfolio>
+              <uuid>6af8d7c4-6608-43b4-9e28-84288616187e</uuid>
+              <name>Portfolio</name>
+              <isRetired>false</isRetired>
+              <referenceAccount reference="../../../../.."/>
+              <transactions>
+                <portfolio-transaction>
+                  <date reference="../../../../../date"/>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>156160</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell" reference="../../../.."/>
+                  <shares>10000000</shares>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="500"/>
+                    </unit>
+                    <unit type="TAX">
+                      <amount currency="EUR" amount="600"/>
+                    </unit>
+                  </units>
+                  <type>BUY</type>
+                </portfolio-transaction>
+              </transactions>
+              <attributes>
+                <map/>
+              </attributes>
+            </portfolio>
+            <portfolioTransaction reference="../portfolio/transactions/portfolio-transaction"/>
+            <account reference="../../../.."/>
+            <accountTransaction reference="../.."/>
+          </crossEntry>
+          <shares>0</shares>
+          <type>BUY</type>
+        </account-transaction>
+        <account-transaction>
+          <date>2020-12-01T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>7900</amount>
+          <security reference="../../../../../securities/security"/>
+          <shares>10000000</shares>
+          <units>
+            <unit type="FEE">
+              <amount currency="EUR" amount="1000"/>
+            </unit>
+            <unit type="TAX">
+              <amount currency="EUR" amount="1100"/>
+            </unit>
+          </units>
+          <type>DIVIDENDS</type>
+        </account-transaction>
+      </transactions>
+      <attributes>
+        <map/>
+      </attributes>
+    </account>
+  </accounts>
+  <portfolios>
+    <portfolio reference="../../accounts/account/transactions/account-transaction/crossEntry/portfolio"/>
+  </portfolios>
+  <plans/>
+  <taxonomies>
+    <taxonomy>
+      <id>cadeb697-2d4f-41e9-9dee-7473d4841608</id>
+      <name>TestTaxonomy</name>
+      <root>
+        <id>8fe29c95-97fd-4681-9a92-1297147686e6</id>
+        <name>TestTaxonomy</name>
+        <color>#84c5ca</color>
+        <children>
+          <classification>
+            <id>a0914e8b-3c1d-4264-b987-6fdbb2f46e76</id>
+            <name>TEST</name>
+            <color>#9abd7f</color>
+            <parent reference="../../.."/>
+            <children/>
+            <assignments>
+              <assignment>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security"/>
+                <weight>10000</weight>
+                <rank>0</rank>
+              </assignment>
+            </assignments>
+            <weight>10000</weight>
+            <rank>0</rank>
+          </classification>
+        </children>
+        <assignments/>
+        <weight>10000</weight>
+        <rank>0</rank>
+      </root>
+    </taxonomy>
+    <taxonomy>
+      <id>fe97ac67-6446-4ead-ba5b-21aaa6695425</id>
+      <name>TestTaxonomy (plus Account classified)</name>
+      <root>
+        <id>4172c4df-21af-41c2-baf7-6da5b7f97d54</id>
+        <name>TestTaxonomy</name>
+        <color>#84c5ca</color>
+        <children>
+          <classification>
+            <id>4cfba210-7693-4237-a2d8-cc06f85dcbc5</id>
+            <name>TEST</name>
+            <color>#9abd7f</color>
+            <parent reference="../../.."/>
+            <children/>
+            <assignments>
+              <assignment>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security"/>
+                <weight>10000</weight>
+                <rank>0</rank>
+              </assignment>
+              <assignment>
+                <investmentVehicle class="account" reference="../../../../../../../../accounts/account"/>
+                <weight>10000</weight>
+                <rank>1</rank>
+              </assignment>
+            </assignments>
+            <weight>10000</weight>
+            <rank>0</rank>
+          </classification>
+        </children>
+        <assignments/>
+        <weight>10000</weight>
+        <rank>0</rank>
+      </root>
+    </taxonomy>
+  </taxonomies>
+  <dashboards/>
+  <properties/>
+  <settings>
+    <bookmarks/>
+    <attributeTypes/>
+    <configurationSets/>
+  </settings>
+</client>
