@@ -19,7 +19,7 @@ public class FormattingPreferencePage extends FieldEditorPreferencePage
     {
         IntegerFieldEditor sharesPrecisionEditor = new IntegerFieldEditor(
                         Preferences.FORMAT_SHARES_DIGITS, Messages.PrefLabelSharesDigits, getFieldEditorParent(), 1);
-        sharesPrecisionEditor.setValidRange(0, 6);
+        sharesPrecisionEditor.setValidRange(0, 8);
         addField(sharesPrecisionEditor);
     }
 }
