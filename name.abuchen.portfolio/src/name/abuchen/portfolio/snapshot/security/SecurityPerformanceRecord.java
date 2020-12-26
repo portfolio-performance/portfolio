@@ -2,10 +2,13 @@ package name.abuchen.portfolio.snapshot.security;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.math.Risk;
@@ -32,7 +35,7 @@ import name.abuchen.portfolio.snapshot.trail.TrailProvider;
 import name.abuchen.portfolio.snapshot.trail.TrailRecord;
 import name.abuchen.portfolio.util.Interval;
 
-public final class SecurityPerformanceRecord implements Adaptable, TrailProvider
+public final class SecurityPerformanceRecord implements Adaptable, TrailProvider, SecurityPerformanceIndicator.Costs
 {
     public enum Periodicity
     {
@@ -77,10 +80,12 @@ public final class SecurityPerformanceRecord implements Adaptable, TrailProvider
             return this.lineItems.isEmpty();
         }
 
-        public SecurityPerformanceRecord build(Client client, CurrencyConverter converter, Interval interval)
+        @SafeVarargs
+        public final SecurityPerformanceRecord build(Client client, CurrencyConverter converter, Interval interval,
+                        Class<? extends SecurityPerformanceIndicator>... indicators)
         {
             SecurityPerformanceRecord record = new SecurityPerformanceRecord(security, lineItems);
-            record.calculate(client, converter, interval);
+            record.calculate(client, converter, interval, indicators);
             return record;
         }
     }
@@ -297,11 +302,13 @@ public final class SecurityPerformanceRecord implements Adaptable, TrailProvider
         return quote;
     }
 
+    @Override
     public Money getFifoCost()
     {
         return fifoCost;
     }
 
+    @Override
     public Money getMovingAverageCost()
     {
         return movingAverageCost;
@@ -342,11 +349,13 @@ public final class SecurityPerformanceRecord implements Adaptable, TrailProvider
         return sharesHeld;
     }
 
+    @Override
     public Quote getFifoCostPerSharesHeld()
     {
         return fifoCostPerSharesHeld;
     }
 
+    @Override
     public Quote getMovingAverageCostPerSharesHeld()
     {
         return movingAverageCostPerSharesHeld;
@@ -450,22 +459,45 @@ public final class SecurityPerformanceRecord implements Adaptable, TrailProvider
         }
     }
 
-    /* package */
-    void calculate(Client client, CurrencyConverter converter, Interval interval)
+    @SafeVarargs
+    /* package */ final void calculate(Client client, CurrencyConverter converter, Interval interval,
+                    Class<? extends SecurityPerformanceIndicator>... indicators)
     {
         Collections.sort(lineItems, new CalculationLineItemComparator());
 
+        Set<Class<? extends SecurityPerformanceIndicator>> flags = new HashSet<>();
+        Arrays.stream(indicators).forEach(flags::add);
+
         if (!lineItems.isEmpty())
         {
-            calculateSharesHeld(converter);
-            calculateMarketValue(converter, interval);
-            calculateIRR(converter);
-            calculateTTWROR(client, converter, interval);
-            calculateDelta(converter);
-            calculateFifoAndMovingAverageCosts(converter);
-            calculateDividends(converter);
-            calculatePeriodicity(client, converter);
-            calculateCapitalGains(converter);
+            if (flags.isEmpty() || flags.contains(SecurityPerformanceIndicator.Costs.class))
+            {
+                calculateSharesHeld(converter);
+                calculateMarketValue(converter, interval);
+            }
+
+            if (flags.isEmpty())
+            {
+                calculateIRR(converter);
+                calculateTTWROR(client, converter, interval);
+                calculateDelta(converter);
+            }
+
+            if (flags.isEmpty() || flags.contains(SecurityPerformanceIndicator.Costs.class))
+            {
+                calculateFifoAndMovingAverageCosts(converter);
+            }
+
+            if (flags.isEmpty())
+            {
+                calculateDividends(converter);
+                calculatePeriodicity(client, converter);
+            }
+
+            if (flags.isEmpty() || flags.contains(SecurityPerformanceIndicator.CapitalGains.class))
+            {
+                calculateCapitalGains(converter);
+            }
         }
     }
 
