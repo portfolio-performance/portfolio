@@ -194,7 +194,7 @@ public abstract class Transaction implements Annotated, Adaptable
     {
         this.currencyCode = currencyCode;
         
-        if("DYNAMIC".equals(currencyCode)) //$NON-NLS-1$
+        if("UNDEFINED".equals(currencyCode)) //$NON-NLS-1$
             this.isDynamicCurrencyCode = true; // do not reset this to false if we get another currency code
     }
     
