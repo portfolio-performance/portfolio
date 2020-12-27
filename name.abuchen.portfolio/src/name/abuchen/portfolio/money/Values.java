@@ -92,6 +92,11 @@ public abstract class Values<E>
             return format(quote.getCurrencyCode(), quote.getAmount(), skipCurrency);
         }
 
+        public String formatNonZero(Quote amount, String skipCurrencyCode)
+        {
+            return amount == null || amount.isZero() ? null : format(amount, skipCurrencyCode);
+        }
+
         /**
          * Factor by which to multiply a monetary amount to convert it into a
          * quote amount. Monetary amounts have 2 decimal digits while quotes

@@ -240,6 +240,7 @@ public class Messages extends NLS
     public static String ColumnProfitLossBaseCurrency;
     public static String ColumnPurchasePrice;
     public static String ColumnPurchasePrice_Description;
+    public static String ColumnPurchasePriceBaseCurrency;
     public static String ColumnPurchaseValue;
     public static String ColumnPurchaseValue_Description;
     public static String ColumnPurchaseValueBaseCurrency;

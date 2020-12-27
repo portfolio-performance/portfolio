@@ -15,13 +15,11 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.DateSelectionDialog;
@@ -59,11 +57,7 @@ public class StatementOfAssetsView extends AbstractFinanceView
     public void notifyModelUpdated()
     {
         CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
-        Client filteredClient = clientFilter.getSelectedFilter().filter(getClient());
-        ClientSnapshot snapshot = ClientSnapshot.create(filteredClient, converter,
-                        snapshotDate.orElse(LocalDate.now()));
-
-        assetViewer.setInput(snapshot, clientFilter.getSelectedFilter());
+        assetViewer.setInput(clientFilter.getSelectedFilter(), LocalDate.now(), converter);
         updateTitle(getDefaultTitle());
     }
 

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.Account;
@@ -189,5 +190,10 @@ public class SecurityPerformanceSnapshot
     public List<SecurityPerformanceRecord> getRecords()
     {
         return records;
+    }
+
+    public Optional<SecurityPerformanceRecord> getRecord(Security security)
+    {
+        return records.stream().filter(r -> security.equals(r.getSecurity())).findAny();
     }
 }
