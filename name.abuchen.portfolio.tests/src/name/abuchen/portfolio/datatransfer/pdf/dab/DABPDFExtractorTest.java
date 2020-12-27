@@ -230,6 +230,35 @@ public class DABPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf7() throws IOException
+    {
+        DABPDFExtractor extractor = new DABPDFExtractor(new Client());
+    
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABKauf7.txt"), errors);
+    
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+    
+        // check security
+        Security security = getSecurity(results);
+        assertThat(security.getIsin(), is("LU0635178014"));
+        assertThat(security.getName(), is("ComSta.-MSCI Em.Mkts.TRN U.ETF Inhaber-Anteile I o.N."));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+    
+        // check buy sell transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+    
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of("CHF", Values.Amount.factorize(6123.98))));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-23T12:13")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(125)));
+    }
+
+    @Test
     public void testWertpapierVerkauf() throws IOException
     {
         DABPDFExtractor extractor = new DABPDFExtractor(new Client());
