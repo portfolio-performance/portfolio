@@ -78,9 +78,9 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("amount", "currency", "exchangeRate", "forex", "forexCurrency", "curr").optional() //
-                        .find(".* (Ausmachender Betrag|Kurswert) (?<forexCurrency>\\w{3}) (?<forex>[\\d\\.]+,\\d+)-")
+                        .find("^Handel.* (Ausmachender Betrag|Kurswert) (?<forexCurrency>\\w{3}) (?<forex>[\\d\\.]+,\\d+)-")
                         .find("Wert Konto-Nr. Devisenkurs Betrag zu Ihren Lasten")
-                        .match("^(\\d+\\.\\d+\\.\\d{4}) ([0-9]*) (?<curr>\\w{3})/\\w{3} (?<exchangeRate>[\\d\\.]+,\\d+) (?<currency>\\w{3}) (?<amount>[\\d\\.]+,\\d+)$")
+                        .match("^(\\d+\\.\\d+\\.\\d{4}) ([0-9]*) (?<curr>\\w{3})\\/\\w{3} (?<exchangeRate>[\\d\\.]+,\\d+) (?<currency>\\w{3}) (?<amount>[\\d\\.]+,\\d+)$")
                         .assign((t, v) -> {
 
                             Money amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
