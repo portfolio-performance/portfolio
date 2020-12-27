@@ -509,10 +509,14 @@ public final class SecurityPerformanceRecord implements Adaptable, TrailProvider
 
     private void calculateMarketValue(CurrencyConverter converter, Interval interval)
     {
+        // in order to minimize rounding error, first sum up individual values
+        // and convert only then into the term currency
+
         this.marketValue = this.lineItems.stream() //
                         .filter(data -> data instanceof CalculationLineItem.ValuationAtEnd)
-                        .map(data -> data.getValue().with(converter.at(data.getDateTime())))
-                        .collect(MoneyCollectors.sum(converter.getTermCurrency()));
+                        .map(CalculationLineItem::getValue) //
+                        .collect(MoneyCollectors.sum(security.getCurrencyCode())) //
+                        .with(converter.at(interval.getEnd()));
 
         this.quote = security.getSecurityPrice(interval.getEnd());
     }
