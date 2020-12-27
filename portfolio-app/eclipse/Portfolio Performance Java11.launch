@@ -15,6 +15,7 @@
     <setAttribute key="deselected_workspace_bundles"/>
     <booleanAttribute key="includeOptional" value="true"/>
     <stringAttribute key="location" value="${workspace_loc}/../runtime-name.abuchen.portfolio.product"/>
+    <booleanAttribute key="org.eclipse.jdt.launching.ATTR_ATTR_USE_ARGFILE" value="false"/>
     <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
     <stringAttribute key="org.eclipse.jdt.launching.JRE_CONTAINER" value="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-11"/>
     <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl de -consoleLog"/>
@@ -30,6 +31,8 @@
         <setEntry value="com.googlecode.json-simple@default:default"/>
         <setEntry value="com.ibm.icu@default:default"/>
         <setEntry value="com.jayway.jsonpath.json-path@default:default"/>
+        <setEntry value="com.sun.jna.platform@default:default"/>
+        <setEntry value="com.sun.jna@default:default"/>
         <setEntry value="de.engehausen.treemap.swt@default:default"/>
         <setEntry value="de.engehausen.treemap@default:default"/>
         <setEntry value="javax.annotation@default:default"/>
@@ -146,7 +149,8 @@
         <setEntry value="org.eclipse.ui.themes@default:default"/>
         <setEntry value="org.eclipse.urischeme@default:default"/>
         <setEntry value="org.jsoup@default:default"/>
-        <setEntry value="org.objectweb.asm@default:default"/>
+        <setEntry value="org.objectweb.asm*5.0.1.v201404251740@default:default"/>
+        <setEntry value="org.objectweb.asm*9.0.0.v20201001-1419@default:default"/>
         <setEntry value="org.sat4j.core@default:default"/>
         <setEntry value="org.sat4j.pb@default:default"/>
         <setEntry value="org.slf4j.api@default:default"/>

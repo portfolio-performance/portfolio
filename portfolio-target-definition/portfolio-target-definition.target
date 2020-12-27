@@ -3,13 +3,13 @@
 <target name="portfolio-target-definition" sequenceNumber="26">
 <locations>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<repository location="https://download.eclipse.org/eclipse/updates/4.16/R-4.16-202006040540/"/>
-		<unit id="org.eclipse.e4.rcp.feature.group" version="4.16.0.v20200604-0951"/>
-		<unit id="org.eclipse.e4.rcp.source.feature.group" version="4.16.0.v20200604-0951"/>
-		<unit id="org.eclipse.equinox.executable" version="3.8.800.v20200514-1529"/>
-		<unit id="org.eclipse.equinox.executable.feature.group" version="3.8.800.v20200514-1529"/>
-		<unit id="org.eclipse.platform.feature.group" version="4.16.0.v20200604-0951"/>
-		<unit id="org.eclipse.pde.feature.group" version="3.14.400.v20200604-0540"/>
+		<repository location="https://download.eclipse.org/eclipse/updates/4.18/R-4.18-202012021800/"/>
+		<unit id="org.eclipse.e4.rcp.feature.group" version="4.18.0.v20201202-1103"/>
+		<unit id="org.eclipse.e4.rcp.source.feature.group" version="4.18.0.v20201202-1103"/>
+		<unit id="org.eclipse.equinox.executable" version="3.8.1000.v20200915-1508"/>
+		<unit id="org.eclipse.equinox.executable.feature.group" version="3.8.1000.v20200915-1508"/>
+		<unit id="org.eclipse.pde.feature.group" version="3.14.600.v20201202-1800"/>
+		<unit id="org.eclipse.platform.feature.group" version="4.18.0.v20201202-1800"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<repository location="https://download.eclipse.org/tools/orbit/downloads/drops/R20200529191137/repository"/>
@@ -40,16 +40,16 @@
 		<unit id="org.eclipse.nebula.widgets.cdatetime.feature.feature.group" version="1.5.0.202007241204"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<repository location="https://buchen.github.io/portfolio-deps/1.4.0"/>
-		<unit id="name.abuchen.portfolio.dependencies.feature.feature.group" version="1.4.0"/>
+		<repository location="https://buchen.github.io/portfolio-deps/1.5.0"/>
+		<unit id="name.abuchen.portfolio.dependencies.feature.feature.group" version="1.5.0"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<repository location="https://download.eclipse.org/technology/babel/update-site/R0.17.1/2019-12/"/>
-		<unit id="org.eclipse.babel.nls_eclipse_de.feature.group" version="4.14.0.v20200113020001"/>
-		<unit id="org.eclipse.babel.nls_eclipse_es.feature.group" version="4.14.0.v20200113020001"/>
-		<unit id="org.eclipse.babel.nls_eclipse_nl.feature.group" version="4.14.0.v20200113020001"/>
-		<unit id="org.eclipse.babel.nls_eclipse_pt.feature.group" version="4.14.0.v20200113020001"/>
-		<unit id="org.eclipse.babel.nls_eclipse_fr.feature.group" version="4.14.0.v20200113020001"/>
+		<repository location="https://download.eclipse.org/technology/babel/update-site/R0.18.1/2020-09/"/>
+		<unit id="org.eclipse.babel.nls_eclipse_de.feature.group" version="4.17.0.v20201010020001"/>
+		<unit id="org.eclipse.babel.nls_eclipse_es.feature.group" version="4.17.0.v20201010020001"/>
+		<unit id="org.eclipse.babel.nls_eclipse_nl.feature.group" version="4.17.0.v20201010020001"/>
+		<unit id="org.eclipse.babel.nls_eclipse_pt.feature.group" version="4.17.0.v20201010020001"/>
+		<unit id="org.eclipse.babel.nls_eclipse_fr.feature.group" version="4.17.0.v20201010020001"/>
 	</location>
 </locations>
 </target>

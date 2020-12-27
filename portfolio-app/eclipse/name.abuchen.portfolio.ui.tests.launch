@@ -27,8 +27,9 @@
     <booleanAttribute key="org.eclipse.jdt.junit.KEEPRUNNING_ATTR" value="false"/>
     <stringAttribute key="org.eclipse.jdt.junit.TESTNAME" value=""/>
     <stringAttribute key="org.eclipse.jdt.junit.TEST_KIND" value="org.eclipse.jdt.junit.loader.junit4"/>
+    <booleanAttribute key="org.eclipse.jdt.launching.ATTR_ATTR_USE_ARGFILE" value="false"/>
     <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
-    <stringAttribute key="org.eclipse.jdt.launching.JRE_CONTAINER" value="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+    <stringAttribute key="org.eclipse.jdt.launching.JRE_CONTAINER" value="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-11"/>
     <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value=""/>
     <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl} -consoleLog"/>
     <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="name.abuchen.portfolio.ui.tests"/>
@@ -45,6 +46,8 @@
         <setEntry value="com.ibm.icu@default:default"/>
         <setEntry value="com.jayway.jsonpath.json-path@default:default"/>
         <setEntry value="com.jcraft.jsch@default:default"/>
+        <setEntry value="com.sun.jna.platform@default:default"/>
+        <setEntry value="com.sun.jna@default:default"/>
         <setEntry value="de.engehausen.treemap.swt@default:default"/>
         <setEntry value="de.engehausen.treemap@default:default"/>
         <setEntry value="javax.annotation@default:default"/>
@@ -64,8 +67,6 @@
         <setEntry value="org.apache.commons.io@default:default"/>
         <setEntry value="org.apache.commons.jxpath@default:default"/>
         <setEntry value="org.apache.commons.logging@default:default"/>
-        <setEntry value="org.apache.felix.gogo.command@default:default"/>
-        <setEntry value="org.apache.felix.gogo.runtime@default:default"/>
         <setEntry value="org.apache.felix.scr@1:true"/>
         <setEntry value="org.apache.httpcomponents.httpclient@default:default"/>
         <setEntry value="org.apache.httpcomponents.httpcore@default:default"/>
@@ -137,6 +138,7 @@
         <setEntry value="org.eclipse.equinox.simpleconfigurator@1:true"/>
         <setEntry value="org.eclipse.help@default:default"/>
         <setEntry value="org.eclipse.jface.databinding@default:default"/>
+        <setEntry value="org.eclipse.jface.notifications@default:default"/>
         <setEntry value="org.eclipse.jface@default:default"/>
         <setEntry value="org.eclipse.nebula.cwt@default:default"/>
         <setEntry value="org.eclipse.nebula.widgets.cdatetime@default:default"/>
@@ -158,9 +160,11 @@
         <setEntry value="org.hamcrest.integration@default:default"/>
         <setEntry value="org.hamcrest.library@default:default"/>
         <setEntry value="org.jsoup@default:default"/>
-        <setEntry value="org.junit@default:default"/>
+        <setEntry value="org.junit*4.12.0.v201504281640@default:default"/>
+        <setEntry value="org.junit*4.13.0.v20200204-1500@default:default"/>
         <setEntry value="org.mockito@default:default"/>
-        <setEntry value="org.objectweb.asm@default:default"/>
+        <setEntry value="org.objectweb.asm*5.0.1.v201404251740@default:default"/>
+        <setEntry value="org.objectweb.asm*9.0.0.v20201001-1419@default:default"/>
         <setEntry value="org.objenesis@default:default"/>
         <setEntry value="org.sat4j.core@default:default"/>
         <setEntry value="org.sat4j.pb@default:default"/>
