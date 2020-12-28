@@ -51,7 +51,7 @@ Run the application and the tests with the launch configurations stored in ~/por
 
 ## Building with Maven
 
-Maven is not required (anymore) to develop Portfolio Performance as you can develop using the Eclipse IDE with the setup above. The Maven build is used for the [Travis CI](https://travis-ci.org/buchen/portfolio) build.
+Maven is not required (anymore) to develop Portfolio Performance as you can develop using the Eclipse IDE with the setup above. The Maven build is used for the [Github Actions](https://github.com/buchen/portfolio/actions) build.
 
 ### Configure
 
