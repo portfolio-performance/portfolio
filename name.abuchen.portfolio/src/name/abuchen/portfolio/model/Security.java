@@ -17,6 +17,9 @@ import java.util.stream.Stream;
 import com.google.common.base.Strings;
 
 import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.online.Factory;
+import name.abuchen.portfolio.online.SecuritySearchProvider;
+import name.abuchen.portfolio.online.impl.PortfolioReportNetSearchProvider;
 import name.abuchen.portfolio.util.Pair;
 
 /**
@@ -123,9 +126,35 @@ public final class Security implements Attributable, InvestmentVehicle
             generateUUID();
     }
 
+    public boolean hasOnlineLink()
+    {
+        return onlineId != null && !onlineId.isEmpty();
+    }
+
     public String getOnlineId()
     {
-        return onlineId;
+        if (hasOnlineLink() && onlineId.contains(":")) //$NON-NLS-1$
+        {
+            return onlineId.split(":", 1)[1]; //$NON-NLS-1$
+        }
+        else
+        {
+            // Legacy case for non-prefixed Portfolio-Report.net
+            return onlineId;
+        }
+    }
+
+    public SecuritySearchProvider getOnlineProvider()
+    {
+        for (SecuritySearchProvider securitySearchProvider : Factory.getSearchProvider())
+        {
+            if (onlineId.startsWith(securitySearchProvider.getName()))
+                return securitySearchProvider;
+        }
+
+        // Fallback to support existing Portfolio-Report.net
+        // onlineId's that have no prefix yet
+        return new PortfolioReportNetSearchProvider();
     }
 
     public void setOnlineId(String onlineId)
@@ -160,7 +189,7 @@ public final class Security implements Attributable, InvestmentVehicle
     /**
      * Gets the target currency for exchange rates (the currency of the exchange
      * rate).
-     * 
+     *
      * @return target currency for exchange rates, else null
      */
     public String getTargetCurrencyCode()
@@ -171,7 +200,7 @@ public final class Security implements Attributable, InvestmentVehicle
     /**
      * Sets the target currency for exchange rates (defines the currency of the
      * exchange rate).
-     * 
+     *
      * @param targetCurrencyCode
      *            target currency for exchange rates, else null
      */

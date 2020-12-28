@@ -13,12 +13,10 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.osgi.framework.FrameworkUtil;
 
-import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Attributes;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityProperty;
-import name.abuchen.portfolio.model.AttributeType.PercentPlainConverter;
 import name.abuchen.portfolio.model.AttributeType.StringConverter;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
@@ -76,7 +74,7 @@ public class ETFDataCom
         private String provider;
         private String domicile;
         private String currencyCode;
-        private String assetClass;
+//        private String assetClass; TODO: This is a potential Taxonomy
         private String replicationMethod;
         private String distributionFrequency;
         private String distributionType;
@@ -109,7 +107,7 @@ public class ETFDataCom
         @Override
         public String getOnlineId()
         {
-            return isin;
+            return String.format("%s:%s", PROVIDER_NAME, isin); //$NON-NLS-1$
         }
 
         @Override
@@ -167,30 +165,13 @@ public class ETFDataCom
             return attributeMapping;
         }
 
-        @Override
-        public Security create()
+        private Attributes createOrUpdateAttributes(Attributes attributes)
         {
-            Security security = new Security();
-
-            security.setOnlineId(isin);
-
-            security.setName(name);
-            security.setIsin(isin);
-            security.setTickerSymbol(symbols.stream().map(SymbolInfo::getSymbol).findAny().orElse(null));
-            symbols.forEach(symbolInfo -> security.addProperty(new SecurityProperty(SecurityProperty.Type.MARKET,
-                            symbolInfo.getExchange(), symbolInfo.getSymbol())));
-            security.setCurrencyCode(CurrencyUnit.getInstance(currencyCode).getCurrencyCode());
-
-
-            Attributes attributes = new Attributes();
+            if (attributes == null)
+                attributes = new Attributes();
 
             AttributeType terType = new AttributeType("ter"); //$NON-NLS-1$
-            terType.setName(Messages.AttributesTERName);
-            terType.setColumnLabel(Messages.AttributesTERColumn);
-            terType.setTarget(Security.class);
-            terType.setType(Double.class);
-            terType.setConverter(PercentPlainConverter.class);
-            attributes.put(terType, ter/100);
+            attributes.put(terType, ter);
 
             for (Map.Entry<String, String> am : attributeMapping().entrySet())
             {
@@ -203,20 +184,43 @@ public class ETFDataCom
                 attributes.put(at, am.getValue());
             }
 
-            security.setAttributes(attributes);
+            return attributes;
+        }
+
+        private Security setInfo(Security security)
+        {
+            security.setOnlineId(isin);
+
+            security.setName(name);
+            security.setIsin(isin);
+            security.setTickerSymbol(symbols.stream().map(SymbolInfo::getSymbol).findAny().orElse(null));
+            symbols.forEach(symbolInfo -> security.addProperty(new SecurityProperty(SecurityProperty.Type.MARKET,
+                            symbolInfo.getExchange(), symbolInfo.getSymbol())));
+            security.setCurrencyCode(CurrencyUnit.getInstance(currencyCode).getCurrencyCode());
+
+            return security;
+        }
+
+        @Override
+        public Security create()
+        {
+            Security security = new Security();
+
+            setInfo(security).setAttributes(createOrUpdateAttributes(null));
 
             return security;
         }
 
         public boolean update(Security security)
         {
-          return false;
+            setInfo(security).setAttributes(createOrUpdateAttributes(security.getAttributes()));
+            return true;
         }
 
         @Override
         public String getProvider()
         {
-            return "ETF-Data.com"; //$NON-NLS-1$
+            return ETFDataCom.PROVIDER_NAME;
         }
 
         @Override
@@ -224,9 +228,12 @@ public class ETFDataCom
         {
             return String.join(", ", attributeMapping().keySet()); //$NON-NLS-1$
         }
+
+
     }
 
 
+    public static final String PROVIDER_NAME = "ETF-Data.com"; //$NON-NLS-1$
     private static final String HOST = "api.etf-data.com"; //$NON-NLS-1$
 
     public List<ResultItem> search(String isin) throws IOException

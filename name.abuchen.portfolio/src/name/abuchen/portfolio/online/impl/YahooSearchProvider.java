@@ -14,6 +14,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
 import name.abuchen.portfolio.util.WebAccess;
 
@@ -100,5 +101,17 @@ public class YahooSearchProvider implements SecuritySearchProvider
                 }
             }
         }
+    }
+
+    @Override
+    public boolean update(Security existingSecurity) throws IOException
+    {
+        return false;
+    }
+
+    @Override
+    public String getLinkFor(Security existingSecurity)
+    {
+        return null;
     }
 }

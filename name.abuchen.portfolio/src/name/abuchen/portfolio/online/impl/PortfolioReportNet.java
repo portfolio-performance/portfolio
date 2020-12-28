@@ -164,7 +164,7 @@ public class PortfolioReportNet
         @Override
         public String getOnlineId()
         {
-            return id;
+            return String.format("%s:%s", PROVIDER_NAME, id); //$NON-NLS-1$
         }
 
         @Override
@@ -290,7 +290,7 @@ public class PortfolioReportNet
         @Override
         public String getProvider()
         {
-            return "Portfolio-Report.com"; //$NON-NLS-1$
+            return PortfolioReportNet.PROVIDER_NAME;
         }
 
         @Override
@@ -303,6 +303,7 @@ public class PortfolioReportNet
     private static final String TYPE_SHARE = "share"; //$NON-NLS-1$
     private static final String TYPE_BOND = "bond"; //$NON-NLS-1$
 
+    public static final String PROVIDER_NAME = "Portfolio-Report.net"; //$NON-NLS-1$
     private static final String HOST = "www.portfolio-report.net"; //$NON-NLS-1$
 
     public List<ResultItem> search(String query, SecuritySearchProvider.Type type) throws IOException

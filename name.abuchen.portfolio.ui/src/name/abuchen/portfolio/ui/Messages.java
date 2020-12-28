@@ -578,7 +578,7 @@ public class Messages extends NLS
     public static String LabelLayoutRelevant;
     public static String LabelLevelNameNumber;
     public static String LabelLevelNumber;
-    public static String LabelLinkedToPortfolioReport;
+    public static String LabelLinkedTo;
     public static String LabelLinkToPortfolioReportNet;
     public static String LabelNamePlusCopy;
     public static String LabelNet;

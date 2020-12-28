@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.wizards.security;
 
+import java.text.MessageFormat;
+
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -47,9 +49,8 @@ public class SecurityMasterDataPage extends AbstractPage
         GridLayoutFactory.fillDefaults().numColumns(2).margins(5, 5).applyTo(container);
 
         boolean isExchangeRate = model.getSecurity().isExchangeRate();
-        boolean isSyncedOnline = model.getOnlineId() != null;
 
-        if (isSyncedOnline)
+        if (model.getSecurity().hasOnlineLink())
         {
             // empty cell
             new Label(container, SWT.NONE).setText(""); //$NON-NLS-1$
@@ -60,9 +61,9 @@ public class SecurityMasterDataPage extends AbstractPage
             area.setLayout(layout);
 
             Link link = new Link(area, SWT.UNDERLINE_LINK);
-            link.setText(Messages.LabelLinkedToPortfolioReport);
+            link.setText(MessageFormat.format(Messages.LabelLinkedTo, model.getSecurity().getOnlineProvider().getName()));
             link.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> DesktopAPI
-                            .browse("https://www.portfolio-report.net/securities/" + model.getOnlineId()))); //$NON-NLS-1$
+                            .browse(model.getSecurity().getOnlineProvider().getLinkFor(model.getSecurity()))));
 
             Button unlink = new Button(area, SWT.PUSH);
             unlink.setText(Messages.EditWizardMasterDataUnlink);
@@ -109,7 +110,7 @@ public class SecurityMasterDataPage extends AbstractPage
         if (!isExchangeRate)
         {
             isin = bindings.bindISINInput(container, Messages.ColumnISIN, "isin"); //$NON-NLS-1$
-            if (isSyncedOnline)
+            if (model.getSecurity().hasOnlineLink())
             {
                 isin.setEditable(false);
                 isin.setBackground(Colors.SIDEBAR_BACKGROUND_SELECTED);
@@ -121,7 +122,7 @@ public class SecurityMasterDataPage extends AbstractPage
         if (!isExchangeRate)
         {
             wkn = bindings.bindStringInput(container, Messages.ColumnWKN, "wkn", SWT.NONE, 12); //$NON-NLS-1$
-            if (isSyncedOnline)
+            if (model.getSecurity().hasOnlineLink())
             {
                 wkn.setEditable(false);
                 wkn.setBackground(Colors.SIDEBAR_BACKGROUND_SELECTED);
