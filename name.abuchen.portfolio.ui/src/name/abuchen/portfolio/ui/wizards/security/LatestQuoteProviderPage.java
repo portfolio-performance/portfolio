@@ -8,7 +8,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.beans.typed.BeanProperties;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.validation.MultiValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
@@ -142,7 +142,6 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
         // validate that quote provider message is null -> no errors
         bindings.getBindingContext().addValidationStatusProvider(new MultiValidator()
         {
-            @SuppressWarnings("unchecked")
             IObservableValue<?> observable = BeanProperties.value("statusLatestQuotesProvider").observe(model); //$NON-NLS-1$
 
             @Override

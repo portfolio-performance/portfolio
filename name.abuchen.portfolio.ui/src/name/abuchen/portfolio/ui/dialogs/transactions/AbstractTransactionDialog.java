@@ -10,16 +10,16 @@ import java.util.function.Supplier;
 import org.eclipse.core.databinding.AggregateValidationStatus;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
-import org.eclipse.core.databinding.beans.BeanProperties;
-import org.eclipse.core.databinding.beans.PojoProperties;
-import org.eclipse.core.databinding.conversion.NumberToStringConverter;
-import org.eclipse.core.databinding.conversion.StringToNumberConverter;
+import org.eclipse.core.databinding.beans.typed.BeanProperties;
+import org.eclipse.core.databinding.beans.typed.PojoProperties;
+import org.eclipse.core.databinding.conversion.text.NumberToStringConverter;
+import org.eclipse.core.databinding.conversion.text.StringToNumberConverter;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.validation.MultiValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.jface.databinding.swt.WidgetProperties;
-import org.eclipse.jface.databinding.viewers.ViewersObservables;
+import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
+import org.eclipse.jface.databinding.viewers.typed.ViewerProperties;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -95,10 +95,8 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
                                                                 .format(Messages.MsgDialogInputRequired, description)));
             }
 
-            @SuppressWarnings("unchecked")
             IObservableValue<String> targetObservable = WidgetProperties.text(SWT.Modify).observe(value);
-            @SuppressWarnings("unchecked")
-            IObservableValue<Long> modelObservable = BeanProperties.value(property).observe(model);
+            IObservableValue<Long> modelObservable = BeanProperties.value(property, Long.class).observe(model);
 
             context.bindValue(targetObservable, modelObservable, strategy, new UpdateValueStrategy<Long, String>()
                             .setConverter(new CurrencyToStringConverter(values)));
@@ -106,10 +104,8 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
 
         public void bindCurrency(String property)
         {
-            @SuppressWarnings("unchecked")
             IObservableValue<String> targetObservable = WidgetProperties.text().observe(currency);
-            @SuppressWarnings("unchecked")
-            IObservableValue<String> modelObservable = BeanProperties.value(property).observe(model);
+            IObservableValue<String> modelObservable = BeanProperties.value(property, String.class).observe(model);
             context.bindValue(targetObservable, modelObservable);
         }
 
@@ -120,15 +116,14 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
             IValidatingConverter<Object, BigDecimal> converter = IValidatingConverter
                             .wrap(StringToNumberConverter.toBigDecimal());
 
-            @SuppressWarnings("unchecked")
-            IObservableValue<Object> targetObservable = WidgetProperties.text(SWT.Modify).observe(value);
-            @SuppressWarnings("unchecked")
-            IObservableValue<BigDecimal> modelObservable = BeanProperties.value(property).observe(model);
+            IObservableValue<String> targetObservable = WidgetProperties.text(SWT.Modify).observe(value);
+            IObservableValue<BigDecimal> modelObservable = BeanProperties.value(property, BigDecimal.class)
+                            .observe(model);
 
             context.bindValue(targetObservable, modelObservable, //
-                            new UpdateValueStrategy<Object, BigDecimal>().setAfterGetValidator(converter)
+                            new UpdateValueStrategy<String, BigDecimal>().setAfterGetValidator(converter)
                                             .setConverter(converter),
-                            new UpdateValueStrategy<BigDecimal, Object>()
+                            new UpdateValueStrategy<BigDecimal, String>()
                                             .setConverter(NumberToStringConverter.fromBigDecimal(format)));
         }
 
@@ -167,9 +162,8 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
             UpdateValueStrategy<Object, Object> strategy = new UpdateValueStrategy<>();
             strategy.setAfterConvertValidator(
                             v -> v != null ? ValidationStatus.ok() : ValidationStatus.error(missingValueMessage));
-            @SuppressWarnings("unchecked")
-            IObservableValue<Object> targetObservable = ViewersObservables.observeSingleSelection(value);
-            @SuppressWarnings("unchecked")
+
+            IObservableValue<Object> targetObservable = ViewerProperties.singleSelection().observe(value);
             IObservableValue<Object> modelObservable = BeanProperties.value(property).observe(model);
 
             context.bindValue(targetObservable, modelObservable, strategy, null);
@@ -179,7 +173,6 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
         public void bindCurrency(String property)
         {
             IObservableValue<?> targetObservable = WidgetProperties.text().observe(currency);
-            @SuppressWarnings("unchecked")
             IObservableValue<?> modelObservable = BeanProperties.value(property).observe(model);
             context.bindValue(targetObservable, modelObservable);
         }
@@ -218,7 +211,6 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
         public void bindDate(String property)
         {
             IObservableValue<?> targetObservable = new SimpleDateTimeDateSelectionProperty().observe(date.getControl());
-            @SuppressWarnings("unchecked")
             IObservableValue<?> modelObservable = BeanProperties.value(property).observe(model);
             context.bindValue(targetObservable, modelObservable);
         }
@@ -226,7 +218,6 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
         public void bindTime(String property)
         {
             IObservableValue<?> targetObservable = new SimpleDateTimeTimeSelectionProperty().observe(time);
-            @SuppressWarnings("unchecked")
             IObservableValue<?> modelObservable = BeanProperties.value(property).observe(model);
             context.bindValue(targetObservable, modelObservable);
         }
@@ -371,8 +362,8 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
 
         createFormElements(editArea);
 
-        @SuppressWarnings("unchecked")
-        IObservableValue<IStatus> calculationStatus = BeanProperties.value("calculationStatus").observe(model); //$NON-NLS-1$
+        IObservableValue<IStatus> calculationStatus = BeanProperties.value("calculationStatus", IStatus.class) //$NON-NLS-1$
+                        .observe(model);
         this.context.addValidationStatusProvider(new MultiValidator()
         {
             @Override
@@ -382,7 +373,6 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
             }
         });
 
-        @SuppressWarnings("unchecked")
         IObservableValue<?> observable = PojoProperties.value("status").observe(status); //$NON-NLS-1$
         context.bindValue(observable, new AggregateValidationStatus(context, AggregateValidationStatus.MAX_SEVERITY));
 

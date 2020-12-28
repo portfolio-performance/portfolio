@@ -26,14 +26,14 @@ import java.util.stream.Collectors;
 
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
-import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.beans.typed.BeanProperties;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.databinding.swt.WidgetProperties;
-import org.eclipse.jface.databinding.viewers.ViewersObservables;
+import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
+import org.eclipse.jface.databinding.viewers.typed.ViewerProperties;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -199,9 +199,8 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
         final Spinner skipLines = new Spinner(container, SWT.BORDER);
         skipLines.setMinimum(0);
 
-        IObservableValue<?> spinnerTarget = WidgetProperties.selection().observe(skipLines);
-        @SuppressWarnings("unchecked")
-        IObservableValue<String> spinnerModel = BeanProperties.value("skipLines").observe(importer); //$NON-NLS-1$
+        IObservableValue<?> spinnerTarget = WidgetProperties.spinnerSelection().observe(skipLines);
+        IObservableValue<String> spinnerModel = BeanProperties.value("skipLines", String.class).observe(importer); //$NON-NLS-1$
         context.bindValue(spinnerTarget, spinnerModel);
 
         skipLines.addModifyListener(event -> doProcessFile());
@@ -213,8 +212,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
         encoding.setContentProvider(ArrayContentProvider.getInstance());
         encoding.setInput(Charset.availableCharsets().values().toArray());
 
-        IObservableValue<?> encodingTarget = ViewersObservables.observeSingleSelection(encoding);
-        @SuppressWarnings("unchecked")
+        IObservableValue<?> encodingTarget = ViewerProperties.singleSelection().observe(encoding);
         IObservableValue<?> encodingModel = BeanProperties.value("encoding").observe(importer); //$NON-NLS-1$
         context.bindValue(encodingTarget, encodingModel);
         encoding.addSelectionChangedListener(event -> doProcessFile());
@@ -222,8 +220,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
         final Button firstLineIsHeader = new Button(container, SWT.CHECK);
         firstLineIsHeader.setText(Messages.CSVImportLabelFirstLineIsHeader);
 
-        IObservableValue<?> targetObservable = WidgetProperties.selection().observe(firstLineIsHeader);
-        @SuppressWarnings("unchecked")
+        IObservableValue<?> targetObservable = WidgetProperties.buttonSelection().observe(firstLineIsHeader);
         IObservableValue<?> modelObservable = BeanProperties.value("firstLineHeader").observe(importer); //$NON-NLS-1$
         context.bindValue(targetObservable, modelObservable);
 
@@ -314,8 +311,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
             }
         });
 
-        IObservableValue<?> targetObservable = ViewersObservables.observeSingleSelection(extractor);
-        @SuppressWarnings("unchecked")
+        IObservableValue<?> targetObservable = ViewerProperties.singleSelection().observe(extractor);
         IObservableValue<?> modelObservable = BeanProperties.value("extractor").observe(importer); //$NON-NLS-1$
         context.bindValue(targetObservable, modelObservable);
         extractor.addSelectionChangedListener(e -> onTargetChanged());
@@ -336,10 +332,10 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
         UpdateValueStrategy<Character, Delimiter> modelToTarget = new UpdateValueStrategy<>();
         modelToTarget.setConverter(new Delimiter.CharToDelimiterConverter());
 
-        @SuppressWarnings("unchecked")
-        IObservableValue<Delimiter> delimiterTarget = ViewersObservables.observeSingleSelection(delimiter);
-        @SuppressWarnings("unchecked")
-        IObservableValue<Character> delimiterModel = BeanProperties.value("delimiter").observe(importer); //$NON-NLS-1$
+        IObservableValue<Delimiter> delimiterTarget = ViewerProperties.singleSelection(Delimiter.class)
+                        .observe(delimiter);
+        IObservableValue<Character> delimiterModel = BeanProperties.value("delimiter", Character.class) //$NON-NLS-1$
+                        .observe(importer);
         context.bindValue(delimiterTarget, delimiterModel, targetToModel, modelToTarget);
         delimiter.addSelectionChangedListener(e -> doProcessFile());
         return delimiter;

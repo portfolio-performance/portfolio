@@ -9,14 +9,14 @@ import java.util.Set;
 import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.ValidationStatusProvider;
-import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.beans.typed.BeanProperties;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.core.databinding.validation.MultiValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.jface.databinding.swt.WidgetProperties;
-import org.eclipse.jface.databinding.viewers.ViewersObservables;
+import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
+import org.eclipse.jface.databinding.viewers.typed.ViewerProperties;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.resource.FontDescriptor;
@@ -302,8 +302,7 @@ public class SecurityTaxonomyPage extends AbstractPage
             strategy.setAfterConvertValidator(new GreaterThanZeroValidator());
 
             IObservableValue<Integer> targetObservable = multiValidator.observeValidatedValue(observable);
-            @SuppressWarnings("unchecked")
-            IObservableValue<Integer> weightObservable = BeanProperties.value("weight").observe(link); //$NON-NLS-1$
+            IObservableValue<Integer> weightObservable = BeanProperties.value("weight", Integer.class).observe(link); //$NON-NLS-1$
             validators.add(bindings.getBindingContext().bindValue(targetObservable, weightObservable, strategy, null));
         }
     }
@@ -324,7 +323,6 @@ public class SecurityTaxonomyPage extends AbstractPage
             UpdateValueStrategy<Object, Object> strategy = new UpdateValueStrategy<>();
             strategy.setAfterConvertValidator(new NotNullValidator());
 
-            @SuppressWarnings("unchecked")
             IObservableValue<Object> classificationObservable = BeanProperties.value("classification").observe(link); //$NON-NLS-1$
             validators.add(bindings.getBindingContext().bindValue(multiValidator.observeValidatedValue(observable),
                             classificationObservable, strategy, null));
@@ -347,7 +345,7 @@ public class SecurityTaxonomyPage extends AbstractPage
         combo.setInput(designation.getElements());
         GridDataFactory.fillDefaults().grab(false, false).applyTo(combo.getControl());
 
-        classificationObservables.add(ViewersObservables.observeSingleSelection(combo));
+        classificationObservables.add(ViewerProperties.singleSelection().observe(combo));
     }
 
     private void addDeleteButton(final Composite block, final TaxonomyDesignation designation,
@@ -374,8 +372,7 @@ public class SecurityTaxonomyPage extends AbstractPage
         spinner.setValues(link.getWeight(), 0, Classification.ONE_HUNDRED_PERCENT, 2, 100, 1000);
         GridDataFactory.fillDefaults().applyTo(spinner);
 
-        @SuppressWarnings("unchecked")
-        IObservableValue<Integer> observable = WidgetProperties.selection().observe(spinner);
+        IObservableValue<Integer> observable = WidgetProperties.spinnerSelection().observe(spinner);
         observables.add(observable);
     }
 

@@ -8,9 +8,10 @@ import java.util.Date;
 import org.eclipse.jface.databinding.swt.WidgetValueProperty;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DateTime;
 
-public class SimpleDateTimeDateSelectionProperty extends WidgetValueProperty
+public class SimpleDateTimeDateSelectionProperty extends WidgetValueProperty<Control, LocalDate>
 {
     public SimpleDateTimeDateSelectionProperty()
     {
@@ -24,7 +25,7 @@ public class SimpleDateTimeDateSelectionProperty extends WidgetValueProperty
     }
 
     @Override
-    protected Object doGetValue(Object source)
+    protected LocalDate doGetValue(Control source)
     {
         if (source instanceof DateTime)
         {
@@ -59,18 +60,16 @@ public class SimpleDateTimeDateSelectionProperty extends WidgetValueProperty
     }
 
     @Override
-    protected void doSetValue(Object source, Object value)
+    protected void doSetValue(Control source, LocalDate date)
     {
         if (source instanceof DateTime)
         {
-            LocalDate date = (LocalDate) value;
             DateTime dateTime = (DateTime) source;
             // DateTime widget has zero-based months
             dateTime.setDate(date.getYear(), date.getMonthValue() - 1, date.getDayOfMonth());
         }
         else if (source instanceof CDateTime)
         {
-            LocalDate date = (LocalDate) value;
             CDateTime dateTime = (CDateTime) source;
             dateTime.setSelection(Date.from(date.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()));
         }

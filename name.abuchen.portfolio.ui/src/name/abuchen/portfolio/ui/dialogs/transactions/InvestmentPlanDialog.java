@@ -14,12 +14,12 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.eclipse.core.databinding.UpdateValueStrategy;
-import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.beans.typed.BeanProperties;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.e4.ui.services.IServiceConstants;
-import org.eclipse.jface.databinding.swt.WidgetProperties;
+import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
@@ -80,10 +80,8 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
                         : ValidationStatus.error(
                                         MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnName));
 
-        @SuppressWarnings("unchecked")
         IObservableValue<String> nameTarget = WidgetProperties.text(SWT.Modify).observe(valueName);
-        @SuppressWarnings("unchecked")
-        IObservableValue<String> nameModel = BeanProperties.value(Properties.name.name()).observe(model);
+        IObservableValue<String> nameModel = BeanProperties.value(Properties.name.name(), String.class).observe(model);
         context.bindValue(nameTarget, nameModel,
                         new UpdateValueStrategy<String, String>().setAfterConvertValidator(validator), null);
 
@@ -120,8 +118,7 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
         labelAutoGenerate.setText(Messages.MsgCreateTransactionsAutomaticallyUponOpening);
 
         Button buttonAutoGenerate = new Button(editArea, SWT.CHECK);
-        IObservableValue<?> targetAutoGenerate = WidgetProperties.selection().observe(buttonAutoGenerate);
-        @SuppressWarnings("unchecked")
+        IObservableValue<?> targetAutoGenerate = WidgetProperties.buttonSelection().observe(buttonAutoGenerate);
         IObservableValue<?> modelAutoGenerate = BeanProperties.value(Properties.autoGenerate.name()).observe(model);
         context.bindValue(targetAutoGenerate, modelAutoGenerate);
 
@@ -131,7 +128,6 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
         lblDate.setText(Messages.ColumnDate);
         DatePicker valueDate = new DatePicker(editArea);
         IObservableValue<?> targetDate = new SimpleDateTimeDateSelectionProperty().observe(valueDate.getControl());
-        @SuppressWarnings("unchecked")
         IObservableValue<?> modelDate = BeanProperties.value(Properties.start.name()).observe(model);
         context.bindValue(targetDate, modelDate);
 
