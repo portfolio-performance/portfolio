@@ -1,7 +1,7 @@
 package name.abuchen.portfolio.online.impl;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
