@@ -38,7 +38,6 @@ import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransferModel.Prope
 import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.SWTHelper;
 
-@SuppressWarnings("restriction")
 public class AccountTransferDialog extends AbstractTransactionDialog // NOSONAR
 {
     private final class AccountsMustBeDifferentValidator extends MultiValidator

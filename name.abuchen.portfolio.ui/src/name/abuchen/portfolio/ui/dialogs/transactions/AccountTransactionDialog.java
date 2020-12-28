@@ -52,7 +52,6 @@ import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SWTHelper;
 
-@SuppressWarnings("restriction")
 public class AccountTransactionDialog extends AbstractTransactionDialog // NOSONAR
 {
     @Inject

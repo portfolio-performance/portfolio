@@ -35,7 +35,6 @@ import name.abuchen.portfolio.money.impl.InverseExchangeRateTimeSeries;
 /**
  * A factory for {@link ExchangeRateProvider}s linked to a client.
  */
-@SuppressWarnings("restriction")
 public class ExchangeRateProviderFactory
 {
     private static class Dijkstra

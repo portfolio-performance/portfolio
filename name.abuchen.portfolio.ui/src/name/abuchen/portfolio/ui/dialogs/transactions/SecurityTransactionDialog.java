@@ -40,7 +40,6 @@ import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.transactions.AbstractSecurityTransactionModel.Properties;
 import name.abuchen.portfolio.ui.util.SWTHelper;
 
-@SuppressWarnings("restriction")
 public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSONAR
 {
     @Inject

@@ -53,7 +53,6 @@ import name.abuchen.portfolio.ui.jobs.UpdateDividendsJob;
 import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
 import name.abuchen.portfolio.ui.wizards.client.ClientMigrationDialog;
 
-@SuppressWarnings("restriction")
 public class ClientInput
 {
     // compatibility: the value used to be stored in the AbstractHistoricView
