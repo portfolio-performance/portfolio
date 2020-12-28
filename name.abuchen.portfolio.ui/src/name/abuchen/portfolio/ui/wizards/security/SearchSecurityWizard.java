@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.wizards.security;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.graphics.Image;
 
+import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
@@ -38,7 +39,12 @@ public class SearchSecurityWizard extends Wizard
         if (item == null)
             return null;
 
-        return item.create();
+        Security newSecurity = item.create();
+
+        for (AttributeType type : newSecurity.getAttributes().getAll().keySet())
+            this.client.getSettings().addAttributeTypeIfNotExists(type);
+
+        return newSecurity;
     }
 
     @Override

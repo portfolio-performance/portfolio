@@ -182,6 +182,13 @@ public class ClientSettings
         attributeTypes.add(index, type);
     }
 
+    public void addAttributeTypeIfNotExists(AttributeType type)
+    {
+        if (attributeTypes.contains(type))
+            return;
+        attributeTypes.add(type);
+    }
+
     public int getAttributeTypeIndexOf(AttributeType type)
     {
         return attributeTypes.indexOf(type);

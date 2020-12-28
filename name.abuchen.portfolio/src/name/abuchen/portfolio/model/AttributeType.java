@@ -468,4 +468,26 @@ public class AttributeType
                 return ((Comparable<Object>) o1).compareTo((Comparable<Object>) o2);
         };
     }
+
+    @Override
+    public int hashCode()
+    {
+        return this.id.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if(o == null)
+            return false;
+
+        if (o == this)
+            return true;
+
+        if (getClass() != o.getClass())
+            return false;
+
+        AttributeType e = (AttributeType) o;
+        return (this.getId().equals(e.getId()));
+    }
 }
