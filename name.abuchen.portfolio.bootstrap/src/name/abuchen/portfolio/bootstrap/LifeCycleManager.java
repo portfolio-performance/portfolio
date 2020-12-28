@@ -35,7 +35,6 @@ import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.Version;
@@ -56,25 +55,9 @@ public class LifeCycleManager
     @PostContextCreate
     public void doPostContextCreate(IEclipseContext context)
     {
-        checkForJava8();
         checkForModelChanges();
         checkForRequestToClearPersistedState();
         setupEventLoopAdvisor(context);
-    }
-
-    private void checkForJava8()
-    {
-        // if the java version is < 8, show a message dialog because otherwise
-        // the application would silently not start
-
-        double version = Double.parseDouble(System.getProperty("java.specification.version")); //$NON-NLS-1$
-
-        if (version < 1.8)
-        {
-            MessageDialog.openInformation(Display.getDefault().getActiveShell(), Messages.TitleJavaVersion,
-                            Messages.MsgMinimumRequiredVersion);
-            throw new UnsupportedOperationException("The minimum Java version required is Java 8"); //$NON-NLS-1$
-        }
     }
 
     private void checkForModelChanges()

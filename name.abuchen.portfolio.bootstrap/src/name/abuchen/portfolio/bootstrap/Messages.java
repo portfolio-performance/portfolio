@@ -12,11 +12,9 @@ public class Messages extends NLS
     public static String LabelSaveAll;
     public static String LabelSaveNone;
     public static String LabelYes;
-    public static String MsgMinimumRequiredVersion;
     public static String SaveHandlerMsgSelectFileToSave;
     public static String SaveHandlerPrompt;
     public static String SaveHandlerTitle;
-    public static String TitleJavaVersion;
     static
     {
         // initialize resource bundle
