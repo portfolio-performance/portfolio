@@ -135,7 +135,7 @@ public final class Security implements Attributable, InvestmentVehicle
     {
         if (hasOnlineLink() && onlineId.contains(":")) //$NON-NLS-1$
         {
-            return onlineId.split(":", 1)[1]; //$NON-NLS-1$
+            return onlineId.split(":", 2)[1]; //$NON-NLS-1$
         }
         else
         {

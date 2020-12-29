@@ -13,10 +13,12 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.osgi.framework.FrameworkUtil;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Attributes;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityProperty;
+import name.abuchen.portfolio.model.AttributeType.PercentConverter;
 import name.abuchen.portfolio.model.AttributeType.StringConverter;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
@@ -171,7 +173,12 @@ public class ETFDataCom
                 attributes = new Attributes();
 
             AttributeType terType = new AttributeType("ter"); //$NON-NLS-1$
-            attributes.put(terType, ter);
+            terType.setName(Messages.AttributesTERName);
+            terType.setColumnLabel(Messages.AttributesTERColumn);
+            terType.setTarget(Security.class);
+            terType.setType(Double.class);
+            terType.setConverter(PercentConverter.class);
+            attributes.put(terType, ter/100);
 
             for (Map.Entry<String, String> am : attributeMapping().entrySet())
             {
@@ -189,7 +196,7 @@ public class ETFDataCom
 
         private Security setInfo(Security security)
         {
-            security.setOnlineId(isin);
+            security.setOnlineId(this.getOnlineId());
 
             security.setName(name);
             security.setIsin(isin);

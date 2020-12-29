@@ -214,7 +214,7 @@ public class PortfolioReportNet
         {
             Security security = new Security();
 
-            security.setOnlineId(id);
+            security.setOnlineId(this.getOnlineId());
 
             security.setName(name);
 
