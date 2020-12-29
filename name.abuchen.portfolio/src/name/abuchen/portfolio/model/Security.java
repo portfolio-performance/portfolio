@@ -159,6 +159,22 @@ public final class Security implements Attributable, InvestmentVehicle
 
     public void setOnlineId(String onlineId)
     {
+        if (onlineId == null || this.onlineId == null)
+        {
+            this.onlineId = onlineId;
+            return;
+        }
+        if (onlineId.contains(":")) //$NON-NLS-1$
+        {
+            this.onlineId = onlineId;
+            return;
+        }
+        if (this.onlineId.contains(":"))  //$NON-NLS-1$
+        {
+            String providerName = this.onlineId.split(":", 2)[0]; //$NON-NLS-1$
+            this.onlineId = String.format("%s:%s", providerName, onlineId); //$NON-NLS-1$
+            return;
+        }
         this.onlineId = onlineId;
     }
 
