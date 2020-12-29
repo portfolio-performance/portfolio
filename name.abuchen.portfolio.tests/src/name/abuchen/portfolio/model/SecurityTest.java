@@ -51,7 +51,7 @@ public class SecurityTest
                 skipped++;
         }
 
-        assertThat(skipped, equalTo(11));
+        assertThat(skipped, equalTo(12));
 
         Security target = source.deepCopy();
 
