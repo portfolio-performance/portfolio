@@ -10,6 +10,7 @@ import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -23,6 +24,7 @@ import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -40,6 +42,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
+import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
@@ -51,6 +54,7 @@ import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionModel.Pr
 import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SWTHelper;
+import name.abuchen.portfolio.ui.util.SimpleAction;
 
 public class AccountTransactionDialog extends AbstractTransactionDialog // NOSONAR
 {
@@ -62,6 +66,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
     private boolean useIndirectQuotation = false;
 
     private Menu contextMenu;
+    private Menu contextMenuCurrencies;
 
     @Inject
     public AccountTransactionDialog(@Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell)
@@ -136,6 +141,20 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         Input dividendAmount = new Input(editArea, Messages.LabelDividendPerShare);
         dividendAmount.bindBigDecimal(Properties.dividendAmount.name(), "#,##0.0000"); //$NON-NLS-1$
         dividendAmount.bindCurrency(Properties.fxCurrencyCode.name());
+                
+        Button btnDividendCurrency = new Button(editArea, SWT.ARROW | SWT.DOWN);
+        btnDividendCurrency.setText(model().getFxCurrencyCode());
+        btnDividendCurrency.addSelectionListener(new SelectionAdapter()
+        {
+            @Override
+            public void widgetSelected(SelectionEvent e)
+            {
+                showCurrencySelectionMenu();
+            }
+        });
+        
+        btnDividendCurrency.setVisible(model().supportsShares());
+        
         dividendAmount.setVisible(model().supportsShares());
 
         // other input fields
@@ -171,7 +190,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
 
         Input forexFees = new Input(editArea, Messages.ColumnFees);
         forexFees.bindValue(Properties.fxFees.name(), Messages.ColumnFees, Values.Amount, false);
-        forexFees.bindCurrency(Properties.securityCurrencyCode.name());
+        forexFees.bindCurrency(Properties.fxCurrencyCode.name());
         forexFees.setVisible(model().supportsFees());
 
         Input fees = new Input(editArea, Messages.ColumnFees);
@@ -260,7 +279,8 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
             // shares [- amount per share]
             startingWith(btnShares).thenRight(dividendAmount.label) //
                             .thenRight(dividendAmount.value).width(amountWidth) //
-                            .thenRight(dividendAmount.currency).width(currencyWidth); //
+                            .thenRight(dividendAmount.currency).width(currencyWidth)
+                            .thenRight(btnDividendCurrency); //
         }
 
         forms = startingWith(grossAmount.value);
@@ -303,12 +323,12 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         //
 
         model.addPropertyChangeListener(Properties.exchangeRateCurrencies.name(), event -> { // NOSONAR
-            String securityCurrency = model().getSecurityCurrencyCode();
+            String maybeFxCurrency = model().getFxCurrencyCode();
             String accountCurrency = model().getAccountCurrencyCode();
 
             // make exchange rate visible if both are set but different
-            boolean isFxVisible = securityCurrency.length() > 0 && accountCurrency.length() > 0
-                            && !securityCurrency.equals(accountCurrency);
+            boolean isFxVisible = maybeFxCurrency.length() > 0 && accountCurrency.length() > 0
+                            && !maybeFxCurrency.equals(accountCurrency);
 
             exchangeRate.setVisible(isFxVisible);
             grossAmount.setVisible(isFxVisible);
@@ -377,6 +397,19 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
 
         contextMenu.setVisible(true);
     }
+    
+    private void showCurrencySelectionMenu()
+    {
+        if (contextMenuCurrencies == null)
+        {
+            MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
+            menuMgr.setRemoveAllWhenShown(true);
+            menuMgr.addMenuListener(this::currencyMenuAboutToShow);
+            contextMenuCurrencies = menuMgr.createContextMenu(getShell());
+        }
+
+        contextMenuCurrencies.setVisible(true);
+    }
 
     private void sharesMenuAboutToShow(IMenuManager manager) // NOSONAR
     {
@@ -408,6 +441,36 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
             }
         });
     }
+    
+    private void currencyMenuAboutToShow(IMenuManager manager) // NOSONAR
+    {
+        // put list of favorite units on top
+        List<CurrencyUnit> allUnits = client.getUsedCurrencies();
+        // add a separator marker
+        allUnits.add(null);
+        // then all available units
+        List<CurrencyUnit> available = CurrencyUnit.getAvailableCurrencyUnits();
+        Collections.sort(available);
+        allUnits.addAll(available);
+        // now show the list
+        for (final CurrencyUnit unit : allUnits)
+        {
+            // is this a unit or a separator?
+            if (unit != null)
+            {
+                Action action = new SimpleAction(unit.getLabel(), a -> {
+                    model().setFxCurrencyCode(unit.getCurrencyCode());
+                });
+                action.setChecked(model().getFxCurrencyCode().equals(unit.getCurrencyCode()));
+                manager.add(action);
+            }
+            else
+            {
+                // add a separator
+                manager.add(new Separator());
+            }
+        }
+    }
 
     private void addAction(IMenuManager manager, PortfolioSnapshot portfolio, final String label)
     {
@@ -426,7 +489,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
             manager.add(action);
         }
     }
-
+    
     private void widgetDisposed()
     {
         if (contextMenu != null && !contextMenu.isDisposed())

@@ -42,6 +42,7 @@ public class AccountTransactionModel extends AbstractModel
     private Account sourceAccount;
     private AccountTransaction sourceTransaction;
 
+    private String explicitFxCurrencyCode;
     private Security security;
     private Account account;
     private LocalDate date = LocalDate.now();
@@ -149,7 +150,7 @@ public class AccountTransactionModel extends AbstractModel
         {
             Transaction.Unit forex = new Transaction.Unit(Transaction.Unit.Type.GROSS_VALUE, //
                             Money.of(getAccountCurrencyCode(), grossAmount), //
-                            Money.of(getSecurityCurrencyCode(), fxGrossAmount), //
+                            Money.of(fxCurrencyCode, fxGrossAmount), //
                             getExchangeRate());
             t.addUnit(forex);
 
@@ -182,6 +183,7 @@ public class AccountTransactionModel extends AbstractModel
         setFxTaxes(0);
         setNote(null);
         setTime(PresetValues.getTime());
+        setFxCurrencyCode(null);
     }
 
     public boolean supportsShares()
@@ -258,6 +260,10 @@ public class AccountTransactionModel extends AbstractModel
                     this.exchangeRate = unit.getExchangeRate();
                     this.grossAmount = unit.getAmount().getAmount();
                     this.fxGrossAmount = unit.getForex().getAmount();
+                    if(!unit.getForex().getCurrencyCode().equals(security.getCurrencyCode())) 
+                    {
+                       setFxCurrencyCode(unit.getForex().getCurrencyCode()); 
+                    }
                     break;
                 case TAX:
                     if (unit.getForex() != null)
@@ -335,6 +341,29 @@ public class AccountTransactionModel extends AbstractModel
 
         updateExchangeRate();
     }
+    
+    public void setFxCurrencyCode(String currencyCode)
+    {
+        String oldFxCurrencyCode = getFxCurrencyCode();
+        if(oldFxCurrencyCode.equals(currencyCode)) return;
+        
+        String oldExchangeRateCurrencies = getExchangeRateCurrencies();
+        String oldInverseExchangeRateCurrencies = getInverseExchangeRateCurrencies();
+        
+        this.explicitFxCurrencyCode = null;
+        if(!getFxCurrencyCode().equals(currencyCode))
+        {
+            this.explicitFxCurrencyCode = currencyCode;    
+        }
+        
+        firePropertyChange(Properties.fxCurrencyCode.name(), oldFxCurrencyCode, getFxCurrencyCode());
+        firePropertyChange(Properties.exchangeRateCurrencies.name(), oldExchangeRateCurrencies,
+                        getExchangeRateCurrencies());
+        firePropertyChange(Properties.inverseExchangeRateCurrencies.name(), oldInverseExchangeRateCurrencies,
+                        getInverseExchangeRateCurrencies());
+
+        updateExchangeRate();
+    }
 
     public Security getSecurity()
     {
@@ -367,7 +396,7 @@ public class AccountTransactionModel extends AbstractModel
     private void updateExchangeRate()
     {
         // set exchange rate to 1, if account and security have the same currency or no security is selected
-        if (getAccountCurrencyCode().equals(getSecurityCurrencyCode()) || getSecurityCurrencyCode().isEmpty())
+        if (getAccountCurrencyCode().equals(getFxCurrencyCode()) || getFxCurrencyCode().isEmpty())
         {
             setExchangeRate(BigDecimal.ONE);
             return;
@@ -378,10 +407,10 @@ public class AccountTransactionModel extends AbstractModel
         if (sourceTransaction != null)
             return;
 
-        if (!getSecurityCurrencyCode().isEmpty())
+        if (!getFxCurrencyCode().isEmpty())
         {
             ExchangeRateTimeSeries series = getExchangeRateProviderFactory() //
-                            .getTimeSeries(getSecurityCurrencyCode(), getAccountCurrencyCode());
+                            .getTimeSeries(getFxCurrencyCode(), getAccountCurrencyCode());
 
             if (series != null)
                 setExchangeRate(series.lookupRate(date).orElse(new ExchangeRate(date, BigDecimal.ONE)).getValue());
@@ -675,16 +704,17 @@ public class AccountTransactionModel extends AbstractModel
 
     public String getFxCurrencyCode()
     {
+        if(explicitFxCurrencyCode != null) return explicitFxCurrencyCode;
         return security != null && !security.getCurrencyCode().isEmpty() ? security.getCurrencyCode()
                         : getAccountCurrencyCode();
     }
-
+    
     /**
      * Returns exchange rate label in direct (price) notation.
      */
     public String getExchangeRateCurrencies()
     {
-        return String.format("%s/%s", getSecurityCurrencyCode(), getAccountCurrencyCode()); //$NON-NLS-1$
+        return String.format("%s/%s", getFxCurrencyCode(), getAccountCurrencyCode()); //$NON-NLS-1$
     }
 
     /**
@@ -692,7 +722,7 @@ public class AccountTransactionModel extends AbstractModel
      */
     public String getInverseExchangeRateCurrencies()
     {
-        return String.format("%s/%s", getAccountCurrencyCode(), getSecurityCurrencyCode()); //$NON-NLS-1$
+        return String.format("%s/%s", getAccountCurrencyCode(), getFxCurrencyCode()); //$NON-NLS-1$
     }
 
     public AccountTransaction.Type getType()
