@@ -114,4 +114,10 @@ public class YahooSearchProvider implements SecuritySearchProvider
     {
         return null;
     }
+
+    @Override
+    public boolean supportsUpdates()
+    {
+        return false;
+    }
 }

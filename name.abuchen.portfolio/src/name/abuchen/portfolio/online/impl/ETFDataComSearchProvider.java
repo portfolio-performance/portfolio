@@ -40,4 +40,10 @@ public class ETFDataComSearchProvider implements SecuritySearchProvider
     {
         return "https://api.etf-data.com/product/" + existingSecurity.getIsin(); //$NON-NLS-1$
     }
+
+    @Override
+    public boolean supportsUpdates()
+    {
+        return true;
+    }
 }

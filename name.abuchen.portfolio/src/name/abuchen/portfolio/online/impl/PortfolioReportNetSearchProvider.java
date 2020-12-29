@@ -47,4 +47,10 @@ public class PortfolioReportNetSearchProvider implements SecuritySearchProvider
     {
         return "https://www.portfolio-report.net/securities/" + existingSecurity.getOnlineId(); //$NON-NLS-1$
     }
+
+    @Override
+    public boolean supportsUpdates()
+    {
+        return true;
+    }
 }

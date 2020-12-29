@@ -62,6 +62,8 @@ public interface SecuritySearchProvider
 
     List<ResultItem> search(String query, Type type) throws IOException;
 
+    boolean supportsUpdates();
+
     boolean update(Security existingSecurity) throws IOException;
 
     String getLinkFor(Security existingSecurity);

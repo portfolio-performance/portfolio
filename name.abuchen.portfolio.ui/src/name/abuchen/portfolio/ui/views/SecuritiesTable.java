@@ -26,6 +26,7 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.ToolTip;
@@ -53,12 +54,16 @@ import name.abuchen.portfolio.model.Watchlist;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.QuoteFeed;
+import name.abuchen.portfolio.online.SecuritySearchProvider;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
+import name.abuchen.portfolio.online.impl.ETFDataComSearchProvider;
 import name.abuchen.portfolio.online.impl.PortfolioReportNet;
+import name.abuchen.portfolio.online.impl.PortfolioReportNetSearchProvider;
 import name.abuchen.portfolio.snapshot.QuoteQualityMetrics;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.dialogs.ListSelectionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.InvestmentPlanDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
@@ -94,22 +99,22 @@ import name.abuchen.portfolio.ui.wizards.events.CustomEventWizard;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
 import name.abuchen.portfolio.ui.wizards.splits.StockSplitWizard;
 import name.abuchen.portfolio.util.Interval;
+import name.abuchen.portfolio.util.Isin;
 import name.abuchen.portfolio.util.Pair;
 
 public final class SecuritiesTable implements ModificationListener
 {
-    private class LinkToPortfolioReport extends Action
+    private class LinkTo extends Action
     {
         private Security security;
 
-        public LinkToPortfolioReport(Security security)
+        public LinkTo(Security security)
         {
             super(Messages.LabelLinkTo);
             this.security = security;
         }
 
-        @Override
-        public void run()
+        private void linkToPortfolioReport() throws IOException
         {
             InputDialog dlg = new InputDialog(Display.getCurrent().getActiveShell(), Messages.LabelInfo,
                             "Portfolio Report URL", "https://www.portfolio-report.net/", //$NON-NLS-1$//$NON-NLS-2$
@@ -126,24 +131,77 @@ public final class SecuritiesTable implements ModificationListener
 
             String onlineId = matcher.group(1);
 
+            Optional<ResultItem> result = new PortfolioReportNet().getUpdatedValues(onlineId);
+            if (!result.isPresent())
+            {
+                MessageDialog.openError(Display.getDefault().getActiveShell(), Messages.LabelError,
+                                MessageFormat.format(Messages.MsgErrorNoInvestmentVehicleFoundAtURL, url));
+            }
+            else
+            {
+                security.setOnlineId(onlineId);
+                PortfolioReportNet.updateWith(security, result.get());
+            }
+        }
+
+        @Override
+        public void run()
+        {
+
+            LabelProvider labelProvider = new LabelProvider()
+            {
+                @Override
+                public String getText(Object element)
+                {
+                    return ((SecuritySearchProvider) element).getName();
+                }
+            };
+            ListSelectionDialog ldlg = new ListSelectionDialog(Display.getCurrent().getActiveShell(), labelProvider);
+
+            ldlg.setTitle(Messages.LabelLinkTo);
+            ldlg.setMessage(String.format("%s %s", Messages.LabelLinkTo, Messages.LabelQuoteFeedProvider)); //$NON-NLS-1$
+            ldlg.setMultiSelection(false);
+
+            ldlg.setElements(Factory.getSearchProvider().stream()
+                            .filter(SecuritySearchProvider::supportsUpdates)
+                            .collect(Collectors.toList())
+                            );
+
+            if (ldlg.open() != Window.OK)
+                return;
+
             try
             {
-                Optional<ResultItem> result = new PortfolioReportNet().getUpdatedValues(onlineId);
-                if (!result.isPresent())
+                if (ldlg.getResult()[0].getClass() == PortfolioReportNetSearchProvider.class)
                 {
-                    MessageDialog.openError(Display.getDefault().getActiveShell(), Messages.LabelError,
-                                    MessageFormat.format(Messages.MsgErrorNoInvestmentVehicleFoundAtURL, url));
+                    linkToPortfolioReport();
                 }
-                else
+
+                if (ldlg.getResult()[0].getClass() == ETFDataComSearchProvider.class)
                 {
-                    security.setOnlineId(onlineId);
-                    PortfolioReportNet.updateWith(security, result.get());
+                    linkToETFDataCom();
                 }
             }
             catch (IOException e)
             {
                 MessageDialog.openError(Display.getDefault().getActiveShell(), Messages.LabelError, e.getMessage());
             }
+
+        }
+
+        private void linkToETFDataCom() throws IOException, IllegalArgumentException
+        {
+            if (!Isin.isValid(security.getIsin()))
+            {
+                MessageDialog.openError(Display.getDefault().getActiveShell(), Messages.LabelError,
+                                MessageFormat.format(Messages.MsgDialogNotAValidISIN, security.getIsin()));
+                return;
+            }
+            ETFDataComSearchProvider searchProvider = new ETFDataComSearchProvider();
+            String neweOnlineId = String.format("%s:%s", searchProvider.getName(), security.getIsin()); //$NON-NLS-1$
+            security.setOnlineId(neweOnlineId);
+
+            searchProvider.update(security);
         }
     }
 
@@ -922,7 +980,7 @@ public final class SecuritiesTable implements ModificationListener
             if (security.getOnlineId() == null)
             {
                 manager.add(new Separator());
-                manager.add(new LinkToPortfolioReport(security));
+                manager.add(new LinkTo(security));
             }
         }
 
