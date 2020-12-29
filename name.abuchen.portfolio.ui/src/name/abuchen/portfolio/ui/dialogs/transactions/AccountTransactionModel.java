@@ -366,17 +366,19 @@ public class AccountTransactionModel extends AbstractModel
 
     private void updateExchangeRate()
     {
+        // set exchange rate to 1, if account and security have the same currency or no security is selected
+        if (getAccountCurrencyCode().equals(getSecurityCurrencyCode()) || getSecurityCurrencyCode().isEmpty())
+        {
+            setExchangeRate(BigDecimal.ONE);
+            return;
+        }
+
         // do not auto-suggest exchange rates when editing an existing
         // transaction
         if (sourceTransaction != null)
             return;
 
-        // set exchange rate to 1, if account and security have the same currency or no security is selected
-        if (getAccountCurrencyCode().equals(getSecurityCurrencyCode()) || getSecurityCurrencyCode().isEmpty())
-        {
-            setExchangeRate(BigDecimal.ONE);
-        }
-        else if (!getSecurityCurrencyCode().isEmpty())
+        if (!getSecurityCurrencyCode().isEmpty())
         {
             ExchangeRateTimeSeries series = getExchangeRateProviderFactory() //
                             .getTimeSeries(getSecurityCurrencyCode(), getAccountCurrencyCode());

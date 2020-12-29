@@ -309,15 +309,17 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
 
     protected void updateExchangeRate()
     {
+        if (getTransactionCurrencyCode().equals(getSecurityCurrencyCode()))
+        {
+            setExchangeRate(BigDecimal.ONE);
+            return;
+        }
+
         // do not auto-suggest exchange rate when editing an existing transaction
         if (hasSource())
             return;
 
-        if (getTransactionCurrencyCode().equals(getSecurityCurrencyCode()))
-        {
-            setExchangeRate(BigDecimal.ONE);
-        }
-        else if (!getTransactionCurrencyCode().isEmpty() && !getSecurityCurrencyCode().isEmpty())
+        if (!getTransactionCurrencyCode().isEmpty() && !getSecurityCurrencyCode().isEmpty())
         {
             ExchangeRateTimeSeries series = getExchangeRateProviderFactory() //
                             .getTimeSeries(getSecurityCurrencyCode(), getTransactionCurrencyCode());
