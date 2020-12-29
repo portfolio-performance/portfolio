@@ -104,7 +104,7 @@ public final class SecuritiesTable implements ModificationListener
 
         public LinkToPortfolioReport(Security security)
         {
-            super(Messages.LabelLinkToPortfolioReportNet);
+            super(Messages.LabelLinkTo);
             this.security = security;
         }
 
