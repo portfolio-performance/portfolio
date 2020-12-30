@@ -1592,7 +1592,24 @@ public class OnvistaPDFExtractorTest
         assertThat(transtem2.getShares(), is(Values.Share.factorize(0)));
         assertThat(((AccountTransaction)transtem2.getSubject()).getType(), is(AccountTransaction.Type.TAXES));
     }
-    
+
+    @Test
+    public void testVorabpauschaleSteuerVerrechnet()
+    {
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "OnvistaVorabpauschaleSteuerVerrechnet.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        Object[] transItems = results.stream().filter(i -> i instanceof Extractor.NonImportableItem).toArray();
+        assertThat(transItems.length, is(2));
+    }
+
     @Test
     public void testFusion() throws IOException
     {

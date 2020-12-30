@@ -1782,12 +1782,18 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         .section("date").optional()
                         .match("^Nominal Ex-Tag Zahltag Jahreswert Vorabpauschale pro Stück")
                         // STK 1.212,000 02.01.2020 02.01.2020 EUR 0,1019
-                        .match("STK .* (?<exdate>\\d+\\.\\d+\\.\\d{4}+) (?<date>\\d+\\.\\d+\\.\\d{4}+) (\\w{3}+) .*")
+                        .match("STK .* (?<exdate>\\d+\\.\\d+\\.\\d{4}+) (?<date>\\d+\\.\\d+\\.\\d{4}+) (?<currency>\\w{3}+) .*")
                         .assign((t, v) -> {
+                            // if all taxes are covered by Freistellungauftrag/Verlustopf, section "Wert Konto-Nr. Betrag zu
+                            // Ihren Lasten" is not present -> extract currency here
+                            if (t.getCurrencyCode() == null)
+                                t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setDateTime(asDate(v.get("date")));
                         })
 
-                        .wrap(t -> t.getAmount() != 0 ? new TransactionItem(t) : null);
+                        .wrap(t -> t.getAmount() != 0 ? new TransactionItem(t)
+                                        : new NonImportableItem("Steuerpflichtige Vorabpauschale mit 0 "
+                                                        + t.getCurrencyCode()));
 
         block.set(taxVorabpauschaleTransaction);
     }
