@@ -1594,44 +1594,20 @@ public class OnvistaPDFExtractorTest
     }
 
     @Test
-    public void testVorabpauschaleSteuerVerrechnet() throws IOException
+    public void testVorabpauschaleSteuerVerrechnet()
     {
         OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "OnvistaVorabpauschaleSteuerVerrechnet.txt"),
-                        errors);
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "OnvistaVorabpauschaleSteuerVerrechnet.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(4));
+        assertThat(results.size(), is(2));
 
-        Object[] secItems = results.stream().filter(i -> i instanceof SecurityItem).toArray();
-        assertThat(secItems.length, is(2));
-
-        Security security1 = ((SecurityItem)secItems[0]).getSecurity();
-        assertThat(security1.getIsin(), is("IE00BKM4GZ66"));
-        assertThat(security1.getName(), is("iShs Core MSCI EM IMI U.ETF Registered Shares o.N."));
-        assertThat(security1.getCurrencyCode(), is("EUR"));
-
-        Security security2 = ((SecurityItem)secItems[1]).getSecurity();
-        assertThat(security2.getIsin(), is("LU1834988518"));
-        assertThat(security2.getName(), is("Lyxor IF-L.ST.Eur.600 Technol. Act. au Port. EUR Acc. oN"));
-        assertThat(security2.getCurrencyCode(), is("EUR"));
-
-        Object[] transItems = results.stream().filter(i -> i instanceof TransactionItem).toArray();
+        Object[] transItems = results.stream().filter(i -> i instanceof Extractor.NonImportableItem).toArray();
         assertThat(transItems.length, is(2));
-
-        TransactionItem transtem1 = ((TransactionItem)transItems[0]);
-        assertThat(transtem1.getAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0))));
-        assertThat(transtem1.getShares(), is(Values.Share.factorize(0)));
-        assertThat(transtem1.getDate(), is(LocalDateTime.parse("2020-01-02T00:00")));
-        assertThat(((AccountTransaction)transtem1.getSubject()).getType(), is(AccountTransaction.Type.TAXES));
-
-        TransactionItem transtem2 = ((TransactionItem)transItems[1]);
-        assertThat(transtem2.getAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0))));
-        assertThat(transtem2.getShares(), is(Values.Share.factorize(0)));
-        assertThat(((AccountTransaction)transtem2.getSubject()).getType(), is(AccountTransaction.Type.TAXES));
     }
 
     @Test
