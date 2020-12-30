@@ -16,6 +16,16 @@ eclipse configuration PortfolioPerformance {
 	feature org.eclipse.nebula.cwt.feature;
 	feature org.eclipse.nebula.widgets.cdatetime.feature;
 	
+	ignore name.abuchen.portfolio.tests;
+	ignore name.abuchen.portfolio.ui.tests;
+	ignore org.eclipse.ant.core;
+	ignore org.eclipse.jdt.annotation;
+	ignore org.eclipse.ui;
+	ignore org.eclipse.ui.workbench;
+	ignore org.junit;
+	ignore org.hamcrest.core;
+	ignore org.hamcrest.library;
+	
     memory min=256M max=768M;
     
     execution-environment 'JavaSE-11';
@@ -45,6 +55,10 @@ abstract junit-plugin configuration TestBase {
 	feature org.eclipse.ecf.filetransfer.feature;
 	feature org.eclipse.nebula.cwt.feature;
 	feature org.eclipse.nebula.widgets.cdatetime.feature;
+
+	ignore org.eclipse.jdt.annotation;
+	ignore org.eclipse.ui;
+	ignore org.eclipse.ui.workbench;
 	
     test {
         runner junit4;
