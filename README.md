@@ -10,7 +10,7 @@ See https://www.portfolio-performance.info for more details.
 
 ## Prerequisites
 
-* [Java 8](https://www.java.com)
+* [Java 11](https://www.oracle.com/java/technologies/javase-jdk11-downloads.html)
 * [Maven](https://maven.apache.org)
 * [Eclipse](https://www.eclipse.org)
 
@@ -44,14 +44,15 @@ After importing the Portfolio Performance projects in Eclipse, they will not com
 
 ### Run Program
 
-Run the application and the tests with the launch configurations stored in ~/portfolio-app/eclipse folder (right-click "Run As").
+Run the application and the tests with the launch configurations stored in ./portfolio-app/eclipse folder (right-click "Run As").
 
 :warning: The launch configuration needs an update when bundles are added and removed or the OS platform changes. If the program does not start, try selecting "Add required plug-ins" in the launch configuration dialog.
-
 
 ## Building with Maven
 
 Maven is not required (anymore) to develop Portfolio Performance as you can develop using the Eclipse IDE with the setup above. The Maven build is used for the [Github Actions](https://github.com/buchen/portfolio/actions) build.
+
+The Maven build works fine when `JAVA_HOME` points to an (Open-)JDK 11 installation.
 
 ### Configure
 
@@ -67,10 +68,16 @@ set MAVEN_OPTS="-Xmx1g"
 
 ### Build
 
-Run Maven 3.x.x in the 'portfolio-app' directory:
+Run Maven 3.x.x:
 
 ```
-mvn clean verify -Dtycho.disableP2Mirrors
+mvn -f portfolio-app/pom.xml clean verify
+```
+
+Note, under **Windows** the maven-enforcer plugin (used in ./portfolio-app/pom.xml) has an issue with `${project.basedir}`, so you need skip it like
+
+```
+mvn -f portfolio-app\pom.xml -Denforcer.skip=true clean verify
 ```
 
 ## License
