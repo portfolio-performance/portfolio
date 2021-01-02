@@ -1618,7 +1618,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
         Block block1 = new Block("Wir haben für Sie (ge|ver)kauft(.*)");
         type.addBlock(block1);
 
-        Block block2 = new Block("(Aus|Ein)buchung:(.*)");
+        Block block2 = new Block("Gutschriftsanzeige|(Aus|Ein)buchung:(.*)");
         type.addBlock(block2);
 
         Transaction<AccountTransaction> taxRefundTransaction = new Transaction<AccountTransaction>()
@@ -1630,7 +1630,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("name", "isin") //
-                        .find("Gattungsbezeichnung ISIN") //
+                        .find("Gattungsbezeichnung (.*)ISIN") //
                         .match("(?<name>.*) (?<isin>[^ ]\\S*)$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
