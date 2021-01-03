@@ -187,9 +187,13 @@ public class PortfolioTransaction extends Transaction
         if (getShares() == 0)
             return Quote.of(getCurrencyCode(), 0);
 
-        double grossPrice = getGrossValueAmount() * Values.Share.factor() * Values.Quote.factorToMoney()
-                        / (double) getShares();
-        return Quote.of(getCurrencyCode(), Math.round(grossPrice));
+        long grossPrice = BigDecimal.valueOf(getGrossValueAmount())
+                        .multiply(Values.Share.getBigDecimalFactor(), Values.MC)
+                        .multiply(Values.Quote.getBigDecimalFactorToMoney(), Values.MC)
+                        .divide(BigDecimal.valueOf(getShares()), Values.MC)
+                        .setScale(0, RoundingMode.HALF_EVEN).longValue();
+
+        return Quote.of(getCurrencyCode(), grossPrice);
     }
 
     /**

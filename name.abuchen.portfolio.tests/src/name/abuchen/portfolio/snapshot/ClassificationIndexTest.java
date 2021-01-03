@@ -74,10 +74,10 @@ public class ClassificationIndexTest
                         .addTo(client);
 
         new PortfolioBuilder(account) //
-                        .buy(security, "2012-01-01", 50 * Values.Share.factor(), 50 * 101 * Values.Amount.factor()) //
-                        .inbound_delivery(security, "2012-01-01", 100 * Values.Share.factor(),
+                        .buy(security, "2012-01-01", Values.Share.factorize(50), 50 * 101 * Values.Amount.factor()) //
+                        .inbound_delivery(security, "2012-01-01", Values.Share.factorize(100),
                                         100 * 100 * Values.Amount.factor()) //
-                        .sell(security, "2012-01-05", 50 * Values.Share.factor(), 50 * 105 * Values.Amount.factor()) //
+                        .sell(security, "2012-01-05", Values.Share.factorize(50), 50 * 105 * Values.Amount.factor()) //
                         .addTo(client);
 
         return client;
@@ -90,7 +90,7 @@ public class ClassificationIndexTest
 
         Classification classification = client.getTaxonomies().get(0).getClassificationById("one");
 
-        List<Exception> warnings = new ArrayList<Exception>();
+        List<Exception> warnings = new ArrayList<>();
 
         CurrencyConverter converter = new TestCurrencyConverter();
         PerformanceIndex iClient = PerformanceIndex.forClient(client, converter, period, warnings);
@@ -116,7 +116,7 @@ public class ClassificationIndexTest
         // remove account assignment
         classification.getAssignments().remove(1);
 
-        List<Exception> warnings = new ArrayList<Exception>();
+        List<Exception> warnings = new ArrayList<>();
 
         CurrencyConverter converter = new TestCurrencyConverter();
         PerformanceIndex iClient = PerformanceIndex.forClient(client, converter, period, warnings);
@@ -138,7 +138,7 @@ public class ClassificationIndexTest
 
         Classification classification = client.getTaxonomies().get(0).getClassificationById("one");
 
-        List<Exception> warnings = new ArrayList<Exception>();
+        List<Exception> warnings = new ArrayList<>();
 
         CurrencyConverter converter = new TestCurrencyConverter();
         PerformanceIndex iClient = PerformanceIndex.forClient(client, converter, period, warnings);
@@ -148,17 +148,17 @@ public class ClassificationIndexTest
         assertThat(warnings.isEmpty(), is(true));
 
         assertThat(iClient.getDates(), is(iClassification.getDates()));
-        assertThat(iClient.getAccumulatedPercentage(), is(iClassification.getAccumulatedPercentage()));
-        assertThat(iClient.getDeltaPercentage(), is(iClassification.getDeltaPercentage()));
         assertThat(half(iClient.getTotals()), is(iClassification.getTotals()));
         assertThat(half(iClient.getTransferals()), is(iClassification.getTransferals()));
+        assertThat(iClient.getAccumulatedPercentage(), is(iClassification.getAccumulatedPercentage()));
+        assertThat(iClient.getDeltaPercentage(), is(iClassification.getDeltaPercentage()));
     }
 
     private long[] half(long[] transferals)
     {
         long[] answer = new long[transferals.length];
         for (int ii = 0; ii < transferals.length; ii++)
-            answer[ii] = transferals[ii] / 2;
+            answer[ii] = Math.round(transferals[ii] / 2.0);
         return answer;
     }
 
@@ -207,7 +207,7 @@ public class ClassificationIndexTest
         Classification classification = new Classification(null, null);
         classification.addAssignment(new Assignment(security));
 
-        List<Exception> warnings = new ArrayList<Exception>();
+        List<Exception> warnings = new ArrayList<>();
 
         PerformanceIndex index = PerformanceIndex.forClassification(client, new TestCurrencyConverter(), classification,
                         Interval.of(LocalDate.parse("2015-01-01"), LocalDate.parse("2017-01-01")), warnings);

@@ -1,6 +1,8 @@
 package name.abuchen.portfolio.money;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -11,6 +13,8 @@ import java.util.Locale;
 
 public abstract class Values<E>
 {
+    public static final MathContext MC = new MathContext(10, RoundingMode.HALF_UP);
+
     public static final class MoneyValues extends Values<Money>
     {
         private MoneyValues()
@@ -58,9 +62,13 @@ public abstract class Values<E>
         private static final ThreadLocal<DecimalFormat> QUOTE_FORMAT = ThreadLocal // NOSONAR
                         .withInitial(() -> new DecimalFormat(QUOTE_PATTERN));
 
+        private final BigDecimal factorToMoney;
+
         private QuoteValues()
         {
             super(QUOTE_PATTERN, 10000D, 10000);
+
+            factorToMoney = BigDecimal.valueOf(factor() / Values.Money.factor());
         }
 
         @Override
@@ -116,6 +124,11 @@ public abstract class Values<E>
         {
             return divider() / Values.Money.divider();
         }
+
+        public BigDecimal getBigDecimalFactorToMoney()
+        {
+            return factorToMoney;
+        }
     }
 
     public static final Values<Long> Amount = new Values<Long>("#,##0.00", 100D, 100) //$NON-NLS-1$
@@ -166,7 +179,7 @@ public abstract class Values<E>
         }
     };
 
-    public static final Values<Long> Share = new Values<Long>("#,##0.######", 1000000D, 1000000) //$NON-NLS-1$
+    public static final Values<Long> Share = new Values<Long>("#,##0.######", 100000000D, 100000000) //$NON-NLS-1$
     {
         private final DecimalFormat format = new DecimalFormat(pattern());
 
