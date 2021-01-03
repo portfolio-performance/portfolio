@@ -70,11 +70,10 @@ public class Trade implements Adaptable
         {
             LocalDate now = LocalDate.now();
 
-            long marketValue = BigDecimal.valueOf(shares)
-                            .divide(Values.Share.getBigDecimalFactor(), Values.MC)
-                            .multiply(BigDecimal.valueOf(security.getSecurityPrice(now).getValue()),
-                                            Values.MC)
-                            .divide(Values.Quote.getBigDecimalFactorToMoney(), Values.MC)
+            long marketValue = BigDecimal.valueOf(shares) //
+                            .movePointLeft(Values.Share.precision()) //
+                            .multiply(BigDecimal.valueOf(security.getSecurityPrice(now).getValue()), Values.MC)
+                            .movePointLeft(Values.Quote.precisionDeltaToMoney()) //
                             .setScale(0, RoundingMode.HALF_UP).longValue();
 
             this.exitValue = converter.at(now).apply(Money.of(security.getCurrencyCode(), marketValue));

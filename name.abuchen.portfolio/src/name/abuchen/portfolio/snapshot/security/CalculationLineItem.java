@@ -155,11 +155,11 @@ public interface CalculationLineItem
             if (shares == 0)
                 return 0;
 
-            return BigDecimal.valueOf(amount)
-                            .multiply(Values.AmountFraction.getBigDecimalFactor(), Values.MC)
-                            .divide(Values.Amount.getBigDecimalFactor(), Values.MC)
-                            .multiply(Values.Share.getBigDecimalFactor(), Values.MC)
-                            .divide(BigDecimal.valueOf(shares), Values.MC)
+            return BigDecimal.valueOf(amount) //
+                            .movePointLeft(Values.Amount.precision()) //
+                            .movePointRight(Values.AmountFraction.precision()) //
+                            .movePointRight(Values.Share.precision()) //
+                            .divide(BigDecimal.valueOf(shares), Values.MC) //
                             .setScale(0, RoundingMode.HALF_EVEN).longValue();
         }
 

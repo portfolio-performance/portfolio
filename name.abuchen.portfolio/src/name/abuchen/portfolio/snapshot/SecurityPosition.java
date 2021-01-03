@@ -97,9 +97,9 @@ public class SecurityPosition
     public Money calculateValue()
     {
         long marketValue = BigDecimal.valueOf(shares) //
-                        .divide(Values.Share.getBigDecimalFactor(), Values.MC)
+                        .movePointLeft(Values.Share.precision())
                         .multiply(BigDecimal.valueOf(price.getValue()), Values.MC)
-                        .divide(Values.Quote.getBigDecimalFactorToMoney(), Values.MC)
+                        .movePointLeft(Values.Quote.precisionDeltaToMoney()) //
                         .setScale(0, RoundingMode.HALF_DOWN).longValue();
         return Money.of(investment.getCurrencyCode(), marketValue);
     }
@@ -119,12 +119,12 @@ public class SecurityPosition
             t2.setCurrencyCode(t.getCurrencyCode());
 
             t2.setAmount(BigDecimal.valueOf(t.getAmount()) //
-                            .multiply(bdWeight, Values.MC)
+                            .multiply(bdWeight, Values.MC) //
                             .divide(Classification.ONE_HUNDRED_PERCENT_BD, Values.MC)
                             .setScale(0, RoundingMode.HALF_DOWN).longValue());
 
             t2.setShares(BigDecimal.valueOf(t.getShares()) //
-                            .multiply(bdWeight, Values.MC)
+                            .multiply(bdWeight, Values.MC) //
                             .divide(Classification.ONE_HUNDRED_PERCENT_BD, Values.MC)
                             .setScale(0, RoundingMode.HALF_DOWN).longValue());
 
@@ -134,8 +134,8 @@ public class SecurityPosition
         }
 
         long newShares = BigDecimal.valueOf(position.shares) //
-                        .multiply(bdWeight, Values.MC)
-                        .divide(Classification.ONE_HUNDRED_PERCENT_BD, Values.MC)
+                        .multiply(bdWeight, Values.MC) //
+                        .divide(Classification.ONE_HUNDRED_PERCENT_BD, Values.MC) //
                         .setScale(0, RoundingMode.HALF_DOWN).longValue();
 
         return new SecurityPosition(position.investment, position.converter, position.price, newShares,

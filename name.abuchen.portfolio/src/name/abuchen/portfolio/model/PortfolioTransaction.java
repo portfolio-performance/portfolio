@@ -188,10 +188,10 @@ public class PortfolioTransaction extends Transaction
             return Quote.of(getCurrencyCode(), 0);
 
         long grossPrice = BigDecimal.valueOf(getGrossValueAmount())
-                        .multiply(Values.Share.getBigDecimalFactor(), Values.MC)
-                        .multiply(Values.Quote.getBigDecimalFactorToMoney(), Values.MC)
-                        .divide(BigDecimal.valueOf(getShares()), Values.MC).setScale(0, RoundingMode.HALF_EVEN)
-                        .longValue();
+                        .movePointRight(Values.Quote.precisionDeltaToMoney()) //
+                        .movePointRight(Values.Share.precision()) //
+                        .divide(BigDecimal.valueOf(getShares()), Values.MC) //
+                        .setScale(0, RoundingMode.HALF_EVEN).longValue();
 
         return Quote.of(getCurrencyCode(), grossPrice);
     }
@@ -214,10 +214,10 @@ public class PortfolioTransaction extends Transaction
         // the gross value (instead of checking the unit type GROSS_VALUE)
 
         long grossPrice = BigDecimal.valueOf(getGrossValue(converter).getAmount())
-                        .multiply(Values.Share.getBigDecimalFactor(), Values.MC)
-                        .multiply(Values.Quote.getBigDecimalFactorToMoney(), Values.MC)
-                        .divide(BigDecimal.valueOf(getShares()), Values.MC).setScale(0, RoundingMode.HALF_EVEN)
-                        .longValue();
+                        .movePointRight(Values.Quote.precisionDeltaToMoney()) //
+                        .movePointRight(Values.Share.precision()) //
+                        .divide(BigDecimal.valueOf(getShares()), Values.MC) //
+                        .setScale(0, RoundingMode.HALF_EVEN).longValue();
         return Quote.of(converter.getTermCurrency(), grossPrice);
     }
 
