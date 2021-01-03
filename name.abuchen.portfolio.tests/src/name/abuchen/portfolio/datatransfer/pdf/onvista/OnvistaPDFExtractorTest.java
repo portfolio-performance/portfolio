@@ -766,6 +766,54 @@ public class OnvistaPDFExtractorTest
     }
 
     @Test
+    public void testGutschriftsanzeige1()
+    {
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+    
+        List<Exception> errors = new ArrayList<>();
+    
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "OnvistaGutschriftsanzeige1.txt"),
+                        errors);
+    
+        assertThat(errors, empty());
+        assertThat(results.size(), is(3));
+    
+        // check security
+        Security security = results.stream() //
+                        .filter(i -> i instanceof Extractor.SecurityItem) //
+                        .map(Item::getSecurity) //
+                        .findFirst().orElseThrow(IllegalArgumentException::new);
+        assertThat(security.getIsin(), is("DE000MC55366"));
+    
+        // check transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+
+        assertThat(entry.getPortfolioTransaction().getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(entry.getPortfolioTransaction().getSecurity(), is(security));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-09-25T00:00")));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2563.60))));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(65)));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0))));
+        
+        // check transaction
+        item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        AccountTransaction transaction = (AccountTransaction) item.orElseThrow(IllegalArgumentException::new)
+                        .getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-09-24T00:00")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(74.63))));
+    }
+
+    @Test
     public void testWertpapierKaufAktien() throws IOException // Aktien
     {
         OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
