@@ -550,12 +550,13 @@ public final class SecurityPerformanceRecord implements Adaptable, TrailProvider
         this.movingAverageCost = cost.getMovingAverageCost();
 
         Money netFifoCost = cost.getNetFifoCost();
+
         this.fifoCostPerSharesHeld = Quote.of(netFifoCost.getCurrencyCode(), Math.round(netFifoCost.getAmount()
-                        * Values.Share.factor() * Values.Quote.factorToMoney() / (double) sharesHeld));
+                        / (double) sharesHeld * Values.Share.factor() * Values.Quote.factorToMoney()));
         Money netMovingAverageCost = cost.getNetMovingAverageCost();
         this.movingAverageCostPerSharesHeld = Quote.of(netMovingAverageCost.getCurrencyCode(),
-                        Math.round(netMovingAverageCost.getAmount() * Values.Share.factor()
-                                        * Values.Quote.factorToMoney() / (double) sharesHeld));
+                        Math.round(netMovingAverageCost.getAmount() / (double) sharesHeld * Values.Share.factor()
+                                        * Values.Quote.factorToMoney()));
 
         this.fees = cost.getFees();
         this.taxes = cost.getTaxes();

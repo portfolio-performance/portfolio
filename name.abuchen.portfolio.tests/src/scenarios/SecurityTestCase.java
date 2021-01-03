@@ -1,11 +1,12 @@
 package scenarios;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.number.IsCloseTo.closeTo;
 import static org.hamcrest.number.OrderingComparison.lessThan;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import org.junit.Test;
@@ -55,9 +56,14 @@ public class SecurityTestCase
         // actually, in this simple scenario (no cash transfers involved), the
         // ttwror is easy to calculate:
 
-        double endvalue = delivery.getShares() * security.getSecurityPrice(LocalDate.parse("2014-12-04")).getValue()
-                        / Values.Share.divider() / Values.Quote.dividerToMoney();
+        double endvalue = BigDecimal.valueOf(delivery.getShares())
+                        .multiply(BigDecimal.valueOf(
+                                        security.getSecurityPrice(LocalDate.parse("2014-12-04")).getValue()), Values.MC)
+                        .divide(Values.Share.getBigDecimalFactor(), Values.MC)
+                        .divide(Values.Quote.getBigDecimalFactorToMoney(), Values.MC)
+                        .divide(BigDecimal.valueOf(delivery.getAmount()), Values.MC).subtract(BigDecimal.ONE)
+                        .doubleValue();
 
-        assertThat(record.getTrueTimeWeightedRateOfReturn(), closeTo((endvalue / delivery.getAmount()) - 1, 0.0001));
+        assertThat(record.getTrueTimeWeightedRateOfReturn(), closeTo(endvalue, 0.0001));
     }
 }

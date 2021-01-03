@@ -1,8 +1,8 @@
 package name.abuchen.portfolio.online.impl;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -51,9 +51,9 @@ public class YahooFinanceQuoteFeedTest
         LatestSecurityPrice price = feed.getLatestQuote(security).get();
 
         assertThat(price.getDate(), is(LocalDate.of(2020, 4, 20)));
-        assertThat(price.getHigh(), is(2816600L));
-        assertThat(price.getLow(), is(2768500L));
-        assertThat(price.getValue(), is(2769300L));
+        assertThat(price.getHigh(), is(Values.Quote.factorize(281.66)));
+        assertThat(price.getLow(), is(Values.Quote.factorize(276.85)));
+        assertThat(price.getValue(), is(Values.Quote.factorize(276.93)));
         assertThat(price.getVolume(), is(31089201L));
     }
 

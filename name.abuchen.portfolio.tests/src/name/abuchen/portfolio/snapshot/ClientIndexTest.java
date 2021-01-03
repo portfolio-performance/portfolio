@@ -3,8 +3,8 @@ package name.abuchen.portfolio.snapshot;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.startsWith;
-import static org.junit.Assert.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDate;
@@ -67,7 +67,7 @@ public class ClientIndexTest
         Interval period = Interval.of(LocalDate.of(2011, Month.DECEMBER, 31), //
                         LocalDate.of(2012, Month.JANUARY, 8));
         CurrencyConverter converter = new TestCurrencyConverter();
-        PerformanceIndex index = PerformanceIndex.forClient(client, converter, period, new ArrayList<Exception>());
+        PerformanceIndex index = PerformanceIndex.forClient(client, converter, period, new ArrayList<>());
 
         assertNotNull(index);
 
@@ -155,14 +155,14 @@ public class ClientIndexTest
         Interval period = Interval.of(LocalDate.of(2012, Month.JANUARY, 1), //
                         LocalDate.of(2012, Month.JANUARY, 9));
         CurrencyConverter converter = new TestCurrencyConverter();
-        PerformanceIndex index = PerformanceIndex.forClient(client, converter, period, new ArrayList<Exception>());
+        PerformanceIndex index = PerformanceIndex.forClient(client, converter, period, new ArrayList<>());
 
         double[] accumulated = index.getAccumulatedPercentage();
         for (int ii = 0; ii < accumulated.length; ii++)
             assertThat(accumulated[ii], IsCloseTo.closeTo(delta[ii], PRECISION));
 
         Client anotherClient = createClient(delta, transferals2);
-        index = PerformanceIndex.forClient(anotherClient, converter, period, new ArrayList<Exception>());
+        index = PerformanceIndex.forClient(anotherClient, converter, period, new ArrayList<>());
 
         accumulated = index.getAccumulatedPercentage();
         for (int ii = 0; ii < accumulated.length; ii++)
@@ -177,7 +177,7 @@ public class ClientIndexTest
         Interval period = Interval.of(LocalDate.of(2012, Month.JANUARY, 1), //
                         LocalDate.of(2012, Month.JANUARY, 9));
         CurrencyConverter converter = new TestCurrencyConverter();
-        PerformanceIndex index = PerformanceIndex.forClient(client, converter, period, new ArrayList<Exception>());
+        PerformanceIndex index = PerformanceIndex.forClient(client, converter, period, new ArrayList<>());
 
         double[] accumulated = index.getAccumulatedPercentage();
         for (int ii = 0; ii < accumulated.length; ii++)
@@ -195,7 +195,7 @@ public class ClientIndexTest
         Interval period = Interval.of(LocalDate.of(2012, Month.JANUARY, 1), //
                         LocalDate.of(2012, Month.JANUARY, 9));
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
         CurrencyConverter converter = new TestCurrencyConverter();
         PerformanceIndex index = PerformanceIndex.forClient(client, converter, period, errors);
 
@@ -216,7 +216,7 @@ public class ClientIndexTest
         Interval period = Interval.of(LocalDate.of(2011, Month.DECEMBER, 20), //
                         LocalDate.of(2012, Month.JANUARY, 8));
         CurrencyConverter converter = new TestCurrencyConverter();
-        PerformanceIndex index = PerformanceIndex.forClient(client, converter, period, new ArrayList<Exception>());
+        PerformanceIndex index = PerformanceIndex.forClient(client, converter, period, new ArrayList<>());
 
         assertThat(index.getFirstDataPoint().get(), is(LocalDate.of(2011, 12, 31)));
         assertThat(index.getFirstDataPoint().get(), not(period.getStart()));
@@ -245,7 +245,8 @@ public class ClientIndexTest
             // additionally has the identical performance on its first day -->
             // use the closing quote of the previous day
 
-            long p = security.getSecurityPrice(date.minusDays(1)).getValue();
+            long p = Math.round(security.getSecurityPrice(date.minusDays(1)).getValue() / Values.Quote.dividerToMoney()
+                            * 100);
             portfolio.inbound_delivery(security, date.atStartOfDay().toString(), Values.Share.factorize(100), p);
             date = date.plusDays(20);
         }
@@ -254,7 +255,7 @@ public class ClientIndexTest
 
         Interval period = Interval.of(startDate, endDate);
 
-        List<Exception> warnings = new ArrayList<Exception>();
+        List<Exception> warnings = new ArrayList<>();
         CurrencyConverter converter = new TestCurrencyConverter();
         PerformanceIndex index = PerformanceIndex.forClient(client, converter, period, warnings);
         assertTrue(warnings.isEmpty());
@@ -292,7 +293,7 @@ public class ClientIndexTest
 
         Interval period = Interval.of(startDate, endDate);
 
-        List<Exception> warnings = new ArrayList<Exception>();
+        List<Exception> warnings = new ArrayList<>();
         CurrencyConverter converter = new TestCurrencyConverter().with(CurrencyUnit.EUR);
 
         PerformanceIndex index = PerformanceIndex.forClient(client, converter, period, warnings);
@@ -322,8 +323,7 @@ public class ClientIndexTest
             Interval reportInterval = Interval.of( //
                             LocalDate.of(2011, Month.DECEMBER, 31), LocalDate.of(2012, Month.JANUARY, 8));
             CurrencyConverter converter = new TestCurrencyConverter();
-            PerformanceIndex index = PerformanceIndex.forClient(client, converter, reportInterval,
-                            new ArrayList<Exception>());
+            PerformanceIndex index = PerformanceIndex.forClient(client, converter, reportInterval, new ArrayList<>());
 
             index = Aggregation.aggregate(index, Aggregation.Period.WEEKLY);
 
@@ -358,8 +358,7 @@ public class ClientIndexTest
         Interval reportInterval = Interval.of(LocalDate.of(2012, Month.JANUARY, 1), //
                         LocalDate.of(2012, Month.JANUARY, 10));
         CurrencyConverter converter = new TestCurrencyConverter();
-        PerformanceIndex index = PerformanceIndex.forClient(client, converter, reportInterval,
-                        new ArrayList<Exception>());
+        PerformanceIndex index = PerformanceIndex.forClient(client, converter, reportInterval, new ArrayList<>());
 
         double[] accumulated = index.getAccumulatedPercentage();
         assertThat(accumulated[accumulated.length - 2], IsCloseTo.closeTo(0.1d, PRECISION));
@@ -379,8 +378,7 @@ public class ClientIndexTest
         Interval reportInterval = Interval.of(LocalDate.of(2012, Month.JANUARY, 1), //
                         LocalDate.of(2012, Month.JANUARY, 10));
         CurrencyConverter converter = new TestCurrencyConverter();
-        PerformanceIndex index = PerformanceIndex.forClient(client, converter, reportInterval,
-                        new ArrayList<Exception>());
+        PerformanceIndex index = PerformanceIndex.forClient(client, converter, reportInterval, new ArrayList<>());
 
         double[] accumulated = index.getAccumulatedPercentage();
         assertThat(accumulated[accumulated.length - 1], IsCloseTo.closeTo(0.1d, PRECISION));

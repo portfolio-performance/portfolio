@@ -57,7 +57,7 @@ public abstract class Values<E>
 
     public static final class QuoteValues extends Values<Long>
     {
-        private static final String QUOTE_PATTERN = "#,##0.00##"; //$NON-NLS-1$
+        private static final String QUOTE_PATTERN = "#,##0.00######"; //$NON-NLS-1$
 
         private static final ThreadLocal<DecimalFormat> QUOTE_FORMAT = ThreadLocal // NOSONAR
                         .withInitial(() -> new DecimalFormat(QUOTE_PATTERN));
@@ -66,7 +66,7 @@ public abstract class Values<E>
 
         private QuoteValues()
         {
-            super(QUOTE_PATTERN, 10000D, 10000);
+            super(QUOTE_PATTERN, 100000000D, 100000000);
 
             factorToMoney = BigDecimal.valueOf(factor() / Values.Money.factor());
         }

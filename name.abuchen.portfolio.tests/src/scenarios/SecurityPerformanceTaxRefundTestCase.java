@@ -2,13 +2,14 @@ package scenarios;
 
 import static org.hamcrest.CoreMatchers.both;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.number.IsCloseTo.closeTo;
 import static org.hamcrest.number.OrderingComparison.lessThan;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -62,8 +63,11 @@ public class SecurityPerformanceTaxRefundTestCase
 
         // no changes in holdings, ttwror must (without taxes and tax refunds):
         double startValue = (double) delivery.getAmount() - delivery.getUnitSum(Unit.Type.TAX).getAmount();
-        double endValue = delivery.getShares() * security.getSecurityPrice(LocalDate.parse("2014-12-06")).getValue()
-                        / Values.Share.divider() / Values.Quote.dividerToMoney();
+        double endValue = BigDecimal.valueOf(delivery.getShares())
+                        .multiply(BigDecimal.valueOf(
+                                        security.getSecurityPrice(LocalDate.parse("2014-12-06")).getValue()), Values.MC)
+                        .divide(Values.Share.getBigDecimalFactor(), Values.MC)
+                        .divide(Values.Quote.getBigDecimalFactorToMoney(), Values.MC).doubleValue();
         double ttwror = (endValue / startValue) - 1;
         assertThat(record.getTrueTimeWeightedRateOfReturn(), closeTo(ttwror, 0.0001));
 

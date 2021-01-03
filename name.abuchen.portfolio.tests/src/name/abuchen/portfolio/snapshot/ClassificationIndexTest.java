@@ -49,9 +49,9 @@ public class ClassificationIndexTest
                         .addTo(client);
 
         Security security = new SecurityBuilder() //
-                        .addPrice("2011-12-31", 100 * Values.Quote.factor()) //
-                        .addPrice("2012-01-03", 106 * Values.Quote.factor()) //
-                        .addPrice("2012-01-08", 112 * Values.Quote.factor()) //
+                        .addPrice("2011-12-31", Values.Quote.factorize(100)) //
+                        .addPrice("2012-01-03", Values.Quote.factorize(106)) //
+                        .addPrice("2012-01-08", Values.Quote.factorize(112)) //
                         .assign(taxonomy, "one", weight) //
                         .addTo(client);
 
@@ -74,10 +74,10 @@ public class ClassificationIndexTest
                         .addTo(client);
 
         new PortfolioBuilder(account) //
-                        .buy(security, "2012-01-01", Values.Share.factorize(50), 50 * 101 * Values.Amount.factor()) //
+                        .buy(security, "2012-01-01", Values.Share.factorize(50), Values.Amount.factorize(50 * 101)) //
                         .inbound_delivery(security, "2012-01-01", Values.Share.factorize(100),
-                                        100 * 100 * Values.Amount.factor()) //
-                        .sell(security, "2012-01-05", Values.Share.factorize(50), 50 * 105 * Values.Amount.factor()) //
+                                        Values.Amount.factorize(100 * 100)) //
+                        .sell(security, "2012-01-05", Values.Share.factorize(50), Values.Amount.factorize(50 * 105)) //
                         .addTo(client);
 
         return client;

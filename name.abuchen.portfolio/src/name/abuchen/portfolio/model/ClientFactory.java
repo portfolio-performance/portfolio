@@ -591,6 +591,9 @@ public class ClientFactory
                 // added fees to dividend transactions
             case 48:
                 incrementSharesPrecisionFromSixToEightDigitsAfterDecimalSign(client);
+                // add 4 more decimal places to the quote to make it 8
+                addDecimalPlacesToQuotes(client);
+                addDecimalPlacesToQuotes(client);
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;

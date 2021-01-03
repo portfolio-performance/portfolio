@@ -735,7 +735,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(t.getUnitSum(Type.FEE), is(Money.of(CurrencyUnit.EUR, 0L)));
         assertThat(t.getDateTime(), is(LocalDateTime.of(2005, 3, 24, 5, 0, 0)));
         assertThat(t.getShares(), is(Values.Share.factorize(52.77908)));
-        assertThat(t.getGrossPricePerShare(), is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(13.0982))));
+        assertThat(t.getGrossPricePerShare(), is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(13.09818208))));
     }
 
     @Test
@@ -766,7 +766,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(t.getUnitSum(Type.FEE), is(Money.of(CurrencyUnit.EUR, 13_21L)));
         assertThat(t.getDateTime(), is(LocalDateTime.of(2008, 5, 16, 5, 0, 0)));
         assertThat(t.getShares(), is(Values.Share.factorize(334)));
-        assertThat(t.getGrossPricePerShare(), is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(9.9296))));
+        assertThat(t.getGrossPricePerShare(), is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(9.9295509))));
     }
 
     @Test
@@ -933,7 +933,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.95126)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 61L)));
         assertThat(entry.getPortfolioTransaction().getGrossPricePerShare(),
-                        is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(25.6397))));
+                        is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(25.6396779))));
     }
 
     @Test
@@ -1295,7 +1295,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(6.43915)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 0_00L)));
         assertThat(entry.getPortfolioTransaction().getGrossPricePerShare(),
-                        is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(15.53))));
+                        is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(15.53000008))));
     }
 
     @Test
