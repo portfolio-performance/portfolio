@@ -15,6 +15,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.osgi.framework.FrameworkUtil;
 
+import com.google.common.base.Objects;
+
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.AttributeType.PercentConverter;
 import name.abuchen.portfolio.model.AttributeType.StringConverter;
@@ -164,8 +166,10 @@ public class ETFDataCom
             return attributeMapping;
         }
 
-        private Attributes updateAttributes(Attributes attributes, ClientSettings settings)
+        private boolean updateAttributes(Attributes attributes, ClientSettings settings)
         {
+            boolean isDirty = false;
+
             for (Map.Entry<String, Object> id2value : attributeMapping().entrySet())
             {
                 AttributeType attribute = settings.getAttributeTypes()
@@ -207,10 +211,14 @@ public class ETFDataCom
                                     return newAttribute;
                                 });
 
-                attributes.put(attribute, id2value.getValue());
+                Object newValue = id2value.getValue();
+
+                Object oldValue = attributes.put(attribute, newValue);
+
+                isDirty = isDirty || !Objects.equal(oldValue, newValue);
             }
 
-            return attributes;
+            return isDirty;
         }
 
         private void setInfo(Security security)
@@ -237,9 +245,14 @@ public class ETFDataCom
             Security security = new Security();
 
             setInfo(security);
-            security.setAttributes(updateAttributes(security.getAttributes(), settings));
+            updateAttributes(security.getAttributes(), settings);
 
             return security;
+        }
+
+        public boolean update(Security security, ClientSettings settings)
+        {
+            return updateAttributes(security.getAttributes(), settings);
         }
     }
 
@@ -268,5 +281,13 @@ public class ETFDataCom
         onlineItems.add(OnlineItem.from(response));
 
         return onlineItems;
+    }
+
+    public static boolean updateWith(Security security, ClientSettings settings, ResultItem item)
+    {
+        if (!(item instanceof OnlineItem))
+            throw new IllegalArgumentException();
+
+        return ((OnlineItem) item).update(security, settings);
     }
 }
