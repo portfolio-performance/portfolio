@@ -213,6 +213,11 @@ public class Classification implements Named
         assignments.remove(assignment);
     }
 
+    public void clearAssignments()
+    {
+        assignments.clear();
+    }
+
     public int getWeight()
     {
         return weight;

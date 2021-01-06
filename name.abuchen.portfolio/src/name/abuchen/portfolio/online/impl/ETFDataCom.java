@@ -225,20 +225,15 @@ public class ETFDataCom
                                     newAttribute.setSource(id);
                                     newAttribute.setTarget(Security.class);
 
-                                    if (id2value.getValue() instanceof Double)
+                                    if (id.endsWith("$ter")) //$NON-NLS-1$
                                     {
                                         newAttribute.setType(Double.class);
                                         newAttribute.setConverter(PercentConverter.class);
                                     }
-                                    else if (id2value.getValue() instanceof String)
+                                    else
                                     {
                                         newAttribute.setType(String.class);
                                         newAttribute.setConverter(StringConverter.class);
-
-                                    }
-                                    else
-                                    {
-                                        throw new IllegalArgumentException();
                                     }
 
                                     // add new attribute to settings
