@@ -30,6 +30,8 @@ eclipse configuration PortfolioPerformance {
     
     execution-environment 'JavaSE-11';
     
+    argument "-consoleLog";
+    
     vm-argument "-XX:+IgnoreUnrecognizedVMOptions";
     vm-argument "--add-modules=ALL-SYSTEM";
     vm-argument "--illegal-access=permit";
