@@ -124,6 +124,17 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             this.changeListener = changeListener;
         }
 
+        String createToolTip(String label, String description, String menuLabel)
+        {
+            if (description != null)
+                return label + "\n\n" + wordwrap(description); //$NON-NLS-1$
+
+            if (menuLabel != null && !label.equals(menuLabel))
+                return label + "\n\n" + menuLabel; //$NON-NLS-1$
+
+            return label;
+        }
+
         String wordwrap(String text)
         {
             // other platforms such as Mac and Linux natively wrap tool tip
@@ -213,13 +224,15 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             if (option == null)
             {
                 tableColumn.setText(column.getLabel());
-                tableColumn.setToolTipText(wordwrap(column.getToolTipText()));
+                tableColumn.setToolTipText(
+                                createToolTip(column.getLabel(), column.getDescription(), column.getMenuLabel()));
             }
             else
             {
-                tableColumn.setText(column.getOptions().getColumnLabel(option));
+                final String text = column.getOptions().getColumnLabel(option);
+                tableColumn.setText(text);
                 String description = column.getOptions().getDescription(option);
-                tableColumn.setToolTipText(wordwrap(description != null ? description : column.getToolTipText()));
+                tableColumn.setToolTipText(createToolTip(text, description, column.getMenuLabel()));
 
                 tableColumn.setData(OPTIONS_KEY, option);
             }
@@ -337,13 +350,15 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             if (option == null)
             {
                 treeColumn.setText(column.getLabel());
-                treeColumn.setToolTipText(column.getToolTipText());
+                treeColumn.setToolTipText(
+                                createToolTip(column.getLabel(), column.getDescription(), column.getMenuLabel()));
             }
             else
             {
-                treeColumn.setText(column.getOptions().getColumnLabel(option));
+                String text = column.getOptions().getColumnLabel(option);
+                treeColumn.setText(text);
                 String description = column.getOptions().getDescription(option);
-                treeColumn.setToolTipText(wordwrap(description != null ? description : column.getToolTipText()));
+                treeColumn.setToolTipText(createToolTip(text, description, column.getMenuLabel()));
                 treeColumn.setData(OPTIONS_KEY, option);
             }
 
