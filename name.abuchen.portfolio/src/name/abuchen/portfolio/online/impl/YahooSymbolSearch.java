@@ -9,6 +9,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
+import name.abuchen.portfolio.model.ClientSettings;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
 import name.abuchen.portfolio.util.WebAccess;
@@ -81,7 +82,7 @@ import name.abuchen.portfolio.util.WebAccess;
         }
 
         @Override
-        public Security create()
+        public Security create(ClientSettings settings)
         {
             Security security = new Security();
             security.setName(name);

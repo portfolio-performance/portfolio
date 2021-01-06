@@ -8,6 +8,7 @@ import org.json.simple.JSONValue;
 import org.json.simple.parser.ParseException;
 import org.junit.Test;
 
+import name.abuchen.portfolio.model.ClientSettings;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityProperty;
 import name.abuchen.portfolio.online.impl.PortfolioReportNet.OnlineItem;
@@ -31,7 +32,7 @@ public class PortfolioReportNetTest
 
         OnlineItem item = OnlineItem.from(jsonObject);
 
-        Security security = item.create();
+        Security security = item.create(new ClientSettings());
 
         assertValues(security);
 

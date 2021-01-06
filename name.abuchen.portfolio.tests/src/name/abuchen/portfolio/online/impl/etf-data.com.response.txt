@@ -1,0 +1,86 @@
+{
+    "assetClass": "EQUITY",
+    "baseCurrency": "EUR",
+    "distributionFrequency": null,
+    "distributionType": "DISTRIBUTING",
+    "domicile": "DEU",
+    "indexName": "DJ Asia Pacific Select Dividend 50 Index",
+    "isin": "DE000A0H0744",
+    "listings": [
+        {
+            "bloombergTicker": "APSDEX GY",
+            "currency": "EUR",
+            "exchange": "XETRA",
+            "reutersTicker": "EXXW.DE",
+            "ticker": "EXXW"
+        }
+    ],
+    "name": "iShares Dow Jones Asia Pacific Select Dividend 50 UCITS ETF (DE)",
+    "provider": "iShares",
+    "regions": [
+        {
+            "country": "HKG",
+            "percentage": 39.49
+        },
+        {
+            "country": "AUS",
+            "percentage": 23.47
+        },
+        {
+            "country": "JPN",
+            "percentage": 18.37
+        },
+        {
+            "country": "SGP",
+            "percentage": 11.69
+        },
+        {
+            "country": "CHN",
+            "percentage": 4.51
+        },
+        {
+            "country": "NZL",
+            "percentage": 2.27
+        }
+    ],
+    "replicationMethod": "PHYSICAL",
+    "sectors": [
+        {
+            "percentage": 31.71,
+            "sector": "FINANCIALS"
+        },
+        {
+            "percentage": 20.78,
+            "sector": "REAL_ESTATE"
+        },
+        {
+            "percentage": 15.6,
+            "sector": "INDUSTRIALS"
+        },
+        {
+            "percentage": 8.47,
+            "sector": "COMMUNICATION_SERVICES"
+        },
+        {
+            "percentage": 8.35,
+            "sector": "MATERIALS"
+        },
+        {
+            "percentage": 5.71,
+            "sector": "UTILITIES"
+        },
+        {
+            "percentage": 4.08,
+            "sector": "ENERGY"
+        },
+        {
+            "percentage": 3.44,
+            "sector": "INFORMATION_TECHNOLOGY"
+        },
+        {
+            "percentage": 1.66,
+            "sector": "CONSUMER_DISCRETIONARY"
+        }
+    ],
+    "totalFee": 0.31
+}

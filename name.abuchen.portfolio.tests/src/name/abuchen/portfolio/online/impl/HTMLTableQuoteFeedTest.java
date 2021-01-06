@@ -5,15 +5,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Scanner;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.TestUtilities;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
@@ -29,7 +28,7 @@ public class HTMLTableQuoteFeedTest
     {
         HTMLTableQuoteFeed feed = new HTMLTableQuoteFeed();
 
-        String html = read("HTMLTableQuoteFeedHistoricalSample.html");
+        String html = TestUtilities.read(getClass(), "HTMLTableQuoteFeedHistoricalSample.html");
 
         QuoteFeedData data = feed.getHistoricalQuotes(html);
 
@@ -52,7 +51,7 @@ public class HTMLTableQuoteFeedTest
             @Override
             String getHtml(String url) throws IOException, URISyntaxException
             {
-                return read("HTMLTableQuoteFeedNonHistoricalSample.html");
+                return TestUtilities.read(getClass(), "HTMLTableQuoteFeedNonHistoricalSample.html");
             }
         };
         Security security = new Security("foo", "EUR");
@@ -75,13 +74,4 @@ public class HTMLTableQuoteFeedTest
         assertThat(price.getHigh(), is(high));
         assertThat(price.getLow(), is(low));
     }
-
-    private String read(String resourceName)
-    {
-        try (Scanner scanner = new Scanner(getClass().getResourceAsStream(resourceName), StandardCharsets.UTF_8.name()))
-        {
-            return scanner.useDelimiter("\\A").next(); //$NON-NLS-1$
-        }
-    }
-
 }
