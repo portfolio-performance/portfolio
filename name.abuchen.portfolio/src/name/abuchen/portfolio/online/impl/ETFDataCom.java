@@ -1,12 +1,17 @@
 package name.abuchen.portfolio.online.impl;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -17,17 +22,23 @@ import org.osgi.framework.FrameworkUtil;
 
 import com.google.common.base.Objects;
 
+import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.AttributeType.PercentConverter;
 import name.abuchen.portfolio.model.AttributeType.StringConverter;
 import name.abuchen.portfolio.model.Attributes;
+import name.abuchen.portfolio.model.Classification;
+import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.ClientSettings;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityProperty;
+import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
+import name.abuchen.portfolio.util.Pair;
 import name.abuchen.portfolio.util.TextUtil;
 import name.abuchen.portfolio.util.WebAccess;
+import name.abuchen.portfolio.util.WebAccess.WebAccessException;
 
 public class ETFDataCom
 {
@@ -85,6 +96,8 @@ public class ETFDataCom
         private String distributionType;
 
         private List<SymbolInfo> symbols;
+        private List<Pair<String, Double>> regions;
+        private List<Pair<String, Double>> sectors;
 
         /* package */ static OnlineItem from(JSONObject jsonObject)
         {
@@ -102,7 +115,30 @@ public class ETFDataCom
             vehicle.distributionType = (String) jsonObject.get("distributionType"); //$NON-NLS-1$
 
             vehicle.symbols = SymbolInfo.from((JSONArray) jsonObject.get("listings")); //$NON-NLS-1$
+
+            vehicle.regions = parse((JSONArray) jsonObject.get("regions"), "country"); //$NON-NLS-1$ //$NON-NLS-2$
+            vehicle.sectors = parse((JSONArray) jsonObject.get("sectors"), "sector"); //$NON-NLS-1$ //$NON-NLS-2$
+
             return vehicle;
+        }
+
+        private static List<Pair<String, Double>> parse(JSONArray jsonArray, String nameLabel)
+        {
+            if (jsonArray == null)
+                return Collections.emptyList();
+
+            List<Pair<String, Double>> answer = new ArrayList<>();
+            for (Object item : jsonArray)
+            {
+                JSONObject json = (JSONObject) item;
+
+                String label = json.get(nameLabel).toString();
+                Double percentage = (Double) json.get("percentage"); //$NON-NLS-1$
+
+                answer.add(new Pair<>(label, percentage));
+            }
+
+            return answer;
         }
 
         private OnlineItem()
@@ -254,6 +290,78 @@ public class ETFDataCom
         {
             return updateAttributes(security.getAttributes(), settings);
         }
+
+        public boolean updateCountryAllocation(Taxonomy taxonomy, Security security)
+        {
+            return updateAllocation(regions, "ISO3166-1-Alpha-3", taxonomy, security); //$NON-NLS-1$
+        }
+
+        public boolean updateSectorAllocation(Taxonomy taxonomy, Security security)
+        {
+            return updateAllocation(sectors, "GICS-sector", taxonomy, security); //$NON-NLS-1$
+        }
+
+        private static boolean updateAllocation(List<Pair<String, Double>> data, String externalId, Taxonomy taxonomy,
+                        Security security)
+        {
+            boolean isDirty = false;
+
+            Map<String, Classification> id2classification = taxonomy.getAllClassifications().stream()
+                            .filter(c -> c.getData(externalId) != null)
+                            .collect(Collectors.toMap(c -> String.valueOf(c.getData(externalId)), c -> c, (r, l) -> {
+                                PortfolioLog.error(MessageFormat.format(
+                                                "{0}: Two categories with same external id: {1} and {2}", //$NON-NLS-1$
+                                                taxonomy.getName(), r.getName(), l.getName()));
+                                return r;
+                            }));
+
+            Set<Classification> currentClassifications = new HashSet<>(taxonomy.getClassifications(security));
+
+            for (Pair<String, Double> pair : data)
+            {
+                Classification classification = id2classification.computeIfAbsent(pair.getKey(), key -> {
+                    Classification newClassification = new Classification(taxonomy.getRoot(),
+                                    UUID.randomUUID().toString(), key);
+                    newClassification.setData(externalId, key);
+                    taxonomy.getRoot().addChild(newClassification);
+                    return newClassification;
+                });
+
+                currentClassifications.remove(classification);
+
+                Optional<Assignment> assignment = classification.getAssignments().stream()
+                                .filter(a -> security.equals(a.getInvestmentVehicle())).findAny();
+
+                int weight = (int) Math.round(Classification.ONE_HUNDRED_PERCENT * pair.getValue() / 100);
+
+                if (assignment.isPresent())
+                {
+                    if (assignment.get().getWeight() != weight)
+                    {
+                        assignment.get().setWeight(weight);
+                        isDirty = true;
+                    }
+                }
+                else
+                {
+                    Assignment newAssignment = new Assignment(security, weight);
+                    classification.addAssignment(newAssignment);
+
+                    isDirty = true;
+                }
+            }
+
+            for (Classification classification : currentClassifications)
+            {
+                new ArrayList<>(classification.getAssignments()).stream()
+                                .filter(a -> security.equals(a.getInvestmentVehicle()))
+                                .forEach(classification::removeAssignment);
+
+                isDirty = true;
+            }
+
+            return isDirty;
+        }
     }
 
     public static final String PROVIDER_NAME = "ETF-Data.com"; //$NON-NLS-1$
@@ -268,8 +376,20 @@ public class ETFDataCom
                                             + FrameworkUtil.getBundle(ETFDataCom.class).getVersion().toString());
             return readItems(webAccess.get());
         }
+        catch (WebAccessException e)
+        {
+            PortfolioLog.error(e);
+
+            if (e.getHttpErrorCode() == HttpURLConnection.HTTP_UNAUTHORIZED)
+                throw new WebAccessException(
+                                "Unfortunately your free requests have expired. Please feel free to visit again tomorrow, or subscribe to a plan.", //$NON-NLS-1$
+                                HttpURLConnection.HTTP_UNAUTHORIZED);
+            else
+                return (new ArrayList<ResultItem>());
+        }
         catch (IOException e)
         {
+            PortfolioLog.error(e);
             return (new ArrayList<ResultItem>());
         }
     }
@@ -289,5 +409,21 @@ public class ETFDataCom
             throw new IllegalArgumentException();
 
         return ((OnlineItem) item).update(security, settings);
+    }
+
+    public static boolean updateCountryAllocation(Security security, Taxonomy taxonomy, ResultItem item)
+    {
+        if (!(item instanceof OnlineItem))
+            throw new IllegalArgumentException();
+
+        return ((OnlineItem) item).updateCountryAllocation(taxonomy, security);
+    }
+
+    public static boolean updateSectorAllocation(Security security, Taxonomy taxonomy, ResultItem item)
+    {
+        if (!(item instanceof OnlineItem))
+            throw new IllegalArgumentException();
+
+        return ((OnlineItem) item).updateSectorAllocation(taxonomy, security);
     }
 }

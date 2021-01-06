@@ -28,6 +28,7 @@ public class Taxonomy
 
     private String id;
     private String name;
+    private String source;
 
     private List<String> dimensions;
     private Classification root;
@@ -66,6 +67,16 @@ public class Taxonomy
     public void setName(String name)
     {
         propertyChangeSupport.firePropertyChange("name", this.name, this.name = name); //$NON-NLS-1$
+    }
+
+    public void setSource(String source)
+    {
+        this.source = source;
+    }
+
+    public String getSource()
+    {
+        return source;
     }
 
     public List<String> getDimensions()
