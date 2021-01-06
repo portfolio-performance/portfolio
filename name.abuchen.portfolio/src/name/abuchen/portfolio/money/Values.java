@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.money;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
@@ -19,7 +20,7 @@ public abstract class Values<E>
     {
         private MoneyValues()
         {
-            super("#,##0.00", 100); //$NON-NLS-1$
+            super("#,##0.00", 2); //$NON-NLS-1$
         }
 
         @Override
@@ -67,7 +68,7 @@ public abstract class Values<E>
 
         private QuoteValues()
         {
-            super(QUOTE_PATTERN, 100000000);
+            super(QUOTE_PATTERN, 8);
 
             factorToMoney = BigDecimal.valueOf(factor() / Values.Money.factor());
             precisionDeltaToMoney = precision() - Values.Money.precision();
@@ -138,7 +139,7 @@ public abstract class Values<E>
         }
     }
 
-    public static final Values<Long> Amount = new Values<Long>("#,##0.00", 100) //$NON-NLS-1$
+    public static final Values<Long> Amount = new Values<Long>("#,##0.00", 2) //$NON-NLS-1$
     {
         @Override
         public String format(Long amount)
@@ -149,7 +150,7 @@ public abstract class Values<E>
 
     public static final MoneyValues Money = new MoneyValues(); // NOSONAR
 
-    public static final Values<Long> AmountFraction = new Values<Long>("#,##0.00###", 100000) //$NON-NLS-1$
+    public static final Values<Long> AmountFraction = new Values<Long>("#,##0.00###", 5) //$NON-NLS-1$
     {
         private final DecimalFormat format = new DecimalFormat(pattern());
 
@@ -164,7 +165,7 @@ public abstract class Values<E>
      * Optionally format values without decimal places. Currently used only for
      * attributes attached to the security.
      */
-    public static final Values<Long> AmountPlain = new Values<Long>("#,##0.##", 100) //$NON-NLS-1$
+    public static final Values<Long> AmountPlain = new Values<Long>("#,##0.##", 2) //$NON-NLS-1$
     {
         private final DecimalFormat format = new DecimalFormat(pattern());
 
@@ -175,7 +176,7 @@ public abstract class Values<E>
         }
     };
 
-    public static final Values<Long> AmountShort = new Values<Long>("#,##0", 100) //$NON-NLS-1$
+    public static final Values<Long> AmountShort = new Values<Long>("#,##0", 2) //$NON-NLS-1$
     {
         private final DecimalFormat format = new DecimalFormat(pattern());
 
@@ -186,7 +187,7 @@ public abstract class Values<E>
         }
     };
 
-    public static final Values<Long> Share = new Values<Long>("#,##0.######", 100000000) //$NON-NLS-1$
+    public static final Values<Long> Share = new Values<Long>("#,##0.######", 8) //$NON-NLS-1$
     {
         private final DecimalFormat format = new DecimalFormat(pattern());
 
@@ -199,7 +200,7 @@ public abstract class Values<E>
 
     public static final QuoteValues Quote = new QuoteValues(); // NOSONAR
 
-    public static final Values<BigDecimal> ExchangeRate = new Values<BigDecimal>("#,##0.0000", 1)//$NON-NLS-1$
+    public static final Values<BigDecimal> ExchangeRate = new Values<BigDecimal>("#,##0.0000", 0)//$NON-NLS-1$
     {
         @Override
         public String format(BigDecimal exchangeRate)
@@ -208,7 +209,7 @@ public abstract class Values<E>
         }
     };
 
-    public static final Values<Integer> Index = new Values<Integer>("#,##0.00", 100) //$NON-NLS-1$
+    public static final Values<Integer> Index = new Values<Integer>("#,##0.00", 2) //$NON-NLS-1$
     {
         @Override
         public String format(Integer index)
@@ -217,7 +218,7 @@ public abstract class Values<E>
         }
     };
 
-    public static final Values<LocalDate> Date = new Values<LocalDate>("yyyy-MM-dd", 1) //$NON-NLS-1$
+    public static final Values<LocalDate> Date = new Values<LocalDate>("yyyy-MM-dd", 0) //$NON-NLS-1$
     {
         DateTimeFormatter formatter = DateTimeFormatter
                         .ofLocalizedDate(new Locale("pt").getLanguage().equals(Locale.getDefault() //$NON-NLS-1$
@@ -230,7 +231,7 @@ public abstract class Values<E>
         }
     };
 
-    public static final Values<LocalDateTime> DateTime = new Values<LocalDateTime>("yyyy-MM-dd HH:mm", 1) //$NON-NLS-1$
+    public static final Values<LocalDateTime> DateTime = new Values<LocalDateTime>("yyyy-MM-dd HH:mm", 0) //$NON-NLS-1$
     {
         DateTimeFormatter formatter = DateTimeFormatter
                         .ofLocalizedDateTime(new Locale("pt").getLanguage().equals(Locale.getDefault() //$NON-NLS-1$
@@ -246,7 +247,7 @@ public abstract class Values<E>
         }
     };
 
-    public static final Values<Double> Thousands = new Values<Double>("0.###k", 1) //$NON-NLS-1$
+    public static final Values<Double> Thousands = new Values<Double>("0.###k", 0) //$NON-NLS-1$
     {
         private ThreadLocal<DecimalFormat> numberFormatter = ThreadLocal // NOSONAR
                         .withInitial(() -> new DecimalFormat("#,##0.###")); //$NON-NLS-1$
@@ -258,7 +259,7 @@ public abstract class Values<E>
         }
     };
 
-    public static final Values<Double> Percent = new Values<Double>("0.00%", 1) //$NON-NLS-1$
+    public static final Values<Double> Percent = new Values<Double>("0.00%", 0) //$NON-NLS-1$
     {
         @Override
         public String format(Double percent)
@@ -267,7 +268,7 @@ public abstract class Values<E>
         }
     };
 
-    public static final Values<Double> PercentShort = new Values<Double>("0.00%", 1) //$NON-NLS-1$
+    public static final Values<Double> PercentShort = new Values<Double>("0.00%", 0) //$NON-NLS-1$
     {
         @Override
         public String format(Double percent)
@@ -276,7 +277,7 @@ public abstract class Values<E>
         }
     };
 
-    public static final Values<Double> PercentPlain = new Values<Double>("0.00", 1) //$NON-NLS-1$
+    public static final Values<Double> PercentPlain = new Values<Double>("0.00", 0) //$NON-NLS-1$
     {
         @Override
         public String format(Double percent)
@@ -285,7 +286,7 @@ public abstract class Values<E>
         }
     };
 
-    public static final Values<Integer> Weight = new Values<Integer>("#,##0.00", 100) //$NON-NLS-1$
+    public static final Values<Integer> Weight = new Values<Integer>("#,##0.00", 2) //$NON-NLS-1$
     {
         @Override
         public String format(Integer weight)
@@ -294,7 +295,7 @@ public abstract class Values<E>
         }
     };
 
-    public static final Values<Integer> WeightPercent = new Values<Integer>("#,##0.00", 100) //$NON-NLS-1$
+    public static final Values<Integer> WeightPercent = new Values<Integer>("#,##0.00", 2) //$NON-NLS-1$
     {
         @Override
         public String format(Integer weight)
@@ -303,7 +304,7 @@ public abstract class Values<E>
         }
     };
 
-    public static final Values<Double> Percent2 = new Values<Double>("0.00%", 1) //$NON-NLS-1$
+    public static final Values<Double> Percent2 = new Values<Double>("0.00%", 0) //$NON-NLS-1$
     {
         @Override
         public String format(Double percent)
@@ -312,7 +313,7 @@ public abstract class Values<E>
         }
     };
 
-    public static final Values<Double> Percent5 = new Values<Double>("0.00000%", 1) //$NON-NLS-1$
+    public static final Values<Double> Percent5 = new Values<Double>("0.00000%", 0) //$NON-NLS-1$
     {
         @Override
         public String format(Double percent)
@@ -321,7 +322,7 @@ public abstract class Values<E>
         }
     };
 
-    public static final Values<Integer> Id = new Values<Integer>("#,##0", 1) //$NON-NLS-1$
+    public static final Values<Integer> Id = new Values<Integer>("#,##0", 0) //$NON-NLS-1$
     {
         @Override
         public String format(Integer amount)
@@ -330,7 +331,7 @@ public abstract class Values<E>
         }
     };
 
-    public static final Values<Integer> Year = new Values<Integer>("0", 1) //$NON-NLS-1$
+    public static final Values<Integer> Year = new Values<Integer>("0", 0) //$NON-NLS-1$
     {
         @Override
         public String format(Integer amount)
@@ -345,12 +346,12 @@ public abstract class Values<E>
     private final int precision;
     private final BigDecimal bdFactor;
 
-    private Values(String pattern, int factor)
+    private Values(String pattern, int precision)
     {
         this.pattern = pattern;
-        this.factor = factor;
+        this.factor = BigInteger.TEN.pow(precision).intValue();
         this.divider = factor;
-        this.precision = (int) Math.log10(divider);
+        this.precision = precision;
         this.bdFactor = BigDecimal.valueOf(factor);
     }
 
