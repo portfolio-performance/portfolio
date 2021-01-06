@@ -589,6 +589,11 @@ public class ClientFactory
                 addDefaultLogoAttributes(client);
             case 47:
                 // added fees to dividend transactions
+            case 48:
+                incrementSharesPrecisionFromSixToEightDigitsAfterDecimalSign(client);
+                // add 4 more decimal places to the quote to make it 8
+                addDecimalPlacesToQuotes(client);
+                addDecimalPlacesToQuotes(client);
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
@@ -1092,6 +1097,16 @@ public class ClientFactory
         client.getSettings().addAttributeType(factory.apply(Account.class));
         client.getSettings().addAttributeType(factory.apply(Portfolio.class));
         client.getSettings().addAttributeType(factory.apply(InvestmentPlan.class));
+    }
+
+    private static void incrementSharesPrecisionFromSixToEightDigitsAfterDecimalSign(Client client)
+    {
+        for (Portfolio portfolio : client.getPortfolios())
+            for (PortfolioTransaction portfolioTransaction : portfolio.getTransactions())
+                portfolioTransaction.setShares(portfolioTransaction.getShares() * 100);
+        for (Account account : client.getAccounts())
+            for (AccountTransaction accountTransaction : account.getTransactions())
+                accountTransaction.setShares(accountTransaction.getShares() * 100);
     }
 
     @SuppressWarnings("nls")

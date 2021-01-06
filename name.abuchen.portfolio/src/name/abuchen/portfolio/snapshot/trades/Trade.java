@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.snapshot.trades;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -67,9 +69,14 @@ public class Trade implements Adaptable
         else
         {
             LocalDate now = LocalDate.now();
-            double marketValue = shares / Values.Share.divider() * security.getSecurityPrice(now).getValue()
-                            / Values.Quote.dividerToMoney();
-            this.exitValue = converter.at(now).apply(Money.of(security.getCurrencyCode(), Math.round(marketValue)));
+
+            long marketValue = BigDecimal.valueOf(shares) //
+                            .movePointLeft(Values.Share.precision()) //
+                            .multiply(BigDecimal.valueOf(security.getSecurityPrice(now).getValue()), Values.MC)
+                            .movePointLeft(Values.Quote.precisionDeltaToMoney()) //
+                            .setScale(0, RoundingMode.HALF_UP).longValue();
+
+            this.exitValue = converter.at(now).apply(Money.of(security.getCurrencyCode(), marketValue));
 
             this.holdingPeriod = Math.round(transactions.stream() //
                             .filter(t -> t.getTransaction().getType().isPurchase())
@@ -78,13 +85,14 @@ public class Trade implements Adaptable
                             .sum() / (double) shares);
         }
 
-        // let's sort again because the list might not be sorted anymore due to transfers
+        // let's sort again because the list might not be sorted anymore due to
+        // transfers
         Collections.sort(transactions,
                         (p1, p2) -> p1.getTransaction().getDateTime().compareTo(p2.getTransaction().getDateTime()));
-        
+
         // re-set start date from first entry after sorting
         this.setStart(transactions.get(0).getTransaction().getDateTime());
-        
+
         calculateIRR(converter);
     }
 

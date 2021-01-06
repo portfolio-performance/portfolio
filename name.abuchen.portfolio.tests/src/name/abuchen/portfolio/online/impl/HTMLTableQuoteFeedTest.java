@@ -38,9 +38,9 @@ public class HTMLTableQuoteFeedTest
 
         Collections.sort(prices, new SecurityPrice.ByDate());
 
-        assertPrice(prices.get(0), "2020-12-03", 6750000, 6750000, 6658900);
-        assertPrice(prices.get(1), "2020-12-04", 6753700, 6753700, 6674600);
-        assertPrice(prices.get(2), "2020-12-07", 6771300, 6803100, 6771300);
+        assertPrice(prices.get(0), "2020-12-03", 675, 675, 665.89);
+        assertPrice(prices.get(1), "2020-12-04", 675.37, 675.37, 667.46);
+        assertPrice(prices.get(2), "2020-12-07", 677.13, 680.31, 677.13);
     }
 
     @Test
@@ -67,11 +67,11 @@ public class HTMLTableQuoteFeedTest
 
     }
 
-    private void assertPrice(LatestSecurityPrice price, String date, long value, long high, long low)
+    private void assertPrice(LatestSecurityPrice price, String date, double value, double high, double low)
     {
         assertThat(price.getDate(), is(LocalDate.parse(date)));
-        assertThat(price.getValue(), is(value));
-        assertThat(price.getHigh(), is(high));
-        assertThat(price.getLow(), is(low));
+        assertThat(price.getValue(), is(Values.Quote.factorize(value)));
+        assertThat(price.getHigh(), is(Values.Quote.factorize(high)));
+        assertThat(price.getLow(), is(Values.Quote.factorize(low)));
     }
 }

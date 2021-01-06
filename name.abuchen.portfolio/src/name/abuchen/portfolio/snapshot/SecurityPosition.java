@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.snapshot;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -94,13 +96,19 @@ public class SecurityPosition
 
     public Money calculateValue()
     {
-        double marketValue = shares / Values.Share.divider() * price.getValue() / Values.Quote.dividerToMoney();
-        return Money.of(investment.getCurrencyCode(), Math.round(marketValue));
+        long marketValue = BigDecimal.valueOf(shares) //
+                        .movePointLeft(Values.Share.precision())
+                        .multiply(BigDecimal.valueOf(price.getValue()), Values.MC)
+                        .movePointLeft(Values.Quote.precisionDeltaToMoney()) //
+                        .setScale(0, RoundingMode.HALF_DOWN).longValue();
+        return Money.of(investment.getCurrencyCode(), marketValue);
     }
 
     public static SecurityPosition split(SecurityPosition position, int weight)
     {
         List<PortfolioTransaction> splitTransactions = new ArrayList<>(position.transactions.size());
+
+        BigDecimal bdWeight = BigDecimal.valueOf(weight);
 
         for (PortfolioTransaction t : position.transactions)
         {
@@ -109,16 +117,28 @@ public class SecurityPosition
             t2.setSecurity(t.getSecurity());
             t2.setType(t.getType());
             t2.setCurrencyCode(t.getCurrencyCode());
-            t2.setAmount(Math.round(t.getAmount() * weight / (double) Classification.ONE_HUNDRED_PERCENT));
-            t2.setShares(Math.round(t.getShares() * weight / (double) Classification.ONE_HUNDRED_PERCENT));
+
+            t2.setAmount(BigDecimal.valueOf(t.getAmount()) //
+                            .multiply(bdWeight, Values.MC) //
+                            .divide(Classification.ONE_HUNDRED_PERCENT_BD, Values.MC)
+                            .setScale(0, RoundingMode.HALF_DOWN).longValue());
+
+            t2.setShares(BigDecimal.valueOf(t.getShares()) //
+                            .multiply(bdWeight, Values.MC) //
+                            .divide(Classification.ONE_HUNDRED_PERCENT_BD, Values.MC)
+                            .setScale(0, RoundingMode.HALF_DOWN).longValue());
 
             t.getUnits().forEach(u -> t2.addUnit(u.split(weight / (double) Classification.ONE_HUNDRED_PERCENT)));
 
             splitTransactions.add(t2);
         }
 
-        return new SecurityPosition(position.investment, position.converter, position.price,
-                        Math.round(position.shares * weight / (double) Classification.ONE_HUNDRED_PERCENT),
+        long newShares = BigDecimal.valueOf(position.shares) //
+                        .multiply(bdWeight, Values.MC) //
+                        .divide(Classification.ONE_HUNDRED_PERCENT_BD, Values.MC) //
+                        .setScale(0, RoundingMode.HALF_DOWN).longValue();
+
+        return new SecurityPosition(position.investment, position.converter, position.price, newShares,
                         splitTransactions);
     }
 }

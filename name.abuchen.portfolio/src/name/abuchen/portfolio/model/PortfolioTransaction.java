@@ -187,9 +187,13 @@ public class PortfolioTransaction extends Transaction
         if (getShares() == 0)
             return Quote.of(getCurrencyCode(), 0);
 
-        double grossPrice = getGrossValueAmount() * Values.Share.factor() * Values.Quote.factorToMoney()
-                        / (double) getShares();
-        return Quote.of(getCurrencyCode(), Math.round(grossPrice));
+        long grossPrice = BigDecimal.valueOf(getGrossValueAmount())
+                        .movePointRight(Values.Quote.precisionDeltaToMoney()) //
+                        .movePointRight(Values.Share.precision()) //
+                        .divide(BigDecimal.valueOf(getShares()), Values.MC) //
+                        .setScale(0, RoundingMode.HALF_EVEN).longValue();
+
+        return Quote.of(getCurrencyCode(), grossPrice);
     }
 
     /**
@@ -209,9 +213,12 @@ public class PortfolioTransaction extends Transaction
         // transaction currency and not in security currency) we must convert
         // the gross value (instead of checking the unit type GROSS_VALUE)
 
-        long grossValue = getGrossValue(converter).getAmount();
-        double grossPrice = grossValue * Values.Share.factor() * Values.Quote.factorToMoney() / (double) getShares();
-        return Quote.of(converter.getTermCurrency(), Math.round(grossPrice));
+        long grossPrice = BigDecimal.valueOf(getGrossValue(converter).getAmount())
+                        .movePointRight(Values.Quote.precisionDeltaToMoney()) //
+                        .movePointRight(Values.Share.precision()) //
+                        .divide(BigDecimal.valueOf(getShares()), Values.MC) //
+                        .setScale(0, RoundingMode.HALF_EVEN).longValue();
+        return Quote.of(converter.getTermCurrency(), grossPrice);
     }
 
     @Override

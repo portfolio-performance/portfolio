@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.snapshot.security;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -153,8 +155,12 @@ public interface CalculationLineItem
             if (shares == 0)
                 return 0;
 
-            return Math.round((amount * (Values.AmountFraction.factor() / (double) Values.Amount.factor())
-                            * Values.Share.divider()) / (double) shares);
+            return BigDecimal.valueOf(amount) //
+                            .movePointLeft(Values.Amount.precision()) //
+                            .movePointRight(Values.AmountFraction.precision()) //
+                            .movePointRight(Values.Share.precision()) //
+                            .divide(BigDecimal.valueOf(shares), Values.MC) //
+                            .setScale(0, RoundingMode.HALF_EVEN).longValue();
         }
 
         public long getGrossValueAmount()

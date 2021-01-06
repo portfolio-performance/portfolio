@@ -13,6 +13,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
 public class DividendTransactionTest
@@ -79,7 +80,7 @@ public class DividendTransactionTest
 
         long result = t.getDividendPerShare();
 
-        assertEquals(result, 9500000000l);
+        assertEquals(result, Values.Share.factorize(9500));
     }
 
     @Test
