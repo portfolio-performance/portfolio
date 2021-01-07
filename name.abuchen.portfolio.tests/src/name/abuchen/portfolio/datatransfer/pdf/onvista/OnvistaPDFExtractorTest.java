@@ -1072,15 +1072,16 @@ public class OnvistaPDFExtractorTest
         assertSecurityWertpapieruebertrag(results);
 
         // check buy sell transaction
-        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
-        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+        assertThat(item.get().getSubject(), instanceOf(PortfolioTransaction.class));
 
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.TRANSFER_IN));
+        PortfolioTransaction entry = (PortfolioTransaction) item.get().getSubject();
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(is(LocalDateTime.parse("2011-12-02T00:00"))));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(28)));
+        assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
+
+        assertThat(entry.getDateTime(), is(is(LocalDateTime.parse("2011-12-02T00:00"))));
+        assertThat(entry.getShares(), is(Values.Share.factorize(28)));
     }
 
     @Test
