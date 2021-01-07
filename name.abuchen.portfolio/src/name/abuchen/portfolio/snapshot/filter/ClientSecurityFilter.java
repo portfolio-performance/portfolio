@@ -178,6 +178,10 @@ public class ClientSecurityFilter implements ClientFilter
     private void convertTransfer(Function<Portfolio, ReadOnlyPortfolio> getPortfolio,
                     TransactionPair<PortfolioTransaction> pair)
     {
+        // in rare cases (wrong imports) the cross entry can be of type BuySellEntry
+        if (!(pair.getTransaction().getCrossEntry() instanceof PortfolioTransferEntry))
+            return;
+        
         PortfolioTransferEntry entry = (PortfolioTransferEntry) pair.getTransaction().getCrossEntry();
 
         ReadOnlyPortfolio source = getPortfolio.apply(entry.getSourcePortfolio());
