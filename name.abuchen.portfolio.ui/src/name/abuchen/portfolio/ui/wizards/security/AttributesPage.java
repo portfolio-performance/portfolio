@@ -6,7 +6,7 @@ import java.util.Set;
 
 import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.UpdateValueStrategy;
-import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.beans.typed.BeanProperties;
 import org.eclipse.core.databinding.conversion.IConverter;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.validation.IValidator;
@@ -16,11 +16,10 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.databinding.swt.WidgetProperties;
+import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -38,6 +37,7 @@ import name.abuchen.portfolio.model.AttributeType.ImageConverter;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.BindingHelper;
 import name.abuchen.portfolio.ui.util.IValidatingConverter;
 import name.abuchen.portfolio.ui.util.LabelOnly;
@@ -164,10 +164,8 @@ public class AttributesPage extends AbstractPage implements IMenuListener
             value = new Button(container, SWT.CHECK);
             GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(value);
 
-            @SuppressWarnings("unchecked")
-            IObservableValue<Boolean> attributeModel = BeanProperties.value("value").observe(attribute); //$NON-NLS-1$
-            @SuppressWarnings("unchecked")
-            IObservableValue<Button> attributeTarget = WidgetProperties.selection().observe(value);
+            IObservableValue<Boolean> attributeModel = BeanProperties.value("value", Boolean.class).observe(attribute); //$NON-NLS-1$
+            IObservableValue<Boolean> attributeTarget = WidgetProperties.buttonSelection().observe((Button) value);
             binding = bindings.getBindingContext().bindValue(attributeTarget, attributeModel);
         }
         else if (attribute.getType().getConverter() instanceof ImageConverter)
@@ -186,9 +184,7 @@ public class AttributesPage extends AbstractPage implements IMenuListener
             GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(value);
 
             ToAttributeObjectConverter input2model = new ToAttributeObjectConverter(attribute);
-            @SuppressWarnings("unchecked")
             IObservableValue<Object> attributeModel = BeanProperties.value("value").observe(attribute); //$NON-NLS-1$
-            @SuppressWarnings("unchecked")
             IObservableValue<String> attributeTarget = WidgetProperties.tooltipText().observe(preview);
             binding = bindings.getBindingContext().bindValue( //
                             attributeTarget, attributeModel,
@@ -225,38 +221,23 @@ public class AttributesPage extends AbstractPage implements IMenuListener
                                                 }
                                             }));
 
-            preview.addMouseListener(new MouseListener()
-            {
-                @Override
-                public void mouseDoubleClick(MouseEvent e)
+            preview.addMouseListener(MouseListener.mouseDownAdapter(e -> {
+                FileDialog dial = new FileDialog(container.getShell());
+                String filename = dial.open();
+                if (filename != null)
                 {
-                }
-
-                @Override
-                public void mouseUp(MouseEvent e)
-                {
-                }
-
-                @Override
-                public void mouseDown(MouseEvent e)
-                {
-                    FileDialog dial = new FileDialog(container.getShell());
-                    String filename = dial.open();
-                    if (filename != null)
+                    try
                     {
-                        try
-                        {
-                            String b64 = ImageUtil.loadAndPrepare(filename, ImageConverter.MAXIMUM_SIZE_EMBEDDED_IMAGE,
-                                            ImageConverter.MAXIMUM_SIZE_EMBEDDED_IMAGE);
-                            attributeModel.setValue(b64);
-                        }
-                        catch (IOException ex)
-                        {
-                        }
+                        String b64 = ImageUtil.loadAndPrepare(filename, ImageConverter.MAXIMUM_SIZE_EMBEDDED_IMAGE,
+                                        ImageConverter.MAXIMUM_SIZE_EMBEDDED_IMAGE);
+                        attributeModel.setValue(b64);
+                    }
+                    catch (IOException ex)
+                    {
+                        PortfolioPlugin.log(ex);
                     }
                 }
-
-            });
+            }));
         }
         else
         {
@@ -264,9 +245,7 @@ public class AttributesPage extends AbstractPage implements IMenuListener
             GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(value);
 
             ToAttributeObjectConverter input2model = new ToAttributeObjectConverter(attribute);
-            @SuppressWarnings("unchecked")
             IObservableValue<Object> attributeModel = BeanProperties.value("value").observe(attribute); //$NON-NLS-1$
-            @SuppressWarnings("unchecked")
             IObservableValue<String> attributeTarget = WidgetProperties.text(SWT.Modify).observe(value);
             binding = bindings.getBindingContext().bindValue( //
                             attributeTarget, attributeModel,

@@ -1,8 +1,8 @@
 package name.abuchen.portfolio.datatransfer.pdf.baaderbank;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.junit.Assert.assertThat;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -192,6 +192,44 @@ public class BaaderBankPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf5()
+    {
+        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+    
+        List<Exception> errors = new ArrayList<>();
+    
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "BaaderBankWertpapierKauf5.txt"),
+                        errors);
+    
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+    
+        Optional<Item> item;
+    
+        // get security
+        item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
+    
+        // assert security
+        assertThat(security.getIsin(), is("IE00B3XXRP09"));
+        assertThat(security.getWkn(), is("A1JX53"));
+        assertThat(security.getName(), is("Vanguard S&P 500 UCITS ETF"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+    
+        // get transaction
+        item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
+    
+        // assert transaction
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(1030.25)));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-12-21T12:45")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(24)));
+    }
+
+    @Test
     public void testGratisbrokerWertpapierKauf01()
     {
         BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
@@ -345,6 +383,45 @@ public class BaaderBankPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierVerkauf3()
+    {
+        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+    
+        List<Exception> errors = new ArrayList<>();
+    
+        List<Item> results = extractor
+                        .extract(PDFInputFile.loadTestCase(getClass(), "BaaderBankWertpapierVerkauf3.txt"), errors);
+    
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+    
+        Optional<Item> item;
+    
+        // get security
+        item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
+    
+        // assert security
+        assertThat(security.getIsin(), is("LU0446734526"));
+        assertThat(security.getWkn(), is("A0X97T"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+    
+        // get transaction
+        item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
+    
+        // assert transaction
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(226.68)));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-12-21T13:06")));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0))));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(6)));
+    }
+
+    @Test
     public void testGratisbrokerWertpapierVerkauf01()
     {
         BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
@@ -494,6 +571,33 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-05-04T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(100.00)));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+    }
+
+    @Test
+    public void testScalableTageskontoauszug1()
+    {
+        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+    
+        List<Exception> errors = new ArrayList<>();
+    
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "BaaderBankScalableTageskontoauszug01.txt"), errors);
+    
+        assertThat(results.size(), is(1));
+        assertThat(errors, empty());
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+    
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+    
+        // get transaction
+        AccountTransaction transaction = (AccountTransaction) item.orElseThrow(IllegalArgumentException::new)
+                        .getSubject();
+    
+        // assert transaction
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-11T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(20.00)));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
     }
 

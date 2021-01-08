@@ -2,9 +2,9 @@ package name.abuchen.portfolio.datatransfer.pdf.onvista;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertNotNull;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -69,7 +69,7 @@ public class OnvistaPDFExtractorTest
 
         return security;
     }
-
+    
     private Security assertSecuritySell(List<Item> results)
     {
         Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
@@ -766,6 +766,54 @@ public class OnvistaPDFExtractorTest
     }
 
     @Test
+    public void testGutschriftsanzeige1()
+    {
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+    
+        List<Exception> errors = new ArrayList<>();
+    
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "OnvistaGutschriftsanzeige1.txt"),
+                        errors);
+    
+        assertThat(errors, empty());
+        assertThat(results.size(), is(3));
+    
+        // check security
+        Security security = results.stream() //
+                        .filter(i -> i instanceof Extractor.SecurityItem) //
+                        .map(Item::getSecurity) //
+                        .findFirst().orElseThrow(IllegalArgumentException::new);
+        assertThat(security.getIsin(), is("DE000MC55366"));
+    
+        // check transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+
+        assertThat(entry.getPortfolioTransaction().getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(entry.getPortfolioTransaction().getSecurity(), is(security));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-09-25T00:00")));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2563.60))));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(65)));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0))));
+        
+        // check transaction
+        item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        AccountTransaction transaction = (AccountTransaction) item.orElseThrow(IllegalArgumentException::new)
+                        .getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-09-24T00:00")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(74.63))));
+    }
+
+    @Test
     public void testWertpapierKaufAktien() throws IOException // Aktien
     {
         OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
@@ -906,7 +954,7 @@ public class OnvistaPDFExtractorTest
         assertThat(entryTaxReturn.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.06))));
         assertThat(entryTaxReturn.getDateTime(), is(is(LocalDateTime.parse("2017-07-18T00:00"))));
     }
-
+    
     @Test
     public void testWertpapierKaufBezugsrechte() throws IOException // Aktien
     {
@@ -1592,7 +1640,24 @@ public class OnvistaPDFExtractorTest
         assertThat(transtem2.getShares(), is(Values.Share.factorize(0)));
         assertThat(((AccountTransaction)transtem2.getSubject()).getType(), is(AccountTransaction.Type.TAXES));
     }
-    
+
+    @Test
+    public void testVorabpauschaleSteuerVerrechnet()
+    {
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "OnvistaVorabpauschaleSteuerVerrechnet.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        Object[] transItems = results.stream().filter(i -> i instanceof Extractor.NonImportableItem).toArray();
+        assertThat(transItems.length, is(2));
+    }
+
     @Test
     public void testFusion() throws IOException
     {
@@ -1899,6 +1964,82 @@ public class OnvistaPDFExtractorTest
         assertThat(secondEntry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-09-02T09:10")));
         assertThat(secondEntry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.5))));
+    }
+
+    @Test
+    public void testOnvistaMultipartKaufVerkauf2()
+    {
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+    
+        List<Exception> errors = new ArrayList<>();
+    
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "OnvistaMultipartKaufVerkauf2.txt"), errors);
+    
+        assertThat(errors, empty());
+        assertThat(results.size(), is(6));
+    
+        Optional<Item> item;
+    
+        // check securities
+        item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
+        assertThat(security.getName(), is("QuantumScape Corp. Reg. Shares Cl.A  DL -,0001"));
+        assertThat(security.getIsin(), is("US74767V1098"));
+    
+        item = results.stream().filter(i -> i instanceof SecurityItem).skip(1).findFirst();
+        security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
+        assertThat(security.getName(), is("Talon Metals Corp. Registered Shares o.N."));
+        assertThat(security.getIsin(), is("VGG866591024"));
+    
+        // check first transaction
+        item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
+    
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+    
+        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(1926.20)));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-15T15:30")));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of("EUR", Values.Amount.factorize(15.00))));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(40)));
+
+        // check second transaction
+        item = results.stream().filter(i -> i instanceof BuySellEntryItem).skip(1).findFirst();
+        entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
+    
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+    
+        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(3965.72)));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-15T16:11")));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of("EUR", Values.Amount.factorize(15.00))));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(80)));
+
+        // check third transaction
+        item = results.stream().filter(i -> i instanceof BuySellEntryItem).skip(2).findFirst();
+        entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
+    
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+    
+        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(1021.99)));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-16T12:17")));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of("EUR", Values.Amount.factorize(10.65))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of("EUR", Values.Amount.factorize(27.36))));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5000)));
+
+        // check tax refund transaction
+        item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        AccountTransaction t = (AccountTransaction) item.orElseThrow(IllegalArgumentException::new).getSubject();
+    
+        assertThat(t.getType(), is(AccountTransaction.Type.TAX_REFUND));
+        assertThat(t.getAmount(), is(Values.Amount.factorize(14.10)));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2020-12-16T00:00")));
     }
 
     @Test

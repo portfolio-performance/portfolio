@@ -16,14 +16,14 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.beans.typed.BeanProperties;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.databinding.swt.WidgetProperties;
+import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -52,7 +52,6 @@ import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SWTHelper;
 
-@SuppressWarnings("restriction")
 public class AccountTransactionDialog extends AbstractTransactionDialog // NOSONAR
 {
     @Inject
@@ -164,6 +163,23 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         grossAmount.bindValue(Properties.grossAmount.name(), totalLabel, Values.Amount, true);
         grossAmount.bindCurrency(Properties.accountCurrencyCode.name());
 
+        // fees
+
+        Label plusForexFees = new Label(editArea, SWT.NONE);
+        plusForexFees.setText("+"); //$NON-NLS-1$
+        plusForexFees.setVisible(model().supportsFees());
+
+        Input forexFees = new Input(editArea, Messages.ColumnFees);
+        forexFees.bindValue(Properties.fxFees.name(), Messages.ColumnFees, Values.Amount, false);
+        forexFees.bindCurrency(Properties.securityCurrencyCode.name());
+        forexFees.setVisible(model().supportsFees());
+
+        Input fees = new Input(editArea, Messages.ColumnFees);
+        fees.bindValue(Properties.fees.name(), Messages.ColumnFees, Values.Amount, false);
+        fees.bindCurrency(Properties.accountCurrencyCode.name());
+        fees.setVisible(model().supportsFees());
+        fees.label.setVisible(false); // will only show if no fx available
+
         // taxes
 
         Label plusForexTaxes = new Label(editArea, SWT.NONE);
@@ -186,7 +202,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         Input total = new Input(editArea, getTotalLabel());
         total.bindValue(Properties.total.name(), Messages.ColumnTotal, Values.Amount, false);
         total.bindCurrency(Properties.accountCurrencyCode.name());
-        total.setVisible(model().supportsTaxUnits());
+        total.setVisible(model().supportsTaxUnits() || model().supportsFees());
 
         // note
 
@@ -194,7 +210,6 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         lblNote.setText(Messages.ColumnNote);
         Text valueNote = new Text(editArea, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
         IObservableValue<?> targetNote = WidgetProperties.text(SWT.Modify).observe(valueNote);
-        @SuppressWarnings("unchecked")
         IObservableValue<?> noteObservable = BeanProperties.value(Properties.note.name()).observe(model);
         context.bindValue(targetNote, noteObservable);
 
@@ -203,7 +218,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         //
 
         int widest = widest(securities != null ? securities.label : null, accounts.label, dateTime.label, shares.label,
-                        taxes.label, total.label, lblNote, fxGrossAmount.label);
+                        taxes.label, fees.label, total.label, lblNote, fxGrossAmount.label);
 
         FormDataFactory forms;
         if (securities != null)
@@ -225,11 +240,10 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         // shares
         forms = forms.thenBelow(dateTime.date.getControl()).label(dateTime.label);
 
-        startingWith(dateTime.date.getControl()).thenRight(dateTime.time)
-                        .thenRight(dateTime.button, 0);
+        startingWith(dateTime.date.getControl()).thenRight(dateTime.time).thenRight(dateTime.button, 0);
 
         // shares [- amount per share]
-        forms = forms.thenBelow(shares.value).width(amountWidth).label(shares.label).suffix(btnShares) //
+        forms.thenBelow(shares.value).width(amountWidth).label(shares.label).suffix(btnShares) //
                         // fxAmount - exchange rate - amount
                         .thenBelow(fxGrossAmount.value).width(amountWidth).label(fxGrossAmount.label) //
                         .thenRight(fxGrossAmount.currency).width(currencyWidth) //
@@ -249,18 +263,35 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
                             .thenRight(dividendAmount.currency).width(currencyWidth); //
         }
 
+        forms = startingWith(grossAmount.value);
+
+        // fees
+        if (model().supportsFees())
+        {
+            forms.thenBelow(fees.value).width(amountWidth).label(fees.label).suffix(fees.currency);
+
+            startingWith(fees.value).thenLeft(plusForexFees).thenLeft(forexFees.currency).width(currencyWidth)
+                            .thenLeft(forexFees.value).width(amountWidth).thenLeft(forexFees.label);
+
+            forms = startingWith(fees.value);
+        }
+
         // forexTaxes - taxes
         if (model().supportsTaxUnits())
         {
-            startingWith(grossAmount.value) //
-                            .thenBelow(taxes.value).width(amountWidth).label(taxes.label).suffix(taxes.currency) //
-                            .thenBelow(total.value).width(amountWidth).label(total.label).thenRight(total.currency)
-                            .width(currencyWidth);
+            forms.thenBelow(taxes.value).width(amountWidth).label(taxes.label).suffix(taxes.currency);
 
             startingWith(taxes.value).thenLeft(plusForexTaxes).thenLeft(forexTaxes.currency).width(currencyWidth)
                             .thenLeft(forexTaxes.value).width(amountWidth).thenLeft(forexTaxes.label);
 
-            forms = startingWith(total.value);
+            forms = startingWith(taxes.value);
+        }
+
+        // total
+        if (model().supportsFees() || model().supportsTaxUnits())
+        {
+            forms = forms.thenBelow(total.value).width(amountWidth).label(total.label).thenRight(total.currency)
+                            .width(currencyWidth);
         }
 
         // note
@@ -281,19 +312,27 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
 
             exchangeRate.setVisible(isFxVisible);
             grossAmount.setVisible(isFxVisible);
-            forexTaxes.setVisible(isFxVisible && model().supportsShares());
+
+            plusForexFees.setVisible(isFxVisible && model().supportsShares());
+            forexFees.setVisible(isFxVisible && model().supportsShares());
+            fees.label.setVisible(!isFxVisible && model().supportsFees());
+
             plusForexTaxes.setVisible(isFxVisible && model().supportsShares());
+            forexTaxes.setVisible(isFxVisible && model().supportsShares());
             taxes.label.setVisible(!isFxVisible && model().supportsTaxUnits());
 
             // in case fx taxes have been entered
             if (!isFxVisible)
+            {
                 model().setFxTaxes(0);
+                model().setFxFees(0);
+            }
 
             // move input fields to have a nicer layout
             if (isFxVisible)
-                startingWith(grossAmount.value).thenBelow(taxes.value);
+                startingWith(grossAmount.value).thenBelow(model().supportsFees() ? fees.value : taxes.value);
             else
-                startingWith(fxGrossAmount.value).thenBelow(taxes.value);
+                startingWith(fxGrossAmount.value).thenBelow(model().supportsFees() ? fees.value : taxes.value);
             editArea.layout();
         });
 

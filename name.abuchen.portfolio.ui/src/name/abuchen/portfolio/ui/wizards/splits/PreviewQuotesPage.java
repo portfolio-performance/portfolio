@@ -1,9 +1,9 @@
 package name.abuchen.portfolio.ui.wizards.splits;
 
 import org.eclipse.core.databinding.DataBindingContext;
-import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.beans.typed.BeanProperties;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
-import org.eclipse.jface.databinding.swt.WidgetProperties;
+import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -122,8 +122,7 @@ public class PreviewQuotesPage extends AbstractWizardPage
 
         DataBindingContext context = new DataBindingContext();
 
-        IObservableValue<?> targetObservable = WidgetProperties.selection().observe(checkbox);
-        @SuppressWarnings("unchecked")
+        IObservableValue<?> targetObservable = WidgetProperties.buttonSelection().observe(checkbox);
         IObservableValue<?> modelObservable = BeanProperties.value("changeHistoricalQuotes").observe(model); //$NON-NLS-1$
         context.bindValue(targetObservable, modelObservable);
 

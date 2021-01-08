@@ -7,7 +7,6 @@ import java.util.List;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
-import name.abuchen.portfolio.money.MoneyCollectors;
 import name.abuchen.portfolio.money.MutableMoney;
 
 public class AssetCategory
@@ -19,7 +18,7 @@ public class AssetCategory
     private final Money totalAssets;
     private final MutableMoney valuation;
 
-    /* package */AssetCategory(Classification classification, CurrencyConverter converter, LocalDate date,
+    /* package */ AssetCategory(Classification classification, CurrencyConverter converter, LocalDate date,
                     Money totalAssets)
     {
         this.classification = classification;
@@ -37,24 +36,6 @@ public class AssetCategory
     public double getShare()
     {
         return (double) this.valuation.getAmount() / (double) this.totalAssets.getAmount();
-    }
-
-    public Money getFIFOPurchaseValue()
-    {
-        return positions.stream().map(AssetPosition::getFIFOPurchaseValue)
-                        .collect(MoneyCollectors.sum(converter.getTermCurrency()));
-    }
-
-    public Money getMovingAveragePurchaseValue()
-    {
-        return positions.stream().map(AssetPosition::getMovingAveragePurchaseValue)
-                        .collect(MoneyCollectors.sum(converter.getTermCurrency()));
-    }
-
-    public Money getProfitLoss()
-    {
-        return positions.stream().map(AssetPosition::getProfitLoss)
-                        .collect(MoneyCollectors.sum(converter.getTermCurrency()));
     }
 
     public Classification getClassification()

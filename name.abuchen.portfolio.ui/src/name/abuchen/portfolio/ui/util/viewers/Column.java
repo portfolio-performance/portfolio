@@ -223,14 +223,4 @@ public class Column
     {
         return editingSupport;
     }
-
-    /* package */String getToolTipText()
-    {
-        if (description != null)
-            return description;
-        else if (menuLabel != null)
-            return menuLabel;
-        else
-            return null;
-    }
 }

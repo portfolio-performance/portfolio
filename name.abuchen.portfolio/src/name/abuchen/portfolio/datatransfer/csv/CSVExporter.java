@@ -25,12 +25,14 @@ import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.util.TextUtil;
 
 /* not thread safe */
 public class CSVExporter
 {
     /* package */static final CSVFormat STRATEGY = CSVFormat //
-                    .newFormat(';').withQuote('"').withRecordSeparator("\r\n").withAllowDuplicateHeaderNames(); //$NON-NLS-1$
+                    .newFormat(TextUtil.getListSeparatorChar()).withQuote('"').withRecordSeparator("\r\n") //$NON-NLS-1$
+                    .withAllowDuplicateHeaderNames();
 
     public void exportAccountTransactions(File file, Account account) throws IOException
     {

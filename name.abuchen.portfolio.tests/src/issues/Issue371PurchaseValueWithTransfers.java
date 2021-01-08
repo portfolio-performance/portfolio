@@ -1,7 +1,7 @@
 package issues;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -15,6 +15,9 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
@@ -40,8 +43,7 @@ public class Issue371PurchaseValueWithTransfers
         assertThat(client.getPortfolios().stream().flatMap(p -> p.getTransactions().stream())
                         .filter(t -> t.getSecurity() == adidas)
                         .filter(t -> t.getCrossEntry() instanceof PortfolioTransferEntry)
-                        .anyMatch(t -> t.getType() == PortfolioTransaction.Type.TRANSFER_IN),
-                        is(true));
+                        .anyMatch(t -> t.getType() == PortfolioTransaction.Type.TRANSFER_IN), is(true));
 
         CurrencyConverter converter = new TestCurrencyConverter();
         ClientSnapshot snapshot = ClientSnapshot.create(client, converter, period.getEnd());
@@ -51,6 +53,9 @@ public class Issue371PurchaseValueWithTransfers
         SecurityPerformanceRecord securityRecord = securitySnapshot.getRecords().get(0);
         assertThat(securityRecord.getSecurity(), is(adidas));
 
-        assertThat(securityPosition.getFIFOPurchaseValue(), is(securityRecord.getFifoCost()));
+        assertThat(securityPosition.getShares(), is(securityRecord.getSharesHeld()));
+        assertThat(securityPosition.calculateValue(), is(securityRecord.getMarketValue()));
+
+        assertThat(securityRecord.getFifoCost(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2397.6))));
     }
 }

@@ -1,0 +1,50 @@
+﻿PDF Autor: 'DAB-BNP-Paribas'
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=123456
+Wertpapierabrechnung DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=DRUCK
+ADRESSZEILE1=Herr
+Verkauf  ADRESSZEILE2=Max Mustermann
+Kommissionsgeschäft ADRESSZEILE3=Musterstraße 123
+ADRESSZEILE4=12345 Musterstadt
+Depot-Nr. Abrechnungs-Nr. ADRESSZEILE5=
+123456 123456 / 09.12.2020 ADRESSZEILE6=
+Herr BELEGNUMMER=4093
+Max Mustermann SEITENNUMMER=1
+Musterstraße 123 STEUERERSTATTUNG=N
+12345 Musterstadt Depotinhaber
+Max Mustermann
+München, 09.12.2020
+Wir haben für Sie verkauft
+Gattungsbezeichnung ISIN
+Implantica AG Reg.Sw.Dep.Rcpts (SDRs)/1 o.N. SE0014855029
+Nominal Kurs
+STK 220,000 EUR 11,7160
+Handelstag 09.12.2020 Kurswert EUR 2.577,52 
+Handelszeit 13:04*
+Börse Gettex/GDM
+Verwahrart Wertpapierrechnung
+Lagerland Schweden
+Wert Konto-Nr. Betrag zu Ihren Gunsten
+11.12.2020 123456 EUR 2.577,52
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Veräußerungsgewinn Aktien EUR 532,60
+Aktienverlusttopf EUR 5.242,84 4.710,24
+allgemeiner Verlusttopf EUR 0,00 0,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern EUR 0,00
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 135,74
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 7,46
+Jahressteuerbescheinigung folgt
+* Die angegebene Zeit entspricht den Angaben der Handelspartner gemäß der lokalen Zeit in Deutschland
+  (Mitteleuropäische Zeit bzw. Mitteleuropäische Sommerzeit).
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+BNP Paribas S.A. Niederlassung Deutschland > Standort: München > Landsberger Straße 300 > 80687 München > Sitz: Nürnberg HRB Nürnberg 31129 > USt.-Ident-Nr.: DE 
+191528929 > Sitz der Hauptniederlassung der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449 > Président du 
+Conseil d‘Administration: Jean Lemierre, Directeur Général: Jean-Laurent Bonnafé
+3.19/ABREABHNHANDVFDI/GAAASAFG/004093/091220/154419

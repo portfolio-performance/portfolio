@@ -14,7 +14,6 @@ import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.FormatHelper;
 import name.abuchen.portfolio.util.TradeCalendarManager;
 
-@SuppressWarnings("restriction")
 public class Preference2EnvAddon
 {
 

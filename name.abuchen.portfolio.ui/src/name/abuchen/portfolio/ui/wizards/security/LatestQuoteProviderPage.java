@@ -8,7 +8,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.beans.typed.BeanProperties;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.validation.MultiValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
@@ -32,6 +32,7 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.QuoteFeedData;
+import name.abuchen.portfolio.online.impl.GenericJSONQuoteFeed;
 import name.abuchen.portfolio.online.impl.PortfolioReportQuoteFeed;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -141,7 +142,6 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
         // validate that quote provider message is null -> no errors
         bindings.getBindingContext().addValidationStatusProvider(new MultiValidator()
         {
-            @SuppressWarnings("unchecked")
             IObservableValue<?> observable = BeanProperties.value("statusLatestQuotesProvider").observe(model); //$NON-NLS-1$
 
             @Override
@@ -181,6 +181,18 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
     protected void setStatus(String status)
     {
         getModel().setStatusLatestQuotesProvider(status);
+    }
+
+    @Override
+    protected String getJSONDatePropertyName()
+    {
+        return GenericJSONQuoteFeed.DATE_PROPERTY_NAME_LATEST;
+    }
+
+    @Override
+    protected String getJSONClosePropertyName()
+    {
+        return GenericJSONQuoteFeed.CLOSE_PROPERTY_NAME_LATEST;
     }
 
     @Override

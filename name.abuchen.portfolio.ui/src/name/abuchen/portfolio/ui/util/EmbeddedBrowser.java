@@ -33,6 +33,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.util.TokenReplacingReader;
 
+@SuppressWarnings("restriction")
 public class EmbeddedBrowser
 {
     private String htmlpage;

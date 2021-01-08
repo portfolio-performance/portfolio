@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Portfolio Platform UI
 Bundle-SymbolicName: name.abuchen.portfolio.ui;singleton:=true
 Bundle-Version: 0.49.5.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: name.abuchen.portfolio.ui.PortfolioPlugin
 Bundle-Vendor: Andreas Buchen
@@ -15,7 +15,7 @@ Import-Package: com.google.common.base,
  de.engehausen.treemap,
  de.engehausen.treemap.impl,
  de.engehausen.treemap.swt,
- javax.annotation,
+ javax.annotation;version="1.2.0",
  javax.inject,
  org.apache.commons.csv,
  org.apache.pdfbox.pdmodel,
@@ -24,7 +24,9 @@ Import-Package: com.google.common.base,
  org.eclipse.core.commands.common,
  org.eclipse.core.databinding,
  org.eclipse.core.databinding.beans,
+ org.eclipse.core.databinding.beans.typed,
  org.eclipse.core.databinding.conversion,
+ org.eclipse.core.databinding.conversion.text,
  org.eclipse.core.databinding.observable.value,
  org.eclipse.core.databinding.property.value,
  org.eclipse.core.databinding.validation,
@@ -72,7 +74,9 @@ Import-Package: com.google.common.base,
  org.eclipse.jface,
  org.eclipse.jface.action,
  org.eclipse.jface.databinding.swt,
+ org.eclipse.jface.databinding.swt.typed,
  org.eclipse.jface.databinding.viewers,
+ org.eclipse.jface.databinding.viewers.typed,
  org.eclipse.jface.dialogs,
  org.eclipse.jface.fieldassist,
  org.eclipse.jface.internal,

@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.snapshot.security;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -85,30 +87,39 @@ public interface CalculationLineItem
             return amountFractionPerShare(getGrossValueAmount(), tx().getShares());
         }
 
-        public Money getFifoCost()
+        /**
+         * Returns the FIFO costs. It is the cost of the total position of the
+         * given security. However, a dividend payment may only be about partial
+         * holdings, for example if the security is held in multiple securities
+         * accounts.
+         */
+        /* package */ Money getFifoCost()
         {
             return fifoCost;
         }
 
-        /* package */
-        void setFifoCost(Money fifoCost)
+        /* package */ void setFifoCost(Money fifoCost)
         {
             this.fifoCost = fifoCost;
         }
 
-        public Money getMovingAverageCost()
+        /**
+         * Returns the costs based on moving average. It is the cost of the
+         * total position of the given security. However, a dividend payment may
+         * only be about partial holdings, for example if the security is held
+         * in multiple securities accounts.
+         */
+        /* package */ Money getMovingAverageCost()
         {
             return movingAverageCost;
         }
 
-        /* package */
-        void setMovingAverageCost(Money movingAverageCost)
+        /* package */ void setMovingAverageCost(Money movingAverageCost)
         {
             this.movingAverageCost = movingAverageCost;
         }
 
-        /* package */
-        void setTotalShares(long totalShares)
+        /* package */ void setTotalShares(long totalShares)
         {
             this.totalShares = totalShares;
         }
@@ -144,8 +155,12 @@ public interface CalculationLineItem
             if (shares == 0)
                 return 0;
 
-            return Math.round((amount * (Values.AmountFraction.factor() / (double) Values.Amount.factor())
-                            * Values.Share.divider()) / (double) shares);
+            return BigDecimal.valueOf(amount) //
+                            .movePointLeft(Values.Amount.precision()) //
+                            .movePointRight(Values.AmountFraction.precision()) //
+                            .movePointRight(Values.Share.precision()) //
+                            .divide(BigDecimal.valueOf(shares), Values.MC) //
+                            .setScale(0, RoundingMode.HALF_EVEN).longValue();
         }
 
         public long getGrossValueAmount()

@@ -46,7 +46,7 @@ public class SutorPDFExtractorTest
         results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "sutor_umsaetze_pdf.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(12));
+        assertThat(results.size(), is(13));
     }
 
     @Test
@@ -69,17 +69,19 @@ public class SutorPDFExtractorTest
         List<TransactionItem> transactionItems = results.stream().filter(i -> i instanceof TransactionItem)
                         .map(i -> (TransactionItem) i).collect(Collectors.toList());
 
-        assertThat(transactionItems.size(), is(4));
+        assertThat(transactionItems.size(), is(5));
         transactionItems.forEach(item -> assertThat(item.getAmount().getCurrencyCode(), is("EUR")));
 
         // direct deposit
         assertThat(transactionItems.get(0).getAmount().getAmount(), is(16042L));
+        // Zulage deposit
+        assertThat(transactionItems.get(1).getAmount().getAmount(), is(22200L));
         // administration fee
-        assertThat(transactionItems.get(1).getAmount().getAmount(), is(1983L));
+        assertThat(transactionItems.get(2).getAmount().getAmount(), is(1983L));
         // partial administration fee
-        assertThat(transactionItems.get(2).getAmount().getAmount(), is(212L));
+        assertThat(transactionItems.get(3).getAmount().getAmount(), is(212L));
         // account management fees
-        assertThat(transactionItems.get(3).getAmount().getAmount(), is(1350L));
+        assertThat(transactionItems.get(4).getAmount().getAmount(), is(1350L));
     }
 
     @Test
@@ -136,7 +138,7 @@ public class SutorPDFExtractorTest
                         errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(9));
+        assertThat(results.size(), is(12));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check securities
@@ -210,6 +212,29 @@ public class SutorPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(25.3618)));
 
+        // check account transactions (fees, deposits, etc.)
+        AccountTransaction t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+                        .collect(Collectors.toList()).get(0).getSubject();
+
+        assertThat(t.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(175.00))));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2020-03-02T00:00")));
+
+        // check 2nd transaction
+        t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).collect(Collectors.toList())
+                        .get(1).getSubject();
+
+        assertThat(t.getType(), is(AccountTransaction.Type.FEES));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(18.00))));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2020-06-11T00:00")));
+
+        // check 3rd transaction
+        t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).collect(Collectors.toList())
+                        .get(2).getSubject();
+
+        assertThat(t.getType(), is(AccountTransaction.Type.FEES));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.92))));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2020-01-08T00:00")));
     }
 
 }

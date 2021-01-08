@@ -58,8 +58,7 @@ public final class ReportingPeriodDropDown extends DropDown implements IMenuList
 
         manager.add(new Separator());
         manager.add(new SimpleAction(Messages.LabelReportingAddPeriod, a -> {
-            ReportingPeriodDialog dialog = new ReportingPeriodDialog(Display.getDefault().getActiveShell(),
-                            selected);
+            ReportingPeriodDialog dialog = new ReportingPeriodDialog(Display.getDefault().getActiveShell(), selected);
 
             if (dialog.open() == Window.OK)
             {
@@ -67,7 +66,8 @@ public final class ReportingPeriodDropDown extends DropDown implements IMenuList
 
                 doSelect(period);
 
-                periods.add(period);
+                if (!periods.contains(period))
+                    periods.add(period);
 
                 if (listener != null)
                     listener.reportingPeriodUpdated();
@@ -86,7 +86,7 @@ public final class ReportingPeriodDropDown extends DropDown implements IMenuList
                 // make sure at least one entry exists
                 if (periods.isEmpty())
                     periods.add(selected);
-                
+
                 if (!periods.contains(selected))
                 {
                     doSelect(periods.get(0));

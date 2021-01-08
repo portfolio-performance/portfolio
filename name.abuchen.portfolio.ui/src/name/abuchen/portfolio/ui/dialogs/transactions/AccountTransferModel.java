@@ -231,25 +231,24 @@ public class AccountTransferModel extends AbstractModel
 
     private void updateExchangeRate()
     {
+        if (getSourceAccountCurrency().equals(getTargetAccountCurrency()))
+        {
+            setExchangeRate(BigDecimal.ONE);
+            return;
+        }
+
         // do not auto-suggest exchange rate when editing an existing
         // transaction
         if (source != null)
             return;
 
-        if (getSourceAccountCurrency().equals(getTargetAccountCurrency()))
-        {
-            setExchangeRate(BigDecimal.ONE);
-        }
-        else
-        {
-            ExchangeRateTimeSeries series = getExchangeRateProviderFactory() //
-                            .getTimeSeries(getSourceAccountCurrency(), getTargetAccountCurrency());
+        ExchangeRateTimeSeries series = getExchangeRateProviderFactory() //
+                        .getTimeSeries(getSourceAccountCurrency(), getTargetAccountCurrency());
 
-            if (series != null)
-                setExchangeRate(series.lookupRate(date).orElse(new ExchangeRate(date, BigDecimal.ONE)).getValue());
-            else
-                setExchangeRate(BigDecimal.ONE);
-        }
+        if (series != null)
+            setExchangeRate(series.lookupRate(date).orElse(new ExchangeRate(date, BigDecimal.ONE)).getValue());
+        else
+            setExchangeRate(BigDecimal.ONE);
     }
 
     public LocalDate getDate()

@@ -6,12 +6,12 @@ import java.util.Objects;
 import javax.inject.Inject;
 
 import org.eclipse.core.databinding.UpdateValueStrategy;
-import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.beans.typed.BeanProperties;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.e4.core.services.events.IEventBroker;
-import org.eclipse.jface.databinding.swt.WidgetProperties;
+import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -162,10 +162,8 @@ public class EditSecurityDialog extends Dialog
 
         // bind to model
 
-        @SuppressWarnings("unchecked")
         IObservableValue<String> targetName = WidgetProperties.text(SWT.Modify).observe(name);
-        @SuppressWarnings("unchecked")
-        IObservableValue<String> observable = BeanProperties.value("name").observe(model); //$NON-NLS-1$
+        IObservableValue<String> observable = BeanProperties.value("name", String.class).observe(model); //$NON-NLS-1$
         bindings.getBindingContext().bindValue(targetName, observable,
                         new UpdateValueStrategy<String, String>().setAfterConvertValidator(
                                         v -> v != null && v.trim().length() > 0 ? ValidationStatus.ok()

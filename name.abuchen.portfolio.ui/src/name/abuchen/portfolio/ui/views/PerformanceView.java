@@ -138,8 +138,9 @@ public class PerformanceView extends AbstractHistoricView
             calculation.getTree().setRedraw(true);
         }
 
-        snapshotStart.setInput(snapshot.getStartClientSnapshot(), clientFilter.getSelectedFilter());
-        snapshotEnd.setInput(snapshot.getEndClientSnapshot(), clientFilter.getSelectedFilter());
+        snapshotStart.setInput(clientFilter.getSelectedFilter(), snapshot.getStartClientSnapshot().getTime(),
+                        converter);
+        snapshotEnd.setInput(clientFilter.getSelectedFilter(), snapshot.getEndClientSnapshot().getTime(), converter);
 
         earnings.setInput(snapshot.getEarnings());
         earningsByAccount.setInput(new GroupEarningsByAccount(snapshot).getItems());
@@ -240,10 +241,8 @@ public class PerformanceView extends AbstractHistoricView
                         boolean hasHoldings = snapshot.getEndClientSnapshot().getPositionsByVehicle()
                                         .get(security) != null;
 
-                        if(hasHoldings) 
-                        {
+                        if (hasHoldings)
                             return LogoManager.instance().getDefaultColumnImage(security, getClient().getSettings());
-                        }
                         return Images.SECURITY_RETIRED.image();
                     }
                     else
@@ -537,7 +536,9 @@ public class PerformanceView extends AbstractHistoricView
             public Image getImage(Object element)
             {
                 Security security = ((TransactionPair<?>) element).getTransaction().getSecurity();
-                return security != null ? LogoManager.instance().getDefaultColumnImage(security, getClient().getSettings()) : null;
+                return security != null
+                                ? LogoManager.instance().getDefaultColumnImage(security, getClient().getSettings())
+                                : null;
             }
         });
         column.setSorter(ColumnViewerSorter.create(e -> {
@@ -567,7 +568,9 @@ public class PerformanceView extends AbstractHistoricView
                 Portfolio portfolio = ((TransactionPair<?>) element).getOwner() instanceof Portfolio
                                 ? (Portfolio) ((TransactionPair<?>) element).getOwner()
                                 : null;
-                return portfolio != null ? LogoManager.instance().getDefaultColumnImage(portfolio, getClient().getSettings()) : null;
+                return portfolio != null
+                                ? LogoManager.instance().getDefaultColumnImage(portfolio, getClient().getSettings())
+                                : null;
             }
         });
         column.setSorter(ColumnViewerSorter.create(e -> {
@@ -610,7 +613,9 @@ public class PerformanceView extends AbstractHistoricView
             public Image getImage(Object element)
             {
                 Account account = getAccount.apply(element);
-                return account != null ? LogoManager.instance().getDefaultColumnImage(account, getClient().getSettings()) : null;
+                return account != null
+                                ? LogoManager.instance().getDefaultColumnImage(account, getClient().getSettings())
+                                : null;
             }
         });
         column.setSorter(ColumnViewerSorter.create(e -> {

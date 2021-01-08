@@ -54,6 +54,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.util.Isin;
+import name.abuchen.portfolio.util.TextUtil;
 
 public final class CSVImporter
 {
@@ -364,6 +365,18 @@ public final class CSVImporter
         @Override
         public FieldFormat guessFormat(Client client, String value)
         {
+            // pre-configured based on locale; as PP currently does not allow
+            // arbitrary number format patterns, map it to the available FORMAT
+            // objects
+
+            if ("CH".equals(Locale.getDefault().getCountry())) //$NON-NLS-1$
+                return FORMATS.get(2);
+            if (TextUtil.DECIMAL_SEPARATOR == ',')
+                return FORMATS.get(0);
+            if (TextUtil.DECIMAL_SEPARATOR == '.')
+                return FORMATS.get(1);
+
+            // fallback
             return FORMATS.get(0);
         }
 
@@ -605,7 +618,7 @@ public final class CSVImporter
 
     private CSVExtractor currentExtractor;
 
-    private char delimiter = ';';
+    private char delimiter = TextUtil.getListSeparatorChar();
     private Charset encoding = Charset.defaultCharset();
     private int skipLines = 0;
     private boolean isFirstLineHeader = true;
@@ -860,7 +873,7 @@ public final class CSVImporter
      *            {@link Column}
      * @return value on success, else null
      */
-    private String getFirstNonEmptyValue(Column column)
+    public String getFirstNonEmptyValue(Column column)
     {
         int index = column.getColumnIndex();
         for (String[] rawValues : values)

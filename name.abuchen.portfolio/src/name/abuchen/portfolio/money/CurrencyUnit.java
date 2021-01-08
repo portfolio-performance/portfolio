@@ -2,18 +2,23 @@ package name.abuchen.portfolio.money;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
+import java.util.NavigableMap;
 import java.util.ResourceBundle;
+import java.util.TreeMap;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.util.Pair;
 
 public final class CurrencyUnit implements Comparable<CurrencyUnit>
 {
-    public static final CurrencyUnit EMPTY = new CurrencyUnit(Messages.LabelNoCurrency, Messages.LabelNoCurrencyDescription, null);
+    public static final CurrencyUnit EMPTY = new CurrencyUnit(Messages.LabelNoCurrency,
+                    Messages.LabelNoCurrencyDescription, null);
     public static final String EUR = "EUR"; //$NON-NLS-1$
     public static final String USD = "USD"; //$NON-NLS-1$
 
@@ -66,6 +71,30 @@ public final class CurrencyUnit implements Comparable<CurrencyUnit>
     public static CurrencyUnit getInstance(String currencyCode)
     {
         return CACHE.get(currencyCode);
+    }
+
+    public static List<Pair<String, List<CurrencyUnit>>> getAvailableCurrencyUnitsGrouped()
+    {
+        NavigableMap<Integer, Pair<String, List<CurrencyUnit>>> sublists = new TreeMap<>();
+        sublists.put(0, new Pair<>("A - D", new ArrayList<>())); //$NON-NLS-1$
+        sublists.put(4, new Pair<>("E - I", new ArrayList<>())); //$NON-NLS-1$
+        sublists.put(9, new Pair<>("J - M", new ArrayList<>())); //$NON-NLS-1$
+        sublists.put(13, new Pair<>("N - R", new ArrayList<>())); //$NON-NLS-1$
+        sublists.put(18, new Pair<>("S - V", new ArrayList<>())); //$NON-NLS-1$
+        sublists.put(22, new Pair<>("W - Z", new ArrayList<>())); //$NON-NLS-1$
+
+        for (CurrencyUnit unit : CACHE.values())
+        {
+            int letter = unit.getCurrencyCode().charAt(0) - 'A';
+            sublists.floorEntry(letter).getValue().getRight().add(unit);
+        }
+
+        List<Pair<String, List<CurrencyUnit>>> answer = new ArrayList<>(sublists.values());
+
+        for (Pair<String, List<CurrencyUnit>> pair : answer)
+            Collections.sort(pair.getRight());
+
+        return answer;
     }
 
     public String getCurrencyCode()

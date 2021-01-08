@@ -100,4 +100,5 @@ jobs:
       run: |
         mvn verify \
         --batch-mode \
-        --file portfolio-app/pom.xml
+        --file portfolio-app/pom.xml \
+        -pl :portfolio-target-definition,:name.abuchen.portfolio,:name.abuchen.portfolio.tests -am -amd

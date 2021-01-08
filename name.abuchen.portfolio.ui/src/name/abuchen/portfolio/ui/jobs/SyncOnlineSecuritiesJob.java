@@ -34,7 +34,8 @@ public final class SyncOnlineSecuritiesJob extends AbstractClientJob
         if (toBeSynced.isEmpty())
             return Status.OK_STATUS;
 
-        monitor.beginTask(Messages.JobLabelSyncSecuritiesOnline, toBeSynced.size());
+        monitor.beginTask(MessageFormat.format(Messages.JobLabelSyncSecuritiesOnline, "https://portfolio-report.net"), //$NON-NLS-1$
+                        toBeSynced.size());
 
         boolean isDirty = false;
 

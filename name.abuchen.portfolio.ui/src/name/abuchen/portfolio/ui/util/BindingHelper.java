@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.util;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.text.MessageFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,15 +11,15 @@ import java.util.stream.Collectors;
 import org.eclipse.core.databinding.AggregateValidationStatus;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
-import org.eclipse.core.databinding.beans.BeanProperties;
-import org.eclipse.core.databinding.beans.PojoProperties;
+import org.eclipse.core.databinding.beans.typed.BeanProperties;
+import org.eclipse.core.databinding.beans.typed.PojoProperties;
 import org.eclipse.core.databinding.conversion.IConverter;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.databinding.swt.ISWTObservableValue;
-import org.eclipse.jface.databinding.swt.WidgetProperties;
-import org.eclipse.jface.databinding.viewers.ViewersObservables;
+import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
+import org.eclipse.jface.databinding.viewers.typed.ViewerProperties;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
@@ -236,7 +237,6 @@ public class BindingHelper
         this.model = model;
         this.context = new DataBindingContext();
 
-        @SuppressWarnings("unchecked")
         IObservableValue<?> observable = PojoProperties.value("status").observe(listener); //$NON-NLS-1$
         context.bindValue(observable, new AggregateValidationStatus(context, AggregateValidationStatus.MAX_SEVERITY));
     }
@@ -259,7 +259,6 @@ public class BindingHelper
         GridDataFactory.fillDefaults().span(2, 1).grab(true, false).applyTo(errorLabel);
 
         // error label
-        @SuppressWarnings("unchecked")
         IObservableValue<String> statusTarget = WidgetProperties.text().observe(errorLabel);
         IObservableValue<IStatus> statusModel = new AggregateValidationStatus(context,
                         AggregateValidationStatus.MAX_SEVERITY);
@@ -277,7 +276,6 @@ public class BindingHelper
     public final void bindLabel(Composite editArea, String property)
     {
         Label label = new Label(editArea, SWT.NONE);
-        @SuppressWarnings("unchecked")
         IObservableValue<?> labelModel = BeanProperties.value(property).observe(model);
         IObservableValue<?> labelTarget = WidgetProperties.text().observe(label);
         context.bindValue(labelTarget, labelModel);
@@ -294,9 +292,8 @@ public class BindingHelper
         spinner.setIncrement(increment);
         GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.FILL)
                         .hint((int) Math.round(5 * getAverageCharWidth(spinner)), SWT.DEFAULT).applyTo(spinner);
-        @SuppressWarnings("unchecked")
         IObservableValue<?> spinnerModel = BeanProperties.value(property).observe(model);
-        IObservableValue<?> spinnerTarget = WidgetProperties.selection().observe(spinner);
+        IObservableValue<?> spinnerTarget = WidgetProperties.spinnerSelection().observe(spinner);
         context.bindValue(spinnerTarget, spinnerModel);
     }
 
@@ -327,10 +324,9 @@ public class BindingHelper
         UpdateValueStrategy<String, CurrencyUnit> modelToTarget = new UpdateValueStrategy<>();
         modelToTarget.setConverter(new StringToCurrencyUnitConverter());
 
-        @SuppressWarnings("unchecked")
-        IObservableValue<String> comboModel = BeanProperties.value(property).observe(model);
-        @SuppressWarnings("unchecked")
-        IObservableValue<CurrencyUnit> comboTarget = ViewersObservables.observeSingleSelection(combo);
+        IObservableValue<String> comboModel = BeanProperties.value(property, String.class).observe(model);
+        IObservableValue<CurrencyUnit> comboTarget = ViewerProperties.singleSelection(CurrencyUnit.class)
+                        .observe(combo);
         context.bindValue(comboTarget, comboModel, targetToModel, modelToTarget);
         return combo;
     }
@@ -357,10 +353,9 @@ public class BindingHelper
         UpdateValueStrategy<String, TradeCalendar> modelToTarget = new UpdateValueStrategy<>();
         modelToTarget.setConverter(new StringToCalendarConverter(emptyOption));
 
-        @SuppressWarnings("unchecked")
-        IObservableValue<TradeCalendar> targetObservable = ViewersObservables.observeSingleSelection(combo);
-        @SuppressWarnings("unchecked")
-        IObservableValue<String> observable = BeanProperties.value(property).observe(model);
+        IObservableValue<TradeCalendar> targetObservable = ViewerProperties.singleSelection(TradeCalendar.class)
+                        .observe(combo);
+        IObservableValue<String> observable = BeanProperties.value(property, String.class).observe(model);
         context.bindValue(targetObservable, observable, targetToModel, modelToTarget);
         return combo;
     }
@@ -373,13 +368,11 @@ public class BindingHelper
         DatePicker boxDate = new DatePicker(editArea);
         GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.CENTER).applyTo(boxDate.getControl());
 
-        @SuppressWarnings("unchecked")
-        IObservableValue<Object> targetObservable = new SimpleDateTimeDateSelectionProperty()
+        IObservableValue<LocalDate> targetObservable = new SimpleDateTimeDateSelectionProperty()
                         .observe(boxDate.getControl());
-        @SuppressWarnings("unchecked")
-        IObservableValue<Object> modelObservable = BeanProperties.value(property).observe(model);
+        IObservableValue<LocalDate> modelObservable = BeanProperties.value(property, LocalDate.class).observe(model);
         context.bindValue(targetObservable, modelObservable,
-                        new UpdateValueStrategy<Object, Object>().setAfterConvertValidator(value -> value != null
+                        new UpdateValueStrategy<LocalDate, LocalDate>().setAfterConvertValidator(value -> value != null
                                         ? ValidationStatus.ok()
                                         : ValidationStatus.error(
                                                         MessageFormat.format(Messages.MsgDialogInputRequired, label))),
@@ -413,10 +406,8 @@ public class BindingHelper
         input2model.setAfterConvertValidator(v -> v != null && v.longValue() > 0 ? ValidationStatus.ok()
                         : ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired, label)));
 
-        @SuppressWarnings("unchecked")
         IObservableValue<String> targetObservable = WidgetProperties.text(SWT.Modify).observe(txtValue);
-        @SuppressWarnings("unchecked")
-        IObservableValue<Long> modelObservable = BeanProperties.value(property).observe(model);
+        IObservableValue<Long> modelObservable = BeanProperties.value(property, Long.class).observe(model);
         context.bindValue(targetObservable, modelObservable, input2model,
                         new UpdateValueStrategy<Long, String>().setConverter(new CurrencyToStringConverter(type)));
     }
@@ -462,22 +453,19 @@ public class BindingHelper
     {
         Text txtValue = createTextInput(editArea, label, style, SWT.DEFAULT);
 
-        @SuppressWarnings("unchecked")
         IObservableValue<String> targetObservablebserveText = WidgetProperties.text(SWT.Modify).observe(txtValue);
-        @SuppressWarnings("unchecked")
-        IObservableValue<String> modelObeservable = BeanProperties.value(property).observe(model);
+        IObservableValue<String> modelObeservable = BeanProperties.value(property, String.class).observe(model);
         context.bindValue(targetObservablebserveText, modelObeservable);
 
         return targetObservablebserveText;
     }
 
-    @SuppressWarnings("unchecked")
     public final Text bindStringInput(Composite editArea, final String label, String property, int style,
                     int lenghtInCharacters)
     {
         Text txtValue = createTextInput(editArea, label, style, lenghtInCharacters);
 
-        ISWTObservableValue observeText = WidgetProperties.text(SWT.Modify).observe(txtValue);
+        ISWTObservableValue<String> observeText = WidgetProperties.text(SWT.Modify).observe(txtValue);
         context.bindValue(observeText, BeanProperties.value(property).observe(model));
 
         return txtValue;
@@ -488,10 +476,8 @@ public class BindingHelper
         Text txtValue = createTextInput(editArea, label, SWT.NONE, 12);
         txtValue.setTextLimit(12);
 
-        @SuppressWarnings("unchecked")
         IObservableValue<String> targetObservable = WidgetProperties.text(SWT.Modify).observe(txtValue);
-        @SuppressWarnings("unchecked")
-        IObservableValue<String> modelObservable = BeanProperties.value(property).observe(model);
+        IObservableValue<String> modelObservable = BeanProperties.value(property, String.class).observe(model);
 
         context.bindValue(targetObservable, modelObservable, //
                         new UpdateValueStrategy<String, String>().setAfterConvertValidator(
@@ -510,8 +496,7 @@ public class BindingHelper
 
         final Button btnCheckbox = new Button(editArea, SWT.CHECK);
 
-        IObservableValue<?> targetObservable = WidgetProperties.selection().observe(btnCheckbox);
-        @SuppressWarnings("unchecked")
+        IObservableValue<?> targetObservable = WidgetProperties.buttonSelection().observe(btnCheckbox);
         IObservableValue<?> modelObservable = BeanProperties.value(property).observe(model);
 
         context.bindValue(targetObservable, modelObservable);

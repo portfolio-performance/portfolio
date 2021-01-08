@@ -6,7 +6,6 @@ import java.util.Comparator;
 import java.util.ResourceBundle;
 
 import name.abuchen.portfolio.money.Money;
-import name.abuchen.portfolio.money.MoneyCollectors;
 import name.abuchen.portfolio.money.Values;
 
 public class AccountTransaction extends Transaction
@@ -103,10 +102,8 @@ public class AccountTransaction extends Transaction
      */
     public long getGrossValueAmount()
     {
-        long taxes = getUnits().filter(u -> u.getType() == Unit.Type.TAX)
-                        .collect(MoneyCollectors.sum(getCurrencyCode(), Unit::getAmount)).getAmount();
-
-        return getAmount() + (type.isCredit() ? taxes : -taxes);
+        long taxAndFees = getUnitSum(Unit.Type.FEE, Unit.Type.TAX).getAmount();
+        return getAmount() + (type.isCredit() ? taxAndFees : -taxAndFees);
     }
 
     /**

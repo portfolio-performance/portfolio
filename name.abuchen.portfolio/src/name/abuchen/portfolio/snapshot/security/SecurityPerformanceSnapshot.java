@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.Account;
@@ -21,7 +22,9 @@ import name.abuchen.portfolio.util.Interval;
 
 public class SecurityPerformanceSnapshot
 {
-    public static SecurityPerformanceSnapshot create(Client client, CurrencyConverter converter, Interval interval)
+    @SafeVarargs
+    public static SecurityPerformanceSnapshot create(Client client, CurrencyConverter converter, Interval interval,
+                    Class<? extends SecurityPerformanceIndicator>... indicators)
     {
         Map<Security, SecurityPerformanceRecord.Builder> transactions = initRecords(client);
 
@@ -36,7 +39,7 @@ public class SecurityPerformanceSnapshot
             addPseudoValuationTansactions(portfolio, converter, interval, transactions);
         }
 
-        return doCreateSnapshot(client, converter, transactions, interval);
+        return doCreateSnapshot(client, converter, transactions, interval, indicators);
     }
 
     public static SecurityPerformanceSnapshot create(Client client, CurrencyConverter converter, Portfolio portfolio,
@@ -45,8 +48,10 @@ public class SecurityPerformanceSnapshot
         return create(new PortfolioClientFilter(portfolio).filter(client), converter, interval);
     }
 
+    @SafeVarargs
     public static SecurityPerformanceSnapshot create(Client client, CurrencyConverter converter, Interval interval,
-                    ClientSnapshot valuationAtStart, ClientSnapshot valuationAtEnd)
+                    ClientSnapshot valuationAtStart, ClientSnapshot valuationAtEnd,
+                    Class<? extends SecurityPerformanceIndicator>... indicators)
     {
         Map<Security, SecurityPerformanceRecord.Builder> transactions = initRecords(client);
 
@@ -74,7 +79,7 @@ public class SecurityPerformanceSnapshot
             }
         }
 
-        return doCreateSnapshot(client, converter, transactions, interval);
+        return doCreateSnapshot(client, converter, transactions, interval, indicators);
     }
 
     private static Map<Security, SecurityPerformanceRecord.Builder> initRecords(Client client)
@@ -86,8 +91,10 @@ public class SecurityPerformanceSnapshot
         return records;
     }
 
+    @SafeVarargs
     private static SecurityPerformanceSnapshot doCreateSnapshot(Client client, CurrencyConverter converter,
-                    Map<Security, SecurityPerformanceRecord.Builder> records, Interval interval)
+                    Map<Security, SecurityPerformanceRecord.Builder> records, Interval interval,
+                    Class<? extends SecurityPerformanceIndicator>... indicators)
     {
         List<SecurityPerformanceRecord> list = new ArrayList<>();
 
@@ -96,7 +103,7 @@ public class SecurityPerformanceSnapshot
             if (record.isEmpty())
                 continue;
 
-            list.add(record.build(client, converter, interval));
+            list.add(record.build(client, converter, interval, indicators));
         }
 
         return new SecurityPerformanceSnapshot(list);
@@ -183,5 +190,10 @@ public class SecurityPerformanceSnapshot
     public List<SecurityPerformanceRecord> getRecords()
     {
         return records;
+    }
+
+    public Optional<SecurityPerformanceRecord> getRecord(Security security)
+    {
+        return records.stream().filter(r -> security.equals(r.getSecurity())).findAny();
     }
 }

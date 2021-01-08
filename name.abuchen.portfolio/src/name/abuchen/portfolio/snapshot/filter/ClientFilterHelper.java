@@ -1,10 +1,14 @@
 package name.abuchen.portfolio.snapshot.filter;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
+import name.abuchen.portfolio.money.Values;
 
 /* protected */ class ClientFilterHelper
 {
@@ -15,11 +19,11 @@ import name.abuchen.portfolio.model.PortfolioTransferEntry;
     /* package */ static void recreateTransfer(PortfolioTransferEntry transferEntry, ReadOnlyPortfolio sourcePortfolio,
                     ReadOnlyPortfolio targetPortfolio)
     {
-        recreateTransfer(transferEntry, sourcePortfolio, targetPortfolio, Classification.ONE_HUNDRED_PERCENT);
+        recreateTransfer(transferEntry, sourcePortfolio, targetPortfolio, Classification.ONE_HUNDRED_PERCENT_BD);
     }
 
     /* package */ static void recreateTransfer(PortfolioTransferEntry transferEntry, ReadOnlyPortfolio sourcePortfolio,
-                    ReadOnlyPortfolio targetPortfolio, int weight)
+                    ReadOnlyPortfolio targetPortfolio, BigDecimal weight)
     {
         PortfolioTransaction t = transferEntry.getSourceTransaction();
 
@@ -57,11 +61,14 @@ import name.abuchen.portfolio.model.PortfolioTransferEntry;
         targetAccount.internalAddTransaction(copy.getTargetTransaction());
     }
 
-    private static long value(long value, int weight)
+    private static long value(long value, BigDecimal weight)
     {
-        if (weight == Classification.ONE_HUNDRED_PERCENT)
+        if (weight.equals(Classification.ONE_HUNDRED_PERCENT_BD))
             return value;
         else
-            return Math.round(value * weight / (double) Classification.ONE_HUNDRED_PERCENT);
+            return BigDecimal.valueOf(value) //
+                            .multiply(weight, Values.MC)
+                            .divide(Classification.ONE_HUNDRED_PERCENT_BD, Values.MC)
+                            .setScale(0, RoundingMode.HALF_EVEN).longValue();
     }
 }

@@ -10,6 +10,7 @@ import java.text.DecimalFormatSymbols;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.Year;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
@@ -20,6 +21,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.Set;
@@ -51,6 +53,42 @@ import name.abuchen.portfolio.util.WebAccess;
 
 public class HTMLTableQuoteFeed implements QuoteFeed
 {
+    private static class ExtractedPrice extends LatestSecurityPrice
+    {
+        private LocalTime time;
+
+        public LocalTime getTime()
+        {
+            return time;
+        }
+
+        public void setTime(LocalTime time)
+        {
+            this.time = time;
+        }
+
+        public LatestSecurityPrice toLatestSecurityPrice()
+        {
+            return new LatestSecurityPrice(getDate(), getValue(), getHigh(), getLow(), getVolume());
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (!super.equals(obj))
+                return false;
+
+            ExtractedPrice other = (ExtractedPrice) obj;
+            return Objects.equals(this.time, other.time);
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return 31 * super.hashCode() + Objects.hash(time);
+        }
+    }
+
     protected abstract static class Column
     {
         static final ThreadLocal<DecimalFormat> DECIMAL_FORMAT_GERMAN = ThreadLocal
@@ -85,7 +123,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
             return false;
         }
 
-        abstract void setValue(Element value, LatestSecurityPrice price, String languageHint) throws ParseException;
+        abstract void setValue(Element value, ExtractedPrice price, String languageHint) throws ParseException;
 
         protected long asQuote(Element value, String languageHint) throws ParseException
         {
@@ -155,7 +193,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         }
 
         @Override
-        void setValue(Element value, LatestSecurityPrice price, String languageHint) throws ParseException
+        void setValue(Element value, ExtractedPrice price, String languageHint) throws ParseException
         {
             String text = TextUtil.strip(value.text());
             for (int ii = 0; ii < formatters.length; ii++)
@@ -176,13 +214,46 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         }
     }
 
+    protected static class TimeColumn extends Column
+    {
+        private DateTimeFormatter[] formatters = new DateTimeFormatter[] { DateTimeFormatter.ISO_LOCAL_TIME };
+
+        @SuppressWarnings("nls")
+        public TimeColumn()
+        {
+            super(new String[] { "Zeit.*" });
+        }
+
+        @Override
+        void setValue(Element value, ExtractedPrice price, String languageHint) throws ParseException
+        {
+            String text = TextUtil.strip(value.text());
+            for (DateTimeFormatter formatter : formatters)
+            {
+                try
+                {
+                    LocalTime time = LocalTime.parse(text, formatter);
+                    price.setTime(time);
+                    return;
+                }
+                catch (DateTimeParseException e) // NOSONAR
+                {
+                    // continue with next pattern
+                }
+
+            }
+
+            throw new ParseException(text, 0);
+        }
+    }
+
     protected static class CloseColumn extends Column
     {
         @SuppressWarnings("nls")
         public CloseColumn()
         {
             super(new String[] { "Schluss.*", "Schluß.*", "Rücknahmepreis.*", "Close.*", "Zuletzt", "Price",
-                            "akt. Kurs", "Dernier" });
+                            "akt. Kurs", "Dernier", "Kurs" });
         }
 
         public CloseColumn(String[] patterns)
@@ -191,7 +262,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         }
 
         @Override
-        void setValue(Element value, LatestSecurityPrice price, String languageHint) throws ParseException
+        void setValue(Element value, ExtractedPrice price, String languageHint) throws ParseException
         {
             price.setValue(asQuote(value, languageHint));
         }
@@ -211,7 +282,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         }
 
         @Override
-        void setValue(Element value, LatestSecurityPrice price, String languageHint) throws ParseException
+        void setValue(Element value, ExtractedPrice price, String languageHint) throws ParseException
         {
             if ("-".equals(value.text().trim())) //$NON-NLS-1$
                 price.setHigh(LatestSecurityPrice.NOT_AVAILABLE);
@@ -234,7 +305,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         }
 
         @Override
-        void setValue(Element value, LatestSecurityPrice price, String languageHint) throws ParseException
+        void setValue(Element value, ExtractedPrice price, String languageHint) throws ParseException
         {
             if ("-".equals(value.text().trim())) //$NON-NLS-1$
                 price.setLow(LatestSecurityPrice.NOT_AVAILABLE);
@@ -269,8 +340,8 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 
     public static final String ID = "GENERIC_HTML_TABLE"; //$NON-NLS-1$
 
-    private static final Column[] COLUMNS = new Column[] { new DateColumn(), new CloseColumn(), new HighColumn(),
-                    new LowColumn() };
+    private static final Column[] COLUMNS = new Column[] { new DateColumn(), new TimeColumn(), new CloseColumn(),
+                    new HighColumn(), new LowColumn() };
 
     private final PageCache<Pair<String, List<LatestSecurityPrice>>> cache = new PageCache<>();
 
@@ -392,9 +463,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
     {
         try
         {
-            String html = new WebAccess(url) //
-                            .addUserAgent(getUserAgent()) //
-                            .get();
+            String html = getHtml(url);
 
             Document document = Jsoup.parse(html);
             List<LatestSecurityPrice> prices = parse(url, document, data);
@@ -408,6 +477,13 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         }
     }
 
+    String getHtml(String url) throws IOException, URISyntaxException
+    {
+        return new WebAccess(url) //
+                        .addUserAgent(getUserAgent()) //
+                        .get();
+    }
+
     protected List<LatestSecurityPrice> parseFromHTML(String html, QuoteFeedData data)
     {
         return parse("n/a", Jsoup.parse(html), data); //$NON-NLS-1$
@@ -418,7 +494,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         // check if language is provided
         String language = document.select("html").attr("lang"); //$NON-NLS-1$ //$NON-NLS-2$
 
-        List<LatestSecurityPrice> prices = new ArrayList<>();
+        List<ExtractedPrice> prices = new ArrayList<>();
 
         // first: find tables
         Elements tables = document.getElementsByTag("table"); //$NON-NLS-1$
@@ -442,8 +518,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 
                         try
                         {
-                            LatestSecurityPrice price = extractPrice(row, specs, language,
-                                            headerInfo.numberOfHeaderColumns);
+                            ExtractedPrice price = extractPrice(row, specs, language, headerInfo.numberOfHeaderColumns);
                             if (price != null)
                                 prices.add(price);
                         }
@@ -459,12 +534,44 @@ public class HTMLTableQuoteFeed implements QuoteFeed
             }
         }
 
-        // if no quotes could be extract, log HTML for further analysis
+        // if no quotes could be extracted, log HTML for further analysis
         if (prices.isEmpty())
+        {
             data.addError(new IOException(MessageFormat.format(Messages.MsgNoQuotesFoundInHTML, url,
                             Jsoup.clean(document.html(), Whitelist.relaxed()))));
+            return Collections.emptyList();
+        }
 
-        return prices;
+        // sort by date and, if available, by time
+
+        Collections.sort(prices, (r, l) -> {
+            int compare = l.getDate().compareTo(r.getDate());
+            if (compare != 0)
+                return compare;
+
+            if (r.getTime() == null || l.getTime() == null)
+                return 0;
+
+            return l.getTime().compareTo(r.getTime());
+        });
+
+        // remove the duplicates with the same date (keep the one with the
+        // oldest time)
+
+        List<LatestSecurityPrice> answer = new ArrayList<>(prices.size());
+
+        LocalDate last = null;
+        for (ExtractedPrice p : prices)
+        {
+            if (p.getDate().equals(last))
+                continue;
+
+            answer.add(p.toLatestSecurityPrice());
+
+            last = p.getDate();
+        }
+
+        return answer;
     }
 
     @SuppressWarnings("nls")
@@ -557,15 +664,15 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 
         for (Spec spec : specs)
         {
-            hasDate = hasDate || spec.column instanceof DateColumn;
+            hasDate = hasDate || spec.column instanceof DateColumn || spec.column instanceof TimeColumn;
             hasClose = hasClose || spec.column instanceof CloseColumn;
         }
 
         return hasDate && hasClose;
     }
 
-    private LatestSecurityPrice extractPrice(Element row, List<Spec> specs, String languageHint,
-                    int numberOfHeaderColumns) throws ParseException
+    private ExtractedPrice extractPrice(Element row, List<Spec> specs, String languageHint, int numberOfHeaderColumns)
+                    throws ParseException
     {
         Elements cells = row.select("> td"); //$NON-NLS-1$
 
@@ -573,10 +680,13 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         if (cells.size() != numberOfHeaderColumns)
             return null;
 
-        LatestSecurityPrice price = new LatestSecurityPrice();
+        ExtractedPrice price = new ExtractedPrice();
 
         for (Spec spec : specs)
             spec.column.setValue(cells.get(spec.index), price, languageHint);
+
+        if (price.getDate() == null)
+            price.setDate(LocalDate.now());
 
         return price;
     }

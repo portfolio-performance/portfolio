@@ -1,0 +1,166 @@
+<client>
+  <version>47</version>
+  <baseCurrency>EUR</baseCurrency>
+  <securities>
+    <security>
+      <uuid>a504a7fa-decd-4d41-a7eb-ce5720d2e753</uuid>
+      <onlineId>32877218877048ed8cadff71747b7e6a</onlineId>
+      <name>ADIDAS AG NA O.N.</name>
+      <currencyCode>EUR</currencyCode>
+      <isin>DE000A1EWWW0</isin>
+      <tickerSymbol>ADS</tickerSymbol>
+      <wkn>A1EWWW</wkn>
+      <feed>PORTFOLIO-REPORT</feed>
+      <prices>
+        <price t="2020-11-20" v="2805000"/>
+      </prices>
+      <attributes>
+        <map/>
+      </attributes>
+      <events/>
+      <property type="MARKET" name="XFRA">ADS</property>
+      <property type="MARKET" name="XNAS">ADDDF</property>
+      <property type="FEED" name="PORTFOLIO-REPORT-MARKET">XETR</property>
+      <property type="FEED" name="PORTFOLIO-REPORT-MARKETS">[{&quot;marketCode&quot;:&quot;XETR&quot;,&quot;currencyCode&quot;:&quot;EUR&quot;,&quot;firstPriceDate&quot;:{&quot;year&quot;:2000,&quot;month&quot;:1,&quot;day&quot;:3},&quot;lastPriceDate&quot;:{&quot;year&quot;:2020,&quot;month&quot;:11,&quot;day&quot;:20}}]</property>
+      <isRetired>false</isRetired>
+    </security>
+  </securities>
+  <watchlists/>
+  <consumerPriceIndeces/>
+  <accounts>
+    <account>
+      <uuid>dd73113a-16d3-4476-8b27-824e08a299c7</uuid>
+      <name>Konto 1</name>
+      <currencyCode>EUR</currencyCode>
+      <isRetired>false</isRetired>
+      <transactions>
+        <account-transaction>
+          <date>2020-01-01T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>500000</amount>
+          <shares>0</shares>
+          <type>DEPOSIT</type>
+        </account-transaction>
+        <account-transaction>
+          <date>2020-09-21T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>200000</amount>
+          <security reference="../../../../../securities/security"/>
+          <crossEntry class="buysell">
+            <portfolio>
+              <uuid>fa5e4ffd-65d5-4bd4-9e66-350c8fa5d554</uuid>
+              <name>Depot 1</name>
+              <isRetired>false</isRetired>
+              <referenceAccount reference="../../../../.."/>
+              <transactions>
+                <portfolio-transaction>
+                  <date reference="../../../../../date"/>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>200000</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell" reference="../../../.."/>
+                  <shares>10000000</shares>
+                  <type>BUY</type>
+                </portfolio-transaction>
+              </transactions>
+              <attributes>
+                <map/>
+              </attributes>
+            </portfolio>
+            <portfolioTransaction reference="../portfolio/transactions/portfolio-transaction"/>
+            <account reference="../../../.."/>
+            <accountTransaction reference="../.."/>
+          </crossEntry>
+          <shares>0</shares>
+          <type>BUY</type>
+        </account-transaction>
+      </transactions>
+      <attributes>
+        <map/>
+      </attributes>
+    </account>
+    <account>
+      <uuid>79243bdd-6a14-4355-94f5-6b21fbe7481f</uuid>
+      <name>Konto 2</name>
+      <currencyCode>EUR</currencyCode>
+      <isRetired>false</isRetired>
+      <transactions>
+        <account-transaction>
+          <date>2020-01-01T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>500000</amount>
+          <shares>0</shares>
+          <type>DEPOSIT</type>
+        </account-transaction>
+        <account-transaction>
+          <date>2020-10-21T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>100000</amount>
+          <security reference="../../../../../securities/security"/>
+          <crossEntry class="buysell">
+            <portfolio>
+              <uuid>672e3a96-06c5-47a3-9394-712272f4ba0e</uuid>
+              <name>Depot 2</name>
+              <isRetired>false</isRetired>
+              <referenceAccount reference="../../../../.."/>
+              <transactions>
+                <portfolio-transaction>
+                  <date reference="../../../../../date"/>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100000</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell" reference="../../../.."/>
+                  <shares>10000000</shares>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <date>2020-11-21T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>280500</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <date reference="../../../date"/>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>280500</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <type>SELL</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>10000000</shares>
+                  <type>SELL</type>
+                </portfolio-transaction>
+              </transactions>
+              <attributes>
+                <map/>
+              </attributes>
+            </portfolio>
+            <portfolioTransaction reference="../portfolio/transactions/portfolio-transaction"/>
+            <account reference="../../../.."/>
+            <accountTransaction reference="../.."/>
+          </crossEntry>
+          <shares>0</shares>
+          <type>BUY</type>
+        </account-transaction>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[2]/crossEntry/accountTransaction"/>
+      </transactions>
+      <attributes>
+        <map/>
+      </attributes>
+    </account>
+  </accounts>
+  <portfolios>
+    <portfolio reference="../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio"/>
+    <portfolio reference="../../accounts/account[2]/transactions/account-transaction[2]/crossEntry/portfolio"/>
+  </portfolios>
+  <plans/>
+  <taxonomies/>
+  <dashboards/>
+  <properties/>
+  <settings/>
+</client>

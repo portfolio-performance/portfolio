@@ -27,6 +27,7 @@ import org.eclipse.swt.widgets.Control;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Taxonomy;
+import name.abuchen.portfolio.online.TaxonomySource;
 import name.abuchen.portfolio.snapshot.filter.ClientFilter;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
@@ -247,6 +248,25 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
 
     private void addConfigButton(ToolBarManager toolBar)
     {
+        toolBar.add(new DropDown("Sync", Images.CLOUD, SWT.NONE, manager -> {
+
+            String source = taxonomy.getSource();
+
+            for (TaxonomySource ts : TaxonomySource.values())
+            {
+                Action action = new SimpleAction(ts.getLabel(), a -> {
+                    if (ts.getIdentifier().equals(source))
+                        taxonomy.setSource(null);
+                    else
+                        taxonomy.setSource(ts.getIdentifier());
+
+                    model.getClient().touch();
+                });
+                action.setChecked(ts.getIdentifier().equals(source));
+                manager.add(action);
+            }
+        }));
+
         toolBar.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE,
                         manager -> getCurrentPage().ifPresent(p -> p.configMenuAboutToShow(manager))));
     }

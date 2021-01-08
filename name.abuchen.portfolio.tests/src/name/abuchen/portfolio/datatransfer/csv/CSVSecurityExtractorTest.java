@@ -3,7 +3,7 @@ package name.abuchen.portfolio.datatransfer.csv;
 import static name.abuchen.portfolio.datatransfer.csv.CSVExtractorTestUtil.buildField2Column;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.text.ParseException;
 import java.util.ArrayList;

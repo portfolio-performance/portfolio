@@ -1,4 +1,6 @@
 target
+workspace
 .metadata/*
+.project
 .recommenders/*
 .DS_Store

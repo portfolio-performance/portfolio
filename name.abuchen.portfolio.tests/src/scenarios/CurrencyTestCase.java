@@ -1,7 +1,7 @@
 package scenarios;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -30,6 +30,7 @@ import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.GroupByTaxonomy;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
+import name.abuchen.portfolio.snapshot.security.SecurityPerformanceIndicator;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.trail.Trail;
@@ -51,10 +52,14 @@ public class CurrencyTestCase
     {
         client = ClientFactory.load(SecurityTestCase.class.getResourceAsStream("currency_sample.xml"));
 
-        securityEUR = client.getSecurities().stream().filter(s -> s.getName().equals("BASF")).findFirst().get();
-        securityUSD = client.getSecurities().stream().filter(s -> s.getName().equals("Apple")).findFirst().get();
-        accountEUR = client.getAccounts().stream().filter(s -> s.getName().equals("Account EUR")).findFirst().get();
-        accountUSD = client.getAccounts().stream().filter(s -> s.getName().equals("Account USD")).findFirst().get();
+        securityEUR = client.getSecurities().stream().filter(s -> s.getName().equals("BASF")).findFirst()
+                        .orElseThrow(IllegalArgumentException::new);
+        securityUSD = client.getSecurities().stream().filter(s -> s.getName().equals("Apple")).findFirst()
+                        .orElseThrow(IllegalArgumentException::new);
+        accountEUR = client.getAccounts().stream().filter(s -> s.getName().equals("Account EUR")).findFirst()
+                        .orElseThrow(IllegalArgumentException::new);
+        accountUSD = client.getAccounts().stream().filter(s -> s.getName().equals("Account USD")).findFirst()
+                        .orElseThrow(IllegalArgumentException::new);
     }
 
     @Test
@@ -83,8 +88,8 @@ public class CurrencyTestCase
     {
         assertThat(snapshot.getMonetaryAssets(), is(grouping.getValuation()));
 
-        assertThat(grouping.getCategories().map(c -> c.getValuation()).collect(MoneyCollectors.sum(CurrencyUnit.EUR)),
-                        is(grouping.getValuation()));
+        assertThat(grouping.getCategories().map(AssetCategory::getValuation)
+                        .collect(MoneyCollectors.sum(CurrencyUnit.EUR)), is(grouping.getValuation()));
     }
 
     private void testAssetCategories(GroupByTaxonomy grouping)
@@ -124,25 +129,42 @@ public class CurrencyTestCase
         AssetPosition equityUSD = getAssetPositionByName(grouping, securityUSD.getName());
 
         assertThat(equityUSD.getPosition().getShares(), is(Values.Share.factorize(10)));
+
+        Interval interval = Interval.of(LocalDate.MIN, grouping.getDate());
+        SecurityPerformanceRecord recordUSD = SecurityPerformanceSnapshot
+                        .create(client, converter.with(CurrencyUnit.USD), interval,
+                                        SecurityPerformanceIndicator.Costs.class)
+                        .getRecord(securityUSD).orElseThrow(IllegalArgumentException::new);
+
+        SecurityPerformanceRecord recordEUR = SecurityPerformanceSnapshot
+                        .create(client, converter.with(CurrencyUnit.EUR), interval,
+                                        SecurityPerformanceIndicator.Costs.class)
+                        .getRecord(securityUSD).orElseThrow(IllegalArgumentException::new);
+
         // purchase value must be sum of both purchases:
         // the one in EUR account and the one in USD account
 
         // must take the inverse of the exchange used within the transaction
         BigDecimal rate = BigDecimal.ONE.divide(BigDecimal.valueOf(0.8237), 10, RoundingMode.HALF_DOWN);
 
-        assertThat(equityUSD.getPosition().getFIFOPurchaseValue(),
-                        is(Money.of("USD", Math.round(454_60 * rate.doubleValue()) + 571_90)));
+        assertThat(recordUSD.getFifoCost(),
+                        is(Money.of(CurrencyUnit.USD, Math.round(454_60 * rate.doubleValue()) + 571_90)));
 
         // price per share is the total purchase price minus 20 USD fees and
         // taxes divided by the number of shares
-        Money pricePerShare = equityUSD.getPosition().getFIFOPurchaseValue() //
-                        .subtract(Money.of("USD", 20_00)).divide(10);
-        assertThat(equityUSD.getPosition().getFIFOPurchasePrice(), is(pricePerShare));
+        Money pricePerShare = recordUSD.getFifoCost() //
+                        .subtract(Money.of(CurrencyUnit.USD, 20_00)).divide(10);
+        assertThat(recordUSD.getFifoCostPerSharesHeld().toMoney(), is(pricePerShare));
 
         // profit loss w/o rounding differences
-        assertThat(equityUSD.getProfitLoss(), is(equityUSD.getValuation().subtract(equityUSD.getFIFOPurchaseValue())));
-        assertThat(equityUSD.getPosition().getProfitLoss(), is(equityUSD.getPosition().calculateValue()
-                        .subtract(equityUSD.getPosition().getFIFOPurchaseValue())));
+
+        assertThat(equityUSD.getValuation(), is(recordEUR.getMarketValue()));
+
+        assertThat(recordEUR.getCapitalGainsOnHoldings(),
+                        is(equityUSD.getValuation().subtract(recordEUR.getFifoCost())));
+
+        assertThat(recordUSD.getCapitalGainsOnHoldings(),
+                        is(equityUSD.getPosition().calculateValue().subtract(recordUSD.getFifoCost())));
 
     }
 
@@ -194,14 +216,21 @@ public class CurrencyTestCase
 
         AssetPosition position = snapshot.getPositionsByVehicle().get(securityUSD);
         assertThat(position.getPosition().getShares(), is(Values.Share.factorize(15)));
-        assertThat(position.getFIFOPurchaseValue(), is(Money.of(CurrencyUnit.EUR, 454_60 + 471_05 + 498_45)));
+
+        Interval inteval = Interval.of(LocalDate.MIN, snapshot.getTime());
+        SecurityPerformanceRecord recordEUR = SecurityPerformanceSnapshot
+                        .create(client, converter.with(CurrencyUnit.EUR), inteval,
+                                        SecurityPerformanceIndicator.Costs.class)
+                        .getRecord(securityUSD).orElseThrow(IllegalArgumentException::new);
+
+        assertThat(recordEUR.getFifoCost(), is(Money.of(CurrencyUnit.EUR, 454_60L + 471_05 + 498_45)));
 
         Interval period = Interval.of(LocalDate.parse("2014-12-31"), LocalDate.parse("2015-08-10"));
         SecurityPerformanceSnapshot performance = SecurityPerformanceSnapshot.create(client, converter, period);
         SecurityPerformanceRecord record = performance.getRecords().stream().filter(r -> r.getSecurity() == securityUSD)
-                        .findAny().get();
+                        .findAny().orElseThrow(IllegalArgumentException::new);
         assertThat(record.getSharesHeld(), is(Values.Share.factorize(15)));
-        assertThat(record.getFifoCost(), is(Money.of(CurrencyUnit.EUR, 454_60 + 471_05 + 498_45)));
+        assertThat(record.getFifoCost(), is(Money.of(CurrencyUnit.EUR, 454_60L + 471_05 + 498_45)));
     }
 
     private AccountSnapshot lookupAccountSnapshot(ClientSnapshot snapshot, Account account)
@@ -210,18 +239,19 @@ public class CurrencyTestCase
             if (account.equals(as.getAccount()))
                 return as;
 
-        return null;
+        throw new IllegalArgumentException();
     }
 
     private AssetCategory getAssetCategoryByName(GroupByTaxonomy grouping, String label)
     {
         return grouping.asList().stream().filter(category -> label.equals(category.getClassification().getName()))
-                        .findFirst().get();
+                        .findFirst().orElseThrow(IllegalArgumentException::new);
     }
 
     private AssetPosition getAssetPositionByName(GroupByTaxonomy grouping, String label)
     {
         return grouping.asList().stream().flatMap(category -> category.getPositions().stream())
-                        .filter(position -> label.equals(position.getDescription())).findFirst().get();
+                        .filter(position -> label.equals(position.getDescription())).findFirst()
+                        .orElseThrow(IllegalArgumentException::new);
     }
 }
