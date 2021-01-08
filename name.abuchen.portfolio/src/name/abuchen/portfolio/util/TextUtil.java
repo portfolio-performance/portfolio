@@ -24,11 +24,11 @@ public final class TextUtil
         if (text == null)
             return null;
 
-        // add a word boundary to correctly match a full line
-        String raw = text + "X"; //$NON-NLS-1$
+        // add a space to correctly match a full line
+        String raw = text + " "; //$NON-NLS-1$
 
         StringBuilder wrapped = new StringBuilder();
-        Pattern p = Pattern.compile(".{0,80}\\b[ \\t\\n\\x0b\\r\\f,.]*"); //$NON-NLS-1$
+        Pattern p = Pattern.compile(".{0,80}[ \\t\\n\\x0b\\r\\f,.]+"); //$NON-NLS-1$
         Matcher m = p.matcher(raw);
         while (m.find())
         {
@@ -44,8 +44,8 @@ public final class TextUtil
             wrapped.append(fragment.replace("&", "&&")); //$NON-NLS-1$ //$NON-NLS-2$
         }
 
-        // remove added character needed to create a word boundary
-        return wrapped.substring(0, wrapped.length() - 2);
+        // remove added space used for line breaking
+        return wrapped.substring(0, wrapped.length() - 1);
     }
 
     public static final String tooltip(String text)
