@@ -32,23 +32,6 @@ public class SecurityCacheTest
         security.setIsin("DE0007164600");
         security.setCurrencyCode("USD");
         client.addSecurity(security);
-
-        for (int i = 0; i < 500; i++)
-        {
-            security = new Security();
-            security.setName("Security Name" + i);
-            security.setIsin("DE00071646" + i);
-            security.setCurrencyCode("USD");
-            client.addSecurity(security);
-        }
-        for (int i = 0; i < 500; i++)
-        {
-            security = new Security();
-            security.setName("Security Name USD" + i);
-            security.setIsin("DE00071646" + i);
-            security.setCurrencyCode("USD");
-            client.addSecurity(security);
-        }
     }
 
     @Test
