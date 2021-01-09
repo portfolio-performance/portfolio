@@ -868,7 +868,7 @@ public class BaaderBankPDFExtractorTest
             assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
             assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
             assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(418.00)));
-            assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-04-17T00:00")));
+            assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-04-13T00:00")));
             assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2)));
         }
         if (iter.hasNext())
@@ -880,7 +880,7 @@ public class BaaderBankPDFExtractorTest
             assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
             assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
             assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(238.20)));
-            assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-04-17T00:00")));
+            assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-04-13T00:00")));
             assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2)));
         }
 
@@ -973,7 +973,7 @@ public class BaaderBankPDFExtractorTest
             assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
             assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
             assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(642.40)));
-            assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-07-27T00:00")));
+            assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-07-25T00:00")));
             assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4)));
         }
         if (iter.hasNext())
@@ -985,7 +985,7 @@ public class BaaderBankPDFExtractorTest
             assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
             assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
             assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(304.92)));
-            assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-07-27T00:00")));
+            assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-07-25T00:00")));
             assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2)));
         }
         if (iter.hasNext())
@@ -997,7 +997,7 @@ public class BaaderBankPDFExtractorTest
             assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
             assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
             assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(488.72)));
-            assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-07-27T00:00")));
+            assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-07-25T00:00")));
             assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4)));
         }
         if (iter.hasNext())
@@ -1009,7 +1009,7 @@ public class BaaderBankPDFExtractorTest
             assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
             assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
             assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(515.61)));
-            assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-07-27T00:00")));
+            assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-07-25T00:00")));
             assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4)));
         }
         
