@@ -68,13 +68,89 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                         .match("^STK (?<shares>[\\d.]+(,\\d+)?) (\\w{3}) ([\\d.]+,\\d+)$")
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                        .section("amount", "currency") //
-                        .optional() //
+                        .section("amount", "currency").optional() //
                         .find("Wert Konto-Nr\\. Betrag zu Ihren Lasten")
                         .match("^(\\d+\\.\\d+\\.\\d{4}) ([0-9]*) (?<currency>\\w{3}) (?<amount>[\\d.]+,\\d+)$")
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
+
+                        .section("amount", "currency", "exchangeRate").optional() //
+                        .find("Wert Konto-Nr\\. Devisenkurs Betrag zu Ihren Lasten")
+                        .match("^(\\d+\\.\\d+\\.\\d{4}) ([0-9]*) \\w{3}\\/\\w{3} (?<exchangeRate>[\\d.,]+) (?<currency>\\w{3}) (?<amount>[\\d.]+,\\d+)$")
+                        .assign((t, v) -> {
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            type.getCurrentContext().put("exchangeRate", v.get("exchangeRate"));
+                        })
+
+                        .section("date") //
+                        .match("^Handelstag (?<date>\\d+\\.\\d+\\.\\d{4}) .*$")
+                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+
+                        .section("date", "time").optional() //
+                        .match("^Handelstag (?<date>\\d+\\.\\d+\\.\\d{4}) .*$") //
+                        .match("^Handelszeit (?<time>\\d+:\\d+).*$").assign((t, v) -> {
+                            if (v.get("time") != null)
+                            {
+                                t.setDate(asDate(v.get("date"), v.get("time")));
+                            }
+                            else
+                            {
+                                t.setDate(asDate(v.get("date")));
+                            }
+                        })
+
+                        .section("fees", "currency").optional() //
+                        .match("^.* Registrierungsspesen (?<currency>\\w{3}+) (?<fees>[\\d.]+,\\d+)-$")
+                        .assign((t, v) -> t.getPortfolioTransaction()
+                                        .addUnit(new Unit(Unit.Type.FEE,
+                                                        Money.of(asCurrencyCode(v.get("currency")),
+                                                                        asAmount(v.get("fees"))))))
+
+                        .section("fees", "currency").optional() //
+                        .match("^.* Provision (?<currency>\\w{3}+) (?<fees>[\\d.]+,\\d+)-$").assign((t, v) -> {
+                            String currency = asCurrencyCode(v.get("currency"));
+
+                            if (currency.equals(t.getAccountTransaction().getCurrencyCode()))
+                            {
+                                t.getPortfolioTransaction().addUnit(
+                                                new Unit(Unit.Type.FEE, Money.of(currency, asAmount(v.get("fees")))));
+                            }
+                            else
+                            {
+                                BigDecimal exchangeRate = asExchangeRate(type.getCurrentContext().get("exchangeRate"));
+                                BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
+                                                RoundingMode.HALF_DOWN);
+
+                                long fxfees = asAmount(v.get("fees"));
+                                long fees = new BigDecimal(fxfees).divide(exchangeRate, 10, RoundingMode.HALF_DOWN).longValue();
+                                t.getPortfolioTransaction().addUnit(
+                                                new Unit(Unit.Type.FEE, Money.of(t.getAccountTransaction().getCurrencyCode(), fees), Money.of(currency, fxfees), inverseRate));
+                            }
+                        })
+
+                        .section("fees", "currency").optional() //
+                        .match("^.* Handelsplatzentgelt (?<currency>\\w{3}) (?<fees>[\\d.]+,\\d+)-$").assign((t, v) -> {
+                            String currency = asCurrencyCode(v.get("currency"));
+
+                            if (currency.equals(t.getAccountTransaction().getCurrencyCode()))
+                            {
+                                t.getPortfolioTransaction().addUnit(
+                                                new Unit(Unit.Type.FEE, Money.of(currency, asAmount(v.get("fees")))));
+                            }
+                            else
+                            {
+                                BigDecimal exchangeRate = asExchangeRate(type.getCurrentContext().get("exchangeRate"));
+                                BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
+                                                RoundingMode.HALF_DOWN);
+
+                                long fxfees = asAmount(v.get("fees"));
+                                long fees = new BigDecimal(fxfees).divide(exchangeRate, 10, RoundingMode.HALF_DOWN).longValue();
+                                t.getPortfolioTransaction().addUnit(
+                                                new Unit(Unit.Type.FEE, Money.of(t.getAccountTransaction().getCurrencyCode(), fees), Money.of(currency, fxfees), inverseRate));
+                            }
                         })
 
                         .section("amount", "currency", "exchangeRate", "forex", "forexCurrency", "curr").optional() //
@@ -98,44 +174,13 @@ public class DABPDFExtractor extends AbstractPDFExtractor
 
                             Money forex = Money.of(asCurrencyCode(v.get("forexCurrency")), asAmount(v.get("forex")));
 
+                            // the amount needs to be adjusted for fees already deducted
+                            Money fees = t.getPortfolioTransaction().getUnitSum(Unit.Type.FEE);
+                            
+                            amount = amount.subtract(fees);
+                            
                             Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, forex, exchangeRate);
                             t.getPortfolioTransaction().addUnit(grossValue);
-                        })
-
-                        .section("date") //
-                        .match("^Handelstag (?<date>\\d+\\.\\d+\\.\\d{4}) .*$")
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
-
-                        .section("date", "time").optional() //
-                        .match("^Handelstag (?<date>\\d+\\.\\d+\\.\\d{4}) .*$") //
-                        .match("^Handelszeit (?<time>\\d+:\\d+).*$").assign((t, v) -> {
-                            if (v.get("time") != null)
-                            {
-                                t.setDate(asDate(v.get("date"), v.get("time")));
-                            }
-                            else
-                            {
-                                t.setDate(asDate(v.get("date")));
-                            }
-                        })
-
-                        .section("fees", "currency") //
-                        .optional().match("^.* Registrierungsspesen (?<currency>\\w{3}) (?<fees>[\\d.]+,\\d+)-$")
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("fees"))))))
-
-                        .section("fees", "currency") //
-                        .optional().match("^.* Provision (?<currency>\\w{3}) (?<fees>[\\d.]+,\\d+)-$")
-                        .assign((t, v) -> {
-                            String currency = asCurrencyCode(v.get("currency"));
-                            // FIXME forex fees must update gross value
-                            if (currency.equals(t.getAccountTransaction().getCurrencyCode()))
-                            {
-                                t.getPortfolioTransaction().addUnit(
-                                                new Unit(Unit.Type.FEE, Money.of(currency, asAmount(v.get("fees")))));
-                            }
                         })
 
                         .wrap(t -> {
