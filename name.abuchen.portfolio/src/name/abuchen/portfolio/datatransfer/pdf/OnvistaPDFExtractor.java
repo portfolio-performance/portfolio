@@ -594,10 +594,10 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
         Block block = new Block("Wir erhielten zu Gunsten Ihres Depots(.*)");
         type.addBlock(block);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        Transaction<PortfolioTransaction> pdfTransaction = new Transaction<>();
         pdfTransaction.subject(() -> {
-            BuySellEntry entry = new BuySellEntry();
-            entry.setType(PortfolioTransaction.Type.TRANSFER_IN);
+            PortfolioTransaction entry = new PortfolioTransaction();
+            entry.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
             return entry;
         });
 
@@ -622,14 +622,12 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                             {
                                 t.setShares(asShares(v.get("shares")));
                             }
-                            t.setDate(asDate(v.get("date")));
+                            t.setDateTime(asDate(v.get("date")));
                             t.setCurrencyCode(asCurrencyCode(
-                                            t.getPortfolioTransaction().getSecurity().getCurrencyCode()));
+                                            t.getSecurity().getCurrencyCode()));
                         })
 
-                        .wrap(BuySellEntryItem::new);
-
-        addFeesSectionsTransaction(pdfTransaction);
+                        .wrap(TransactionItem::new);
     }
 
     private void addCapitalReductionTransaction()
