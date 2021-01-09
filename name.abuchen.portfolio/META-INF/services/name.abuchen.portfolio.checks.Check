@@ -10,4 +10,5 @@ name.abuchen.portfolio.checks.impl.TransactionCurrencyCheck
 name.abuchen.portfolio.checks.impl.FixTaxRefundsCheck
 name.abuchen.portfolio.checks.impl.MissingUUIDCheck
 name.abuchen.portfolio.checks.impl.FixOrphanedSecurtiesCheck
+name.abuchen.portfolio.checks.impl.FixWrongTransfersCheck
 name.abuchen.portfolio.checks.impl.FixDepositsWithSecurityCheck
