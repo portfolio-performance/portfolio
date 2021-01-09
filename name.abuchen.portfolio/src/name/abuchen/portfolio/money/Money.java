@@ -66,7 +66,7 @@ public final class Money implements Comparable<Money>
     public Money subtract(Money monetaryAmount)
     {
         if (!monetaryAmount.getCurrencyCode().equals(currencyCode))
-            throw new MonetaryException(MessageFormat.format("Illegal substraction: {0} - {1}", //$NON-NLS-1$
+            throw new MonetaryException(MessageFormat.format("Illegal subtraction: {0} - {1}", //$NON-NLS-1$
                             Values.Money.format(this), Values.Money.format(monetaryAmount)));
 
         return Money.of(currencyCode, amount - monetaryAmount.getAmount());
