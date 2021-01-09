@@ -45,10 +45,15 @@ public class SecurityCache
 
         this.localMaps.add(client.getSecurities().stream().filter(s -> s.getName() != null && !s.getName().isEmpty())
                         .collect(Collectors.toMap(Security::getName, s -> s, (l, r) -> DUPLICATE_SECURITY_MARKER)));
-
     }
 
     public Security lookup(String isin, String tickerSymbol, String wkn, String name,
+                    Supplier<Security> creationFunction)
+    {
+        return lookup(isin, tickerSymbol, wkn, name, null, creationFunction);
+    }
+
+    public Security lookup(String isin, String tickerSymbol, String wkn, String name, String currency,
                     Supplier<Security> creationFunction)
     {
         List<String> attributes = Arrays.asList(isin, tickerSymbol, wkn, name);
@@ -68,13 +73,6 @@ public class SecurityCache
                 idOfAttributeWithDuplicateSecurities = ii;
         }
 
-        // if we detect duplicate securities for one attribute, the error
-        // message is only returned to the user if the other attributes also did
-        // not match
-        if (idOfAttributeWithDuplicateSecurities >= 0)
-            throw new IllegalArgumentException(MessageFormat.format(MESSAGES.get(idOfAttributeWithDuplicateSecurities),
-                            attributes.get(idOfAttributeWithDuplicateSecurities)));
-
         // second: check the name. But: even if the name matches, we also must
         // check that the identifying attributes do not differ. Why? Investment
         // instruments could have the same name but different ISINs.
@@ -83,11 +81,27 @@ public class SecurityCache
         if (security != null)
             return security;
 
+        // third: check for isin and different currency
+        List<Security> securities = client.getSecurities().stream()
+                        .filter(s -> s.getIsin().equals(isin) && s.getCurrencyCode().equals(currency))
+                        .collect(Collectors.toList());
+
+        if (securities.size() == 1)
+            return securities.get(0);
+
+        // if we detect duplicate securities for one attribute, the error
+        // message is only returned to the user if the other attributes also did
+        // not match
+        if (idOfAttributeWithDuplicateSecurities >= 0)
+            throw new IllegalArgumentException(MessageFormat.format(MESSAGES.get(idOfAttributeWithDuplicateSecurities),
+                            attributes.get(idOfAttributeWithDuplicateSecurities)));
+
         security = creationFunction.get();
         security.setIsin(isin);
         security.setWkn(wkn);
         security.setTickerSymbol(tickerSymbol);
         security.setName(name);
+        security.setCurrencyCode(currency);
 
         for (int ii = 0; ii < localMaps.size(); ii++)
         {
