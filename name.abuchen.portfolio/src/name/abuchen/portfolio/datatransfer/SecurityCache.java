@@ -82,12 +82,15 @@ public class SecurityCache
             return security;
 
         // third: check for isin and different currency
-        List<Security> securities = client.getSecurities().stream()
-                        .filter(s -> s.getIsin().equals(isin) && s.getCurrencyCode().equals(currency))
-                        .collect(Collectors.toList());
+        if (currency != null)
+        {
+            List<Security> securities = client.getSecurities().stream()
+                            .filter(s -> s.getIsin().equals(isin) && s.getCurrencyCode().equals(currency))
+                            .collect(Collectors.toList());
 
-        if (securities.size() == 1)
-            return securities.get(0);
+            if (securities.size() == 1)
+                return securities.get(0);
+        }
 
         // if we detect duplicate securities for one attribute, the error
         // message is only returned to the user if the other attributes also did
@@ -101,7 +104,10 @@ public class SecurityCache
         security.setWkn(wkn);
         security.setTickerSymbol(tickerSymbol);
         security.setName(name);
-        security.setCurrencyCode(currency);
+        if (currency != null)
+        {
+            security.setCurrencyCode(currency);
+        }
 
         for (int ii = 0; ii < localMaps.size(); ii++)
         {

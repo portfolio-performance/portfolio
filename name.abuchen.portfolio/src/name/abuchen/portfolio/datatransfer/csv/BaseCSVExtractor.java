@@ -109,11 +109,12 @@ import name.abuchen.portfolio.util.TextUtil;
         String tickerSymbol = getText(Messages.CSVColumn_TickerSymbol, rawValues, field2column);
         String wkn = getText(Messages.CSVColumn_WKN, rawValues, field2column);
         String name = getText(Messages.CSVColumn_SecurityName, rawValues, field2column);
+        String currency = getText(Messages.CSVColumn_Currency, rawValues, field2column);
 
         if (isin != null || tickerSymbol != null || wkn != null || name != null)
         {
             name = constructName(isin, tickerSymbol, wkn, name);
-            security = securityCache.lookup(isin, tickerSymbol, wkn, name, () -> {
+            security = securityCache.lookup(isin, tickerSymbol, wkn, name, currency, () -> {
                 Security s = new Security();
                 s.setCurrencyCode(client.getBaseCurrency());
 
