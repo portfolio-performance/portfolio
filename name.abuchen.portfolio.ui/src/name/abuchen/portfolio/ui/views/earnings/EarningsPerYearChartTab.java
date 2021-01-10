@@ -75,7 +75,7 @@ public class EarningsPerYearChartTab extends AbstractChartTab
             topLeft.setText(Messages.ColumnSecurity);
 
             Label label = new Label(container, SWT.CENTER);
-            label.setBackground(barSeries.getBarColor());
+            label.setBackground(barColor);
             label.setForeground(Colors.getTextColor(barSeries.getBarColor()));
             label.setText(TextUtil.pad(String.valueOf(model.getStartYear() + year)));
             GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(label);

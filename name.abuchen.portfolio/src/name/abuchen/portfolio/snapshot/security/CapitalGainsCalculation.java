@@ -146,13 +146,13 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
                                         .convert(forex, convert2forex.getRate(item.date, termCurrency)) //
                                         .convert(back, converter.getRate(t.getDateTime(),
                                                         t.getSecurity().getCurrencyCode()))
-                                        .substract(startTrail);
+                                        .subtract(startTrail);
                     }
 
                     realizedCapitalGains.addCapitalGains(Money.of(termCurrency, end - start));
                     realizedCapitalGains.addCapitalGainsTrail(txTrail //
                                     .fraction(Money.of(termCurrency, end), soldShares, t.getShares())
-                                    .substract(startTrail));
+                                    .subtract(startTrail));
                     realizedCapitalGains.addForexCaptialGains(Money.of(termCurrency, forexGain));
                     realizedCapitalGains.addForexCapitalGainsTrail(forexGainTrail);
 
@@ -190,30 +190,24 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
                         continue;
 
                     long n = Math.min(moved, entry.shares);
+                    
+                    long transferredValue = Math.round(n / (double) entry.shares * entry.value);                    
+                    LineItem transfer = new LineItem(n, t.getDateTime().toLocalDate(), transferredValue,
+                                    entry.trail.fraction(
+                                                    Money.of(getTermCurrency(), transferredValue),
+                                                    n,
+                                                    entry.originalShares
+                                    ).transfer(t.getDateTime().toLocalDate(), entry.source.getOwner(),
+                                                    transactionItem.getOwner()),
+                                    transactionItem);
 
                     if (n == entry.shares)
                     {
-                        LineItem transfer = new LineItem(entry.shares, entry.date, entry.value,
-                                        entry.trail.transfer(t.getDateTime().toLocalDate(), entry.source.getOwner(),
-                                                        transactionItem.getOwner()),
-                                        transactionItem);
-
                         fifo.add(fifo.indexOf(entry) + 1, transfer);
                         fifo.remove(entry);
                     }
                     else
                     {
-                        long transferredValue = Math.round(n / (double) entry.shares * entry.value);
-
-                        LineItem transfer = new LineItem(n, //
-                                        t.getDateTime().toLocalDate(), transferredValue, //
-                                        entry.trail.fraction(Money.of(getTermCurrency(), transferredValue), n,
-                                                        entry.originalShares) //
-                                                        .transfer(t.getDateTime().toLocalDate(),
-                                                                        entry.source.getOwner(),
-                                                                        transactionItem.getOwner()),
-                                        transactionItem);
-
                         entry.value -= transferredValue;
                         entry.shares -= n;
 
@@ -340,15 +334,15 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
 
             // convert the forex amount back with the
             // exchange rate at the end (=snapshot end) and
-            // substract start value
+            // subtract start value
 
             forexGainTrail = forexGainTrail
                             .convert(back, converter.getRate(valuationAtEndDate, getSecurity().getCurrencyCode()))
-                            .substract(startTrail);
+                            .subtract(startTrail);
         }
 
         unrealizedCapitalGains.addCapitalGains(Money.of(termCurrency, end - start));
-        unrealizedCapitalGains.addCapitalGainsTrail(endTrail.substract(startTrail));
+        unrealizedCapitalGains.addCapitalGainsTrail(endTrail.subtract(startTrail));
         unrealizedCapitalGains.addForexCaptialGains(Money.of(termCurrency, forexGain));
         unrealizedCapitalGains.addForexCapitalGainsTrail(forexGainTrail);
     }

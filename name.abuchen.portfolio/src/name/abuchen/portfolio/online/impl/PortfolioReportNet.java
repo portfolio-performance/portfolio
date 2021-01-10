@@ -19,6 +19,7 @@ import org.osgi.framework.FrameworkUtil;
 
 import com.google.gson.Gson;
 
+import name.abuchen.portfolio.model.ClientSettings;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityProperty;
 import name.abuchen.portfolio.model.SecurityProperty.Type;
@@ -210,7 +211,7 @@ public class PortfolioReportNet
         }
 
         @Override
-        public Security create()
+        public Security create(ClientSettings settings)
         {
             Security security = new Security();
 

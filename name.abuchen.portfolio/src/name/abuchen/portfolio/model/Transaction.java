@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -315,6 +316,16 @@ public abstract class Transaction implements Annotated, Adaptable
     public Money getUnitSum(Unit.Type type)
     {
         return getUnits().filter(u -> u.getType() == type) //
+                        .collect(MoneyCollectors.sum(getCurrencyCode(), Unit::getAmount));
+    }
+
+    /**
+     * Returns the sum of units in transaction currency
+     */
+    public Money getUnitSum(Unit.Type first, Unit.Type... rest)
+    {
+        EnumSet<Unit.Type> set = EnumSet.of(first, rest);
+        return getUnits().filter(u -> set.contains(u.getType())) //
                         .collect(MoneyCollectors.sum(getCurrencyCode(), Unit::getAmount));
     }
 

@@ -1,0 +1,373 @@
+<client>
+  <version>47</version>
+  <baseCurrency>EUR</baseCurrency>
+  <securities>
+    <security>
+      <uuid>1ea700c4-e325-45c9-9b1a-c712c514bf06</uuid>
+      <name>Public Joint Stock Company Gazprom</name>
+      <currencyCode>EUR</currencyCode>
+      <tickerSymbol>GAZ.DE</tickerSymbol>
+      <feed>YAHOO</feed>
+      <prices>
+        <price t="2019-12-27" v="74160"/>
+        <price t="2019-12-30" v="73940"/>
+        <price t="2020-01-02" v="75700"/>
+        <price t="2020-11-13" v="38650"/>
+        <price t="2020-11-16" v="40060"/>
+      </prices>
+      <latest t="2020-11-16" v="40060">
+        <high>40100</high>
+        <low>39170</low>
+        <volume>1173149</volume>
+        <previousClose>38650</previousClose>
+      </latest>
+      <attributes>
+        <map/>
+      </attributes>
+      <events/>
+      <isRetired>false</isRetired>
+    </security>
+  </securities>
+  <watchlists/>
+  <consumerPriceIndeces/>
+  <accounts>
+    <account>
+      <uuid>b73e341d-17e3-4c34-97d3-dc4c426f04d1</uuid>
+      <name>konto1</name>
+      <currencyCode>EUR</currencyCode>
+      <isRetired>false</isRetired>
+      <transactions>
+        <account-transaction>
+          <date>2020-04-01T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>41470</amount>
+          <security reference="../../../../../securities/security"/>
+          <crossEntry class="buysell">
+            <portfolio>
+              <uuid>4b5f9aea-086a-4123-96d4-fc55b0043084</uuid>
+              <name>depot1</name>
+              <isRetired>false</isRetired>
+              <referenceAccount reference="../../../../.."/>
+              <transactions>
+                <portfolio-transaction>
+                  <date reference="../../../../../date"/>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>41470</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell" reference="../../../.."/>
+                  <shares>100000000</shares>
+                  <type>BUY</type>
+                </portfolio-transaction>
+              </transactions>
+              <attributes>
+                <map/>
+              </attributes>
+            </portfolio>
+            <portfolioTransaction reference="../portfolio/transactions/portfolio-transaction"/>
+            <account reference="../../../.."/>
+            <accountTransaction reference="../.."/>
+          </crossEntry>
+          <shares>0</shares>
+          <type>BUY</type>
+        </account-transaction>
+        <account-transaction>
+          <date>2020-04-01T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>41460</amount>
+          <security reference="../../../../../securities/security"/>
+          <crossEntry class="buysell">
+            <portfolio>
+              <uuid>0806a719-1727-4600-a68e-613168db1138</uuid>
+              <name>depot2</name>
+              <note></note>
+              <isRetired>false</isRetired>
+              <referenceAccount reference="../../../../.."/>
+              <transactions>
+                <portfolio-transaction>
+                  <date reference="../../../../../date"/>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>41460</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell" reference="../../../.."/>
+                  <shares>100000000</shares>
+                  <type>BUY</type>
+                </portfolio-transaction>
+              </transactions>
+              <attributes>
+                <map/>
+              </attributes>
+            </portfolio>
+            <portfolioTransaction reference="../portfolio/transactions/portfolio-transaction"/>
+            <account reference="../../../.."/>
+            <accountTransaction reference="../.."/>
+          </crossEntry>
+          <shares>0</shares>
+          <type>BUY</type>
+        </account-transaction>
+        <account-transaction>
+          <date>2020-08-01T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>4000</amount>
+          <security reference="../../../../../securities/security"/>
+          <shares>100000000</shares>
+          <type>DIVIDENDS</type>
+        </account-transaction>
+        <account-transaction>
+          <date>2020-08-01T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>4000</amount>
+          <security reference="../../../../../securities/security"/>
+          <shares>100000000</shares>
+          <type>DIVIDENDS</type>
+        </account-transaction>
+      </transactions>
+      <attributes>
+        <map/>
+      </attributes>
+    </account>
+  </accounts>
+  <portfolios>
+    <portfolio reference="../../accounts/account/transactions/account-transaction/crossEntry/portfolio"/>
+    <portfolio reference="../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio"/>
+  </portfolios>
+  <plans/>
+  <taxonomies/>
+  <dashboards>
+    <dashboard name="Dashboard">
+      <configuration>
+        <entry>
+          <string>REPORTING_PERIOD</string>
+          <string>L1Y0</string>
+        </entry>
+      </configuration>
+      <columns>
+        <column>
+          <weight>1</weight>
+          <widgets>
+            <widget type="HEADING">
+              <label>Kennzahlen</label>
+            </widget>
+            <widget type="TTWROR">
+              <label>True Time-Weighted Rate of Return</label>
+              <configuration/>
+            </widget>
+            <widget type="IRR">
+              <label>Interner Zinsfuß (IZF)</label>
+              <configuration/>
+            </widget>
+            <widget type="ABSOLUTE_CHANGE">
+              <label>Absolute Veränderung</label>
+              <configuration/>
+            </widget>
+            <widget type="DELTA">
+              <label>Delta (im Berichtszeitraum)</label>
+              <configuration/>
+            </widget>
+            <widget type="HEADING">
+              <label>Letzter Tag</label>
+            </widget>
+            <widget type="TTWROR">
+              <label>True Time-Weighted Rate of Return</label>
+              <configuration>
+                <entry>
+                  <string>REPORTING_PERIOD</string>
+                  <string>T1</string>
+                </entry>
+              </configuration>
+            </widget>
+            <widget type="ABSOLUTE_CHANGE">
+              <label>Absolute Veränderung</label>
+              <configuration>
+                <entry>
+                  <string>REPORTING_PERIOD</string>
+                  <string>T1</string>
+                </entry>
+              </configuration>
+            </widget>
+          </widgets>
+        </column>
+        <column>
+          <weight>1</weight>
+          <widgets>
+            <widget type="HEADING">
+              <label>Risikokennzahlen</label>
+            </widget>
+            <widget type="MAXDRAWDOWN">
+              <label>Maximaler Drawdown</label>
+              <configuration/>
+            </widget>
+            <widget type="MAXDRAWDOWNDURATION">
+              <label>Maximale Drawdown Duration</label>
+              <configuration/>
+            </widget>
+            <widget type="VOLATILITY">
+              <label>Volatilität</label>
+              <configuration/>
+            </widget>
+            <widget type="SEMIVOLATILITY">
+              <label>Semivolatilität</label>
+              <configuration/>
+            </widget>
+          </widgets>
+        </column>
+        <column>
+          <weight>1</weight>
+          <widgets>
+            <widget type="HEADING">
+              <label>Berechnung</label>
+            </widget>
+            <widget type="CALCULATION">
+              <label>Performance-Berechnung</label>
+              <configuration/>
+            </widget>
+          </widgets>
+        </column>
+      </columns>
+    </dashboard>
+  </dashboards>
+  <properties>
+    <entry>
+      <string>security-chart-details</string>
+      <string>SCALING_LINEAR,INVESTMENT,DIVIDENDS,EVENTS</string>
+    </entry>
+  </properties>
+  <settings>
+    <bookmarks/>
+    <attributeTypes>
+      <attribute-type>
+        <id>logo</id>
+        <name>Logo</name>
+        <columnLabel>Logo</columnLabel>
+        <target>name.abuchen.portfolio.model.Security</target>
+        <type>java.lang.String</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$ImageConverter</converterClass>
+      </attribute-type>
+      <attribute-type>
+        <id>logo</id>
+        <name>Logo</name>
+        <columnLabel>Logo</columnLabel>
+        <target>name.abuchen.portfolio.model.Account</target>
+        <type>java.lang.String</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$ImageConverter</converterClass>
+      </attribute-type>
+      <attribute-type>
+        <id>logo</id>
+        <name>Logo</name>
+        <columnLabel>Logo</columnLabel>
+        <target>name.abuchen.portfolio.model.Portfolio</target>
+        <type>java.lang.String</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$ImageConverter</converterClass>
+      </attribute-type>
+      <attribute-type>
+        <id>logo</id>
+        <name>Logo</name>
+        <columnLabel>Logo</columnLabel>
+        <target>name.abuchen.portfolio.model.InvestmentPlan</target>
+        <type>java.lang.String</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$ImageConverter</converterClass>
+      </attribute-type>
+      <attribute-type>
+        <id>ter</id>
+        <name>Gesamtkostenquote (TER)</name>
+        <columnLabel>TER</columnLabel>
+        <target>name.abuchen.portfolio.model.Security</target>
+        <type>java.lang.Double</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$PercentConverter</converterClass>
+      </attribute-type>
+      <attribute-type>
+        <id>aum</id>
+        <name>Fondsgröße</name>
+        <columnLabel>Fondsgröße</columnLabel>
+        <target>name.abuchen.portfolio.model.Security</target>
+        <type>java.lang.Long</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$AmountPlainConverter</converterClass>
+      </attribute-type>
+      <attribute-type>
+        <id>vendor</id>
+        <name>Anbieter</name>
+        <columnLabel>Anbieter</columnLabel>
+        <target>name.abuchen.portfolio.model.Security</target>
+        <type>java.lang.String</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$StringConverter</converterClass>
+      </attribute-type>
+      <attribute-type>
+        <id>acquisitionFee</id>
+        <name>Kaufgebühr (prozentual)</name>
+        <columnLabel>Kaufgebühr</columnLabel>
+        <target>name.abuchen.portfolio.model.Security</target>
+        <type>java.lang.Double</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$PercentConverter</converterClass>
+      </attribute-type>
+      <attribute-type>
+        <id>managementFee</id>
+        <name>Verwaltungsgebühr (prozentual)</name>
+        <columnLabel>Verwaltungsgebühr</columnLabel>
+        <target>name.abuchen.portfolio.model.Security</target>
+        <type>java.lang.Double</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$PercentConverter</converterClass>
+      </attribute-type>
+    </attributeTypes>
+    <configurationSets>
+      <entry>
+        <string>StatementOfAssetsHistoryView-PICKER</string>
+        <config-set>
+          <configurations>
+            <config>
+              <uuid>4dc7e321-c62e-4595-aa97-d2e279ef156b</uuid>
+              <name>Standard</name>
+              <data>Client-totals;#000000;SOLID;false,Client-transferals;#808080;SOLID;false</data>
+            </config>
+          </configurations>
+        </config-set>
+      </entry>
+      <entry>
+        <string>name.abuchen.portfolio.ui.views.SecuritiesPerformanceView</string>
+        <config-set>
+          <configurations>
+            <config>
+              <uuid>bf117b5e-ccf3-4688-b0bf-dfee9c10f39a</uuid>
+              <name>Standard</name>
+              <data>shares=80;name=250;sumdiv=80;d%=80;d%peryear=80;pv=75;pp=75;quote=75;5=60;changeonpreviousamount=60;mv=75;twror=80;izf=80;delta=80;</data>
+            </config>
+          </configurations>
+        </config-set>
+      </entry>
+      <entry>
+        <string>PerformanceChartView-PICKER</string>
+        <config-set>
+          <configurations>
+            <config>
+              <uuid>a7f05296-4d7c-4a70-903b-61a5a01ab334</uuid>
+              <name>Standard</name>
+              <data>Client-totals;#000000;SOLID;false</data>
+            </config>
+          </configurations>
+        </config-set>
+      </entry>
+      <entry>
+        <string>name.abuchen.portfolio.ui.views.SecuritiesTable</string>
+        <config-set>
+          <configurations>
+            <config>
+              <uuid>e7d130a9-dd32-4cc0-a249-1c4c66326173</uuid>
+              <name>Standard</name>
+              <data>0=1024$400;note=22;1=100;2=80;7=80;4=60;5=80;changeonpreviousamount=80;9=80;10=80;q-date-first-historic=80;</data>
+            </config>
+          </configurations>
+        </config-set>
+      </entry>
+      <entry>
+        <string>name.abuchen.portfolio.ui.views.StatementOfAssetsViewer</string>
+        <config-set>
+          <configurations>
+            <config>
+              <uuid>63e8302a-a241-47e5-9c34-9ba06c65fabd</uuid>
+              <name>Standard</name>
+              <data>0=80;1=300;2=80;4=60;5=80;6=80;note=22;</data>
+            </config>
+          </configurations>
+        </config-set>
+      </entry>
+    </configurationSets>
+  </settings>
+</client>

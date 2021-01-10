@@ -58,7 +58,6 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
         // validate that quote provider message is null -> no errors
         bindings.getBindingContext().addValidationStatusProvider(new MultiValidator()
         {
-            @SuppressWarnings("unchecked")
             IObservableValue<?> observable = BeanProperties.value("statusHistoricalQuotesProvider").observe(model); //$NON-NLS-1$
 
             @Override
@@ -93,6 +92,18 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
     protected void setFeedURL(String feedURL)
     {
         getModel().setFeedURL(feedURL);
+    }
+
+    @Override
+    protected String getJSONDatePropertyName()
+    {
+        return GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC;
+    }
+
+    @Override
+    protected String getJSONClosePropertyName()
+    {
+        return GenericJSONQuoteFeed.CLOSE_PROPERTY_NAME_HISTORIC;
     }
 
     @Override
@@ -175,8 +186,10 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
                                             .getFeedProperty(QuandlQuoteFeed.QUANDL_CLOSE_COLUMN_NAME_PROPERTY_NAME));
         else if (GenericJSONQuoteFeed.ID.equals(getFeed()))
             return GenericJSONQuoteFeed.ID + getModel().getFeedURL()
-                            + String.valueOf(getModel().getFeedProperty(GenericJSONQuoteFeed.DATE_PROPERTY_NAME))
-                            + String.valueOf(getModel().getFeedProperty(GenericJSONQuoteFeed.CLOSE_PROPERTY_NAME));
+                            + String.valueOf(getModel()
+                                            .getFeedProperty(GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC))
+                            + String.valueOf(getModel()
+                                            .getFeedProperty(GenericJSONQuoteFeed.CLOSE_PROPERTY_NAME_HISTORIC));
         else
             return getFeed() + getModel().getFeedURL();
     }

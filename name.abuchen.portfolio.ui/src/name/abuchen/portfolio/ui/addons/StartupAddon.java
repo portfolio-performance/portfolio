@@ -39,7 +39,6 @@ import name.abuchen.portfolio.ui.util.ProgressMonitorFactory;
 import name.abuchen.portfolio.ui.util.RecentFilesCache;
 import name.abuchen.portfolio.ui.util.swt.ActiveShell;
 
-@SuppressWarnings("restriction")
 public class StartupAddon
 {
     private static final class UpdateExchangeRatesJob extends Job

@@ -94,6 +94,23 @@ public class WebAccess
         HttpRequestBase create(URI uri) throws IOException;
     }
 
+    public static class WebAccessException extends IOException
+    {
+        private static final long serialVersionUID = 1L;
+        private final int httpErrorCode;
+
+        public WebAccessException(String message, int httpErrorCode)
+        {
+            super(message);
+            this.httpErrorCode = httpErrorCode;
+        }
+
+        public int getHttpErrorCode()
+        {
+            return httpErrorCode;
+        }
+    }
+
     public static final RequestConfig defaultRequestConfig = RequestConfig.custom().setSocketTimeout(20000)
                     .setConnectTimeout(2000).setConnectionRequestTimeout(20000).setCookieSpec(CookieSpecs.STANDARD)
                     .build();
@@ -185,7 +202,8 @@ public class WebAccess
             response = client.execute(request);
 
             if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK)
-                throw new IOException(uri.toString() + " --> " + response.getStatusLine().getStatusCode()); //$NON-NLS-1$
+                throw new WebAccessException(uri.toString() + " --> " + response.getStatusLine().getStatusCode(), //$NON-NLS-1$
+                                response.getStatusLine().getStatusCode());
 
             return response;
         }

@@ -3,7 +3,6 @@ package name.abuchen.portfolio.ui.dialogs;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -22,6 +21,7 @@ import org.eclipse.swt.dnd.DragSourceAdapter;
 import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.dnd.TransferData;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -33,6 +33,7 @@ import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.ContextMenu;
+import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.util.TextUtil;
 
 public class EditReportingPeriodsDialog extends Dialog
@@ -91,10 +92,15 @@ public class EditReportingPeriodsDialog extends Dialog
         tableViewer.setContentProvider(ArrayContentProvider.getInstance());
         tableViewer.setInput(periods);
 
+        tableViewer.getTable().addKeyListener(KeyListener.keyReleasedAdapter(e -> {
+            if (e.character == SWT.BS || e.character == SWT.DEL)
+                deleteSelectedItems();
+        }));
+
         setupDnD();
 
         new ContextMenu(tableViewer.getTable(), this::fillContextMenu).hook();
-        
+
         Label info = new Label(container, SWT.NONE);
         info.setText(TextUtil.tooltip(Messages.LabelReportingPeriodEditTooltip));
 
@@ -160,20 +166,16 @@ public class EditReportingPeriodsDialog extends Dialog
 
     private void fillContextMenu(IMenuManager manager)
     {
-        manager.add(new Action(Messages.MenuReportingPeriodDelete)
-        {
-            @Override
-            public void run()
-            {
-                IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
-
-                for (Object o : selection.toArray())
-                    periods.remove(o);
-
-                tableViewer.refresh();
-            }
-        });
-
+        manager.add(new SimpleAction(Messages.MenuReportingPeriodDelete, a -> deleteSelectedItems()));
     }
 
+    private void deleteSelectedItems()
+    {
+        IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
+
+        for (Object o : selection.toArray())
+            periods.remove(o);
+
+        tableViewer.refresh();
+    }
 }

@@ -26,7 +26,6 @@ import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.jobs.AbstractClientJob;
 import name.abuchen.portfolio.ui.util.swt.ActiveShell;
 
-@SuppressWarnings("restriction")
 public class UploadToDivvyDiaryHandler
 {
     @CanExecute

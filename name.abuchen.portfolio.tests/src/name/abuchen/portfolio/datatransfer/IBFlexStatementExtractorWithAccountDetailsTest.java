@@ -3,7 +3,7 @@ package name.abuchen.portfolio.datatransfer;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -154,7 +154,7 @@ public class IBFlexStatementExtractorWithAccountDetailsTest
         assertThat(entry.getPortfolioTransaction().getSecurity().getName(), is("ORACLE CORP"));
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of("EUR", 4185_05L)));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-09-15T16:20")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(100_000000L));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of("EUR", 1_67L)));
         // 100 shares at 50 USD minus 2USD transaction cost is 49.98 USD per
         // share times 0.83701 is 41.8338

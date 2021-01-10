@@ -1,0 +1,108 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=35XXXXXXX
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Steuerbelastung ADRESSZEILE1=Herr
+aus Wertpapieren ADRESSZEILE2=Max MusterADRESSZEILE3=Musterstr. 4
+ADRESSZEILE4=12345 Musterstadt
+Herr ADRESSZEILE5=
+Max Muster ADRESSZEILE6=
+Depot-Nr. Ausführungs-Nr.
+Musterstr. 4 BELEGNUMMER=20445
+12345 Musterstadt 35XXXXXXX 82128903 / 09.01.2020 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Max Muster
+Steuerpflichtige Vorabpauschale Frankfurt am Main, 09.01.2020
+(§ 18 InvStG)
+Gattungsbezeichnung ISIN
+iShs Core MSCI EM IMI U.ETF Registered Shares o.N. IE00BKM4GZ66
+Nominal Ex-Tag Zahltag Jahreswert Vorabpauschale pro Stück
+STK 100,000 02.01.2020 02.01.2020 EUR 0,0815
+Investmentertrag für 2019 (besitzzeitanteilig, vor Teilfreistellung) EUR 4,08
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+steuerpflichtige Vorabpauschale vor Teilfreistellung (TFQ) EUR 4,08
+steuerpflichtige Vorabpauschale nach Teilfreistellung EUR 2,85
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 235,64 232,79
+Freistellungsauftrag (eingereicht: EUR 400,00) EUR 400,00 400,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern EUR 0,00
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 0,00
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 0,00
+Steuerlicher Stichtag: 02.01.2020
+Jahressteuerbescheinigung folgt
+Im Jahr des Erwerbs der Fondsanteile vermindert sich die Vorabpauschale um 1/12 für jeden vollen Monat, der dem Monat
+des Erwerbs vorangeht (besitzzeitanteilige Ermittlung gem. § 18 Abs. 2 InvStG). Um eine doppelte Besteuerung
+auszuschließen, werden die während der Besitzzeit angesetzten Vorabpauschalen vom Veräußerungsergebnis abgezogen.
+Dabei werden diese, ungeachtet einer möglichen Teilfreistellung, in voller Höhe berücksichtigt (§ 19 Abs. 1 Satz 3 und 4
+InvStG).
+Weitere Informationen zur Vorabpauschale sowie wichtige FAQs finden Sie auf unserer Aktionsseite 
+www.onvista-bank.de/vorabpauschale
+Verwahrart: Wertpapierrechnung Lagerland: Grossbritannien
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+onvista bank Wildunger Straße 6a 60487 Frankfurt am Main T: +49 (0)69-7107-0 F: +49 (0)69-7107-100 info@onvista-bank.de www.onvista-bank.de
+onvista bank ist eine Marke der comdirect bank AG
+Sitz der comdirect bank AG: Pascalkehre 15 25451 Quickborn (AG Pinneberg HRB 4889) T: +49 (0)4106-704-0 F: +49 (0)4106-708-258-5 www.comdirect.de
+Vorstand: Frauke Hegemann (Vorsitzende), Dietmar von Blücher, Matthias Hach Vorsitzender des Aufsichtsrates: Dr. Jochen Sutor
+3.20/DUANDEREEREIERTR/GDBERTRG/020445/100120/005342
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=35XXXXXXX
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Steuerbelastung ADRESSZEILE1=Herr
+aus Wertpapieren ADRESSZEILE2=Max MusterADRESSZEILE3=Musterstr. 4
+ADRESSZEILE4=12345 Musterstadt
+Herr ADRESSZEILE5=
+Max Muster ADRESSZEILE6=
+Depot-Nr. Ausführungs-Nr.
+Musterstr. 4 BELEGNUMMER=20446
+12345 Musterstadt 35XXXXXXX 14381407 / 09.01.2020 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Max Muster
+Steuerpflichtige Vorabpauschale Frankfurt am Main, 09.01.2020
+(§ 18 InvStG)
+Gattungsbezeichnung ISIN
+Lyxor IF-L.ST.Eur.600 Technol. Act. au Port. EUR Acc. oN LU1834988518
+Nominal Ex-Tag Zahltag Jahreswert Vorabpauschale pro Stück
+STK 100,000 02.01.2020 02.01.2020 EUR 0,1618
+Investmentertrag für 2019 (besitzzeitanteilig, vor Teilfreistellung) EUR 16,18
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+steuerpflichtige Vorabpauschale vor Teilfreistellung (TFQ) EUR 16,18
+steuerpflichtige Vorabpauschale nach Teilfreistellung EUR 11,33
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 232,79 221,46
+Freistellungsauftrag (eingereicht: EUR 400,00) EUR 400,00 400,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern EUR 0,00
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 0,00
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 0,00
+Steuerlicher Stichtag: 02.01.2020
+Jahressteuerbescheinigung folgt
+Im Jahr des Erwerbs der Fondsanteile vermindert sich die Vorabpauschale um 1/12 für jeden vollen Monat, der dem Monat
+des Erwerbs vorangeht (besitzzeitanteilige Ermittlung gem. § 18 Abs. 2 InvStG). Um eine doppelte Besteuerung
+auszuschließen, werden die während der Besitzzeit angesetzten Vorabpauschalen vom Veräußerungsergebnis abgezogen.
+Dabei werden diese, ungeachtet einer möglichen Teilfreistellung, in voller Höhe berücksichtigt (§ 19 Abs. 1 Satz 3 und 4
+InvStG).
+Weitere Informationen zur Vorabpauschale sowie wichtige FAQs finden Sie auf unserer Aktionsseite 
+www.onvista-bank.de/vorabpauschale
+Verwahrart: Girosammelverwahrung      
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+onvista bank Wildunger Straße 6a 60487 Frankfurt am Main T: +49 (0)69-7107-0 F: +49 (0)69-7107-100 info@onvista-bank.de www.onvista-bank.de
+onvista bank ist eine Marke der comdirect bank AG
+Sitz der comdirect bank AG: Pascalkehre 15 25451 Quickborn (AG Pinneberg HRB 4889) T: +49 (0)4106-704-0 F: +49 (0)4106-708-258-5 www.comdirect.de
+Vorstand: Frauke Hegemann (Vorsitzende), Dietmar von Blücher, Matthias Hach Vorsitzender des Aufsichtsrates: Dr. Jochen Sutor
+3.20/DUANDEREEREIERTR/GDBERTRG/020446/100120/005342
+

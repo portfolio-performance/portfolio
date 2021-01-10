@@ -1,0 +1,116 @@
+PDF Autor: 'HAVI Solutions GmbH & Co. KG, phg'
+PDFBox Version: 1.8.16
+-----------------------------------------
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Kundennr. /BLZ Bezeichnung
+12345678  Max  Mustermann                                  
+                                                  
+            
+123 456 78 Musterstr. 123                                    12345 Musterstadt                                      
+abweichend wirtschaftlich Berechtigter
+                              
+                                              ----                    
+ c o  m   d  i r e  c  t                                    
+               
+ 2  5  4  5  1   Q  u  i c  k  b  o  r n                   
+0  1   0  9  7828
+                                                  
+ T  e  le  f o  n  :             0   4  1  0  6   -  7  0 8 25 00
+                              
+Herrn                          D  a  t u  m   :                       1   4  . 1  2  .2020         
+ M a x   M u s t e r m a n n               
+ D  e  p  o  t  n  u  m   m  er:        1 2 3 4 5 6  
+M u s  t e r  s  t r .  1  2  3                  
+12  R  e  f e  r e  n  z  - N   u mmer:     11   I G  7  J  P  S   L V6000GF       3  4  5   M   u s t e r  s t a d t                   
+                                      
+                                                  
+                                                  
+                                                  
+Steuerliche Behandlung: Ausländische Dividende vom 12.12.2020                                                                     
+Stk.              13 3M CO.             DL-,01 , WKN / ISIN: 851745  / US88579Y1010                                               
+ Zu  Ih r e n G u n s t e n v o r S te u e r n :                                                                                                    E U R              13,3 3   
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+ S te u e rb e m  e ss u n g s g r u n d la g e                                                            E  U   R                                1  5 , 6 8                          
+                                                                                                                                
+                                                                                                                                
+ K ap i ta le r tr a gs t e ue r                                                                        E  U   R                                -  1 , 5 7                          
+(angerechnete ausländische Quellensteuer:       EUR               2,35  )                                                       
+S  ol id a ri tä t sz u s c hl a g                                                                      E  U   R                                -  0 , 0 8                          
+ K irc h e n s te u e r                                                                              _E  _U   _R  _  _  _   _  _  _   _  _  _  _   _  _  _   _  0_ ,_ _0 0_                          
+a b g e f ü h rt e S t e u er n                                                                                                                    _E _U R_ _ _ _ _ _ _ _ _ _ _  _ __ -__1,_6_ _5   
+                                                                                                                                
+Z u  Ih r e n G u n s t e n n a c h S t e u er n :                                                                                                   E U R              11,6 8   
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+Die Gutschrift erfolgt mit Valuta 16.12.2020 auf Konto EUR mit der IBAN DE12 3456 7890 1234 5678 90                                                   
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+KEINE STEUERBESCHEINIGUNG ...
+Bisher einbehaltene bzw. angerechnete Steuer in EUR (4)
+in 2020 einbehaltene einbehaltener einbehaltene angerechneteKapitalertragsteuer Solidaritätszuschlag Kirchensteuer ausländische Quellensteuer
+vor Ermittlung
+            1.234,56                123
+                0,00               234
+nach Ermittlung
+            12345,67 123                 0,00               234               
+Verrechnungssalden in EUR (4)
+in 2020 Gewinne / Verluste sonstige anrechenbare verfügbareraus Aktien Gewinne / Verluste ausländische Quellensteuer Freistellungsauftrag
+vor Ermittlung
+            23456             12345                 0,00                 0,00
+nach Ermittlung
+            23456             12345
+                0,00                 0,00
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+Ihre comdirect                                                                                                                                        
+Diese Abrechnung ist maschinell erstellt und wird nicht unterschrieben.                                                                               
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+(4) Die ausgewiesenen EUR-Beträge spiegeln den Stand zum Abrechnungszeitpunkt wider.                                                                  
+KEINE STEUERBESCHEINIGUNG

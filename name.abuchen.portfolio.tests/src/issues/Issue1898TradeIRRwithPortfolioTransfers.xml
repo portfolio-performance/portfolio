@@ -1,0 +1,205 @@
+<client>
+  <version>47</version>
+  <baseCurrency>EUR</baseCurrency>
+  <securities>
+    <security>
+      <uuid>60a1d844-3ec4-466a-9719-9601dd372caa</uuid>
+      <name>MASCH. BERTH. HERMLE AG Inhaber</name>
+      <currencyCode>EUR</currencyCode>
+      <tickerSymbol>MBH3.SG</tickerSymbol>
+      <feed>YAHOO</feed>
+      <prices/>
+      <latest t="2020-10-09" v="2290000">
+        <high>2340000</high>
+        <low>2290000</low>
+        <volume>50</volume>
+        <previousClose>2370000</previousClose>
+      </latest>
+      <attributes>
+        <map/>
+      </attributes>
+      <events/>
+      <isRetired>false</isRetired>
+    </security>
+  </securities>
+  <watchlists/>
+  <consumerPriceIndeces/>
+  <accounts>
+    <account>
+      <uuid>b205e393-a791-4ac8-bf8f-c50d770eab25</uuid>
+      <name>Referenz 1</name>
+      <currencyCode>EUR</currencyCode>
+      <isRetired>false</isRetired>
+      <transactions>
+        <account-transaction>
+          <date>2013-07-10T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>673715</amount>
+          <security reference="../../../../../securities/security"/>
+          <crossEntry class="buysell">
+            <portfolio>
+              <uuid>c72209fc-14f9-41ec-ac25-8f579c4e44f2</uuid>
+              <name>Depot 1</name>
+              <isRetired>false</isRetired>
+              <referenceAccount reference="../../../../.."/>
+              <transactions>
+                <portfolio-transaction>
+                  <date reference="../../../../../date"/>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>673715</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell" reference="../../../.."/>
+                  <shares>55000000</shares>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="2715"/>
+                    </unit>
+                  </units>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <date>2020-05-05T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>1160500</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="portfolio-transfer">
+                    <portfolioFrom reference="../../../.."/>
+                    <transactionFrom reference="../.."/>
+                    <portfolioTo>
+                      <uuid>18a96dbb-d43b-428c-bd87-76d86530df97</uuid>
+                      <name>Depot 2</name>
+                      <isRetired>false</isRetired>
+                      <referenceAccount>
+                        <uuid>bdd3e4a0-6a52-436b-854c-a0c032c49b54</uuid>
+                        <name>Referenz 2</name>
+                        <currencyCode>EUR</currencyCode>
+                        <isRetired>false</isRetired>
+                        <transactions>
+                          <account-transaction>
+                            <date>2020-04-29T00:00</date>
+                            <currencyCode>EUR</currencyCode>
+                            <amount>537700</amount>
+                            <security reference="../../../../../../../../../../../../../../securities/security"/>
+                            <crossEntry class="buysell">
+                              <portfolio reference="../../../../.."/>
+                              <portfolioTransaction>
+                                <date reference="../../../date"/>
+                                <currencyCode>EUR</currencyCode>
+                                <amount>537700</amount>
+                                <security reference="../../../../../../../../../../../../../../../../securities/security"/>
+                                <crossEntry class="buysell" reference="../.."/>
+                                <shares>25000000</shares>
+                                <units>
+                                  <unit type="FEE">
+                                    <amount currency="EUR" amount="200"/>
+                                  </unit>
+                                </units>
+                                <type>BUY</type>
+                              </portfolioTransaction>
+                              <account reference="../../../.."/>
+                              <accountTransaction reference="../.."/>
+                            </crossEntry>
+                            <shares>0</shares>
+                            <type>BUY</type>
+                          </account-transaction>
+                          <account-transaction>
+                            <date>2020-04-29T00:00</date>
+                            <currencyCode>EUR</currencyCode>
+                            <amount>537700</amount>
+                            <shares>0</shares>
+                            <type>DEPOSIT</type>
+                          </account-transaction>
+                          <account-transaction>
+                            <date>2020-09-21T00:00</date>
+                            <currencyCode>EUR</currencyCode>
+                            <amount>1306857</amount>
+                            <security reference="../../../../../../../../../../../../../../securities/security"/>
+                            <crossEntry class="buysell">
+                              <portfolio reference="../../../../.."/>
+                              <portfolioTransaction>
+                                <date reference="../../../date"/>
+                                <currencyCode>EUR</currencyCode>
+                                <amount>1306857</amount>
+                                <security reference="../../../../../../../../../../../../../../../../securities/security"/>
+                                <crossEntry class="buysell" reference="../.."/>
+                                <shares>55000000</shares>
+                                <units>
+                                  <unit type="FEE">
+                                    <amount currency="EUR" amount="2143"/>
+                                  </unit>
+                                </units>
+                                <type>SELL</type>
+                              </portfolioTransaction>
+                              <account reference="../../../.."/>
+                              <accountTransaction reference="../.."/>
+                            </crossEntry>
+                            <shares>0</shares>
+                            <type>SELL</type>
+                          </account-transaction>
+                        </transactions>
+                        <attributes>
+                          <map/>
+                        </attributes>
+                      </referenceAccount>
+                      <transactions>
+                        <portfolio-transaction reference="../../referenceAccount/transactions/account-transaction/crossEntry/portfolioTransaction"/>
+                        <portfolio-transaction>
+                          <date reference="../../../../../date"/>
+                          <currencyCode>EUR</currencyCode>
+                          <amount>1160500</amount>
+                          <security reference="../../../../../../../../../../../../../securities/security"/>
+                          <crossEntry class="portfolio-transfer" reference="../../../.."/>
+                          <shares>55000000</shares>
+                          <type>TRANSFER_IN</type>
+                        </portfolio-transaction>
+                        <portfolio-transaction reference="../../referenceAccount/transactions/account-transaction[3]/crossEntry/portfolioTransaction"/>
+                      </transactions>
+                      <attributes>
+                        <map/>
+                      </attributes>
+                    </portfolioTo>
+                    <transactionTo reference="../portfolioTo/transactions/portfolio-transaction[2]"/>
+                  </crossEntry>
+                  <shares>55000000</shares>
+                  <type>TRANSFER_OUT</type>
+                </portfolio-transaction>
+              </transactions>
+              <attributes>
+                <map/>
+              </attributes>
+            </portfolio>
+            <portfolioTransaction reference="../portfolio/transactions/portfolio-transaction"/>
+            <account reference="../../../.."/>
+            <accountTransaction reference="../.."/>
+          </crossEntry>
+          <shares>0</shares>
+          <type>BUY</type>
+        </account-transaction>
+        <account-transaction>
+          <date>2013-07-10T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>673715</amount>
+          <shares>0</shares>
+          <type>DEPOSIT</type>
+        </account-transaction>
+      </transactions>
+      <attributes>
+        <map/>
+      </attributes>
+    </account>
+    <account reference="../account/transactions/account-transaction/crossEntry/portfolio/transactions/portfolio-transaction[2]/crossEntry/portfolioTo/referenceAccount"/>
+  </accounts>
+  <portfolios>
+    <portfolio reference="../../accounts/account/transactions/account-transaction/crossEntry/portfolio"/>
+    <portfolio reference="../../accounts/account/transactions/account-transaction/crossEntry/portfolio/transactions/portfolio-transaction[2]/crossEntry/portfolioTo"/>
+  </portfolios>
+  <plans/>
+  <taxonomies/>
+  <dashboards/>
+  <properties/>
+  <settings>
+    <bookmarks/>
+    <attributeTypes/>
+    <configurationSets/>
+  </settings>
+</client>

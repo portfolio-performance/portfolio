@@ -1,0 +1,170 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=241462000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Wertpapierabrechnung ADRESSZEILE1=Herr
+ADRESSZEILE2=MAX MUSTERMANN
+Kauf ADRESSZEILE3=MUSTERSTRASSE 37
+Kommissionsgeschäft ADRESSZEILE4=12345 MUSTERDORF
+Herr ADRESSZEILE5=
+MAX MUSTERMANN ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+MUSTERSTRASSE 37 BELEGNUMMER=9199
+12345 MUSTERDORF 241462000 28514820 / 16.12.2020 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+MAX MUSTERMANN
+Frankfurt am Main, 16.12.2020
+Wir haben für Sie gekauft
+Gattungsbezeichnung ISIN
+QuantumScape Corp. Reg. Shares Cl.A  DL -,0001 US74767V1098
+Nominal Kurs
+STK 40,000 USD 58,0000
+Handelstag 15.12.2020 Kurswert USD 2.320,00-
+Handelszeit 15:30 Orderprovision USD 12,14-
+Handelsplatz Börse New York/NAY Handelsplatzgebühr USD 6,07-
+Verwahrart Wertpapierrechnung Ausmachender Betrag USD 2.338,21-
+Lagerland USA
+Wert Konto-Nr. Devisenkurs Betrag zu Ihren Lasten
+17.12.2020 241462046 EUR/USD 1,2139 EUR 1.926,20
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+onvista bank - eine Marke der Commerzbank AG Wildunger Straße 6a 60487 Frankfurt am Main
+Kundenservice: +49 (0)69-7107-530 T: +49 (0)69-7107-0 F: +49 (0)69-7107-100 E: info@onvista-bank.de W: www.onvista-bank.de
+Commerzbank AG 60261 Frankfurt am Main AG Frankfurt am Main HRB 32000 Vorstand: Martin Zielke (Vorsitzender), Roland Boekhout, Marcus Chromik,
+Jörg Hessenmüller, Bettina Orlopp, Sabine Schmittroth Vorsitzender des Aufsichtsrates: Hans-Jörg Vetter
+3.18/ABREABHNHANDKFDI/GAAASAFG/009199/171220/003447
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=241462000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Wertpapierabrechnung ADRESSZEILE1=Herr
+ADRESSZEILE2=MAX MUSTERMANN
+Verkauf ADRESSZEILE3=MUSTERSTRASSE 37
+Kommissionsgeschäft ADRESSZEILE4=123456 MUSTERDORF 
+Herr ADRESSZEILE5=
+MAX MUSTERMANN ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+MUSTERSTRASSE 37 BELEGNUMMER=9200
+12345 MUSTERDORF  241462000 52329327 / 16.12.2020 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+MAX MUSTERMANN 
+Frankfurt am Main, 16.12.2020
+Wir haben für Sie verkauft
+Gattungsbezeichnung ISIN
+QuantumScape Corp. Reg. Shares Cl.A  DL -,0001 US74767V1098
+Nominal Kurs
+STK 80,000 USD 60,9001
+Handelstag 15.12.2020 Kurswert USD 4.872,01 
+Handelszeit 16:11 Orderprovision USD 12,24-
+Handelsplatz Börse New York/NAY Handelsplatzgebühr USD 6,12-
+Verwahrart Wertpapierrechnung Ausmachender Betrag USD 4.853,65 
+Lagerland USA
+Wert Konto-Nr. Devisenkurs Betrag zu Ihren Gunsten
+17.12.2020 241462046 EUR/USD 1,2239 EUR 3.965,72
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Veräußerungsverlust Aktien EUR 53,43
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Freistellungsauftrag (eingereicht: EUR 801,00) EUR 0,00 0,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern (negativ) EUR 53,43
+Steuerausgleich nach § 43a EStG:
+Kapitalertragsteuer EUR 13,36
+Solidaritätszuschlag EUR 0,74
+Wert Konto-Nr. Abrechnungs-Nr. Betrag zu Ihren Gunsten
+16.12.2020 241462046 59592727 EUR 14,10
+Es folgt Seite 2
+onvista bank - eine Marke der Commerzbank AG Wildunger Straße 6a 60487 Frankfurt am Main
+Kundenservice: +49 (0)69-7107-530 T: +49 (0)69-7107-0 F: +49 (0)69-7107-100 E: info@onvista-bank.de W: www.onvista-bank.de
+Commerzbank AG 60261 Frankfurt am Main AG Frankfurt am Main HRB 32000 Vorstand: Martin Zielke (Vorsitzender), Roland Boekhout, Marcus Chromik,
+Jörg Hessenmüller, Bettina Orlopp, Sabine Schmittroth Vorsitzender des Aufsichtsrates: Hans-Jörg Vetter
+3.18/ABREABHNHANDVFDI/GAAASAFG/009200/171220/003447
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=241462000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+ADRESSZEILE1=Herr
+Depot-Nr. Abrechnungs-Nr. Seite-Nr. ADRESSZEILE2=MAX MUSTERMANN 
+241462000 52329327 2 ADRESSZEILE3=MUSTERSTRASSE 37
+ADRESSZEILE4=12345 MUSTERDORF
+ADRESSZEILE5=
+ADRESSZEILE6=
+BELEGNUMMER=9200
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 8.388,88 SEITENNUMMER=2
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 461,38 STEUERERSTATTUNG=N
+Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer nach gemeldetem Kirchensteuersatz verrechnet mit dem
+Finanzamt Itzehoe, Steuernummer 18/297/13562.
+Jahressteuerbescheinigung folgt
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+onvista bank - eine Marke der Commerzbank AG Wildunger Straße 6a 60487 Frankfurt am Main
+Kundenservice: +49 (0)69-7107-530 T: +49 (0)69-7107-0 F: +49 (0)69-7107-100 E: info@onvista-bank.de W: www.onvista-bank.de
+Commerzbank AG 60261 Frankfurt am Main AG Frankfurt am Main HRB 32000 Vorstand: Martin Zielke (Vorsitzender), Roland Boekhout, Marcus Chromik,
+Jörg Hessenmüller, Bettina Orlopp, Sabine Schmittroth Vorsitzender des Aufsichtsrates: Hans-Jörg Vetter
+3.18/ABREABHNHANDVFDI/GAAASAFG/009200/171220/003447
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=241462000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Wertpapierabrechnung ADRESSZEILE1=Herr
+ADRESSZEILE2=MAX MUSTERMANN
+Verkauf Limitauftrag ADRESSZEILE3=MUSTERSTRASSE 37
+Kommissionsgeschäft ADRESSZEILE4=12345 MUSTERDORF
+Herr ADRESSZEILE5=
+MAX MUSTERMANN ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+MUSTERSTRASSE 37 BELEGNUMMER=9201
+12345 MUSTERDORF241462000 15336433 / 16.12.2020 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+MAX MUSTERMANN
+Frankfurt am Main, 16.12.2020
+Wir haben für Sie verkauft
+Gattungsbezeichnung ISIN
+Talon Metals Corp. Registered Shares o.N. VGG866591024
+Nominal Kurs
+STK 5.000,000 EUR 0,2120
+Handelstag 16.12.2020 Kurswert EUR 1.060,00 
+Handelszeit 12:17 Orderprovision EUR 5,00-
+Handelsplatz Börse Frankfurt/EDF Börsengebühr EUR 3,65-
+Verwahrart Wertpapierrechnung Handelsplatzgebühr EUR 2,00-
+Lagerland Kanada Kapitalertragsteuer EUR 25,93-
+Solidaritätszuschlag EUR 1,43-
+Wert Konto-Nr. Betrag zu Ihren Gunsten
+18.12.2020 241462046 EUR 1.021,99
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Veräußerungsgewinn Aktien EUR 103,70
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Freistellungsauftrag (eingereicht: EUR 801,00) EUR 0,00 0,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern EUR 103,70
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 8.402,24
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 462,12
+Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer nach gemeldetem Kirchensteuersatz verrechnet mit dem
+Finanzamt Itzehoe, Steuernummer 18/297/13562.
+Jahressteuerbescheinigung folgt
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+onvista bank - eine Marke der Commerzbank AG Wildunger Straße 6a 60487 Frankfurt am Main
+Kundenservice: +49 (0)69-7107-530 T: +49 (0)69-7107-0 F: +49 (0)69-7107-100 E: info@onvista-bank.de W: www.onvista-bank.de
+Commerzbank AG 60261 Frankfurt am Main AG Frankfurt am Main HRB 32000 Vorstand: Martin Zielke (Vorsitzender), Roland Boekhout, Marcus Chromik,
+Jörg Hessenmüller, Bettina Orlopp, Sabine Schmittroth Vorsitzender des Aufsichtsrates: Hans-Jörg Vetter
+3.18/ABREABHNHANDVFDI/GAAASAFG/009201/171220/003447

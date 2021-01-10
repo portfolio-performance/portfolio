@@ -16,7 +16,6 @@ import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
-import name.abuchen.portfolio.money.MoneyCollectors;
 
 public final class GroupByTaxonomy
 {
@@ -182,22 +181,9 @@ public final class GroupByTaxonomy
         return valuation;
     }
 
-    public Money getFIFOPurchaseValue()
+    public CurrencyConverter getCurrencyConverter()
     {
-        return categories.stream().map(AssetCategory::getFIFOPurchaseValue)
-                        .collect(MoneyCollectors.sum(converter.getTermCurrency()));
-    }
-
-    public Money getMovingAveragePurchaseValue()
-    {
-        return categories.stream().map(AssetCategory::getMovingAveragePurchaseValue)
-                        .collect(MoneyCollectors.sum(converter.getTermCurrency()));
-    }
-
-    public Money getProfitLoss()
-    {
-        return categories.stream().map(AssetCategory::getProfitLoss)
-                        .collect(MoneyCollectors.sum(converter.getTermCurrency()));
+        return converter;
     }
 
     public List<AssetCategory> asList()

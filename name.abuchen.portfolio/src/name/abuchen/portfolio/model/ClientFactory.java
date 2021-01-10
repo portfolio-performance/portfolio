@@ -64,6 +64,7 @@ import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
 import name.abuchen.portfolio.util.ProgressMonitorInputStream;
 import name.abuchen.portfolio.util.XStreamLocalDateConverter;
 import name.abuchen.portfolio.util.XStreamLocalDateTimeConverter;
+import name.abuchen.portfolio.util.XStreamSecurityPriceConverter;
 
 @SuppressWarnings("deprecation")
 public class ClientFactory
@@ -586,6 +587,13 @@ public class ClientFactory
             case 46:
                 // added dividend payment security event
                 addDefaultLogoAttributes(client);
+            case 47:
+                // added fees to dividend transactions
+            case 48:
+                incrementSharesPrecisionFromSixToEightDigitsAfterDecimalSign(client);
+                // add 4 more decimal places to the quote to make it 8
+                addDecimalPlacesToQuotes(client);
+                addDecimalPlacesToQuotes(client);
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
@@ -1091,6 +1099,16 @@ public class ClientFactory
         client.getSettings().addAttributeType(factory.apply(InvestmentPlan.class));
     }
 
+    private static void incrementSharesPrecisionFromSixToEightDigitsAfterDecimalSign(Client client)
+    {
+        for (Portfolio portfolio : client.getPortfolios())
+            for (PortfolioTransaction portfolioTransaction : portfolio.getTransactions())
+                portfolioTransaction.setShares(portfolioTransaction.getShares() * 100);
+        for (Account account : client.getAccounts())
+            for (AccountTransaction accountTransaction : account.getTransactions())
+                accountTransaction.setShares(accountTransaction.getShares() * 100);
+    }
+
     @SuppressWarnings("nls")
     private static synchronized XStream xstream()
     {
@@ -1102,6 +1120,7 @@ public class ClientFactory
 
             xstream.registerConverter(new XStreamLocalDateConverter());
             xstream.registerConverter(new XStreamLocalDateTimeConverter());
+            xstream.registerConverter(new XStreamSecurityPriceConverter());
             xstream.registerConverter(
                             new PortfolioTransactionConverter(xstream.getMapper(), xstream.getReflectionProvider()));
 

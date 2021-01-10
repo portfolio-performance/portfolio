@@ -2,26 +2,25 @@ package name.abuchen.portfolio.ui.views;
 
 import java.beans.PropertyChangeListener;
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 import javax.inject.Inject;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.DateSelectionDialog;
@@ -31,6 +30,7 @@ import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
+import name.abuchen.portfolio.util.Pair;
 
 public class StatementOfAssetsView extends AbstractFinanceView
 {
@@ -59,11 +59,7 @@ public class StatementOfAssetsView extends AbstractFinanceView
     public void notifyModelUpdated()
     {
         CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
-        Client filteredClient = clientFilter.getSelectedFilter().filter(getClient());
-        ClientSnapshot snapshot = ClientSnapshot.create(filteredClient, converter,
-                        snapshotDate.orElse(LocalDate.now()));
-
-        assetViewer.setInput(snapshot, clientFilter.getSelectedFilter());
+        assetViewer.setInput(clientFilter.getSelectedFilter(), LocalDate.now(), converter);
         updateTitle(getDefaultTitle());
     }
 
@@ -71,33 +67,33 @@ public class StatementOfAssetsView extends AbstractFinanceView
     protected void addButtons(final ToolBarManager toolBar)
     {
         DropDown dropDown = new DropDown(getClient().getBaseCurrency());
+
+        Function<CurrencyUnit, Action> asAction = unit -> {
+            Action action = new SimpleAction(unit.getLabel(), a -> {
+                dropDown.setLabel(unit.getCurrencyCode());
+                getClient().setBaseCurrency(unit.getCurrencyCode());
+            });
+            action.setChecked(getClient().getBaseCurrency().equals(unit.getCurrencyCode()));
+            return action;
+        };
+
         dropDown.setMenuListener(manager -> {
+
             // put list of favorite units on top
-            List<CurrencyUnit> allUnits = getClient().getUsedCurrencies();
+            getClient().getUsedCurrencies().forEach(unit -> manager.add(asAction.apply(unit)));
+
             // add a separator marker
-            allUnits.add(null);
+            manager.add(new Separator());
+
             // then all available units
-            List<CurrencyUnit> available = CurrencyUnit.getAvailableCurrencyUnits();
-            Collections.sort(available);
-            allUnits.addAll(available);
-            // now show the list
-            for (final CurrencyUnit unit : allUnits)
+            List<Pair<String, List<CurrencyUnit>>> available = CurrencyUnit.getAvailableCurrencyUnitsGrouped();
+
+            for (Pair<String, List<CurrencyUnit>> pair : available)
             {
-                // is this a unit or a separator?
-                if (unit != null)
-                {
-                    Action action = new SimpleAction(unit.getLabel(), a -> {
-                        dropDown.setLabel(unit.getCurrencyCode());
-                        getClient().setBaseCurrency(unit.getCurrencyCode());
-                    });
-                    action.setChecked(getClient().getBaseCurrency().equals(unit.getCurrencyCode()));
-                    manager.add(action);
-                }
-                else
-                {
-                    // add a separator
-                    manager.add(new Separator());
-                }
+                MenuManager submenu = new MenuManager(pair.getLeft());
+                manager.add(submenu);
+
+                pair.getRight().forEach(unit -> submenu.add(asAction.apply(unit)));
             }
         });
 

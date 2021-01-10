@@ -62,10 +62,11 @@ import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.snapshot.AssetPosition;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.filter.ClientSecurityFilter;
 import name.abuchen.portfolio.snapshot.filter.ReadOnlyClient;
+import name.abuchen.portfolio.snapshot.security.SecurityPerformanceIndicator;
+import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.Colors;
@@ -1464,31 +1465,23 @@ public class SecuritiesChart
     private Optional<Double> getPurchasePrice(Client filteredClient, CurrencyConverter currencyConverter,
                     LocalDate date)
     {
-        ClientSnapshot snapshot = ClientSnapshot.create(filteredClient, currencyConverter, date);
-        AssetPosition position = snapshot.getPositionsByVehicle().get(security);
-        if (position == null)
-            return Optional.empty();
-
-        Money purchasePrice = position.getPosition().getFIFOPurchasePrice();
-        if (!purchasePrice.isZero())
-            return Optional.of(purchasePrice.getAmount() / Values.Amount.divider());
-        else
-            return Optional.empty();
+        return SecurityPerformanceSnapshot
+                        .create(filteredClient, currencyConverter, Interval.of(LocalDate.MIN, date),
+                                        SecurityPerformanceIndicator.Costs.class)
+                        .getRecord(security) //
+                        .filter(r -> !r.getFifoCostPerSharesHeld().isZero()) //
+                        .map(r -> r.getFifoCostPerSharesHeld().getAmount() / Values.Quote.divider());
     }
 
     private Optional<Double> getMovingAveragePurchasePrice(Client filteredClient, CurrencyConverter currencyConverter,
                     LocalDate date)
     {
-        ClientSnapshot snapshot = ClientSnapshot.create(filteredClient, currencyConverter, date);
-        AssetPosition position = snapshot.getPositionsByVehicle().get(security);
-        if (position == null)
-            return Optional.empty();
-
-        Money purchasePrice = position.getPosition().getMovingAveragePurchasePrice();
-        if (!purchasePrice.isZero())
-            return Optional.of(purchasePrice.getAmount() / Values.Amount.divider());
-        else
-            return Optional.empty();
+        return SecurityPerformanceSnapshot
+                        .create(filteredClient, currencyConverter, Interval.of(LocalDate.MIN, date),
+                                        SecurityPerformanceIndicator.Costs.class)
+                        .getRecord(security) //
+                        .filter(r -> !r.getFifoCostPerSharesHeld().isZero()) //
+                        .map(r -> r.getMovingAverageCostPerSharesHeld().getAmount() / Values.Quote.divider());
     }
 
 }

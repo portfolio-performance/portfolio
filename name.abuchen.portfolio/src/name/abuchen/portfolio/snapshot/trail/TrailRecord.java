@@ -68,11 +68,11 @@ public interface TrailRecord
         return new ArithmeticTrail(ArithmeticTrail.Operation.ADDITION, Messages.LabelSum, this, trail);
     }
 
-    default TrailRecord substract(TrailRecord trail)
+    default TrailRecord subtract(TrailRecord trail)
     {
         if (trail instanceof EmptyTrail)
             return this;
-        return new ArithmeticTrail(ArithmeticTrail.Operation.SUBSTRACTION, Messages.LabelDifference, this, trail);
+        return new ArithmeticTrail(ArithmeticTrail.Operation.SUBTRACTION, Messages.LabelDifference, this, trail);
     }
 
     default TrailRecord fraction(Money value, long numerator, long denominator)

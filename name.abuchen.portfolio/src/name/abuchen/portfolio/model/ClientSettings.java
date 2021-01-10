@@ -94,6 +94,7 @@ public class ClientSettings
         ter.setName(Messages.AttributesTERName);
         ter.setColumnLabel(Messages.AttributesTERColumn);
         ter.setTarget(Security.class);
+        ter.setSource("etf-data.com$ter"); //$NON-NLS-1$
         ter.setType(Double.class);
         ter.setConverter(PercentConverter.class);
         attributeTypes.add(ter);
@@ -110,6 +111,7 @@ public class ClientSettings
         vendor.setName(Messages.AttributesVendorName);
         vendor.setColumnLabel(Messages.AttributesVendorColumn);
         vendor.setTarget(Security.class);
+        vendor.setSource("etf-data.com$vendor"); //$NON-NLS-1$
         vendor.setType(String.class);
         vendor.setConverter(StringConverter.class);
         attributeTypes.add(vendor);

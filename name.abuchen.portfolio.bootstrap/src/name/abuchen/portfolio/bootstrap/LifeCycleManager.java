@@ -35,7 +35,6 @@ import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.Version;
@@ -56,51 +55,9 @@ public class LifeCycleManager
     @PostContextCreate
     public void doPostContextCreate(IEclipseContext context)
     {
-        checkForJava8();
-        removeClearPersistedStateFlag();
         checkForModelChanges();
         checkForRequestToClearPersistedState();
         setupEventLoopAdvisor(context);
-    }
-
-    private void checkForJava8()
-    {
-        // if the java version is < 8, show a message dialog because otherwise
-        // the application would silently not start
-
-        double version = Double.parseDouble(System.getProperty("java.specification.version")); //$NON-NLS-1$
-
-        if (version < 1.8)
-        {
-            MessageDialog.openInformation(Display.getDefault().getActiveShell(), Messages.TitleJavaVersion,
-                            Messages.MsgMinimumRequiredVersion);
-            throw new UnsupportedOperationException("The minimum Java version required is Java 8"); //$NON-NLS-1$
-        }
-    }
-
-    private void removeClearPersistedStateFlag()
-    {
-        // the 'old' update mechanism edited the ini file *after* the upgrade
-        // and added the -clearPersistedState flag. The current mechanism does
-        // not need it, hence it must be remove if present
-
-        // not applicable on Mac OS X because only update is not supported
-        if (Platform.OS_MACOSX.equals(Platform.getOS()))
-            return;
-
-        try
-        {
-            IniFileManipulator iniFile = new IniFileManipulator();
-            iniFile.load();
-            iniFile.unsetClearPersistedState();
-            if (iniFile.isDirty())
-                iniFile.save();
-        }
-        catch (IOException ignore)
-        {
-            // ignore: in production, it will anyway be removed during the next
-            // update; in development, it will annoy to always report this error
-        }
     }
 
     private void checkForModelChanges()

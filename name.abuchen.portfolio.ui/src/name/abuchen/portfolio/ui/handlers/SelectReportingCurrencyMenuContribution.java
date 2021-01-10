@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.ui.handlers;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,6 +10,7 @@ import org.eclipse.e4.ui.di.AboutToShow;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.menu.ItemType;
 import org.eclipse.e4.ui.model.application.ui.menu.MDirectMenuItem;
+import org.eclipse.e4.ui.model.application.ui.menu.MMenu;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuElement;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuFactory;
 import org.eclipse.e4.ui.services.IServiceConstants;
@@ -21,6 +21,7 @@ import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.editor.ClientInput;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
+import name.abuchen.portfolio.util.Pair;
 
 public class SelectReportingCurrencyMenuContribution
 {
@@ -41,9 +42,16 @@ public class SelectReportingCurrencyMenuContribution
 
         menuItems.add(MMenuFactory.INSTANCE.createMenuSeparator());
 
-        List<CurrencyUnit> available = CurrencyUnit.getAvailableCurrencyUnits();
-        Collections.sort(available);
-        available.forEach(currency -> menuItems.add(createMenu(currency, portfolioPart)));
+        List<Pair<String, List<CurrencyUnit>>> available = CurrencyUnit.getAvailableCurrencyUnitsGrouped();
+
+        for (Pair<String, List<CurrencyUnit>> pair : available)
+        {
+            MMenu submenu = MMenuFactory.INSTANCE.createMenu();
+            submenu.setLabel(pair.getLeft());
+            menuItems.add(submenu);
+
+            pair.getRight().forEach(currency -> submenu.getChildren().add(createMenu(currency, portfolioPart)));
+        }
     }
 
     private MMenuElement createMenu(CurrencyUnit currency, PortfolioPart part)

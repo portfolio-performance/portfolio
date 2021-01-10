@@ -26,7 +26,6 @@ import name.abuchen.portfolio.PortfolioLog;
 
 @Singleton
 @Creatable
-@SuppressWarnings("restriction")
 public class CSVConfigManager
 {
     @Inject

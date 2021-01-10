@@ -295,8 +295,8 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private void addPeriodenauszugTransactions()
     {
-        final DocumentType type = new DocumentType("Perioden-Kontoauszug", (context, lines) -> {
-            Pattern pCurrency = Pattern.compile("Perioden-Kontoauszug:[ ]+(\\w{3}+)-Konto");
+        final DocumentType type = new DocumentType("(Perioden-Kontoauszug|Tageskontoauszug)", (context, lines) -> {
+            Pattern pCurrency = Pattern.compile("(Perioden-Kontoauszug|Tageskontoauszug):[ ]+(\\w{3})-Konto");
             // read the current context here
             for (String line : lines)
             {
@@ -312,7 +312,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
         // deposit, add value to account
         // 01.01.2020 Lastschrift aktiv 01.01.2020 123,45
         Block depositBlock = new Block(
-                        "(\\d+\\.\\d+\\.\\d{4}) (Lastschrift aktiv) (\\d+\\.\\d+\\.\\d{4}) ([\\d.]+,\\d{2})");
+                        "(\\d+\\.\\d+\\.\\d{4}) (Lastschrift aktiv|Gutschrift) (\\d+\\.\\d+\\.\\d{4}) ([\\d.]+,\\d{2})");
         type.addBlock(depositBlock);
         depositBlock.set(new Transaction<AccountTransaction>().subject(() -> {
             AccountTransaction t = new AccountTransaction();
@@ -321,7 +321,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
         })
 
                         .section("valuta", "amount")
-                        .match("(\\d+\\.\\d+\\.\\d{4}) (Lastschrift aktiv) (?<valuta>\\d+\\.\\d+\\.\\d{4}) (?<amount>[\\d.]+,\\d{2})")
+                        .match("(\\d+\\.\\d+\\.\\d{4}) (Lastschrift aktiv|Gutschrift) (?<valuta>\\d+\\.\\d+\\.\\d{4}) (?<amount>[\\d.]+,\\d{2})")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
                             t.setCurrencyCode(asCurrencyCode(context.get("currency")));
@@ -385,7 +385,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("amount", "date", "shares")
-                        .match("(\\d+.\\d+.\\d{4}+) (Kauf) (?<date>\\d+.\\d+.\\d{4}+) (?<amount>[\\d.,]+).*")
+                        .match("(?<date>\\d+.\\d+.\\d{4}+) (Kauf) (\\d+.\\d+.\\d{4}+) (?<amount>[\\d.,]+).*")
                         .match("^(.*)$").match("^ISIN .{12}").match("^STK *(?<shares>[\\d.,]+).*").assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
                             t.setDate(asDate(v.get("date")));
@@ -410,7 +410,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("amount", "date", "shares")
-                        .match("(\\d+.\\d+.\\d{4}+) (Verkauf) (?<date>\\d+.\\d+.\\d{4}+) (?<amount>[\\d.,]+).*")
+                        .match("(?<date>\\d+.\\d+.\\d{4}+) (Verkauf) (\\d+.\\d+.\\d{4}+) (?<amount>[\\d.,]+).*")
                         .match("^(.*)$").match("^ISIN .{12}").match("^STK *(?<shares>[\\d.,]+).*").assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
                             t.setDate(asDate(v.get("date")));

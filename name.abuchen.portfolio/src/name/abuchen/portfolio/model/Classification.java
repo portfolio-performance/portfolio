@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.model;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -81,6 +82,7 @@ public class Classification implements Named
     }
 
     public static final int ONE_HUNDRED_PERCENT = 100 * Values.Weight.factor();
+    public static final BigDecimal ONE_HUNDRED_PERCENT_BD = BigDecimal.valueOf(Values.Weight.factorize(100));
 
     public static final String UNASSIGNED_ID = "$unassigned$"; //$NON-NLS-1$
     public static final String VIRTUAL_ROOT = "$virtualroot$"; //$NON-NLS-1$
@@ -211,6 +213,11 @@ public class Classification implements Named
     public void removeAssignment(Assignment assignment)
     {
         assignments.remove(assignment);
+    }
+
+    public void clearAssignments()
+    {
+        assignments.clear();
     }
 
     public int getWeight()

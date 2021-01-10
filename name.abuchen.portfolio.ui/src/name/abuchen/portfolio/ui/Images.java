@@ -47,6 +47,7 @@ public enum Images
     CALENDAR_ON("calendar_on.png"), //$NON-NLS-1$
     CALENDAR_OFF("calendar_off.png"), //$NON-NLS-1$
     CLOCK("clock.png"), //$NON-NLS-1$
+    CLOUD("cloud.png"), //$NON-NLS-1$
 
     // views
 
