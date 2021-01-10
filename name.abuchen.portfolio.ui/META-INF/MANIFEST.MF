@@ -115,6 +115,7 @@ Require-Bundle: com.ibm.icu,
  org.eclipse.nebula.cwt,
  org.eclipse.ui.forms,
  org.eclipse.e4.ui.css.core,
- org.eclipse.ui.themes
+ org.eclipse.ui.themes,
+ org.eclipse.jface
 Automatic-Module-Name: name.abuchen.portfolio.ui
 Service-Component: OSGI-INF/name.abuchen.portfolio.ui.util.theme.ColorAndFontProviderImpl.xml

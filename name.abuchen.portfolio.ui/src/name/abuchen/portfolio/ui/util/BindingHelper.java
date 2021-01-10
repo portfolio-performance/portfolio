@@ -17,9 +17,15 @@ import org.eclipse.core.databinding.conversion.IConverter;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.jface.bindings.keys.KeyStroke;
 import org.eclipse.jface.databinding.swt.ISWTObservableValue;
 import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.jface.databinding.viewers.typed.ViewerProperties;
+import org.eclipse.jface.fieldassist.ContentProposal;
+import org.eclipse.jface.fieldassist.ContentProposalAdapter;
+import org.eclipse.jface.fieldassist.IContentProposal;
+import org.eclipse.jface.fieldassist.IContentProposalProvider;
+import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
@@ -27,6 +33,8 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Button;
@@ -46,45 +54,33 @@ import name.abuchen.portfolio.util.TradeCalendarManager;
 
 public class BindingHelper
 {
-    private static final class StringToCurrencyUnitConverter implements IConverter<String, CurrencyUnit>
+    private static final class CurrencyProposalProvider implements IContentProposalProvider
     {
-        @Override
-        public Object getToType()
+        private Iterable<String> currencies;
+
+        private CurrencyProposalProvider(Iterable<String> currencies)
         {
-            return CurrencyUnit.class;
+            this.currencies = currencies;
         }
 
         @Override
-        public Object getFromType()
+        public IContentProposal[] getProposals(String contents, int position)
         {
-            return String.class;
-        }
-
-        @Override
-        public CurrencyUnit convert(String fromObject)
-        {
-            return fromObject == null ? CurrencyUnit.EMPTY : CurrencyUnit.getInstance((String) fromObject);
-        }
-    }
-
-    private static final class CurrencyUnitToStringConverter implements IConverter<CurrencyUnit, String>
-    {
-        @Override
-        public Object getToType()
-        {
-            return String.class;
-        }
-
-        @Override
-        public Object getFromType()
-        {
-            return CurrencyUnit.class;
-        }
-
-        @Override
-        public String convert(CurrencyUnit fromObject)
-        {
-            return CurrencyUnit.EMPTY.equals(fromObject) ? null : fromObject.getCurrencyCode();
+            List<IContentProposal> proposals = new ArrayList<>();
+            for (String currency : currencies)
+            {
+                if (currency.length() >= contents.length() && currency.substring(0, contents.length()).equalsIgnoreCase(contents))
+                {
+                    proposals.add(new ContentProposal(currency));
+                }
+            }
+            // below matching currencies, add everything for scrolling
+            proposals.add(new ContentProposal(String.format("--- %s ---", Messages.LabelAllCurrencies))); //$NON-NLS-1$
+            for (String currency : currencies)
+            {
+                proposals.add(new ContentProposal(currency));
+            }
+            return proposals.toArray(new IContentProposal[0]);
         }
     }
 
@@ -297,38 +293,49 @@ public class BindingHelper
         context.bindValue(spinnerTarget, spinnerModel);
     }
 
-    public final ComboViewer bindCurrencyCodeCombo(Composite editArea, String label, String property)
+    public final Text bindCurrencyCodeCombo(Composite editArea, String label, String property)
     {
         return bindCurrencyCodeCombo(editArea, label, property, true);
     }
 
-    public final ComboViewer bindCurrencyCodeCombo(Composite editArea, String label, String property,
+    public final Text bindCurrencyCodeCombo(Composite editArea, String label, String property,
                     boolean includeEmpty)
     {
-        Label l = new Label(editArea, SWT.NONE);
-        l.setText(label);
-        ComboViewer combo = new ComboViewer(editArea, SWT.READ_ONLY);
-        combo.setContentProvider(ArrayContentProvider.getInstance());
-        combo.setLabelProvider(new LabelProvider());
-
-        List<CurrencyUnit> currencies = new ArrayList<>();
+        List<String> currencies = new ArrayList<>();
         if (includeEmpty)
-            currencies.add(CurrencyUnit.EMPTY);
-        currencies.addAll(CurrencyUnit.getAvailableCurrencyUnits().stream().sorted().collect(Collectors.toList()));
-        combo.setInput(currencies);
-        GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.FILL).applyTo(combo.getControl());
+            currencies.add(CurrencyUnit.EMPTY.toString());
+        currencies.addAll(CurrencyUnit.getAvailableCurrencyUnits().stream().map(CurrencyUnit::toString).sorted().collect(Collectors.toList()));
 
-        UpdateValueStrategy<CurrencyUnit, String> targetToModel = new UpdateValueStrategy<>();
-        targetToModel.setConverter(new CurrencyUnitToStringConverter());
 
-        UpdateValueStrategy<String, CurrencyUnit> modelToTarget = new UpdateValueStrategy<>();
-        modelToTarget.setConverter(new StringToCurrencyUnitConverter());
+        Text text = createTextInput(editArea, label, SWT.NONE, currencies.stream().mapToInt(String::length).max().getAsInt());
+        IContentProposalProvider provider = new CurrencyProposalProvider(currencies);
+        ContentProposalAdapter adapter = new ContentProposalAdapter(text, new TextContentAdapter(), provider, KeyStroke.getInstance(0), null);
+        adapter.setPropagateKeys(true);
+        adapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_REPLACE);
 
-        IObservableValue<String> comboModel = BeanProperties.value(property, String.class).observe(model);
-        IObservableValue<CurrencyUnit> comboTarget = ViewerProperties.singleSelection(CurrencyUnit.class)
-                        .observe(combo);
-        context.bindValue(comboTarget, comboModel, targetToModel, modelToTarget);
-        return combo;
+        text.addKeyListener(new KeyAdapter()
+        {
+            @Override
+            public void keyPressed(KeyEvent e)
+            {
+                if (e.keyCode == SWT.BS)
+                   adapter.openProposalPopup();
+            }
+        });
+
+        UpdateValueStrategy<String, String> targetToModel = new UpdateValueStrategy<>();
+        targetToModel.setAfterGetValidator(c -> currencies.contains(c)
+                        ? ValidationStatus.ok() : ValidationStatus.error(MessageFormat.format(
+                                                    Messages.MsgDialogNotAValidCurrency, label)));
+        targetToModel.setConverter(IConverter.create(selected -> selected.equals(CurrencyUnit.EMPTY.toString()) ? null : selected.substring(0, 3)));
+
+        UpdateValueStrategy<String, String> modelToTarget = new UpdateValueStrategy<>();
+        modelToTarget.setConverter(IConverter.create(code -> code == null ? CurrencyUnit.EMPTY.toString() : CurrencyUnit.getInstance(code).toString()));
+
+        IObservableValue<String> textModel = BeanProperties.value(property, String.class).observe(model);
+        IObservableValue<String> textTarget = WidgetProperties.text(SWT.Modify).observe(text);
+        context.bindValue(textTarget, textModel, targetToModel, modelToTarget);
+        return text;
     }
 
     public final ComboViewer bindCalendarCombo(Composite editArea, String label, String property)
