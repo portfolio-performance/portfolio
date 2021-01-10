@@ -3,7 +3,7 @@
 
 @import url("platform:/plugin/name.abuchen.portfolio.ui/css/dark/common.css");
 
-.MPart Table,
-.MPart Tree {
+Table,
+Tree {
 	swt-lines-visible: false;
 }
