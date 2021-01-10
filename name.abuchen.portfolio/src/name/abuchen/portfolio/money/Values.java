@@ -187,7 +187,7 @@ public abstract class Values<E>
         }
     };
 
-    public static final Values<Long> Share = new Values<Long>("#,##0.######", 8) //$NON-NLS-1$
+    public static final Values<Long> Share = new Values<Long>("#,##0.########", 8) //$NON-NLS-1$
     {
         private final DecimalFormat format = new DecimalFormat(pattern());
 
