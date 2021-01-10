@@ -15,7 +15,7 @@ import name.abuchen.portfolio.money.MutableMoney;
 {
     public enum Operation
     {
-        ADDITION, SUBSTRACTION
+        ADDITION, SUBTRACTION
     }
 
     private final Operation operation;
@@ -37,12 +37,12 @@ import name.abuchen.portfolio.money.MutableMoney;
                 this.value = this.children.stream().map(TrailRecord::getValue).filter(Objects::nonNull)
                                 .collect(MoneyCollectors.sum(this.children.get(0).getValue().getCurrencyCode()));
             }
-            else if (operation == Operation.SUBSTRACTION)
+            else if (operation == Operation.SUBTRACTION)
             {
-                MutableMoney substraction = MutableMoney.of(this.children.get(0).getValue());
+                MutableMoney subtraction = MutableMoney.of(this.children.get(0).getValue());
                 for (int index = 1; index < inputs.length; index++)
-                    substraction.subtract(children.get(index).getValue());
-                this.value = substraction.toMoney();
+                    subtraction.subtract(children.get(index).getValue());
+                this.value = subtraction.toMoney();
             }
             else
             {
@@ -110,9 +110,9 @@ import name.abuchen.portfolio.money.MutableMoney;
     }
 
     @Override
-    public TrailRecord substract(TrailRecord trail)
+    public TrailRecord subtract(TrailRecord trail)
     {
-        if (this.operation == Operation.SUBSTRACTION && trail instanceof ArithmeticTrail
+        if (this.operation == Operation.SUBTRACTION && trail instanceof ArithmeticTrail
                         && ((ArithmeticTrail) trail).operation.equals(this.operation))
         {
             ArithmeticTrail answer = new ArithmeticTrail(this.operation, label);
@@ -122,7 +122,7 @@ import name.abuchen.portfolio.money.MutableMoney;
         }
         else
         {
-            return TrailRecord.super.substract(trail);
+            return TrailRecord.super.subtract(trail);
         }
     }
 }
