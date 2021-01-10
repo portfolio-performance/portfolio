@@ -86,16 +86,6 @@ jobs:
       with:
         source: "portfolio-app/releng/x86/x86-target-definition.target"
         target: "portfolio-target-definition/portfolio-target-definition.target"
-    - name: setup x86 product
-      uses: canastro/copy-file-action@master
-      with:
-        source: "portfolio-app/releng/x86/x86-product.product"
-        target: "portfolio-product/name.abuchen.portfolio.product"
-    - name: setup x86 distro
-      uses: canastro/copy-file-action@master
-      with:
-        source: "portfolio-app/releng/x86/x86-distro.product"
-        target: "portfolio-product/name.abuchen.portfolio.distro.product"
     - name: Build with Maven
       run: |
         mvn verify \
