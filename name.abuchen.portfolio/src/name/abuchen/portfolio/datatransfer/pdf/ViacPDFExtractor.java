@@ -19,6 +19,7 @@ public class ViacPDFExtractor extends SwissBasedPDFExtractor
         super(client);
 
         addBankIdentifier("Terzo"); //$NON-NLS-1$
+        addBankIdentifier("WIR Bank"); //$NON-NLS-1$
 
         addDepositTransaction();
         addDepositTransactionEnglish();
