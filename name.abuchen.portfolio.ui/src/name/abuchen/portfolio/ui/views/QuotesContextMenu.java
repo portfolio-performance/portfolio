@@ -212,6 +212,15 @@ public class QuotesContextMenu
             });
         }
 
+        if (security.getLatest() != null)
+        {
+            manager.add(new SimpleAction("Delete Latest Quote", a -> {
+                security.setLatest(null);
+                owner.markDirty();
+                owner.notifyModelUpdated();
+            }));
+        }
+
         manager.add(new Separator());
 
         manager.add(new Action(Messages.SecurityMenuExportCSV)
