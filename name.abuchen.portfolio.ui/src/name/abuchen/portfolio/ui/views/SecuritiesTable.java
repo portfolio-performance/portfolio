@@ -73,6 +73,7 @@ import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
 import name.abuchen.portfolio.ui.util.BookmarkMenu;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ConfirmActionWithSelection;
+import name.abuchen.portfolio.ui.util.FormatHelper;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.viewers.BooleanEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.Column;
@@ -81,6 +82,7 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationL
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.NumberColorLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.OptionLabelProvider;
+import name.abuchen.portfolio.ui.util.viewers.QuotesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ReportingPeriodColumnOptions;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
@@ -311,21 +313,16 @@ public final class SecuritiesTable implements ModificationListener
     {
         Column column = new Column("4", Messages.ColumnLatest, SWT.RIGHT, 60); //$NON-NLS-1$
         column.setMenuLabel(Messages.ColumnLatest_MenuLabel);
-        column.setLabelProvider(new ColumnLabelProvider()
+        column.setLabelProvider(new QuotesLabelProvider(getClient())
         {
             @Override
-            public String getText(Object e)
+            public Quote getQuote(Object e)
             {
                 Security security = (Security) e;
                 SecurityPrice latest = security.getSecurityPrice(LocalDate.now());
                 if (latest == null)
                     return null;
-
-                if (security.getCurrencyCode() == null)
-                    return Values.Quote.format(latest.getValue());
-                else
-                    return Values.Quote.format(security.getCurrencyCode(), latest.getValue(),
-                                    getClient().getBaseCurrency());
+                return Quote.of(security.getCurrencyCode(), latest.getValue());
             }
         });
         column.setSorter(ColumnViewerSorter.create((o1, o2) -> {
@@ -347,7 +344,7 @@ public final class SecuritiesTable implements ModificationListener
         Column column;
         column = new Column("5", Messages.ColumnChangeOnPrevious, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setMenuLabel(Messages.ColumnChangeOnPrevious_MenuLabel);
-        column.setLabelProvider(new NumberColorLabelProvider<>(Values.Percent2, element -> {
+        column.setLabelProvider(new NumberColorLabelProvider<>(Values.Percent2::format, element -> {
             Optional<Pair<SecurityPrice, SecurityPrice>> previous = ((Security) element).getLatestTwoSecurityPrices();
             if (previous.isPresent())
             {
@@ -408,7 +405,9 @@ public final class SecuritiesTable implements ModificationListener
         Column column;
         column = new Column("changeonpreviousamount", Messages.ColumnChangeOnPreviousAmount, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setMenuLabel(Messages.ColumnChangeOnPrevious_MenuLabelAmount);
-        column.setLabelProvider(new NumberColorLabelProvider<>(Values.Quote, element -> {
+        column.setLabelProvider(new NumberColorLabelProvider<>(quote -> {
+            return FormatHelper.format(null, quote, getClient().getBaseCurrency());
+        }, element -> {
             Optional<Pair<SecurityPrice, SecurityPrice>> previous = ((Security) element).getLatestTwoSecurityPrices();
             if (previous.isPresent())
             {
@@ -729,10 +728,10 @@ public final class SecuritiesTable implements ModificationListener
             @Override
             public String getText(Object e)
             {
-                return Values.Percent2.format(metricsCache.get((Security) e).getCompleteness());
+                return Values.Percent2.format(metricsCache.get(e).getCompleteness());
             }
         });
-        column.setSorter(ColumnViewerSorter.create(o -> metricsCache.get((Security) o).getCompleteness()));
+        column.setSorter(ColumnViewerSorter.create(o -> metricsCache.get(o).getCompleteness()));
         support.addColumn(column);
 
         column = new Column("qqm-expected", Messages.ColumnMetricExpectedNumberOfQuotes, SWT.RIGHT, 80); //$NON-NLS-1$
@@ -743,10 +742,10 @@ public final class SecuritiesTable implements ModificationListener
             @Override
             public String getText(Object e)
             {
-                return Integer.toString(metricsCache.get((Security) e).getExpectedNumberOfQuotes());
+                return Integer.toString(metricsCache.get(e).getExpectedNumberOfQuotes());
             }
         });
-        column.setSorter(ColumnViewerSorter.create(o -> metricsCache.get((Security) o).getExpectedNumberOfQuotes()));
+        column.setSorter(ColumnViewerSorter.create(o -> metricsCache.get(o).getExpectedNumberOfQuotes()));
         support.addColumn(column);
 
         column = new Column("qqm-actual", Messages.ColumnMetricActualNumberOfQuotes, SWT.RIGHT, 80); //$NON-NLS-1$
@@ -757,10 +756,10 @@ public final class SecuritiesTable implements ModificationListener
             @Override
             public String getText(Object e)
             {
-                return Integer.toString(metricsCache.get((Security) e).getActualNumberOfQuotes());
+                return Integer.toString(metricsCache.get(e).getActualNumberOfQuotes());
             }
         });
-        column.setSorter(ColumnViewerSorter.create(o -> metricsCache.get((Security) o).getActualNumberOfQuotes()));
+        column.setSorter(ColumnViewerSorter.create(o -> metricsCache.get(o).getActualNumberOfQuotes()));
         support.addColumn(column);
 
         column = new Column("qqm-missing", Messages.ColumnMetricNumberOfMissingQuotes, SWT.RIGHT, 80); //$NON-NLS-1$
@@ -771,12 +770,12 @@ public final class SecuritiesTable implements ModificationListener
             @Override
             public String getText(Object e)
             {
-                QuoteQualityMetrics metrics = metricsCache.get((Security) e);
+                QuoteQualityMetrics metrics = metricsCache.get(e);
                 return Integer.toString(metrics.getExpectedNumberOfQuotes() - metrics.getActualNumberOfQuotes());
             }
         });
         column.setSorter(ColumnViewerSorter.create(e -> {
-            QuoteQualityMetrics metrics = metricsCache.get((Security) e);
+            QuoteQualityMetrics metrics = metricsCache.get(e);
             return metrics.getExpectedNumberOfQuotes() - metrics.getActualNumberOfQuotes();
         }));
         support.addColumn(column);

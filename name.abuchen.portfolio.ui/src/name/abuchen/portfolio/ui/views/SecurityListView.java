@@ -64,7 +64,6 @@ import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.model.Watchlist;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
-import name.abuchen.portfolio.money.Quote;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.impl.EurostatHICPQuoteFeed;
@@ -92,6 +91,7 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.DateEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.QuotesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
@@ -664,14 +664,14 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         support.addColumn(column);
 
         column = new Column(Messages.ColumnQuote, SWT.RIGHT, 80);
-        column.setLabelProvider(new ColumnLabelProvider()
+        column.setLabelProvider(new QuotesLabelProvider(getClient())
         {
             @Override
-            public String getText(Object element)
+            protected Quote getQuote(Object element)
             {
                 Security security = (Security) prices.getData(Security.class.toString());
                 SecurityPrice price = (SecurityPrice) element;
-                return Values.Quote.format(security.getCurrencyCode(), price.getValue(), getClient().getBaseCurrency());
+                return Quote.of(security.getCurrencyCode(), price.getValue());
             }
         });
         ColumnViewerSorter.create(SecurityPrice.class, "value").attachTo(column); //$NON-NLS-1$
@@ -866,16 +866,15 @@ public class SecurityListView extends AbstractListView implements ModificationLi
 
         column = new Column(Messages.ColumnPerShare, SWT.RIGHT, 80);
         column.setDescription(Messages.ColumnPerShare_Description);
-        column.setLabelProvider(new ColumnLabelProvider()
+        column.setLabelProvider(new QuotesLabelProvider(getClient())
         {
             @Override
-            public String getText(Object element)
+            protected Quote getQuote(Object element)
             {
                 Transaction t = ((TransactionPair<?>) element).getTransaction();
                 if (t instanceof PortfolioTransaction)
                 {
-                    return Values.Quote.format(((PortfolioTransaction) t).getGrossPricePerShare(),
-                                    getClient().getBaseCurrency());
+                    return Quote.of(((PortfolioTransaction) t).getGrossPricePerShare());
                 }
                 else if (t instanceof AccountTransaction)
                 {
@@ -884,7 +883,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                     {
                         long perShare = Math.round(((AccountTransaction) t).getGrossValueAmount()
                                         * Values.Share.divider() * Values.Quote.factorToMoney() / shares);
-                        return Values.Quote.format(Quote.of(t.getCurrencyCode(), perShare));
+                        return Quote.of(t.getCurrencyCode(), perShare);
                     }
                 }
                 return null;

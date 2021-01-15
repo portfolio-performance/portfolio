@@ -48,7 +48,6 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MutableMoney;
-import name.abuchen.portfolio.money.Quote;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
@@ -68,6 +67,7 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.DateTimeEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.QuotesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.TransactionOwnerListEditingSupport;
@@ -559,22 +559,22 @@ public class AccountListView extends AbstractListView implements ModificationLis
 
         column = new Column("6", Messages.ColumnPerShare, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setDescription(Messages.ColumnPerShare_Description);
-        column.setLabelProvider(new ColumnLabelProvider()
+        column.setLabelProvider(new QuotesLabelProvider(getClient())
         {
             @Override
-            public String getText(Object e)
+            protected Quote getQuote(Object e)
             {
                 AccountTransaction t = (AccountTransaction) e;
                 if (t.getCrossEntry() instanceof BuySellEntry)
                 {
                     PortfolioTransaction pt = ((BuySellEntry) t.getCrossEntry()).getPortfolioTransaction();
-                    return Values.Quote.format(pt.getGrossPricePerShare(), getClient().getBaseCurrency());
+                    return Quote.of(pt.getGrossPricePerShare());
                 }
                 else if (t.getType() == Type.DIVIDENDS && t.getShares() != 0)
                 {
                     long perShare = Math.round(t.getGrossValueAmount() * Values.Share.divider()
                                     * Values.Quote.factorToMoney() / t.getShares());
-                    return Values.Quote.format(Quote.of(t.getCurrencyCode(), perShare), getClient().getBaseCurrency());
+                    return Quote.of(t.getCurrencyCode(), perShare);
                 }
                 else
                 {

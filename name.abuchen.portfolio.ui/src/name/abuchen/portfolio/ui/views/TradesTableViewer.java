@@ -198,12 +198,12 @@ public class TradesTableViewer
 
         column = new Column("irr", Messages.ColumnIRR, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setMenuLabel(Messages.ColumnIRR_MenuLabel);
-        column.setLabelProvider(new NumberColorLabelProvider<>(Values.Percent2, t -> ((Trade) t).getIRR()));
+        column.setLabelProvider(new NumberColorLabelProvider<>(Values.Percent2::format, t -> ((Trade) t).getIRR()));
         column.setSorter(ColumnViewerSorter.create(e -> ((Trade) e).getIRR()));
         support.addColumn(column);
 
         column = new Column("return", Messages.ColumnReturn, SWT.RIGHT, 80); //$NON-NLS-1$
-        column.setLabelProvider(new NumberColorLabelProvider<>(Values.Percent2, t -> ((Trade) t).getReturn()));
+        column.setLabelProvider(new NumberColorLabelProvider<>(Values.Percent2::format, t -> ((Trade) t).getReturn()));
         column.setSorter(ColumnViewerSorter.create(e -> ((Trade) e).getReturn()));
         column.setVisible(false);
         support.addColumn(column);

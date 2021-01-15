@@ -34,6 +34,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Quote;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
@@ -41,6 +42,7 @@ import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.selection.SelectionService;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.FormatHelper;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
@@ -336,11 +338,15 @@ public final class TransactionsViewer implements ModificationListener
 
         column = new Column("4", Messages.ColumnQuote, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setLabelProvider(new TransactionLabelProvider(t -> {
-            if (t instanceof PortfolioTransaction)
-                return t.getShares() != 0 ? Values.Quote.format(((PortfolioTransaction) t).getGrossPricePerShare(),
-                                owner.getClient().getBaseCurrency()) : null;
+            if (t instanceof PortfolioTransaction && t.getShares() != 0)
+            {
+                Quote quote = ((PortfolioTransaction) t).getGrossPricePerShare();
+                return FormatHelper.format(quote.getCurrencyCode(), quote.getAmount(), owner.getClient().getBaseCurrency());
+            }
             else
+            {
                 return null;
+            }
         }));
         ColumnViewerSorter.create(e -> {
             Transaction tx = ((TransactionPair<?>) e).getTransaction();

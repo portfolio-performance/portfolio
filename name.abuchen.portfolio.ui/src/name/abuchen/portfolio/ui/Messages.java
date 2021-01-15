@@ -919,6 +919,7 @@ public class Messages extends NLS
     public static String PrefLabelNote;
     public static String PrefLabelProxyHost;
     public static String PrefLabelProxyPort;
+    public static String PrefLabelQuoteDigits;
     public static String PrefLabelSharesDigits;
     public static String PrefLabelUseIndirectQuotation;
     public static String PrefMsgConfigureUpdates;

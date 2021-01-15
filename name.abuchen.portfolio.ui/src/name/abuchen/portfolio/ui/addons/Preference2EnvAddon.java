@@ -70,4 +70,10 @@ public class Preference2EnvAddon
     {
         FormatHelper.setSharesDisplayPrecision(sharesPrecision);
     }
+
+    @Inject
+    public void setQuotePrecision(@Preference(value = UIConstants.Preferences.FORMAT_QUOTE_DIGITS) int quotePrecision)
+    {
+        FormatHelper.setQuoteDisplayPrecision(quotePrecision);
+    }
 }

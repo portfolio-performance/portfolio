@@ -70,6 +70,7 @@ import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.selection.SelectionService;
 import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.ui.util.DropDown;
+import name.abuchen.portfolio.ui.util.FormatHelper;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown;
@@ -85,6 +86,7 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.MoneyColorLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.MoneyTrailToolTipSupport;
 import name.abuchen.portfolio.ui.util.viewers.NumberColorLabelProvider;
+import name.abuchen.portfolio.ui.util.viewers.QuotesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
@@ -429,13 +431,12 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         column.setDescription(Messages.ColumnPurchasePrice_Description + TextUtil.PARAGRAPH_BREAK
                         + Messages.DescriptionDataRelativeToReportingPeriod);
         column.setImage(Images.INTERVAL);
-        column.setLabelProvider(new ColumnLabelProvider()
+        column.setLabelProvider(new QuotesLabelProvider(getClient())
         {
             @Override
-            public String getText(Object r)
+            public Quote getQuote(Object r)
             {
-                return Values.Quote.format(((SecurityPerformanceRecord) r).getFifoCostPerSharesHeld(),
-                                getClient().getBaseCurrency());
+                return Quote.of(((SecurityPerformanceRecord) r).getFifoCostPerSharesHeld());
             }
         });
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "fifoCostPerSharesHeld")); //$NON-NLS-1$
@@ -447,13 +448,12 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         column.setDescription(Messages.ColumnPurchasePriceMovingAverage_Description + TextUtil.PARAGRAPH_BREAK
                         + Messages.DescriptionDataRelativeToReportingPeriod);
         column.setImage(Images.INTERVAL);
-        column.setLabelProvider(new ColumnLabelProvider()
+        column.setLabelProvider(new QuotesLabelProvider(getClient())
         {
             @Override
-            public String getText(Object r)
+            protected Quote getQuote(Object r)
             {
-                return Values.Quote.format(((SecurityPerformanceRecord) r).getMovingAverageCostPerSharesHeld(),
-                                getClient().getBaseCurrency());
+                return Quote.of(((SecurityPerformanceRecord) r).getMovingAverageCostPerSharesHeld());
             }
         });
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "movingAverageCostPerSharesHeld")); //$NON-NLS-1$
@@ -463,13 +463,12 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         // latest / current quote
         column = new Column("quote", Messages.ColumnQuote, SWT.RIGHT, 75); //$NON-NLS-1$
         column.setDescription(Messages.ColumnQuote_DescriptionEndOfReportingPeriod);
-        column.setLabelProvider(new ColumnLabelProvider()
+        column.setLabelProvider(new QuotesLabelProvider(getClient())
         {
             @Override
-            public String getText(Object element)
+            protected Quote getQuote(Object element)
             {
-                SecurityPerformanceRecord record = (SecurityPerformanceRecord) element;
-                return Values.Quote.format(record.getQuote(), getClient().getBaseCurrency());
+                return Quote.of(((SecurityPerformanceRecord) element).getQuote());
             }
 
             @Override
@@ -477,7 +476,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
             {
                 SecurityPerformanceRecord record = (SecurityPerformanceRecord) element;
 
-                return MessageFormat.format(Messages.TooltipQuoteAtDate, getText(element),
+                return MessageFormat.format(Messages.TooltipQuoteAtDate, super.getToolTipText(element),
                                 Values.Date.format(record.getLatestSecurityPrice().getDate()));
             }
         });
@@ -487,7 +486,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         // change to previous day percent value
         column = new Column("5", Messages.ColumnChangeOnPrevious, SWT.RIGHT, 60); //$NON-NLS-1$
         column.setMenuLabel(Messages.ColumnChangeOnPrevious_MenuLabel);
-        column.setLabelProvider(new NumberColorLabelProvider<>(Values.Percent2, element -> {
+        column.setLabelProvider(new NumberColorLabelProvider<>(Values.Percent2::format, element -> {
             Optional<Pair<SecurityPrice, SecurityPrice>> previous = ((SecurityPerformanceRecord) element).getSecurity()
                             .getLatestTwoSecurityPrices();
             if (previous.isPresent())
@@ -550,7 +549,9 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         column = new Column("changeonpreviousamount", Messages.ColumnChangeOnPreviousAmount, SWT.RIGHT, 60); //$NON-NLS-1$
         column.setMenuLabel(Messages.ColumnChangeOnPrevious_MenuLabelAmount);
 
-        column.setLabelProvider(new NumberColorLabelProvider<>(Values.Quote, element -> {
+        column.setLabelProvider(new NumberColorLabelProvider<>(quote -> {
+            return FormatHelper.format(null, quote, getClient().getBaseCurrency());
+        }, element -> {
             Optional<Pair<SecurityPrice, SecurityPrice>> previous = ((SecurityPerformanceRecord) element).getSecurity()
                             .getLatestTwoSecurityPrices();
             if (previous.isPresent())
@@ -682,7 +683,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         Column column = new Column("twror", Messages.ColumnTWROR, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setMenuLabel(Messages.ColumnTWROR_Description);
-        column.setLabelProvider(new NumberColorLabelProvider<>(Values.Percent2,
+        column.setLabelProvider(new NumberColorLabelProvider<>(Values.Percent2::format,
                         r -> ((SecurityPerformanceRecord) r).getTrueTimeWeightedRateOfReturn()));
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "trueTimeWeightedRateOfReturn")); //$NON-NLS-1$
         recordColumns.addColumn(column);
@@ -692,7 +693,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setMenuLabel(Messages.ColumnIRR_MenuLabel);
         column.setLabelProvider(
-                        new NumberColorLabelProvider<>(Values.Percent2, r -> ((SecurityPerformanceRecord) r).getIrr()));
+                        new NumberColorLabelProvider<>(Values.Percent2::format, r -> ((SecurityPerformanceRecord) r).getIrr()));
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "irr")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
@@ -708,7 +709,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         column = new Column("capitalgains%", Messages.ColumnCapitalGainsPercent, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setDescription(Messages.ColumnCapitalGainsPercent_Description);
-        column.setLabelProvider(new NumberColorLabelProvider<>(Values.Percent2,
+        column.setLabelProvider(new NumberColorLabelProvider<>(Values.Percent2::format,
                         r -> ((SecurityPerformanceRecord) r).getCapitalGainsOnHoldingsPercent()));
         column.setVisible(false);
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "capitalGainsOnHoldingsPercent")); //$NON-NLS-1$
@@ -730,7 +731,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setMenuLabel(Messages.ColumnCapitalGainsMovingAveragePercent_MenuLabel);
         column.setDescription(Messages.ColumnCapitalGainsMovingAveragePercent_Description);
-        column.setLabelProvider(new NumberColorLabelProvider<>(Values.Percent2,
+        column.setLabelProvider(new NumberColorLabelProvider<>(Values.Percent2::format,
                         r -> ((SecurityPerformanceRecord) r).getCapitalGainsOnHoldingsMovingAveragePercent()));
         column.setVisible(false);
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class,
@@ -752,7 +753,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         column.setDescription(Messages.ColumnAbsolutePerformancePercent_Description);
         column.setMenuLabel(Messages.ColumnAbsolutePerformancePercent_MenuLabel);
         column.setGroupLabel(Messages.GroupLabelPerformance);
-        column.setLabelProvider(new NumberColorLabelProvider<>(Values.Percent2,
+        column.setLabelProvider(new NumberColorLabelProvider<>(Values.Percent2::format,
                         r -> ((SecurityPerformanceRecord) r).getDeltaPercent()));
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "deltaPercent")); //$NON-NLS-1$
         column.setVisible(false);
@@ -1237,17 +1238,16 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
 
         // purchase quote
         column = new Column(Messages.ColumnQuote, SWT.RIGHT, 80);
-        column.setLabelProvider(new ColumnLabelProvider()
+        column.setLabelProvider(new QuotesLabelProvider(getClient())
         {
             @Override
-            public String getText(Object e)
+            public Quote getQuote(Object e)
             {
                 Optional<Transaction> tx = ((CalculationLineItem) e).getTransaction();
 
                 if (tx.isPresent() && tx.get() instanceof PortfolioTransaction)
                 {
-                    PortfolioTransaction ptx = (PortfolioTransaction) tx.get();
-                    return Values.Quote.format(ptx.getGrossPricePerShare(), getClient().getBaseCurrency());
+                    return Quote.of(((PortfolioTransaction) tx.get()).getGrossPricePerShare());
                 }
                 else
                 {
