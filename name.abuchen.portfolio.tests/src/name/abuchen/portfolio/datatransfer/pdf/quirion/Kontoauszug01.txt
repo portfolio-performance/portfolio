@@ -1,0 +1,132 @@
+PDF Autor: 'Unknown'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Kontoauszug
+Konto 0000000000 EUR
+IBAN DE81101106000000000000
+Musterfrau, Maximiliane
+Vermögensverwaltungskonto in EUR
+Frau Datum 30.04.2019
+Maximiliane Musterfrau Auszug-Nr 1
+Straße 1 Seite 1 von 3
+00815 Ort
+Betreuer quirion online
+Telefon +49 (0) 30 89 021 400
+E-Mail info@quirion.de
+Buchungshinweise Buchungsdatum Valuta Umsatz
+Kontoübertrag 1197537 28.05.2019 28.05.2019 3.000,00 EUR
+Ref.: 86991330
+Sammelgutschrift 19.12.2019 19.12.2019 5.000,00 EUR
+DE00000000000000000000
+Ref.: 105892216
+AWV-Meldepflicht beachten - Tel.-Nr.08001234111
+Interne Buchung 31.01.2020 31.01.2020 2,84 EUR
+Ref.: 110934428
+Kulanzzahlung
+Überweisungsgutschrift Inland 27.12.2019 27.12.2019 2.000,00 EUR
+Ref.: 106509889
+Konto Inhaber DE00000000000000000000
+Verwendungszweck
+Steueroptimierung 12.06.2020 12.06.2020 36,82 EUR
+Ref.: 135435928
+Rücküberweisung Inland 23.12.2019 19.12.2019 -5.002,84 EUR
+Ref.: 106317528
+Kontoinhaber DE00000000000000000000
+Verwendungszweck             laenge
+r Verrechnungskontonummer
+5fx3t8k485f104a-39000
+Wertpapier Kauf, Ref.: 174680182 10.12.2020 14.12.2020 -428,06 EUR
+Xtr.(IE)MSCI World Value Registered Shares 1C USD o.N.
+IE00BL25JM42, ST 16,091
+Wertpapier Kauf, Ref.: 133305911 03.06.2020 05.06.2020 -408,26 EUR
+AIS-Amundi MSCI EMERG.MARKETS Namens-Anteile C Cap.EUR
+o.N.
+LU1681045370, ST 102,054
+Thesaurierung, Ref.: 111353113 25.02.2020 02.01.2020 -0,40 EUR
+SPDR MSCI Wrld Small Cap U.ETF Registered Shares o.N.
+IE00BCBJG560, ST 28,476
+KEST: EUR -0,38, SOLI: EUR -0,02
+Thesaurierung, Ref.: 111727648 25.02.2020 03.01.2020 -0,49 EUR
+AIS-Amundi MSCI EMERG.MARKETS Namens-Anteile C Cap.EUR
+o.N.
+LU1681045370, ST 449,231
+KEST: EUR -0,47, SOLI: EUR -0,02
+Quirin Privatbank AG
+Postfach 311105 | 10641 Berlin T +49 (0)30 890 21-300 Handelsregister: Vorstand: Karl Matthäus Schmidt
+Kurfürstendamm 119 | 10711 Berlin F +49 (0)30 890 21-301 Berlin Charlottenburg, HRB 87859 Johannes Eismann
+www.quirinprivatbank.de info@quirinprivatbank.de USt-IdNr.: DE195661729 Aufsichtsratsvorsitzender: Holger Timm
+KTO_AUSZ / Mailing: 20067624 / Timestamp: 20190501 05:13:26
+Kontoauszug
+Konto 0000000000 EUR
+IBAN DE81101106000000000000
+Musterfrau, Maximiliane
+Vermögensverwaltungskonto in EUR
+Frau Datum 30.04.2019
+Maximiliane Musterfrau Auszug-Nr 1
+Straße 1 Seite 2 von 3
+00815 Ort
+Betreuer quirion online
+Telefon +49 (0) 30 89 021 400
+E-Mail info@quirion.de
+Buchungshinweise Buchungsdatum Valuta Umsatz
+Erträgnisabrechnung, Ref.: 169958419 30.11.2020 27.11.2020 156,33 EUR
+Amundi Index Solu.-A.PRIME GL. Nam.-Ant.UCI.ETF DR USD Dis.oN
+LU1931974692, ST 481,99
+KEST: EUR -1,81, SOLI: EUR -0,09
+Erträgnisabrechnung, Ref.: 169992104 27.11.2020 28.11.2020 54,86 EUR
+Amundi I.S.-A.PRIME EURO CORP. Nam.-Ant.UC.ETF DR EUR
+Dis.oN
+LU1931975079, ST 189,172
+KEST: EUR -0,01
+Erträgnisabrechnung, Ref.: 87991231 27.06.2019 27.06.2019 11,54 EUR
+I.M.-I.S&P 500 UETF Reg.Shares Dist o.N.
+IE00BYML9W36, ST 106,167
+KEST: USD -2,83, SOLI: USD -0,15
+Wertpapier Kauf, Ref.: 85249245 08.05.2019 10.05.2019 -235,86 EUR
+SPDR MSCI Wrld Small Cap U.ETF Registered Shares o.N.
+IE00BCBJG560, ST 3,648
+Erträgnisabrechnung, Ref.: 119876044 09.04.2020 08.04.2020 0,94 EUR
+Vanguard FTSE Japan UCITS ETF Registered Shares USD Dis.oN
+IE00B95PGT31, ST 31,633
+KEST: USD -0,22, SOLI: USD -0,01
+Wertpapier Verkauf, Ref.: 106663542 03.01.2020 07.01.2020 110,86 EUR
+Dimensional Fds-Emerg.Mkts Va. Registered Shares EUR Dis.o.N.
+IE00B42THM37, ST -10,763
+Steueroptimierung 03.01.2020 03.01.2020 0,40 EUR
+Ref.: 107410183
+Erträgnisabrechnung, Ref.: 108905624 30.01.2020 29.01.2020 5,35 EUR
+iShsIII-EO Corp Bd 1-5yr U.ETF Registered Shares o.N.
+IE00B4L60045, ST 21,296
+KEST: EUR -1,81, SOLI: EUR -0,09
+letzter Auszug alter Saldo 0,00 EUR
+Umsatz 19,61 EUR
+Limit (in Währung) 0,00 neuer Saldo 19,61 EUR
+Sollzins in % p.a. 0,00
+Überziehungszins in % p.a. 0,00
+Quirin Privatbank AG
+Postfach 311105 | 10641 Berlin T +49 (0)30 890 21-300 Handelsregister: Vorstand: Karl Matthäus Schmidt
+Kurfürstendamm 119 | 10711 Berlin F +49 (0)30 890 21-301 Berlin Charlottenburg, HRB 87859 Johannes Eismann
+www.quirinprivatbank.de info@quirinprivatbank.de USt-IdNr.: DE195661729 Aufsichtsratsvorsitzender: Holger Timm
+KTO_AUSZ / Mailing: 20067624 / Timestamp: 20190501 05:13:26
+Kontoauszug
+Konto 0000000000 EUR
+IBAN DE81101106000000000000
+Musterfrau, Maximiliane
+Vermögensverwaltungskonto in EUR
+Frau Datum 30.04.2019
+Maximiliane Musterfrau Auszug-Nr 1
+Straße 1 Seite 3 von 3
+00815 Ort
+Betreuer quirion online
+Telefon +49 (0) 30 89 021 400
+E-Mail info@quirion.de
+Dieser Kontoauszug gilt gleichzeitig als Saldenmitteilung. Etwaige Einwendungen gegen den Kontoauszug sind unverzüglich zu erheben;
+ist der Kontoauszug zusätzlich als Rechnungsabschluss bezeichnet, gilt der Abschlusssaldo als genehmigt, wenn ihm nicht innerhalb von
+sechs Wochen nach Zugang schriftlich widersprochen wird. Zur Fristwahrung genügt die rechtzeitige Absendung.
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen können dem
+"Informationsbogen für den Einleger" entnommen werden.
+Quirin Privatbank AG
+Postfach 311105 | 10641 Berlin T +49 (0)30 890 21-300 Handelsregister: Vorstand: Karl Matthäus Schmidt
+Kurfürstendamm 119 | 10711 Berlin F +49 (0)30 890 21-301 Berlin Charlottenburg, HRB 87859 Johannes Eismann
+www.quirinprivatbank.de info@quirinprivatbank.de USt-IdNr.: DE195661729 Aufsichtsratsvorsitzender: Holger Timm
+KTO_AUSZ / Mailing: 20067624 / Timestamp: 20190501 05:13:26

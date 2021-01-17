@@ -191,7 +191,7 @@ public class ETFDataCom
         {
             Map<String, Object> attributeMapping = new HashMap<>();
 
-            attributeMapping.put("etf-data.com$ter", ter / 100); //$NON-NLS-1$
+            attributeMapping.put("etf-data.com$ter", ter != null ? Double.valueOf(ter / 100) : null); // $NON-NLS-1$
             attributeMapping.put("etf-data.com$indexName", indexName); //$NON-NLS-1$
             attributeMapping.put("etf-data.com$vendor", provider); //$NON-NLS-1$
             attributeMapping.put("etf-data.com$domicile", domicile); //$NON-NLS-1$

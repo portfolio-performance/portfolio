@@ -597,7 +597,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         "Steuerliche Behandlung: (Aus|In)ländische (Dividende|Investment-Aussch.ttung)");
 
         this.addDocumentTyp(type);
-        Block block = new Block("^\\s*Steuerliche Behandlung:.*");
+        Block block = new Block("^\\s*Steuerliche Behandlung:.*", "^Die Gutschrift erfolgt mit Valuta .*");
 
         type.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
@@ -618,15 +618,15 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("currency", "amount")
-                        .find(".*(Z\\s*u\\s*I\\s*h\\s*r\\s*e\\s*n\\s*G\\s*u\\s*n\\s*s\\s*t\\s*e\\s*n\\s*n\\s*a\\s*c\\s*h\\s*S\\s*t\\s*e\\s*u\\s*e\\s*r\\s*n\\s*:)\\s*(?<currency>[A-Z\\s]*)\\s*(?<amount>[\\d\\.\\s]*,[\\d\\s]+).*")
+                        .find("^\\s*(Z\\s*u\\s*I\\s*h\\s*r\\s*e\\s*n\\s*G\\s*u\\s*n\\s*s\\s*t\\s*e\\s*n\\s*n\\s*a\\s*c\\s*h\\s*S\\s*t\\s*e\\s*u\\s*e\\s*r\\s*n\\s*:)\\s*(?<currency>[A-Z\\s]*)\\s*(?<amount>[\\d\\.\\s]*,[\\d\\s]+).*")
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(stripBlanks(v.get("amount"))));
                         })
 
                         .section("currency", "gross1", "gross2")
-                        .match(".*(Z\\s*u\\s*I\\s*h\\s*r\\s*e\\s*n\\s*G\\s*u\\s*n\\s*s\\s*t\\s*e\\s*n\\s*v\\s*o\\s*r\\s*S\\s*t\\s*e\\s*u\\s*e\\s*r\\s*n\\s*:)\\s*(?<currency>[A-Z\\s]*)\\s*(?<gross1>[\\d\\.\\s]*,[\\d\\s]+)")
-                        .match(".*(S\\s*t\\s*e\\s*u\\s*e\\s*r\\s*b\\s*e\\s*m\\s*e\\s*s\\s*s\\s*u\\s*n\\s*g\\s*s\\s*g\\s*r\\s*u\\s*n\\s*d\\s*l\\s*a\\s*g\\s*e\\s*(v\\s*o\\s*r\\s*V\\s*e\\s*r\\s*l\\s*u\\s*s\\s*t\\s*v\\s*e\\s*r\\s*r\\s*e\\s*c\\s*h\\s*n\\s*u\\s*n\\s*g)?)\\s*(?<currency>[A-Z\\s]*)\\s*(?<gross2>[\\d\\.\\s]*,[\\d\\s]+)")
+                        .match("^\\s*(Z\\s*u\\s*I\\s*h\\s*r\\s*e\\s*n\\s*G\\s*u\\s*n\\s*s\\s*t\\s*e\\s*n\\s*v\\s*o\\s*r\\s*S\\s*t\\s*e\\s*u\\s*e\\s*r\\s*n\\s*:)\\s*(?<currency>[A-Z\\s]*)\\s*(?<gross1>[\\d\\.\\s]*,[\\d\\s]+)")
+                        .match("^\\s*(S\\s*t\\s*e\\s*u\\s*e\\s*r\\s*b\\s*e\\s*m\\s*e\\s*s\\s*s\\s*u\\s*n\\s*g\\s*s\\s*g\\s*r\\s*u\\s*n\\s*d\\s*l\\s*a\\s*g\\s*e\\s*(v\\s*o\\s*r\\s*V\\s*e\\s*r\\s*l\\s*u\\s*s\\s*t\\s*v\\s*e\\s*r\\s*r\\s*e\\s*c\\s*h\\s*n\\s*u\\s*n\\s*g)?)\\s*(\\(\\s*1\\s*\\))?\\s*(?<currency>[A-Z\\s]*)\\s*(?<gross2>[\\d\\.\\s]*,[\\d\\s]+)")
                         .assign((t, v) -> {
                             long amount = t.getAmount();
                             long gross1 = asAmount(stripBlanks(v.get("gross1")));
@@ -645,7 +645,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date") //
-                        .match("^(Die Gutschrift erfolgt mit Valuta) (?<date>\\d+.\\d+.\\d{4}+).*")
+                        .match("^(Die Gutschrift erfolgt mit Valuta) (?<date>\\d+\\.\\d+\\.\\d{4}+).*")
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         .wrap(TransactionItem::new));

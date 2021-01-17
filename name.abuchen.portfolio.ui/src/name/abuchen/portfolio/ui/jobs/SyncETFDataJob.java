@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.jobs;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,8 +36,11 @@ public final class SyncETFDataJob extends AbstractClientJob
     @Override
     protected IStatus run(IProgressMonitor monitor)
     {
-        List<Security> toBeSynced = getClient().getSecurities().stream()
-                        .filter(s -> !Strings.isNullOrEmpty(s.getIsin())).collect(Collectors.toList());
+        List<Security> toBeSynced = getClient().getSecurities().stream() //
+                        .filter(s -> !Strings.isNullOrEmpty(s.getIsin())) //
+                        .collect(Collectors.toList());
+
+        Collections.shuffle(toBeSynced);
 
         if (toBeSynced.isEmpty())
             return Status.OK_STATUS;

@@ -96,8 +96,8 @@ public class EditSecurityDialog extends Dialog
         Point preferredSize = getShell().computeSize(SWT.DEFAULT, SWT.DEFAULT, true);
 
         // create dialog with a minimum size
-        preferredSize.x = Math.max(preferredSize.x, 700);
-        preferredSize.y = Math.max(preferredSize.y, 500);
+        preferredSize.x = Math.min(Math.max(preferredSize.x, 700), 1000);
+        preferredSize.y = Math.min(Math.max(preferredSize.y, 500), 700);
         return preferredSize;
     }
 

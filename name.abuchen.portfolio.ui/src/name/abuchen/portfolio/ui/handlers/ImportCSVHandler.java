@@ -13,6 +13,7 @@ import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
@@ -52,6 +53,18 @@ public class ImportCSVHandler
                     @org.eclipse.e4.core.di.annotations.Optional @Named("name.abuchen.portfolio.ui.param.name") String index,
                     Client client, Account account, Portfolio portfolio)
     {
+        if (client.getAccounts().isEmpty())
+        {
+            MessageDialog.openError(shell, Messages.LabelError, Messages.MsgMissingAccount);
+            return;
+        }
+
+        if (client.getPortfolios().isEmpty())
+        {
+            MessageDialog.openError(shell, Messages.LabelError, Messages.MsgMissingPortfolio);
+            return;
+        }
+
         FileDialog fileDialog = new FileDialog(shell, SWT.OPEN);
         fileDialog.setFilterNames(new String[] { Messages.CSVImportLabelFileCSV, Messages.CSVImportLabelFileAll });
         fileDialog.setFilterExtensions(new String[] { "*.csv", "*.*" }); //$NON-NLS-1$ //$NON-NLS-2$

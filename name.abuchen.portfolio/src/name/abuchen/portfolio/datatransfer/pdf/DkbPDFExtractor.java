@@ -39,6 +39,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         addParticipationcertificateRefundTransaction();
         addInvestmentPayoutTransaction();
         addBuyTransactionFundsSavingsPlan();
+        addAdvanceTaxTransaction();
     }
 
     @Override
@@ -350,7 +351,12 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
     {
         addTransaction("Investmentfonds", "Ausschüttung Investmentfonds", AccountTransaction.Type.DIVIDENDS);
     }
-
+    
+    private void addAdvanceTaxTransaction()
+    {
+        addTransaction("Vorabpauschale", "Vorabpauschale Investmentfonds", AccountTransaction.Type.TAXES);
+    }
+    
     private void addTransaction(String documentTypeString, String blockMarkerString,
                     AccountTransaction.Type transactiontype)
     {
@@ -392,7 +398,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .section("date", "amount")
                         .match("(^Ausmachender Betrag) (?<amount>[\\d,.]*)(.*) (?<currency>\\w{3}+)")
                         .match("(^Lagerstelle) (.*)")
-                        .match("(^Den Betrag buchen wir mit Wertstellung) (?<date>\\d+.\\d+.\\d{4}+) zu Gunsten des Kontos (.*)")
+                        .match("(^Den Betrag buchen wir mit Wertstellung) (?<date>\\d+.\\d+.\\d{4}+) zu (Gunsten|Lasten) des Kontos (.*)")
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));

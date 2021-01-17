@@ -59,7 +59,7 @@ public class StatementOfAssetsView extends AbstractFinanceView
     public void notifyModelUpdated()
     {
         CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
-        assetViewer.setInput(clientFilter.getSelectedFilter(), LocalDate.now(), converter);
+        assetViewer.setInput(clientFilter.getSelectedFilter(), snapshotDate.orElse(LocalDate.now()), converter);
         updateTitle(getDefaultTitle());
     }
 

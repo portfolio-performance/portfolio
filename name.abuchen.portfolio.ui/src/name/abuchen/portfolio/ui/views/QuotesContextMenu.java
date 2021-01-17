@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.views;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
@@ -13,6 +14,8 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.jface.dialogs.IInputValidator;
+import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.window.Window;
@@ -21,11 +24,15 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 
+import com.ibm.icu.text.MessageFormat;
+
 import name.abuchen.portfolio.datatransfer.csv.CSVExporter;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.QuoteFeedData;
@@ -193,34 +200,6 @@ public class QuotesContextMenu
             }
         });
 
-        if (security.getCurrencyCode() != null)
-        {
-            manager.add(new Action(Messages.SecurityMenuCreateQuotesFromTransactions)
-            {
-                @Override
-                public void run()
-                {
-                    ExchangeRateProviderFactory factory = owner.getFromContext(ExchangeRateProviderFactory.class);
-                    CurrencyConverter converter = new CurrencyConverterImpl(factory, security.getCurrencyCode());
-                    QuoteFromTransactionExtractor qte = new QuoteFromTransactionExtractor(owner.getClient(), converter);
-                    if (qte.extractQuotes(security))
-                    {
-                        owner.markDirty();
-                        owner.notifyModelUpdated();
-                    }
-                }
-            });
-        }
-
-        if (security.getLatest() != null)
-        {
-            manager.add(new SimpleAction("Delete Latest Quote", a -> {
-                security.setLatest(null);
-                owner.markDirty();
-                owner.notifyModelUpdated();
-            }));
-        }
-
         manager.add(new Separator());
 
         manager.add(new Action(Messages.SecurityMenuExportCSV)
@@ -247,5 +226,86 @@ public class QuotesContextMenu
                 }
             }
         });
+
+        manager.add(new Separator());
+
+        if (security.getCurrencyCode() != null)
+        {
+            manager.add(new Action(Messages.SecurityMenuCreateQuotesFromTransactions)
+            {
+                @Override
+                public void run()
+                {
+                    ExchangeRateProviderFactory factory = owner.getFromContext(ExchangeRateProviderFactory.class);
+                    CurrencyConverter converter = new CurrencyConverterImpl(factory, security.getCurrencyCode());
+                    QuoteFromTransactionExtractor qte = new QuoteFromTransactionExtractor(owner.getClient(), converter);
+                    if (qte.extractQuotes(security))
+                    {
+                        owner.markDirty();
+                        owner.notifyModelUpdated();
+                    }
+                }
+            });
+        }
+
+        if (security.getLatest() != null)
+        {
+            manager.add(new SimpleAction(Messages.SecurityMenuDeleteLatestQuote, a -> {
+                security.setLatest(null);
+                owner.markDirty();
+                owner.notifyModelUpdated();
+            }));
+        }
+
+        manager.add(new SimpleAction(Messages.SecurityMenuRoundToXDecimalPlaces, a -> {
+
+            IInputValidator validator = newText -> {
+                try
+                {
+                    int decimalPlaces = Integer.parseInt(newText);
+
+                    if (decimalPlaces < 0 || decimalPlaces > Values.Quote.precision())
+                        return MessageFormat.format(Messages.SecurityMenuErrorMessageRoundingMustBeBetween0AndX,
+                                        Values.Quote.precision());
+
+                    return null;
+                }
+                catch (NumberFormatException e)
+                {
+                    return String.format(Messages.CellEditor_NotANumber, newText);
+                }
+            };
+
+            InputDialog dialog = new InputDialog(Display.getCurrent().getActiveShell(),
+                            Messages.SecurityMenuRoundToXDecimalPlaces, Messages.SecurityMenuLabelNumberOfDecimalPlaces,
+                            String.valueOf(4), validator);
+
+            if (dialog.open() != Window.OK)
+                return;
+
+            int newPrecision = Integer.parseInt(dialog.getValue());
+
+            boolean isDirty = false;
+
+            for (SecurityPrice price : security.getPrices())
+            {
+                final long oldValue = price.getValue();
+                final long newValue = BigDecimal.valueOf(oldValue).movePointLeft(Values.Quote.precision())
+                                .setScale(newPrecision, Values.MC.getRoundingMode())
+                                .movePointRight(Values.Quote.precision()).longValue();
+
+                if (oldValue != newValue)
+                {
+                    price.setValue(newValue);
+                    isDirty = true;
+                }
+            }
+
+            if (isDirty)
+            {
+                owner.markDirty();
+                owner.notifyModelUpdated();
+            }
+        }));
     }
 }
