@@ -54,4 +54,9 @@ public class ReadOnlyPortfolio extends Portfolio
     {
         super.addAllTransaction(transactions);
     }
+
+    public static Portfolio unwrap(Portfolio portfolio)
+    {
+        return portfolio instanceof ReadOnlyPortfolio ? unwrap(((ReadOnlyPortfolio) portfolio).source) : portfolio;
+    }
 }
