@@ -645,7 +645,11 @@ public class HTMLTableQuoteFeed implements QuoteFeed
             if (element.hasAttr("colspan")) //$NON-NLS-1$
             {
                 int colspan = Integer.valueOf(element.attr("colspan")); //$NON-NLS-1$
+                // remove attribute
                 element.removeAttr("colspan"); //$NON-NLS-1$
+
+                // add copies of this column to the header to align header with
+                // columns in table
                 for (int c = 1; c < colspan; c++)
                 {
                     row.add(ii, element);
