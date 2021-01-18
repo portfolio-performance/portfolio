@@ -188,6 +188,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
                             DateTimeFormatter.ofPattern("MMM d, y", Locale.ENGLISH), //$NON-NLS-1$
                             DateTimeFormatter.ofPattern("MMM dd, y", Locale.ENGLISH), //$NON-NLS-1$
                             DateTimeFormatter.ofPattern("MMM dd y", Locale.ENGLISH), //$NON-NLS-1$
+                            DateTimeFormatter.ofPattern("d MMM y", Locale.ENGLISH), //$NON-NLS-1$
                             DateTimeFormatter.ofPattern("EEEE, MMMM dd, yEEE, MMM dd, y", Locale.ENGLISH) //$NON-NLS-1$
             };
         }
@@ -641,6 +642,15 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         for (int ii = 0; ii < row.size(); ii++)
         {
             Element element = row.get(ii);
+            if (element.hasAttr("colspan")) //$NON-NLS-1$
+            {
+                int colspan = Integer.valueOf(element.attr("colspan")); //$NON-NLS-1$
+                element.removeAttr("colspan"); //$NON-NLS-1$
+                for (int c = 1; c < colspan; c++)
+                {
+                    row.add(ii, element);
+                }
+            }
 
             for (Column column : available)
             {
