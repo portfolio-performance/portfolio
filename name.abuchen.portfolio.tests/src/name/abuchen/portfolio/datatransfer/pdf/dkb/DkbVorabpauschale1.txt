@@ -1,0 +1,58 @@
+﻿PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+10919 Berlin Seite 1
+Depotnummer 123456789
+Kundennummer 1234567890
+Max Muster
+Abrechnungsnr. 12345678901
+Herrn Datum 12.01.2021
+Max Muster
+Musterstraße 123
+12345 Musterstadt
+Vorabpauschale Investmentfonds
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 49,1102 VANGUARD FTSE ALL-WORLD U.ETF IE00BK5BQT80 (A2PKXG)
+REG. SHS USD ACC. ON
+Zahlbarkeitstag 04.01.2021 Vorabpauschale pro St. 0,037971560 EUR
+Bestandsstichtag 31.12.2020 mit Teilfreistellung (Aktien-
+Ex-Tag 04.01.2021 fonds) 0,026580090 EUR
+Geschäftsjahr 01.01.2020 - 31.12.2020 Herkunftsland Irland
+Steuerpflichtige Vorabpauschale 0,44+ EUR
+davon steuerfreier Anteil wg. Teilfreistellung 0,13- EUR
+Kapitalertragsteuerpfl. Ertrag nach Teilfreistellung 0,31+ EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 0,31+ EUR
+Kapitalertragsteuer 24,45 % auf 0,31 EUR 0,08- EUR
+Solidaritätszuschlag 5,5 % auf 0,08 EUR 0,00 EUR
+Kirchensteuer 9 % auf 0,08 EUR 0,00 EUR
+Ausmachender Betrag 0,08- EUR
+Lagerstelle Clearstream Banking Lux (999999 / 99999)
+Den Betrag buchen wir mit Wertstellung 06.01.2021 zu Lasten des Kontos 1234567890 (IBAN DE99 9999 9999 9999 9999
+99), BLZ 120 300 00 (BIC BYLADEM1001).
+Keine Steuerbescheinigung.
+Bitte ggf. Rückseite beachten.
+9999.99999999.99999999ER99
+
+Seite 2
+Depotnummer 123456789
+Kundennummer 1234567890
+Abrechnungsnr. 12345678901
+Datum 12.01.2021
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2021 ohne Vorjahressaldo Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 0,00
+Ertrag 0,00 0,00 0,00 0,00 0,31
+Nachher 0,00 0,00 0,00 0,00 0,31
+Nachrichtlich zur Ermittlung des Bruttowertes zur Vorabpauschale berücksichtigte Anschaffungsgeschäfte.
+Anschaffungen Summe Nominale Anzahl Monat(e) anteiliger Bruttowert
+im zurückliegenden Kalenderjahr
+im Monat
+September 20,0791 04/12 0,25 €
+Oktober 10,0377 03/12 0,10 €
+November 9,6861 02/12 0,06 €
+Dezember 9,3073 01/12 0,03 €
+Bestand zum 31.12.2020 49,1102 0,44 €
+9999.99999999.99999999ER99

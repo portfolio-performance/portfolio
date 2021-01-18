@@ -199,8 +199,8 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
         final Spinner skipLines = new Spinner(container, SWT.BORDER);
         skipLines.setMinimum(0);
 
-        IObservableValue<?> spinnerTarget = WidgetProperties.spinnerSelection().observe(skipLines);
-        IObservableValue<String> spinnerModel = BeanProperties.value("skipLines", String.class).observe(importer); //$NON-NLS-1$
+        IObservableValue<Integer> spinnerTarget = WidgetProperties.spinnerSelection().observe(skipLines);
+        IObservableValue<Integer> spinnerModel = BeanProperties.value("skipLines", Integer.class).observe(importer); //$NON-NLS-1$
         context.bindValue(spinnerTarget, spinnerModel);
 
         skipLines.addModifyListener(event -> doProcessFile());

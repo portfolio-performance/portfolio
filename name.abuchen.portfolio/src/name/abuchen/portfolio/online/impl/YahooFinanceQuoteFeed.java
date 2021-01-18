@@ -253,7 +253,11 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
                 {
                     LatestSecurityPrice price = new LatestSecurityPrice();
                     price.setDate(LocalDateTime.ofEpochSecond(ts, 0, ZoneOffset.UTC).toLocalDate());
-                    price.setValue(Values.Quote.factorize(q));
+
+                    // yahoo api seesm to return floating numbers --> limit to 4
+                    // digits which seems to round it to the right value
+                    double v = Math.round(q * 10000) / 10000d;
+                    price.setValue(Values.Quote.factorize(v));
                     answer.add(price);
                 }
             }
@@ -265,6 +269,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
 
         QuoteFeedData data = new QuoteFeedData();
         data.getLatestPrices().addAll(answer);
+        data.addResponse("n/a", responseBody); //$NON-NLS-1$
         return data;
     }
 
