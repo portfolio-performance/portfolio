@@ -1,0 +1,34 @@
+PDF Autor: '3BankenEDV'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Wertpapier-Abrechnu n g                             Kauf
+401493 - 04.01.2021
+Depotnummer Betreuer
+Nachname Vorname 999-123456 789
+Wertpapiernummer Bezeichnung Nominale/Stück
+LU0675401409 Lyxor Emerg Market 2x Lev ETF Zugang Stk .               2,00
+Inhaber-Anteile I o.N.
+Kurs 102,64 EUR Kurswert EUR              205,28
+Dritt- und Börsengebühr EUR                0,02
+Summe EUR              205,30
+Handelszeitpunkt: 04.01.2021 12:05:55
+Handelsplatz: XETRA-Frankfurt
+Auftrags-Nr. 543923-04.01.2021
+Schlusstag 04.01.2021
+Kassatag 06.01.2021
+Verrechnung
+Verwahrart, Positionsdaten
+Wertpapierrechnung Wert 06.01.2021 EUR              205,30
+München zu Lasten Konto AT99 1234 1234 1234 1234
+      Seite 1 von 2
+Rechtsform: Aktiengesellschaft, Sitz: Klagenfurt, Firmenbuch-Nr.: FN 91810s/Klagenfurt, DVR 0063703, UID-Nr. ATU 25231503
+Wertpapier-Abrechnung
+401493 - 04.01.2021
+Depotbezeichnung Depotnummer Betreuer
+Nachname Vorname 999-123456 789
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden                           2,00 STK
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG
+  steuerlicher Anschaffungswert:                                                   205,28 EUR
+Fondsgesellschaft: Lyxor
+Auftragszeitpunkt: 04.01.2021 um 12:05:54 Uhr
+Rechtsform: Aktiengesellschaft, Sitz: Klagenfurt, Firmenbuch-Nr.: FN 91810s/Klagenfurt, DVR 0063703, UID-Nr. ATU 25231503       Seite 2 von 2
