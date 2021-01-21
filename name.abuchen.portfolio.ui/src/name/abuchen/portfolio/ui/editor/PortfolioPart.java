@@ -271,7 +271,8 @@ public class PortfolioPart implements ClientInputListener
 
         Label label = new Label(container, SWT.CENTER | SWT.WRAP);
         label.setBackground(container.getBackground());
-        label.setText(message);
+        if (message != null)
+            label.setText(message);
 
         data = new FormData();
         data.top = new FormAttachment(image, 40);

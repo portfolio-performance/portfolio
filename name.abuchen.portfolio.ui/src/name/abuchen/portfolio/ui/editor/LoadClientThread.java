@@ -45,7 +45,8 @@ import name.abuchen.portfolio.ui.UIConstants;
         }
         catch (Exception exception)
         {
-            Display.getDefault().asyncExec(() -> clientInput.setErrorMessage(exception.getMessage()));
+            String message = exception.getMessage() != null ? exception.getMessage() : exception.getClass().getName();
+            Display.getDefault().asyncExec(() -> clientInput.setErrorMessage(message));
             PortfolioPlugin.log(exception);
         }
     }
