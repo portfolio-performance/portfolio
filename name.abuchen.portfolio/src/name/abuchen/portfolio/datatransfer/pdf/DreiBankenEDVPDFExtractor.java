@@ -2,9 +2,6 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 
 import java.util.Map;
-import java.util.function.BiConsumer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
@@ -140,7 +137,6 @@ public class DreiBankenEDVPDFExtractor extends AbstractPDFExtractor
         .section("isin", "name", "shares", "nameContinued")
         .match("(?<isin>[\\w]{12}.*?) (?<name>.*?) (Stk .).*(?<shares>[\\d.]+(,\\d+)).*")
         .match("(?<nameContinued>.*)")
-        //.assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
         .assign((t, v) -> {
             v.put("isin", v.get("isin"));
             v.put("name", v.get("name"));                            
