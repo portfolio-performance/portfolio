@@ -31,6 +31,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
         addSellTransaction();
         addDividendTransaction();
         addTaxAdjustmentTransaction();
+        addPreTaxTransaction();
         addFeesAssetManagerTransaction();
         addPeriodenauszugTransactions();
 
@@ -176,7 +177,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
         this.addDocumentTyp(type2);
         this.addDocumentTyp(type3);
 
-        Block block = new Block("Ex-Tag.*");
+        Block block = new Block("^Ex-Tag.*");
         type1.addBlock(block);
         type2.addBlock(block);
         type3.addBlock(block);
@@ -257,6 +258,40 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        .wrap(t -> new TransactionItem(t)));
+    }
+
+    @SuppressWarnings("nls")
+    private void addPreTaxTransaction()
+    {
+    
+        DocumentType type = new DocumentType("Vorabpauschale");
+        this.addDocumentTyp(type);
+    
+        Block block = new Block("^Ex-Tag.*");
+        type.addBlock(block);
+        block.set(new Transaction<AccountTransaction>().subject(() -> {
+            AccountTransaction t = new AccountTransaction();
+            t.setType(AccountTransaction.Type.TAXES);
+            return t;
+        })
+    
+                        .section("isin", "wkn", "name", "shares") //
+                        .match("^Nominale *ISIN: *(?<isin>[^ ]*) *WKN: *(?<wkn>[^ ]*)$") //
+                        .match("^STK (?<shares>[\\.\\d]+[,\\d]*) (?<name>.*)") //
+                        .assign((t, v) -> {
+                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setShares(asShares(v.get("shares")));
+                        })
+
+                        .section("amount", "currency", "date")
+                        .match("Zu Lasten Konto \\d+ Valuta: (?<date>\\d+\\.\\d+\\.\\d{4}) *(?<currency>\\w{3}) *(?<amount>[\\d.]+,\\d{2})")
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setDateTime(asDate(v.get("date")));
                         })
 
                         .wrap(t -> new TransactionItem(t)));
