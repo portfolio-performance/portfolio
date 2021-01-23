@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.zip.Deflater;
@@ -1000,7 +1001,8 @@ public class ClientFactory
 
         for (Security security : client.getSecurities())
         {
-            security.getPrices().stream().forEach(p -> p.setValue(p.getValue() * decimalPlacesAdded));
+            security.getPrices().stream().filter(Objects::nonNull)
+                            .forEach(p -> p.setValue(p.getValue() * decimalPlacesAdded));
             if (security.getLatest() != null)
             {
                 LatestSecurityPrice l = security.getLatest();
