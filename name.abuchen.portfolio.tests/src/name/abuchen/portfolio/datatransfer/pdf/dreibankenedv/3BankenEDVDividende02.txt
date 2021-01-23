@@ -1,0 +1,30 @@
+PDF Autor: '3BankenEDV'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Wertpapier-Abrechnu n g                        Dividende
+396558 - 31.12.2020
+Depotnummer Betreuer
+Nachname Vorname 999-123456 789
+Wertpapiernummer Bezeichnung Nominale/Stück
+US3755581036 GILEAD SCIENCES INC. Stk .               3,00
+Registered Shares DL -,001
+Ertrag 0,68 USD Kurswert USD                2,04Quellensteuer USD               -0,31
+Auslands-KESt USD               -0,26
+Zwischensumme USD                1,47
+15 % QUSt a 1,224 v. 28.12.2020 EUR                1,21
+Extag 14.12.2020
+Verrechnung
+Verwahrart, Positionsdaten
+Wertpapierrechnung Wert 30.12.2020 EUR                1,21
+München zu Gunsten Konto AT99 1234 1234 1234 1234
+      Seite 1 von 2
+Rechtsform: Aktiengesellschaft, Sitz: Klagenfurt, Firmenbuch-Nr.: FN 91810s/Klagenfurt, DVR 0063703, UID-Nr. ATU 25231503
+Wertpapier-Abrechnung
+396558 - 31.12.2020
+Depotbezeichnung Depotnummer Betreuer
+Nachname Vorname 999-123456 789
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden                           3,00 STK
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG
+---------------------------------------------------------------------------------------------
+Die KESt wird an das Finanzamt Klagenfurt abgeführt.
+Rechtsform: Aktiengesellschaft, Sitz: Klagenfurt, Firmenbuch-Nr.: FN 91810s/Klagenfurt, DVR 0063703, UID-Nr. ATU 25231503       Seite 2 von 2

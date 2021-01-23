@@ -1,8 +1,14 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Map;
+
+import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -19,6 +25,7 @@ public class DreiBankenEDVPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("91810s/Klagenfurt"); //$NON-NLS-1$
  
         addBuySellTransaction();
+        addDividendeTransaction();
     }
 
     @Override
@@ -107,5 +114,154 @@ public class DreiBankenEDVPDFExtractor extends AbstractPDFExtractor
                                                             asAmount(v.get("fee"))))))
     
             .wrap(BuySellEntryItem::new);
+    }
+    
+    @SuppressWarnings("nls")
+    private void addDividendeTransaction()
+    {
+        DocumentType newType = new DocumentType(".*(Ausschüttung|Dividende).*");
+        this.addDocumentTyp(newType);
+
+        Block block = new Block(".*(Ausschüttung|Dividende).*");
+        newType.addBlock(block);
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>()
+
+        .subject(() -> {
+            AccountTransaction entry = new AccountTransaction();
+            entry.setType(AccountTransaction.Type.DIVIDENDS);
+            return entry;
+        });
+
+        Block firstRelevantLine = new Block(".*(Kauf|Verkauf).*");
+        newType.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction
+        
+            // IE00B0M63284 iShs Euro.Property Yield U.ETF Stk . 4,00
+            // Registered Shares EUR (Dist)oN
+            .section("isin", "name", "shares", "nameContinued")
+            .match("(?<isin>[\\w]{12}.*?) (?<name>.*?) (Stk .).*(?<shares>[\\d.]+(,\\d+)).*")
+            .match("(?<nameContinued>.*)")
+            .assign((t, v) -> {
+                v.put("isin", v.get("isin"));
+                v.put("name", v.get("name"));                            
+                t.setSecurity(getOrCreateSecurity(v));
+                t.setShares(asShares(v.get("shares")));
+            })
+    
+            // Wertpapierrechnung Wert 23.12.2020 EUR 0,30
+            .section("currency", "amount")
+            .match("^(Wertpapierrechn.* Wert) (\\d+.\\d+.\\d{4}+) (?<currency>\\w{3}+) *(?<amount>[\\d.-]+,\\d+).*")
+            .assign((t, v) -> {
+                t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                t.setAmount(asAmount(v.get("amount")));
+            })
+
+            // Extag 10.12.2020
+            .section("date")
+            .match("^Extag (?<date>\\d+.\\d+.\\d{4}+).*")
+            .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+           
+            // Ertrag 0,68 USD Kurswert USD                2,04Quellensteuer USD               -0,31
+            // Auslands-KESt USD               -0,26 <--- Sometimes 
+            // Zwischensumme USD                1,47
+            // 15 % QUSt a 1,224 v. 28.12.2020 EUR                1,21
+            .section("exchangeRate", "fxAmount", "fxCurrency", "amount", "currency").optional()
+            .match(".*Kurswert.*(?<fxCurrency>\\w{3}).*(?<fxAmount>[\\d.]+,\\d+).*\\w+.*(\\w{3}).*([\\d.]+,\\d+)")
+            .match("(?<line>\\w.*)")
+            .match("(?<line>\\w.*)")
+            .match(".*(?<exchangeRate>[\\d.]+,\\d+) v. (\\d+.\\d+.\\d{4}).*(?<currency>\\w{3}).*(?<amount>[\\d.]+,\\d+).*")
+            .assign((t, v) -> {
+                
+                BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
+                {
+                    exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+                }
+                newType.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
+
+                if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
+                {
+                    BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
+                                    RoundingMode.HALF_DOWN);
+
+                    // check, if forex currency is transaction
+                    // currency or not and swap amount, if necessary
+                    Unit grossValue;
+                    if (!asCurrencyCode(v.get("fxCurrency")).equals(t.getCurrencyCode()))
+                    {
+                        Money fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")),
+                                        asAmount(v.get("fxAmount")));
+                        Money amount = Money.of(asCurrencyCode(v.get("currency")),
+                                        asAmount(v.get("amount")));
+                        grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
+                    }
+                    else
+                    {
+                        Money amount = Money.of(asCurrencyCode(v.get("fxCurrency")),
+                                        asAmount(v.get("fxAmount")));
+                        Money fxAmount = Money.of(asCurrencyCode(v.get("currency")),
+                                        asAmount(v.get("amount")));
+                        grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
+                    }
+                    t.addUnit(grossValue);
+                }
+            })
+            
+            .wrap(TransactionItem::new);
+
+        addTaxesSectionsTransaction(pdfTransaction, newType);
+
+        block.set(pdfTransaction);
+    }
+    
+    @SuppressWarnings("nls")
+    private <T extends Transaction<?>> void addTaxesSectionsTransaction(T Transaction, DocumentType type)
+    {
+        Transaction       
+                 // Auslands-KESt USD               -0,26
+                .section("tax", "currency").optional()
+                .match("Auslands-KESt.*(?<currency>\\w{3}).*-(?<tax>[\\d.]+,\\d+).*")
+                .assign((t, v) -> {
+                    processTaxEntries(t, v, type);
+                })
+                
+                // Zwischensumme USD                0,39
+                .section("tax", "currency").optional()
+                .match("Zwischensumme.*(?<currency>\\w{3}).*-(?<tax>[\\d.]+,\\d+).*")
+                .assign((t, v) -> {
+                    processTaxEntries(t, v, type);
+                })
+
+                // Ertrag 0,0806 EUR Kurswert EUR                0,32KESt-Neu EUR               -0,02
+                .section("tax", "currency").optional()
+                .match(".*KESt-Neu.*(?<currency>\\w{3}).*-(?<tax>[\\d.]+,\\d+).*")
+                .assign((t, v) -> {
+                    processTaxEntries(t, v, type);
+                })
+               
+                // Ertrag 0,68 USD Kurswert USD                2,04Quellensteuer USD               -0,31
+                .section("tax", "currency").optional()
+                .match(".*Quellensteuer.*(?<currency>\\w{3}).*-(?<tax>[\\d.]+,\\d+).*")
+                .assign((t, v) -> {
+                    processTaxEntries(t, v, type);
+                });                
+    }
+    
+    @SuppressWarnings("nls")
+    private void processTaxEntries(Object t, Map<String, String> v, DocumentType type)
+    {
+        if (t instanceof name.abuchen.portfolio.model.Transaction)
+        {
+            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+            PDFExtractorUtils.checkAndSetTax(tax, (name.abuchen.portfolio.model.Transaction) t, type);
+        }
+        else
+        {
+            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+            PDFExtractorUtils.checkAndSetTax(tax,
+                            ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
+        }
     }
 }
