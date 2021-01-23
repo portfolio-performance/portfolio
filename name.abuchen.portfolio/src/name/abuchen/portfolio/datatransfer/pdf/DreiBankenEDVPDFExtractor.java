@@ -164,7 +164,7 @@ public class DreiBankenEDVPDFExtractor extends AbstractPDFExtractor
             .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
            
             // Ertrag 0,68 USD Kurswert USD                2,04Quellensteuer USD               -0,31
-            // Auslands-KESt USD               -0,26 <--- Sometimes 
+            // Auslands-KESt USD               -0,26
             // Zwischensumme USD                1,47
             // 15 % QUSt a 1,224 v. 28.12.2020 EUR                1,21
             .section("exchangeRate", "fxAmount", "fxCurrency", "amount", "currency").optional()
@@ -223,13 +223,6 @@ public class DreiBankenEDVPDFExtractor extends AbstractPDFExtractor
                  // Auslands-KESt USD               -0,26
                 .section("tax", "currency").optional()
                 .match("Auslands-KESt.*(?<currency>\\w{3}).*-(?<tax>[\\d.]+,\\d+).*")
-                .assign((t, v) -> {
-                    processTaxEntries(t, v, type);
-                })
-                
-                // Zwischensumme USD                0,39
-                .section("tax", "currency").optional()
-                .match("Zwischensumme.*(?<currency>\\w{3}).*-(?<tax>[\\d.]+,\\d+).*")
                 .assign((t, v) -> {
                     processTaxEntries(t, v, type);
                 })
