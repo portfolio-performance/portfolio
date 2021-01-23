@@ -1,0 +1,81 @@
+{
+	"version": 1,
+	"transactions": [
+		{
+			"type": "PURCHASE",
+			"date": "2020-10-29",
+			"currency": "EUR",
+			"amount": 40,
+			"shares": 1.551798,
+			"security": {
+				"name": "iShares TecDAX UCITS ETF DE Inhaber-Anteile",
+				"isin": "DE0005933972",
+				"currency": "EUR"
+			},
+			"units": [
+				{
+					"type": "FEE",
+					"amount": 0.08
+				}
+			]
+		},
+		{
+			"type": "PURCHASE",
+			"date": "2020-11-27",
+			"currency": "EUR",
+			"amount": 40,
+			"shares": 1.409391,
+			"security": {
+				"name": "iShares TecDAX UCITS ETF DE Inhaber-Anteile",
+				"isin": "DE0005933972",
+				"currency": "EUR"
+			},
+			"units": [
+				{
+					"type": "FEE",
+					"amount": 0.08
+				}
+			]
+		},
+		{
+			"type": "SALE",
+			"date": "2020-12-21",
+			"currency": "EUR",
+			"amount": 0.00,
+			"shares": 0.414447,
+			"security": {
+				"name": "iShares TecDAX UCITS ETF DE Inhaber-Anteile",
+				"isin": "DE0005933972",
+				"currency": "EUR"
+			},
+			"units": [
+				{
+					"type": "FEE",
+					"amount": 11.70
+				},
+				{
+					"type": "TAX",
+					"amount": 0.03
+				}
+			]
+		},
+		{
+			"type": "PURCHASE",
+			"date": "2020-12-23",
+			"currency": "EUR",
+			"amount": 40,
+			"shares": 1.382295,
+			"security": {
+				"name": "iShares TecDAX UCITS ETF DE Inhaber-Anteile",
+				"isin": "DE0005933972",
+				"currency": "EUR"
+			},
+			"units": [
+				{
+					"type": "FEE",
+					"amount": 0.08
+				}
+			]
+		}
+	]
+}
