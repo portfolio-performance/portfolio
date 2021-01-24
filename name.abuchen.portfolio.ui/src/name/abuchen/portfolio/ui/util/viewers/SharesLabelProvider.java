@@ -16,7 +16,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.widgets.Widget;
 
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.ui.util.FormatHelper;
+import name.abuchen.portfolio.util.FormatHelper;
 
 public abstract class SharesLabelProvider extends OwnerDrawLabelProvider
 {

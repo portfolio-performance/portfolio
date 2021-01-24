@@ -1,0 +1,93 @@
+PDF Autor: 'Unknown'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Kontoauszug
+Konto 1234567890 EUR
+IBAN DE03101106001234567890
+Mustermann, Max
+Vermögensverwaltungskonto in EUR
+Herrn Datum 31.12.2019
+Max Mustermann Auszug-Nr 7
+Musterstr. 15 Seite 1 von 2 
+12345 Musterstadt
+Betreuer quirion online
+Telefon +49 (0) 30 89 021 400
+E-Mail info@quirion.de
+Buchungshinweise Buchungsdatum Valuta Umsatz
+Überweisungsgutschrift aus dem Ausland 02.12.2019 02.12.2019 500,00 EUR
+Ref.: 123453609
+Max Mustermann
+Musterstr. 15
+Musterstadt, NRW, 12345
+Germany XX123456789012345678
+Sparplan 87654321
+AWV-Meldepflicht beachten - Tel.-Nr.08001234111
+Wertpapier Kauf, Ref.: 123456385 02.12.2019 04.12.2019 -96,46 EUR
+Amundi Index Solu.-A.PRIME GL. Nam.-Ant.UCI.ETF DR USD Dis.oN
+LU1931974692, ST 4,466
+Wertpapier Kauf, Ref.: 123456399 02.12.2019 04.12.2019 -65,63 EUR
+MUL-LYX.EO Gov.Bd 1-3Y(DR)U.E. Inhaber-Anteile Acc o.N.
+LU1650487413, ST 0,526
+Wertpapier Kauf, Ref.: 123456407 02.12.2019 04.12.2019 -63,23 EUR
+iShsIII-Core Gl.Aggr.Bd UC.ETF Registered Shs EUR Acc.hgd o.N
+IE00BDBRDM35, ST 11,802
+Wertpapier Kauf, Ref.: 123456416 02.12.2019 04.12.2019 -61,07 EUR
+Xtr.(IE)-MSCI World Minim.Vol. Registered Shares 1C USD o.N.
+IE00BL25JN58, ST 2,079
+Wertpapier Kauf, Ref.: 123456427 02.12.2019 04.12.2019 -49,88 EUR
+SPDR MSCI World UCITS ETF Reg.Shares USD Unhgd Acc. o.N.
+IE00BFY0GT14, ST 2,338
+Wertpapier Kauf, Ref.: 123456431 02.12.2019 04.12.2019 -47,53 EUR
+Am.I.S.-AM.IDX EO COR.SRI 0-3Y Act.Nom.UCITS ETF EUR DR
+Ac.oN
+LU2037748774, ST 0,946
+Wertpapier Kauf, Ref.: 123456440 02.12.2019 04.12.2019 -45,93 EUR
+Xtr.(IE)MSCI World Momentum Registered Shares 1C USD o.N.
+IE00BL25JP72, ST 1,181
+Wertpapier Kauf, Ref.: 123456446 02.12.2019 04.12.2019 -45,65 EUR
+Amundi I.S.-A.PRIME EURO CORP. Nam.-Ant.UC.ETF DR EUR
+Dis.oN
+LU1931975079, ST 2,186
+Quirin Privatbank AG
+Postfach 311105 | 10641 Berlin T +49 (0)30 890 21-300 Handelsregister: Vorstand: Karl Matthäus Schmidt
+Kurfürstendamm 119 | 10711 Berlin F +49 (0)30 890 21-301 Berlin Charlottenburg, HRB 87859 Johannes Eismann
+www.quirinprivatbank.de info@quirinprivatbank.de USt-IdNr.: DE195661729 Aufsichtsratsvorsitzender: Holger Timm
+KTO_AUSZ / Mailing: 98765432 / Timestamp: 20190101 06:19:25
+Kontoauszug
+Konto 1234567890 EUR
+IBAN DE03101106001234567890
+Mustermann, Max
+Vermögensverwaltungskonto in EUR
+Herrn Datum 31.12.2019
+Max Mustermann Auszug-Nr 7
+Musterstr. 15 Seite 2 von 2 
+12345 Musterstadt
+Betreuer quirion online
+Telefon +49 (0) 30 89 021 400
+E-Mail info@quirion.de
+Buchungshinweise Buchungsdatum Valuta Umsatz
+Wertpapier Kauf, Ref.: 123456450 02.12.2019 04.12.2019 -34,89 EUR
+iShs Core MSCI EM IMI U.ETF Registered Shares o.N.
+IE00BKM4GZ66, ST 1,245
+Wertpapier Kauf, Ref.: 123456453 02.12.2019 04.12.2019 -28,83 EUR
+Xtr.II EUR H.Yield Corp.Bond Inhaber-Anteile 1D o.N.
+LU1109942653, ST 1,651
+Vermögensverwaltungshonorar 1234567890, 01.12.2019 - 31.12.2019 31.12.2019 31.12.2019 -1,70 EUR
+Bemessungsgrundlage 14.184,38 EUR
+Betrag inkl. USt: -1,70 EUR (Netto: -1,47 EUR, USt: -0,23 EUR)
+Ref.: 123458336
+letzter Auszug 30.11.2019 alter Saldo 103,05 EUR
+Umsatz -40,80 EUR
+Limit (in Währung) 0,00 neuer Saldo 62,25 EUR
+Sollzins in % p.a. 0,00
+Überziehungszins in % p.a. 0,00
+Dieser Kontoauszug gilt gleichzeitig als Saldenmitteilung. Etwaige Einwendungen gegen den Kontoauszug sind unverzüglich zu erheben;
+ist der Kontoauszug zusätzlich als Rechnungsabschluss bezeichnet, gilt der Abschlusssaldo als genehmigt, wenn ihm nicht innerhalb von
+sechs Wochen nach Zugang schriftlich widersprochen wird. Zur Fristwahrung genügt die rechtzeitige Absendung.
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen können dem
+"Informationsbogen für den Einleger" entnommen werden.
+Quirin Privatbank AG
+Postfach 311105 | 10641 Berlin T +49 (0)30 890 21-300 Handelsregister: Vorstand: Karl Matthäus Schmidt
+Kurfürstendamm 119 | 10711 Berlin F +49 (0)30 890 21-301 Berlin Charlottenburg, HRB 87859 Johannes Eismann
+www.quirinprivatbank.de info@quirinprivatbank.de USt-IdNr.: DE195661729 Aufsichtsratsvorsitzender: Holger Timm
+KTO_AUSZ / Mailing: 98765432 / Timestamp: 20190101 06:19:25

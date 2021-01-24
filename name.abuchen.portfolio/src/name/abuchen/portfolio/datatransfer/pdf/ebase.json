@@ -295,7 +295,7 @@
 					"context": "UNIT",
 					"isOptional": true,
 					"pattern": [
-						"^(Depotführungsentgelt inkl. \\d*\\% USt) (?<amount>[\\d,.]*) (?<currency>\\w{3}+)$"
+						"^(Depotführungsentgelt inkl. \\d*( ){0,1}\\% USt) (?<amount>[\\d,.]*) (?<currency>\\w{3}+)$"
 					],
 					"attributes": {
 						"type": "FEE"

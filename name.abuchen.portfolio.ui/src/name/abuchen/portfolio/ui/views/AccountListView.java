@@ -75,6 +75,7 @@ import name.abuchen.portfolio.ui.util.viewers.TransactionTypeEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
 import name.abuchen.portfolio.ui.views.actions.ConvertTransferToDepositRemovalAction;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
+import name.abuchen.portfolio.ui.views.columns.CalculatedQuoteColumn;
 import name.abuchen.portfolio.ui.views.columns.CurrencyColumn;
 import name.abuchen.portfolio.ui.views.columns.CurrencyColumn.CurrencyEditingSupport;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
@@ -557,37 +558,24 @@ public class AccountListView extends AbstractListView implements ModificationLis
         }.addListener(this).attachTo(column);
         transactionsColumns.addColumn(column);
 
-        column = new Column("6", Messages.ColumnPerShare, SWT.RIGHT, 80); //$NON-NLS-1$
-        column.setDescription(Messages.ColumnPerShare_Description);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
+        column = new CalculatedQuoteColumn("6", getClient(), e -> { //$NON-NLS-1$
+            AccountTransaction t = (AccountTransaction) e;
+            if (t.getCrossEntry() instanceof BuySellEntry)
             {
-                AccountTransaction t = (AccountTransaction) e;
-                if (t.getCrossEntry() instanceof BuySellEntry)
-                {
-                    PortfolioTransaction pt = ((BuySellEntry) t.getCrossEntry()).getPortfolioTransaction();
-                    return Values.Quote.format(pt.getGrossPricePerShare(), getClient().getBaseCurrency());
-                }
-                else if (t.getType() == Type.DIVIDENDS && t.getShares() != 0)
-                {
-                    long perShare = Math.round(t.getGrossValueAmount() * Values.Share.divider()
-                                    * Values.Quote.factorToMoney() / t.getShares());
-                    return Values.Quote.format(Quote.of(t.getCurrencyCode(), perShare), getClient().getBaseCurrency());
-                }
-                else
-                {
-                    return null;
-                }
+                PortfolioTransaction pt = ((BuySellEntry) t.getCrossEntry()).getPortfolioTransaction();
+                return pt.getGrossPricePerShare();
             }
-
-            @Override
-            public Color getForeground(Object element)
+            else if (t.getType() == Type.DIVIDENDS && t.getShares() != 0)
             {
-                return colorFor((AccountTransaction) element);
+                long perShare = Math.round(t.getGrossValueAmount() * Values.Share.divider()
+                                * Values.Quote.factorToMoney() / t.getShares());
+                return Quote.of(t.getCurrencyCode(), perShare);
             }
-        });
+            else
+            {
+                return null;
+            }
+        }, element -> colorFor((AccountTransaction) element));
         transactionsColumns.addColumn(column);
 
         column = new Column("7", Messages.ColumnOffsetAccount, SWT.None, 120); //$NON-NLS-1$

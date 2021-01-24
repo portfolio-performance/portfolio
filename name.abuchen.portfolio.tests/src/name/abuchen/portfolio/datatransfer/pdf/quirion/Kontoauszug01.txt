@@ -98,6 +98,15 @@ Erträgnisabrechnung, Ref.: 108905624 30.01.2020 29.01.2020 5,35 EUR
 iShsIII-EO Corp Bd 1-5yr U.ETF Registered Shares o.N.
 IE00B4L60045, ST 21,296
 KEST: EUR -1,81, SOLI: EUR -0,09
+Vermögensverwaltungshonorar 31.08.2019 31.08.2019 -5,75 EUR
+0000000000, 01.08.2019 - 31.08.2019
+Bemessungsgrundlage 24.095,47 EUR
+Betrag inkl. USt: -5,75 EUR (Netto: -4,83 EUR, USt: -0,92 EUR)
+Ref.: 94613532
+Vermögensverwaltungshonorar 0000000000, 01.09.2019 - 30.09.2019 30.09.2019 30.09.2019 -6,98 EUR
+Bemessungsgrundlage 27.703,80 EUR
+Betrag inkl. USt: -6,98 EUR (Netto: -5,87 EUR, USt: -1,11 EUR)
+Ref.: 97492689
 letzter Auszug alter Saldo 0,00 EUR
 Umsatz 19,61 EUR
 Limit (in Währung) 0,00 neuer Saldo 19,61 EUR

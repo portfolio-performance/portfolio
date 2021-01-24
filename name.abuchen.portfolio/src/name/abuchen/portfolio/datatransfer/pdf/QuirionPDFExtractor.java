@@ -135,9 +135,24 @@ public class QuirionPDFExtractor extends AbstractPDFExtractor
                             t.setDateTime(asDate(v.get("valuta")));
                             t.setAmount(asAmount(v.get("amount")));
                         }).wrap(t -> new TransactionItem(t)));
+        
+    // @formatter:off
+        
+//Vermögensverwaltungshonorar 0000000000, 01.09.2019 - 30.09.2019 30.09.2019 30.09.2019 -6,98 EUR
+//Bemessungsgrundlage 27.703,80 EUR
+//Betrag inkl. USt: -6,98 EUR (Netto: -5,87 EUR, USt: -1,11 EUR)
+//Ref.: 97492689
+        
+//Vermögensverwaltungshonorar 31.08.2019 31.08.2019 -5,75 EUR
+//0000000000, 01.08.2019 - 31.08.2019
+//Bemessungsgrundlage 24.095,47 EUR
+//Betrag inkl. USt: -5,75 EUR (Netto: -4,83 EUR, USt: -0,92 EUR)
+//Ref.: 94613532
 
+    // @formatter:on
+        
         Block feesBlock = new Block(
-                        "(Vermögensverwaltungshonorar) (\\d+,) (\\d+\\.\\d+\\.\\d{4}) - (\\d+\\.\\d+\\.\\d{4}) (\\d+\\.\\d+\\.\\d{4}) (\\d+\\.\\d+\\.\\d{4}) (-[\\d.]+,\\d{2}) (\\w{3})");
+                        "(Vermögensverwaltungshonorar)(.*) (\\d+\\.\\d+\\.\\d{4}) (\\d+\\.\\d+\\.\\d{4}) (-[\\d.]+,\\d{2}) (\\w{3})");
         type.addBlock(feesBlock);
         feesBlock.set(new Transaction<AccountTransaction>().subject(() -> {
             AccountTransaction t = new AccountTransaction();
@@ -146,7 +161,7 @@ public class QuirionPDFExtractor extends AbstractPDFExtractor
         })
 
                         .section("valuta", "amount")
-                        .match("(Vermögensverwaltungshonorar) (\\d+,) (\\d+\\.\\d+\\.\\d{4}) - (\\d+\\.\\d+\\.\\d{4}) (\\d+\\.\\d+\\.\\d{4}) (?<valuta>\\d+\\.\\d+\\.\\d{4}) -(?<amount>[\\d.]+,\\d{2}) (\\w{3})")
+                        .match("(Vermögensverwaltungshonorar)(.*) (\\d+\\.\\d+\\.\\d{4}) (?<valuta>\\d+\\.\\d+\\.\\d{4}) -(?<amount>[\\d.]+,\\d{2}) (\\w{3})")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
                             t.setCurrencyCode(asCurrencyCode(context.get("currency")));

@@ -26,6 +26,13 @@
 					]
 				},
 				{
+					"isOptional" : true,
+					"pattern": [
+						"VERRECHNUNGSKONTO VALUTA BETRAG",
+						".* -(?<amount>[\\d+,.]*) (?<currency>\\w{3}+)"
+					]
+				},
+				{
 					"pattern": [
 						"Sparplanausführung am (?<date>\\d+\\.\\d+\\.\\d{4}|\\d{4}-\\d+-\\d+) .*"
 					]
@@ -50,17 +57,7 @@
 					"context": "UNIT",
 					"isOptional": true,
 					"pattern": [
-						"Kapitalertragssteuer -(?<amount>[\\d.,]+) (?<currency>\\w{3}+)"
-					],
-					"attributes": {
-						"type": "TAX"
-					}
-				},
-				{
-					"context": "UNIT",
-					"isOptional": true,
-					"pattern": [
-						"Solidaritätszuschlag -(?<amount>[\\d.,]+) (?<currency>\\w{3}+)"
+						"Frz\\. Finanztransaktionssteuer -(?<amount>[\\d.,]+) (?<currency>\\w{3}+)"
 					],
 					"attributes": {
 						"type": "TAX"

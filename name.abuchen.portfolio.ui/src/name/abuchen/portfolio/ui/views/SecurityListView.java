@@ -99,6 +99,7 @@ import name.abuchen.portfolio.ui.util.viewers.TransactionOwnerListEditingSupport
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
 import name.abuchen.portfolio.ui.views.actions.ConvertBuySellToDeliveryAction;
 import name.abuchen.portfolio.ui.views.actions.ConvertDeliveryToBuySellAction;
+import name.abuchen.portfolio.ui.views.columns.CalculatedQuoteColumn;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 import name.abuchen.portfolio.ui.wizards.events.CustomEventWizard;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
@@ -864,31 +865,23 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         }));
         support.addColumn(column);
 
-        column = new Column(Messages.ColumnPerShare, SWT.RIGHT, 80);
-        column.setDescription(Messages.ColumnPerShare_Description);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object element)
+        column = new CalculatedQuoteColumn("4", getClient(), element -> { //$NON-NLS-1$
+            Transaction t = ((TransactionPair<?>) element).getTransaction();
+            if (t instanceof PortfolioTransaction)
             {
-                Transaction t = ((TransactionPair<?>) element).getTransaction();
-                if (t instanceof PortfolioTransaction)
-                {
-                    return Values.Quote.format(((PortfolioTransaction) t).getGrossPricePerShare(),
-                                    getClient().getBaseCurrency());
-                }
-                else if (t instanceof AccountTransaction)
-                {
-                    long shares = ((AccountTransaction) t).getShares();
-                    if (shares != 0)
-                    {
-                        long perShare = Math.round(((AccountTransaction) t).getGrossValueAmount()
-                                        * Values.Share.divider() * Values.Quote.factorToMoney() / shares);
-                        return Values.Quote.format(Quote.of(t.getCurrencyCode(), perShare));
-                    }
-                }
-                return null;
+                return ((PortfolioTransaction) t).getGrossPricePerShare();
             }
+            else if (t instanceof AccountTransaction)
+            {
+                long shares = ((AccountTransaction) t).getShares();
+                if (shares != 0)
+                {
+                    long perShare = Math.round(((AccountTransaction) t).getGrossValueAmount() * Values.Share.divider()
+                                    * Values.Quote.factorToMoney() / shares);
+                    return Quote.of(t.getCurrencyCode(), perShare);
+                }
+            }
+            return null;
         });
         support.addColumn(column);
 

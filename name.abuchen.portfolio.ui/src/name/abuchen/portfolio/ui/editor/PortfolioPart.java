@@ -17,6 +17,7 @@ import javax.inject.Named;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.Persist;
@@ -271,7 +272,8 @@ public class PortfolioPart implements ClientInputListener
 
         Label label = new Label(container, SWT.CENTER | SWT.WRAP);
         label.setBackground(container.getBackground());
-        label.setText(message);
+        if (message != null)
+            label.setText(message);
 
         data = new FormData();
         data.top = new FormAttachment(image, 40);
@@ -370,6 +372,12 @@ public class PortfolioPart implements ClientInputListener
     {
         if (view != null && view.getControl() != null && !view.getControl().isDisposed())
             view.notifyModelUpdated();
+    }
+
+    @Inject
+    public void setQuotePrecision(@Preference(value = UIConstants.Preferences.FORMAT_CALCULATED_QUOTE_DIGITS) int quotePrecision)
+    {
+        onRecalculationNeeded();
     }
 
     @Focus

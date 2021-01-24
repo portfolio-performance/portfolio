@@ -1,0 +1,23 @@
+{
+	"version": 1,
+	"transactions": [
+		{
+			"type": "PURCHASE",
+			"date": "2021-01-18",
+			"currency": "EUR",
+			"amount": 1003.0,
+			"shares": 2.0028,
+			"security": {
+				"name": "LVMH Moët Henn. L. Vuitton SE",
+				"isin": "FR0000121014",
+				"currency": "EUR"
+			},
+			"units": [
+				{
+					"type": "TAX",
+					"amount": 3.0
+				}
+			]
+		}
+	]
+}
