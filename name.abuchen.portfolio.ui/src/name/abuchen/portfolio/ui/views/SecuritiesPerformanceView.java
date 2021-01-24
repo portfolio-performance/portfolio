@@ -53,6 +53,7 @@ import name.abuchen.portfolio.model.TransactionOwner;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
+import name.abuchen.portfolio.money.Quote;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.snapshot.filter.ClientFilter;
@@ -436,7 +437,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
             @Override
             public Quote getQuote(Object r)
             {
-                return Quote.of(((SecurityPerformanceRecord) r).getFifoCostPerSharesHeld());
+                return ((SecurityPerformanceRecord) r).getFifoCostPerSharesHeld();
             }
         });
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "fifoCostPerSharesHeld")); //$NON-NLS-1$
@@ -453,7 +454,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
             @Override
             protected Quote getQuote(Object r)
             {
-                return Quote.of(((SecurityPerformanceRecord) r).getMovingAverageCostPerSharesHeld());
+                return ((SecurityPerformanceRecord) r).getMovingAverageCostPerSharesHeld();
             }
         });
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "movingAverageCostPerSharesHeld")); //$NON-NLS-1$
@@ -463,12 +464,13 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         // latest / current quote
         column = new Column("quote", Messages.ColumnQuote, SWT.RIGHT, 75); //$NON-NLS-1$
         column.setDescription(Messages.ColumnQuote_DescriptionEndOfReportingPeriod);
-        column.setLabelProvider(new QuotesLabelProvider(getClient())
+        column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
-            protected Quote getQuote(Object element)
+            public String getText(Object element)
             {
-                return Quote.of(((SecurityPerformanceRecord) element).getQuote());
+                SecurityPerformanceRecord record = (SecurityPerformanceRecord) element;
+                return Values.Quote.format(record.getQuote(), getClient().getBaseCurrency());
             }
 
             @Override
@@ -476,7 +478,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
             {
                 SecurityPerformanceRecord record = (SecurityPerformanceRecord) element;
 
-                return MessageFormat.format(Messages.TooltipQuoteAtDate, super.getToolTipText(element),
+                return MessageFormat.format(Messages.TooltipQuoteAtDate, getText(element),
                                 Values.Date.format(record.getLatestSecurityPrice().getDate()));
             }
         });
@@ -1246,13 +1248,9 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
                 Optional<Transaction> tx = ((CalculationLineItem) e).getTransaction();
 
                 if (tx.isPresent() && tx.get() instanceof PortfolioTransaction)
-                {
-                    return Quote.of(((PortfolioTransaction) tx.get()).getGrossPricePerShare());
-                }
+                    return ((PortfolioTransaction) tx.get()).getGrossPricePerShare();
                 else
-                {
                     return null;
-                }
             }
         });
         support.addColumn(column);

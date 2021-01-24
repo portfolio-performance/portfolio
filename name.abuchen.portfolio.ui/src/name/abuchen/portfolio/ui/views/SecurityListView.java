@@ -64,6 +64,7 @@ import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.model.Watchlist;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
+import name.abuchen.portfolio.money.Quote;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.impl.EurostatHICPQuoteFeed;
@@ -664,14 +665,14 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         support.addColumn(column);
 
         column = new Column(Messages.ColumnQuote, SWT.RIGHT, 80);
-        column.setLabelProvider(new QuotesLabelProvider(getClient())
+        column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
-            protected Quote getQuote(Object element)
+            public String getText(Object element)
             {
                 Security security = (Security) prices.getData(Security.class.toString());
                 SecurityPrice price = (SecurityPrice) element;
-                return Quote.of(security.getCurrencyCode(), price.getValue());
+                return Values.Quote.format(security.getCurrencyCode(), price.getValue(), getClient().getBaseCurrency());
             }
         });
         ColumnViewerSorter.create(SecurityPrice.class, "value").attachTo(column); //$NON-NLS-1$
@@ -874,7 +875,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                 Transaction t = ((TransactionPair<?>) element).getTransaction();
                 if (t instanceof PortfolioTransaction)
                 {
-                    return Quote.of(((PortfolioTransaction) t).getGrossPricePerShare());
+                    return ((PortfolioTransaction) t).getGrossPricePerShare();
                 }
                 else if (t instanceof AccountTransaction)
                 {

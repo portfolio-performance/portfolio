@@ -14,6 +14,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.widgets.Widget;
 
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.money.Quote;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.util.FormatHelper;
 
@@ -41,7 +42,7 @@ public abstract class QuotesLabelProvider extends OwnerDrawLabelProvider
         if (quote == null)
             return null;
 
-        return quote.formatFull();
+        return Values.Quote.format(quote);
     }
 
     protected abstract Quote getQuote(Object element);
@@ -91,7 +92,7 @@ public abstract class QuotesLabelProvider extends OwnerDrawLabelProvider
         Quote quote = getQuote(element);
         if (quote != null)
         {
-            String text = quote.format(client.getBaseCurrency());
+            String text = FormatHelper.format(quote.getCurrencyCode(), quote.getAmount(), client.getBaseCurrency());
             Rectangle size = getSize(event, text);
             event.setBounds(new Rectangle(event.x, event.y, size.width, event.height));
         }
@@ -115,7 +116,7 @@ public abstract class QuotesLabelProvider extends OwnerDrawLabelProvider
             event.gc.setForeground(newForeground);
         }
 
-        String text = quote.format(client.getBaseCurrency());
+        String text = FormatHelper.format(quote.getCurrencyCode(), quote.getAmount(), client.getBaseCurrency());
         Rectangle size = getSize(event, text);
 
         TextLayout textLayout = getSharedTextLayout(event.display);
@@ -135,48 +136,5 @@ public abstract class QuotesLabelProvider extends OwnerDrawLabelProvider
     protected void erase(Event event, Object element)
     {
         // use os-specific background
-    }
-
-    public static class Quote // with optional currency
-    {
-        private final String currency;
-        private final long amount;
-
-        private Quote(String currency, long amount)
-        {
-            this.currency = currency;
-            this.amount = amount;
-        }
-
-        public static Quote of(name.abuchen.portfolio.money.Quote quote)
-        {
-            if (quote == null)
-                return null;
-
-            return new Quote(quote.getCurrencyCode(), quote.getAmount());
-        }
-
-        public static Quote of(String currency, long amount)
-        {
-            return new Quote(currency, amount);
-        }
-
-        public static Quote of(long amount)
-        {
-            return new Quote(null, amount);
-        }
-
-        private String formatFull()
-        {
-            if (currency == null)
-                return Values.Quote.format(amount);
-            else
-                return Values.Quote.format(currency, amount);
-        }
-
-        private String format(String skipCurrency)
-        {
-            return FormatHelper.format(currency, amount, skipCurrency);
-        }
     }
 }

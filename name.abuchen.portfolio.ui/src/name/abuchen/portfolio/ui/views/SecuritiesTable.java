@@ -82,7 +82,6 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationL
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.NumberColorLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.OptionLabelProvider;
-import name.abuchen.portfolio.ui.util.viewers.QuotesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ReportingPeriodColumnOptions;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
@@ -313,16 +312,21 @@ public final class SecuritiesTable implements ModificationListener
     {
         Column column = new Column("4", Messages.ColumnLatest, SWT.RIGHT, 60); //$NON-NLS-1$
         column.setMenuLabel(Messages.ColumnLatest_MenuLabel);
-        column.setLabelProvider(new QuotesLabelProvider(getClient())
+        column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
-            public Quote getQuote(Object e)
+            public String getText(Object e)
             {
                 Security security = (Security) e;
                 SecurityPrice latest = security.getSecurityPrice(LocalDate.now());
                 if (latest == null)
                     return null;
-                return Quote.of(security.getCurrencyCode(), latest.getValue());
+
+                if (security.getCurrencyCode() == null)
+                    return Values.Quote.format(latest.getValue());
+                else
+                    return Values.Quote.format(security.getCurrencyCode(), latest.getValue(),
+                                    getClient().getBaseCurrency());
             }
         });
         column.setSorter(ColumnViewerSorter.create((o1, o2) -> {

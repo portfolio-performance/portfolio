@@ -28,7 +28,6 @@ import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.swt.ActiveShell;
 import name.abuchen.portfolio.ui.util.viewers.Column;
-import name.abuchen.portfolio.ui.util.viewers.QuotesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
@@ -170,10 +169,10 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
         support.addColumn(column);
 
         column = new Column("quote", Messages.ColumnQuote, SWT.RIGHT, 60); //$NON-NLS-1$
-        column.setLabelProvider(new QuotesLabelProvider(getModel().getClient())
+        column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
-            public Quote getQuote(Object element)
+            public String getText(Object element)
             {
                 TaxonomyNode node = (TaxonomyNode) element;
 
@@ -182,7 +181,7 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                     return null;
 
                 SecurityPrice price = security.getSecurityPrice(LocalDate.now());
-                return Quote.of(security.getCurrencyCode(), price.getValue());
+                return Values.Quote.format(security.getCurrencyCode(), price.getValue(), getModel().getCurrencyCode());
             }
         });
         support.addColumn(column);

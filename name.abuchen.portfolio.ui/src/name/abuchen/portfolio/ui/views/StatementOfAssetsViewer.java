@@ -91,7 +91,6 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.TouchClientListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.OptionLabelProvider;
-import name.abuchen.portfolio.ui.util.viewers.QuotesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ReportingPeriodColumnOptions;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
@@ -381,17 +380,18 @@ public class StatementOfAssetsViewer
         support.addColumn(column);
 
         column = new Column("4", Messages.ColumnQuote, SWT.RIGHT, 60); //$NON-NLS-1$
-        column.setLabelProvider(new QuotesLabelProvider(client)
+        column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
-            public Quote getQuote(Object e)
+            public String getText(Object e)
             {
                 Element element = (Element) e;
                 if (!element.isSecurity())
                     return null;
 
                 Security security = element.getSecurity();
-                return Quote.of(security.getCurrencyCode(), element.getSecurityPosition().getPrice().getValue());
+                return Values.Quote.format(security.getCurrencyCode(),
+                                element.getSecurityPosition().getPrice().getValue(), client.getBaseCurrency());
             }
         });
         column.setComparator(new ElementComparator(new AttributeComparator(e -> {

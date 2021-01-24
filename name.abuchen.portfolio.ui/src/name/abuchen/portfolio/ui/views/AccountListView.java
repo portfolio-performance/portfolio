@@ -48,6 +48,7 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MutableMoney;
+import name.abuchen.portfolio.money.Quote;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
@@ -568,7 +569,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
                 if (t.getCrossEntry() instanceof BuySellEntry)
                 {
                     PortfolioTransaction pt = ((BuySellEntry) t.getCrossEntry()).getPortfolioTransaction();
-                    return Quote.of(pt.getGrossPricePerShare());
+                    return pt.getGrossPricePerShare();
                 }
                 else if (t.getType() == Type.DIVIDENDS && t.getShares() != 0)
                 {
