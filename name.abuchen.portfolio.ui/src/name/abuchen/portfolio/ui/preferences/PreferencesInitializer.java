@@ -19,6 +19,7 @@ public class PreferencesInitializer extends AbstractPreferenceInitializer
                                         ? "https://updates.portfolio-performance.info/portfolio-x86" //$NON-NLS-1$
                                         : "https://updates.portfolio-performance.info/portfolio"); //$NON-NLS-1$
         store.setDefault(UIConstants.Preferences.FORMAT_SHARES_DIGITS, 1);
+        store.setDefault(UIConstants.Preferences.FORMAT_CALCULATED_QUOTE_DIGITS, 2);
         store.setDefault(UIConstants.Preferences.USE_INDIRECT_QUOTATION, true);
         store.setDefault(UIConstants.Preferences.CREATE_BACKUP_BEFORE_SAVING, true);
         store.setDefault(UIConstants.Preferences.UPDATE_QUOTES_AFTER_FILE_OPEN, true);

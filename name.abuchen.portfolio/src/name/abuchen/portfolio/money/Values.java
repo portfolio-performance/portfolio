@@ -12,6 +12,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Locale;
 
+import name.abuchen.portfolio.util.FormatHelper;
+
 public abstract class Values<E>
 {
     public static final MathContext MC = new MathContext(10, RoundingMode.HALF_UP);
@@ -139,6 +141,65 @@ public abstract class Values<E>
         }
     }
 
+    public static final class CalculatedQuoteValues extends Values<Long>
+    {
+        private static final String QUOTE_PATTERN = "#,##0.00######"; //$NON-NLS-1$
+
+        private static final ThreadLocal<DecimalFormat> QUOTE_FORMAT = ThreadLocal // NOSONAR
+                        .withInitial(() -> {
+                            int precision = FormatHelper.getCalculatedQuoteDisplayPrecision();
+                            DecimalFormat format = new DecimalFormat("#,##0.##"); //$NON-NLS-1$
+                            format.setMinimumFractionDigits(precision);
+                            format.setMaximumFractionDigits(precision);
+                            return format;
+                        });
+
+        private CalculatedQuoteValues()
+        {
+            super(QUOTE_PATTERN, 8);
+        }
+
+        @Override
+        public String format(Long quote)
+        {
+            DecimalFormat format = QUOTE_FORMAT.get();
+            if (format.getMinimumFractionDigits() != FormatHelper.getCalculatedQuoteDisplayPrecision())
+            {
+                QUOTE_FORMAT.remove();
+                format = QUOTE_FORMAT.get();
+            }
+            return format.format(quote / divider());
+        }
+
+        public String format(String currencyCode, long quote, String skipCurrency)
+        {
+            if (currencyCode == null || skipCurrency.equals(currencyCode))
+                return format(quote);
+            else
+                return format(currencyCode, quote);
+        }
+
+        public String format(String currencyCode, long quote)
+        {
+            return currencyCode + " " + format(quote); //$NON-NLS-1$
+        }
+
+        public String format(Quote quote)
+        {
+            return format(quote.getCurrencyCode(), quote.getAmount());
+        }
+
+        public String format(Quote quote, String skipCurrency)
+        {
+            return format(quote.getCurrencyCode(), quote.getAmount(), skipCurrency);
+        }
+
+        public String formatNonZero(Quote amount, String skipCurrencyCode)
+        {
+            return amount == null || amount.isZero() ? null : format(amount, skipCurrencyCode);
+        }
+    }
+
     public static final Values<Long> Amount = new Values<Long>("#,##0.00", 2) //$NON-NLS-1$
     {
         @Override
@@ -199,6 +260,8 @@ public abstract class Values<E>
     };
 
     public static final QuoteValues Quote = new QuoteValues(); // NOSONAR
+
+    public static final CalculatedQuoteValues CalculatedQuote = new CalculatedQuoteValues(); // NOSONAR
 
     public static final Values<BigDecimal> ExchangeRate = new Values<BigDecimal>("#,##0.0000", 0)//$NON-NLS-1$
     {

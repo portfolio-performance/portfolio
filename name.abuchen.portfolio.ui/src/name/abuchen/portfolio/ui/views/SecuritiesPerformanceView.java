@@ -434,7 +434,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
             @Override
             public String getText(Object r)
             {
-                return Values.Quote.format(((SecurityPerformanceRecord) r).getFifoCostPerSharesHeld(),
+                return Values.CalculatedQuote.format(((SecurityPerformanceRecord) r).getFifoCostPerSharesHeld(),
                                 getClient().getBaseCurrency());
             }
         });
@@ -452,7 +452,8 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
             @Override
             public String getText(Object r)
             {
-                return Values.Quote.format(((SecurityPerformanceRecord) r).getMovingAverageCostPerSharesHeld(),
+                return Values.CalculatedQuote.format(
+                                ((SecurityPerformanceRecord) r).getMovingAverageCostPerSharesHeld(),
                                 getClient().getBaseCurrency());
             }
         });
@@ -550,7 +551,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         column = new Column("changeonpreviousamount", Messages.ColumnChangeOnPreviousAmount, SWT.RIGHT, 60); //$NON-NLS-1$
         column.setMenuLabel(Messages.ColumnChangeOnPrevious_MenuLabelAmount);
 
-        column.setLabelProvider(new NumberColorLabelProvider<>(Values.Quote, element -> {
+        column.setLabelProvider(new NumberColorLabelProvider<>(Values.CalculatedQuote, element -> {
             Optional<Pair<SecurityPrice, SecurityPrice>> previous = ((SecurityPerformanceRecord) element).getSecurity()
                             .getLatestTwoSecurityPrices();
             if (previous.isPresent())
@@ -1247,7 +1248,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
                 if (tx.isPresent() && tx.get() instanceof PortfolioTransaction)
                 {
                     PortfolioTransaction ptx = (PortfolioTransaction) tx.get();
-                    return Values.Quote.format(ptx.getGrossPricePerShare(), getClient().getBaseCurrency());
+                    return Values.CalculatedQuote.format(ptx.getGrossPricePerShare(), getClient().getBaseCurrency());
                 }
                 else
                 {

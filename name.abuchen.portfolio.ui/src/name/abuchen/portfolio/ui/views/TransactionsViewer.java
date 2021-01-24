@@ -337,8 +337,10 @@ public final class TransactionsViewer implements ModificationListener
         column = new Column("4", Messages.ColumnQuote, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setLabelProvider(new TransactionLabelProvider(t -> {
             if (t instanceof PortfolioTransaction)
-                return t.getShares() != 0 ? Values.Quote.format(((PortfolioTransaction) t).getGrossPricePerShare(),
-                                owner.getClient().getBaseCurrency()) : null;
+                return t.getShares() != 0
+                                ? Values.CalculatedQuote.format(((PortfolioTransaction) t).getGrossPricePerShare(),
+                                                owner.getClient().getBaseCurrency())
+                                : null;
             else
                 return null;
         }));

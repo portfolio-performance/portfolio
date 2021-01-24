@@ -98,6 +98,11 @@ public interface UIConstants
          */
         String FORMAT_SHARES_DIGITS = "FORMAT_SHARES_DIGITS"; //$NON-NLS-1$
 
+        /*
+         * Preference key for display precision of quote values
+         */
+        String FORMAT_CALCULATED_QUOTE_DIGITS = "FORMAT_CALCULATED_QUOTE_DIGITS"; //$NON-NLS-1$
+
         /**
          * Preference key to use indirect quotation ("Mengennotierung") when
          * displaying exchange rates.

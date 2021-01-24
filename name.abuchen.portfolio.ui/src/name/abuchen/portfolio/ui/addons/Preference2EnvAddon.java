@@ -11,7 +11,7 @@ import name.abuchen.portfolio.online.impl.DivvyDiaryDividendFeed;
 import name.abuchen.portfolio.online.impl.FinnhubQuoteFeed;
 import name.abuchen.portfolio.online.impl.QuandlQuoteFeed;
 import name.abuchen.portfolio.ui.UIConstants;
-import name.abuchen.portfolio.ui.util.FormatHelper;
+import name.abuchen.portfolio.util.FormatHelper;
 import name.abuchen.portfolio.util.TradeCalendarManager;
 
 public class Preference2EnvAddon
@@ -69,5 +69,11 @@ public class Preference2EnvAddon
     public void setSharesPrecision(@Preference(value = UIConstants.Preferences.FORMAT_SHARES_DIGITS) int sharesPrecision)
     {
         FormatHelper.setSharesDisplayPrecision(sharesPrecision);
+    }
+
+    @Inject
+    public void setQuotePrecision(@Preference(value = UIConstants.Preferences.FORMAT_CALCULATED_QUOTE_DIGITS) int quotePrecision)
+    {
+        FormatHelper.setCalculatedQuoteDisplayPrecision(quotePrecision);
     }
 }

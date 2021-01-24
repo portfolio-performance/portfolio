@@ -408,7 +408,7 @@ public final class SecuritiesTable implements ModificationListener
         Column column;
         column = new Column("changeonpreviousamount", Messages.ColumnChangeOnPreviousAmount, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setMenuLabel(Messages.ColumnChangeOnPrevious_MenuLabelAmount);
-        column.setLabelProvider(new NumberColorLabelProvider<>(Values.Quote, element -> {
+        column.setLabelProvider(new NumberColorLabelProvider<>(Values.CalculatedQuote, element -> {
             Optional<Pair<SecurityPrice, SecurityPrice>> previous = ((Security) element).getLatestTwoSecurityPrices();
             if (previous.isPresent())
             {
