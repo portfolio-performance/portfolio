@@ -231,5 +231,37 @@ public class DreiBankenEDVPDFExtractorTest
         Status s = c.process(t, account);
         assertThat(s, is(Status.OK_STATUS));
     }
+    
+    @Test
+    public void testAusschuettung05()
+    {
+        DreiBankenEDVPDFExtractor extractor = new DreiBankenEDVPDFExtractor(new Client());
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "3BankenEDVDividende05.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        AccountTransaction t = results.stream().filter(i -> i instanceof TransactionItem)
+                        .map(i -> (AccountTransaction) ((TransactionItem) i).getSubject()).findAny()
+                        .orElseThrow(IllegalArgumentException::new);
+
+        assertThat(t.getSecurity().getName(), is("Lyxor Emerg Market 2x Lev ETF Inhaber-Anteile I o.N."));
+        assertThat(t.getSecurity().getIsin(), is("LU0675401409"));
+        assertThat(t.getSecurity().getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2020-12-09T00:00")));
+        assertThat(t.getShares(), is(Values.Share.factorize(6)));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.32))));
+        assertThat(t.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.12 + 0.02))));
+
+        CheckCurrenciesAction c = new CheckCurrenciesAction();
+        Account account = new Account();
+        account.setCurrencyCode(CurrencyUnit.EUR);
+        Status s = c.process(t, account);
+        assertThat(s, is(Status.OK_STATUS));
+    }
 
 }

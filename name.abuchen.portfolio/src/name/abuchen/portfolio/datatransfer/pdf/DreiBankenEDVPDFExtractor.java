@@ -160,7 +160,51 @@ public class DreiBankenEDVPDFExtractor extends AbstractPDFExtractor
                         // 15 % QUSt a 1,224 v. 28.12.2020 EUR 1,21
                         .section("exchangeRate", "fxAmount", "fxCurrency", "amount", "currency").optional()
                         .match(".*Kurswert.*(?<fxCurrency>\\w{3}).*(?<fxAmount>[\\d.]+,\\d+).*\\w+.*(\\w{3}).*([\\d.]+,\\d+)")
-                        .match("\\w.*") //
+                        .match("\\w.*")
+                        .match("\\w.*")
+                        .match(".*(?<exchangeRate>[\\d.]+,\\d+) v. (\\d+.\\d+.\\d{4}).*(?<currency>\\w{3}).*(?<amount>[\\d.]+,\\d+).*")
+                        .assign((t, v) -> {
+
+                            BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                            if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
+                            {
+                                exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+                            }
+                            newType.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
+
+                            if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
+                            {
+                                BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
+                                                RoundingMode.HALF_DOWN);
+
+                                // check, if forex currency is transaction
+                                // currency or not and swap amount, if necessary
+                                Unit grossValue;
+                                if (!asCurrencyCode(v.get("fxCurrency")).equals(t.getCurrencyCode()))
+                                {
+                                    Money fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")),
+                                                    asAmount(v.get("fxAmount")));
+                                    Money amount = Money.of(asCurrencyCode(v.get("currency")),
+                                                    asAmount(v.get("amount")));
+                                    grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
+                                }
+                                else
+                                {
+                                    Money amount = Money.of(asCurrencyCode(v.get("fxCurrency")),
+                                                    asAmount(v.get("fxAmount")));
+                                    Money fxAmount = Money.of(asCurrencyCode(v.get("currency")),
+                                                    asAmount(v.get("amount")));
+                                    grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
+                                }
+                                t.addUnit(grossValue);
+                            }
+                        })
+                        
+                        // Ertrag 0,09 USD Kurswert USD                0,54KESt-Neu USD               -0,15
+                        // Zwischensumme USD                0,39
+                        // a 1,214 v. 09.12.2020 EUR                0,32
+                        .section("exchangeRate", "fxAmount", "fxCurrency", "amount", "currency").optional()
+                        .match(".*Kurswert.*(?<fxCurrency>\\w{3}).*(?<fxAmount>[\\d.]+,\\d+).*\\w+.*(\\w{3}).*([\\d.]+,\\d+)")
                         .match("\\w.*")
                         .match(".*(?<exchangeRate>[\\d.]+,\\d+) v. (\\d+.\\d+.\\d{4}).*(?<currency>\\w{3}).*(?<amount>[\\d.]+,\\d+).*")
                         .assign((t, v) -> {
@@ -215,6 +259,11 @@ public class DreiBankenEDVPDFExtractor extends AbstractPDFExtractor
                         .match("Auslands-KESt.*(?<currency>\\w{3}).*-(?<tax>[\\d.]+,\\d+).*")
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
+                        // 0,0204 EUR KESt
+                        .section("tax", "currency").optional()
+                        .match(".*(?<tax>[\\d.]+,\\d+).*(?<currency>\\w{3}).*KESt")
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+                        
                         // Ertrag 0,0806 EUR Kurswert EUR 0,32KESt-Neu EUR -0,02
                         .section("tax", "currency").optional()
                         .match(".*KESt-Neu.*(?<currency>\\w{3}).*-(?<tax>[\\d.]+,\\d+).*")
