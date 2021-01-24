@@ -460,7 +460,24 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
         blockTransaction.set(pdfTransaction);
-        pdfTransaction.section("amount", "shares", "date")
+
+        pdfTransaction
+
+                        .section("amount", "shares", "date", "fee").optional()
+                        .match("^Kauf (?<amount>[\\d,]+) [\\d]{2,10}\\/.* (?<shares>[\\d,]+) (?<date>\\d+.\\d+.\\d{4}+) .*")
+                        .match(".*Provision.* (?<fee>[\\d,]+) .*")
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+                            t.setSecurity(getOrCreateSecurity(context));
+                            t.setDate(asDate(v.get("date")));
+                            t.setShares(asShares(v.get("shares")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                            Money feeAmount = Money.of(asCurrencyCode(v.get("currencyFee")), asAmount(v.get("fee")));  
+                            t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, feeAmount));
+                        })
+        
+                        .section("amount", "shares", "date").optional()
                         .match("^Kauf (?<amount>[\\d,]+) [\\d]{2,10}\\/.* (?<shares>[\\d,]+) (?<date>\\d+.\\d+.\\d{4}+) .*")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
