@@ -199,7 +199,7 @@ public class ChartWidget extends WidgetDelegate<Object>
         chart.getTitle().setText(title.getText());
         chart.getAxisSet().getYAxis(0).getTick().setVisible(false);
         if (useCase != DataSeries.UseCase.STATEMENT_OF_ASSETS)
-            chart.getToolTip().setValueFormat(new DecimalFormat("0.##%")); //$NON-NLS-1$
+            chart.getToolTip().setDefaultValueFormat(new DecimalFormat("0.##%")); //$NON-NLS-1$
         chart.getToolTip().reverseLabels(true);
 
         GC gc = new GC(container);

@@ -190,7 +190,7 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
         toolTip = new TimelineChartToolTip(chart);
         toolTip.enableCategory(true);
         toolTip.reverseLabels(true);
-        toolTip.setValueFormat(new DecimalFormat("#")); //$NON-NLS-1$
+        toolTip.setDefaultValueFormat(new DecimalFormat("#")); //$NON-NLS-1$
         toolTip.setXAxisFormat(obj -> {
             Integer index = (Integer) obj;
             @SuppressWarnings("unchecked")
@@ -252,7 +252,7 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
 
             ChartType chartType = get(ChartTypeConfig.class).getValue();
 
-            toolTip.setValueFormat(new DecimalFormat(chartType == ChartType.COUNT ? "#" : "#,##0.00")); //$NON-NLS-1$ //$NON-NLS-2$
+            toolTip.setDefaultValueFormat(new DecimalFormat(chartType == ChartType.COUNT ? "#" : "#,##0.00")); //$NON-NLS-1$ //$NON-NLS-2$
 
             IAxis xAxis = chart.getAxisSet().getXAxis(0);
             Interval interval = get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now());

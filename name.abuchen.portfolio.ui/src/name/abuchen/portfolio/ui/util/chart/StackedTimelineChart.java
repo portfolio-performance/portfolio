@@ -73,7 +73,7 @@ public class StackedTimelineChart extends Chart // NOSONAR
         toolTip = new TimelineChartToolTip(this);
         toolTip.enableCategory(true);
         toolTip.reverseLabels(true);
-        toolTip.setValueFormat(new DecimalFormat("#0.0%")); //$NON-NLS-1$
+        toolTip.setDefaultValueFormat(new DecimalFormat("#0.0%")); //$NON-NLS-1$
 
         new ChartContextMenu(this);
     }

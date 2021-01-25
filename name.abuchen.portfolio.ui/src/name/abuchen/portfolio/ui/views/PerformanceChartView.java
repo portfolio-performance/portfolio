@@ -24,6 +24,7 @@ import org.swtchart.ISeries;
 
 import com.google.common.collect.Lists;
 
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.Aggregation;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.ui.Images;
@@ -96,7 +97,7 @@ public class PerformanceChartView extends AbstractHistoricView
         chart.getTitle().setText(getTitle());
         chart.getTitle().setVisible(false);
         chart.getAxisSet().getYAxis(0).getTick().setFormat(new DecimalFormat("0.#%")); //$NON-NLS-1$
-        chart.getToolTip().setValueFormat(new DecimalFormat("0.00%")); //$NON-NLS-1$
+        chart.getToolTip().setDefaultValueFormat(new DecimalFormat(Values.Percent2.pattern()));
         chart.getToolTip().reverseLabels(true);
 
         DataSeriesCache cache = make(DataSeriesCache.class);
