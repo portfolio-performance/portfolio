@@ -68,6 +68,7 @@ import name.abuchen.portfolio.snapshot.GroupByTaxonomy;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.snapshot.filter.ClientFilter;
+import name.abuchen.portfolio.snapshot.filter.ReadOnlyAccount;
 import name.abuchen.portfolio.snapshot.filter.ReadOnlyPortfolio;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceIndicator;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
@@ -840,7 +841,7 @@ public class StatementOfAssetsViewer
 
         if (element.isAccount())
         {
-            new AccountContextMenu(view).menuAboutToShow(manager, element.getAccount(), null);
+            new AccountContextMenu(view).menuAboutToShow(manager, ReadOnlyAccount.unwrap(element.getAccount()), null);
         }
         else if (element.isSecurity())
         {
