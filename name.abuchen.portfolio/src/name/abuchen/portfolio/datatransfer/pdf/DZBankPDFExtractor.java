@@ -20,6 +20,7 @@ public class DZBankPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("Volksbank"); //$NON-NLS-1$
         addBankIdentifier("VRB Oberbayern"); //$NON-NLS-1$
         addBankIdentifier("NIBC Direct Depotservice"); //$NON-NLS-1$
+        addBankIdentifier("Postfach 12 40 · 97755 Hammelburg"); //$NON-NLS-1$
 
         addBuyTransaction();
         addSellTransaction();

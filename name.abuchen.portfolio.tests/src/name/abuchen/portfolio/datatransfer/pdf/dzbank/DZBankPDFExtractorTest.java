@@ -146,6 +146,44 @@ public class DZBankPDFExtractorTest
     }
     
     @Test
+    public void testWertpapierKauf4()
+    {
+        DZBankPDFExtractor extractor = new DZBankPDFExtractor(new Client());
+    
+        List<Exception> errors = new ArrayList<>();
+    
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "DZBankWertpapierabrechnung_Kauf4.txt"), errors);
+    
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+    
+        Optional<Item> item;
+    
+        // security
+        item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+    
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
+        assertThat(security.getName(), is("NEXTERA ENERGY INC."));
+        assertThat(security.getIsin(), is("US65339F1012"));
+        assertThat(security.getWkn(), is("A1CZ4H"));
+        
+        item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+    
+        assertThat(item.orElseThrow(IllegalArgumentException::new).getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
+    
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-01-27T16:18")));
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+    
+        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(3450.10)));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of("EUR", Values.Amount.factorize(25.10))));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(50)));
+    }
+
+    @Test
     public void testWertpapierVerkauf1()
     {
         DZBankPDFExtractor extractor = new DZBankPDFExtractor(new Client());

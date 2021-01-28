@@ -1,0 +1,41 @@
+﻿PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+   
+Postfach 12 40 · 97755 Hammelburg
+Depotnummer
+ 12345678
+ Kundennummer 999999999
+Max Mustermann
+ Auftragsnummer 635230/50.00
+Max Mustermann Datum 27.01.2021
+Musterstr. 10 Ihr Berater Herr Maxi Muster
+60318 Frankfurt am Main Telefon +49 69 600000-00
+Telefax +49 69 600000-01
+Rechnungsnummer W06175-0000008220/21
+Umsatzsteuer-ID DE198159260   
+ 
+Wertpapier Abrechnung Kauf 
+Auftrag vom 21.01.2021 18:18:07 Uhr
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 50 NEXTERA ENERGY INC.                US65339F1012 (A1CZ4H)
+REGISTERED SHARES DL -,01          
+Handels-/Ausführungsplatz Tradegate (gemäß Weisung)
+Börsensegment XGAT
+Limit-Order
+Limit 68,50 EUR 
+Schlusstag/-Zeit 27.01.2021 16:18:02 Auftraggeber Max Mustermann
+Ausführungskurs 68,50 EUR Auftragserteilung/ -ort Online-Banking
+Wertpapierrechnung Lagerland USA
+Kurswert 3.425,00- EUR
+Provision 25,00- EUR
+Übertragungs-/Liefergebühr 0,10- EUR
+Ausmachender Betrag 3.450,10- EUR
+ 
+Den Gegenwert buchen wir mit Valuta 29.01.2021 zu Lasten des Kontos 1234567 (IBAN DE34 7013 0800 0001 2345 67),
+BLZ 70130800 (BIC GENODEF1M06).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+6175.01271756.0000538OR07
