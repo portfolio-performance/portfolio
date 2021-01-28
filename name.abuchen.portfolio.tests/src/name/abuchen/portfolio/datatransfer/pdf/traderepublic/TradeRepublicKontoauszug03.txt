@@ -1,0 +1,15 @@
+`PDF Autor: ''
+PDFBox Version: 1.8.16
+
+TRADE REPUBLIC BANK GMBH KASTANIENALLEE 32 10435 BERLIN
+xxxxxxxxx SEITE 1 von 2
+xxxxxx 17 DATUM 22.01.2021
+D xxxxx xxxxxxx DEPOT xxxxx
+KONTOAUSZUG
+zum 31.12.2020
+BUCHUNGEN
+Aufstellung über die Buchungen in Deinem Verrechnungskonto DExxxxxxxxxxxxxxxxxxx3.
+BUCHUNGSTAG / BUCHUNGSTEXT BETRAG IN EUR
+WERTSTELLUNG
+04.11.2020 Steueroptimierung null 0000000000000000 4,20
+04.11.2020
