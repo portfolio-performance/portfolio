@@ -17,6 +17,7 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
@@ -31,6 +32,8 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Text;
+
+import com.ibm.icu.text.MessageFormat;
 
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.AttributeType.ImageConverter;
@@ -98,7 +101,7 @@ public class AttributesPage extends AbstractPage implements IMenuListener
         @Override
         public Object convert(String fromObject)
         {
-            return attribute.getType().getConverter().fromString((String) fromObject);
+            return attribute.getType().getConverter().fromString(fromObject);
         }
     }
 
@@ -230,7 +233,11 @@ public class AttributesPage extends AbstractPage implements IMenuListener
                     {
                         String b64 = ImageUtil.loadAndPrepare(filename, ImageConverter.MAXIMUM_SIZE_EMBEDDED_IMAGE,
                                         ImageConverter.MAXIMUM_SIZE_EMBEDDED_IMAGE);
-                        attributeModel.setValue(b64);
+                        if (b64 == null)
+                            MessageDialog.openError(getShell(), Messages.MsgInvalidImage,
+                                            MessageFormat.format(Messages.MsgInvalidImageDetail, filename));
+                        else
+                            attributeModel.setValue(b64);
                     }
                     catch (IOException ex)
                     {

@@ -114,6 +114,9 @@ public class ImageUtil
     {
         byte[] data = Files.readAllBytes(Paths.get(filename));
         ImageData imgData = ImageUtil.toImageData(data);
+        if (imgData == null)
+            return null;
+
         if (imgData.width > maxWidth || imgData.height > maxHeight)
         {
             imgData = ImageUtil.resize(imgData, maxWidth, maxHeight, true);

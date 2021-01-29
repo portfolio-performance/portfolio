@@ -11,6 +11,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 
+import com.ibm.icu.text.MessageFormat;
+
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.AttributeType.ImageConverter;
 import name.abuchen.portfolio.ui.Messages;
@@ -62,8 +64,14 @@ public class ImageAttributeEditingSupport extends AttributeEditingSupport
             {
                 try
                 {
-                    return ImageUtil.loadAndPrepare(filename, ImageConverter.MAXIMUM_SIZE_EMBEDDED_IMAGE,
+                    String image = ImageUtil.loadAndPrepare(filename, ImageConverter.MAXIMUM_SIZE_EMBEDDED_IMAGE,
                                     ImageConverter.MAXIMUM_SIZE_EMBEDDED_IMAGE);
+
+                    if (image == null)
+                        MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.MsgInvalidImage,
+                                        MessageFormat.format(Messages.MsgInvalidImageDetail, filename));
+
+                    return image;
                 }
                 catch (IOException ex)
                 {
