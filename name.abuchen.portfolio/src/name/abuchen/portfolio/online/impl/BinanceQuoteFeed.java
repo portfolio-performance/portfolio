@@ -23,7 +23,7 @@ import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.QuoteFeedData;
 import name.abuchen.portfolio.util.WebAccess;
 
-public final class BinanceQuoteFeed implements QuoteFeed 
+public final class BinanceQuoteFeed implements QuoteFeed
 {
     public static final String ID = "BINANCE"; //$NON-NLS-1$
 
@@ -146,12 +146,11 @@ public final class BinanceQuoteFeed implements QuoteFeed
 
         try
         {
-            String path = "/api/v3/klines"; //$NON-NLS-1$
-            WebAccess webaccess = new WebAccess("api.binance.com", path) 
-                    // Ticker: BTCUSD, IOTUSD, ...
-                    .addParameter("symbol", security.getTickerSymbol()) 
-                    .addParameter("interval", "1d")
-                    .addParameter("startTime", tickerStartEpochMilliSeconds.toString());
+            WebAccess webaccess = new WebAccess("api.binance.com", "/api/v3/klines") //$NON-NLS-1$ //$NON-NLS-2$
+                            // Ticker: BTCEUR, BTCUSDT, ...
+                            .addParameter("symbol", security.getTickerSymbol()) //$NON-NLS-1$
+                            .addParameter("interval", "1d") //$NON-NLS-1$ //$NON-NLS-2$
+                            .addParameter("startTime", tickerStartEpochMilliSeconds.toString()); //$NON-NLS-1$
             String html = webaccess.get();
 
             if (collectRawResponse)

@@ -28,6 +28,7 @@ import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.QuoteFeedData;
 import name.abuchen.portfolio.online.impl.AlphavantageQuoteFeed;
+import name.abuchen.portfolio.online.impl.BinanceQuoteFeed;
 import name.abuchen.portfolio.online.impl.FinnhubQuoteFeed;
 import name.abuchen.portfolio.online.impl.GenericJSONQuoteFeed;
 import name.abuchen.portfolio.online.impl.PortfolioReportQuoteFeed;
@@ -179,6 +180,8 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
             return AlphavantageQuoteFeed.ID + getModel().getTickerSymbol();
         else if (FinnhubQuoteFeed.ID.equals(getFeed()))
             return FinnhubQuoteFeed.ID + getModel().getTickerSymbol();
+        else if (BinanceQuoteFeed.ID.equals(getFeed()))
+            return BinanceQuoteFeed.ID + getModel().getTickerSymbol();
         else if (QuandlQuoteFeed.ID.equals(getFeed()))
             return QuandlQuoteFeed.ID
                             + String.valueOf(getModel().getFeedProperty(QuandlQuoteFeed.QUANDL_CODE_PROPERTY_NAME))
