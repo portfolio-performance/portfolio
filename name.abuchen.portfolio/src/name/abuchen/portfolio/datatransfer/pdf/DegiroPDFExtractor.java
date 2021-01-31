@@ -122,6 +122,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
         // 02-08-2017 00:00 Einzahlung EUR 350,00 EUR 350,00
         // 01-02-2019 11:44 01-02-2019 Einzahlung EUR 0,01 EUR 0,01
         // 22-02-2019 18:40 22-02-2019 SOFORT Einzahlung EUR 27,00 EUR 44,89
+        // 26-10-2020 15:00 26-10-2020 flatex Einzahlung EUR 500,00 EUR 512,88
         Block blockDeposit = new Block("^.* Einzahlung .*$"); 
         type.addBlock(blockDeposit);
         blockDeposit.set(new Transaction<AccountTransaction>().subject(() -> {
@@ -131,7 +132,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
         })
 
                         .section("date", "currency", "amount")   
-                        .match("(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) (\\d+-\\d+-\\d{4} )?(SOFORT )?Einzahlung (?<currency>\\w{3}) (?<amount>[\\d.]+,\\d{2}) .*") 
+                        .match("(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) (\\d+-\\d+-\\d{4} )?(SOFORT |flatex )?Einzahlung (?<currency>\\w{3}) (?<amount>[\\d.]+,\\d{2}) .*") 
                         .assign((t, v) -> {
                                 t.setCurrencyCode(asCurrencyCode(v.get("currency"))); 
                                 t.setDateTime(asDate(v.get("date"))); 
