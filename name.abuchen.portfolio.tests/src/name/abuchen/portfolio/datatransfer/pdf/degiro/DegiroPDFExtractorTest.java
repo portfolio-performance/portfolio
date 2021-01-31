@@ -138,6 +138,24 @@ public class DegiroPDFExtractorTest
         return security;
     }
     
+    private Security assertSecurityKontoauszug11First(Security security)
+    { 
+        assertThat(security.getIsin(), is("GB00B03MLX29"));
+        assertThat(security.getName(), is("ROYAL DUTCH SHELL PLC"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        return security;
+    }
+    
+    private Security assertSecurityKontoauszug11Second(Security security)
+    { 
+        assertThat(security.getIsin(), is("US1912161007"));
+        assertThat(security.getName(), is("COCA-COLA COMPANY (THE"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+
+        return security;
+    }
+    
     private Security assertSecurityTransaktionsuebersicht2First(Security security)
     {
         assertThat(security.getIsin(), is("DE000C21EMZ1"));
@@ -191,7 +209,6 @@ public class DegiroPDFExtractorTest
 
         return security;
     }
-    
 
     @Test
     public void testKontoauszug1()
@@ -663,6 +680,51 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-01T09:35")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 2_50)));
         
+    }
+    
+    @Test
+    public void testKontoauszug11()
+    {
+        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DegiroKontoauszug11.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(32));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        
+        // check deposit transaction
+        // 26-10-2020 15:00 26-10-2020 flatex Einzahlung EUR 500,00 EUR 512,88
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).collect(Collectors.toList()).get(0).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-10-26T15:00")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 500_00L)));
+
+        // check dividends transaction EUR --> EUR
+        // 16-12-2020 11:33 16-12-2020 ROYAL DUTCH SHELL PLC GB00B03MLX29 Dividende EUR 1,52 EUR 651,96
+        // 16-12-2020 11:33 16-12-2020 ROYAL DUTCH SHELL PLC GB00B03MLX29 Dividendensteuer EUR -0,23 EUR 650,44
+        transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).collect(Collectors.toList()).get(1).getSubject();
+        assertSecurityKontoauszug11First(transaction.getSecurity());
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-16T11:33")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 1_52L)));
+        Unit taxUnit = transaction.getUnit(Unit.Type.TAX).orElseThrow(IllegalArgumentException::new);
+        assertThat(taxUnit.getAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.23))));
+        
+        // check dividends transaction USD --> EUR
+        // 16-12-2020 08:38 15-12-2020 COCA-COLA COMPANY (THE US1912161007 Dividende USD 1,23 USD 7,18
+        // 16-12-2020 08:38 15-12-2020 COCA-COLA COMPANY (THE US1912161007 Dividendensteuer USD -0,37 USD 5,95
+        transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).collect(Collectors.toList()).get(2).getSubject();
+        assertSecurityKontoauszug11Second(transaction.getSecurity());
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-16T08:38")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 5_87L)));
+        Unit grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1.23))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.30))));
     }
         
     @Test
