@@ -31,6 +31,7 @@ import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.QuoteFeedData;
 import name.abuchen.portfolio.online.impl.variableurl.Factory;
 import name.abuchen.portfolio.online.impl.variableurl.urls.VariableURL;
+import name.abuchen.portfolio.util.TextUtil;
 import name.abuchen.portfolio.util.WebAccess;
 
 public class GenericJSONQuoteFeed implements QuoteFeed
@@ -121,6 +122,8 @@ public class GenericJSONQuoteFeed implements QuoteFeed
                 {
                     data.addError(new IOException(url + '\n' + e.getMessage(), e));
                 }
+
+                json = TextUtil.stripJavaScriptCallback(json);
 
                 if (json != null)
                     cache.put(url, json);

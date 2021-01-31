@@ -167,4 +167,40 @@ public final class TextUtil
         }
         return buffer.toString();
     }
+
+    public static String stripJavaScriptCallback(String json)
+    {
+        if (json == null)
+            return null;
+
+        final int length = json.length();
+        final int search = 200; // only check the first 200 characters
+
+        int start = 0;
+        int end = length;
+
+        for (; start < length && start < search; start++)
+        {
+            char c = json.charAt(start);
+            if (c == '{' || c == '[')
+                break;
+        }
+
+        for (; end > start && end > length - search; end--)
+        {
+            char c = json.charAt(end - 1);
+            if (c == '}' || c == ']')
+                break;
+        }
+
+        // remove only if
+        // a) start is before end
+        // b) the limit of 200 characters to search has not been hit
+        // c) a prefix *and* a postfix have been found
+
+        if (start < end && start < search && end > length - search && (start > 0 && end < length - 1))
+            return json.substring(start, end);
+
+        return json;
+    }
 }
