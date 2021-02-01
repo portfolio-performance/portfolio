@@ -1,0 +1,51 @@
+PDF author: '' 
+PDFBox Version: 1.8.13
+-----------------------------------------
+Postfach · 60255 Frankfurt am Main Seite 1
+Depotnummer xxxxxxxxxx
+Kundennummer xxxxxxx
+Vorname Nachname
+Abrechnungsnr. 504xxxxxxxx
+Herrn Datum 04.01.2018
+Vorname Nachname Ihr Berater 1822direkt
+Musterstr. 123 Telefon 069 94170-0
+12345 Musterstadt
+Gutschrift von Investmenterträgen
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 920 ISHSIV-FA.AN.HI.YI.CO.BD U.ETF IE00BYM31M36 (A2AFCX)
+REGISTERED SHARES USD O.N.
+Zahlbarkeitstag 29.12.2017 Ertrag pro St. 0,123000000 USD
+Bestandsstichtag 13.12.2017 Zinsanteil pro St. 0,123100800 USD
+Ex-Tag 14.12.2017 Herkunftsland Irland
+Geschäftsjahr 01.06.2017 - 31.12.2017
+Devisenkurs EUR / USD 1,2095
+Devisenkursdatum 02.01.2018
+Ausschüttung 113,16 USD 93,56+ EUR
+Kapitalertragsteuerpflichtiger Zinsanteil gesamt 113,25 USD
+Umrechnung in EUR 93,63 EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 93,63 EUR
+Kapitalertragsteuer 25 % auf 93,63 EUR 23,41- EUR
+Solidaritätszuschlag 5,5 % auf 23,41 EUR 1,28- EUR
+Ausmachender Betrag 68,87+ EUR
+Lagerstelle Clearstream Banking Lux (84xxxx / 6xxxx)
+Den Betrag buchen wir mit Wertstellung 03.01.2018 zu Gunsten des Kontos xxxxxxxxxx (IBAN DExx xxxx xxxx xxxx
+xxxx xx), BLZ 500 502 01 (BIC HELADEF1822).
+Keine Steuerbescheinigung.
+Bitte ggf. Rückseite beachten.
+xxxx.0105xxxx.0002xxxxxxx
+
+Seite 2
+Depotnummer xxxxxxxxxx
+Kundennummer xxxxxxx
+Abrechnungsnr. 504xxxxxxxx
+Datum 04.01.2018
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2017 ohne Vorjahressaldo Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 0,05
+Ertrag 0,00 0,00 0,00 0,00 93,63
+Nachher 0,00 0,00 0,00 0,00 93,68
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+xxxx.0105xxxx.0002xxxxxxx
