@@ -486,7 +486,7 @@ public class OnvistaPDFExtractorTest
         Unit grossValue = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
         assertThat(grossValue.getAmount(),
                         is(Money.of(CurrencyUnit.EUR, transaction.getAmount() + taxes.getAmount())));
-        assertThat(grossValue.getForex(), is(Money.of("DKK", Values.Amount.factorize(3.02 * 7.483 + 8.34))));
+        assertThat(grossValue.getForex(), is(Money.of("DKK", Values.Amount.factorize(6 * 5.15)))); // Rundungsfehler in alter Berechnung: 3.02 * 7.483 + 8.34))));
     }
 
     @Test
@@ -762,7 +762,7 @@ public class OnvistaPDFExtractorTest
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(23.53))));
         assertThat(transaction.getShares(), is(Values.Share.factorize(500)));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.16 + 0.18 + 4.74))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(31.62 - 23.53)))); // alternativ: 3.16 + 0.18 + 5.63/1.1859 = 8.09
     }
 
     @Test
