@@ -86,7 +86,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
             })
 
             // Eingebuchte sonstige negative Kapitalerträge 0,02 EUR
-            .section("tax", "currency").optional()
+            .section("tax", "currency")
             .match("^(Eingebuchte.*Kapitalerträge) (?<tax>[\\d.]+,\\d{2}) (?<currency>\\w{3})")
             .assign((t, v) -> t.getPortfolioTransaction()
                             .addUnit(new Unit(Unit.Type.TAX,
