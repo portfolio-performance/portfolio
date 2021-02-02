@@ -495,7 +495,8 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                             .equals(tax.getCurrencyCode()))
             {
                 Unit gv = grossValue.get();
-
+                Money currentTax = t.getUnitSum(Unit.Type.TAX);
+                
                 Money money = Money.of(t.getCurrencyCode(), BigDecimal.valueOf(tax.getAmount())
                                 .multiply(gv.getExchangeRate())
                                 .setScale(0, RoundingMode.HALF_DOWN)
@@ -507,13 +508,16 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
                 t.removeUnit(grossValue.get());
 
-                t.addUnit(new Unit(Unit.Type.GROSS_VALUE,
-                                Money.of(gv.getAmount().getCurrencyCode(),
+                Money grossValueWithTax = Money.of(gv.getAmount().getCurrencyCode(),
                                                 grossValue.get().getAmount().getAmount()
-                                                                + money.getAmount()),
-                                Money.of(gv.getForex().getCurrencyCode(), gv.getForex().getAmount()
-                                                                + tax.getAmount()),
-                                gv.getExchangeRate()));
+                                                                + money.getAmount()
+                                                                + currentTax.getAmount());
+                Money grossValueWithTaxFx = Money.of(gv.getForex().getCurrencyCode(), 
+                                                BigDecimal.valueOf(grossValueWithTax.getAmount())
+                                                    .divide(gv.getExchangeRate(), 0, RoundingMode.HALF_DOWN)
+                                                    .longValue());
+                
+                t.addUnit(new Unit(Unit.Type.GROSS_VALUE, grossValueWithTax, grossValueWithTaxFx, gv.getExchangeRate()));
             }
             else if (type.getCurrentContext()
                             .containsKey(t.getCurrencyCode() + "/" + tax.getCurrencyCode()))
@@ -530,9 +534,11 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
             }
         };
         
+        addTaxesSectionsTransaction(pdfTransaction);
+        
         pdfTransaction
                         .section("tax", "currency").optional() //
-                        .match("^davon anrechenbare US-Quellensteuer ([0-9,]+% )?(?<currency>\\w{3}+)\\s+(?<tax>[\\d.,]*)")
+                        .match("^US-Quellensteuer ([0-9,]+% )?(?<currency>\\w{3}+)\\s+(?<tax>[\\d.,]*)")
                         .assign(taxAssignment)
 
                         .section("tax", "currency").optional() //
@@ -541,7 +547,6 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new);
 
-        addTaxesSectionsTransaction(pdfTransaction);
 
         // optional: Reinvestierung in:
         block = new Block("Reinvestierung.*");
