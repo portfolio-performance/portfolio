@@ -239,18 +239,19 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         })
     
                         .section("name", "isin", "shares") //
-                        .find("NR. BUCHUNG WERTPAPIER ANZAHL.*") //
-                        .match(".* Tilgung (?<name>.*) (?<shares>[\\d+,.]*) Stk.$") //
+                        .find("NR. BUCHUNG WERTPAPIER (ANZAHL|BETRAG).*") //
+                        .match("\\d+ Tilgung (?<name>.*) (?<shares>[\\d+,.]*) Stk.$") //
                         .match(".*") //
-                        .match("(ISIN:)?(?<isin>\\w{12})").assign((t, v) -> {
+                        .match("(ISIN:)?(?<isin>\\w{12})")
+                        .assign((t, v) -> {
                             t.setSecurity(getOrCreateSecurity(v));
                             t.setShares(asShares(v.get("shares")));
                         })
                         
                         .section("amount", "currency")//
-                        .match("NR. POSITION SUMME") //
-                        .match("1 Kurswert .*") //
-                        .match("SUMME (?<amount>[\\d+,.]*) (?<currency>\\w{3})") //
+                        .match("NR. POSITION (SUMME|BETRAG)") //
+                        .match("\\d+ Kurswert .*") //
+                        .match("(SUMME|GESAMT) (?<amount>[\\d+,.]*) (?<currency>\\w{3})") //
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
