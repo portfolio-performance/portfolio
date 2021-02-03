@@ -670,8 +670,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                             return t;
                         })
 
-                        .section("wkn", "date").optional()
-                        .match("^.*Verwahrentgelt .*, WKN (?<wkn>\\S+) (?<date>\\d+.\\d+.\\d{4}).*$") //
+                        .section("name", "wkn", "date").optional()
+                        .match("^.*Verwahrentgelt (?<name>.*), WKN (?<wkn>\\S+) (?<date>\\d+.\\d+.\\d{4}).*$") //
                         .assign((t, v) -> {
                             v.put("wkn", stripBlanks(v.get("wkn")));
                             t.setSecurity(getOrCreateSecurity(v));
@@ -679,7 +679,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("currency", "amount")
-                        .match("^.* Buchung von (?<amount>\\d+,\\d+) (?<currency>\\w+) .*$") //
+                        .match("^.* (Buchung|Höhe) von (?<amount>\\d+,\\d+) (?<currency>\\w+).*$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(stripBlanks(v.get("amount"))));
