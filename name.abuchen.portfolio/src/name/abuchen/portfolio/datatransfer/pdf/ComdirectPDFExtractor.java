@@ -727,7 +727,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
             
             // DE04 2004 1133 1234 5678 90   EUR       04.12.2020         EUR             100,00 
             .section("date", "amount", "currency")
-            .match("^([A-Za-z]{2}[0-9]{2}[0-9\s]{11,30})\\s+([\\w]{3})\\s+(?<date>\\d+.\\d+.\\d{4})\\s+(?<currency>[\\w]{3})\\s+(?<amount>[\\d.-]+,\\d+).*")
+            .match("^([A-Za-z]{2}[0-9]{2}[0-9\\s]{11,30})\\s+([\\w]{3})\\s+(?<date>\\d+.\\d+.\\d{4})\\s+(?<currency>[\\w]{3})\\s+(?<amount>[\\d.-]+,\\d+).*")
             .assign((t, v) -> {
                 t.setDateTime(asDate(v.get("date")));
                 t.setAmount(asAmount(v.get("amount")));
