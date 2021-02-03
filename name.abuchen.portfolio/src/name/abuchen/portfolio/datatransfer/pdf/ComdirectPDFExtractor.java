@@ -41,6 +41,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
         addVorabsteuerTransaction();
         addDividendTransactionFromSteuermitteilungPDF();
         addFeesFromVerwahrentgeltPDF();
+        addInterestOnSecuritiesTransaction();
     }
 
     @SuppressWarnings("nls")
@@ -685,6 +686,55 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(TransactionItem::new));
+    }
+
+    @SuppressWarnings("nls")
+    private void addInterestOnSecuritiesTransaction()
+    {
+        DocumentType type = new DocumentType("Abrechnung Zinsgutschrift");
+        this.addDocumentTyp(type);
+
+        Block block = new Block(".*G *u *t *s *c *h *r *i *f *t *f *ä *l *l *i *g *e *r *W *e *r *t *p *a *p *i *e *r *- *E *r *t *r *ä *g *e *");
+        type.addBlock(block);
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        
+        pdfTransaction.subject(() -> {
+            AccountTransaction transaction = new AccountTransaction();
+            transaction.setType(AccountTransaction.Type.DIVIDENDS);
+            return transaction;
+        });
+        
+        block.set(pdfTransaction);
+        
+        pdfTransaction
+
+            // Zinsgutschrift                                                                     
+            // Depotbestand             Zinssatz     Wertpapier-Bezeichnung               WKN/ISIN
+            // p e  r  0 3. 1  2 .2  0 20            v  a r ia  b el       SA N H A  G m b  H &   C o.  K  G                     A 1 T NA  7
+            .section("name", "isin", "wkn", "shares", "text")
+            .match(".*(?<text>Zins.*) .*")
+            .match("^(\\w+) .* ([\\w]{3}\\/[\\w]{4}).*")
+            .match("^(\\w\\s\\w\\s+\\w)\\s{2}(\\w.*)\\s{5,}(\\w.*)\\s{5,}(?<name>\\w.*)\\s{5,}(?<wkn>\\w.*)$")
+            .match(".*(\\w.*)\\s{5,}(?<shares>\\w.*)\\s{5,}\\w.*\\s{5,}(?<isin>\\w.*).*")
+            .assign((t, v) -> {
+                v.put("isin", stripBlanks(v.get("isin")));
+                v.put("wkn", stripBlanks(v.get("wkn")));
+                v.put("name", stripBlanks(v.get("name")));
+                t.setNote(v.get("text"));
+                t.setSecurity(getOrCreateSecurity(v));
+                t.setShares(asShares(stripBlanks(v.get("shares"))));
+            })
+            
+            // DE04 2004 1133 1234 5678 90   EUR       04.12.2020         EUR             100,00 
+            .section("date", "amount", "currency")
+            .match("^([A-Za-z]{2}[0-9]{2}[0-9\\s]{11,30})\\s+([\\w]{3})\\s+(?<date>\\d+.\\d+.\\d{4})\\s+(?<currency>[\\w]{3})\\s+(?<amount>[\\d.-]+,\\d+).*")
+            .assign((t, v) -> {
+                t.setDateTime(asDate(v.get("date")));
+                t.setAmount(asAmount(v.get("amount")));
+                t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+            })
+
+            .wrap(TransactionItem::new);
     }
 
     @Override

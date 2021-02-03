@@ -1,0 +1,45 @@
+PDF Autor: 'HAVI Solutions GmbH & Co. KG, phg'
+PDFBox Version: 1.8.16
+-----------------------------------------
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+25449 Quickborn
+                                                                                                    
+                                                  
+                                                                      
+                                                                      
+                                                                      
+                   
+                        
+       
+                       
+Depotnr.:    1234567890
+     10288 010 BLZ:        200 411 33 
+Herrn                              
+                             
+Vorname Nachname                 
+                             
+                             
+                                   
+Teststr. 123                                                          
+                             
+12345 Musterdorf
+04.12.2020
+ G u t s c h  ri f t fä  ll ig  e r W  e r t p a p i e r -E  r tr ä g e                                                                   
+Zinsgutschrift                                                                     
+Depotbestand             Zinssatz     Wertpapier-Bezeichnung               WKN/ISIN
+p e  r  0 3. 1  2 .2  0 20            v  a r ia  b el       SA N H A  G m b  H &   C o.  K  G                     A 1 T NA  7
+E U R             5. 0 0  0 ,0 0 0                 ST  Z- A n l e  ih e  v  .2  0 1 3 ( 2 3 / 2 6)         D  E0  00  A1 T N A 7 0 
+                                      Zinstermin: 04JD                             
+                                      Emissionsland: DEUTSCHLAND                   
+2,00       % Zinsen zahlbar: 04.12.2020                                            
+                         Abrechnung Zinsgutschrift                                 
+Bruttobetrag:                                              EUR             100,00  
+Verrechnung über Konto (IBAN)           Valuta       Zu Ihren Gunsten vor Steuern  
+DE04 2004 1133 1234 5678 90   EUR       04.12.2020         EUR             100,00  
+Information zur steuerlichen Behandlung dieses Geschäftsvorganges und den auf      
+Ihrem Konto gebuchten Endbetrag finden Sie auf der separaten Steuermitteilung      
+(Referenz-Nr. 25IG6U55RA000010).                                                   
+Ihre comdirect                                                                     
+                                                                                   
+*Diese Abrechnung wird von der Bank nicht unterschrieben                           
+DD762/11/09
