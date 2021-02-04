@@ -1,0 +1,38 @@
+PDF Autor: 'LGT Bank AG'
+PDFBox Version: 1.8.16
+-----------------------------------------
+LGT Bank AG
+Herrengasse 12, FL-9490 Vaduz
+Tel. +423 235 11 22
+info@lgt.com, www.lgt.li, BIC BLFLLI2X
+HR Nr.: 1122356-7, Sitz: 9490 Vaduz, MWST-Nr. 50119
+UID: CHE-260.887.880
+Securities dealer no. 1023228
+Herr
+Hans Müller
+Musterallee 1
+12345 Buxtehude
+DEUTSCHLAND 1 / 1
+Vaduz, 14. April 2020
+ 
+Abrechnung Kauf Portfolio: 0037156.008
+Auftragsnummer: 262697612 Kundenportfolio
+Kunde: Hans Müller
+Titel A.P. Moeller - Maersk A/S
+Namen- und Inhaber-Aktien -B-
+ISIN DK0010244508
+Valorennummer 906020
+Wertpapierkennnummer 861837
+Abschlussdatum 14.04.2020 09:00:02
+Börsenplatz NASDAQ Copenhagen
+Anzahl 12 Stück
+Kurs DKK 6'732.00
+Kurswert DKK 80'784.00
+Eidg. Umsatzabgabe  DKK 121.19
+Courtage  DKK 1'534.90
+Broker Kommission  DKK 12.12
+Belastung DKK Konto 0037156.021 DKK 82'452.21
+Valuta 16.04.2020
+Wir haben die Titel in das oben genannte Depot eingebucht.
+Die Gutschrift im oben erwähnten Depot erfolgt vorbehaltlich der effektiven Lieferung.
+0037156 13E T VA I TRD1001 50784613 9:32 14.04.2020 %Media:XML-A4H

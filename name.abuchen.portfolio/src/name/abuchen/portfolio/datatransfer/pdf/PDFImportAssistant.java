@@ -52,6 +52,7 @@ public class PDFImportAssistant
         extractors.add(new INGDiBaExtractor(client));
         extractors.add(new JustTradePDFExtractor(client));
         extractors.add(new MLPBankingAGPDFExtractor(client));
+        extractors.add(new LGTBankPDFExtractor(client));
         extractors.add(new OnvistaPDFExtractor(client));
         extractors.add(new PostfinancePDFExtractor(client));
         extractors.add(new QuirionPDFExtractor(client));
