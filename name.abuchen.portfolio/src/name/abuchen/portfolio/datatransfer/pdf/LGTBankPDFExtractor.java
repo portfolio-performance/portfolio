@@ -85,7 +85,6 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
             .section("currency", "amount")
             .match("^(Belastung.* Konto) .* (?<currency>[\\w]{3}) (?<amount>[\\d('|.)]+(,|.)\\d+)$")
             .assign((t, v) -> {
-                //t.setSecurity(getOrCreateSecurity(v));
                 t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 t.setAmount(asAmount(ConvertAmount(v.get("amount"))));
             })
