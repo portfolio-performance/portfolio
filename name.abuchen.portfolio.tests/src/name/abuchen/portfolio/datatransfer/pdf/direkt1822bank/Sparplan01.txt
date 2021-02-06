@@ -1,0 +1,34 @@
+PDF author: '' 
+PDFBox Version: 1.8.13
+-----------------------------------------
+Postfach · 60255 Frankfurt am Main
+Depotnummer 800xxxxxxx
+Kundennummer 72xxxxx
+Vorname Nachname
+Auftragsnummer 39xxxx/34.00
+Herrn Datum 06.12.2017
+Vorname Nachname Ihr Berater 1822direkt
+Musterstr. 1 Telefon 069 94170-0
+xxxxx Musterstadt Rechnungsnummer W02158-0000xxxxxx/17
+Umsatzsteuer-ID DE11410xxxx
+Wertpapier Abrechnung Ausgabe Investmentfonds
+Auftrag vom 05.12.2017 00:15:28 Uhr
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 0,9619 COMSTA.-MSCI PACIFIC TRN U.ETF LU0392495023 (ETF114)
+INHABER-ANTEILE I O.N.
+Börse Außerbörslich (gemäß Weisung)
+Schlusstag 05.12.2017 Auftraggeber Nachname, Vorname
+Ausführungskurs 51,979 EUR Auftragserteilung sonstige
+Girosammelverw. mehrere Sammelurkunden - kein Stückeausdruck -
+Kurswert 50,00- EUR
+Ausmachender Betrag 50,00- EUR
+Den Gegenwert buchen wir mit Valuta 07.12.2017 zu Lasten des Kontos 12xxxxxxxx
+(IBAN DE84 5005 0201 12xx xxxx xx), BLZ 50050201 (BIC HELADEF1822).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Gegenpartei bei diesem Geschäft war BÖRSE QUOTRIX
+ABR. OHNE AUSGABEAUFSCHLAG
+IHR ETF-SPARPLAN NR. 5
+Für das Geschäft wurde keine Anlageberatung erbracht.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+2158.12062133.00046xxxxxx

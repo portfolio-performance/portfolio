@@ -43,6 +43,7 @@ public class PDFImportAssistant
         extractors.add(new DABPDFExtractor(client));
         extractors.add(new DegiroPDFExtractor(client));
         extractors.add(new DeutscheBankPDFExtractor(client));
+        extractors.add(new Direkt1822BankPDFExtractor(client));
         extractors.add(new DkbPDFExtractor(client));
         extractors.add(new DreiBankenEDVPDFExtractor(client));
         extractors.add(new DZBankPDFExtractor(client));
