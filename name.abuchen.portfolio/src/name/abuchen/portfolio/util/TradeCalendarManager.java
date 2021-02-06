@@ -6,12 +6,15 @@ import static name.abuchen.portfolio.util.HolidayName.BERCHTOLDSTAG;
 import static name.abuchen.portfolio.util.HolidayName.BOXING_DAY;
 import static name.abuchen.portfolio.util.HolidayName.CHRISTMAS;
 import static name.abuchen.portfolio.util.HolidayName.CHRISTMAS_EVE;
+import static name.abuchen.portfolio.util.HolidayName.CHRISTMAS_EVE_RUSSIA;
+import static name.abuchen.portfolio.util.HolidayName.DEFENDER_OF_THE_FATHERLAND_DAY;
 import static name.abuchen.portfolio.util.HolidayName.EARLY_MAY_BANK_HOLIDAY;
 import static name.abuchen.portfolio.util.HolidayName.EASTER_MONDAY;
 import static name.abuchen.portfolio.util.HolidayName.FIRST_CHRISTMAS_DAY;
 import static name.abuchen.portfolio.util.HolidayName.FUNERAL_OF_PRESIDENT_REAGAN;
 import static name.abuchen.portfolio.util.HolidayName.GOOD_FRIDAY;
 import static name.abuchen.portfolio.util.HolidayName.HURRICANE_SANDY;
+import static name.abuchen.portfolio.util.HolidayName.INTERNATION_WOMENS_DAY;
 import static name.abuchen.portfolio.util.HolidayName.INDEPENDENCE;
 import static name.abuchen.portfolio.util.HolidayName.LABOUR_DAY;
 import static name.abuchen.portfolio.util.HolidayName.MARTIN_LUTHER_KING;
@@ -19,6 +22,7 @@ import static name.abuchen.portfolio.util.HolidayName.MEMORIAL;
 import static name.abuchen.portfolio.util.HolidayName.NATION_DAY;
 import static name.abuchen.portfolio.util.HolidayName.NEW_YEAR;
 import static name.abuchen.portfolio.util.HolidayName.NEW_YEARS_EVE;
+import static name.abuchen.portfolio.util.HolidayName.NEW_YEAR_HOLIDAY;
 import static name.abuchen.portfolio.util.HolidayName.REFORMATION_DAY;
 import static name.abuchen.portfolio.util.HolidayName.REMEMBERANCE_OF_PRESIDENT_FORD;
 import static name.abuchen.portfolio.util.HolidayName.SECOND_CHRISTMAS_DAY;
@@ -26,6 +30,8 @@ import static name.abuchen.portfolio.util.HolidayName.SPRING_MAY_BANK_HOLIDAY;
 import static name.abuchen.portfolio.util.HolidayName.SUMMER_BANK_HOLIDAY;
 import static name.abuchen.portfolio.util.HolidayName.THANKSGIVING;
 import static name.abuchen.portfolio.util.HolidayName.UNIFICATION_GERMANY;
+import static name.abuchen.portfolio.util.HolidayName.UNITY_DAY;
+import static name.abuchen.portfolio.util.HolidayName.VICTORY_DAY;
 import static name.abuchen.portfolio.util.HolidayName.WASHINGTONS_BIRTHDAY;
 import static name.abuchen.portfolio.util.HolidayName.WHIT_MONDAY;
 import static name.abuchen.portfolio.util.HolidayType.easter;
@@ -141,6 +147,37 @@ public class TradeCalendarManager
         tc.add(fixed(FIRST_CHRISTMAS_DAY, Month.DECEMBER, 25));
         tc.add(fixed(SECOND_CHRISTMAS_DAY, Month.DECEMBER, 26));
         tc.add(fixed(NEW_YEARS_EVE, Month.DECEMBER, 31));
+        CACHE.put(tc.getCode(), tc);
+        
+        // see Vienna Stock Exchange trading days on their official website:
+        // https://www.wienerborse.at/handel/handelsinformationen/handelskalender/
+        tc = new TradeCalendar("vse", Messages.LabelTradeCalendarVSE); //$NON-NLS-1$
+        tc.add(fixed(NEW_YEAR, Month.JANUARY, 1));
+        tc.add(easter(GOOD_FRIDAY, -2));
+        tc.add(easter(EASTER_MONDAY, 1));
+        tc.add(easter(WHIT_MONDAY, 50));
+        tc.add(fixed(NATION_DAY, Month.OCTOBER, 26));
+        tc.add(fixed(CHRISTMAS_EVE, Month.DECEMBER, 24));
+        tc.add(fixed(NEW_YEARS_EVE, Month.DECEMBER, 31));
+        CACHE.put(tc.getCode(), tc);
+        
+        // see Moscow Exchange trading days on their official website:
+        // https://www.moex.com/s371
+        // https://de.wikipedia.org/wiki/Feiertage_in_Russland
+        // Die offizielle Regelung in Russland lautet: Wenn ein gesetzlicher Feiertag auf einen Samstag oder Sonntag fällt, wird der Feiertag auf einen Arbeitstag verlegt.
+        tc = new TradeCalendar("MICEX-RTS", Messages.LabelTradeCalendarMICEXRTS); //$NON-NLS-1$
+        tc.add(fixed(NEW_YEAR, Month.JANUARY, 1));
+        tc.add(fixed(NEW_YEAR_HOLIDAY, Month.JANUARY, 2));
+        tc.add(fixed(NEW_YEAR_HOLIDAY, Month.JANUARY, 3));
+        tc.add(fixed(NEW_YEAR_HOLIDAY, Month.JANUARY, 4));
+        tc.add(fixed(NEW_YEAR_HOLIDAY, Month.JANUARY, 5));
+        tc.add(fixed(CHRISTMAS_EVE_RUSSIA, Month.JANUARY, 7));
+        tc.add(fixed(DEFENDER_OF_THE_FATHERLAND_DAY, Month.FEBRUARY, 23));
+        tc.add(fixed(INTERNATION_WOMENS_DAY, Month.MARCH, 8).moveIf(DayOfWeek.SATURDAY, 2).moveIf(DayOfWeek.SUNDAY, 1));
+        tc.add(fixed(LABOUR_DAY, Month.MAY, 1).moveIf(DayOfWeek.SATURDAY, 2).moveIf(DayOfWeek.SUNDAY, 1));
+        tc.add(fixed(VICTORY_DAY, Month.MAY, 9).moveIf(DayOfWeek.SATURDAY, 2).moveIf(DayOfWeek.SUNDAY, 1));
+        tc.add(fixed(NATION_DAY, Month.JUNE, 12).moveIf(DayOfWeek.SATURDAY, 2).moveIf(DayOfWeek.SUNDAY, 1));
+        tc.add(fixed(UNITY_DAY, Month.NOVEMBER, 4).moveIf(DayOfWeek.SATURDAY, 2).moveIf(DayOfWeek.SUNDAY, 1));
         CACHE.put(tc.getCode(), tc);
         
         tc = new TradeCalendar(TradeCalendar.EMPTY_CODE, Messages.LabelTradeCalendarEmpty);
