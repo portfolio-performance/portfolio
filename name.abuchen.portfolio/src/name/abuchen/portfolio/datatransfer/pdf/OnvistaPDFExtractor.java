@@ -131,20 +131,18 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                                                 BigDecimal exchangeRate = asExchangeRate(
                                                                                 v.get("exchangeRate"));
                                                                 BigDecimal reverseRate = BigDecimal.ONE.divide(
-                                                                                exchangeRate, 10,
-                                                                                RoundingMode.HALF_DOWN);
+                                                                                exchangeRate, 10, RoundingMode.HALF_UP);
 
                                                                 long fxAmount = exchangeRate.multiply(BigDecimal
                                                                                 .valueOf(t.getPortfolioTransaction()
                                                                                                 .getAmount()))
-                                                                                .setScale(0, RoundingMode.HALF_DOWN)
+                                                                                .setScale(0, RoundingMode.HALF_UP)
                                                                                 .longValue();
 
                                                                 Unit grossValue = new Unit(Unit.Type.GROSS_VALUE,
                                                                                 t.getPortfolioTransaction()
                                                                                                 .getMonetaryAmount(),
-                                                                                Money.of(forex, fxAmount),
-                                                                                reverseRate);
+                                                                                Money.of(forex, fxAmount), reverseRate);
 
                                                                 t.getPortfolioTransaction().addUnit(grossValue);
                                                             }
@@ -231,20 +229,18 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                                                 BigDecimal exchangeRate = asExchangeRate(
                                                                                 v.get("exchangeRate"));
                                                                 BigDecimal reverseRate = BigDecimal.ONE.divide(
-                                                                                exchangeRate, 10,
-                                                                                RoundingMode.HALF_DOWN);
+                                                                                exchangeRate, 10, RoundingMode.HALF_UP);
 
                                                                 long fxAmount = exchangeRate.multiply(BigDecimal
                                                                                 .valueOf(t.getPortfolioTransaction()
                                                                                                 .getAmount()))
-                                                                                .setScale(0, RoundingMode.HALF_DOWN)
+                                                                                .setScale(0, RoundingMode.HALF_UP)
                                                                                 .longValue();
 
                                                                 Unit grossValue = new Unit(Unit.Type.GROSS_VALUE,
                                                                                 t.getPortfolioTransaction()
                                                                                                 .getMonetaryAmount(),
-                                                                                Money.of(forex, fxAmount),
-                                                                                reverseRate);
+                                                                                Money.of(forex, fxAmount), reverseRate);
 
                                                                 t.getPortfolioTransaction().addUnit(grossValue);
                                                             }
@@ -456,7 +452,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
                                                             long fxAmount = exchangeRate
                                                                             .multiply(BigDecimal.valueOf(t.getAmount()))
-                                                                            .setScale(0, RoundingMode.HALF_DOWN)
+                                                                            .setScale(0, RoundingMode.HALF_UP)
                                                                             .longValue();
 
                                                             Money forex = Money.of(asCurrencyCode(v.get("fxCurrency")),
@@ -465,11 +461,15 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                                             Unit unit = new Unit(Unit.Type.GROSS_VALUE,
                                                                             t.getMonetaryAmount(), forex,
                                                                             BigDecimal.ONE.divide(exchangeRate, 10,
-                                                                                            RoundingMode.HALF_DOWN));
-                                                            
-                                                            // add gross value unit only if currency code of
-                                                            // security actually matches
-                                                            if (unit.getForex().getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
+                                                                                            RoundingMode.HALF_UP));
+
+                                                            // add gross value
+                                                            // unit only if
+                                                            // currency code of
+                                                            // security actually
+                                                            // matches
+                                                            if (unit.getForex().getCurrencyCode()
+                                                                            .equals(t.getSecurity().getCurrencyCode()))
                                                                 t.addUnit(unit);
                                                         })
 
@@ -498,9 +498,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 Money currentTax = t.getUnitSum(Unit.Type.TAX);
                 
                 Money money = Money.of(t.getCurrencyCode(), BigDecimal.valueOf(tax.getAmount())
-                                .multiply(gv.getExchangeRate())
-                                .setScale(0, RoundingMode.HALF_DOWN)
-                                .longValue());
+                                .multiply(gv.getExchangeRate()).setScale(0, RoundingMode.HALF_UP).longValue());
 
                 t.addUnit(new Unit(Unit.Type.TAX, money, tax, gv.getExchangeRate()));
 
@@ -509,15 +507,13 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 t.removeUnit(grossValue.get());
 
                 Money grossValueWithTax = Money.of(gv.getAmount().getCurrencyCode(),
-                                                grossValue.get().getAmount().getAmount()
-                                                                + money.getAmount()
-                                                                + currentTax.getAmount());
-                Money grossValueWithTaxFx = Money.of(gv.getForex().getCurrencyCode(), 
-                                                BigDecimal.valueOf(grossValueWithTax.getAmount())
-                                                    .divide(gv.getExchangeRate(), 0, RoundingMode.HALF_DOWN)
-                                                    .longValue());
-                
-                t.addUnit(new Unit(Unit.Type.GROSS_VALUE, grossValueWithTax, grossValueWithTaxFx, gv.getExchangeRate()));
+                                grossValue.get().getAmount().getAmount() + money.getAmount() + currentTax.getAmount());
+                Money grossValueWithTaxFx = Money.of(gv.getForex().getCurrencyCode(),
+                                BigDecimal.valueOf(grossValueWithTax.getAmount())
+                                                .divide(gv.getExchangeRate(), 0, RoundingMode.HALF_UP).longValue());
+
+                t.addUnit(new Unit(Unit.Type.GROSS_VALUE, grossValueWithTax, grossValueWithTaxFx,
+                                gv.getExchangeRate()));
             }
             else if (type.getCurrentContext()
                             .containsKey(t.getCurrencyCode() + "/" + tax.getCurrencyCode()))
@@ -525,10 +521,8 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 BigDecimal exchangeRate = asExchangeRate(type.getCurrentContext()
                                 .get(t.getCurrencyCode() + "/" + tax.getCurrencyCode()));
 
-                Money money = Money.of(t.getCurrencyCode(),
-                                BigDecimal.valueOf(tax.getAmount())
-                                                .divide(exchangeRate, 0, RoundingMode.HALF_DOWN)
-                                                .longValue());
+                Money money = Money.of(t.getCurrencyCode(), BigDecimal.valueOf(tax.getAmount())
+                                .divide(exchangeRate, 0, RoundingMode.HALF_UP).longValue());
 
                 t.addUnit(new Unit(Unit.Type.TAX, money));
             }
@@ -1571,7 +1565,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                     Money forex = Money.of(currency, asAmount(v.get("fee")));
                     Money amount = Money.of(t.getPortfolioTransaction().getCurrencyCode(),
                                     gv.getExchangeRate().multiply(BigDecimal.valueOf(forex.getAmount()))
-                                                    .setScale(0, RoundingMode.HALF_DOWN).longValue());
+                                                    .setScale(0, RoundingMode.HALF_UP).longValue());
 
                     t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, amount, forex, gv.getExchangeRate()));
 
@@ -1739,7 +1733,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                 Money mTaxesFxInEUR = Money.of(asCurrencyCode(v.get("currency")),
                                                 asAmount(v.get("amountSum")));
                                 BigDecimal inverseRate = BigDecimal.valueOf(asAmount(v.get("amountSum")))
-                                                .divide(BigDecimal.valueOf(t.getAmount()), 10, RoundingMode.HALF_DOWN);
+                                                .divide(BigDecimal.valueOf(t.getAmount()), 10, RoundingMode.HALF_UP);
                                 t.addUnit(new Unit(Unit.Type.TAX, mTaxesFxInEUR, mTaxesFx, inverseRate));
                                 t.setAmount(asAmount(v.get("amountSum")));
                             }
