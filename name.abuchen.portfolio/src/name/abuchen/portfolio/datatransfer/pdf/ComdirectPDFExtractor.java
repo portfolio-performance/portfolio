@@ -41,7 +41,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
         addVorabsteuerTransaction();
         addDividendTransactionFromSteuermitteilungPDF();
         addFeesFromVerwahrentgeltPDF();
-        addInterestOnSecuritiesTransaction();
+        addInteresWithoutTaxOnSecuritiesTransaction();
+        addInteresWithTaxOnSecuritiesTransaction();
     }
 
     @SuppressWarnings("nls")
@@ -689,7 +690,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
     }
 
     @SuppressWarnings("nls")
-    private void addInterestOnSecuritiesTransaction()
+    private void addInteresWithoutTaxOnSecuritiesTransaction()
     {
         DocumentType type = new DocumentType("Abrechnung Zinsgutschrift");
         this.addDocumentTyp(type);
@@ -720,7 +721,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                 v.put("isin", stripBlanks(v.get("isin")));
                 v.put("wkn", stripBlanks(v.get("wkn")));
                 v.put("name", stripBlanks(v.get("name")));
-                t.setNote(v.get("text"));
+                t.setNote(v.get("text") + " " + v.get("name"));
                 t.setSecurity(getOrCreateSecurity(v));
                 t.setShares(asShares(stripBlanks(v.get("shares"))));
             })
@@ -735,6 +736,68 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
             })
 
             .wrap(TransactionItem::new);
+    }
+
+    @SuppressWarnings("nls")
+    private void addInteresWithTaxOnSecuritiesTransaction()
+    {
+        DocumentType type = new DocumentType("Steuerliche Behandlung: Zinsen vom .*");
+
+        this.addDocumentTyp(type);
+        Block block = new Block("^\\s*Steuerliche Behandlung: Zinsen.*", "^Die Gutschrift erfolgt mit Valuta .*");
+
+        type.addBlock(block);
+        block.set(new Transaction<AccountTransaction>()
+
+            .subject(() -> {
+                AccountTransaction t = new AccountTransaction();
+                t.setType(AccountTransaction.Type.DIVIDENDS);
+                return t;
+            })
+
+            .section("text", "wkn", "name", "isin", "shares").optional()
+            .match("^(Steuerliche Behandlung:)\\W+(?<text>.*)\\W .*")
+            .match("^([\\w+]{3})\\W*(?<shares>\\d[\\d\\.,]*)\\W+(?<name>.*),\\W*(WKN \\/ ISIN:)(?<wkn>.*)\\/(?<isin>.*)$")
+            .assign((t, v) -> {
+                v.put("isin", stripBlanks(v.get("isin")));
+                v.put("wkn", stripBlanks(v.get("wkn")));
+                t.setNote(v.get("text") + " " + v.get("name"));
+                t.setSecurity(getOrCreateSecurity(v));
+                t.setShares(asShares(stripBlanks(v.get("shares"))));
+            })
+
+            .section("currency", "amount")
+            .find("^\\s*(Z\\s*u\\s*I\\s*h\\s*r\\s*e\\s*n\\s*G\\s*u\\s*n\\s*s\\s*t\\s*e\\s*n\\s*n\\s*a\\s*c\\s*h\\s*S\\s*t\\s*e\\s*u\\s*e\\s*r\\s*n\\s*:)\\s*(?<currency>[A-Z\\s]*)\\s*(?<amount>[\\d\\.\\s]*,[\\d\\s]+).*")
+            .assign((t, v) -> {
+                t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                t.setAmount(asAmount(stripBlanks(v.get("amount"))));
+            })
+
+            .section("currency", "gross1", "gross2")
+            .match("^\\s*(Z\\s*u\\s*I\\s*h\\s*r\\s*e\\s*n\\s*G\\s*u\\s*n\\s*s\\s*t\\s*e\\s*n\\s*v\\s*o\\s*r\\s*S\\s*t\\s*e\\s*u\\s*e\\s*r\\s*n\\s*:)\\s*(?<currency>[A-Z\\s]*)\\s*(?<gross1>[\\d\\.\\s]*,[\\d\\s]+)")
+            .match("^\\s*(S\\s*t\\s*e\\s*u\\s*e\\s*r\\s*b\\s*e\\s*m\\s*e\\s*s\\s*s\\s*u\\s*n\\s*g\\s*s\\s*g\\s*r\\s*u\\s*n\\s*d\\s*l\\s*a\\s*g\\s*e\\s*(v\\s*o\\s*r\\s*V\\s*e\\s*r\\s*l\\s*u\\s*s\\s*t\\s*v\\s*e\\s*r\\s*r\\s*e\\s*c\\s*h\\s*n\\s*u\\s*n\\s*g)?)\\s*(\\(\\s*1\\s*\\))?\\s*(?<currency>[A-Z\\s]*)\\s*(?<gross2>[\\d\\.\\s]*,[\\d\\s]+)")
+            .assign((t, v) -> {
+                long amount = t.getAmount();
+                long gross1 = asAmount(stripBlanks(v.get("gross1")));
+                long gross2 = asAmount(stripBlanks(v.get("gross2")));
+                long tax = 0;
+
+                if (gross1 > gross2)
+                    // vor Steuern > Steuerbemessungsgrundlage
+                    tax = gross1 - amount;
+                else
+                    // vor Steuern < Steuerbemessungsgrundlage
+                    tax = gross2 - amount;
+
+                if (tax > 0)
+                    t.addUnit(new Unit(Unit.Type.TAX, Money.of(asCurrencyCode(v.get("currency")), tax)));
+            })
+
+            .section("date")
+            .match("^(Die Gutschrift erfolgt mit Valuta) (?<date>\\d+\\.\\d+\\.\\d{4}+).*")
+            .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+            .wrap(TransactionItem::new));
     }
 
     @Override
