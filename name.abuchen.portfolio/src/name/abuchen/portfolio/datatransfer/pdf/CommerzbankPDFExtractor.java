@@ -1,5 +1,9 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -19,9 +23,11 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
 
         addBankIdentifier("C O M M E R Z B A N K"); //$NON-NLS-1$
         addBankIdentifier("Commerzbank AG"); //$NON-NLS-1$
+        addBankIdentifier("COBADE"); //$NON-NLS-1$
 
         addBuyTransaction();
         addDividendTransaction();
+        addKontoauszugGiro();
     }
 
     private void addBuyTransaction()
@@ -181,6 +187,75 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                             // currency of the transaction
                             t.setSecurity(getOrCreateSecurity(v));
                             t.setShares(asShares(stripDots(stripBlanks(v.get("shares")))));
+                        })
+
+                        .wrap(TransactionItem::new));
+    }
+    
+    private void addKontoauszugGiro()
+    {
+        DocumentType type = new DocumentType("Kontoauszug", (context, lines) -> {
+            Pattern pCurrency = Pattern.compile("^(Kontowährung )(\\w{3}).*$");
+            // read the current context here
+            for (String line : lines)
+            {
+                Matcher m = pCurrency.matcher(line);
+                if (m.matches())
+                {
+                    context.put("currency", m.group(2).toUpperCase());
+                }
+            }
+            Pattern pYear = Pattern.compile("^(Kontoauszug vom)( \\d \\d . \\d \\d .)(?<year> \\d \\d \\d \\d)$");
+            // read the current context here
+            for (String line : lines)
+            {
+                Matcher m = pYear.matcher(line);
+                if (m.matches())
+                {
+                    // Read year
+                    context.put("year", stripBlanks(m.group(3)));
+                }
+            }
+        });
+        this.addDocumentTyp(type);
+
+        Block removalblock = new Block("^((?!A l t e r Kontostand)(?!Neuer Kontostand).*) \\d \\, \\d \\d( -)$");
+        type.addBlock(removalblock);
+        removalblock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction entry = new AccountTransaction();
+                            entry.setType(AccountTransaction.Type.REMOVAL);
+                            return entry;
+                        })
+
+                        .section("day", "month", "value")
+                        .match("^(.*)(?<day>(0 [1-9])|([1-2] [0-9])|(3 [0-1])) \\. (?<month>((0 [1-9])|(1 [0-2])) )(?<value>((\\. )?(\\d ){1,3})+\\, (\\d \\d))( \\-)$")
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+                            t.setDateTime(asDate(stripBlanks(v.get("day"))+"."+stripBlanks(v.get("month"))+"."+context.get("year")));     
+                            t.setAmount(asAmount(stripBlanks(v.get("value"))));
+                            t.setCurrencyCode(context.get("currency"));
+                        })
+
+                        .wrap(TransactionItem::new));
+        Block depositblock = new Block("^((?!A l t e r Kontostand)(?!Neuer Kontostand).*) \\d \\, \\d \\d$");
+        type.addBlock(depositblock);
+        depositblock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction entry = new AccountTransaction();
+                            entry.setType(AccountTransaction.Type.DEPOSIT);
+                            return entry;
+                        })
+
+                        .section("day", "month", "value")
+                        .match("^(.*)(?<day>(0 [1-9])|([1-2] [0-9])|(3 [0-1])) \\. (?<month>((0 [1-9])|(1 [0-2])) )(?<value>((\\. )?(\\d ){1,3})+\\, (\\d \\d))$")
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+                            t.setDateTime(asDate(stripBlanks(v.get("day"))+"."+stripBlanks(v.get("month"))+"."+context.get("year")));     
+                            t.setAmount(asAmount(stripBlanks(v.get("value"))));
+                            t.setCurrencyCode(context.get("currency"));
                         })
 
                         .wrap(TransactionItem::new));
