@@ -50,6 +50,7 @@
 		<unit id="org.eclipse.babel.nls_eclipse_nl.feature.group" version="4.17.0.v20201010020001"/>
 		<unit id="org.eclipse.babel.nls_eclipse_pt.feature.group" version="4.17.0.v20201010020001"/>
 		<unit id="org.eclipse.babel.nls_eclipse_fr.feature.group" version="4.17.0.v20201010020001"/>
+		<unit id="org.eclipse.babel.nls_eclipse_it.feature.group" version="4.17.0.v20201010020001"/>
 	</location>
 </locations>
 </target>
