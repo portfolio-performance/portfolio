@@ -418,7 +418,7 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
         }
 
         long shares = Math
-                        .round(availableAmount * Values.Share.factor() * Values.Quote.factorToMoney() / (double) price);
+                        .round((double) availableAmount * Values.Share.factor() * Values.Quote.factorToMoney() / price);
 
         if (account != null)
         {

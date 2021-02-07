@@ -73,6 +73,7 @@ import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
+import name.abuchen.portfolio.util.FormatHelper;
 import name.abuchen.portfolio.util.Interval;
 import name.abuchen.portfolio.util.TradeCalendar;
 import name.abuchen.portfolio.util.TradeCalendarManager;
@@ -380,7 +381,7 @@ public class SecuritiesChart
 
         toolTip.showToolTipOnlyForDatesInDataSeries(Messages.ColumnQuote);
 
-        toolTip.setValueFormat(new DecimalFormat(Values.Quote.pattern()));
+        toolTip.setDefaultValueFormat(new DecimalFormat(Values.Quote.pattern()));
         toolTip.addSeriesExclude(Messages.LabelChartDetailChartDevelopment + "Positive"); //$NON-NLS-1$
         toolTip.addSeriesExclude(Messages.LabelChartDetailChartDevelopment + "Negative"); //$NON-NLS-1$
         toolTip.addSeriesExclude(Messages.LabelChartDetailChartDevelopment + "Zero"); //$NON-NLS-1$
@@ -394,6 +395,28 @@ public class SecuritiesChart
         toolTip.addSeriesExclude(Messages.LabelChartDetailMarkerDividends + "1"); //$NON-NLS-1$
         toolTip.addSeriesExclude(Messages.LabelChartDetailMarkerDividends + "2"); //$NON-NLS-1$
         toolTip.addSeriesExclude(Messages.LabelChartDetailIndicatorBollingerBands);
+
+        int precision = FormatHelper.getCalculatedQuoteDisplayPrecision();
+        DecimalFormat calculatedFormat = new DecimalFormat(Values.CalculatedQuote.pattern());
+        calculatedFormat.setMinimumFractionDigits(precision);
+        calculatedFormat.setMaximumFractionDigits(precision);
+        for (String period : new String[] {
+                        Messages.LabelChartDetailMovingAverage_5days,
+                        Messages.LabelChartDetailMovingAverage_20days,
+                        Messages.LabelChartDetailMovingAverage_30days,
+                        Messages.LabelChartDetailMovingAverage_38days,
+                        Messages.LabelChartDetailMovingAverage_50days,
+                        Messages.LabelChartDetailMovingAverage_100days,
+                        Messages.LabelChartDetailMovingAverage_200days,
+        })
+        {
+            toolTip.overrideValueFormat(String.format("%s (%s)", Messages.LabelChartDetailMovingAverageEMA, period), calculatedFormat); //$NON-NLS-1$
+            toolTip.overrideValueFormat(String.format("%s (%s)", Messages.LabelChartDetailMovingAverageSMA, period), calculatedFormat); //$NON-NLS-1$
+        }
+        toolTip.overrideValueFormat(Messages.LabelChartDetailIndicatorBollingerBandsLower, calculatedFormat);
+        toolTip.overrideValueFormat(Messages.LabelChartDetailIndicatorBollingerBandsUpper, calculatedFormat);
+        toolTip.overrideValueFormat(Messages.LabelChartDetailMarkerPurchaseFIFO, calculatedFormat);
+        toolTip.overrideValueFormat(Messages.LabelChartDetailMarkerPurchaseMovingAverage, calculatedFormat);
 
         toolTip.addExtraInfo((composite, focus) -> {
             if (focus instanceof Date)

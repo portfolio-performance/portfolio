@@ -464,6 +464,7 @@ public class Messages extends NLS
     public static String LabelAccumulatedTaxes;
     public static String LabelAggregation;
     public static String LabelAggregationDaily;
+    public static String LabelAllCurrencies;
     public static String LabelAllFiles;
     public static String LabelAllSecurities;
     public static String LabelAllTrades;
@@ -817,6 +818,7 @@ public class Messages extends NLS
     public static String MsgDeletionNotPossible;
     public static String MsgDeletionNotPossibleDetail;
     public static String MsgDialogInputRequired;
+    public static String MsgDialogNotAValidCurrency;
     public static String MsgDialogNotAValidISIN;
     public static String MsgEmbeddedBrowserError;
     public static String MsgErrorConvertedAmount;
@@ -836,6 +838,8 @@ public class Messages extends NLS
     public static String MsgIncorrectTotal;
     public static String MsgInfoChangingCurrencyNotPossible;
     public static String MsgInfoRetiredSecurities;
+    public static String MsgInvalidImage;
+    public static String MsgInvalidImageDetail;
     public static String MsgJavaVersionTooOldForLetsEncrypt;
     public static String MsgLoadingFile;
     public static String MsgMissingAccount;

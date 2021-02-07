@@ -428,4 +428,51 @@
             "label": "Orderinfo"
         }
     ]
+},
+{
+    "delimiter": ";",
+    "encoding": "UTF-8",
+    "isFirstLineHeader": true,
+    "label": "Finpension",
+    "skipLines": 0,
+    "target": "account-transaction",
+    "columns": [
+        {
+            "field": "date",
+            "format": "yyyy-MM-dd",
+            "label": "﻿Date"
+        },
+        {
+            "field": "type",
+            "format": "DEPOSIT=Deposit;FEES=Flat-rate administrative fee;BUY=Buy;SELL=Sell",
+            "label": "Category"
+        },
+        {
+            "field": "name",
+            "label": "Asset Name"
+        },
+        {
+            "field": "shares",
+            "format": "0,000.00",
+            "label": "Number of Shares"
+        },
+        {
+            "field": "currency",
+            "label": "Asset Currency"
+        },
+        {
+            "label": "Currency Rate"
+        },
+        {
+            "label": "Asset Price in CHF"
+        },
+        {
+            "field": "value",
+            "format": "0,000.00",
+            "label": "Cash Flow"
+        },
+        {
+            "label": "Balance"
+        }
+    ]
 }]

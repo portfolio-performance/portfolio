@@ -1,0 +1,58 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Deutsche Kreditbank, Taubenstr. 7-9, 10117 Berlin
+Max Mustermann
+Straße 1 IHR DISPOKREDIT EUR 500,00
+12345 Ort
+DKB-Cash
+Kontoauszug Nummer 002 / 2021 vom 05.01.2021 bis 04.02.2021
+Kontonummer 0000000000 / IBAN DE34 1203 0000 0000 0000 00
+Bu.Tag Wert Wir haben für Sie gebucht Belastung in EUR Gutschrift in EUR
+06.01. 06.01. Überweisung 1.000,00
+KRAKEN, PAYWARD LTD.
+KREF+HKCCS63499SVWZ+0000 0000 0000 0000
+kraken.comDATUM 06.01.2021, 16.34 UHR1.TAN 353305
+08.01. 08.01. Überweisung 20,00
+STADTVERWALTUNG BLA
+KREF+HKCCS70147SVWZ+Aktenzeichen.
+000.00.000000.0DATUM 07.01.2021, 18.11 UHR1.TAN
+900050
+18.01. 18.01. Zahlungseingang 0,01
+TRADE REPUBLIC BANK GMBH
+EREF+TRB-8350606870397269965-002160SVWZ+Deine
+PUK ist 000000.Bitte aufbewahren. Keine Ueberweisung
+an diese IBAN.
+28.01. 28.01. Dauerauftrag 91,00
+STADTWERKE Ort
+SVWZ+Kundennummer 000000 /Rechnungseinheit 000000
+29.01. 29.01. Lohn, Gehalt, Rente 1.234,56
+Firma AG
+EREF+2021012019031413000000028000014650SVWZ+G
+A/515349 VD01.21 Verdienstabrechnung 01.21/1 /
+Firma AG - HRD/SC -00000000+Fir-
+ma AG - HRD/SC - 0000 -
+01.02. 01.02. Dauerauftrag 1.000,00
+Max Mustermann
+SVWZ+Verwendungszweck
+01.02. 01.02. Dauerauftrag 999,00
+Max Mustermann
+SVWZ+Trade Republic
+01.02. 01.02. Kartenzahlung 43,86
+DANKE, IHR LIDL
+SVWZ+2021-01-29T17.25Debitk.0 2023-12ABWA+DANKE,
+IHR LIDL//Ort/DE
+DEUTSCHE KREDITBANK AG IBAN: DE34120300000000000000 Seite 1 von 2
+TAUBENSTRASSE 7-9 BIC: BYLADEM1001
+10117 BERLIN USt-ID: DE137178746
+Kontoauszug Nummer 002 / 2021 vom 05.01.2021 bis 04.02.2021
+Kontonummer 0000000000 / IBAN DE34 1203 0000 0000 0000 00
+ALTER KONTOSTAND 3.000,68 H EUR
+Gemäß dem Finanzkonten-Informationsaustauschgesetz (FKAustG) ermittelt die DKB AG die nach diesem Gesetz
+erforderlichen Daten zur steuerlichen Ansässigkeit und meldet diese, soweit aufgrund des Gesetzes
+erforderlich, jährlich an das Bundeszentralamt für Steuern (BZSt), das diese dann ggf. an zuständige
+ausländische Steuerbehörden weiterleitet. Gemeldet werden die erforderlichen Kundendaten, Steuer-
+Identifikationsnummer sowie Konto- und Depotnummern, Kontosalden sowie gutgeschriebene Kapitalerträge.
+DEUTSCHE KREDITBANK AG IBAN: DE34120300000000000000 Seite 2 von 2
+TAUBENSTRASSE 7-9 BIC: BYLADEM1001
+10117 BERLIN USt-ID: DE137178746

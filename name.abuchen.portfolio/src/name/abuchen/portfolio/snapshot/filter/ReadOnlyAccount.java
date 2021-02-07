@@ -44,4 +44,9 @@ public class ReadOnlyAccount extends Account
     {
         throw new UnsupportedOperationException();
     }
+
+    public static Account unwrap(Account account)
+    {
+        return account instanceof ReadOnlyAccount ? unwrap(((ReadOnlyAccount) account).source) : account;
+    }
 }

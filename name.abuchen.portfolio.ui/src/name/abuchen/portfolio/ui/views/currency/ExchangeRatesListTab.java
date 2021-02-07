@@ -161,7 +161,7 @@ public class ExchangeRatesListTab implements AbstractTabbedView.Tab
     protected void createBottomTable(Composite parent)
     {
         chart = new TimelineChart(parent);
-        chart.getToolTip().setValueFormat(new DecimalFormat("0.0000")); //$NON-NLS-1$
+        chart.getToolTip().setDefaultValueFormat(new DecimalFormat(Values.ExchangeRate.pattern()));
         refreshChart(null);
     }
 

@@ -64,10 +64,10 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private void addBuyTransaction()
     {
-        DocumentType type = new DocumentType("Wertpapierabrechnung Kauf");
+        DocumentType type = new DocumentType("Wertpapierabrechnung (Kauf|Bezug).*");
         this.addDocumentTyp(type);
 
-        Block block = new Block("Wertpapierabrechnung Kauf.*");
+        Block block = new Block("Wertpapierabrechnung (Kauf|Bezug).*");
         type.addBlock(block);
         block.set(new Transaction<BuySellEntry>()
 

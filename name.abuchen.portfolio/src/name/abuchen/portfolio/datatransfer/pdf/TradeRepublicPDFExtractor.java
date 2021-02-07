@@ -25,6 +25,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         addSellTransaction();
         addLiquidationTransaction();
         addAccountStatementTransaction();
+        addTaxStatementTransaction();
     }
 
     @SuppressWarnings("nls")
@@ -238,18 +239,19 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         })
     
                         .section("name", "isin", "shares") //
-                        .find("NR. BUCHUNG WERTPAPIER ANZAHL.*") //
-                        .match(".* Tilgung (?<name>.*) (?<shares>[\\d+,.]*) Stk.$") //
+                        .find("NR. BUCHUNG WERTPAPIER (ANZAHL|BETRAG).*") //
+                        .match("\\d+ Tilgung (?<name>.*) (?<shares>[\\d+,.]*) Stk.$") //
                         .match(".*") //
-                        .match("(ISIN:)?(?<isin>\\w{12})").assign((t, v) -> {
+                        .match("(ISIN:)?(?<isin>\\w{12})")
+                        .assign((t, v) -> {
                             t.setSecurity(getOrCreateSecurity(v));
                             t.setShares(asShares(v.get("shares")));
                         })
                         
                         .section("amount", "currency")//
-                        .match("NR. POSITION SUMME") //
-                        .match("1 Kurswert .*") //
-                        .match("SUMME (?<amount>[\\d+,.]*) (?<currency>\\w{3})") //
+                        .match("NR. POSITION (SUMME|BETRAG)") //
+                        .match("\\d+ Kurswert .*") //
+                        .match("(SUMME|GESAMT) (?<amount>[\\d+,.]*) (?<currency>\\w{3})") //
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -321,9 +323,9 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         });
         this.addDocumentTyp(type);
 
-        Block block = new Block("\\d+.\\d+.\\d{4}+ Accepted PayIn.*");
-        type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>()
+        Block payInBlock = new Block("\\d+.\\d+.\\d{4}+ Accepted PayIn.*");
+        type.addBlock(payInBlock);
+        payInBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
                             AccountTransaction t = new AccountTransaction();
@@ -340,6 +342,71 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(TransactionItem::new));
+
+        Block taxRefundBlock = new Block("\\d+.\\d+.\\d{4}+ Steueroptimierung.*");
+        type.addBlock(taxRefundBlock);
+        taxRefundBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction t = new AccountTransaction();
+                            t.setType(AccountTransaction.Type.TAX_REFUND);
+                            return t;
+                        })
+
+                        .section("date", "amount")
+                        .match("(?<date>\\d+\\.\\d+\\.\\d{4}|\\d{4}-\\d+-\\d+) Steueroptimierung null \\d{16} (?<amount>[\\d+,.]*)")
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("currency")));
+                        }).wrap(TransactionItem::new));
+    }
+    
+    @SuppressWarnings("nls")
+    private void addTaxStatementTransaction()
+    {
+        DocumentType type = new DocumentType("STEUERABRECHNUNG");
+        this.addDocumentTyp(type);
+
+        Block taxBlock = new Block("Kapitalertragsteuer Optimierung.*");
+        type.addBlock(taxBlock);
+        taxBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction t = new AccountTransaction();
+                            t.setType(AccountTransaction.Type.TAX_REFUND);
+                            return t;
+                        })
+
+                        .section("tax", "currency", "date")
+                        .match("Kapitalertragsteuer Optimierung (?<tax>[\\d+,.]*) (?<currency>\\w{3}+)")
+                        .match("VERRECHNUNGSKONTO VALUTA BETRAG")
+                        .match(".* (?<date>\\d+\\.\\d+\\.\\d{4}|\\d{4}-\\d+-\\d+) ([\\d+,.]*)")
+                        .assign((t, v) -> {
+                            t.setAmount(asAmount(v.get("tax")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setDateTime(asDate(v.get("date")));
+                        })
+
+                        .section("tax", "currency", "date")
+                        .match("Solidaritätszuschlag Optimierung (?<tax>[\\d+,.]*) (?<currency>\\w{3}+)")
+                        .match("VERRECHNUNGSKONTO VALUTA BETRAG")
+                        .match(".* (?<date>\\d+\\.\\d+\\.\\d{4}|\\d{4}-\\d+-\\d+) ([\\d+,.]*)")
+                        .assign((t, v) -> {
+                            t.setAmount(t.getAmount() + asAmount(v.get("tax")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setDateTime(asDate(v.get("date")));
+                        })
+
+                        .section("tax", "currency", "date").optional()
+                        .match("Kirchensteuer Optimierung (?<tax>[\\d+,.]*) (?<currency>\\w{3}+)")
+                        .match("VERRECHNUNGSKONTO VALUTA BETRAG")
+                        .match(".* (?<date>\\d+\\.\\d+\\.\\d{4}|\\d{4}-\\d+-\\d+) ([\\d+,.]*)")
+                        .assign((t, v) -> {
+                            t.setAmount(t.getAmount() + asAmount(v.get("tax")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setDateTime(asDate(v.get("date")));
+                        }).wrap(TransactionItem::new));
     }
 
     @Override
