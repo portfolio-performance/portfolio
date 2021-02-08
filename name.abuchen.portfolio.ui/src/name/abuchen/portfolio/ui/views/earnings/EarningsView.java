@@ -35,6 +35,8 @@ public class EarningsView extends AbstractFinanceView
     private static final String KEY_YEAR = EarningsView.class.getSimpleName() + "-year"; //$NON-NLS-1$
     private static final String KEY_MODE = EarningsView.class.getSimpleName() + "-mode"; //$NON-NLS-1$
     private static final String KEY_USE_GROSS_VALUE = EarningsView.class.getSimpleName() + "-use-gross-value"; //$NON-NLS-1$
+    private static final String KEY_USE_CONSOLIDATE_RETIRED = EarningsView.class.getSimpleName()
+                    + "-use-consolidate-retired"; //$NON-NLS-1$
 
     @Inject
     private Client client;
@@ -62,6 +64,7 @@ public class EarningsView extends AbstractFinanceView
 
         EarningsViewModel.Mode mode = EarningsViewModel.Mode.ALL;
         String prefMode = preferences.getString(KEY_MODE);
+
         if (prefMode != null && !prefMode.isEmpty())
         {
             try
@@ -75,13 +78,15 @@ public class EarningsView extends AbstractFinanceView
         }
 
         boolean useGrossValue = preferences.getBoolean(KEY_USE_GROSS_VALUE);
+        boolean useConsolidateRetired = preferences.getBoolean(KEY_USE_CONSOLIDATE_RETIRED);
 
-        model.configure(year, mode, useGrossValue);
+        model.configure(year, mode, useGrossValue, useConsolidateRetired);
 
         model.addUpdateListener(() -> {
             preferences.setValue(KEY_YEAR, model.getStartYear());
             preferences.setValue(KEY_MODE, model.getMode().name());
             preferences.setValue(KEY_USE_GROSS_VALUE, model.usesGrossValue());
+            preferences.setValue(KEY_USE_CONSOLIDATE_RETIRED, model.usesConsolidateRetired());
         });
     }
 
@@ -149,7 +154,7 @@ public class EarningsView extends AbstractFinanceView
         }));
 
         toolBar.add(new DropDown(Messages.MenuConfigureView, Images.CONFIG, SWT.NONE, manager -> {
-            
+
             EnumSet<Mode> supportGrossValue = EnumSet.of(Mode.DIVIDENDS, Mode.INTEREST, Mode.EARNINGS);
             if (supportGrossValue.contains(model.getMode()))
             {
@@ -158,6 +163,11 @@ public class EarningsView extends AbstractFinanceView
                 action.setChecked(model.usesGrossValue());
                 manager.add(action);
             }
+
+            Action action = new SimpleAction(Messages.LabelEarningsUseConsolidateRetired,
+                            a -> model.setUseConsolidateRetired(!model.usesConsolidateRetired()));
+            action.setChecked(model.usesConsolidateRetired());
+            manager.add(action);
 
             EarningsTab tab = (EarningsTab) folder.getSelection().getData();
             if (tab != null)

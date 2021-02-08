@@ -83,7 +83,7 @@ public class EarningsPerYearMatrixTab extends EarningsPerMonthMatrixTab
             public Font getFont(Object element)
             {
                 InvestmentVehicle vehicle = ((EarningsViewModel.Line) element).getVehicle();
-                return vehicle != null ? null : boldFont;
+                return vehicle != null || ((EarningsViewModel.Line) element).getConsolidatedRetired() ? null : boldFont;
             }
         });
 
