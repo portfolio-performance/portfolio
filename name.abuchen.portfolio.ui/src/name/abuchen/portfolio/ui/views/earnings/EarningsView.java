@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.earnings;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.EnumSet;
 
 import javax.annotation.PostConstruct;
@@ -35,6 +36,11 @@ public class EarningsView extends AbstractFinanceView
     private static final String KEY_YEAR = EarningsView.class.getSimpleName() + "-year"; //$NON-NLS-1$
     private static final String KEY_MODE = EarningsView.class.getSimpleName() + "-mode"; //$NON-NLS-1$
     private static final String KEY_USE_GROSS_VALUE = EarningsView.class.getSimpleName() + "-use-gross-value"; //$NON-NLS-1$
+    private static final String KEY_USE_TRADE_VALUE = EarningsView.class.getSimpleName() + "-use-trade-value"; //$NON-NLS-1$
+    private static final String KEY_USE_CONSOLIDATE_RETIRED = EarningsView.class.getSimpleName()
+                    + "-use-consolidate-retired"; //$NON-NLS-1$
+
+    private ToolBarManager toolBarManagerIcon;
 
     @Inject
     private Client client;
@@ -62,6 +68,7 @@ public class EarningsView extends AbstractFinanceView
 
         EarningsViewModel.Mode mode = EarningsViewModel.Mode.ALL;
         String prefMode = preferences.getString(KEY_MODE);
+
         if (prefMode != null && !prefMode.isEmpty())
         {
             try
@@ -75,13 +82,17 @@ public class EarningsView extends AbstractFinanceView
         }
 
         boolean useGrossValue = preferences.getBoolean(KEY_USE_GROSS_VALUE);
+        boolean useTradeValue = preferences.getBoolean(KEY_USE_TRADE_VALUE);
+        boolean useConsolidateRetired = preferences.getBoolean(KEY_USE_CONSOLIDATE_RETIRED);
 
-        model.configure(year, mode, useGrossValue);
+        model.configure(year, mode, useGrossValue, useTradeValue, useConsolidateRetired);
 
         model.addUpdateListener(() -> {
             preferences.setValue(KEY_YEAR, model.getStartYear());
             preferences.setValue(KEY_MODE, model.getMode().name());
             preferences.setValue(KEY_USE_GROSS_VALUE, model.usesGrossValue());
+            preferences.setValue(KEY_USE_TRADE_VALUE, model.usesTradeValue());
+            preferences.setValue(KEY_USE_CONSOLIDATE_RETIRED, model.usesConsolidateRetired());
         });
     }
 
@@ -100,28 +111,33 @@ public class EarningsView extends AbstractFinanceView
     @Override
     protected void addViewButtons(ToolBarManager toolBarManager)
     {
+        toolBarManagerIcon = toolBarManager;
         for (EarningsViewModel.Mode mode : EarningsViewModel.Mode.values())
         {
             ActionContributionItem item = new ActionContributionItem( //
                             new SimpleAction(TextUtil.tooltip(mode.getLabel()), a -> {
                                 model.setMode(mode);
-                                updateIcons(toolBarManager);
+                                updateIcons();
                                 updateTitle(model.getMode().getLabel());
                             }));
             item.setMode(ActionContributionItem.MODE_FORCE_TEXT);
             toolBarManager.add(item);
         }
 
-        updateIcons(toolBarManager);
+        updateIcons();
     }
 
-    private void updateIcons(ToolBarManager toolBarManager)
+    private void updateIcons()
     {
         int index = 0;
-        for (IContributionItem item : toolBarManager.getItems())
+        model.getMode();
+        int indexTrade = Arrays.asList(Mode.values()).indexOf(Mode.TRADES);
+        for (IContributionItem item : toolBarManagerIcon.getItems())
         {
             Images image = index == model.getMode().ordinal() ? Images.VIEW_SELECTED : Images.VIEW;
             ((ActionContributionItem) item).getAction().setImageDescriptor(image.descriptor());
+            if (index == indexTrade)
+                ((ActionContributionItem) item).getAction().setEnabled(model.usesTradeValue());
             index++;
         }
     }
@@ -149,7 +165,7 @@ public class EarningsView extends AbstractFinanceView
         }));
 
         toolBar.add(new DropDown(Messages.MenuConfigureView, Images.CONFIG, SWT.NONE, manager -> {
-            
+
             EnumSet<Mode> supportGrossValue = EnumSet.of(Mode.DIVIDENDS, Mode.INTEREST, Mode.EARNINGS);
             if (supportGrossValue.contains(model.getMode()))
             {
@@ -158,6 +174,18 @@ public class EarningsView extends AbstractFinanceView
                 action.setChecked(model.usesGrossValue());
                 manager.add(action);
             }
+
+            Action action = new SimpleAction(Messages.LabelEarningsUseTradeProfitLoss, a -> {
+                model.setUseTradeValue(!model.usesTradeValue());
+                updateIcons();
+            });
+            action.setChecked(model.usesTradeValue());
+            manager.add(action);
+
+            action = new SimpleAction(Messages.LabelEarningsUseConsolidateRetired,
+                            a -> model.setUseConsolidateRetired(!model.usesConsolidateRetired()));
+            action.setChecked(model.usesConsolidateRetired());
+            manager.add(action);
 
             EarningsTab tab = (EarningsTab) folder.getSelection().getData();
             if (tab != null)

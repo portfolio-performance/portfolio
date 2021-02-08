@@ -198,14 +198,17 @@ public class EarningsPerMonthMatrixTab implements EarningsTab
             public String getText(Object element)
             {
                 InvestmentVehicle vehicle = ((EarningsViewModel.Line) element).getVehicle();
-                return vehicle != null ? vehicle.getName() : Messages.ColumnSum;
+                return vehicle != null ? vehicle.getName()
+                                : (((EarningsViewModel.Line) element).getConsolidatedRetired()
+                                                ? Messages.LabelEarningsConsolidateRetired
+                                                : Messages.ColumnSum);
             }
 
             @Override
             public Font getFont(Object element)
             {
                 InvestmentVehicle vehicle = ((EarningsViewModel.Line) element).getVehicle();
-                return vehicle != null ? null : boldFont;
+                return vehicle != null || ((EarningsViewModel.Line) element).getConsolidatedRetired() ? null : boldFont;
             }
         });
 
@@ -257,7 +260,7 @@ public class EarningsPerMonthMatrixTab implements EarningsTab
             public Font getFont(Object element)
             {
                 InvestmentVehicle vehicle = ((EarningsViewModel.Line) element).getVehicle();
-                return vehicle != null ? null : boldFont;
+                return vehicle != null || ((EarningsViewModel.Line) element).getConsolidatedRetired() ? null : boldFont;
             }
         });
 
@@ -300,7 +303,7 @@ public class EarningsPerMonthMatrixTab implements EarningsTab
             @Override
             public Font getFont(Object element)
             {
-                return boldFont;
+                return ((EarningsViewModel.Line) element).getConsolidatedRetired() ? null : boldFont;
             }
         });
 
