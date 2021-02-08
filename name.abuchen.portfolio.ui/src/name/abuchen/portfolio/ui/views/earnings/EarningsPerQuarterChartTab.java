@@ -84,8 +84,25 @@ public class EarningsPerQuarterChartTab extends AbstractChartTab
                 }
             });
 
-            Label l = new Label(container, SWT.NONE);
-            l.setText(Messages.ColumnSum);
+            if (model.usesConsolidateRetired())
+            {
+                Label lSumRetired = new Label(container, SWT.NONE);
+                lSumRetired.setText(Messages.LabelEarningsConsolidateRetired);
+
+                for (int m = quarter * 3; m < totalNoOfMonths; m += 12)
+                {
+                    int mLimit = m + 3;
+                    long value = 0;
+                    for (int mQuarter = m; mQuarter < mLimit && mQuarter < totalNoOfMonths; mQuarter += 1)
+                        value += model.getSumRetired().getValue(mQuarter);
+                    ColoredLabel cl = new ColoredLabel(container, SWT.RIGHT);
+                    cl.setText(Values.Amount.format(value));
+                    GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(cl);
+                }
+            }
+
+            Label lSum = new Label(container, SWT.NONE);
+            lSum.setText(Messages.ColumnSum);
 
             for (int m = quarter * 3; m < totalNoOfMonths; m += 12)
             {

@@ -310,7 +310,7 @@ public abstract class Values<E>
         }
     };
 
-    public static final Values<Double> Thousands = new Values<Double>("0.###k", 0) //$NON-NLS-1$
+    public static final Values<Double> Thousands = new Values<Double>("#,##0.00", 0) //$NON-NLS-1$
     {
         private ThreadLocal<DecimalFormat> numberFormatter = ThreadLocal // NOSONAR
                         .withInitial(() -> new DecimalFormat("#,##0.###")); //$NON-NLS-1$
@@ -318,7 +318,12 @@ public abstract class Values<E>
         @Override
         public String format(Double value)
         {
-            return numberFormatter.get().format(value / 1000) + "k"; //$NON-NLS-1$
+            if (value < 1000)
+                return numberFormatter.get().format(value); // $NON-NLS-1$
+            else if (value < 1000000)
+                return numberFormatter.get().format(value / 1000) + "k"; //$NON-NLS-1$
+            else
+                return numberFormatter.get().format(value / 1000000) + "m"; //$NON-NLS-1$
         }
     };
 
