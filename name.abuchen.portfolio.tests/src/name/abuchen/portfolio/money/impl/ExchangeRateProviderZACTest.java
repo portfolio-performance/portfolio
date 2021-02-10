@@ -32,27 +32,27 @@ public class ExchangeRateProviderZACTest
                         comparesEqualTo(BigDecimal.ONE.divide(new BigDecimal("17.8953"), 12, RoundingMode.HALF_DOWN)));
 
         // ZAR -> ZAC
-        ExchangeRateTimeSeries zar_zac = factory.getTimeSeries("GBX", "GBP");
+        ExchangeRateTimeSeries zar_zac = factory.getTimeSeries("ZAR", "ZAC");
         assertThat(zar_zac.lookupRate(LocalDate.now()).get().getValue(), comparesEqualTo(new BigDecimal("0.01")));
 
         // inverse of default ZAR -> ZAC
         ExchangeRateTimeSeries zac_zar = factory.getTimeSeries("ZAC", "ZAR");
         assertThat(zac_zar.lookupRate(LocalDate.now()).get().getValue(), comparesEqualTo(new BigDecimal(100.0)));
 
-        // ZAC -> EUR
+        // ZAC -> USD
         // default value EUR -> ZAR is 17.8953
         // default value EUR -> USD is 1.2104
         double calculatedRate = 0.01d * (1 / 17.8953d) * 1.2104d;
 
-        ExchangeRateTimeSeries zac_eur = factory.getTimeSeries("ZAC", "EUR");
-        assertThat(zac_eur.lookupRate(LocalDate.now()).get().getValue().doubleValue(),
+        ExchangeRateTimeSeries zac_usd = factory.getTimeSeries("ZAC", "USD");
+        assertThat(zac_usd.lookupRate(LocalDate.now()).get().getValue().doubleValue(),
                         closeTo(calculatedRate, 0.00000001));
 
-        // EUR -> ZAC
+        // USD -> ZAC
         calculatedRate = (1 / 1.2104d) * 17.8953 * 100;
 
-        ExchangeRateTimeSeries eur_zac = factory.getTimeSeries("EUR", "ZAC");
-        assertThat(eur_zac.lookupRate(LocalDate.now()).get().getValue().doubleValue(),
+        ExchangeRateTimeSeries usd_zac = factory.getTimeSeries("USD", "ZAC");
+        assertThat(usd_zac.lookupRate(LocalDate.now()).get().getValue().doubleValue(),
                         closeTo(calculatedRate, 0.00000001));
     }
 }
