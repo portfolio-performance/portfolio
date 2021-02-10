@@ -40,7 +40,7 @@ public class FixedExchangeRateProvider implements ExchangeRateProvider
         series.add(new FixedExchangeRateTimeSeries(this, 2, BigDecimal.valueOf(3.6725), CurrencyUnit.USD, "AED", LocalDate.of(1997, 11, 1))); //$NON-NLS-1$
         series.add(new FixedExchangeRateTimeSeries(this, 2, BigDecimal.valueOf(0.01), "GBX", "GBP")); //$NON-NLS-1$ //$NON-NLS-2$
         series.add(new FixedExchangeRateTimeSeries(this, 2, BigDecimal.valueOf(0.01), "ILA", "ILS")); //$NON-NLS-1$ //$NON-NLS-2$
-        series.add(new FixedExchangeRateTimeSeries(this, 2, BigDecimal.valueOf(0.01), "ZAC", "ZAR")); //$NON-NLS-1$ //$NON-NLS-2$
+        series.add(new FixedExchangeRateTimeSeries(this, 2, BigDecimal.valueOf(0.01), "ZAR", "ZAC")); //$NON-NLS-1$ //$NON-NLS-2$
         
         return series;
     }
