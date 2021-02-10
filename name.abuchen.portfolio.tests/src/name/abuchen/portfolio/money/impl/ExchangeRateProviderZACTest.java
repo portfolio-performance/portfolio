@@ -43,15 +43,15 @@ public class ExchangeRateProviderZACTest
         // default value EUR -> ZAR is 17.975
         double calculatedRate = 0.01d * (1 / 17.975d);
 
-        ExchangeRateTimeSeries zac_usd = factory.getTimeSeries("ZAC", "EUR");
-        assertThat(zac_usd.lookupRate(LocalDate.now()).get().getValue().doubleValue(),
+        ExchangeRateTimeSeries zac_eur = factory.getTimeSeries("ZAC", "EUR");
+        assertThat(zac_eur.lookupRate(LocalDate.now()).get().getValue().doubleValue(),
                         closeTo(calculatedRate, 0.00000001));
 
         // EUR -> ZAC
         calculatedRate = 17.975d * 100;
 
-        ExchangeRateTimeSeries usd_zac = factory.getTimeSeries("EUR", "ZAC");
-        assertThat(usd_zac.lookupRate(LocalDate.now()).get().getValue().doubleValue(),
+        ExchangeRateTimeSeries eur_zac = factory.getTimeSeries("EUR", "ZAC");
+        assertThat(eur_zac.lookupRate(LocalDate.now()).get().getValue().doubleValue(),
                         closeTo(calculatedRate, 0.00000001));
     }
 }
