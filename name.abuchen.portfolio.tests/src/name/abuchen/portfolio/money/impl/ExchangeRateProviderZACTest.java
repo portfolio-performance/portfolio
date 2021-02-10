@@ -22,7 +22,7 @@ public class ExchangeRateProviderZACTest
     {
         ExchangeRateProviderFactory factory = new ExchangeRateProviderFactory(new Client());
 
-        // default value EUR -> ZAR is 17.8953       
+        // default value EUR -> ZAR is 17.8953
         ExchangeRateTimeSeries eur_zar = factory.getTimeSeries("EUR", "ZAR");
         assertThat(eur_zar.lookupRate(LocalDate.now()).get().getValue(), comparesEqualTo(new BigDecimal("17.8953")));
 
@@ -35,24 +35,25 @@ public class ExchangeRateProviderZACTest
         ExchangeRateTimeSeries zar_zac = factory.getTimeSeries("ZAR", "ZAC");
         assertThat(zar_zac.lookupRate(LocalDate.now()).get().getValue(), comparesEqualTo(new BigDecimal("0.01")));
 
-        // inverse of default ZAR -> ZAC
+        // ZAC -> ZAR
         ExchangeRateTimeSeries zac_zar = factory.getTimeSeries("ZAC", "ZAR");
         assertThat(zac_zar.lookupRate(LocalDate.now()).get().getValue(), comparesEqualTo(new BigDecimal(100.0)));
 
-        // ZAC -> USD
+        // ZAR -> USD
         // default value EUR -> ZAR is 17.8953
-        // default value EUR -> USD is 1.2104
-        double calculatedRate = 0.01d * (1 / 17.8953d) * 1.2104d;
+        // default value EUR -> USD is 1.0836
+        double calculatedRate = 0.01d * (1 / 17.8953d) * 1.0836d;
 
-        ExchangeRateTimeSeries zac_usd = factory.getTimeSeries("ZAC", "USD");
-        assertThat(zac_usd.lookupRate(LocalDate.now()).get().getValue().doubleValue(),
+        ExchangeRateTimeSeries zar_usd = factory.getTimeSeries("ZAR", "USD");
+        assertThat(zar_usd.lookupRate(LocalDate.now()).get().getValue().doubleValue(),
                         closeTo(calculatedRate, 0.00000001));
 
-        // USD -> ZAC
-        calculatedRate = (1 / 1.2104d) * 17.8953 * 100;
+        // USD -> ZAR
+        calculatedRate = (1 / 1.0836d) * 17.8953d * 100;
 
-        ExchangeRateTimeSeries usd_zac = factory.getTimeSeries("USD", "ZAC");
-        assertThat(usd_zac.lookupRate(LocalDate.now()).get().getValue().doubleValue(),
+        ExchangeRateTimeSeries usd_zar = factory.getTimeSeries("USD", "ZAR");
+        assertThat(usd_zar.lookupRate(LocalDate.now()).get().getValue().doubleValue(),
                         closeTo(calculatedRate, 0.00000001));
+
     }
 }
