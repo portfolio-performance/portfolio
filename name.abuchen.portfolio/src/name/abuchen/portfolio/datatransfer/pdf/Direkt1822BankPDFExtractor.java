@@ -47,9 +47,9 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
         pdfTransaction.subject(() -> {
-            BuySellEntry entry = new BuySellEntry();
-            entry.setType(PortfolioTransaction.Type.BUY);
-            return entry;
+                BuySellEntry entry = new BuySellEntry();
+                entry.setType(PortfolioTransaction.Type.BUY);
+                return entry;
         });
 
         Block firstRelevantLine = new Block(".*Abrechnung Kauf.*");

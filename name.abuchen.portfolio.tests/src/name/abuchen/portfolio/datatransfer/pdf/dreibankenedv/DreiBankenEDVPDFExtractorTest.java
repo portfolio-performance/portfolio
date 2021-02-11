@@ -131,7 +131,7 @@ public class DreiBankenEDVPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.30))));
         assertThat(transaction.getShares(), is(Values.Share.factorize(4)));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-10T00:00")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-23T00:00")));
 
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.02))));
     }
@@ -156,7 +156,7 @@ public class DreiBankenEDVPDFExtractorTest
         assertThat(t.getSecurity().getIsin(), is("US3755581036"));
         assertThat(t.getSecurity().getCurrencyCode(), is(CurrencyUnit.EUR));
 
-        assertThat(t.getDateTime(), is(LocalDateTime.parse("2020-12-14T00:00")));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2020-12-30T00:00")));
         assertThat(t.getShares(), is(Values.Share.factorize(3)));
         assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.21))));
         assertThat(t.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.25 + 0.21))));
@@ -188,7 +188,7 @@ public class DreiBankenEDVPDFExtractorTest
         assertThat(t.getSecurity().getIsin(), is("US6802231042"));
         assertThat(t.getSecurity().getCurrencyCode(), is(CurrencyUnit.EUR));
 
-        assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-01-04T00:00")));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-01-15T00:00")));
         assertThat(t.getShares(), is(Values.Share.factorize(7)));
         assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.16))));
         assertThat(t.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.58))));
@@ -220,7 +220,7 @@ public class DreiBankenEDVPDFExtractorTest
         assertThat(t.getSecurity().getIsin(), is("US56035L1044"));
         assertThat(t.getSecurity().getCurrencyCode(), is(CurrencyUnit.EUR));
 
-        assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-01-04T00:00")));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-01-15T00:00")));
         assertThat(t.getShares(), is(Values.Share.factorize(6)));
         assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.73))));
         assertThat(t.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.28))));
@@ -252,7 +252,7 @@ public class DreiBankenEDVPDFExtractorTest
         assertThat(t.getSecurity().getIsin(), is("LU0675401409"));
         assertThat(t.getSecurity().getCurrencyCode(), is(CurrencyUnit.EUR));
 
-        assertThat(t.getDateTime(), is(LocalDateTime.parse("2020-12-09T00:00")));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2020-12-11T00:00")));
         assertThat(t.getShares(), is(Values.Share.factorize(6)));
         assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.32))));
         assertThat(t.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.12 + 0.02))));
