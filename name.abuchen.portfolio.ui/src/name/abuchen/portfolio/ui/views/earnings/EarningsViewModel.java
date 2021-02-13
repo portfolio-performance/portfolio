@@ -255,6 +255,8 @@ public class EarningsViewModel
     {
         List<Line> answer = new ArrayList<>();
         answer.addAll(lines);
+        if (useConsolidateRetired)
+            answer.add(sumRetired);
         answer.add(sum);
         return answer;
     }
