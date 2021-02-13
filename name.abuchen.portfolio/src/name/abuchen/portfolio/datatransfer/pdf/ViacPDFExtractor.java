@@ -356,7 +356,7 @@ public class ViacPDFExtractor extends SwissBasedPDFExtractor
 
                         .section("date", "amount", "currency") //
                         .find("Zins") //
-                        .match("Am (?<date>\\d+.\\d+.\\d{4}+) haben wir Ihrem Konto gutgeschrieben:") //
+                        .match("Am (?<date>\\d+.\\d+.\\d{4}+) haben wir (Ihrem Konto|Ihnen) gutgeschrieben:") //
                         .match("Zinsgutschrift: (?<currency>\\w{3}+) (?<amount>[\\d+',.]*)") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));

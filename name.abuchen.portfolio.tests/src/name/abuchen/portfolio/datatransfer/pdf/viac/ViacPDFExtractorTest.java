@@ -331,6 +331,31 @@ public class ViacPDFExtractorTest
     }
 
     @Test
+    public void testInterest03()
+    {
+        Client client = new Client();
+    
+        ViacPDFExtractor extractor = new ViacPDFExtractor(client);
+    
+        List<Exception> errors = new ArrayList<>();
+    
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ViacZins03.txt"), errors);
+    
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+    
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+    
+        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of("CHF", Values.Amount.factorize(0.19))));
+    
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-31T00:00")));
+    }
+
+    @Test
     public void testFees01()
     {
         Client client = new Client();
