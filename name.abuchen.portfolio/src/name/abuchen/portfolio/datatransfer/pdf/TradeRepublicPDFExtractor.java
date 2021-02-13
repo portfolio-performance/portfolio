@@ -26,7 +26,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         addLiquidationTransaction();
         addAccountStatementTransaction();
         addTaxStatementTransaction();
-        addAdvanceFeeTransaction();
+        addAdvanceTaxTransaction();
     }
 
     @SuppressWarnings("nls")
@@ -411,7 +411,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
     }
 
     @SuppressWarnings("nls")
-    private void addAdvanceFeeTransaction()
+    private void addAdvanceTaxTransaction()
     {
         DocumentType type = new DocumentType("Vorabpauschale");
         this.addDocumentTyp(type);
