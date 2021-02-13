@@ -16,6 +16,15 @@ RepublicDATUM 30.12.2020, 21.15 UHR1.TAN 570992
 04.01. 04.01. Dauerauftrag 1.000,00
 Max Mustermann
 SVWZ+Verwendungszweck
+29.01. 29.01. 1234567890 Steuerausgleich 1,23
+1234567890 SteuerausgleichKapitalertragsteuer
+01.02. 01.02. Zahlungseingang 1.234,56
+Max Mustermann
+DEUTSCHE KREDITBANK AG IBAN: DE34120300000000000000 Seite 1 von 2
+TAUBENSTRASSE 7-9 BIC: BYLADEM1001
+10117 BERLIN USt-ID: DE137178746
+Kontoauszug Nummer 001 / 2021 vom 31.12.2020 bis 01.02.2021
+Kontonummer 0000000000 / IBAN DE34 1203 0000 0000 0000 00
 ALTER KONTOSTAND 5.000,67 H EUR
 NEUER KONTOSTAND 4.000,68 H EUR
 Gemäß dem Finanzkonten-Informationsaustauschgesetz (FKAustG) ermittelt die DKB AG die nach diesem Gesetz
