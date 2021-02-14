@@ -51,6 +51,11 @@ public class ClientInputFactory
         return answer;
     }
 
+    public synchronized Optional<ClientInput> lookupIfPresent(File clientFile)
+    {
+        return cache.keySet().stream().filter(i -> clientFile.equals(i.getFile())).findAny();
+    }
+
     public synchronized ClientInput create(String label, Client client)
     {
         ClientInput answer = new ClientInput(label, null);
