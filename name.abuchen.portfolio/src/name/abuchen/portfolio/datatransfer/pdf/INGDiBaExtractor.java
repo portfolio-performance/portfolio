@@ -15,7 +15,6 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
-import name.abuchen.portfolio.model.Transaction.Unit.Type;
 import name.abuchen.portfolio.money.Money;
 
 public class INGDiBaExtractor extends AbstractPDFExtractor
@@ -83,9 +82,7 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
 
                         .section("wkn", "isin", "name", "name1") //
                         .match("^ISIN \\(WKN\\) (?<isin>[^ ]*) \\((?<wkn>.*)\\)$")
-                        .match("Wertpapierbezeichnung (?<name>.*)")
-                        .match("(?<name1>.*)")
-                        .assign((t, v) -> {
+                        .match("Wertpapierbezeichnung (?<name>.*)").match("(?<name1>.*)").assign((t, v) -> {
                             if (!v.get("name1").startsWith("Nominale"))
                                 v.put("name", v.get("name") + " " + v.get("name1"));
                             t.setSecurity(getOrCreateSecurity(v));
@@ -124,20 +121,22 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
 
                         .section("fee", "currency").optional() //
                         .match("Handelsplatzgeb.hr (?<currency>\\w{3}+) (?<fee>[\\d.]+,\\d+)") //
-                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
-
-                        .section("fee", "currency").optional() //
-                        .match("Provision (?<currency>\\w{3}+) (?<fee>[\\d.]+,\\d+)") //
-                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
-
-                        .section("fee", "currency").optional() //
-                        .match("Handelsentgelt (?<currency>\\w{3}+) (?<fee>[\\d.]+,\\d+)") //
                         .assign((t, v) -> t.getPortfolioTransaction()
                                         .addUnit(new Unit(Unit.Type.FEE,
                                                         Money.of(asCurrencyCode(v.get("currency")),
                                                                         asAmount(v.get("fee"))))))
+
+                        .section("fee", "currency").optional() //
+                        .match("Provision (?<currency>\\w{3}+) (?<fee>[\\d.]+,\\d+)") //
+                        .assign((t, v) -> t.getPortfolioTransaction()
+                                        .addUnit(new Unit(Unit.Type.FEE,
+                                                        Money.of(asCurrencyCode(v.get("currency")),
+                                                                        asAmount(v.get("fee"))))))
+
+                        .section("fee", "currency").optional() //
+                        .match("Handelsentgelt (?<currency>\\w{3}+) (?<fee>[\\d.]+,\\d+)") //
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
                         .wrap(t -> {
                             if (t.getPortfolioTransaction().getDateTime() == null)
                                 throw new IllegalArgumentException("Missing date");
@@ -159,12 +158,9 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                             BuySellEntry entry = new BuySellEntry();
                             entry.setType(PortfolioTransaction.Type.SELL);
                             return entry;
-                        })
-                        .section("wkn", "isin", "name", "name1") //
+                        }).section("wkn", "isin", "name", "name1") //
                         .match("^ISIN \\(WKN\\) (?<isin>[^ ]*) \\((?<wkn>.*)\\)$")
-                        .match("Wertpapierbezeichnung (?<name>.*)")
-                        .match("(?<name1>.*)")
-                        .assign((t, v) -> {
+                        .match("Wertpapierbezeichnung (?<name>.*)").match("(?<name1>.*)").assign((t, v) -> {
                             if (!v.get("name1").startsWith("Nominale"))
                                 v.put("name", v.get("name") + " " + v.get("name1"));
                             t.setSecurity(getOrCreateSecurity(v));
@@ -192,18 +188,24 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
 
                         .section("fee", "currency").optional() //
                         .match("Handelsplatzgeb.hr (?<currency>\\w{3}+) (?<fee>[\\d.]+,\\d+)") //
-                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
+                        .assign((t, v) -> t.getPortfolioTransaction()
+                                        .addUnit(new Unit(Unit.Type.FEE,
+                                                        Money.of(asCurrencyCode(v.get("currency")),
+                                                                        asAmount(v.get("fee"))))))
 
                         .section("fee", "currency").optional() //
                         .match("Provision (?<currency>\\w{3}+) (?<fee>[\\d.]+,\\d+)") //
-                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
+                        .assign((t, v) -> t.getPortfolioTransaction()
+                                        .addUnit(new Unit(Unit.Type.FEE,
+                                                        Money.of(asCurrencyCode(v.get("currency")),
+                                                                        asAmount(v.get("fee"))))))
 
                         .section("fee", "currency").optional() //
                         .match("Handelsentgelt (?<currency>\\w{3}+) (?<fee>[\\d.]+,\\d+)") //
-                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
+                        .assign((t, v) -> t.getPortfolioTransaction()
+                                        .addUnit(new Unit(Unit.Type.FEE,
+                                                        Money.of(asCurrencyCode(v.get("currency")),
+                                                                        asAmount(v.get("fee"))))))
 
                         .wrap(BuySellEntryItem::new);
 
@@ -386,18 +388,19 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private void addTaxSectionToBuySellEntry(DocumentType type, Transaction<BuySellEntry> transaction)
     {
-                    // Kapitalerstragsteuer (Einzelkonto)
-         transaction.section("tax", "currency").optional() //
-                    .match("Kapitalertragsteuer \\d+,\\d+ ?% (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)")
-                    .assign((t, v) -> 
-                            t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX,
-                                    Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))))
-                    
-                    // Kapitalerstragsteuer (Gemeinschaftskonto)
-                    .section("tax1", "currency1", "tax2", "currency2").optional() //
-                    .match("KapSt anteilig 50,00 ?% \\d+,\\d+ ?% (?<currency1>\\w{3}+) (?<tax1>[\\d.]+,\\d+)")
-                    .match("KapSt anteilig 50,00 ?% \\d+,\\d+ ?% (?<currency2>\\w{3}+) (?<tax2>[\\d.]+,\\d+)")
-                    .assign((t, v) -> {
+        // Kapitalerstragsteuer (Einzelkonto)
+        transaction.section("tax", "currency").optional() //
+                        .match("Kapitalertragsteuer \\d+,\\d+ ?% (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)")
+                        .assign((t, v) -> t.getPortfolioTransaction()
+                                        .addUnit(new Unit(Unit.Type.TAX,
+                                                        Money.of(asCurrencyCode(v.get("currency")),
+                                                                        asAmount(v.get("tax"))))))
+
+                        // Kapitalerstragsteuer (Gemeinschaftskonto)
+                        .section("tax1", "currency1", "tax2", "currency2").optional() //
+                        .match("KapSt anteilig 50,00 ?% \\d+,\\d+ ?% (?<currency1>\\w{3}+) (?<tax1>[\\d.]+,\\d+)")
+                        .match("KapSt anteilig 50,00 ?% \\d+,\\d+ ?% (?<currency2>\\w{3}+) (?<tax2>[\\d.]+,\\d+)")
+                        .assign((t, v) -> {
                             t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX,
                                             Money.of(asCurrencyCode(v.get("currency1")), asAmount(v.get("tax1")))));
                             t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX,
