@@ -152,6 +152,12 @@ public interface UIConstants
          * Preference key whether to store settings (standard calendar)
          */
         String CALENDAR = "CALENDAR"; //$NON-NLS-1$
+
+        String RUN_WEB_SERVER = "RUN_WEB_SERVER"; //$NON-NLS-1$
+
+        String WEB_SERVER_PORT = "WEB_SERVER_PORT"; //$NON-NLS-1$
+
+        String WEB_SERVER_TOKEN = "WEB_SERVER_TOKEN"; //$NON-NLS-1$
     }
 
     interface CSS // NOSONAR

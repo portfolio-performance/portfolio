@@ -20,7 +20,7 @@
     <stringAttribute key="org.eclipse.jdt.launching.JRE_CONTAINER" value="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-11"/>
     <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl de -consoleLog"/>
     <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.pde.ui.workbenchClasspathProvider"/>
-    <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-XX:+IgnoreUnrecognizedVMOptions --add-modules=ALL-SYSTEM --illegal-access=permit -XX:+UseG1GC -XX:+UseStringDeduplication -Xms256m -Xmx768m -XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts"/>
+    <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-XX:+IgnoreUnrecognizedVMOptions --add-modules=ALL-SYSTEM --illegal-access=permit -XX:+UseG1GC -XX:+UseStringDeduplication -Xms256m -Xmx768m -XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts&#10;-Dorg.eclipse.jetty.util.log.class=org.eclipse.jetty.util.log.StdErrLog &#10;-DXorg.eclipse.jetty.LEVEL=DEBUG"/>
     <stringAttribute key="pde.version" value="3.3"/>
     <stringAttribute key="product" value="name.abuchen.portfolio.bootstrap.product"/>
     <stringAttribute key="productFile" value="/portfolio-product/name.abuchen.portfolio.product"/>
@@ -35,10 +35,19 @@
         <setEntry value="com.sun.jna@default:default"/>
         <setEntry value="de.engehausen.treemap.swt@default:default"/>
         <setEntry value="de.engehausen.treemap@default:default"/>
+        <setEntry value="javassist@default:default"/>
+        <setEntry value="javax.activation@default:default"/>
         <setEntry value="javax.annotation@default:default"/>
         <setEntry value="javax.inject@default:default"/>
+        <setEntry value="javax.servlet@default:default"/>
+        <setEntry value="javax.validation.api@default:default"/>
+        <setEntry value="javax.ws.rs@default:default"/>
+        <setEntry value="javax.xml.bind@default:default"/>
+        <setEntry value="javax.xml.stream@default:default"/>
+        <setEntry value="javax.xml@default:default"/>
         <setEntry value="net.minidev.accessors-smart@default:default"/>
         <setEntry value="net.minidev.json-smart@default:default"/>
+        <setEntry value="org.aopalliance@default:default"/>
         <setEntry value="org.apache.batik.constants@default:default"/>
         <setEntry value="org.apache.batik.css@default:default"/>
         <setEntry value="org.apache.batik.i18n@default:default"/>
@@ -112,6 +121,8 @@
         <setEntry value="org.eclipse.equinox.event@default:default"/>
         <setEntry value="org.eclipse.equinox.frameworkadmin.equinox@default:default"/>
         <setEntry value="org.eclipse.equinox.frameworkadmin@default:default"/>
+        <setEntry value="org.eclipse.equinox.http.jetty@default:default"/>
+        <setEntry value="org.eclipse.equinox.http.servlet@default:default"/>
         <setEntry value="org.eclipse.equinox.launcher.cocoa.macosx.x86_64@default:false"/>
         <setEntry value="org.eclipse.equinox.launcher@default:default"/>
         <setEntry value="org.eclipse.equinox.p2.artifact.repository@default:default"/>
@@ -134,6 +145,14 @@
         <setEntry value="org.eclipse.equinox.security@default:default"/>
         <setEntry value="org.eclipse.equinox.simpleconfigurator.manipulator@default:default"/>
         <setEntry value="org.eclipse.equinox.simpleconfigurator@1:true"/>
+        <setEntry value="org.eclipse.jetty.continuation@default:default"/>
+        <setEntry value="org.eclipse.jetty.http@default:default"/>
+        <setEntry value="org.eclipse.jetty.io@default:default"/>
+        <setEntry value="org.eclipse.jetty.security@default:default"/>
+        <setEntry value="org.eclipse.jetty.server@default:default"/>
+        <setEntry value="org.eclipse.jetty.servlet@default:default"/>
+        <setEntry value="org.eclipse.jetty.util.ajax@default:default"/>
+        <setEntry value="org.eclipse.jetty.util@default:default"/>
         <setEntry value="org.eclipse.jface.databinding@default:default"/>
         <setEntry value="org.eclipse.jface@default:default"/>
         <setEntry value="org.eclipse.nebula.cwt@default:default"/>
@@ -148,6 +167,16 @@
         <setEntry value="org.eclipse.ui.forms@default:default"/>
         <setEntry value="org.eclipse.ui.themes@default:default"/>
         <setEntry value="org.eclipse.urischeme@default:default"/>
+        <setEntry value="org.glassfish.hk2.api@default:default"/>
+        <setEntry value="org.glassfish.hk2.locator@default:default"/>
+        <setEntry value="org.glassfish.hk2.osgi-resource-locator@default:true"/>
+        <setEntry value="org.glassfish.hk2.utils@default:default"/>
+        <setEntry value="org.glassfish.jersey.containers.servlet.core@default:default"/>
+        <setEntry value="org.glassfish.jersey.containers.servlet@default:default"/>
+        <setEntry value="org.glassfish.jersey.core.jersey-client@default:default"/>
+        <setEntry value="org.glassfish.jersey.core.jersey-common@default:default"/>
+        <setEntry value="org.glassfish.jersey.core.jersey-server@default:default"/>
+        <setEntry value="org.glassfish.jersey.inject.jersey-hk2@default:default"/>
         <setEntry value="org.jsoup@default:default"/>
         <setEntry value="org.objectweb.asm*5.0.1.v201404251740@default:default"/>
         <setEntry value="org.objectweb.asm*9.0.0.v20201001-1419@default:default"/>
@@ -163,6 +192,7 @@
     </setAttribute>
     <setAttribute key="selected_workspace_bundles">
         <setEntry value="name.abuchen.portfolio.bootstrap@default:default"/>
+        <setEntry value="name.abuchen.portfolio.server@default:default"/>
         <setEntry value="name.abuchen.portfolio.ui@default:default"/>
         <setEntry value="name.abuchen.portfolio@default:default"/>
     </setAttribute>
