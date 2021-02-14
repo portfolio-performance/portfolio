@@ -2,8 +2,8 @@ package name.abuchen.portfolio.datatransfer.pdf.ingdiba;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsEmptyCollection.empty;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -19,7 +19,6 @@ import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
-import name.abuchen.portfolio.datatransfer.pdf.ConsorsbankPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.INGDiBaExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.Account;
