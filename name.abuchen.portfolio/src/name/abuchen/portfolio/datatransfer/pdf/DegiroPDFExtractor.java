@@ -819,8 +819,8 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 + "[-.,\\d]* [\\w]{3} " 
                                                 + "[-.,\\d]* [\\w]{3} " 
                                                 + "[-.,\\d]* [\\w]{3} " 
-                                                + "-?(?<fee>[.,\\d]*) (?<currencyFee>[\\w]{3}) " 
-                                                + "-?(?<amount>[.,\\d]*) (?<currency>[\\w]{3})$") 
+                                                + "-?(?<fee>[,\\d]*) (?<currencyFee>[\\w]{3}) " 
+                                                + "-?(?<amount>[,\\d]*) (?<currency>[\\w]{3})$") 
                                 .assign((t, v) -> {
                                     t.setSecurity(getOrCreateSecurity(v));
                                     t.setDate(asDate(v.get("date"))); 
@@ -838,6 +838,42 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                     Money feeAmount = Money.of(asCurrencyCode(v.get("currencyFee")), asAmount(v.get("fee")));  
                                     t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, feeAmount));
                             }),
+
+                                // -------------------------------------
+                                // without currency exchange
+                                // with fee
+                                // Money        --> \d.\d or \d,\d.\d
+                                // -------------------------------------
+                                // 07-01-2021 09:00 K&S AG DE000KSAG888 XET XETA 25 9.748 EUR -1,082.50 EUR -972.53 EUR -0.63 EUR -973.16 EUR
+                                section -> section
+                                    .attributes("date", "name", "isin", "shares", "currencyFee", "fee", "currency", "amount")
+                                    .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) "
+                                                    + "(?<name>.*) "
+                                                    + "(?<isin>[\\w]{12}) "
+                                                    + "[\\w]{3} [\\w]{4} "
+                                                    + "(?<shares>-?[.\\d]+[,\\d]*) "  
+                                                    + "[-.,\\d]* [\\w]{3} " 
+                                                    + "[-.,\\d]* [\\w]{3} " 
+                                                    + "[-.,\\d]* [\\w]{3} " 
+                                                    + "-?(?<fee>([\\d]+,[\\d]{3}.\\d+|\\d+.\\d+)*) (?<currencyFee>[\\w]{3}) " 
+                                                    + "-?(?<amount>([\\d]+,[\\d]{3}.\\d+|\\d+.\\d+)*) (?<currency>[\\w]{3})$") 
+                                    .assign((t, v) -> {
+                                        t.setSecurity(getOrCreateSecurity(v));
+                                        t.setDate(asDate(v.get("date"))); 
+                                        if (v.get("shares").startsWith("-"))   
+                                        {
+                                            t.setType(PortfolioTransaction.Type.SELL);
+                                            t.setShares(asShares(v.get("shares").replaceFirst("-", "")));   
+                                        }
+                                        else 
+                                        {
+                                            t.setShares(asShares(v.get("shares")));
+                                        }
+                                        t.setCurrencyCode(asCurrencyCode(v.get("currency"))); 
+                                        t.setAmount(asAmount(ConvertAmount(v.get("amount"))));
+                                        Money feeAmount = Money.of(asCurrencyCode(v.get("currencyFee")), asAmount(ConvertAmount(v.get("fee"))));  
+                                        t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, feeAmount));
+                                }),
 
                             // -------------------------------------
                             // with currency exchange 
