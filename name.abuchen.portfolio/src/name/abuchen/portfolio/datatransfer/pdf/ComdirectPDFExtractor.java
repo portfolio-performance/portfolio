@@ -43,6 +43,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
         addFeesFromVerwahrentgeltPDF();
         addInteresWithoutTaxOnSecuritiesTransaction();
         addInteresWithTaxOnSecuritiesTransaction();
+        addFinanzreport();
     }
 
     @SuppressWarnings("nls")
@@ -895,6 +896,100 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
         return new Unit(Unit.Type.TAX,
                         Money.of(asCurrencyCode(matcher.group("currency")), asAmount(matcher.group("amount"))));
+    }
+
+    @SuppressWarnings("nls")
+    private void addFinanzreport()
+    {
+        DocumentType type = new DocumentType("Finanzreport", (context, lines) -> {
+            // read the current context here
+            for (int i = 0; i < lines.length; i++)
+            {
+                if (lines[i].compareTo("Ihre aktuellen Salden IBAN Saldo in") == 0)
+                {
+                    context.put("currency", lines[i+1]);
+                }
+            }
+        });
+        this.addDocumentTyp(type);
+
+        Block removalblock = new Block("^(\\d+.\\d+.\\d+) ((Übertrag)|(Entgelte)|(Lastschrift)|(Visa-Umsatz))(.*) \\-([\\d.]+,\\d{2})$");
+        type.addBlock(removalblock);
+        removalblock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction entry = new AccountTransaction();
+                            entry.setType(AccountTransaction.Type.REMOVAL);
+                            return entry;
+                        })
+
+                        .section("date", "amount")
+                        .match("^(\\d+.\\d+.\\d+) ((Übertrag)|(Entgelte)|(Lastschrift)|(Visa-Umsatz))(.*) \\-(?<amount>[\\d.]+,\\d{2})$")
+                        .match("^(?<date>\\d+.\\d+.\\d+)(.*)")
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+                            t.setDateTime(asDate(v.get("date")));     
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(context.get("currency"));
+                        })
+
+                        .wrap(TransactionItem::new));
+        Block depositblock = new Block("^(\\d+.\\d+.\\d+) ((Kontoübertrag)|(Guthabenübertr))(.*) \\+([\\d.]+,\\d{2})$");
+        type.addBlock(depositblock);
+        depositblock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction entry = new AccountTransaction();
+                            entry.setType(AccountTransaction.Type.DEPOSIT);
+                            return entry;
+                        })
+
+                        .section("date", "amount")
+                        .match("^(\\d+.\\d+.\\d+) ((Kontoübertrag)|(Kontoabschluss)|(Guthabenübertr))(.*) \\+(?<amount>[\\d.]+,\\d{2})$")
+                        .match("^(?<date>\\d+.\\d+.\\d+)(.*)")
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(context.get("currency"));
+                        })
+
+                        .wrap(TransactionItem::new));
+        
+        Block interestblock = new Block("^(\\d+.\\d+.\\d+) (Kontoabschluss Abschluss Zinsen)(.*) \\+([\\d.]+,\\d{2})$");
+        type.addBlock(interestblock);
+        interestblock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction entry = new AccountTransaction();
+                            entry.setType(AccountTransaction.Type.INTEREST);
+                            return entry;
+                        })
+
+                        .section("date", "amount")
+                        .match("^(\\d+.\\d+.\\d+) (Kontoabschluss Abschluss Zinsen)(.*) \\+(?<amount>[\\d.]+,\\d{2})$")
+                        .match("^(?<date>\\d+.\\d+.\\d+)(.*)")
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(context.get("currency"));
+                        })
+                        
+                        .section("kest", "soli", "kestcur", "solicur").optional()
+                        .match("^(Kapitalertragsteuer) (?<kest>[\\d.]+,\\d{2})- (?<kestcur>\\w{3})$")
+                        .match("^(Solidaritätszuschlag) (?<soli>[\\d.]+,\\d{2})(-)? (?<solicur>\\w{3})$")
+                        .assign((t, v) -> {
+                            Money kest = Money.of(asCurrencyCode(v.get("kestcur")), asAmount(v.get("kest")));
+                            if (kest.getCurrencyCode().equals(t.getCurrencyCode()))
+                                t.addUnit(new Unit(Unit.Type.TAX, kest));
+                            
+                            Money soli = Money.of(asCurrencyCode(v.get("solicur")), asAmount(v.get("soli")));
+                            if (soli.getCurrencyCode().equals(t.getCurrencyCode()))
+                                t.addUnit(new Unit(Unit.Type.TAX, soli));
+                        })
+                        
+                        .wrap(TransactionItem::new));
     }
 
     @Override
