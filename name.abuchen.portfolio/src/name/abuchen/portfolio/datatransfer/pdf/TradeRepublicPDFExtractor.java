@@ -26,6 +26,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         addLiquidationTransaction();
         addAccountStatementTransaction();
         addTaxStatementTransaction();
+        addAdvanceTaxTransaction();
     }
 
     @SuppressWarnings("nls")
@@ -407,6 +408,69 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setDateTime(asDate(v.get("date")));
                         }).wrap(TransactionItem::new));
+    }
+
+    @SuppressWarnings("nls")
+    private void addAdvanceTaxTransaction()
+    {
+        DocumentType type = new DocumentType("Vorabpauschale");
+        this.addDocumentTyp(type);
+    
+        Block block = new Block("VORABPAUSCHALE");
+        type.addBlock(block);
+        block.set(new Transaction<AccountTransaction>().subject(() -> {
+            AccountTransaction t = new AccountTransaction();
+            t.setType(AccountTransaction.Type.TAXES);
+            return t;
+        })
+
+            // iShs Core MSCI EM IMI U.ETF 173,3905 Stk.
+            // Registered Shares o.N.
+            // ISIN: IE00BKM4GZ66
+            .section("name", "isin", "shares", "nameContinued")
+            .match("^(?<name>.*) (?<shares>\\d[\\d .,]*) Stk.$")
+            .match("^(?<nameContinued>.*)$")
+            .match("^ISIN: (?<isin>[\\w]{12})$")
+            .assign((t, v) -> {
+                v.put("isin", v.get("isin"));
+                t.setShares(asShares(v.get("shares")));
+                t.setSecurity(getOrCreateSecurity(v));
+            })
+
+            // Kapitalertragssteuer -0,30 EUR
+            .section("tax", "currency")
+            .match("^Kapitalertragssteuer ((?<tax>-?[\\d]+,\\d{2})) (?<currency>[\\w]{3})$")
+            .assign((t, v) -> {
+                v.put("currency", v.get("currency"));
+                v.put("tax", v.get("tax"));
+                t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                t.addUnit(new Unit(Unit.Type.TAX,
+                                Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")))));
+            })
+
+            // Solidaritätszuschlag -0,02 EUR
+            .section("tax", "currency")
+            .match("^Solidaritätszuschlag (?<tax>-?[\\d]+,\\d{2}) (?<currency>[\\w]{3})$")
+            .assign((t, v) -> {
+                v.put("currency", v.get("currency"));
+                v.put("tax", v.get("tax"));
+                t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                t.addUnit(new Unit(Unit.Type.TAX,
+                                Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")))));
+            })
+
+            // VERRECHNUNGSKONTO VALUTA BETRAG
+            // DE12345678912345678912 04.01.2021 -0,32 EUR
+            .section("date", "amount", "currency")
+            .match("^.* VALUTA .*$")
+            .match("^.* (?<date>\\d{2}.\\d{2}.\\d{4}) (?<amount>-?[\\d]+,\\d{2}) (?<currency>[\\w]{3})")
+            .assign((t, v) -> {
+                t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                t.setAmount(asAmount(v.get("amount")));
+                t.setDateTime(asDate(v.get("date")));
+            })
+
+            .wrap(t -> new TransactionItem(t)));
     }
 
     @Override
