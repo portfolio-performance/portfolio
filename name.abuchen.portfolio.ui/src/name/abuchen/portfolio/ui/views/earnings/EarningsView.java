@@ -172,6 +172,7 @@ public class EarningsView extends AbstractFinanceView
                 Action action = new SimpleAction(Messages.LabelUseGrossValue,
                                 a -> model.setUseGrossValue(!model.usesGrossValue()));
                 action.setChecked(model.usesGrossValue());
+                updateTitle(model.getMode().getLabel());
                 manager.add(action);
             }
 
