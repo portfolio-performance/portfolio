@@ -172,13 +172,13 @@ public class EarningsView extends AbstractFinanceView
                 Action action = new SimpleAction(Messages.LabelUseGrossValue,
                                 a -> model.setUseGrossValue(!model.usesGrossValue()));
                 action.setChecked(model.usesGrossValue());
-                updateTitle(model.getMode().getLabel());
                 manager.add(action);
             }
 
             Action action = new SimpleAction(Messages.LabelEarningsUseTradeProfitLoss, a -> {
                 model.setUseTradeValue(!model.usesTradeValue());
                 updateIcons();
+                updateTitle(model.getMode().getLabel());
             });
             action.setChecked(model.usesTradeValue());
             manager.add(action);
