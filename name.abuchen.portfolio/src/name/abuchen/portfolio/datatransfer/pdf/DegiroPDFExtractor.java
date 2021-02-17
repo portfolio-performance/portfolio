@@ -778,16 +778,16 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                     t.setShares(asShares(v.get("shares")));
                                 }
                                 t.setCurrencyCode(asCurrencyCode(v.get("currencyAccount")));
-                                t.setAmount(asAmount(ConvertAmount(v.get("amount"))));
-                                Money feeAmount = Money.of(asCurrencyCode(v.get("currencyFee")), asAmount(ConvertAmount(v.get("fee"))));
+                                t.setAmount(asAmount(convertAmount(v.get("amount"))));
+                                Money feeAmount = Money.of(asCurrencyCode(v.get("currencyFee")), asAmount(convertAmount(v.get("fee"))));
                                 t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, feeAmount));
 
-                                long amountFx = asAmount(ConvertAmount(v.get("amountFx")));
+                                long amountFx = asAmount(convertAmount(v.get("amountFx")));
                                 String currencyFx = asCurrencyCode(v.get("currency"));
 
                                 if (currencyFx.equals(t.getPortfolioTransaction().getSecurity().getCurrencyCode()))
                                 {
-                                    Money amount = Money.of(asCurrencyCode(v.get("currencyAccount")), asAmount(ConvertAmount(v.get("amount"))));
+                                    Money amount = Money.of(asCurrencyCode(v.get("currencyAccount")), asAmount(convertAmount(v.get("amount"))));
                                     if (t.getPortfolioTransaction().getType() == PortfolioTransaction.Type.BUY)
                                     {
                                         amount = amount.subtract(feeAmount);
@@ -796,7 +796,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                     {
                                         amount = amount.add(feeAmount);
                                     }
-                                    BigDecimal exchangeRate = BigDecimal.ONE.divide(asExchangeRate(ConvertExchangeRate(v.get("exchangeRate"))), 10, RoundingMode.HALF_DOWN);
+                                    BigDecimal exchangeRate = BigDecimal.ONE.divide(asExchangeRate(convertExchangeRate(v.get("exchangeRate"))), 10, RoundingMode.HALF_DOWN);
                                     Money forex = Money.of(asCurrencyCode(v.get("currency")), amountFx);
                                     Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, forex, exchangeRate);
                                     t.getPortfolioTransaction().addUnit(grossValue);
@@ -870,8 +870,8 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                             t.setShares(asShares(v.get("shares")));
                                         }
                                         t.setCurrencyCode(asCurrencyCode(v.get("currency"))); 
-                                        t.setAmount(asAmount(ConvertAmount(v.get("amount"))));
-                                        Money feeAmount = Money.of(asCurrencyCode(v.get("currencyFee")), asAmount(ConvertAmount(v.get("fee"))));  
+                                        t.setAmount(asAmount(convertAmount(v.get("amount"))));
+                                        Money feeAmount = Money.of(asCurrencyCode(v.get("currencyFee")), asAmount(convertAmount(v.get("fee"))));  
                                         t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, feeAmount));
                                 }),
 
@@ -958,15 +958,15 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                     t.setShares(asShares(v.get("shares"))); 
                                 }
                                 t.setCurrencyCode(asCurrencyCode(v.get("currencyAccount"))); 
-                                t.setAmount(asAmount(ConvertAmount(v.get("amount"))));
+                                t.setAmount(asAmount(convertAmount(v.get("amount"))));
 
-                                long amountFx = asAmount(ConvertAmount(v.get("amountFx"))); 
+                                long amountFx = asAmount(convertAmount(v.get("amountFx"))); 
                                 String currencyFx = asCurrencyCode(v.get("currency"));
 
                                 if (currencyFx.equals(t.getPortfolioTransaction().getSecurity().getCurrencyCode()))
                                 {
-                                    Money amount = Money.of(asCurrencyCode(v.get("currencyAccount")), asAmount(ConvertAmount(v.get("amount"))));  
-                                    BigDecimal exchangeRate = BigDecimal.ONE.divide(asExchangeRate(ConvertExchangeRate(v.get("exchangeRate"))), 10, RoundingMode.HALF_DOWN); 
+                                    Money amount = Money.of(asCurrencyCode(v.get("currencyAccount")), asAmount(convertAmount(v.get("amount"))));  
+                                    BigDecimal exchangeRate = BigDecimal.ONE.divide(asExchangeRate(convertExchangeRate(v.get("exchangeRate"))), 10, RoundingMode.HALF_DOWN); 
                                     Money forex = Money.of(asCurrencyCode(v.get("currency")), amountFx);
                                     Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, forex, exchangeRate);
                                     t.getPortfolioTransaction().addUnit(grossValue);
@@ -978,7 +978,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
     }
 
     @SuppressWarnings("nls")
-    private String ConvertAmount(String inputAmount)
+    private String convertAmount(String inputAmount)
     {
         // 43.30        --> 43,30
         // -1,082.50    --> 1082,50
@@ -987,7 +987,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
     }
     
     @SuppressWarnings("nls") 
-    private String ConvertExchangeRate(String inputExchangeRate)
+    private String convertExchangeRate(String inputExchangeRate)
     {
         // 1.112    --> 1,112
         return inputExchangeRate.replace(".", ",");
