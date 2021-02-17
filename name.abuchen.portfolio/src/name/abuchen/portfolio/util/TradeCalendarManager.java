@@ -7,9 +7,11 @@ import static name.abuchen.portfolio.util.HolidayName.BOXING_DAY;
 import static name.abuchen.portfolio.util.HolidayName.CHRISTMAS;
 import static name.abuchen.portfolio.util.HolidayName.CHRISTMAS_EVE;
 import static name.abuchen.portfolio.util.HolidayName.CHRISTMAS_EVE_RUSSIA;
+import static name.abuchen.portfolio.util.HolidayName.CIVIC_DAY;
 import static name.abuchen.portfolio.util.HolidayName.DEFENDER_OF_THE_FATHERLAND_DAY;
 import static name.abuchen.portfolio.util.HolidayName.EARLY_MAY_BANK_HOLIDAY;
 import static name.abuchen.portfolio.util.HolidayName.EASTER_MONDAY;
+import static name.abuchen.portfolio.util.HolidayName.FAMILY_DAY;
 import static name.abuchen.portfolio.util.HolidayName.FIRST_CHRISTMAS_DAY;
 import static name.abuchen.portfolio.util.HolidayName.FUNERAL_OF_PRESIDENT_REAGAN;
 import static name.abuchen.portfolio.util.HolidayName.GOOD_FRIDAY;
@@ -31,6 +33,7 @@ import static name.abuchen.portfolio.util.HolidayName.SUMMER_BANK_HOLIDAY;
 import static name.abuchen.portfolio.util.HolidayName.THANKSGIVING;
 import static name.abuchen.portfolio.util.HolidayName.UNIFICATION_GERMANY;
 import static name.abuchen.portfolio.util.HolidayName.UNITY_DAY;
+import static name.abuchen.portfolio.util.HolidayName.VICTORIA_DAY;
 import static name.abuchen.portfolio.util.HolidayName.VICTORY_DAY;
 import static name.abuchen.portfolio.util.HolidayName.WASHINGTONS_BIRTHDAY;
 import static name.abuchen.portfolio.util.HolidayName.WHIT_MONDAY;
@@ -180,6 +183,21 @@ public class TradeCalendarManager
         tc.add(fixed(UNITY_DAY, Month.NOVEMBER, 4).moveIf(DayOfWeek.SATURDAY, 2).moveIf(DayOfWeek.SUNDAY, 1));
         CACHE.put(tc.getCode(), tc);
         
+        // see Toronto Stock Exchange trading days on their official website:
+        // https://www.tsx.com/trading/calendars-and-trading-hours/calendar
+        tc = new TradeCalendar("tsx", Messages.LabelTradeCalendarTSX); //$NON-NLS-1$
+        tc.add(fixed(NEW_YEAR, Month.JANUARY, 1).moveIf(DayOfWeek.SATURDAY, 2).moveIf(DayOfWeek.SUNDAY, 1));
+        tc.add(weekday(FAMILY_DAY, 3, DayOfWeek.MONDAY, Month.FEBRUARY));
+        tc.add(easter(GOOD_FRIDAY, -2));
+        tc.add(weekday(VICTORIA_DAY, -2, DayOfWeek.MONDAY, Month.MAY));
+        tc.add(fixed(NATION_DAY, Month.JULY, 1).moveIf(DayOfWeek.SATURDAY, 2).moveIf(DayOfWeek.SUNDAY, 1));
+        tc.add(weekday(CIVIC_DAY, 1, DayOfWeek.MONDAY, Month.AUGUST));
+        tc.add(weekday(LABOUR_DAY, 1, DayOfWeek.MONDAY, Month.SEPTEMBER));
+        tc.add(weekday(THANKSGIVING, 2, DayOfWeek.MONDAY, Month.OCTOBER));
+        tc.add(fixed(CHRISTMAS, Month.DECEMBER, 25).moveIf(DayOfWeek.SATURDAY, 2).moveIf(DayOfWeek.SUNDAY, 1));
+        tc.add(fixed(BOXING_DAY, Month.DECEMBER, 26).moveIf(DayOfWeek.MONDAY, 1).moveIf(DayOfWeek.SATURDAY, 2).moveIf(DayOfWeek.SUNDAY, 2));
+        CACHE.put(tc.getCode(), tc);
+
         tc = new TradeCalendar(TradeCalendar.EMPTY_CODE, Messages.LabelTradeCalendarEmpty);
         CACHE.put(tc.getCode(), tc);
 }
