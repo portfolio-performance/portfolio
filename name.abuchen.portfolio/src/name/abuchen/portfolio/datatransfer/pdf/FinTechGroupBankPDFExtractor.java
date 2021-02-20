@@ -1157,8 +1157,8 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             return t;
                         })
 
-                        .section("valuta", "amount", "sign")
-                        .match("\\d+.\\d+.[ ]+(?<valuta>\\d+.\\d+.)[ ]+Zinsabschluss[ ]+(\\d+.\\d+.\\d{4})(\\s+)-(\\s+)(\\d+.\\d+.\\d{4})(\\s+)(?<amount>[\\d.-]+,\\d+)(?<sign>[+-])")
+                        .section("valuta", "amount", "sign", "text")
+                        .match("\\d+.\\d+.[ ]+(?<valuta>\\d+.\\d+.)[ ]+(?<text>Zinsabschluss[ ]+(\\d+.\\d+.\\d{4})(\\s+)-(\\s+)(\\d+.\\d+.\\d{4}))(\\s+)(?<amount>[\\d.-]+,\\d+)(?<sign>[+-])")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
                             String date = v.get("valuta");

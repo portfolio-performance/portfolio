@@ -44,6 +44,7 @@
       <feature id="org.eclipse.babel.nls_eclipse_nl"/>
       <feature id="org.eclipse.babel.nls_eclipse_pt"/>
       <feature id="org.eclipse.babel.nls_eclipse_fr"/>
+      <feature id="org.eclipse.babel.nls_eclipse_it"/>
       <feature id="org.eclipse.ecf.filetransfer.httpclient45.feature"/>
       <feature id="org.eclipse.ecf.core.ssl.feature"/>
       <feature id="org.eclipse.ecf.filetransfer.ssl.feature"/>

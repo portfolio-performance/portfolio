@@ -42,6 +42,7 @@ public class LanguagePreferencePage extends PreferencePage
         ENGLISH("en", "English"), //$NON-NLS-1$ //$NON-NLS-2$
         SPANISH("es", "Español"), //$NON-NLS-1$ //$NON-NLS-2$
         FRENCH("fr", "Français"), //$NON-NLS-1$ //$NON-NLS-2$
+        ITALIAN("it", "Italiano"), //$NON-NLS-1$ //$NON-NLS-2$
         DUTCH("nl", "Nederlands"), //$NON-NLS-1$ //$NON-NLS-2$
         PORTUGUESE("pt", "Português"); //$NON-NLS-1$ //$NON-NLS-2$
 

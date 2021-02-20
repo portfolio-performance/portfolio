@@ -160,7 +160,7 @@ public class ECBExchangeRateProvider implements ExchangeRateProvider
         summary.addSeries(createDefault("LVL", "2013-12-31", BigDecimal.valueOf(0.702804)));
         summary.addSeries(createDefault("MTL", "2007-12-31", BigDecimal.valueOf(0.4293)));
         summary.addSeries(createDefault("LTL", "2014-12-31", BigDecimal.valueOf(3.4528)));
-        summary.addSeries(createDefault("ZAR", date20151218, BigDecimal.valueOf(16.2998)));
+        summary.addSeries(createDefault("ZAR", "2021-02-08", BigDecimal.valueOf(17.975)));
         summary.addSeries(createDefault("INR", date20151218, BigDecimal.valueOf(71.955)));
         summary.addSeries(createDefault("CNY", date20151218, BigDecimal.valueOf(7.0274)));
         summary.addSeries(createDefault("THB", date20151218, BigDecimal.valueOf(39.175)));

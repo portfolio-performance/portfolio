@@ -7,12 +7,14 @@ import static org.hamcrest.collection.IsEmptyCollection.empty;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
@@ -1709,6 +1711,35 @@ public class ComdirectPDFExtractorTest
     }
 
     @Test
+    public void testZinsgutschrift02()
+    {
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "comdirectZinsgutschrift02.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
+        assertThat(security.getIsin(), is("DE000A1TNA70"));
+        assertThat(security.getWkn(), is("A1TNA7"));
+        assertThat(security.getName(), is("SANHAGmbH&Co.KG"));
+
+        // check buy sell transaction
+        AccountTransaction t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+                        .findFirst().get().getSubject();
+
+        assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(t.getAmount(), is(Values.Amount.factorize(181.25)));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2020-06-04T00:00")));
+        assertThat(t.getShares(), is(Values.Share.factorize(5000)));
+    }
+
+    @Test
     public void testSteuermitteilungAusZinsgutschrift01()
     {
         ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
@@ -1741,5 +1772,159 @@ public class ComdirectPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.TAX).getAmount(), is(Values.Amount.factorize(27.99)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(5000)));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-04T00:00")));
+    }
+    
+    @Test
+    public void testFinanzreport1()
+    {
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "comdirectFinanzreport1.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(11));
+        
+        // check transaction
+        // get transactions
+        Iterator<Extractor.Item> iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
+        assertThat(results.stream().filter(i -> i instanceof TransactionItem).count(), is(11L));
+
+        if (iter.hasNext())
+        {
+        Item item = iter.next();
+        
+        // assert transaction1
+        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-09-04T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(1500)));
+        }
+        
+        if (iter.hasNext())
+        {
+        Item item = iter.next();
+        
+        // assert transaction2
+        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-09-05T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(300)));
+        }
+        
+        if (iter.hasNext())
+        {
+        Item item = iter.next();
+        
+        // assert transaction3
+        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-09-05T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(5.9)));
+        }
+        
+        if (iter.hasNext())
+        {
+        Item item = iter.next();
+        
+        // assert transaction4
+        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-09-17T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(68.88)));
+        }
+        
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction5
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-09-14T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(10000)));
+        }
+        
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction6
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-09-17T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(2.18)));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction7
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-09-14T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(10000)));
+        }
+        
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction8
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-07-30T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(2000)));
+        }
+        
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction9
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-09-05T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(300)));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction10
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-09-30T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.14)));
+            assertThat(transaction.getGrossValue().getAmount(), is(Values.Amount.factorize(0.20)));
+        }
+        
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction11
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-09-30T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.14)));
+            assertThat(transaction.getGrossValue().getAmount(), is(Values.Amount.factorize(0.19)));
+        }
     }
 }
