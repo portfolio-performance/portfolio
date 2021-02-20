@@ -1209,7 +1209,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(16508.16)));
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-01-22T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-01-22T16:14")));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(5.90))));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(250)));
@@ -1238,7 +1238,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(10.12)));
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-12-22T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-12-22T19:51")));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(5.90))));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1)));
@@ -1267,7 +1267,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(4840.15)));
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-07-04T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-07-04T14:23")));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(5.90))));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(121)));
@@ -1295,7 +1295,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(tx.size(), is(1));
 
         assertThat(tx, hasItem(allOf( //
-                        hasProperty("dateTime", is(LocalDateTime.parse("2018-01-09T00:00"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2018-01-09T15:00"))), //
                         hasProperty("type", is(PortfolioTransaction.Type.SELL)), //
                         hasProperty("monetaryAmount", is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.95)))))));
 
@@ -1381,7 +1381,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(tx.size(), is(1));
 
         assertThat(tx, hasItem(allOf( //
-                        hasProperty("dateTime", is(LocalDateTime.parse("2019-06-20T00:00"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2019-06-20T09:08"))), //
                         hasProperty("type", is(PortfolioTransaction.Type.SELL)), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9529.81)))))));
@@ -1457,7 +1457,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(5681.04)));
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-02-19T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-02-19T09:22")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(425)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), 
                         is(Money.of("EUR", Values.Amount.factorize(9.90 + 2.51))));

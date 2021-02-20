@@ -737,13 +737,15 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             return entry;
                         })
 
-                        .section("date").optional() //
-                        .match(".*Schlusstag *(?<date>\\d+.\\d+.\\d{4}).*") //
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
-
-                        .section("date").optional() //
-                        .match(".*Handelstag *(?<date>\\d+.\\d+.\\d{4}).*") //
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                        .section("date", "time")
+                        .match(".*(Schlusstag|Handelstag) *(?<date>\\d+.\\d+.\\d{4}).*") //
+                        .match(".*Ausführungszeit *(?<time>\\d+:\\d+).*") //
+                        .assign((t, v) -> {
+                            if (v.get("time") != null)
+                                t.setDate(asDate(v.get("date"), v.get("time")));
+                            else
+                                t.setDate(asDate(v.get("date")));
+                        })
 
                         .section("wkn", "isin", "name")
                         .match("Nr.(\\d*)/(\\d*) *Verkauf *(?<name>.*) *\\((?<isin>[^/]*)/(?<wkn>[^)]*)\\)") //
