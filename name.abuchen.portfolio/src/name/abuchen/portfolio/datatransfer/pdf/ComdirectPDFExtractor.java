@@ -713,11 +713,14 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
             // Zinsgutschrift                                                                     
             // Depotbestand             Zinssatz     Wertpapier-Bezeichnung               WKN/ISIN
             // p e  r  0 3. 1  2 .2  0 20            v  a r ia  b el       SA N H A  G m b  H &   C o.  K  G                     A 1 T NA  7
+            // E  U R           5 . 0 0  0, 0  0 0                ST Z  -A  n le i h  e v  .2 0 1  3(  2 0 / 2 3)          DE 0  00  A 1 T N A7  0
+            //                                       Zinstermin: 04JD                             
             .section("name", "isin", "wkn", "shares", "text")
             .match(".*(?<text>Zins.*) .*")
-            .match("^(\\w+) .* ([\\w]{3}\\/[\\w]{4}).*")
-            .match("^(\\w\\s\\w\\s+\\w)\\s{2}(\\w.*)\\s{5,}(\\w.*)\\s{5,}(?<name>\\w.*)\\s{5,}(?<wkn>\\w.*)$")
-            .match(".*(\\w.*)\\s{5,}(?<shares>\\w.*)\\s{5,}\\w.*\\s{5,}(?<isin>\\w.*).*")
+            .match("^\\w+ .* [\\w]{3}\\/[\\w]{4}.*")
+            .match(".*[\\s]{5,}(?<name>\\w.*)[\\s]{5,}(?<wkn>\\w.*)$")
+            .match("^[\\w\\s]+[\\s]{5,}(?<shares>[\\d\\s.,]+)[\\s]{5,}ST[\\s]+.*\\s{5,}(?<isin>.*)$")
+            .match(".*(Zinstermin).*")
             .assign((t, v) -> {
                 v.put("isin", stripBlanks(v.get("isin")));
                 v.put("wkn", stripBlanks(v.get("wkn")));

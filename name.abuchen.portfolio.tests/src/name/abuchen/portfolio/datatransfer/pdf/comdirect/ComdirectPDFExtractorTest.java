@@ -1711,6 +1711,35 @@ public class ComdirectPDFExtractorTest
     }
 
     @Test
+    public void testZinsgutschrift02()
+    {
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "comdirectZinsgutschrift02.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
+        assertThat(security.getIsin(), is("DE000A1TNA70"));
+        assertThat(security.getWkn(), is("A1TNA7"));
+        assertThat(security.getName(), is("SANHAGmbH&Co.KG"));
+
+        // check buy sell transaction
+        AccountTransaction t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+                        .findFirst().get().getSubject();
+
+        assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(t.getAmount(), is(Values.Amount.factorize(181.25)));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2020-06-04T00:00")));
+        assertThat(t.getShares(), is(Values.Share.factorize(5000)));
+    }
+
+    @Test
     public void testSteuermitteilungAusZinsgutschrift01()
     {
         ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
