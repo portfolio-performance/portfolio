@@ -1430,6 +1430,42 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierVerkauf9()
+    {
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+        
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexVerkauf9.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("IE00B3WJKG14"));
+        assertThat(security.getWkn(), is("A142N1"));
+        assertThat(security.getName(), is("ISHSV-S+500INF.T.SECT.DLA"));
+
+        // check buy sell transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        assertThat(item.orElseThrow(IllegalArgumentException::new).getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+
+        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(5681.04)));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-02-19T00:00")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(425)));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), 
+                        is(Money.of("EUR", Values.Amount.factorize(9.90 + 2.51))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX), 
+                        is(Money.of("EUR", Values.Amount.factorize(305.85))));
+    }
+
+    @Test
     public void testWertpapierÜbertrag1() // NOSONAR
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());

@@ -820,6 +820,13 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                         Money.of(asCurrencyCode(v.get("currency")),
                                                                         asAmount(v.get("fee"))))))
 
+                        .section("tax", "currency").optional() //
+                        .match(".* \\*\\*Einbeh. KESt[\\s:]*(?<tax>[\\d.-]+,\\d+) *(?<currency>\\w{3}+)")
+                        .assign((t, v) -> t.getPortfolioTransaction()
+                                        .addUnit(new Unit(Unit.Type.TAX,
+                                                        Money.of(asCurrencyCode(v.get("currency")),
+                                                                        asAmount(v.get("tax"))))))
+
                         .wrap(BuySellEntryItem::new));
     }
 
