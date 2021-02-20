@@ -2,6 +2,7 @@ name.abuchen.portfolio.money.impl.ECBExchangeRateProviderTest
 name.abuchen.portfolio.money.impl.ExchangeRateProviderGBXTest
 name.abuchen.portfolio.money.impl.ExchangeRateProviderILATest
 name.abuchen.portfolio.money.impl.ExchangeRateProviderAEDTest
+name.abuchen.portfolio.money.impl.ExchangeRateProviderZACTest
 name.abuchen.portfolio.datatransfer.pdf.consorsbank.ConsorsbankPDFExtractorPDFTest
 name.abuchen.portfolio.datatransfer.pdf.dkb.DkbPDFExtractorPDFTest
 name.abuchen.portfolio.model.TaxonomyLoadingTest
