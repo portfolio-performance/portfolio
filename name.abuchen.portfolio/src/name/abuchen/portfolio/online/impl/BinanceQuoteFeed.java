@@ -62,7 +62,7 @@ public final class BinanceQuoteFeed implements QuoteFeed
     @Override
     public QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse)
     {
-        LocalDate quoteStartDate = LocalDate.MIN;
+        LocalDate quoteStartDate = LocalDate.of(1970, 01, 01);
 
         if (!security.getPrices().isEmpty())
             quoteStartDate = security.getPrices().get(security.getPrices().size() - 1).getDate();
