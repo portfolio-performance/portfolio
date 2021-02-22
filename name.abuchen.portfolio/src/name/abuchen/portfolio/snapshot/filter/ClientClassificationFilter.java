@@ -200,9 +200,9 @@ public class ClientClassificationFilter implements ClientFilter
         long accountAmount = value(t.getAmount(), accountWeight);
 
         long commonAmount = Math.min(securityAmount, accountAmount);
-        BigDecimal commonWeight = BigDecimal.valueOf(commonAmount)
-                        .divide(BigDecimal.valueOf(securityAmount), Values.MC)
-                        .multiply(securityWeight, Values.MC);
+        BigDecimal commonWeight = securityAmount == 0L ? securityWeight
+                        : BigDecimal.valueOf(commonAmount).divide(BigDecimal.valueOf(securityAmount), Values.MC)
+                                        .multiply(securityWeight, Values.MC);
 
         // create a buy/sell transactions with the amount shared by the account
         // assignment and the security assignment
@@ -546,8 +546,7 @@ public class ClientClassificationFilter implements ClientFilter
             return value;
         else
             return BigDecimal.valueOf(value) //
-                            .multiply(weight, Values.MC)
-                            .divide(Classification.ONE_HUNDRED_PERCENT_BD, Values.MC)
+                            .multiply(weight, Values.MC).divide(Classification.ONE_HUNDRED_PERCENT_BD, Values.MC)
                             .setScale(0, RoundingMode.HALF_EVEN).longValue();
     }
 }
