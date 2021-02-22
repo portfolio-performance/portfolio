@@ -69,6 +69,11 @@ public final class Interval
         return contains(other.toLocalDate());
     }
 
+    public boolean intersects(Interval other)
+    {
+        return other.getStart().isBefore(end) && other.getEnd().isAfter(start);
+    }
+
     public long getDays()
     {
         return ChronoUnit.DAYS.between(start, end);

@@ -90,7 +90,7 @@ public class PerformanceHeatmapWidget extends AbstractHeatmapWidget<Double>
             for (LocalDate month = LocalDate.of(year.getValue(), 1, 1); month.getYear() == year
                             .getValue(); month = month.plusMonths(1))
             {
-                if (actualInterval.contains(month))
+                if (actualInterval.intersects(Interval.of(month, month.plusMonths(1).minusDays(1))))
                     row.addData(calculatePerformance.applyAsDouble(month));
                 else
                     row.addData(null);
