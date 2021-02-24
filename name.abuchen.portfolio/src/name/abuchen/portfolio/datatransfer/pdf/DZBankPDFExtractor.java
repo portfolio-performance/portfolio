@@ -71,7 +71,7 @@ public class DZBankPDFExtractor extends AbstractPDFExtractor
 
             // Schlusstag/-Zeit 09.02.2021 19:48:50 Auftraggeber Max Muster
             .section("date", "time")
-            .match("(Schlusstag/-Zeit) (?<date>\\d+.\\d+.\\d{4}+) (?<time>\\d+:\\d+:\\d+).*")
+            .match("(Schlusstag\\/-Zeit) (?<date>\\d+.\\d+.\\d{4}+) (?<time>\\d+:\\d+:\\d+).*")
             .assign((t, v) -> {
                 if (v.get("time") != null)
                     t.setDate(asDate(v.get("date"), v.get("time")));
@@ -120,7 +120,7 @@ public class DZBankPDFExtractor extends AbstractPDFExtractor
 
             // Übertragungs-/Liefergebühr 0,10- EUR
             .section("fee", "currency").optional()
-            .match("(Übertragungs-/Liefergeb.hr)[ ]*(?<fee>[\\d+,.]*)- (?<currency>[\\w]{3}).*")
+            .match("(.bertragungs-\\/Liefergeb.hr)[ ]*(?<fee>[\\d+,.]*)- (?<currency>[\\w]{3}).*")
             .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
                             Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
             
