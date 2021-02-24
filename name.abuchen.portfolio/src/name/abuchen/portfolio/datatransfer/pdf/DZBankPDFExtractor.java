@@ -303,7 +303,7 @@ public class DZBankPDFExtractor extends AbstractPDFExtractor
             .section("date", "taxRefund", "currency").optional()
             .match("(Datum) (?<date>\\d+.\\d+.\\d{4}+)$")
             .match("(Kapitalertragsteuer) [\\d+,\\%]* auf [\\d+,]+ [\\w]{3} (?<tax>[\\d+,.]*) (?<currency>[\\w]{3})")
-            .match("(Solidaritätszuschlag) [\\d+,\\%]* auf [\\d+,]+ [\\w]{3} (?<tax>[\\d+,.]*) (?<currency>[\\w]{3})")
+            .match("(Solidarit.tszuschlag) [\\d+,\\%]* auf [\\d+,]+ [\\w]{3} (?<tax>[\\d+,.]*) (?<currency>[\\w]{3})")
             .match("(Ausmachender Betrag)[ ]*(?<taxRefund>[\\d.]+,[\\d-]+) (?<currency>[\\w]{3}).*")
             .assign((t, v) -> {
                 t.setDateTime(asDate(v.get("date")));
