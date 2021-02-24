@@ -1499,8 +1499,6 @@ public class FinTechGroupBankPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(9.90))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX), 
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX), 
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check tax-refund transaction
         item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
