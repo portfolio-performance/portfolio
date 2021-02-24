@@ -1,0 +1,69 @@
+﻿PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+   
+Volksbank Dresden eG · Postfach 100555 · 01075 Dresden Seite 1 von 2
+Depotnummer
+ 5094458700
+ Kundennummer 50827510
+Max Muster
+ Auftragsnummer 657792/35.00
+Max Muster Datum 27.01.2021
+Straße-Str. 4 Rechnungsnummer W07202-0000001635/21
+01234 Stadt Steuernummer 70213805292   
+Onlinedepot
+ 
+Wertpapier Abrechnung Verkauf 
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 5 ETSY INC.                          US29786A1060 (A14P98)
+REGISTERED SHARES DL -,001         
+Handels-/Ausführungsplatz Tradegate (gemäß Weisung)
+Börsensegment XGAT
+Limit-Order
+Limit 161,00 EUR 
+Schlusstag/-Zeit 27.01.2021 15:52:15 Auftraggeber Max KMuster
+Ausführungskurs 163,10 EUR Auftragserteilung/ -ort Online-Banking
+Girosammelverw. mehrere Sammelurkunden - kein Stückeausdruck -
+Kurswert 815,50 EUR
+Provision 9,95- EUR
+Übertragungs-/Liefergebühr 0,10- EUR
+Ermittlung steuerrelevante Erträge
+Veräußerungsverlust 99,50- EUR
+Eingebuchte Aktienverluste 99,50 EUR
+Ausmachender Betrag 805,45 EUR
+ 
+Den Gegenwert buchen wir mit Valuta 29.01.2021 zu Gunsten des Kontos 5074498700
+(IBAN DE27 9503 0000 5023 2680 00), BLZ 85090000 (BIC GENODEF1DRS).
+Die Wertpapiere entnehmen wir Ihrem Depotkonto.
+Steuerliche Ausgleichrechnung
+Verrechnete Aktienverluste 99,50- EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 99,50 EUR
+7202.01272143.0000031OR07
+Seite 2 von 2
+Depotnummer 5094458700
+Kundennummer 50922500
+Auftragsnummer 657792/35.00
+Datum 27.01.2021
+Kapitalertragsteuer 25,00% auf 99,50 EUR 24,87 EUR
+Solidaritätszuschlag 5,50% auf 24,87 EUR 1,36 EUR
+Ausmachender Betrag 26,23 EUR
+ 
+Den Gegenwert buchen wir mit Valuta 27.01.2021 zu Gunsten des Kontos 5072251000
+(IBAN DE27 9503 0000 5023 2680 00), BLZ 85090000 (BIC GENODEF1DRS).
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verlustverrechnungstöpfe 2021 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 3.356,29
+Verkauf 99,50 0,00 0,00 0,00 0,00
+Steuerausgleich 99,50- 0,00 0,00 0,00 99,50-
+Nachher 0,00 0,00 0,00 0,00 3.256,79
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäft Auftragsnr. Ausführ.-tag Whr./St. Nennwert/Stück AS-Kosten Erlös ant. Ergebnis
+Kauf 6555593500 26.01.2021 Stück 5,0000 904,95- 805,45 99,50- (D)
+Summe aller Erträge nach Differenzmethode und/oder Ersatzbemessungsgrundlage 99,50-
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+7202.01272143.0000032OR07

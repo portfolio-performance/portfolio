@@ -81,9 +81,11 @@ public class DZBankPDFExtractor extends AbstractPDFExtractor
             
             // Nominale Wertpapierbezeichnung ISIN (WKN)
             // Stück 1 NETFLIX INC.                       US64110L1061 (552484)
-            .section("shares", "name", "isin", "wkn")
+            // REGISTERED SHARES DL -,001  
+            .section("shares", "name", "isin", "wkn", "nameContinued")
             .match("(Nominale Wertpapierbezeichnung ISIN \\(WKN\\))")
             .match("(St.ck) (?<shares>[\\d.]+(,\\d+)?) (?<name>.*)\\s+(?<isin>.*) \\((?<wkn>.*)\\).*")
+            .match("(?<nameContinued>.*)")
             .assign((t, v) -> {
                 v.put("isin", v.get("isin"));
                 v.put("wkn", v.get("wkn"));
@@ -124,7 +126,7 @@ public class DZBankPDFExtractor extends AbstractPDFExtractor
             
             // Kapitalertragsteuer 25,00% auf 37,93 EUR 9,49- EUR
             .section("tax", "currency").optional()
-            .match("(Kapitalertragsteuer) [\\d+,\\%]* auf [\\d,]* EUR (?<tax>[\\d+,.]*)- (?<currency>[\\w]{3})")
+            .match("(Kapitalertragsteuer) [\\d+,\\%]* auf [\\d,]* [\\w]{3} (?<tax>[\\d+,.]*)- (?<currency>[\\w]{3})")
             .assign((t, v) -> t.getPortfolioTransaction()
                             .addUnit(new Unit(Unit.Type.TAX,
                                             Money.of(asCurrencyCode(v.get("currency")),
@@ -132,14 +134,16 @@ public class DZBankPDFExtractor extends AbstractPDFExtractor
 
             // Solidaritätszuschlag 5,50% auf 9,49 EUR 0,52- EUR
             .section("tax", "currency").optional()
-            .match("(Solidarit.tszuschlag) [\\d+,\\%]* auf [\\d,]* EUR (?<tax>[\\d+,.]*)- (?<currency>[\\w]{3})")
+            .match("(Solidarit.tszuschlag) [\\d+,\\%]* auf [\\d,]* [\\w]{3} (?<tax>[\\d+,.]*)- (?<currency>[\\w]{3})")
             .assign((t, v) -> t.getPortfolioTransaction()
                             .addUnit(new Unit(Unit.Type.TAX,
                                             Money.of(asCurrencyCode(v.get("currency")),
                                                             asAmount(v.get("tax"))))))
 
             .wrap(BuySellEntryItem::new);
-
+        
+        addTaxRefundForSell(type);
+        
         block.set(pdfTransaction);
     }
     
@@ -262,5 +266,55 @@ public class DZBankPDFExtractor extends AbstractPDFExtractor
                                                 asAmount(v.get("fee2")))));               
             })            
             .wrap(BuySellEntryItem::new));
+    }
+
+    @SuppressWarnings("nls")
+    private void addTaxRefundForSell(DocumentType type)
+    {
+        Block block = new Block("Wertpapier Abrechnung (Kauf|Verkauf).*");
+        type.addBlock(block);
+        block.set(new Transaction<AccountTransaction>()
+
+            .subject(() -> {
+                AccountTransaction entry = new AccountTransaction();
+                entry.setType(AccountTransaction.Type.TAX_REFUND);
+                return entry;
+            })
+
+            // Nominale Wertpapierbezeichnung ISIN (WKN)
+            // Stück 5 ETSY INC.                          US29786A1060 (A14P98)
+            // REGISTERED SHARES DL -,001  
+            .section("shares", "name", "isin", "wkn", "nameContinued").optional()
+            .match("(Nominale Wertpapierbezeichnung ISIN \\(WKN\\))")
+            .match("(St.ck) (?<shares>[\\d.]+(,\\d+)?) (?<name>.*)\\s+(?<isin>.*) \\((?<wkn>.*)\\).*")
+            .match("(?<nameContinued>.*)")
+            .assign((t, v) -> {
+                v.put("isin", v.get("isin"));
+                v.put("wkn", v.get("wkn"));
+                v.put("name", v.get("name"));                            
+                t.setSecurity(getOrCreateSecurity(v));
+                t.setShares(asShares(v.get("shares")));
+            })
+
+            // Datum 27.01.2021
+            // Kapitalertragsteuer 25,00% auf 99,50 EUR 24,87 EUR
+            // Solidaritätszuschlag 5,50% auf 24,87 EUR 1,36 EUR
+            // Ausmachender Betrag 26,23 EUR
+            .section("date", "taxRefund", "currency").optional()
+            .match("(Datum) (?<date>\\d+.\\d+.\\d{4}+)$")
+            .match("(Kapitalertragsteuer) [\\d+,\\%]* auf [\\d+,]+ [\\w]{3} (?<tax>[\\d+,.]*) (?<currency>[\\w]{3})")
+            .match("(Solidaritätszuschlag) [\\d+,\\%]* auf [\\d+,]+ [\\w]{3} (?<tax>[\\d+,.]*) (?<currency>[\\w]{3})")
+            .match("(Ausmachender Betrag)[ ]*(?<taxRefund>[\\d.]+,[\\d-]+) (?<currency>[\\w]{3}).*")
+            .assign((t, v) -> {
+                t.setDateTime(asDate(v.get("date")));
+                t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                t.setAmount(asAmount(v.get("taxRefund")));
+            })
+
+            .wrap(t -> {
+                if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                    return new TransactionItem(t);
+                return null;
+            }));
     }
 }
