@@ -170,7 +170,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
             DecimalFormat format = null;
             int potency = 0;
 
-            Pattern patternSingleValue = Pattern.compile("[\\d,.]+(k|m)$"); //$NON-NLS-1$
+            Pattern patternSingleValue = Pattern.compile("[\\d,.]+(k|m|t)$"); //$NON-NLS-1$
             Pattern patternThreeValue = Pattern.compile("[\\d,.]+(mio|mrd|md.)$"); //$NON-NLS-1$
 
             Matcher m = patternSingleValue.matcher(text);
@@ -182,8 +182,13 @@ public class HTMLTableQuoteFeed implements QuoteFeed
                 {
                     case 'k':
                         potency = 3;
+                        break;
+                    case 't':
+                        potency = 3;
+                        break;
                     case 'm':
                         potency = 6;
+                        break;
                     default: 
                         // do nothing
                 }
@@ -210,10 +215,13 @@ public class HTMLTableQuoteFeed implements QuoteFeed
                 {
                     case "mio": //$NON-NLS-1$
                         potency = 6;
+                        break;
                     case "mrd": //$NON-NLS-1$
                         potency = 9;
+                        break;
                     case "md.": //$NON-NLS-1$
                         potency = 9;
+                        break;
                     default: 
                         // do nothing
                 }
