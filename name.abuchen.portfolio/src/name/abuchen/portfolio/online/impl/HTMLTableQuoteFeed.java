@@ -27,6 +27,7 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.jsoup.Jsoup;
@@ -149,7 +150,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
             {
                 // determine format based on the relative location of the last
                 // comma and dot, e.g. the last comma indicates a German number
-                // format
+                // format                                
                 int lastDot = text.lastIndexOf('.');
                 int lastComma = text.lastIndexOf(',');
                 format = Math.max(lastDot, lastComma) == lastComma ? DECIMAL_FORMAT_GERMAN.get()
@@ -158,6 +159,89 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 
             double quote = format.parse(text).doubleValue();
             return Math.round(quote * Values.Quote.factor());
+        }
+
+        protected long asVolume(Element value, String languageHint) throws ParseException
+        {
+            String text = value.text().trim().toLowerCase();
+            text = text.replace(" ", "");  //$NON-NLS-1$//$NON-NLS-2$
+            text = text.replace("'", "");  //$NON-NLS-1$//$NON-NLS-2$
+
+            DecimalFormat format = null;
+            int potency = 0;
+
+            Pattern patternSingleValue = Pattern.compile("[\\d,.]+(k|m)$"); //$NON-NLS-1$
+            Pattern patternThreeValue = Pattern.compile("[\\d,.]+(mio|mrd|md.)$"); //$NON-NLS-1$
+
+            Matcher m = patternSingleValue.matcher(text);
+            if (m.matches())
+            {
+                // Set tenth potency
+                char type  = text.charAt(text.length() - 1);
+                switch(type)
+                {
+                    case 'k':
+                        potency = 3;
+                    case 'm':
+                        potency = 6;
+                    default: 
+                        // do nothing
+                }
+
+                if (text.indexOf(",") != -1) //$NON-NLS-1$
+                {                        
+                    String volumeSingle = text.replace(",", ".");  //$NON-NLS-1$//$NON-NLS-2$
+                    double volumeValue = Double.parseDouble(volumeSingle.substring(0, volumeSingle.length() - 1));
+                    text = Long.toString((long) (volumeValue * Math.pow(10, potency)));
+                }
+                else
+                {
+                    Long volumeValue = Long.parseLong(text.substring(0, text.length() - 1));
+                    text = Long.toString((long) (volumeValue * Math.pow(10, potency)));
+                }
+            }
+
+            m = patternThreeValue.matcher(text);
+            if (m.matches())
+            {
+                // Set tenth potency
+                String type  = text.substring(text.length() - 3);
+                switch(type)
+                {
+                    case "mio": //$NON-NLS-1$
+                        potency = 6;
+                    case "mrd": //$NON-NLS-1$
+                        potency = 9;
+                    case "md.": //$NON-NLS-1$
+                        potency = 9;
+                    default: 
+                        // do nothing
+                }
+
+                if (text.indexOf(",") != -1) //$NON-NLS-1$
+                {
+                    String volume = text.replace(",", ".");  //$NON-NLS-1$//$NON-NLS-2$
+                    double volumeValue = Double.parseDouble(volume.substring(0, volume.length() - 3));
+                    text = Long.toString((long) (volumeValue * Math.pow(10, potency)));
+                }
+                else
+                {
+                    Long volumeValue = Long.parseLong(text.substring(0, text.length() - 3));
+                    text = Long.toString((long) (volumeValue * Math.pow(10, potency)));
+                }
+            }
+            
+            if ("de".equals(languageHint)) //$NON-NLS-1$
+                format = DECIMAL_FORMAT_GERMAN.get();
+            else if ("en".equals(languageHint)) //$NON-NLS-1$
+                format = DECIMAL_FORMAT_ENGLISH.get();
+            else
+                text = text.replace(".", "");  //$NON-NLS-1$//$NON-NLS-2$
+                text = text.replace(",", "");  //$NON-NLS-1$//$NON-NLS-2$
+                format = DECIMAL_FORMAT_GERMAN.get();
+            
+            double volume = format.parse(text).doubleValue();
+            return Math.round(volume);
         }
     }
 
@@ -269,6 +353,26 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         }
     }
 
+    protected static class VolumeColumn extends Column
+    {
+        @SuppressWarnings("nls")
+        public VolumeColumn()
+        {
+            super(new String[] { "Volu.*", "Umsatz in Stück" });
+        }
+
+        public VolumeColumn(String[] patterns)
+        {
+            super(patterns);
+        }
+
+        @Override
+        void setValue(Element value, ExtractedPrice volume, String languageHint) throws ParseException
+        {
+            volume.setVolume(asVolume(value, languageHint));
+        }
+    }
+
     protected static class HighColumn extends Column
     {
         @SuppressWarnings("nls")
@@ -342,7 +446,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
     public static final String ID = "GENERIC_HTML_TABLE"; //$NON-NLS-1$
 
     private static final Column[] COLUMNS = new Column[] { new DateColumn(), new TimeColumn(), new CloseColumn(),
-                    new HighColumn(), new LowColumn() };
+                    new HighColumn(), new LowColumn(), new VolumeColumn() };
 
     private final PageCache<Pair<String, List<LatestSecurityPrice>>> cache = new PageCache<>();
 
