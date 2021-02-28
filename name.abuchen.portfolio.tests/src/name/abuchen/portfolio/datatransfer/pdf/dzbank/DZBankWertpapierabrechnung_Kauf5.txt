@@ -1,0 +1,39 @@
+﻿PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+   
+Volksbank · Postfach 100111 · 01234 Ortschaft
+Depotnummer
+ 2872248800
+ Kundennummer 20826520
+Max Mustermann
+ Auftragsnummer 746825/42.00
+Max Mustermann Datum 01.01.2019
+MWohnstraße 4 Rechnungsnummer W03227-0000007905/38
+01234 Ortschaft Steuernummer 37513578292   
+Onlinedepot
+ 
+Wertpapier Abrechnung Kauf 
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 100 Aktienname TECHNOLOGIES INC.             US90353T1007 (A2PHHG)
+REGISTERED SHARES DL-,00001        
+Handels-/Ausführungsplatz Tradegate (gemäß Weisung)
+Börsensegment XGAT
+Limit-Order
+Limit 39,60 EUR 
+Schlusstag/-Zeit 01.07.2019 18:27:57 Auftraggeber Max Mustermann
+Ausführungskurs 39,53 EUR Auftragserteilung/ -ort Online-Banking
+Girosammelverw. mehrere Sammelurkunden - kein Stückeausdruck -
+Kurswert 8.751,00- EUR
+Provision 9,95- EUR
+Übertragungs-/Liefergebühr 0,10- EUR
+Ausmachender Betrag 8.963,05- EUR
+ 
+Den Gegenwert buchen wir mit Valuta 03.07.2019 zu Lasten des Kontos 3078256012
+(IBAN DE27 8509 0000 5571 2612 00), BLZ 82070000 (BIC GENODEF8HH).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+5282.07912203.0500081O607
