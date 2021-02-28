@@ -50,7 +50,7 @@ public class TradeRepublicPDFExtractorTest
         Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
         assertThat(security.getIsin(), is("IE00BKM4GZ66"));
-        assertThat(security.getName(), is("iShs Core MSCI EM IMI U.ETF"));
+        assertThat(security.getName(), is("iShs Core MSCI EM IMI U.ETF Registered Shares o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check transaction
@@ -84,7 +84,7 @@ public class TradeRepublicPDFExtractorTest
         Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
         assertThat(security.getIsin(), is("US08862E1091"));
-        assertThat(security.getName(), is("Beyond Meat Inc."));
+        assertThat(security.getName(), is("Beyond Meat Inc. Registered Shares o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check transaction
@@ -118,7 +118,7 @@ public class TradeRepublicPDFExtractorTest
         Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
         assertThat(security.getIsin(), is("US88160R1014"));
-        assertThat(security.getName(), is("Tesla Inc."));
+        assertThat(security.getName(), is("Tesla Inc. Registered Shares DL-,001"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check transaction
@@ -152,7 +152,7 @@ public class TradeRepublicPDFExtractorTest
         Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
         assertThat(security.getIsin(), is("DE0007472060"));
-        assertThat(security.getName(), is("Wirecard AG"));
+        assertThat(security.getName(), is("Wirecard AG Inhaber-Aktien o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check transaction
@@ -313,7 +313,7 @@ public class TradeRepublicPDFExtractorTest
         Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
         assertThat(security.getIsin(), is("AU000000CUV3"));
-        assertThat(security.getName(), is("Clinuvel Pharmaceuticals Ltd."));
+        assertThat(security.getName(), is("Clinuvel Pharmaceuticals Ltd. Registered Shares o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check transaction
@@ -348,7 +348,7 @@ public class TradeRepublicPDFExtractorTest
         Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
         assertThat(security.getIsin(), is("DE000TR95XU9"));
-        assertThat(security.getName(), is("HSBC Trinkaus & Burkhardt AG"));
+        assertThat(security.getName(), is("HSBC Trinkaus & Burkhardt AG Call 15.12.21 DAX 14000"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check transaction
@@ -396,7 +396,7 @@ public class TradeRepublicPDFExtractorTest
         Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
         assertThat(security.getIsin(), is("DE0007100000"));
-        assertThat(security.getName(), is("Daimler AG"));
+        assertThat(security.getName(), is("Daimler AG Namens-Aktien o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check transaction
@@ -444,7 +444,7 @@ public class TradeRepublicPDFExtractorTest
         Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
         assertThat(security.getIsin(), is("IE00B0M62Q58"));
-        assertThat(security.getName(), is("iShs-MSCI World UCITS ETF"));
+        assertThat(security.getName(), is("iShs-MSCI World UCITS ETF Registered Shares USD (Dist)oN"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
     
         // check transaction
@@ -478,7 +478,7 @@ public class TradeRepublicPDFExtractorTest
         Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
         assertThat(security.getIsin(), is("DE000TT22GS8"));
-        assertThat(security.getName(), is("HSBC Trinkaus & Burkhardt AG"));
+        assertThat(security.getName(), is("HSBC Trinkaus & Burkhardt AG TurboC O.End Linde"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
     
         // check transaction
@@ -522,7 +522,7 @@ public class TradeRepublicPDFExtractorTest
         Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
         assertThat(security.getIsin(), is("DE1234567891"));
-        assertThat(security.getName(), is("HSBC Trinkaus & Burkhardt AG"));
+        assertThat(security.getName(), is("HSBC Trinkaus & Burkhardt AG TurboP O.End ShopApEu"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
     
         // check transaction
