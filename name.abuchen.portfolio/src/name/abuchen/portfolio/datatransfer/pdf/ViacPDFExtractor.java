@@ -34,6 +34,7 @@ public class ViacPDFExtractor extends SwissBasedPDFExtractor
         addDividendsTransaction();
         addDividendsTransactionEnglish();
         addTaxRefundTransaction();
+        addTaxRefundTransactionEnglish();
     }
 
     @SuppressWarnings("nls")
@@ -597,7 +598,49 @@ public class ViacPDFExtractor extends SwissBasedPDFExtractor
 
                         .wrap(TransactionItem::new));
     }
+    
+    @SuppressWarnings("nls")
+    private void addTaxRefundTransactionEnglish()
+    {
+        DocumentType type = new DocumentType("Dividend Payment");
+        this.addDocumentTyp(type);
 
+        Block block = new Block("Type of dividend: Refund withholding tax");
+        type.addBlock(block);
+        block.set(new Transaction<AccountTransaction>()
+
+            .subject(() -> {
+                AccountTransaction transaction = new AccountTransaction();
+                transaction.setType(AccountTransaction.Type.TAX_REFUND);
+                return transaction;
+            })
+
+            .section("shares", "name", "isin", "currency")
+            .match("(?<shares>[\\d+,.]*) Qty (?<name>.*)$")
+            .match("ISIN: (?<isin>\\S*)") //
+            .match("Dividend payment: (?<currency>\\w{3}+) .*")
+            .assign((t, v) -> {
+                t.setSecurity(getOrCreateSecurity(v));
+                t.setShares(asShares(v.get("shares")));
+            })
+
+            .section("date", "amount", "currency")
+            .match("Amount credited: Value date (?<date>\\d+.\\d+.\\d{4}+) (?<currency>\\w{3}+) (?<amount>-?[\\d+',.]*)")
+            .assign((t, v) -> {
+                t.setDateTime(asDate(v.get("date")));
+
+                t.setAmount(asAmount(v.get("amount")));
+                t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
+                {
+                    t.setNote(t.getSecurity().getName());
+                    t.setSecurity(null);
+                    t.setShares(0L);
+                }
+            })
+
+            .wrap(TransactionItem::new));
+    }
 
     @Override
     public String getLabel()
