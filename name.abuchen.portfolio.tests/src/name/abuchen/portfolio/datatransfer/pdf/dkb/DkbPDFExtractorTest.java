@@ -1402,12 +1402,12 @@ public class DkbPDFExtractorTest
                         errors);
     
         assertThat(errors, empty());
-        assertThat(results.size(), is(8));
+        assertThat(results.size(), is(9));
     
         // check transaction
         // get transactions
         Iterator<Extractor.Item> iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
-        assertThat(results.stream().filter(i -> i instanceof TransactionItem).count(), is(8L));
+        assertThat(results.stream().filter(i -> i instanceof TransactionItem).count(), is(9L));
         if (iter.hasNext())
         {
             Item item = iter.next();
@@ -1467,7 +1467,7 @@ public class DkbPDFExtractorTest
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-01T00:00")));
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(999)));
         }
-        
+
         if (iter.hasNext())
         {
             Item item = iter.next();
@@ -1478,6 +1478,18 @@ public class DkbPDFExtractorTest
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-01T00:00")));
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(43.86)));
+        }
+        
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-01T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(50.00)));
         }
 
         if (iter.hasNext())
@@ -1518,12 +1530,12 @@ public class DkbPDFExtractorTest
                         errors);
     
         assertThat(errors, empty());
-        assertThat(results.size(), is(2));
+        assertThat(results.size(), is(4));
     
         // check transaction
         // get transactions
         Iterator<Extractor.Item> iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
-        assertThat(results.stream().filter(i -> i instanceof TransactionItem).count(), is(2L));
+        assertThat(results.stream().filter(i -> i instanceof TransactionItem).count(), is(4L));
         if (iter.hasNext())
         {
             Item item = iter.next();
@@ -1535,7 +1547,7 @@ public class DkbPDFExtractorTest
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-31T00:00")));
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(1000)));
         }
-        
+
         if (iter.hasNext())
         {
             Item item = iter.next();
@@ -1546,6 +1558,30 @@ public class DkbPDFExtractorTest
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-04T00:00")));
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(1000)));
+        }
+        
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-01T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(1234.56)));
+        }
+        
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-29T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(1.23)));
         }
     }
 

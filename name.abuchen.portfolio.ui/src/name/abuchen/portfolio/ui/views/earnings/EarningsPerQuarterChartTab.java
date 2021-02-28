@@ -96,9 +96,28 @@ public class EarningsPerQuarterChartTab extends AbstractChartTab
                 }
             });
 
-            Label l = new Label(container, SWT.NONE);
-            l.setForeground(foregroundColor);
-            l.setText(Messages.ColumnSum);
+            if (model.usesConsolidateRetired())
+            {
+                Label lSumRetired = new Label(container, SWT.NONE);
+                lSumRetired.setForeground(foregroundColor);
+                lSumRetired.setText(Messages.LabelEarningsConsolidateRetired);
+
+                for (int m = quarter * 3; m < totalNoOfMonths; m += 12)
+                {
+                    int mLimit = m + 3;
+                    long value = 0;
+                    for (int mQuarter = m; mQuarter < mLimit && mQuarter < totalNoOfMonths; mQuarter += 1)
+                        value += model.getSumRetired().getValue(mQuarter);
+                    Label cl = new Label(container, SWT.RIGHT);
+                    cl.setForeground(foregroundColor);
+                    cl.setText(TextUtil.pad(Values.Amount.format(value)));
+                    GridDataFactory.fillDefaults().align(SWT.END, SWT.FILL).applyTo(cl);
+                }
+            }
+
+            Label lSum = new Label(container, SWT.NONE);
+            lSum.setForeground(foregroundColor);
+            lSum.setText(Messages.ColumnSum);
 
             for (int m = quarter * 3; m < totalNoOfMonths; m += 12)
             {
@@ -106,7 +125,7 @@ public class EarningsPerQuarterChartTab extends AbstractChartTab
                 long value = 0;
                 for (int mQuarter = m; mQuarter < mLimit && mQuarter < totalNoOfMonths; mQuarter += 1)
                     value += model.getSum().getValue(mQuarter);
-                l = new Label(container, SWT.RIGHT);
+                Label l = new Label(container, SWT.RIGHT);
                 Color color = ((IBarSeries) getChart().getSeriesSet().getSeries()[m / 12]).getBarColor();
                 l.setBackground(color);
                 l.setForeground(Colors.getTextColor(color));

@@ -1,0 +1,51 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Seite 1/1
+München
+24.02.2021
+Scalable Capital Vermögensverw.GmbH
+Scalable Capital 
+Seitzstr. 8 e Vermögensverwaltung GmbH 
+Seitzstraße 8e
+80538 München
+80538 München 
+service@scalable.capital
+x
+Stamm-Nr.: x    Portfolio: 1
+Depot-Nr.: x
+Vorgangs-Nr.: x
+Referenz-Nr.: x
+Wertpapierabrechnung: Kauf KOPIE
+Auftragsdatum: 24.02.2021 Ausführungsplatz: GETTEX - MM Munich
+Auftragszeit: 14:49:49:67
+Nominale ISIN: ES0173093024 WKN: A2ANA3 Kurs 
+STK 70 Red Electrica Corporacion S.A. EUR 14,045
+Acciones Port. EO -,50
+Auftraggeber: Depotinhaber
+Art der Auftragserteilung: Orderroutingssystem
+Kurswert EUR 983,15
+Span. Finanztransaktionssteuer EUR 1,97
+Zu Lasten Konto 123456789 Valuta: 26.02.2021 EUR 985,12
+Die Wertpapiere buchen wir zu Gunsten Ihres Depots.
+Details zur Ausführung:
+Handels- Handels- 
+Nominale Kurs Ausführungsplatz datum uhrzeit
+STK   70 EUR 14,045 GETTEX - MM Munich 24.02.2021 14:49:46:04
+Verwahrart: Girosammelverwahrung Zeitzone der Handelsuhrzeit: MEZ/MESZ
+Lagerstelle: 100 MIC des Ausführungsplatzes: MUNC
+Lagerland: Deutschland
+Für die Ausführung dieses Auftrags gelten die Usancen des jeweiligen Ausführungsplatzes.
+Diese Auftragsbestätigung/Abrechnung wurde von der Baader Bank AG erstellt. Bitte prüfen Sie diese auf Richtigkeit und 
+Vollständigkeit. Etwaige Einwendungen gegen diese Auftragsbestätigung/Abrechnung müssen nach Zugang unverzüglich bei der 
+Baader Bank AG erhoben werden.
+Dieser Auftrag erfolgte ohne Empfehlung der Bank. Es wurde keine Anlageberatung und keine individuelle Aufklärung durch die Bank 
+erbracht.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Scalable Capital Vermögensverwaltung GmbH | Geschäftsführung: Erik Podzuweit, Florian Prucker, Martin Krebs, Peter Gaubatz | HRB 217778, Amtsgericht 
+München | USt-IdNr. DE300434774 | www.scalable.capital 
+Baader Bank Aktiengesellschaft Weihenstephaner Straße 4 85716 Unterschleißheim Deutschland
+service@baaderbank.de www.baaderbank.de 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft. WPABRECHNUNG-054.108

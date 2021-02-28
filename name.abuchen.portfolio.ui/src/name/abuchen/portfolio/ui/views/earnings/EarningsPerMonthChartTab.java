@@ -90,13 +90,28 @@ public class EarningsPerMonthChartTab extends AbstractChartTab
                 }
             });
 
-            Label l = new Label(container, SWT.NONE);
-            l.setForeground(foregroundColor);
-            l.setText(Messages.ColumnSum);
+            if (model.usesConsolidateRetired())
+            {
+                Label lSumRetired = new Label(container, SWT.NONE);
+                lSumRetired.setForeground(foregroundColor);
+                lSumRetired.setText(Messages.LabelEarningsConsolidateRetired);
+
+                for (int m = month; m < totalNoOfMonths; m += 12)
+                {
+                    Label cl = new Label(container, SWT.RIGHT);
+                    cl.setForeground(foregroundColor);
+                    cl.setText(TextUtil.pad(Values.Amount.format(model.getSumRetired().getValue(m))));
+                    GridDataFactory.fillDefaults().align(SWT.END, SWT.FILL).applyTo(cl);
+                }
+            }
+
+            Label lSum = new Label(container, SWT.NONE);
+            lSum.setForeground(foregroundColor);
+            lSum.setText(Messages.ColumnSum);
 
             for (int m = month; m < totalNoOfMonths; m += 12)
             {
-                l = new Label(container, SWT.RIGHT);
+                Label l = new Label(container, SWT.RIGHT);
                 Color color = ((IBarSeries) getChart().getSeriesSet().getSeries()[m / 12]).getBarColor();
                 l.setBackground(color);
                 l.setForeground(Colors.getTextColor(color));

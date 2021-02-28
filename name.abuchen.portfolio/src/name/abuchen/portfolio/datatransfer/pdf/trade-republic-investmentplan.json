@@ -16,7 +16,7 @@
 					"pattern": [
 						"POSITION ANZAHL (KURS|DURCHSCHNITTSKURS) BETRAG",
 						"(?<name>.*) ([\\d+,.]*) Stk. ([\\d+,.]*) (?<currency>\\w{3}+) ([\\d+,.]*) (\\w{3}+)$",
-						".*",
+						"(?<nameContinued>.*)",
 						"(ISIN: )?(?<isin>.*)"
 					]
 				},

@@ -33,7 +33,9 @@ public class Trade implements Adaptable
     private List<TransactionPair<PortfolioTransaction>> transactions = new ArrayList<>();
 
     private Money entryValue;
+    private Money entryGrossValue;
     private Money exitValue;
+    private Money exitGrossValue;
     private long holdingPeriod;
     private double irr;
 
@@ -52,11 +54,23 @@ public class Trade implements Adaptable
                                         .with(converter.at(t.getTransaction().getDateTime())))
                         .collect(MoneyCollectors.sum(converter.getTermCurrency()));
 
+        this.entryGrossValue = transactions.stream() //
+                        .filter(t -> t.getTransaction().getType().isPurchase())
+                        .map(t -> t.getTransaction().getGrossValue()
+                                        .with(converter.at(t.getTransaction().getDateTime())))
+                        .collect(MoneyCollectors.sum(converter.getTermCurrency()));
+
         if (end != null)
         {
             this.exitValue = transactions.stream() //
                             .filter(t -> t.getTransaction().getType().isLiquidation())
                             .map(t -> t.getTransaction().getMonetaryAmount()
+                                            .with(converter.at(t.getTransaction().getDateTime())))
+                            .collect(MoneyCollectors.sum(converter.getTermCurrency()));
+
+            this.exitGrossValue = transactions.stream() //
+                            .filter(t -> t.getTransaction().getType().isLiquidation())
+                            .map(t -> t.getTransaction().getGrossValue()
                                             .with(converter.at(t.getTransaction().getDateTime())))
                             .collect(MoneyCollectors.sum(converter.getTermCurrency()));
 
@@ -175,6 +189,11 @@ public class Trade implements Adaptable
     public Money getProfitLoss()
     {
         return exitValue.subtract(entryValue);
+    }
+
+    public Money getGrossProfitLoss()
+    {
+        return exitGrossValue.subtract(entryGrossValue);
     }
 
     public long getHoldingPeriod()
