@@ -503,8 +503,8 @@ public class ClientInput
             job.schedule(sixHours);
             regularJobs.add(job);
 
-            new SyncOnlineSecuritiesJob(client).schedule(2000);
-            new UpdateDividendsJob(getClient()).schedule(5000);
+            new SyncOnlineSecuritiesJob(client).schedule(5000);
+            new UpdateDividendsJob(getClient()).schedule(7000);
         }
     }
 
