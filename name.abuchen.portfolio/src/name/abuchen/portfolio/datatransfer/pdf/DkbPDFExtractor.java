@@ -26,7 +26,9 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier(""); //$NON-NLS-1$
+        addBankIdentifier("DKB"); //$NON-NLS-1$
+        addBankIdentifier("Deutsche Kreditbank"); //$NON-NLS-1$
+        addBankIdentifier("10919 Berlin"); //$NON-NLS-1$
 
         addBuyTransaction();
         addSellTransaction();
@@ -63,9 +65,10 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
         block.set(pdfTransaction);
-        pdfTransaction.section("notation", "shares", "name", "isin", "wkn")
+        pdfTransaction.section("notation", "shares", "name", "isin", "wkn", "nameContinued")
                         .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)")
                         .match("(?<notation>^St\\Dck|^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{1,})?) (?<name>.*) (?<isin>[^ ]*) (\\((?<wkn>.*)\\).*)$")
+                        .match("(?<nameContinued>.*)")
                         .assign((t, v) -> {
                             String notation = v.get("notation");
                             if (notation != null && !(notation.startsWith("St") && notation.endsWith("ck")))
@@ -98,6 +101,9 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Wertpapier Abrechnung (Verkauf|Rücknahme Investmentfonds)");
         this.addDocumentTyp(type);
 
+        // Handshake for tax refund transaction
+        Map<String, String> context = type.getCurrentContext();
+        
         Block block = new Block("Wertpapier Abrechnung (Verkauf|Rücknahme Investmentfonds).*");
         type.addBlock(block);
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -107,21 +113,30 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
         block.set(pdfTransaction);
-        pdfTransaction.section("notation", "shares", "name", "isin", "wkn")
+        pdfTransaction.section("notation", "shares", "name", "isin", "wkn", "nameContinued")
                         .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)")
                         .match("(?<notation>^St\\Dck|^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{2,})?) (?<name>.*) (?<isin>[^ ]*) (\\((?<wkn>.*)\\).*)$")
+                        .match("(?<nameContinued>.*)")
                         .assign((t, v) -> {
                             String notation = v.get("notation");
                             if (notation != null && !(notation.startsWith("St") && notation.endsWith("ck")))
                             {
                                 // Prozent-Notierung, Workaround..
+                                String shares = Long.toString(asShares(v.get("shares")) / 100);
                                 t.setShares(asShares(v.get("shares")) / 100);
+                                context.put("shares", shares);
                             }
                             else
                             {
                                 t.setShares(asShares(v.get("shares")));
+                                context.put("shares", v.get("shares"));
                             }
                             t.setSecurity(getOrCreateSecurity(v));
+
+                            context.put("name", v.get("name"));
+                            context.put("nameContinued", v.get("nameContinued"));
+                            context.put("isin", v.get("isin"));
+                            context.put("wkn", v.get("wkn"));
                         })
 
                         .section("amount", "currency") //
@@ -147,6 +162,8 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
         addTaxesSectionsTransaction(type, pdfTransaction);
         addFeesSectionsTransaction(pdfTransaction);
+        addTaxRefundForSell(type, context);
+
     }
 
     private void addInterestTransaction()
@@ -163,9 +180,10 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
             return transaction;
         });
         block.set(pdfTransaction);
-        pdfTransaction.section("notation", "shares", "name", "isin", "wkn")
+        pdfTransaction.section("notation", "shares", "name", "isin", "wkn", "nameContinued")
                         .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)")
                         .match("(?<notation>^St\\Dck|^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{2,})?) (?<name>.*) (?<isin>[^ ]*) (\\((?<wkn>.*)\\).*)$")
+                        .match("(?<nameContinued>.*)")
                         .assign((t, v) -> {
                             String notation = v.get("notation");
                             if (notation != null && !(notation.startsWith("St") && notation.endsWith("ck")))
@@ -198,7 +216,6 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
     private void addDividendTransaction()
     {
         DocumentType type = createDocumentType("Dividendengutschrift");
-        //DocumentType type = new DocumentType("Dividendengutschrift");
         this.addDocumentTyp(type);
 
         Block block = new Block("Dividendengutschrift|Ertragsgutschrift.*");
@@ -256,9 +273,10 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
         block.set(pdfTransaction);
-        pdfTransaction.section("notation", "shares", "name", "isin", "wkn")
+        pdfTransaction.section("notation", "shares", "name", "isin", "wkn", "nameContinued")
                         .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)")
                         .match("(?<notation>^St\\Dck|^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{2,})?) (?<name>.*) (?<isin>[^ ]*) (\\((?<wkn>.*)\\).*)$")
+                        .match("(?<nameContinued>.*)")
                         .assign((t, v) -> {
                             String notation = v.get("notation");
                             if (notation != null && !(notation.startsWith("St") && notation.endsWith("ck")))
@@ -312,9 +330,10 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             return entry;
                         })
 
-                        .section("notation", "shares", "name", "isin", "wkn")
+                        .section("notation", "shares", "name", "isin", "wkn", "nameContinued")
                         .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)")
                         .match("(?<notation>^St\\Dck|^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{2,})?) (?<name>.*) (?<isin>[^ ]*) (\\((?<wkn>.*)\\).*)$")
+                        .match("(?<nameContinued>.*)")
                         .assign((t, v) -> {
                             String notation = v.get("notation");
                             if (notation != null && !(notation.startsWith("St") && notation.endsWith("ck")))
@@ -376,16 +395,16 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         block.set(pdfTransaction);
 
         pdfTransaction.oneOf(
-                        section -> section.attributes("shares", "name", "isin", "wkn", "currency")
-                        .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)")
-                        .match("(^St\\Dck) (?<shares>[\\d,.]*) (?<name>.*)$") //
-                        .match(".*") //
-                        .match("(?<isin>[^ ]*) \\((?<wkn>.*)\\)$") //
-                        .match("^Ertrag pro St. [\\d,.]* (?<currency>\\w{3}+)") //
-                        .assign((t, v) -> {
-                            t.setShares(asShares(v.get("shares")));
-                            t.setSecurity(getOrCreateSecurity(v));
-                        }),
+                        section -> section.attributes("shares", "name", "isin", "wkn", "currency", "nameContinued")
+                                        .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)")
+                                        .match("(^St\\Dck) (?<shares>[\\d,.]*) (?<name>.*)$") //
+                                        .match("(?<nameContinued>.*)")
+                                        .match("(?<isin>[^ ]*) \\((?<wkn>.*)\\)$") //
+                                        .match("^Ertrag pro St. [\\d,.]* (?<currency>\\w{3}+)") //
+                                        .assign((t, v) -> {
+                                            t.setShares(asShares(v.get("shares")));
+                                            t.setSecurity(getOrCreateSecurity(v));
+                                        }),
 
                         section -> section.attributes("shares", "name", "nameContinued", "isin", "wkn")
                                         .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)")
@@ -763,6 +782,41 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(TransactionItem::new));
+    }
+
+    private void addTaxRefundForSell(DocumentType type, Map<String, String> context)
+    {
+        Block block = new Block("Steuerliche Ausgleichrechnung");
+        type.addBlock(block);
+        block.set(new Transaction<AccountTransaction>()
+
+            .subject(() -> {
+                AccountTransaction entry = new AccountTransaction();
+                entry.setType(AccountTransaction.Type.TAX_REFUND);
+                return entry;
+            })
+
+            // Ausmachender Betrag 99,00 EUR
+            // Den Gegenwert buchen wir mit Valuta 24.02.2021 zu Gunsten des Kontos 1123456789
+            .section("taxRefund", "currency", "date").optional()
+            .match("(^Ausmachender Betrag) (?<taxRefund>\\d{1,3}(\\.\\d{3})*(,\\d{2})?) (?<currency>\\w{3}+)(.*)")
+            .match("^Den Gegenwert buchen wir mit Valuta (?<date>\\d+.\\d+.\\d{4}+) (.*)")
+            .assign((t, v) -> {
+                t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                t.setAmount(asAmount(v.get("taxRefund")));
+                t.setShares(asShares(context.get("shares")));
+                t.setSecurity(getOrCreateSecurity(context));
+                if (v.get("time") != null)
+                    t.setDateTime(asDate(v.get("date"), v.get("time")));
+                else
+                    t.setDateTime(asDate(v.get("date")));
+            })
+
+            .wrap(t -> {
+                if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                    return new TransactionItem(t);
+                return null;
+            }));
     }
 
     @Override
