@@ -1,0 +1,65 @@
+﻿PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+10919 Berlin Seite 1 von 2
+Depotnummer 123456789
+Kundennummer 1234567890
+Vorname Name
+Auftragsnummer 123456/78.00
+Herrn Datum 23.02.2021
+Vorname Name Rechnungsnummer W12345-1234567890/21
+Meinestr. 123 a Umsatzsteuer-ID DE123456789
+12345 Ort
+Wertpapier Abrechnung Verkauf
+Auftrag vom 15.02.2021 19:14:31 Uhr
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 20 AMC ENTERTAINMENT HOLDINGS INC US00165C1045 (A1W90H)
+REG. SHARES CLASS A DL -,01
+Handels-/Ausführungsplatz Tradegate (Best Execution)
+Börsensegment XGAT
+Limit-Order
+Limit 5,44 EUR
+Schlusstag/-Zeit 22.02.2021 20:56:04 Auftraggeber Vorname Name
+Ausführungskurs 5,45 EUR Auftragserteilung/ -ort Online-Banking
+Wertpapierrechnung Lagerland USA
+Kurswert 109,00 EUR
+Provision 10,00- EUR
+Ermittlung steuerrelevante Erträge
+Veräußerungsverlust 61,00- EUR
+Eingebuchte Aktienverluste 61,00 EUR
+Ausmachender Betrag 99,00 EUR
+Den Gegenwert buchen wir mit Valuta 24.02.2021 zu Gunsten des Kontos 1123456789
+(IBAN DE12 3456 7890 1234 5678 00), BLZ 12345678 (BIC ABCDEFG1234).
+Die Wertpapiere entnehmen wir Ihrem Depotkonto.
+Steuerliche Ausgleichrechnung
+Verrechnete Aktienverluste 61,00- EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 61,00 EUR
+0883.02232121.0057645OR07
+Seite 2 von 2
+Depotnummer 123456789
+Kundennummer 1234567890
+Auftragsnummer 123456/78.00
+Datum 23.02.2021
+Kapitalertragsteuer 25,00% auf 61,00 EUR 15,25 EUR
+Solidaritätszuschlag 5,50% auf 15,25 EUR 0,83 EUR
+Ausmachender Betrag 16,08 EUR
+Den Gegenwert buchen wir mit Valuta 23.02.2021 zu Gunsten des Kontos 1123456789
+(IBAN DE12 3456 7890 1234 5678 00), BLZ 12345678 (BIC ABCDEFG1234).
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Für das Geschäft wurde keine Anlageberatung erbracht.
+Initiator der Besprechung war der Kunde.
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verlustverrechnungstöpfe 2021 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 161,12
+Verkauf 61,00 0,00 0,00 0,00 0,00
+Steuerausgleich 61,00- 0,00 0,00 0,00 61,00-
+Nachher 0,00 0,00 0,00 0,00 100,12
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäft Auftragsnr. Ausführ.-tag Whr./St. Nennwert/Stück AS-Kosten Erlös ant. Ergebnis
+Kauf 1234567890 02.02.2021 Stück 20,0000 160,00- 99,00 61,00- (D)
+Summe aller Erträge nach Differenzmethode und/oder Ersatzbemessungsgrundlage 61,00-
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0123.01234567.0123456AB12
