@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Portfolio Platform UI
 Bundle-SymbolicName: name.abuchen.portfolio.ui;singleton:=true
-Bundle-Version: 0.50.5.qualifier
+Bundle-Version: 0.51.0
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: name.abuchen.portfolio.ui.PortfolioPlugin
@@ -111,7 +111,7 @@ Import-Package: com.google.common.base,
  org.osgi.service.prefs,
  org.swtchart
 Require-Bundle: com.ibm.icu,
- name.abuchen.portfolio;bundle-version="0.50.5",
+ name.abuchen.portfolio;bundle-version="0.51.0",
  org.eclipse.nebula.cwt,
  org.eclipse.ui.forms,
  org.eclipse.e4.ui.css.core,
