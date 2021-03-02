@@ -318,9 +318,9 @@ public abstract class Values<E>
         @Override
         public String format(Double value)
         {
-            if (value < 1000)
+            if (value > -1000 && value < 1000)
                 return numberFormatter.get().format(value); // $NON-NLS-1$
-            else if (value < 1000000)
+            else if (value > -1000000 && value < 1000000)
                 return numberFormatter.get().format(value / 1000) + "k"; //$NON-NLS-1$
             else
                 return numberFormatter.get().format(value / 1000000) + "m"; //$NON-NLS-1$
