@@ -412,7 +412,7 @@ public class EarningsViewModel
                             value = transaction.getMonetaryAmount().with(converter.at(transaction.getDateTime()))
                                             .getAmount();
                             if (transaction.getType().isDebit())
-                                value *= -100;
+                                value *= -1;
                         }
                         else
                         {
