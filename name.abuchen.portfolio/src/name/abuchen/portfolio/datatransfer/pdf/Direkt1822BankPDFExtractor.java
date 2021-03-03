@@ -60,7 +60,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
             // Stück 13 COMSTA.-MSCI EM.MKTS.TRN U.ETF LU0635178014 (ETF127)
             // INHABER-ANTEILE I O.N.
             .section("isin", "wkn", "name", "shares", "nameContinued")
-            .match("^(Stück) (?<shares>[\\d.,]+) (?<name>.*) (?<isin>[\\w]{12}.*) (\\((?<wkn>.*)\\).*)")
+            .match("^(St.ck) (?<shares>[\\d.,]+) (?<name>.*) (?<isin>[\\w]{12}.*) (\\((?<wkn>.*)\\).*)")
             .match("(?<nameContinued>.*)")
             .assign((t, v) -> {
                 t.setSecurity(getOrCreateSecurity(v));
@@ -113,7 +113,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellSavePlanTransaction()
     {
-        DocumentType newType = new DocumentType(".*Ausgabe.*");
+        DocumentType newType = new DocumentType(".*Wertpapier Abrechnung Ausgabe Investmentfonds.*");
         this.addDocumentTyp(newType);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -123,7 +123,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block(".*Ausgabe.*");
+        Block firstRelevantLine = new Block(".*Wertpapier Abrechnung Ausgabe Investmentfonds.*");
         newType.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -131,9 +131,9 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
             // Stück 13 COMSTA.-MSCI EM.MKTS.TRN U.ETF LU0635178014 (ETF127)
             // INHABER-ANTEILE I O.N.
             .section("isin", "wkn", "name", "shares", "nameContinued")
-            .match("^(Stück) (?<shares>[\\d.,]+) (?<name>.*) (?<isin>[\\w]{12}.*) (\\((?<wkn>.*)\\).*)")
+            .match("^(St.ck) (?<shares>[\\d.,]+) (?<name>.*) (?<isin>[\\w]{12}.*) (\\((?<wkn>.*)\\).*)")
             .match("(?<nameContinued>.*)")
-            .assign((t, v) -> {
+            .assign((t, v) -> {                
                 t.setSecurity(getOrCreateSecurity(v));
                 t.setShares(asShares(v.get("shares")));
             })
@@ -155,7 +155,33 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                 t.setAmount(asAmount(v.get("amount")));
                 t.setCurrencyCode(v.get("currency"));
             })
-
+            
+            // Devisenkurs (EUR/USD) 1,1987 vom 02.03.2021
+            // Kurswert 52,50- EUR
+            .section("forex", "fxamount", "exchangeRate").optional()
+            .match("^(Devisenkurs) .* (?<exchangeRate>[\\d\\.]+,\\d+) .*")
+            .match("^(Kurswert) (?<fxamount>[\\d\\.]+,\\d+) (?<fxcurrency>\\w{3})")            
+            .assign((t, v) -> {                
+                String forex = asCurrencyCode(v.get("forex"));
+                if (t.getPortfolioTransaction().getSecurity().getCurrencyCode().equals(forex))
+                {
+                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                    BigDecimal reverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
+                                    RoundingMode.HALF_DOWN);
+                
+                    // gross given in forex currency
+                    long fxAmount = asAmount(v.get("fxamount"));
+                    long amount = reverseRate.multiply(BigDecimal.valueOf(fxAmount))
+                                    .setScale(0, RoundingMode.HALF_DOWN).longValue();
+                
+                    Unit grossValue = new Unit(Unit.Type.GROSS_VALUE,
+                                    Money.of(t.getPortfolioTransaction().getCurrencyCode(), amount),
+                                    Money.of(forex, fxAmount), reverseRate);
+                
+                    t.getPortfolioTransaction().addUnit(grossValue);
+                }
+            })
+            
             .wrap(BuySellEntryItem::new);
     }
 
