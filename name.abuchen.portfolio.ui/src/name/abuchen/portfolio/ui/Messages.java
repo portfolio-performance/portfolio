@@ -1080,6 +1080,9 @@ public class Messages extends NLS
     public static String HoldingsWarningAssetsWithNegativeValuation;
     public static String HoldingsWarningAssetsWithNegativeValuationDetails;
     public static String YearlyPerformanceHeatmapToolTip;
+    public static String SecurityMenuSetSecurityInactive;
+    public static String SecurityMenuSetMultipleSecurityInactiveConfirm;
+    public static String SecurityMenuSetSingleSecurityInactiveConfirm;
     static
     {
         // initialize resource bundle
