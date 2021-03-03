@@ -96,6 +96,38 @@ public class JustTradePDFExtractorTest
     }
 
     @Test
+    public void testKauf03()
+    {
+        JustTradePDFExtractor extractor = new JustTradePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
+        assertThat(security.getIsin(), is("DE0006069008"));
+        assertThat(security.getName(), is("FROSTA AG"));
+
+        // check transaction
+        item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
+        PortfolioTransaction tx = entry.getPortfolioTransaction();
+
+        assertThat(tx.getType(), is(PortfolioTransaction.Type.BUY));
+
+        assertThat(tx.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2292.00))));
+        assertThat(tx.getDateTime(), is(LocalDateTime.parse("2021-03-01T18:23:36")));
+        assertThat(tx.getShares(), is(Values.Share.factorize(30)));
+        assertThat(tx.getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0))));
+    }
+
+    @Test
     public void testVerkauf01()
     {
         JustTradePDFExtractor extractor = new JustTradePDFExtractor(new Client());
