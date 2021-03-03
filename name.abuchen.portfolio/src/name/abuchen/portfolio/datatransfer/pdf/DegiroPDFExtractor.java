@@ -806,9 +806,10 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // -------------------------------------
                             // without currency exchange 
                             // with fee
-                            // Money        --> \d,\d
+                            // Money        --> .\d,\d
                             // -------------------------------------
                             // 07-01-2021 09:00 K&S AG DE000KSAG888 XET XETA 20 9,748 EUR -194,96 EUR -194,96 EUR -2,04 EUR -197,00 EUR
+                            // 21-12-2020 10:33 VARTA AG DE000A0TGJ55 XET XETA -11 111,60 EUR 1.227,60 EUR 1.227,60 EUR -2,22 EUR 1.225,38 EUR
                             section -> section
                                 .attributes("date", "name", "isin", "shares", "currencyFee", "fee", "currency", "amount")
                                 .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) "
@@ -819,8 +820,8 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 + "[-.,\\d]* [\\w]{3} " 
                                                 + "[-.,\\d]* [\\w]{3} " 
                                                 + "[-.,\\d]* [\\w]{3} " 
-                                                + "-?(?<fee>[,\\d]*) (?<currencyFee>[\\w]{3}) " 
-                                                + "-?(?<amount>[,\\d]*) (?<currency>[\\w]{3})$") 
+                                                + "-?(?<fee>[.\\d]+,[\\d]*) (?<currencyFee>[\\w]{3}) " 
+                                                + "-?(?<amount>[.\\d]+,[\\d]*) (?<currency>[\\w]{3})$")
                                 .assign((t, v) -> {
                                     t.setSecurity(getOrCreateSecurity(v));
                                     t.setDate(asDate(v.get("date"))); 

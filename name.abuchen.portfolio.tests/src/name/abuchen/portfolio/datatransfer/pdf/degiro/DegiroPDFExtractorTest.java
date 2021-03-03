@@ -1633,6 +1633,40 @@ public class DegiroPDFExtractorTest
     }
 
     @Test
+    public void testTransaktionsuebersicht16()
+    {
+        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+    
+        List<Exception> errors = new ArrayList<>();
+    
+        List<Item> results = extractor
+                        .extract(PDFInputFile.loadTestCase(getClass(), "DegiroTransaktionsuebersicht16.txt"), errors);
+    
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+    
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getName(), is("VARTA AG"));
+        assertThat(security.getIsin(), is("DE000A0TGJ55"));
+        assertThat(security.getCurrencyCode(), is("EUR"));
+    
+        // check 1st buy transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)
+                        .collect(Collectors.toList()).get(0).getSubject();
+    
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1225.38))));
+
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.22))));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-21T10:33")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(11)));
+    }
+
+    @Test
     public void testTransacties1()
     {
         DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
