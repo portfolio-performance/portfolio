@@ -42,7 +42,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType newType = new DocumentType(".*Abrechnung Kauf.*");
+        DocumentType newType = new DocumentType("Wertpapier Abrechnung (Kauf|Verkauf).*");
         this.addDocumentTyp(newType);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -52,11 +52,22 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block(".*Abrechnung Kauf.*");
+        Block firstRelevantLine = new Block("Wertpapier Abrechnung (Kauf|Verkauf).*");
         newType.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
+        
+            // Is type --> "Verkauf" change from BUY to SELL
+            .section("type").optional()
+            .match(".*Abrechnung (?<type>Verkauf?).*")
+            .assign((t, v) -> {
+                if (v.get("type").equals("Verkauf"))
+                {
+                    t.setType(PortfolioTransaction.Type.SELL);
+                }
+            })
+
             // Stück 13 COMSTA.-MSCI EM.MKTS.TRN U.ETF LU0635178014 (ETF127)
             // INHABER-ANTEILE I O.N.
             .section("isin", "wkn", "name", "shares", "nameContinued")
@@ -86,7 +97,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
             })
 
             // Eingebuchte sonstige negative Kapitalerträge 0,02 EUR
-            .section("tax", "currency")
+            .section("tax", "currency").optional()
             .match("^(Eingebuchte.*Kapitalerträge) (?<tax>[\\d.]+,\\d{2}) (?<currency>\\w{3})")
             .assign((t, v) -> t.getPortfolioTransaction()
                             .addUnit(new Unit(Unit.Type.TAX,
@@ -94,7 +105,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                                                             asAmount(v.get("tax"))))))
             
             // Provision 4,95- EUR
-            .section("fee", "currency")
+            .section("fee", "currency").optional()
             .match("^(Provision) (?<fee>[\\d.-]+,\\d+)- (?<currency>\\w{3}+)")
             .assign((t, v) -> t.getPortfolioTransaction()
                             .addUnit(new Unit(Unit.Type.FEE,
@@ -102,12 +113,37 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                                                             asAmount(v.get("fee"))))))
             
             // Eigene Spesen 1,95- EUR
-            .section("fee", "currency")
+            .section("fee", "currency").optional()
             .match("^(Eigene Spesen) (?<fee>[\\d.-]+,\\d+)- (?<currency>\\w{3}+)")
             .assign((t, v) -> t.getPortfolioTransaction()
                             .addUnit(new Unit(Unit.Type.FEE,
                                             Money.of(asCurrencyCode(v.get("currency")),
                                                             asAmount(v.get("fee"))))))
+            
+            // Transaktionsentgelt Börse 0,11- EUR
+            .section("fee", "currency").optional()
+            .match("(Transaktionsentgelt B.rse) (?<fee>[\\d+,.]*)- (?<currency>[\\w]{3})")
+            .assign((t, v) -> t.getPortfolioTransaction()
+                            .addUnit(new Unit(Unit.Type.FEE,
+                                            Money.of(asCurrencyCode(v.get("currency")),
+                                                            asAmount(v.get("fee"))))))
+            
+            // Übertragungs-/Liefergebühr 0,11- EUR
+            .section("fee", "currency").optional()
+            .match("(.bertragungs-\\/Liefergeb.hr) (?<fee>[\\d+,.]*)- (?<currency>[\\w]{3})")
+            .assign((t, v) -> t.getPortfolioTransaction()
+                            .addUnit(new Unit(Unit.Type.FEE,
+                                            Money.of(asCurrencyCode(v.get("currency")),
+                                                            asAmount(v.get("fee"))))))
+
+            // Handelsentgelt 1,00- EUR
+            .section("fee", "currency").optional()
+            .match("(Handelsentgelt) (?<fee>[\\d+,.]*)- (?<currency>[\\w]{3})")
+            .assign((t, v) -> t.getPortfolioTransaction()
+                            .addUnit(new Unit(Unit.Type.FEE,
+                                            Money.of(asCurrencyCode(v.get("currency")),
+                                                            asAmount(v.get("fee"))))))
+
             .wrap(BuySellEntryItem::new);
     }
 
