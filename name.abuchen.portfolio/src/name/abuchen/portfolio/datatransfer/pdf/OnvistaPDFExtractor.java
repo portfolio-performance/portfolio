@@ -68,7 +68,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
         block.set(pdfTransaction);
         pdfTransaction.section("name", "isin", "currency") //
-                        .find("Gattungsbezeichnung ISIN") //
+                        .find("Gattungsbezeichnung(.*) ISIN")
                         .match("(?<name>.*) (?<isin>[^ ]\\S*)$") //
                         .find("Nominal Kurs") //
                         .match("^\\w{3} ([\\d,\\.]*) (?<currency>\\w{3}) ([\\d,\\.]*)") //
@@ -170,7 +170,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
         block.set(pdfTransaction);
         pdfTransaction.section("name", "isin") //
-                        .find("Gattungsbezeichnung ISIN") //
+                        .find("Gattungsbezeichnung(.*) ISIN")
                         .match("(?<name>.*) (?<isin>[^ ]\\S*)$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
@@ -269,7 +269,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
         block.set(pdfTransaction);
         pdfTransaction.section("name", "isin") //
-                        .find("Gattungsbezeichnung ISIN") //
+                        .find("Gattungsbezeichnung(.*) ISIN")
                         .match("(?<name>.*) (?<isin>[^ ]\\S*)$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
@@ -323,7 +323,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
         block.set(pdfTransaction);
         pdfTransaction.section("name", "isin") //
-                        .find("Gattungsbezeichnung (.*) ISIN") //
+                        .find("Gattungsbezeichnung(.*) ISIN")
                         .match("(?<name>.*) (.*) (?<isin>[^ ]\\S*)$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
@@ -559,7 +559,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
                         .section("name", "isin") //
                         .find("Die Dividende wurde wie folgt in neue Aktien reinvestiert:")
-                        .find("Gattungsbezeichnung ISIN") //
+                        .find("Gattungsbezeichnung(.*) ISIN")
                         .match("(?<name>.*) (?<isin>[^ ]\\S*)$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
@@ -602,7 +602,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
         block.set(pdfTransaction);
         pdfTransaction.section("name", "isin") //
-                        .find("Gattungsbezeichnung ISIN") //
+                        .find("Gattungsbezeichnung(.*) ISIN")
                         .match("(?<name>.*) (?<isin>[^ ]\\S*)$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
@@ -654,7 +654,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("name", "isin") //
-                        .find("Gattungsbezeichnung ISIN") //
+                        .find("Gattungsbezeichnung(.*) ISIN")
                         .match("(?<name>.*) (?<isin>[^ ]\\S*)$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
@@ -725,7 +725,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
                         .section("name", "isin") //
                         .find("Einbuchung:(\\s*)") //
-                        .find("Gattungsbezeichnung ISIN") //
+                        .find("Gattungsbezeichnung(.*) ISIN")
                         .match("(?<name>.*) (?<isin>[^ ]\\S*)$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
@@ -775,7 +775,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
                         .section("name", "isin") //
                         .find("Einbuchung:(\\s*)") //
-                        .find("Gattungsbezeichnung ISIN") //
+                        .find("Gattungsbezeichnung(.*) ISIN")
                         .match("(?<name>.*) (?<isin>[^ ]\\S*)$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
@@ -818,7 +818,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction.section("name", "isin") //
                         .find("Ausbuchung:(\\s*)") //
-                        .find("Gattungsbezeichnung ISIN") //
+                        .find("Gattungsbezeichnung(.*) ISIN")
                         .match("(?<name>.*) (?<isin>[^ ]\\S*)$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
@@ -875,7 +875,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
         block.set(pdfTransaction);
 
         pdfTransaction.section("name", "isin") //
-                        .find("Gattungsbezeichnung ISIN") //
+                        .find("Gattungsbezeichnung(.*) ISIN")
                         .match("(?<name>.*) (?<isin>[^ ]\\S*)$") //
                         .assign((t, v) -> {
                             t.setSecurity(getOrCreateSecurity(v));
@@ -952,7 +952,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
         block.set(pdfTransaction);
         pdfTransaction.section("name", "isin") //
-                        .find("Gattungsbezeichnung ISIN") //
+                        .find("Gattungsbezeichnung(.*) ISIN")
                         .match("(?<name>.*) (?<isin>[^ ]\\S*)$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
@@ -1029,7 +1029,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
         block.set(pdfTransaction);
 
         pdfTransaction.section("name", "isin") //
-                        .find("Gattungsbezeichnung ISIN") //
+                        .find("Gattungsbezeichnung(.*) ISIN")
                         .match("(?<name>.*) (?<isin>[^ ]\\S*)$") //
                         .assign((t, v) -> {
                             t.setSecurity(getOrCreateSecurity(v));
@@ -1627,7 +1627,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("name", "isin") //
-                        .find("Gattungsbezeichnung (.*)ISIN") //
+                        .find("Gattungsbezeichnung(.*) ISIN")
                         .match("(?<name>.*) (?<isin>[^ ]\\S*)$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
@@ -1764,7 +1764,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("name", "isin") //
-                        .find("Gattungsbezeichnung ISIN") //
+                        .find("Gattungsbezeichnung(.*) ISIN")
                         .match("(?<name>.*) (?<isin>[^ ]\\S*)$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
