@@ -23,6 +23,7 @@ import name.abuchen.portfolio.ui.preferences.FinnhubPreferencePage;
 import name.abuchen.portfolio.ui.preferences.FormattingPreferencePage;
 import name.abuchen.portfolio.ui.preferences.GeneralPreferencePage;
 import name.abuchen.portfolio.ui.preferences.LanguagePreferencePage;
+import name.abuchen.portfolio.ui.preferences.PortfolioReportPreferencePage;
 import name.abuchen.portfolio.ui.preferences.PresentationPreferencePage;
 import name.abuchen.portfolio.ui.preferences.ProxyPreferencePage;
 import name.abuchen.portfolio.ui.preferences.QuandlPreferencePage;
@@ -59,9 +60,10 @@ public class OpenPreferenceDialogHandler
 
         pm.addToRoot(new PreferenceNode("api", new APIKeyPreferencePage())); //$NON-NLS-1$
         pm.addTo("api", new PreferenceNode("alphavantage", new AlphaVantagePreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
-        pm.addTo("api", new PreferenceNode("quandl", new QuandlPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
-        pm.addTo("api", new PreferenceNode("finnhub", new FinnhubPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
         pm.addTo("api", new PreferenceNode("divvydiary", new DivvyDiaryPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
+        pm.addTo("api", new PreferenceNode("finnhub", new FinnhubPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
+        pm.addTo("api", new PreferenceNode("portfolio-report", new PortfolioReportPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
+        pm.addTo("api", new PreferenceNode("quandl", new QuandlPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
 
         pm.addToRoot(new PreferenceNode("proxy", new ProxyPreferencePage())); //$NON-NLS-1$
         pm.addToRoot(new PreferenceNode("updates", new UpdatePreferencePage())); //$NON-NLS-1$
