@@ -20,7 +20,7 @@ import name.abuchen.portfolio.model.TransactionPair;
 
 public class JClient
 {
-    /* package */ static final Gson GSON = new GsonBuilder() //
+    public static final Gson GSON = new GsonBuilder() //
                     .registerTypeAdapter(LocalDate.class, new LocalDateSerializer())
                     .registerTypeAdapter(LocalTime.class, new LocalTimeSerializer())
                     .setFieldNamingPolicy(FieldNamingPolicy.IDENTITY).create();
