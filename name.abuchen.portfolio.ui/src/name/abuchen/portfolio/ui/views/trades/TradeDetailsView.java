@@ -81,6 +81,9 @@ public class TradeDetailsView extends AbstractFinanceView
     {
         return Messages.LabelTrades;
     }
+    
+    // if true, only closed trades will be displayed
+    private boolean isFiltered = false;
 
     @Inject
     @Optional
@@ -142,6 +145,26 @@ public class TradeDetailsView extends AbstractFinanceView
 
         toolBarManager.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE,
                         manager -> table.getShowHideColumnHelper().menuAboutToShow(manager)));
+        
+        addFilterButton(toolBarManager);
+    }
+    
+    private void addFilterButton(ToolBarManager manager)
+    {
+        Action filter = new Action()
+        {
+            @Override
+            public void run()
+            {
+                isFiltered = !isFiltered;
+             //   getPart().getPreferenceStore().setValue(FILTER_INACTIVE_ACCOUNTS, isFiltered);
+                setImageDescriptor(isFiltered ? Images.FILTER_ON.descriptor() : Images.FILTER_OFF.descriptor());
+               // resetInput();
+            }
+        };
+        filter.setImageDescriptor(isFiltered ? Images.FILTER_ON.descriptor() : Images.FILTER_OFF.descriptor());
+        //filter.setToolTipText(Messages.AccountFilterRetiredAccounts);
+        manager.add(filter);
     }
 
     @Override
