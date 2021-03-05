@@ -156,7 +156,7 @@ public class TradeDetailsView extends AbstractFinanceView
     
     private void addFilterButtonHelper(IMenuManager manager) {
         
-        Action showOpenAction = new Action("Open") {
+        Action showOpenAction = new Action(Messages.LabelOpenTradeSelection) {
             @Override
             public void run()
             {
@@ -167,7 +167,7 @@ public class TradeDetailsView extends AbstractFinanceView
         showOpenAction.setChecked(showOpen);
         
         
-        Action showClosedAction = new Action("Closed") {
+        Action showClosedAction = new Action(Messages.LabelClosedTradeSelection) {
             @Override
             public void run()
             {
@@ -184,7 +184,7 @@ public class TradeDetailsView extends AbstractFinanceView
     private void addFilterButton(ToolBarManager manager)
     {
         
-        DropDown filterDropDowMenu = new DropDown("Offene/Geschlossene Trades",Images.FILTER_OFF, SWT.NONE, this::addFilterButtonHelper );
+        DropDown filterDropDowMenu = new DropDown(Messages.FilterOpenClosedTrades,Images.FILTER_OFF, SWT.NONE, this::addFilterButtonHelper );
 
         manager.add(filterDropDowMenu);
     }

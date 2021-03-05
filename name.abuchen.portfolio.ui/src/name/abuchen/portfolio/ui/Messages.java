@@ -523,6 +523,7 @@ public class Messages extends NLS
     public static String LabelClientFilterNew;
     public static String LabelClientFilterNoCustomFilterExisting;
     public static String LabelClose;
+    public static String LabelClosedTradeSelection;
     public static String LabelColorSchema;
     public static String LabelColumns;
     public static String LabelCommon;
@@ -599,6 +600,7 @@ public class Messages extends NLS
     public static String LabelNumberDataSeries;
     public static String LabelOneOfX;
     public static String LabelOpenTrade;
+    public static String LabelOpenTradeSelection;
     public static String LabelOrderByTaxonomy;
     public static String LabelPassword;
     public static String LabelPasswordRepeat;
@@ -1058,6 +1060,7 @@ public class Messages extends NLS
     public static String WatchlistRename;
     public static String BookmarkMenu_EditBookmarks;
     public static String FilterNotRetired;
+    public static String FilterOpenClosedTrades;
     public static String FilterValuationNonZero;
     public static String ForceClearPersistedStateDialogTitle;
     public static String ForceClearPersistedStateMessage;
