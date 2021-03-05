@@ -38,6 +38,7 @@ import name.abuchen.portfolio.ui.views.SecurityContextMenu;
 import name.abuchen.portfolio.ui.views.TradesTableViewer;
 import name.abuchen.portfolio.util.Interval;
 
+
 public class TradeDetailsView extends AbstractFinanceView
 {
     public static class Input
@@ -81,9 +82,12 @@ public class TradeDetailsView extends AbstractFinanceView
     {
         return Messages.LabelTrades;
     }
+
+   
+    private boolean showOpen = true;
+    private boolean showClosed = true;
     
-    // if true, only closed trades will be displayed
-    private boolean isFiltered = false;
+
 
     @Inject
     @Optional
@@ -145,26 +149,44 @@ public class TradeDetailsView extends AbstractFinanceView
 
         toolBarManager.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE,
                         manager -> table.getShowHideColumnHelper().menuAboutToShow(manager)));
-        
+
         addFilterButton(toolBarManager);
+    }
+
+    
+    private void addFilterButtonHelper(IMenuManager manager) {
+        
+        Action showOpenAction = new Action("Open") {
+            @Override
+            public void run()
+            {
+                showOpen = !showOpen;
+                updateFrom(collectAllTrades());
+            }
+        };
+        showOpenAction.setChecked(showOpen);
+        
+        
+        Action showClosedAction = new Action("Closed") {
+            @Override
+            public void run()
+            {
+                showClosed = !showClosed;
+                updateFrom(collectAllTrades());
+            }
+        };
+        showClosedAction.setChecked(showClosed);
+        
+        manager.add(showOpenAction);
+        manager.add(showClosedAction);
     }
     
     private void addFilterButton(ToolBarManager manager)
     {
-        Action filter = new Action()
-        {
-            @Override
-            public void run()
-            {
-                isFiltered = !isFiltered;
-             //   getPart().getPreferenceStore().setValue(FILTER_INACTIVE_ACCOUNTS, isFiltered);
-                setImageDescriptor(isFiltered ? Images.FILTER_ON.descriptor() : Images.FILTER_OFF.descriptor());
-               // resetInput();
-            }
-        };
-        filter.setImageDescriptor(isFiltered ? Images.FILTER_ON.descriptor() : Images.FILTER_OFF.descriptor());
-        //filter.setToolTipText(Messages.AccountFilterRetiredAccounts);
-        manager.add(filter);
+        
+        DropDown filterDropDowMenu = new DropDown("Offene/Geschlossene Trades",Images.FILTER_OFF, SWT.NONE, this::addFilterButtonHelper );
+
+        manager.add(filterDropDowMenu);
     }
 
     @Override
@@ -234,7 +256,8 @@ public class TradeDetailsView extends AbstractFinanceView
                 errors.add(e);
             }
         });
+        List<Trade> filteredTrades = trades.stream().filter((Trade t) -> (t.isClosed() && showClosed) || (!t.isClosed() && showOpen)).collect(Collectors.toList());
 
-        return new Input(null, trades, errors);
+        return new Input(null, filteredTrades, errors);
     }
 }
