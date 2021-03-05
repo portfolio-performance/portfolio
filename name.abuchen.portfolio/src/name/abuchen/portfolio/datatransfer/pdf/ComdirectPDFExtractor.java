@@ -52,7 +52,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Wertpapierkauf");
         this.addDocumentTyp(type);
 
-        Block block = new Block("^(\\* )?Wertpapierkauf *.*");
+        Block block = new Block("^(\\*\\s+)?Wertpapierkauf *.*");
         type.addBlock(block);
         Transaction<BuySellEntry> pdfTransaction = new Transaction<BuySellEntry>()
 
@@ -158,7 +158,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
         block.set(pdfTransaction);
 
-        addTaxRefunds(type, "^(\\* )?Wertpapierkauf *.*");
+        addTaxRefunds(type, "^(\\*\\s+)?Wertpapierkauf *.*");
     }
 
     @SuppressWarnings("nls")
@@ -256,7 +256,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Wertpapierverkauf");
         this.addDocumentTyp(type);
 
-        Block block = new Block("^(\\* )?Wertpapierverkauf *.*");
+        Block block = new Block("^(\\*\\s+)?Wertpapierverkauf *.*");
         type.addBlock(block);
         Transaction<BuySellEntry> pdfTransaction = new Transaction<BuySellEntry>()
 
@@ -336,7 +336,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
         block.set(pdfTransaction);
 
-        addTaxRefunds(type, "^(\\* )?Wertpapierverkauf *.*");
+        addTaxRefunds(type, "^(\\*\\s+)?Wertpapierverkauf *.*");
     }
 
     @SuppressWarnings("nls")
