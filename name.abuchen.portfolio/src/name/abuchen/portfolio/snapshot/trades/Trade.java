@@ -210,6 +210,15 @@ public class Trade implements Adaptable
     {
         return (exitValue.getAmount() / (double) entryValue.getAmount()) - 1;
     }
+    
+    /**
+     * @brief Checks if a trade is closed
+     * @return True if the trade has been closed, false otherwise
+     */
+    public boolean isClosed()
+    {
+        return this.getEnd().isPresent();
+    }
 
     @Override
     public <T> T adapt(Class<T> type)
