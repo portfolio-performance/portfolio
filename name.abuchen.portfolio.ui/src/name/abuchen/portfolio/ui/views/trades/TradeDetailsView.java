@@ -154,37 +154,62 @@ public class TradeDetailsView extends AbstractFinanceView
     }
 
     
-    private void addFilterButtonHelper(IMenuManager manager) {
-        
-        Action showOpenAction = new Action(Messages.LabelOpenTradeSelection) {
-            @Override
-            public void run()
-            {
-                showOpen = !showOpen;
-                updateFrom(collectAllTrades());
-            }
-        };
-        showOpenAction.setChecked(showOpen);
-        
-        
-        Action showClosedAction = new Action(Messages.LabelClosedTradeSelection) {
-            @Override
-            public void run()
-            {
-                showClosed = !showClosed;
-                updateFrom(collectAllTrades());
-            }
-        };
-        showClosedAction.setChecked(showClosed);
-        
-        manager.add(showOpenAction);
-        manager.add(showClosedAction);
-    }
+
     
     private void addFilterButton(ToolBarManager manager)
     {
         
-        DropDown filterDropDowMenu = new DropDown(Messages.FilterOpenClosedTrades,Images.FILTER_OFF, SWT.NONE, this::addFilterButtonHelper );
+        DropDown filterDropDowMenu = new DropDown(Messages.FilterOpenClosedTrades,Images.FILTER_OFF, SWT.NONE);
+                        
+        filterDropDowMenu.setMenuListener(mgr -> {
+            
+            Action showOpenAction = new Action(Messages.LabelOpenTradeSelection) 
+            {
+                @Override
+                public void run()
+                {
+                    showOpen = !showOpen;
+                    updateFrom(collectAllTrades());
+                    if (!showOpen || !showClosed) 
+                    {
+                        filterDropDowMenu.setImage(Images.FILTER_ON);
+                    }
+                    else 
+                    {
+                        filterDropDowMenu.setImage(Images.FILTER_OFF);
+                    }
+
+                }
+            };
+            showOpenAction.setChecked(showOpen);
+            
+            
+            Action showClosedAction = new Action(Messages.LabelClosedTradeSelection) 
+            {
+                @Override
+                public void run()
+                {
+                    showClosed = !showClosed;
+                    updateFrom(collectAllTrades());
+                    
+                    if (!showClosed || !showClosed) 
+                    {
+                        filterDropDowMenu.setImage(Images.FILTER_ON);
+                    }
+                    else
+                    {
+                        filterDropDowMenu.setImage(Images.FILTER_OFF);
+                    }
+                }
+            };
+            showClosedAction.setChecked(showClosed);
+            
+            
+            mgr.add(showOpenAction);
+            mgr.add(showClosedAction);
+            
+            
+        });
 
         manager.add(filterDropDowMenu);
     }
