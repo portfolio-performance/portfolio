@@ -709,6 +709,14 @@ public class ComdirectPDFExtractorTest
         assertThat(txP.getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(12.90 + 13.90 / 1.222500))));
         assertThat(txP.getShares(), is(Values.Share.factorize(25)));
+
+        // check tax-refund transaction
+        Item itemTaxReturn = results.stream().filter(i -> i instanceof TransactionItem).collect(Collectors.toList())
+                        .get(0);
+        AccountTransaction entryTaxReturn = (AccountTransaction) itemTaxReturn.getSubject();
+        assertThat(entryTaxReturn.getType(), is(AccountTransaction.Type.TAX_REFUND));
+        assertThat(entryTaxReturn.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.84))));
+        assertThat(entryTaxReturn.getDateTime(), is(LocalDateTime.parse("2020-12-15T00:00")));
     }
 
     @Test
