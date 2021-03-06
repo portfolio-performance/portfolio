@@ -154,6 +154,8 @@ Alter Saldo 03.09.2018 +120,33
 A30.09.2019 Visa-Umsatz Firma Ort 000 -3,94
 A 119093157242901
 28.09.2019
+28.10.2019 Barauszahlung ATMS Bank Country City 000 Betrag: -70,00 PEN Kurs: -19,21
+24.10.2019 119102909170000 3,6438
 Neuer Saldo 01.10.2018 +368,31
 comdirect bank AG USt-ID: DE 812 279 461
 25449 Quickborn
