@@ -937,7 +937,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(TransactionItem::new));
-        Block depositblock = new Block("^(\\d+.\\d+.\\d+) ((Kontoübertrag)|(Guthabenübertr))(.*) \\+([\\d.]+,\\d{2})$");
+        Block depositblock = new Block("^(\\d+.\\d+.\\d+) ((Kontoübertrag)|(Übertrag)|(Guthabenübertr))(.*) \\+([\\d.]+,\\d{2})$");
         type.addBlock(depositblock);
         depositblock.set(new Transaction<AccountTransaction>()
 
@@ -948,7 +948,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date", "amount")
-                        .match("^(\\d+.\\d+.\\d+) ((Kontoübertrag)|(Kontoabschluss)|(Guthabenübertr))(.*) \\+(?<amount>[\\d.]+,\\d{2})$")
+                        .match("^(\\d+.\\d+.\\d+) ((Kontoübertrag)|(Übertrag)|(Guthabenübertr))(.*) \\+(?<amount>[\\d.]+,\\d{2})$")
                         .match("^(?<date>\\d+.\\d+.\\d+)(.*)")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();

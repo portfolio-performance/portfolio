@@ -1785,12 +1785,12 @@ public class ComdirectPDFExtractorTest
                         PDFInputFile.loadTestCase(getClass(), "comdirectFinanzreport1.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(11));
+        assertThat(results.size(), is(12));
         
         // check transaction
         // get transactions
         Iterator<Extractor.Item> iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
-        assertThat(results.stream().filter(i -> i instanceof TransactionItem).count(), is(11L));
+        assertThat(results.stream().filter(i -> i instanceof TransactionItem).count(), is(12L));
 
         if (iter.hasNext())
         {
@@ -1876,12 +1876,24 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-09-14T00:00")));
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(10000)));
         }
-        
+
         if (iter.hasNext())
         {
             Item item = iter.next();
 
             // assert transaction8
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-09-21T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(20)));
+        }
+        
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction9
             AccountTransaction transaction = (AccountTransaction) item.getSubject();
             assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
@@ -1893,7 +1905,7 @@ public class ComdirectPDFExtractorTest
         {
             Item item = iter.next();
 
-            // assert transaction9
+            // assert transaction10
             AccountTransaction transaction = (AccountTransaction) item.getSubject();
             assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
@@ -1905,7 +1917,7 @@ public class ComdirectPDFExtractorTest
         {
             Item item = iter.next();
 
-            // assert transaction10
+            // assert transaction11
             AccountTransaction transaction = (AccountTransaction) item.getSubject();
             assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
@@ -1918,7 +1930,7 @@ public class ComdirectPDFExtractorTest
         {
             Item item = iter.next();
 
-            // assert transaction11
+            // assert transaction12
             AccountTransaction transaction = (AccountTransaction) item.getSubject();
             assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));

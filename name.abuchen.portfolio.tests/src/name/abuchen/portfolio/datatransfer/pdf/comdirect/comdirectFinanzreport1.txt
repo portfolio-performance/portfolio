@@ -76,7 +76,7 @@ Finanzreport Nr. 9 per 01.10.2018 - Seite 4
 Kundennummer 102 0000000
 Buchungstag Vorgang Auftraggeber/Empfänger Buchungstext Ausgang
 Valuta Referenz IBAN/BIC Eingang
-21.09.2018 Übertrag / Handelskrankenkasse (hkk) Kunden werben Kunden 20.00 +20,00
+21.09.2018 Übertrag / Firma Verwendungszweck 20.00 +20,00
 21.09.2018 Überweisung End-to-End-Ref.:
 HO218264G310 3620043175000000
 8996/17200
