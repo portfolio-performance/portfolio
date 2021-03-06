@@ -155,6 +155,16 @@ public class TradeDetailsView extends AbstractFinanceView
 
     
 
+    private void setFilterButton(DropDown filterDropDown) {
+        if (!showOpen || !showClosed) 
+        {
+            filterDropDown.setImage(Images.FILTER_ON);
+        }
+        else 
+        {
+            filterDropDown.setImage(Images.FILTER_OFF);
+        }
+    }
     
     private void addFilterButton(ToolBarManager manager)
     {
@@ -170,14 +180,7 @@ public class TradeDetailsView extends AbstractFinanceView
                 {
                     showOpen = !showOpen;
                     updateFrom(collectAllTrades());
-                    if (!showOpen || !showClosed) 
-                    {
-                        filterDropDowMenu.setImage(Images.FILTER_ON);
-                    }
-                    else 
-                    {
-                        filterDropDowMenu.setImage(Images.FILTER_OFF);
-                    }
+                    setFilterButton(filterDropDowMenu);
 
                 }
             };
@@ -191,15 +194,7 @@ public class TradeDetailsView extends AbstractFinanceView
                 {
                     showClosed = !showClosed;
                     updateFrom(collectAllTrades());
-                    
-                    if (!showClosed || !showClosed) 
-                    {
-                        filterDropDowMenu.setImage(Images.FILTER_ON);
-                    }
-                    else
-                    {
-                        filterDropDowMenu.setImage(Images.FILTER_OFF);
-                    }
+                    setFilterButton(filterDropDowMenu);
                 }
             };
             showClosedAction.setChecked(showClosed);
