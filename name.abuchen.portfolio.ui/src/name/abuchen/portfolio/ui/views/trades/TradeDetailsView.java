@@ -184,7 +184,8 @@ public class TradeDetailsView extends AbstractFinanceView
 
     
 
-    private void setFilterButton(DropDown filterDropDown) {
+    private void setFilterButton(DropDown filterDropDown) 
+    {
         if (!showOpen.getVal() || !showClosed.getVal() || !showEarnings.getVal() || !showLosses.getVal()) 
         {
             filterDropDown.setImage(Images.FILTER_ON);
@@ -208,7 +209,8 @@ public class TradeDetailsView extends AbstractFinanceView
         }
         
         @Override
-        public void run() {
+        public void run() 
+        {
             filterCriterion.invert();
             updateFrom(collectAllTrades());
             setFilterButton(theMenu);
