@@ -12,6 +12,7 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -83,10 +84,38 @@ public class TradeDetailsView extends AbstractFinanceView
         return Messages.LabelTrades;
     }
 
+    /*
+     * We need a reference to the value in the buttons but the native Boolean class is immutable.
+     * This is a tiny wrapper since I did not want to add the MutableBoolean class from org.apache.commons.lang3.mutable.
+     * Less dependencies is always better.
+     */
+    private class MutableBoolean
+    {
+        private boolean value;
+        
+        public MutableBoolean(boolean val)
+        {
+            this.value=val;
+        }
+        
+        public boolean getVal()
+        {
+            return value;
+        }
+        
+        public void invert() 
+        {
+            value = !value;
+        }
+        
+    }
    
-    private boolean showOpen = true;
-    private boolean showClosed = true;
+    private MutableBoolean showOpen = new MutableBoolean(true);
+    private MutableBoolean showClosed = new MutableBoolean(true);
     
+    private MutableBoolean showEarnings = new MutableBoolean(true);
+    private MutableBoolean showLosses = new MutableBoolean(true);
+   
 
 
     @Inject
@@ -156,13 +185,33 @@ public class TradeDetailsView extends AbstractFinanceView
     
 
     private void setFilterButton(DropDown filterDropDown) {
-        if (!showOpen || !showClosed) 
+        if (!showOpen.getVal() || !showClosed.getVal() || !showEarnings.getVal() || !showLosses.getVal()) 
         {
             filterDropDown.setImage(Images.FILTER_ON);
         }
         else 
         {
             filterDropDown.setImage(Images.FILTER_OFF);
+        }
+    }
+    
+    private class Helper extends Action
+    {
+        MutableBoolean filterCriterion;
+        DropDown theMenu;
+        public Helper(String label, MutableBoolean filterCriterion, DropDown theMenu) 
+        {
+            super(label);
+            this.filterCriterion=filterCriterion;
+            this.theMenu = theMenu;
+            this.setChecked(filterCriterion.getVal());
+        }
+        
+        @Override
+        public void run() {
+            filterCriterion.invert();
+            updateFrom(collectAllTrades());
+            setFilterButton(theMenu);
         }
     }
     
@@ -173,35 +222,19 @@ public class TradeDetailsView extends AbstractFinanceView
                         
         filterDropDowMenu.setMenuListener(mgr -> {
             
-            Action showOpenAction = new Action(Messages.LabelOpenTradeSelection) 
-            {
-                @Override
-                public void run()
-                {
-                    showOpen = !showOpen;
-                    updateFrom(collectAllTrades());
-                    setFilterButton(filterDropDowMenu);
 
-                }
-            };
-            showOpenAction.setChecked(showOpen);
-            
-            
-            Action showClosedAction = new Action(Messages.LabelClosedTradeSelection) 
-            {
-                @Override
-                public void run()
-                {
-                    showClosed = !showClosed;
-                    updateFrom(collectAllTrades());
-                    setFilterButton(filterDropDowMenu);
-                }
-            };
-            showClosedAction.setChecked(showClosed);
-            
+            Action showOpenAction = new Helper(Messages.LabelOpenTradeSelection,showOpen,filterDropDowMenu);
+            Action showClosedAction = new Helper(Messages.LabelClosedTradeSelection,showClosed,filterDropDowMenu);
+
+            Action showEarningsAction = new Helper(Messages.LabelTradesWithLoss, showEarnings, filterDropDowMenu);
+            Action showLossesAction = new Helper(Messages.LabelTradesWithProfit, showLosses, filterDropDowMenu);
+
             
             mgr.add(showOpenAction);
             mgr.add(showClosedAction);
+            mgr.add(new Separator());
+            mgr.add(showEarningsAction);
+            mgr.add(showLossesAction);
             
             
         });
@@ -236,7 +269,12 @@ public class TradeDetailsView extends AbstractFinanceView
 
     private void updateFrom(Input data)
     {
-        table.setInput(data.getTrades());
+        
+        List<Trade> filteredTrades = data.getTrades().stream().
+                        filter((Trade t) -> (t.isClosed() && showClosed.getVal()) || (!t.isClosed() && showOpen.getVal())).
+                        filter((Trade t) -> (t.isLoss() && showLosses.getVal()) || (!t.isLoss() && showEarnings.getVal())).
+                        collect(Collectors.toList());
+        table.setInput(filteredTrades);
 
         ToolBarManager toolBar = getToolBarManager();
 
@@ -276,8 +314,7 @@ public class TradeDetailsView extends AbstractFinanceView
                 errors.add(e);
             }
         });
-        List<Trade> filteredTrades = trades.stream().filter((Trade t) -> (t.isClosed() && showClosed) || (!t.isClosed() && showOpen)).collect(Collectors.toList());
 
-        return new Input(null, filteredTrades, errors);
+        return new Input(null, trades, errors);
     }
 }
