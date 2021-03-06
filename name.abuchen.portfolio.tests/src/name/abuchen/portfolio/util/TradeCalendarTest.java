@@ -142,6 +142,51 @@ public class TradeCalendarTest
     }
 
     @Test
+    public void testTSX()
+    {
+        // See https://www.tsx.com/trading/calendars-and-trading-hours/calendar
+
+        TradeCalendar calendar = TradeCalendarManager.getInstance("tsx");
+
+        // New Year
+        assertThat(calendar.isHoliday(LocalDate.parse("2011-01-03")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2012-01-02")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2017-01-02")), is(true));
+
+        // Christmas and Boxing Day
+        assertThat(calendar.isHoliday(LocalDate.parse("2016-12-26")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2016-12-27")), is(true));
+
+        // Canada Day
+        assertThat(calendar.isHoliday(LocalDate.parse("2017-07-03")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2018-07-02")), is(true));
+
+        // 2020: Note Christmas and Boxing Day
+        assertThat(calendar.isHoliday(LocalDate.parse("2020-01-01")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2020-02-17")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2020-04-10")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2020-05-18")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2020-07-01")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2020-08-03")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2020-09-07")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2020-10-12")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2020-12-25")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2020-12-28")), is(true));
+
+        // 2021: Note Christmas and Boxing Day
+        assertThat(calendar.isHoliday(LocalDate.parse("2021-01-01")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2021-02-15")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2021-04-02")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2021-05-24")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2021-07-01")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2021-08-02")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2021-09-06")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2021-10-11")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2021-12-27")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2021-12-28")), is(true));
+    }
+
+    @Test
     public void testEmptyCalendar()
     {
         TradeCalendar calendar = TradeCalendarManager.getInstance(TradeCalendar.EMPTY_CODE);

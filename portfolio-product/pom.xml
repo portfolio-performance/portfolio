@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>name.abuchen.portfolio</groupId>
 		<artifactId>portfolio-app</artifactId>
-		<version>0.50.5-SNAPSHOT</version>
+		<version>0.51.1</version>
 		<relativePath>../portfolio-app</relativePath>
 	</parent>
 
@@ -101,7 +101,7 @@
 						</property>
 						<property>
 							<name>CFBundleGetInfoString</name>
-							<value>Copyright 2012 - 2020 Andreas Buchen. All rights reserved.</value>
+							<value>Copyright 2012 - 2021 Andreas Buchen. All rights reserved.</value>
 						</property>
 						<property>
 							<name>Eclipse</name>

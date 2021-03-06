@@ -2,7 +2,7 @@
 <feature
       id="name.abuchen.portfolio.feature"
       label="Portfolio Performance"
-      version="0.50.5.qualifier"
+      version="0.51.1"
       provider-name="Andreas Buchen">
 
    <description url="http://buchen.github.io/portfolio/">
@@ -10,7 +10,7 @@
    </description>
 
    <copyright>
-      (c) Copyright Andreas Buchen 2012 - 2020.  All rights reserved.
+      (c) Copyright Andreas Buchen 2012 - 2021.  All rights reserved.
    </copyright>
 
    <license url="http://www.eclipse.org/legal/epl-v10.html">

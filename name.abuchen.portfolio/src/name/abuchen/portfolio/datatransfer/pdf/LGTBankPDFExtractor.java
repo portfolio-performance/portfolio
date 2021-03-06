@@ -1,8 +1,13 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -19,6 +24,7 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("LGT Bank AG"); //$NON-NLS-1$
 
         addBuySellTransaction();
+        addDividendeTransaction();
     }
 
     @Override
@@ -55,10 +61,10 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
             // ISIN DK0010244508
             // Valorennummer 906020
             // Wertpapierkennnummer 861837
-            .section("isin", "wkn", "name")
+            .section("isin", "wkn", "name", "nameContinued")
             .match("^(Titel) (?<name>.*)$")
+            .match("(?<nameContinued>.*)")
             .match("^(ISIN) (?<isin>[\\w]{12}.*)$")
-            .match(".*")
             .match("^(Wertpapierkennnummer) (?<wkn>.*)$")
             .assign((t, v) -> {
                 t.setSecurity(getOrCreateSecurity(v));
@@ -86,7 +92,7 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
             .match("^(Belastung.* Konto) .* (?<currency>[\\w]{3}) (?<amount>[\\d('|.)]+(,|.)\\d+)$")
             .assign((t, v) -> {
                 t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                t.setAmount(asAmount(ConvertAmount(v.get("amount"))));
+                t.setAmount(asAmount(convertAmount(v.get("amount"))));
             })
 
             // Eidg. Umsatzabgabe  DKK 121.19
@@ -95,33 +101,87 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
             .assign((t, v) -> t.getPortfolioTransaction()
                             .addUnit(new Unit(Unit.Type.TAX,
                                             Money.of(asCurrencyCode(v.get("currency")),
-                                                            asAmount(ConvertAmount(v.get("tax")))))))
+                                                            asAmount(convertAmount(v.get("tax")))))))
 
             // Courtage  DKK 1'534.90
             .section("fee", "currency")
             .match("^(Courtage)\\s+(?<currency>[\\w]{3}) (?<fee>[\\d('|.)]+(,|.)\\d+)$")
             .assign((t, v) -> t.getPortfolioTransaction()
                             .addUnit(new Unit(Unit.Type.FEE,
-                                            Money.of(asCurrencyCode(ConvertAmount(v.get("currency"))),
-                                                            asAmount(ConvertAmount(v.get("fee")))))))
+                                            Money.of(asCurrencyCode(convertAmount(v.get("currency"))),
+                                                            asAmount(convertAmount(v.get("fee")))))))
 
             // Broker Kommission  DKK 12.12
             .section("fee", "currency")
             .match("^(Broker Kommission)\\s+(?<currency>[\\w]{3}) (?<fee>[\\d('|.)]+(,|.)\\d+)$")
             .assign((t, v) -> t.getPortfolioTransaction()
                             .addUnit(new Unit(Unit.Type.FEE,
-                                            Money.of(asCurrencyCode(ConvertAmount(v.get("currency"))),
-                                                            asAmount(ConvertAmount(v.get("fee")))))))
+                                            Money.of(asCurrencyCode(convertAmount(v.get("currency"))),
+                                                            asAmount(convertAmount(v.get("fee")))))))
 
             .wrap(BuySellEntryItem::new);
     }
 
-    private String ConvertAmount(String inputAmount)
+
+    private void addDividendeTransaction()
     {
-        String amount;
+        DocumentType newType = new DocumentType("Barausschüttung .*");
+        this.addDocumentTyp(newType);
+
+        Block block = new Block("Barausschüttung .*");
+        newType.addBlock(block);
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>()
+            .subject(() -> {
+                AccountTransaction entry = new AccountTransaction();
+                entry.setType(AccountTransaction.Type.DIVIDENDS);
+                return entry;
+            });
+
+        pdfTransaction
+            // 551 Veolia Environnement SA
+            // Namen- und Inhaber-Aktien
+            // ISIN: FR0000124141, Valoren-Nr.: 1098758
+            .section("shares", "isin", "wkn", "name", "nameContinued")
+            .match("^(?<shares>[\\d.,]+) (?<name>.*)$")
+            .match("(?<nameContinued>.*)")
+            .match("^(ISIN:) (?<isin>[\\w]{12}), .* (?<wkn>.*)$")
+            .assign((t, v) -> {
+                t.setSecurity(getOrCreateSecurity(v));
+                t.setShares(asShares(v.get("shares")));
+            })
+
+            // Ex-Datum 12. Mai 2020
+            .section("date")
+            .match("^(Ex-Datum) (?<date>\\d+. \\w+ \\d{4})$")
+            .assign((t, v) -> {
+                // Formate the date from 14. Mai 2020 to 14.05.2020
+                v.put("date", DateTimeFormatter.ofPattern("dd.MM.yyyy").format(LocalDate.parse(v.get("date"), DateTimeFormatter.ofPattern("d. MMMM yyyy", Locale.GERMANY))));
+                t.setDateTime(asDate(v.get("date")));
+            })
+
+            // Netto EUR 198.36
+            .section("currency", "amount")
+            .match("^(Netto) (?<currency>[\\w]{3}) *(?<amount>[\\d('|.)]+(,|.)\\d+)$")
+            .assign((t, v) -> {
+                t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                t.setAmount(asAmount(convertAmount(v.get("amount"))));
+            })
+
+            // Quellensteuer 28 % EUR -77.14
+            .section("tax", "currency")
+            .match("^(Quellensteuer) .* (?<currency>[\\w]{3}) (?<tax>-[\\d('|.)]+(,|.)\\d+)$")
+            .assign((t, v) ->
+                            t.addUnit(new Unit(Unit.Type.TAX,
+                                            Money.of(asCurrencyCode(v.get("currency")),
+                                                            asAmount(convertAmount(v.get("tax")))))))
+            .wrap(TransactionItem::new);
         
-        amount = inputAmount.replace("'", "");
-        
+        block.set(pdfTransaction);
+    }
+    
+    private String convertAmount(String inputAmount)
+    {
+        String amount = inputAmount.replace("'", "");
         return amount.replace(".", ",");
     }
 }

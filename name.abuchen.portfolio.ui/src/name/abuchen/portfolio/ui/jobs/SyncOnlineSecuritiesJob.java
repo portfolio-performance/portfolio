@@ -64,6 +64,16 @@ public final class SyncOnlineSecuritiesJob extends AbstractClientJob
             {
                 PortfolioPlugin.log(e);
             }
+
+            try
+            {
+                // poor man's throttling to help out portfolio-report
+                Thread.sleep(1000);
+            }
+            catch (InterruptedException e)
+            {
+                Thread.currentThread().interrupt();
+            }
         }
 
         if (isDirty)

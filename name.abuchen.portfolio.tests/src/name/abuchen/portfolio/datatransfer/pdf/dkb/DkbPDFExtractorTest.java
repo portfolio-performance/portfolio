@@ -2,8 +2,8 @@ package name.abuchen.portfolio.datatransfer.pdf.dkb;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsEmptyCollection.empty;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -42,7 +42,7 @@ public class DkbPDFExtractorTest
         Security security = ((SecurityItem) item.get()).getSecurity();
         assertThat(security.getIsin(), is("DE000A1HLTD2"));
         assertThat(security.getWkn(), is("A1HLTD"));
-        assertThat(security.getName(), is("8,75 % METALCORP GROUP B.V."));
+        assertThat(security.getName(), is("8,75 % METALCORP GROUP B.V. EO-ANLEIHE 2013(18)"));
 
         return security;
     }
@@ -54,7 +54,19 @@ public class DkbPDFExtractorTest
         Security security = ((SecurityItem) item.get()).getSecurity();
         assertThat(security.getIsin(), is("BMG7945E1057"));
         assertThat(security.getWkn(), is("A0ERZ0"));
-        assertThat(security.getName(), is("SEADRILL LTD."));
+        assertThat(security.getName(), is("SEADRILL LTD. REGISTERED SHARES DL 2,-"));
+
+        return security;
+    }
+
+    private Security assertSecurityBuyKaufOTC(List<Item> results)
+    {
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getIsin(), is("LU0392494562"));
+        assertThat(security.getWkn(), is("ETF110"));
+        assertThat(security.getName(), is("COMSTAGE-MSCI WORLD TRN U.ETF NAMENS-AKTIEN O.N."));
 
         return security;
     }
@@ -66,7 +78,7 @@ public class DkbPDFExtractorTest
         Security security = ((SecurityItem) item.get()).getSecurity();
         assertThat(security.getIsin(), is("LU0392494562"));
         assertThat(security.getWkn(), is("ETF110"));
-        assertThat(security.getName(), is("COMSTAGE-MSCI WORLD TRN U.ETF"));
+        assertThat(security.getName(), is("COMSTAGE-MSCI WORLD TRN U.ETF INHABER-ANTEILE I O.N."));
 
         return security;
     }
@@ -78,7 +90,7 @@ public class DkbPDFExtractorTest
         Security security = ((SecurityItem) item.get()).getSecurity();
         assertThat(security.getIsin(), is("AT0000A0U9J2"));
         assertThat(security.getWkn(), is("A1MLSS"));
-        assertThat(security.getName(), is("8,5 % SCHOLZ HOLDING"));
+        assertThat(security.getName(), is("8,5 % SCHOLZ HOLDING INH.-SCHV. V.2012(2017)"));
 
         return security;
     }
@@ -90,7 +102,7 @@ public class DkbPDFExtractorTest
         Security security = ((SecurityItem) item.get()).getSecurity();
         assertThat(security.getIsin(), is("DE0005140008"));
         assertThat(security.getWkn(), is("514000"));
-        assertThat(security.getName(), is("DEUTSCHE BANK AG"));
+        assertThat(security.getName(), is("DEUTSCHE BANK AG NAMENS-AKTIEN O.N."));
 
         return security;
     }
@@ -102,7 +114,7 @@ public class DkbPDFExtractorTest
         Security security = ((SecurityItem) item.get()).getSecurity();
         assertThat(security.getIsin(), is("DE000A2YN900"));
         assertThat(security.getWkn(), is("A2YN90"));
-        assertThat(security.getName(), is("TEAMVIEWER AG"));
+        assertThat(security.getName(), is("TEAMVIEWER AG INHABER-AKTIEN O.N."));
 
         return security;
     }
@@ -114,7 +126,7 @@ public class DkbPDFExtractorTest
         Security security = ((SecurityItem) item.get()).getSecurity();
         assertThat(security.getIsin(), is("DE000A1R1AN5"));
         assertThat(security.getWkn(), is("A1R1AN"));
-        assertThat(security.getName(), is("PCC SE"));
+        assertThat(security.getName(), is("PCC SE INH.-TEILSCHULDV. V.13(13/17)"));
 
         return security;
     }
@@ -186,7 +198,7 @@ public class DkbPDFExtractorTest
         Security security = ((SecurityItem) item.get()).getSecurity();
         assertThat(security.getIsin(), is("XS0149161217"));
         assertThat(security.getWkn(), is("858865"));
-        assertThat(security.getName(), is("2,309 % RBS CAPITAL TRUST A"));
+        assertThat(security.getName(), is("2,309 % RBS CAPITAL TRUST A EO-FLR TR.PREF.SEC.02(12/UND.)"));
 
         return security;
     }
@@ -198,7 +210,7 @@ public class DkbPDFExtractorTest
         Security security = ((SecurityItem) item.get()).getSecurity();
         assertThat(security.getIsin(), is("DE000A1RE7V0"));
         assertThat(security.getWkn(), is("A1RE7V"));
-        assertThat(security.getName(), is("6,875 % MS DEUTSCHLAND GMBH"));
+        assertThat(security.getName(), is("6,875 % MS DEUTSCHLAND GMBH INH.-SCHV. V.2012(2017)"));
 
         return security;
     }
@@ -210,7 +222,7 @@ public class DkbPDFExtractorTest
         Security security = ((SecurityItem) item.get()).getSecurity();
         assertThat(security.getIsin(), is("DE000US9RGR9"));
         assertThat(security.getWkn(), is("US9RGR"));
-        assertThat(security.getName(), is("24,75 % UBS AG (LONDON BRANCH)"));
+        assertThat(security.getName(), is("24,75 % UBS AG (LONDON BRANCH) EO-ANL. 14(16) RWE"));
 
         return security;
     }
@@ -237,7 +249,7 @@ public class DkbPDFExtractorTest
         assertThat(security.getName(), is("COMSTA.-MSCI EM.MKTS.TRN U.ETF"));
         return security;
     }
-    
+
     private Security assertSecurityBuyFondssparplan02(List<Item> results)
     {
         Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
@@ -517,7 +529,7 @@ public class DkbPDFExtractorTest
         Security security = ((SecurityItem) item.get()).getSecurity();
         assertThat(security.getIsin(), is("IE00B6YX5D40"));
         assertThat(security.getWkn(), is("A1JKS0"));
-        assertThat(security.getName(), is("SPDR S&P US DIVID.ARISTOCR.ETF"));
+        assertThat(security.getName(), is("SPDR S&P US DIVID.ARISTOCR.ETF REGISTERED SHARES O.N."));
         assertThat(security.getCurrencyCode(), is("USD"));
 
         // check transaction
@@ -723,7 +735,7 @@ public class DkbPDFExtractorTest
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
 
-        assertSecurityBuyFonds(results);
+        assertSecurityBuyKaufOTC(results);
 
         // check buy sell transaction
         Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
@@ -755,7 +767,7 @@ public class DkbPDFExtractorTest
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DkbVerkauf1.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(2));
+        assertThat(results.size(), is(3));
 
         assertSecuritySell1(results);
 
@@ -777,6 +789,16 @@ public class DkbPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(481.17))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.00))));
+
+        // check tax-refund transaction
+        item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(56.57))));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-10-27T00:00")));
     }
 
     @Test
@@ -846,6 +868,50 @@ public class DkbPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierVerkauf4() throws IOException
+    {
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DkbVerkauf4.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(3));
+
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("US00165C1045"));
+        assertThat(security.getWkn(), is("A1W90H"));
+        assertThat(security.getName(), is("AMC ENTERTAINMENT HOLDINGS INC REG. SHARES CLASS A DL -,01"));
+
+        // check buy sell transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        assertThat(item.orElseThrow(IllegalArgumentException::new).getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+
+        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(99.00)));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-02-22T00:00")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(20)));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of("EUR", Values.Amount.factorize(10.00))));
+
+        // check tax-refund transaction
+        item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(16.08))));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-23T00:00")));
+    }
+
+    @Test
     public void testWertpapierVerkauf4ausKapitalmassnahme() throws IOException
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
@@ -863,7 +929,7 @@ public class DkbPDFExtractorTest
         Security security = ((SecurityItem) item.get()).getSecurity();
         assertThat(security.getIsin(), is("DE000LED02V0"));
         assertThat(security.getWkn(), is("LED02V"));
-        assertThat(security.getName(), is("OSRAM LICHT AG"));
+        assertThat(security.getName(), is("OSRAM LICHT AG Z.VERKAUF EING.NAMENS-AKTIEN"));
 
         // check buy sell transaction
         item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
@@ -1260,7 +1326,7 @@ public class DkbPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.3160)));
 
     }
-    
+
     @Test
     public void testWertpapierKaufFondsSparplanSammelbeleg02() throws IOException
     {
@@ -1270,8 +1336,8 @@ public class DkbPDFExtractorTest
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DkbSammelbelegFondssparplan02.txt"),
-                        errors);
+        List<Item> results = extractor
+                        .extract(PDFInputFile.loadTestCase(getClass(), "DkbSammelbelegFondssparplan02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(4));
@@ -1337,7 +1403,7 @@ public class DkbPDFExtractorTest
         Security security = ((SecurityItem) item.get()).getSecurity();
         assertThat(security.getIsin(), is("FR0010524777"));
         assertThat(security.getWkn(), is("LYX0CB"));
-        assertThat(security.getName(), is("LYXOR NEW ENERGY UCITS ETF"));
+        assertThat(security.getName(), is("LYXOR NEW ENERGY UCITS ETF ACTIONS AU PORT.DIST O.N."));
 
         // check buy sell transaction
         item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
@@ -1361,15 +1427,14 @@ public class DkbPDFExtractorTest
     public void testVorabpauschale1() throws IOException
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
-    
+
         List<Exception> errors = new ArrayList<Exception>();
-    
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DkbVorabpauschale1.txt"),
-                        errors);
-    
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DkbVorabpauschale1.txt"), errors);
+
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-    
+
         // check security
         Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         assertThat(item.isPresent(), is(true));
@@ -1377,7 +1442,7 @@ public class DkbPDFExtractorTest
         assertThat(security.getIsin(), is("IE00BK5BQT80"));
         assertThat(security.getWkn(), is("A2PKXG"));
         assertThat(security.getName(), is("VANGUARD FTSE ALL-WORLD U.ETF REG. SHS USD ACC. ON"));
-    
+
         // check transaction
         item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
         assertThat(item.isPresent(), is(true));
@@ -1390,24 +1455,24 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.08)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(49.1102)));
     }
-    
+
     @Test
     public void testGiroKontoauszug1() throws IOException
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
-    
+
         List<Exception> errors = new ArrayList<Exception>();
-    
+
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DkbKontoauszugGiro1.txt"),
                         errors);
-    
+
         assertThat(errors, empty());
-        assertThat(results.size(), is(8));
-    
+        assertThat(results.size(), is(9));
+
         // check transaction
         // get transactions
         Iterator<Extractor.Item> iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
-        assertThat(results.stream().filter(i -> i instanceof TransactionItem).count(), is(8L));
+        assertThat(results.stream().filter(i -> i instanceof TransactionItem).count(), is(9L));
         if (iter.hasNext())
         {
             Item item = iter.next();
@@ -1419,7 +1484,7 @@ public class DkbPDFExtractorTest
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-06T00:00")));
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(1000)));
         }
-        
+
         if (iter.hasNext())
         {
             Item item = iter.next();
@@ -1431,7 +1496,7 @@ public class DkbPDFExtractorTest
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-08T00:00")));
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(20)));
         }
-        
+
         if (iter.hasNext())
         {
             Item item = iter.next();
@@ -1443,7 +1508,7 @@ public class DkbPDFExtractorTest
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-28T00:00")));
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(91)));
         }
-        
+
         if (iter.hasNext())
         {
             Item item = iter.next();
@@ -1455,7 +1520,7 @@ public class DkbPDFExtractorTest
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-01T00:00")));
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(1000)));
         }
-        
+
         if (iter.hasNext())
         {
             Item item = iter.next();
@@ -1467,7 +1532,7 @@ public class DkbPDFExtractorTest
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-01T00:00")));
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(999)));
         }
-        
+
         if (iter.hasNext())
         {
             Item item = iter.next();
@@ -1486,12 +1551,24 @@ public class DkbPDFExtractorTest
 
             // assert transaction
             AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-01T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(50.00)));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
             assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-18T00:00")));
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(00.01)));
         }
-        
+
         if (iter.hasNext())
         {
             Item item = iter.next();
@@ -1503,23 +1580,24 @@ public class DkbPDFExtractorTest
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-29T00:00")));
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(1234.56)));
         }
-        
+
     }
-    
+
     @Test
     public void testGiroKontoauszug2() throws IOException
     {
-        // this test case is especially for the first Kontoauszug of the year and checks for correct date interpretation
+        // this test case is especially for the first Kontoauszug of the year
+        // and checks for correct date interpretation
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
-    
+
         List<Exception> errors = new ArrayList<Exception>();
-    
+
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DkbKontoauszugGiro2.txt"),
                         errors);
-    
+
         assertThat(errors, empty());
         assertThat(results.size(), is(4));
-    
+
         // check transaction
         // get transactions
         Iterator<Extractor.Item> iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
@@ -1547,7 +1625,7 @@ public class DkbPDFExtractorTest
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-04T00:00")));
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(1000)));
         }
-        
+
         if (iter.hasNext())
         {
             Item item = iter.next();
@@ -1559,7 +1637,7 @@ public class DkbPDFExtractorTest
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-01T00:00")));
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(1234.56)));
         }
-        
+
         if (iter.hasNext())
         {
             Item item = iter.next();

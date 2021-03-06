@@ -87,8 +87,22 @@ public class EarningsPerYearChartTab extends AbstractChartTab
                 GridDataFactory.fillDefaults().align(SWT.END, SWT.FILL).applyTo(l);
             });
 
-            Label l = new Label(container, SWT.NONE);
-            l.setText(Messages.ColumnSum);
+            if (model.usesConsolidateRetired())
+            {
+                Label lSumRetired = new Label(container, SWT.NONE);
+                lSumRetired.setText(Messages.LabelEarningsConsolidateRetired);
+
+                long value = 0;
+                for (int m = year * 12; m < (year + 1) * 12 && m < totalNoOfMonths; m += 1)
+                    value += model.getSumRetired().getValue(m);
+
+                ColoredLabel cl = new ColoredLabel(container, SWT.RIGHT);
+                cl.setText(Values.Amount.format(value));
+                GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(cl);
+            }
+
+            Label lSum = new Label(container, SWT.NONE);
+            lSum.setText(Messages.ColumnSum);
 
             long value = 0;
             for (int m = year * 12; m < (year + 1) * 12 && m < totalNoOfMonths; m += 1)

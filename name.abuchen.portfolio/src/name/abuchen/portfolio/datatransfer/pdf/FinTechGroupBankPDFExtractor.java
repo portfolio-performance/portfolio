@@ -737,13 +737,14 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             return entry;
                         })
 
-                        .section("date").optional() //
-                        .match(".*Schlusstag *(?<date>\\d+.\\d+.\\d{4}).*") //
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
-
-                        .section("date").optional() //
-                        .match(".*Handelstag *(?<date>\\d+.\\d+.\\d{4}).*") //
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                        .section("date", "time").match(".*(Schlusstag|Handelstag) *(?<date>\\d+.\\d+.\\d{4}).*") //
+                        .match(".*Ausführungszeit *(?<time>\\d+:\\d+).*") //
+                        .assign((t, v) -> {
+                            if (v.get("time") != null)
+                                t.setDate(asDate(v.get("date"), v.get("time")));
+                            else
+                                t.setDate(asDate(v.get("date")));
+                        })
 
                         .section("wkn", "isin", "name")
                         .match("Nr.(\\d*)/(\\d*) *Verkauf *(?<name>.*) *\\((?<isin>[^/]*)/(?<wkn>[^)]*)\\)") //
@@ -820,7 +821,27 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                         Money.of(asCurrencyCode(v.get("currency")),
                                                                         asAmount(v.get("fee"))))))
 
+                        // Gewinn/Verlust: 1.112,18 EUR **Einbeh. KESt : 305,85
+                        // EUR
+                        .section("tax", "currency").optional()
+                        .match(".* \\*\\*Einbeh. KESt[\\s:]*(?<tax>[\\d.]+,\\d+) *(?<currency>\\w{3}+)")
+                        .assign((t, v) -> {
+                            t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX,
+                                            Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")))));
+                        })
+
+                        // Tax Refund (negative amount)
+                        // Gewinn/Verlust: -68,61 EUR **Einbeh. KESt : -18,87
+                        // EUR
+                        .section("taxRefund", "currency").optional()
+                        .match(".* \\*\\*Einbeh. KESt[\\s:]*(?<taxRefund>-[\\d.]+,\\d+) *(?<currency>\\w{3}+)")
+                        .assign((t, v) -> {
+                            t.setAmount(t.getPortfolioTransaction().getAmount() - asAmount(v.get("taxRefund")));
+                        })
+
                         .wrap(BuySellEntryItem::new));
+
+        addTaxRefundForSell(type);
     }
 
     // example is from 2016-12-01
@@ -1330,6 +1351,52 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(t -> {
                             if (t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        }));
+    }
+
+    @SuppressWarnings("nls")
+    private void addTaxRefundForSell(DocumentType type)
+    {
+        Block block = new Block(".*(Handelstag) *(?<date>\\d+.\\d+.\\d{4}).*");
+        type.addBlock(block);
+        block.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction entry = new AccountTransaction();
+                            entry.setType(AccountTransaction.Type.TAX_REFUND);
+                            return entry;
+                        })
+
+                        // Nr.170997333/1 Verkauf DWS TOP DIVIDENDE LD
+                        // (DE0009848119/984811)
+                        .section("wkn", "isin", "name")
+                        .match("Nr.(\\d*)/(\\d*) *Verkauf *(?<name>.*) *\\((?<isin>[^/]*)/(?<wkn>[^)]*)\\)")
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                        // XXXXXXX XXXXXXX Handelstag 10.11.2020am
+                        // XXXXXXX XXXXXX XXXXXXXXXXX Ausführungszeit 17:55 Uhr
+                        .section("date", "time").match(".*(Schlusstag|Handelstag) *(?<date>\\d+.\\d+.\\d{4}).*")
+                        .match(".*Ausführungszeit *(?<time>\\d+:\\d+).*").assign((t, v) -> {
+                            if (v.get("time") != null)
+                                t.setDateTime(asDate(v.get("date"), v.get("time")));
+                            else
+                                t.setDateTime(asDate(v.get("date")));
+                        })
+
+                        // Tax Refund (negative amount)
+                        // Gewinn/Verlust: -68,61 EUR **Einbeh. KESt : -18,87
+                        // EUR
+                        .section("taxRefund", "currency").optional()
+                        .match(".* \\*\\*Einbeh. KESt[\\s:]*(?<taxRefund>-[\\d.]+,\\d+) *(?<currency>\\w{3}+)")
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("taxRefund")));
+                        })
+
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
                                 return new TransactionItem(t);
                             return null;
                         }));
