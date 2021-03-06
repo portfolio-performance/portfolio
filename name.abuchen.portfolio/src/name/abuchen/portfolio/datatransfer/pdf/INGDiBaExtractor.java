@@ -82,14 +82,14 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
 
                         .section("wkn", "isin", "name", "name1") //
                         .match("^ISIN \\(WKN\\) (?<isin>[^ ]*) \\((?<wkn>.*)\\)$")
-                        .match("Wertpapierbezeichnung (?<name>.*)").match("(?<name1>.*)").assign((t, v) -> {
+                        .match("Wertpapierbezeichnung (?<name>.*)").match("(?<name1>.*)")
+                        .assign((t, v) -> {
                             if (!v.get("name1").startsWith("Nominale"))
                                 v.put("name", v.get("name") + " " + v.get("name1"));
                             t.setSecurity(getOrCreateSecurity(v));
                         })
 
                         .section("shares")
-                        //
                         .match("^Nominale( St.ck)? (?<shares>[\\d.]+(,\\d+)?).*")
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
@@ -135,8 +135,11 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
 
                         .section("fee", "currency").optional() //
                         .match("Handelsentgelt (?<currency>\\w{3}) (?<fee>[\\d.]+,\\d+)") //
-                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
+                        .assign((t, v) -> t.getPortfolioTransaction()
+                                        .addUnit(new Unit(Unit.Type.FEE,
+                                                        Money.of(asCurrencyCode(v.get("currency")),
+                                                                        asAmount(v.get("fee"))))))
+
                         .wrap(t -> {
                             if (t.getPortfolioTransaction().getDateTime() == null)
                                 throw new IllegalArgumentException("Missing date");
@@ -158,16 +161,19 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                             BuySellEntry entry = new BuySellEntry();
                             entry.setType(PortfolioTransaction.Type.SELL);
                             return entry;
-                        }).section("wkn", "isin", "name", "name1") //
+                        })
+                        
+                        .section("wkn", "isin", "name", "name1") //
                         .match("^ISIN \\(WKN\\) (?<isin>[^ ]*) \\((?<wkn>.*)\\)$")
-                        .match("Wertpapierbezeichnung (?<name>.*)").match("(?<name1>.*)").assign((t, v) -> {
+                        .match("Wertpapierbezeichnung (?<name>.*)")
+                        .match("(?<name1>.*)")
+                        .assign((t, v) -> {
                             if (!v.get("name1").startsWith("Nominale"))
                                 v.put("name", v.get("name") + " " + v.get("name1"));
                             t.setSecurity(getOrCreateSecurity(v));
                         })
 
                         .section("shares")
-                        //
                         .match("^Nominale St.ck (?<shares>[\\d.]+(,\\d+)?)")
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
@@ -230,13 +236,11 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                         })
 
                         .section("wkn", "isin", "name")
-                        //
                         .match("^ISIN \\(WKN\\) (?<isin>[^ ]*) \\((?<wkn>.*)\\)$")
                         .match("Wertpapierbezeichnung (?<name>.*)")
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         .section("shares")
-                        //
                         .match("^Nominale (?<shares>[\\d.]+(,\\d+)?) .*")
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
@@ -246,9 +250,7 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
 
                         .section("currency") //
                         .match("Gesamtbetrag zu Ihren (Gunsten|Lasten) (?<currency>\\w{3}) .*") //
-                        .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                        });
+                        .assign((t, v) -> t.setCurrencyCode(asCurrencyCode(v.get("currency"))));
 
         // make sure that tax elements are parsed *before* the total amount so
         // that we can convert to a TAX transaction if necessary
@@ -296,7 +298,6 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                         })
 
                         .section("wkn", "isin", "name")
-                        //
                         .match("^ISIN \\(WKN\\) (?<isin>[^ ]*) \\((?<wkn>.*)\\)$")
                         .match("Wertpapierbezeichnung (?<name>.*)")
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
@@ -337,7 +338,8 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                         .section("wkn", "isin", "name", "name1") //
                         .match("^ISIN \\(WKN\\) (?<isin>[^ ]*) \\((?<wkn>.*)\\)$")
                         .match("Wertpapierbezeichnung (?<name>.*)")
-                        .match("(?<name1>.*)").assign((t, v) -> {
+                        .match("(?<name1>.*)")
+                        .assign((t, v) -> {
                             if (!v.get("name1").startsWith("Nominale"))
                                 v.put("name", v.get("name") + " " + v.get("name1"));
                             t.setSecurity(getOrCreateSecurity(v));
@@ -350,7 +352,6 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                         .section("amount", "currency") //
                         .match("Gesamtbetrag zu Ihren Gunsten (?<currency>\\w{3}) (?<amount>[\\d.]+,\\d+)") //
                         .assign((t, v) -> {
-
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                         })
@@ -359,7 +360,6 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                         .match("Brutto (?<fxCurrency>\\w{3}) (?<fxAmount>[\\d\\.]+,\\d+)") //
                         .match("Umg. z. Dev.-Kurs \\((?<exchangeRate>[\\d\\.]+,\\d+)\\) (?<currency>\\w{3}) ([\\d\\.]+,\\d+)") //
                         .assign((t, v) -> {
-
                             BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                             type.getCurrentContext().put(EXCHANGE_RATE, exchangeRate.toPlainString());
 
@@ -392,8 +392,9 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private void addTaxSectionToBuySellEntry(DocumentType type, Transaction<BuySellEntry> transaction)
     {
-        // Kapitalerstragsteuer (Einzelkonto)
-        transaction.section("tax", "currency").optional() //
+        transaction
+                        // Kapitalerstragsteuer (Einzelkonto)
+                        .section("tax", "currency").optional() //
                         .match("Kapitalertragsteuer \\d+,\\d+ ?% (?<currency>\\w{3}) (?<tax>[\\d.]+,\\d+)")
                         .assign((t, v) -> t.getPortfolioTransaction()
                                         .addUnit(new Unit(Unit.Type.TAX,
@@ -457,8 +458,9 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private void addTaxSectionToAccountTransaction(DocumentType type, Transaction<AccountTransaction> transaction)
     {
-        // Kapitalerstragsteuer (Einzelkonto)
-        transaction.section("tax", "currency").optional() //
+        transaction
+                        // Kapitalerstragsteuer (Einzelkonto)
+                        .section("tax", "currency").optional() //
                         .match("Kapitalertragsteuer \\d+,\\d+ ?% (?<currency>\\w{3}) (?<tax>[\\d.]+,\\d+)")
                         .assign((t, v) -> t.addUnit(new Unit(Unit.Type.TAX,
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))))
@@ -516,8 +518,7 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                         })
 
                         // Quellensteuer
-                        .section("tax", "currency", "taxTx", "currencyTx") //
-                        .optional() //
+                        .section("tax", "currency", "taxTx", "currencyTx").optional() //
                         .match("QuSt \\d+,\\d+ % \\((?<currency>\\w{3}) (?<tax>[\\d.,]*)\\) (?<currencyTx>\\w{3}) (?<taxTx>[\\d.,]*)")
                         .assign((t, v) -> {
                             String currency = asCurrencyCode(v.get("currency"));
@@ -538,9 +539,9 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                                 t.addUnit(new Unit(Unit.Type.TAX, Money.of(currencyTx, asAmount(v.get("taxTx")))));
                             }
                         })
+
                         // Quellensteuer ohne Fremdwährung
-                        .section("tax", "currency") //
-                        .optional() //
+                        .section("tax", "currency").optional() //
                         .match("QuSt \\d+,\\d+ % (?<currency>\\w{3}) (?<tax>[\\d.,]*)").assign((t, v) -> {
                             String currency = asCurrencyCode(v.get("currency"));
                             t.addUnit(new Unit(Unit.Type.TAX, Money.of(currency, asAmount(v.get("tax")))));
