@@ -184,6 +184,7 @@ public class Messages extends NLS
     public static String ColumnFix;
     public static String ColumnForeignCurrencies;
     public static String ColumnGrossDividend;
+    public static String ColumnGrossProfitLoss;
     public static String ColumnGrossValue;
     public static String ColumnHeight;
     public static String ColumnHoldingPeriod;
