@@ -54,6 +54,9 @@ DE63MUC00001787612
 H0218248F1742 Girokonto auf Visa-Karte
 633/2 End-to-End-Ref.: nicht
 angegeben
+30.10.2017 Auszahlung BANK Auszahlung -50,00
+30.10.2017 1DB173030000 Bank//Ort/DE
+1310/26679 0000-00-00TT00:00:00 KFN 0 VJ 0000
 05.09.2018 Entgelte Entgelt für Änderung der -5,90
 05.09.2018 3RF18248J0000 PIN bei der VISA-Karte
 909/255 ZUORDN. 118 9900160 20
