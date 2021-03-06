@@ -193,6 +193,9 @@ public class Trade implements Adaptable
 
     public Money getGrossProfitLoss()
     {
+        if (exitGrossValue == null) {
+            return null;
+        }
         return exitGrossValue.subtract(entryGrossValue);
     }
 
