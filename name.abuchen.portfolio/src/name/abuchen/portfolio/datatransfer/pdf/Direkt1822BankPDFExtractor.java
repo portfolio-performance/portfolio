@@ -80,7 +80,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
 
             // Auftrag vom 05.12.2017 00:15:28 Uhr
             .section("date", "time")
-            .match("^(Schlusstag/-Zeit) (?<date>\\d+.\\d+.\\d{4}+) (?<time>\\d+:\\d+:\\d+).*")
+            .match("^(Schlusstag/-Zeit) (?<date>\\d+.\\d+.\\d{4}) (?<time>\\d+:\\d+:\\d+).*")
             .assign((t, v) -> {
                 if (v.get("time") != null)
                     t.setDate(asDate(v.get("date"), v.get("time")));
@@ -90,7 +90,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
 
             // Ausmachender Betrag 50,00- EUR
             .section("currency", "amount")
-            .match("^(Ausmachender Betrag) (?<amount>[\\d.]+,\\d+)[?(-|\\+)] (?<currency>\\w{3}+)")
+            .match("^(Ausmachender Betrag) (?<amount>[\\d.]+,\\d+)[?(-|\\+)] (?<currency>\\w{3})")
             .assign((t, v) -> {
                 t.setAmount(asAmount(v.get("amount")));
                 t.setCurrencyCode(v.get("currency"));
@@ -106,7 +106,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
             
             // Provision 4,95- EUR
             .section("fee", "currency").optional()
-            .match("^(Provision) (?<fee>[\\d.-]+,\\d+)- (?<currency>\\w{3}+)")
+            .match("^(Provision) (?<fee>[\\d.-]+,\\d+)- (?<currency>\\w{3})")
             .assign((t, v) -> t.getPortfolioTransaction()
                             .addUnit(new Unit(Unit.Type.FEE,
                                             Money.of(asCurrencyCode(v.get("currency")),
@@ -114,7 +114,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
             
             // Eigene Spesen 1,95- EUR
             .section("fee", "currency").optional()
-            .match("^(Eigene Spesen) (?<fee>[\\d.-]+,\\d+)- (?<currency>\\w{3}+)")
+            .match("^(Eigene Spesen) (?<fee>[\\d.-]+,\\d+)- (?<currency>\\w{3})")
             .assign((t, v) -> t.getPortfolioTransaction()
                             .addUnit(new Unit(Unit.Type.FEE,
                                             Money.of(asCurrencyCode(v.get("currency")),
@@ -176,7 +176,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
 
             // Auftrag vom 05.12.2017 00:15:28 Uhr
             .section("date", "time")
-            .match("^(Auftrag vom) (?<date>\\d+.\\d+.\\d{4}+) (?<time>\\d+:\\d+:\\d+) Uhr")
+            .match("^(Auftrag vom) (?<date>\\d+.\\d+.\\d{4}) (?<time>\\d+:\\d+:\\d+) Uhr")
             .assign((t, v) -> {
                 if (v.get("time") != null)
                     t.setDate(asDate(v.get("date"), v.get("time")));
@@ -186,7 +186,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
 
             // Ausmachender Betrag 50,00- EUR
             .section("currency", "amount")
-            .match("^(Ausmachender Betrag) (?<amount>[\\d.]+,\\d+)- (?<currency>\\w{3}+)")
+            .match("^(Ausmachender Betrag) (?<amount>[\\d.]+,\\d+)- (?<currency>\\w{3})")
             .assign((t, v) -> {
                 t.setAmount(asAmount(v.get("amount")));
                 t.setCurrencyCode(v.get("currency"));
@@ -248,7 +248,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
 
             // Ausmachender Betrag 68,87+ EUR
             .section("currency", "amount")
-            .match("^(Ausmachender Betrag) (?<amount>[\\d.]+,\\d+)\\+ (?<currency>\\w{3}+)")
+            .match("^(Ausmachender Betrag) (?<amount>[\\d.]+,\\d+)\\+ (?<currency>\\w{3})")
             .assign((t, v) -> {
                 t.setAmount(asAmount(v.get("amount")));
                 t.setCurrencyCode(v.get("currency"));
@@ -256,7 +256,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
 
             // Ex-Tag 14.12.2017 Herkunftsland Irland
             .section("date")
-            .match("^Ex-Tag (?<date>\\d+.\\d+.\\d{4}+).*")
+            .match("^Ex-Tag (?<date>\\d+.\\d+.\\d{4}).*")
             .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
             // Devisenkurs EUR / USD 1,2095
