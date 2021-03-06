@@ -212,12 +212,30 @@ public class Trade implements Adaptable
     }
     
     /**
-     * @brief Checks if a trade is closed
+     * @brief Checks if the trade is closed
      * @return True if the trade has been closed, false otherwise
      */
     public boolean isClosed()
     {
         return this.getEnd().isPresent();
+    }
+    
+    /**
+     * @brief Checks if the trade made a net loss
+     * @return True if the trade resulted in a net loss
+     */
+    public boolean isLoss()
+    {
+        return this.getProfitLoss().isNegative();
+    }
+    
+    /**
+     * @brief Check if the trade man a gross gross 
+     * @return True if the trade result in a gross loss
+     */
+    public boolean isGrossLoss()
+    {
+        return this.getGrossProfitLoss().isNegative();
     }
 
     @Override
