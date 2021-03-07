@@ -201,7 +201,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
         })
 
                         .section("date", "name", "isin", "currency", "amount")    //$NON-NLS-4$ //$NON-NLS-5$
-                        .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) (\\d+-\\d+-\\d{4} )?(?<name>.*) (?<isin>\\w{12}+) (Dividende|Fondsausschüttung) (?<currency>\\w{3}) -?(?<amount>[\\d.]+,\\d{2}) (\\w{3}).*$") 
+                        .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) (\\d+-\\d+-\\d{4} )?(?<name>.*) (?<isin>\\w{12}) (Dividende|Fondsausschüttung) (?<currency>\\w{3}) -?(?<amount>[\\d.]+,\\d{2}) (\\w{3}).*$") 
                         .assign((t, v) -> {
                             
                             t.setSecurity(getOrCreateSecurity(v));
@@ -239,7 +239,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                         // 14-06-2019 07:55 14-06-2019 THE KRAFT HEINZ COMPAN US5007541064 Dividendensteuer USD -0,06 USD -0,06
                         // nicht  17-07-2017 00:00 ISH.S.EU.SEL.DIV.30 U.ETF DE0002635299 Dividendensteuer EUR -0,55 EUR 519,34
                         .section("isin", "currencyTax", "tax").optional()  
-                        .match("^(\\d+-\\d+-\\d{4} \\d+:\\d+) (\\d+-\\d+-\\d{4} )?(.*) (?<isin>\\w{12}+) .*Dividendensteuer\\s(?<currencyTax>\\w{3}) -?(?<tax>[\\d.]+,\\d{2}) (\\w{3}).*$") 
+                        .match("^(\\d+-\\d+-\\d{4} \\d+:\\d+) (\\d+-\\d+-\\d{4} )?(.*) (?<isin>\\w{12}) .*Dividendensteuer\\s(?<currencyTax>\\w{3}) -?(?<tax>[\\d.]+,\\d{2}) (\\w{3}).*$") 
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
                             if (!v.get("currencyTax").equalsIgnoreCase(getClient().getBaseCurrency())
@@ -270,7 +270,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                         
                         //  06-06-2019 09:00 05-06-2019 SONY CORPORATION COMMO US8356993076 ADR/GDR Weitergabegebühr USD -0,04 USD -0,040
                         .section("isin", "currencyFee", "feeFx").optional()      
-                        .match("^(\\d+-\\d+-\\d{4} \\d+:\\d+) (\\d+-\\d+-\\d{4} )?(.*) (?<isin>\\w{12}+) ADR/GDR Weitergabegebühr (?<currencyFee>\\w{3}) -?(?<feeFx>[\\d.]+,\\d{2}) .*$") 
+                        .match("^(\\d+-\\d+-\\d{4} \\d+:\\d+) (\\d+-\\d+-\\d{4} )?(.*) (?<isin>\\w{12}) ADR/GDR Weitergabegebühr (?<currencyFee>\\w{3}) -?(?<feeFx>[\\d.]+,\\d{2}) .*$") 
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
                             if (!v.get("currencyFee").equalsIgnoreCase(getClient().getBaseCurrency())
@@ -447,7 +447,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
         })
 
                         .section("date", "name", "isin", "currency", "amount")    //$NON-NLS-4$ //$NON-NLS-5$
-                        .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) (\\d+-\\d+-\\d{4} )?(?<name>.*) (?<isin>\\w{12}+) .*Gebühr.* (Ausübung|Zuteilung).*(?<currency>\\w{3}) -?(?<amount>[\\d.]+,\\d{2}) .*$") 
+                        .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) (\\d+-\\d+-\\d{4} )?(?<name>.*) (?<isin>\\w{12}) .*Gebühr.* (Ausübung|Zuteilung).*(?<currency>\\w{3}) -?(?<amount>[\\d.]+,\\d{2}) .*$") 
                         .assign((t, v) -> {
                             t.setSecurity(getOrCreateSecurity(v));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency"))); 
@@ -510,7 +510,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Transaktionsübersicht|Transacciones|Transacties|Transactions");
         this.addDocumentTyp(type);
         
-        Block blockBuy = new Block("^\\d+-\\d+-\\d{4} \\d+:\\d+ .* \\w{12}+ .* (\\w{3}+|\\w{3}+ \\w{4}+) .*([.\\d]+,\\d{2}|\\w{3})$"); 
+        Block blockBuy = new Block("^\\d+-\\d+-\\d{4} \\d+:\\d+ .* \\w{12} .* (\\w{3}|\\w{3} \\w{4}) .*([.\\d]+,\\d{2}|\\w{3})$"); 
         type.addBlock(blockBuy);
 
         blockBuy.set(new Transaction<BuySellEntry>()
@@ -528,7 +528,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
 
                             section -> section
                                 .attributes("date", "name", "isin", "shares", "currency", "amount")    //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
-                                .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) (?<name>.*) (?<isin>\\w{12}+) \\w{3} (?<shares>[-]?[.\\d]+[,\\d]*)" 
+                                .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) (?<name>.*) (?<isin>\\w{12}) \\w{3} (?<shares>[-]?[.\\d]+[,\\d]*)" 
                                                 // quote
                                                 + " \\w{3} [-.,\\d]*" 
                                                  // gross value transaction currency
@@ -560,7 +560,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
 
                             section -> section
                                 .attributes("date", "name", "isin", "shares", "currencyFee", "fee", "currency", "amount")    //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
-                                .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) (?<name>.*) (?<isin>\\w{12}+) \\w{3} (?<shares>[-]?[.\\d]+[,\\d]*)"  
+                                .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) (?<name>.*) (?<isin>\\w{12}) \\w{3} (?<shares>[-]?[.\\d]+[,\\d]*)"  
                                                 // quote
                                                 + " \\w{3} [-.,\\d]*" 
                                                 // gross value transaction currency
@@ -595,7 +595,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // 23-07-2019 15:30 RIO TINTO PLC COMMON S US7672041008 NSY -3 USD 61,04 USD 183,12 EUR 163,83 1,1177 EUR -0,51 EUR 163,32
 
                             section -> section.attributes("date", "name", "isin", "shares", "currency", "amountFx", "exchangeRate", "currencyFee", "fee", "currencyAccount", "amount")
-                            .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) (?<name>.*) (?<isin>\\w{12}+) \\w{3} (?<shares>[-]?[.\\d]+[,\\d]*)" 
+                            .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) (?<name>.*) (?<isin>\\w{12}) \\w{3} (?<shares>[-]?[.\\d]+[,\\d]*)" 
                                             + " \\w{3} -?[.\\d]+,\\d{2,4}" 
                                             + " (?<currency>\\w{3}) -?(?<amountFx>[.\\d]+,\\d{2}).*" 
                                             + " \\w{3} -?[.\\d]+,\\d{2}" 
@@ -644,7 +644,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             section -> section.attributes("date", "name", "isin", "shares", "currency", "amountFx", "exchangeRate", "currencyFee", "fee", "currencyAccount", "amount")
                             .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) "
                                             + "(?<name>.*) "
-                                            + "(?<isin>\\w{12}+) "
+                                            + "(?<isin>\\w{12}) "
                                             + "\\w{3} "
                                             + "(?<shares>[-]?[.\\d]+[,\\d]*) "
                                             + "-?[.\\d]+,\\d{2,4} \\w{3} "
@@ -694,7 +694,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // 22-07-2019 19:16 LPL FINANCIAL HOLDINGS US50212V1008 NDQ -1 USD 85,73 USD 85,73 EUR 76,42 1,1218 EUR 76,42
 
                             section -> section.attributes("date", "name", "isin", "shares", "currency", "amountFx", "exchangeRate", "currencyAccount", "amount")
-                            .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) (?<name>.*) (?<isin>\\w{12}+) \\w{3} (?<shares>[-]?[.\\d]+[,\\d]*)"  
+                            .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) (?<name>.*) (?<isin>\\w{12}) \\w{3} (?<shares>[-]?[.\\d]+[,\\d]*)"  
                                             + " \\w{3} -?[.\\d]+,\\d{2,3}.*" 
                                             + " (?<currency>\\w{3}) -?(?<amountFx>[.\\d]+,\\d{2}).*" 
                                             + " \\w{3} -?[.\\d]+,\\d{2}" 
