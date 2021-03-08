@@ -100,6 +100,11 @@ public class PRApiClient
         deleteEntity("/portfolios/" + portfolioId + "/accounts/" + account.getId());  //$NON-NLS-1$ //$NON-NLS-2$
     }
     
+    public List<PRTransaction> listTransactions(long portfolioId) throws IOException
+    {
+        return list(PRTransaction.class, "/portfolios/" + portfolioId + "/transactions"); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
     private <T> List<T> list(Class<T> type, String path) throws IOException
     {
         HttpGet request = new HttpGet(ENDPOINT + path);
@@ -150,5 +155,4 @@ public class PRApiClient
         return new IOException(request.toString() + " --> " + response.getStatusLine().getStatusCode() + "\n\n" //$NON-NLS-1$ //$NON-NLS-2$
                         + EntityUtils.toString(response.getEntity()));
     }
-
 }
