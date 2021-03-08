@@ -8,8 +8,10 @@ import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
@@ -68,6 +70,36 @@ public class PRApiClient
         return create(PRSecurity.class, "/portfolios/" + portfolioId + "/securities", security); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
+    public PRSecurity updateSecurity(long portfolioId, PRSecurity security) throws IOException
+    {
+        return update(PRSecurity.class, "/portfolios/" + portfolioId + "/securities/" + security.getId(), security); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+    
+    public void deleteSecurity(long portfolioId, PRSecurity security) throws IOException
+    {
+        deleteEntity("/portfolios/" + portfolioId + "/securities/" + security.getId());  //$NON-NLS-1$ //$NON-NLS-2$
+    }
+    
+    public List<PRAccount> listAccounts(long portfolioId) throws IOException
+    {
+        return list(PRAccount.class, "/portfolios/" + portfolioId + "/accounts"); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    public PRAccount createAccount(long portfolioId, PRAccount account) throws IOException
+    {
+        return create(PRAccount.class, "/portfolios/" + portfolioId + "/accounts", account); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+    
+    public PRAccount updateAccount(long portfolioId, PRAccount account) throws IOException
+    {
+        return update(PRAccount.class, "/portfolios/" + portfolioId + "/accounts/" + account.getId(), account); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+    
+    public void deleteAccount(long portfolioId, PRAccount account) throws IOException
+    {
+        deleteEntity("/portfolios/" + portfolioId + "/accounts/" + account.getId());  //$NON-NLS-1$ //$NON-NLS-2$
+    }
+    
     private <T> List<T> list(Class<T> type, String path) throws IOException
     {
         HttpGet request = new HttpGet(ENDPOINT + path);
@@ -91,7 +123,28 @@ public class PRApiClient
 
         return JClient.GSON.fromJson(EntityUtils.toString(response.getEntity()), type);
     }
+    
+    private <T> T update(Class<T> type, String path, T input) throws IOException
+    {
+        HttpPut request = new HttpPut(ENDPOINT + path);
+        request.setEntity(new StringEntity(JClient.GSON.toJson(input)));
+        CloseableHttpResponse response = client.execute(request);
 
+        if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK)
+            throw asError(request, response);
+
+        return JClient.GSON.fromJson(EntityUtils.toString(response.getEntity()), type);
+    }
+    
+    private void deleteEntity(String path) throws IOException
+    {
+        HttpDelete request = new HttpDelete(ENDPOINT + path);
+        CloseableHttpResponse response = client.execute(request);
+        
+        if (response.getStatusLine().getStatusCode() >= 300)
+            throw asError(request, response);
+    }
+    
     private IOException asError(HttpRequestBase request, CloseableHttpResponse response) throws IOException
     {
         return new IOException(request.toString() + " --> " + response.getStatusLine().getStatusCode() + "\n\n" //$NON-NLS-1$ //$NON-NLS-2$
