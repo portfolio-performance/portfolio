@@ -600,6 +600,14 @@ public class ClientFactory
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
+            case 50:
+                for (Account a : client.getAccounts())
+                    for (Transaction t : a.getTransactions())
+                        t.generateUUID();
+
+                for (Portfolio p : client.getPortfolios())
+                    for (Transaction t : p.getTransactions())
+                        t.generateUUID();
             case Client.CURRENT_VERSION:
                 break;
             default:

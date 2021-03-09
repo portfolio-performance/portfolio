@@ -11,6 +11,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import name.abuchen.portfolio.Messages;
@@ -143,6 +144,7 @@ public abstract class Transaction implements Annotated, Adaptable
         }
     }
 
+    private String uuid;
     private LocalDateTime date;
     private String currencyCode;
     private long amount;
@@ -156,6 +158,7 @@ public abstract class Transaction implements Annotated, Adaptable
 
     public Transaction()
     {
+        this.uuid = UUID.randomUUID().toString();
     }
 
     public Transaction(LocalDateTime date, String currencyCode, long amount)
@@ -166,12 +169,23 @@ public abstract class Transaction implements Annotated, Adaptable
     public Transaction(LocalDateTime date, String currencyCode, long amount, Security security, long shares,
                     String note)
     {
+        this();
         this.date = date;
         this.currencyCode = currencyCode;
         this.amount = amount;
         this.security = security;
         this.shares = shares;
         this.note = note;
+    }
+    
+    public String getUUID()
+    {
+        return uuid;
+    }
+    
+    void generateUUID()
+    {
+        uuid = UUID.randomUUID().toString();
     }
 
     public LocalDateTime getDateTime()
