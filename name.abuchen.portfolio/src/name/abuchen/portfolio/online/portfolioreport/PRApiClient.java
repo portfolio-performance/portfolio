@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.online.portfolioreport;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -120,7 +121,7 @@ public class PRApiClient
     private <T> T create(Class<T> type, String path, T input) throws IOException
     {
         HttpPost request = new HttpPost(ENDPOINT + path);
-        request.setEntity(new StringEntity(JClient.GSON.toJson(input)));
+        request.setEntity(new StringEntity(JClient.GSON.toJson(input), StandardCharsets.UTF_8));
         CloseableHttpResponse response = client.execute(request);
 
         if (response.getStatusLine().getStatusCode() != HttpStatus.SC_CREATED)
@@ -132,7 +133,8 @@ public class PRApiClient
     private <T> T update(Class<T> type, String path, T input) throws IOException
     {
         HttpPut request = new HttpPut(ENDPOINT + path);
-        request.setEntity(new StringEntity(JClient.GSON.toJson(input)));
+        request.setEntity(new StringEntity(JClient.GSON.toJson(input), StandardCharsets.UTF_8));
+        
         CloseableHttpResponse response = client.execute(request);
 
         if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK)
