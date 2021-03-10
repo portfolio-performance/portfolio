@@ -2,9 +2,8 @@ package name.abuchen.portfolio.online.portfolioreport;
 
 public class PRSecurity
 {
-    private long id;
-    private String name;
     private String uuid;
+    private String name;
     private String currencyCode;
     private String isin;
     private String wkn;
@@ -12,14 +11,14 @@ public class PRSecurity
     private boolean active;
     private String note;
 
-    public long getId()
+    public String getUuid()
     {
-        return id;
+        return uuid;
     }
 
-    public void setId(long id)
+    public void setUuid(String uuid)
     {
-        this.id = id;
+        this.uuid = uuid;
     }
 
     public String getName()
@@ -30,16 +29,6 @@ public class PRSecurity
     public void setName(String name)
     {
         this.name = name;
-    }
-
-    public String getUuid()
-    {
-        return uuid;
-    }
-
-    public void setUuid(String uuid)
-    {
-        this.uuid = uuid;
     }
 
     public String getCurrencyCode()

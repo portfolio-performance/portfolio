@@ -1,80 +1,95 @@
 package name.abuchen.portfolio.online.portfolioreport;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PRTransaction
 {
-    private long id;
-    private String type; 
+    private String uuid;
+    private String type;
 
-    private long accountId;
-    private LocalDateTime datetime;
-    private long partnerTransactionId;
-    private PRTransaction partnerTransaction;
-    // TODO: private List<TransactionUnit> units; 
+    private String accountUuid;
+    private String datetime;
+    private String partnerTransactionUuid;
+    private List<PRTransactionUnit> units;
     private String shares;
-    private long securityId;
+    private String portfolioSecurityUuid;
     private String note;
-    
 
-    public long getId()
+    public PRTransaction()
     {
-        return id;
     }
 
-    public void setId(long id)
+    public PRTransaction(PRTransaction source)
     {
-        this.id = id;
+        this.uuid = source.uuid;
+        this.type = source.type;
+        this.accountUuid = source.accountUuid;
+        this.datetime = source.datetime;
+        this.partnerTransactionUuid = source.partnerTransactionUuid;
+        this.units = source.units != null ? new ArrayList<PRTransactionUnit>(source.units) : null;
+        this.shares = source.shares;
+        this.portfolioSecurityUuid = source.portfolioSecurityUuid;
+        this.note = source.note;
     }
-    
+
+    public String getUuid()
+    {
+        return uuid;
+    }
+
+    public void setUuid(String uuid)
+    {
+        this.uuid = uuid;
+    }
+
     public String getType()
     {
-        return type;  
+        return type;
     }
 
     public void setType(String type)
     {
         this.type = type;
     }
-    
-    public long getAccountId()
+
+    public String getAccountUuid()
     {
-        return accountId;
+        return accountUuid;
     }
 
-    public void setAccountId(long accountId)
+    public void setAccountUuid(String accountUuid)
     {
-        this.accountId = accountId;
+        this.accountUuid = accountUuid;
     }
 
-    public LocalDateTime getDatetime()
+    public String getDatetime()
     {
         return datetime;
     }
 
-    public void setDatetime(LocalDateTime datetime)
+    public void setDatetime(String datetime)
     {
         this.datetime = datetime;
     }
 
-    public long getPartnerTransactionId()
+    public void setDatetime(LocalDateTime datetime)
     {
-        return partnerTransactionId;
+        this.datetime = datetime.atZone(ZoneId.systemDefault()).toOffsetDateTime()
+                        .format(DateTimeFormatter.ISO_DATE_TIME);
     }
 
-    public void setPartnerTransactionId(long partnerTransactionId)
+    public String getPartnerTransactionUuid()
     {
-        this.partnerTransactionId = partnerTransactionId;
+        return partnerTransactionUuid;
     }
 
-    public PRTransaction getPartnerTransaction()
+    public void setPartnerTransactionUuid(String partnerTransactionUuid)
     {
-        return partnerTransaction;
-    }
-
-    public void setPartnerTransaction(PRTransaction partnerTransaction)
-    {
-        this.partnerTransaction = partnerTransaction;
+        this.partnerTransactionUuid = partnerTransactionUuid;
     }
 
     public String getShares()
@@ -87,14 +102,37 @@ public class PRTransaction
         this.shares = shares;
     }
 
-    public long getSecurityId()
+    public void setShares(long shares)
     {
-        return securityId;
+        this.shares = Double.toString(shares / 1.e8);
     }
 
-    public void setSecurityId(long securityId)
+    public List<PRTransactionUnit> getUnits()
     {
-        this.securityId = securityId;
+        return units;
+    }
+
+    public void setUnits(List<PRTransactionUnit> units)
+    {
+        this.units = units;
+    }
+
+    public void addUnit(PRTransactionUnit unit)
+    {
+        if (this.units == null)
+            units = new ArrayList<PRTransactionUnit>();
+
+        units.add(unit);
+    }
+
+    public String getPortfolioSecurityUuid()
+    {
+        return portfolioSecurityUuid;
+    }
+
+    public void setPortfolioSecurityUuid(String portfolioSecurityUuid)
+    {
+        this.portfolioSecurityUuid = portfolioSecurityUuid;
     }
 
     public String getNote()

@@ -7,7 +7,7 @@ public class PRAccount
     private String name;
     private String uuid;
     private String currencyCode;
-    private long referenceAccountId;
+    private String referenceAccountUuid;
     private boolean active;
     private String note;
 
@@ -61,14 +61,14 @@ public class PRAccount
         this.currencyCode = currencyCode;
     }
 
-    public long getReferenceAccountId()
+    public String getReferenceAccountUuid()
     {
-        return referenceAccountId;
+        return referenceAccountUuid;
     }
 
-    public void setReferenceAccountId(long referenceAccountId)
+    public void setReferenceAccountUuid(String referenceAccountUuid)
     {
-        this.referenceAccountId = referenceAccountId;
+        this.referenceAccountUuid = referenceAccountUuid;
     }
 
     public boolean isActive()

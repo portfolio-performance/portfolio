@@ -66,44 +66,46 @@ public class PRApiClient
         return list(PRSecurity.class, "/portfolios/" + portfolioId + "/securities"); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
-    public PRSecurity createSecurity(long portfolioId, PRSecurity security) throws IOException
-    {
-        return create(PRSecurity.class, "/portfolios/" + portfolioId + "/securities", security); //$NON-NLS-1$ //$NON-NLS-2$
-    }
-
     public PRSecurity updateSecurity(long portfolioId, PRSecurity security) throws IOException
     {
-        return update(PRSecurity.class, "/portfolios/" + portfolioId + "/securities/" + security.getId(), security); //$NON-NLS-1$ //$NON-NLS-2$
+        return update(PRSecurity.class, "/portfolios/" + portfolioId + "/securities/" + security.getUuid(), security); //$NON-NLS-1$ //$NON-NLS-2$
     }
-    
-    public void deleteSecurity(long portfolioId, PRSecurity security) throws IOException
+
+    public PRSecurity deleteSecurity(long portfolioId, PRSecurity security) throws IOException
     {
-        deleteEntity("/portfolios/" + portfolioId + "/securities/" + security.getId());  //$NON-NLS-1$ //$NON-NLS-2$
+        return deleteEntity(PRSecurity.class, "/portfolios/" + portfolioId + "/securities/" + security.getUuid()); //$NON-NLS-1$ //$NON-NLS-2$
     }
-    
+
     public List<PRAccount> listAccounts(long portfolioId) throws IOException
     {
         return list(PRAccount.class, "/portfolios/" + portfolioId + "/accounts"); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
-    public PRAccount createAccount(long portfolioId, PRAccount account) throws IOException
-    {
-        return create(PRAccount.class, "/portfolios/" + portfolioId + "/accounts", account); //$NON-NLS-1$ //$NON-NLS-2$
-    }
-    
     public PRAccount updateAccount(long portfolioId, PRAccount account) throws IOException
     {
-        return update(PRAccount.class, "/portfolios/" + portfolioId + "/accounts/" + account.getId(), account); //$NON-NLS-1$ //$NON-NLS-2$
+        return update(PRAccount.class, "/portfolios/" + portfolioId + "/accounts/" + account.getUuid(), account); //$NON-NLS-1$ //$NON-NLS-2$
     }
-    
-    public void deleteAccount(long portfolioId, PRAccount account) throws IOException
+
+    public PRAccount deleteAccount(long portfolioId, PRAccount account) throws IOException
     {
-        deleteEntity("/portfolios/" + portfolioId + "/accounts/" + account.getId());  //$NON-NLS-1$ //$NON-NLS-2$
+        return deleteEntity(PRAccount.class, "/portfolios/" + portfolioId + "/accounts/" + account.getUuid()); //$NON-NLS-1$ //$NON-NLS-2$
     }
-    
+
     public List<PRTransaction> listTransactions(long portfolioId) throws IOException
     {
         return list(PRTransaction.class, "/portfolios/" + portfolioId + "/transactions"); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    public PRTransaction updateTransaction(long portfolioId, PRTransaction transaction) throws IOException
+    {
+        return update(PRTransaction.class, "/portfolios/" + portfolioId + "/transactions/" + transaction.getUuid(), //$NON-NLS-1$ //$NON-NLS-2$
+                        transaction);
+    }
+
+    public PRTransaction deleteTransaction(long portfolioId, PRTransaction transaction) throws IOException
+    {
+        return deleteEntity(PRTransaction.class,
+                        "/portfolios/" + portfolioId + "/transactions/" + transaction.getUuid()); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     private <T> List<T> list(Class<T> type, String path) throws IOException
@@ -129,7 +131,7 @@ public class PRApiClient
 
         return JClient.GSON.fromJson(EntityUtils.toString(response.getEntity()), type);
     }
-    
+
     private <T> T update(Class<T> type, String path, T input) throws IOException
     {
         HttpPut request = new HttpPut(ENDPOINT + path);
@@ -142,16 +144,18 @@ public class PRApiClient
 
         return JClient.GSON.fromJson(EntityUtils.toString(response.getEntity()), type);
     }
-    
-    private void deleteEntity(String path) throws IOException
+
+    private <T> T deleteEntity(Class<T> type, String path) throws IOException
     {
         HttpDelete request = new HttpDelete(ENDPOINT + path);
         CloseableHttpResponse response = client.execute(request);
-        
-        if (response.getStatusLine().getStatusCode() >= 300)
+
+        if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK)
             throw asError(request, response);
+
+        return JClient.GSON.fromJson(EntityUtils.toString(response.getEntity()), type);
     }
-    
+
     private IOException asError(HttpRequestBase request, CloseableHttpResponse response) throws IOException
     {
         return new IOException(request.toString() + " --> " + response.getStatusLine().getStatusCode() + "\n\n" //$NON-NLS-1$ //$NON-NLS-2$
