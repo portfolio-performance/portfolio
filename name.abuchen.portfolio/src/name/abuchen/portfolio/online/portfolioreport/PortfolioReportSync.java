@@ -2,6 +2,7 @@ package name.abuchen.portfolio.online.portfolioreport;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -354,7 +355,7 @@ public class PortfolioReportSync
                 pr2.setPortfolioSecurityUuid(pp.getSecurity().getUUID());
                 pr2.setAccountUuid(findPortfolioForAdditionalTransaction(pp, account).getUUID());
 
-                pr2.addUnit(new PRTransactionUnit("fee", amount, pp.getCurrencyCode())); // TODO
+                pr2.addUnit(new PRTransactionUnit("fee", amount, pp.getCurrencyCode()));
             }
         }
         else if (type == AccountTransaction.Type.TAXES || type == AccountTransaction.Type.TAX_REFUND)
@@ -379,7 +380,7 @@ public class PortfolioReportSync
                 pr2.setPortfolioSecurityUuid(pp.getSecurity().getUUID());
                 pr2.setAccountUuid(findPortfolioForAdditionalTransaction(pp, account).getUUID());
 
-                pr2.addUnit(new PRTransactionUnit("tax", amount, pp.getCurrencyCode())); // TODO
+                pr2.addUnit(new PRTransactionUnit("tax", amount, pp.getCurrencyCode()));
             }
 
         }
@@ -452,29 +453,63 @@ public class PortfolioReportSync
         return candidates.get(0);
     }
 
+    /**
+     * Saves remote transaction via API. Checks if partnerTransaction is
+     * referenced and exists. If necessary updates without reference to
+     * partnerTransaction and schedules retry of update.
+     */
+    private void saveTransaction(long portfolioId, PRTransaction transaction, List<String> remoteTransactionsUuids,
+                    List<PRTransaction> retryUpdateTransactions) throws IOException
+    {
+        // We cannot reference non-existent partnerTransaction
+        String partnerTransactionUuid = transaction.getPartnerTransactionUuid();
+        if (partnerTransactionUuid != null && !remoteTransactionsUuids.contains(partnerTransactionUuid))
+        {
+            // Queue transaction to retry update later
+            PRTransaction originalTransaction = new PRTransaction(transaction);
+            retryUpdateTransactions.add(originalTransaction);
+
+            // Remove partnerTransactionUuid
+            transaction.setPartnerTransactionUuid(null);
+        }
+
+        // Create transaction
+        PRTransaction createdTransaction = api.updateTransaction(portfolioId, transaction);
+        remoteTransactionsUuids.add(createdTransaction.getUuid());
+    }
+
     private void syncTransactions(long portfolioId) throws IOException
     {
         List<PRTransaction> remoteTransactions = api.listTransactions(portfolioId);
 
+        List<String> remoteTransactionsUuids = remoteTransactions.stream().map(t -> t.getUuid())
+                        .collect(Collectors.toList());
+
         Map<String, PRTransaction> unmatchedRemoteTransactionsByUuid = remoteTransactions.stream()
                         .collect(Collectors.toMap(s -> s.getUuid(), s -> s));
+
+        List<PRTransaction> retryUpdateTransactions = new ArrayList<PRTransaction>();
 
         for (Portfolio portfolio : client.getPortfolios())
         {
             for (PortfolioTransaction local : portfolio.getTransactions())
             {
                 PRTransaction remote = unmatchedRemoteTransactionsByUuid.remove(local.getUUID());
+                PRTransaction convertedLocal = convertPortfolioTransaction(local, portfolio);
 
                 if (remote == null)
                 {
-                    // Create
-                    // TODO: check if partnerTransaction exists in API
-                    api.updateTransaction(portfolioId, convertPortfolioTransaction(local, portfolio));
+                    // TODO: Decide whether create remote or delete local
+
+                    // Create remote
+                    saveTransaction(portfolioId, convertedLocal, remoteTransactionsUuids, retryUpdateTransactions);
                 }
                 else
                 {
-                    // Update
-                    api.updateTransaction(portfolioId, convertPortfolioTransaction(local, portfolio));
+                    // TODO: Decide whether update remote or local
+
+                    // Update remote
+                    saveTransaction(portfolioId, convertedLocal, remoteTransactionsUuids, retryUpdateTransactions);
                 }
             }
         }
@@ -483,7 +518,8 @@ public class PortfolioReportSync
         {
             for (AccountTransaction local : account.getTransactions())
             {
-
+                // Try to find remote partnerTransactionUuid (to be used for
+                // additional transactions)
                 String remotePartnerTransactionUuid;
                 try
                 {
@@ -502,22 +538,31 @@ public class PortfolioReportSync
 
                     if (remote == null)
                     {
-                        // Create
-                        // TODO: check if partnerTransaction exists in API
-                        api.updateTransaction(portfolioId, convertedLocal);
+                        // TODO: Decide whether create remote or delete local
+
+                        // Create remote
+                        saveTransaction(portfolioId, convertedLocal, remoteTransactionsUuids, retryUpdateTransactions);
                     }
                     else
                     {
-                        // Update
-                        api.updateTransaction(portfolioId, convertedLocal);
+                        // TODO: Decide whether update remote or local
+
+                        // Update remote
+                        saveTransaction(portfolioId, convertedLocal, remoteTransactionsUuids, retryUpdateTransactions);
                     }
                 }
             }
         }
 
-        // Delete unmatched remote transactions
+        // Update transactions with partnerTransactionUuid
+        for (PRTransaction t : retryUpdateTransactions)
+            api.updateTransaction(portfolioId, t);
+
         for (PRTransaction transaction : unmatchedRemoteTransactionsByUuid.values())
         {
+            // TODO: Decide whether delete remote or create local
+
+            // Delete remote
             api.deleteTransaction(portfolioId, transaction);
         }
 
