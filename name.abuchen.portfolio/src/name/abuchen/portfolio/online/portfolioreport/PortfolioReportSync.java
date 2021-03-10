@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.PortfolioLog;
@@ -438,17 +439,57 @@ public class PortfolioReportSync
         return ret;
     }
 
-    private Portfolio findPortfolioForAdditionalTransaction(AccountTransaction transaction, Account account)
+    /**
+     * Filters a list
+     */
+    private <T> List<T> filter(List<T> input, Predicate<T> predicate)
+    {
+        return input.stream().filter(predicate).collect(Collectors.toList());
+    }
+
+    /**
+     * Filters a list, but returns all elements if no element matches
+     */
+    private <T> List<T> filterWithCaution(List<T> input, Predicate<T> predicate)
+    {
+        List<T> filteredList = filter(input, predicate);
+
+        if (filteredList.size() > 0)
+            return filteredList;
+        else
+            return input;
+    }
+
+    /**
+     * Finds best matching Portfolio for AccountTransaction to be used for
+     * additional transaction
+     */
+    private Portfolio findPortfolioForAdditionalTransaction(AccountTransaction accountTransaction, Account account)
     {
         List<Portfolio> candidates = client.getPortfolios();
 
-        // TODO: Improve search
+        // Look for portfolios with...
 
-        for (Portfolio p : candidates)
-        {
-            if (p.getReferenceAccount() == account)
-            { return p; }
-        }
+        // ...transactions for the linked security
+        candidates = filterWithCaution(candidates,
+                        p -> filter(p.getTransactions(), t -> t.getSecurity() == accountTransaction.getSecurity())
+                                        .size() > 0);
+
+        // ...transactions for the linked security before or at transaction date
+        candidates = filterWithCaution(candidates,
+                        p -> filter(p.getTransactions(), t -> (t.getSecurity() == accountTransaction.getSecurity()
+                                        && t.getDateTime().compareTo(accountTransaction.getDateTime()) <= 0))
+                                                        .size() > 0);
+
+        // ...positive number of shares at the date of the transaction
+        // TODO
+
+        // ...right number of shares at the date of the transaction
+        // (if transaction contains number of shares, e.g. dividend)
+        // TODO
+
+        // ...account as referenceAccount
+        candidates = filterWithCaution(candidates, p -> p.getReferenceAccount() == account);
 
         return candidates.get(0);
     }
