@@ -28,23 +28,24 @@ import name.abuchen.portfolio.json.JClient;
 import name.abuchen.portfolio.online.impl.PortfolioReportNet;
 import name.abuchen.portfolio.util.WebAccess;
 
+@SuppressWarnings("nls")
 public class PRApiClient
 {
-    private static final String ENDPOINT = "https://api.portfolio-report.net"; //$NON-NLS-1$
+    private static final String ENDPOINT = "https://api.portfolio-report.net";
 
     private CloseableHttpClient client;
 
     public PRApiClient(String token)
     {
         List<Header> headers = new ArrayList<>();
-        headers.add(new BasicHeader("Authorization", "Bearer " + token)); //$NON-NLS-1$ //$NON-NLS-2$
+        headers.add(new BasicHeader("Authorization", "Bearer " + token));
         headers.add(new BasicHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString()));
         headers.add(new BasicHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.toString()));
 
         this.client = HttpClientBuilder.create() //
                         .setDefaultRequestConfig(WebAccess.defaultRequestConfig) //
                         .setDefaultHeaders(headers) //
-                        .setUserAgent("PortfolioPerformance/" //$NON-NLS-1$
+                        .setUserAgent("PortfolioPerformance/"
                                         + FrameworkUtil.getBundle(PortfolioReportNet.class).getVersion().toString()) //
                         .useSystemProperties() //
                         .build();
@@ -53,59 +54,59 @@ public class PRApiClient
 
     public List<PRPortfolio> listPortfolios() throws IOException
     {
-        return list(PRPortfolio.class, "/portfolios"); //$NON-NLS-1$
+        return list(PRPortfolio.class, "/portfolios");
     }
 
     public PRPortfolio createPortfolio(PRPortfolio portfolio) throws IOException
     {
-        return create(PRPortfolio.class, "/portfolios", portfolio); //$NON-NLS-1$
+        return create(PRPortfolio.class, "/portfolios", portfolio);
     }
 
     public List<PRSecurity> listSecurities(long portfolioId) throws IOException
     {
-        return list(PRSecurity.class, "/portfolios/" + portfolioId + "/securities"); //$NON-NLS-1$ //$NON-NLS-2$
+        return list(PRSecurity.class, "/portfolios/" + portfolioId + "/securities");
     }
 
     public PRSecurity updateSecurity(long portfolioId, PRSecurity security) throws IOException
     {
-        return update(PRSecurity.class, "/portfolios/" + portfolioId + "/securities/" + security.getUuid(), security); //$NON-NLS-1$ //$NON-NLS-2$
+        return update(PRSecurity.class, "/portfolios/" + portfolioId + "/securities/" + security.getUuid(), security);
     }
 
     public PRSecurity deleteSecurity(long portfolioId, PRSecurity security) throws IOException
     {
-        return deleteEntity(PRSecurity.class, "/portfolios/" + portfolioId + "/securities/" + security.getUuid()); //$NON-NLS-1$ //$NON-NLS-2$
+        return deleteEntity(PRSecurity.class, "/portfolios/" + portfolioId + "/securities/" + security.getUuid());
     }
 
     public List<PRAccount> listAccounts(long portfolioId) throws IOException
     {
-        return list(PRAccount.class, "/portfolios/" + portfolioId + "/accounts"); //$NON-NLS-1$ //$NON-NLS-2$
+        return list(PRAccount.class, "/portfolios/" + portfolioId + "/accounts");
     }
 
     public PRAccount updateAccount(long portfolioId, PRAccount account) throws IOException
     {
-        return update(PRAccount.class, "/portfolios/" + portfolioId + "/accounts/" + account.getUuid(), account); //$NON-NLS-1$ //$NON-NLS-2$
+        return update(PRAccount.class, "/portfolios/" + portfolioId + "/accounts/" + account.getUuid(), account);
     }
 
     public PRAccount deleteAccount(long portfolioId, PRAccount account) throws IOException
     {
-        return deleteEntity(PRAccount.class, "/portfolios/" + portfolioId + "/accounts/" + account.getUuid()); //$NON-NLS-1$ //$NON-NLS-2$
+        return deleteEntity(PRAccount.class, "/portfolios/" + portfolioId + "/accounts/" + account.getUuid());
     }
 
     public List<PRTransaction> listTransactions(long portfolioId) throws IOException
     {
-        return list(PRTransaction.class, "/portfolios/" + portfolioId + "/transactions"); //$NON-NLS-1$ //$NON-NLS-2$
+        return list(PRTransaction.class, "/portfolios/" + portfolioId + "/transactions");
     }
 
     public PRTransaction updateTransaction(long portfolioId, PRTransaction transaction) throws IOException
     {
-        return update(PRTransaction.class, "/portfolios/" + portfolioId + "/transactions/" + transaction.getUuid(), //$NON-NLS-1$ //$NON-NLS-2$
+        return update(PRTransaction.class, "/portfolios/" + portfolioId + "/transactions/" + transaction.getUuid(),
                         transaction);
     }
 
     public PRTransaction deleteTransaction(long portfolioId, PRTransaction transaction) throws IOException
     {
         return deleteEntity(PRTransaction.class,
-                        "/portfolios/" + portfolioId + "/transactions/" + transaction.getUuid()); //$NON-NLS-1$ //$NON-NLS-2$
+                        "/portfolios/" + portfolioId + "/transactions/" + transaction.getUuid());
     }
 
     private <T> List<T> list(Class<T> type, String path) throws IOException
@@ -158,7 +159,7 @@ public class PRApiClient
 
     private IOException asError(HttpRequestBase request, CloseableHttpResponse response) throws IOException
     {
-        return new IOException(request.toString() + " --> " + response.getStatusLine().getStatusCode() + "\n\n" //$NON-NLS-1$ //$NON-NLS-2$
+        return new IOException(request.toString() + " --> " + response.getStatusLine().getStatusCode() + "\n\n"
                         + EntityUtils.toString(response.getEntity()));
     }
 }
