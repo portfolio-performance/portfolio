@@ -91,7 +91,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
 
                         // S t . 2 0 0 EUR 2 0 1 , 7 0 
                         .section("shares")
-                        .match("S t . (?<shares>[\\d\\s,.]*) .*")
+                        .match("(S t .|St.) (?<shares>[\\d\\s,.]*) .*")
                         .assign((t, v) -> t.setShares(asShares(stripBlanks(v.get("shares")))))
 
                         .section("amount", "currency")
@@ -153,7 +153,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("feeInPercent", "currency", "marketValue").optional()
-                        .match("S t . [\\d\\s,.]* (?<currency>\\w{3}) (?<marketValue>[\\d\\s,.]*)$")
+                        .match("(S t .|St.) [\\d\\s,.]* (?<currency>\\w{3}) (?<marketValue>[\\d\\s,.]*)$")
                         .match("I n dem K u r s w e r t s i n d (?<feeInPercent>[\\d\\s,.]*) % A u s g a b e a u f s c h l a g d e r B a n k e n t h a l t e n.*")
                         .assign((t, v) -> {
                             // Fee in percent on the market value
@@ -242,7 +242,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
         pdfTransaction
                         .section("date", "wkn", "shares", "name", "nameContinued", "isin")
                         .match(".*WKN\\/ISIN.*")
-                        .match("p e r (?<date>[\\d\\s]+.[\\d\\s]+.[\\d\\s]+) (?<name>.*) (?<wkn>([\\w]{6}|\\w\\s\\w\\s\\w\\s\\w\\s\\w\\s\\w))$")
+                        .match("(p e r|per) (?<date>[\\d\\s]+.[\\d\\s]+.[\\d\\s]+) (?<name>.*) (?<wkn>([\\w]{6}|\\w\\s\\w\\s\\w\\s\\w\\s\\w\\s\\w))$")
                         .match("STK (?<shares>[\\d\\s,.]+) (?<nameContinued>.*) (?<isin>[\\w]{12})$")
                         .assign((t, v) -> {
                             v.put("wkn", stripBlanks(v.get("wkn")));
@@ -258,6 +258,16 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(stripBlanks(v.get("amount"))));
+                        })
+
+                        .section("note1", "note2", "note3").optional()
+                        .match("^\\w{3} [\\d\\s,.]* .* (?<note2>[\\d\\s]+.[\\d\\s]+.[\\d\\s]+) .* (?<note3>[\\d\\s]+.[\\d\\s]+.[\\d\\s]+)$")
+                        .match(".*")
+                        .match("Abrechnung (?<note1>.*)")
+                        .assign((t, v) -> 
+                        {
+                            String note = stripBlanks(v.get("note1")) + " " + stripBlanks(v.get("note2")) + " - " + stripBlanks(v.get("note3"));
+                            t.setNote(note);
                         })
 
                         // B r u t t o b e t r a g : USD 8 6 , 6 3
