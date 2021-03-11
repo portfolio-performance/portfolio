@@ -1,0 +1,51 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Ihren Auftrag haben wir gemäß unseren Sonderbedingungen für
+Wertpapiergeschäfte wie nachstehend ausgeführt. Die Wertpapiere
+haben wir der Abrechnung entsprechend gebucht. Wir bitten Sie,
+XXXXXXXXXX diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zuüberprüfen und etwaige Einwendungen unverzüglich zu erheben.
+11111 HANNOVER
+Telefon : xxxxx xxxx-x
+xxxxx xxx Filnr: 111Depotnr.: 0000000 01
+Maximilian BLZ: 111 111 11Michael Mustermann
+Musterstr. 1
+11111 Musterstadt
+GESCHÄFTSABRECHNUNG VOM 31.01.2021
+f ü r I h r D i r e k t D e p o t
+*
+W e r t p a p i e r v e r k a u f
+G e s c h ä f t s n u m m e r : 1 1 0 0 1 1 0 0
+0 0 1 1 9 8 7 6 4 3 2 1 - 0 0 1 Rechnungsnummer : 498786858483DBB2
+G e s c h ä f t s t a g : 3 1 . 0 1 . 2 0 2 1 A u s f ü h r u n g s p l a t z : FRANKFURT
+H a n d e l s z e i t : 1 3 : 1 0 U h r (MEZ/MESZ)
+W e r t p a p i e r - B e z e i c h n u n g W e r t p a p i e r k e n n n u m m e r
+A l l i a n z SE 8 4 0 4 0 0
+v i n k . N a m e n s - A k t i e n o . N .
+N e n n w e r t Zum K u r s von
+S t . 2 0 0 EUR 2 0 1 , 7 0
+K u r s w e r t : EUR 4 0 . 3 4 0 , 0 0
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+E i g e n e E n t g e l t e
+0 , 2 5 0 0 0 % P r o v i s i o n : EUR 1 0 0 , 8 5 -
+S o c k e l b e t r a g : EUR 4 , 9 0 -
+Summe E n t g e l t e : EUR 1 0 5 , 7 5 -
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+F r e m d e K o s t e n
+0 , 0 5 9 9 7 % V a r i a b l e B ö r s e n s p e s e n : EUR 2 4 , 1 9 -
+T r a n s a k t i o n s e n t g e l t : EUR 4 , 6 1 -
+Summe K o s t e n : EUR 2 8 , 8 0 -
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+IBAN V a l u t a Zu I h r e n Guns ten v o r S t e u e r n
+DE11 1 1 2 2 4 3 1 4 2 2 8 8 8 1 1 1 0 0 EUR 0 4 . 0 2 . 2 0 2 1 EUR 4 0 . 2 0 5 , 4 5
+V e r w a h r u n g s - A r t : GIROSAMMELDEPOT
+I h r e W e r t p a p i e r - O r d e r w u r d e ü b e r d a s O n l i n e B a n k i n g e r t e i l t .
+A b r e c h n u n g e r f o l g t m i t d e n v e r g ü n s t i g t e n K o n d i t i o n e n d e s D i r e k t D e p o t s .
+I n f o r m a t i o n e n z u r s t e u e r l i c h e n B e h a n d l u n g d i e s e s G e s c h ä f t s v o r g a n g s u n d d e n a u f
+I h r e m K o n t o g e b u c h t e n E n d b e t r a g f i n d e n S i e a u f d e r s e p a r a t e n S t e u e r m i t t e i l u n g .
+C O M M E R Z B A N K
+Aktiengesellschaft
+Diese Abrechnung wird von der Bank nicht unterschrieben
+D i e L e i s t u n g i s t gemäß § 4 N r . 8 UStG u m s a t z s t e u e r f r e i . U S t - I d - N r . : DE 1 1 4 1 0 3 5 1 4
+A113
+DO151D/16/04/2010
