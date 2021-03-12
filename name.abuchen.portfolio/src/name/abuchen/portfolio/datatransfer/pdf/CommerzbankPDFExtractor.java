@@ -172,12 +172,12 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
 
     private void addTaxTreatmentTransaction()
     {
-        DocumentType type = new DocumentType("Steuerliche Behandlung: (Wertpapier(kauf|verkauf)|Verkauf|.* Dividende) .*");
+        DocumentType type = new DocumentType("Steuerliche Behandlung: (Wertpapier(kauf|verkauf)|Verkauf|.*Dividende) .*");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("Steuerliche Behandlung: (Wertpapier(kauf|verkauf)|Verkauf|.* Dividende) .*");
+        Block firstRelevantLine = new Block("Steuerliche Behandlung: (Wertpapier(kauf|verkauf)|Verkauf|.*Dividende) .*");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 

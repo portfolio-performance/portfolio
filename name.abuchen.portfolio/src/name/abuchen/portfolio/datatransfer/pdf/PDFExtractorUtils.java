@@ -50,7 +50,7 @@ class PDFExtractorUtils
             BigDecimal exchangeRate = new BigDecimal(type.getCurrentContext().get("exchangeRate"));
             BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
 
-            Money txFee = Money.of(t.getCurrencyCode(),
+            Money fxFee = Money.of(t.getCurrencyCode(),
                             BigDecimal.valueOf(fee.getAmount()).multiply(inverseRate)
                                             .setScale(0, RoundingMode.HALF_UP).longValue());
 
@@ -58,11 +58,11 @@ class PDFExtractorUtils
             // is different to transaction currency
             if (t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
             {
-                t.addUnit(new Unit(Unit.Type.FEE, txFee));
+                t.addUnit(new Unit(Unit.Type.FEE, fxFee));
             }
             else
             {
-                t.addUnit(new Unit(Unit.Type.FEE, txFee, fee, inverseRate));
+                t.addUnit(new Unit(Unit.Type.FEE, fxFee, fee, inverseRate));
             }
         }
     }
