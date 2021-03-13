@@ -129,7 +129,7 @@ public class PRApiClient
         CloseableHttpResponse response = client.execute(request);
 
         if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK)
-            throw asError(request, response);
+            throw asError(request, response, null);
 
         return this.gson.fromJson(EntityUtils.toString(response.getEntity()),
                         TypeToken.getParameterized(List.class, type).getType());
@@ -142,7 +142,7 @@ public class PRApiClient
         CloseableHttpResponse response = client.execute(request);
 
         if (response.getStatusLine().getStatusCode() != HttpStatus.SC_CREATED)
-            throw asError(request, response);
+            throw asError(request, response, EntityUtils.toString(request.getEntity()));
 
         return this.gson.fromJson(EntityUtils.toString(response.getEntity()), type);
     }
@@ -155,7 +155,7 @@ public class PRApiClient
         CloseableHttpResponse response = client.execute(request);
 
         if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK)
-            throw asError(request, response);
+            throw asError(request, response, EntityUtils.toString(request.getEntity()));
 
         return this.gson.fromJson(EntityUtils.toString(response.getEntity()), type);
     }
@@ -166,14 +166,16 @@ public class PRApiClient
         CloseableHttpResponse response = client.execute(request);
 
         if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK)
-            throw asError(request, response);
+            throw asError(request, response, null);
 
         return this.gson.fromJson(EntityUtils.toString(response.getEntity()), type);
     }
 
-    private IOException asError(HttpRequestBase request, CloseableHttpResponse response) throws IOException
+    private IOException asError(HttpRequestBase request, CloseableHttpResponse response, String requestBody)
+                    throws IOException
     {
         return new IOException(request.toString() + " --> " + response.getStatusLine().getStatusCode() + "\n\n"
+                        + (requestBody != null ? requestBody + "\n\n" : "")
                         + EntityUtils.toString(response.getEntity()));
     }
 }
