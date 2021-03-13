@@ -351,6 +351,38 @@ public class DkbPDFExtractorTest
     }
 
     @Test
+    public void testDividendeGemeinschaftskonto01()
+    {
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+        
+        List<Exception> errors = new ArrayList<>();
+        
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DkbDividendeGemeinschaftskonto01.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        AccountTransaction t = results.stream().filter(i -> i instanceof TransactionItem)
+                        .map(i -> (AccountTransaction) ((TransactionItem) i).getSubject()).findAny()
+                        .orElseThrow(IllegalArgumentException::new);
+        
+        assertThat(t.getSecurity().getIsin(), is("DE000A1R1AN5"));
+        assertThat(t.getSecurity().getWkn(), is("A1R1AN"));
+        assertThat(t.getSecurity().getName(), is("PCC SE INH.-TEILSCHULDV. V.13(13/17)"));
+
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(13.24))));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(935)));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-05T00:00")));
+
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(5.12))));
+    }
+
+    @Test
     public void testErtragsgutschriftDividende2019() throws IOException
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
