@@ -43,6 +43,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         addBuyTransactionFundsSavingsPlan();
         addAdvanceTaxTransaction();
         addGiroTransactions();
+        addKreditkartenabrechnung();
     }
 
     @Override
@@ -817,6 +818,119 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                     return new TransactionItem(t);
                 return null;
             }));
+    }
+    
+    private void addKreditkartenabrechnung()
+    {
+        DocumentType type = new DocumentType("Ihre Abrechnung vom ", (context, lines) -> {
+            Pattern pCurrency = Pattern.compile("^(Beleg BuchungVerwendungszweck )(\\w{3})$");
+            // read the current context here
+            for (String line : lines)
+            {
+                Matcher m = pCurrency.matcher(line);
+                if (m.matches())
+                {
+                    context.put("currency", m.group(2));
+                }
+            }
+
+            Pattern pcentury = Pattern.compile("^(Ihre Abrechnung vom \\d{2}.\\d{2}.\\d{4} bis \\d{2}.\\d{2}.\\d{4} Abrechnungsdatum: \\d{2}. .*)(?<century>\\d{2})(\\d{2})$");
+            // read the current context here
+            for (String line : lines)
+            {
+                Matcher m = pcentury.matcher(line);
+                if (m.matches())
+                {
+                    // Read century
+                    context.put("century", m.group(2));
+                }
+            }
+        });
+        this.addDocumentTyp(type);
+        
+        Block depositblock = new Block("^(\\d{2}.\\d{2}.\\d{2}) (\\d{2}.\\d{2}.\\d{2})((?! Habenzins)).* ([\\d.]+,\\d{2})\\+$");
+        type.addBlock(depositblock);
+        depositblock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction entry = new AccountTransaction();
+                            entry.setType(AccountTransaction.Type.DEPOSIT);
+                            return entry;
+                        })
+
+                        .section("date", "value")
+                        .match("^(\\d{2}.\\d{2}.\\d{2}) (?<date>\\d{2}.\\d{2}.\\d{2})((?! Habenzins)).* (?<value>[\\d.]+,\\d{2})\\+$")
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+                            t.setDateTime(asDate(v.get("date").substring(0, 6)+context.get("century")+v.get("date").substring(6, 8))); 
+                            t.setAmount(asAmount(v.get("value")));
+                            t.setCurrencyCode(context.get("currency"));
+                        })
+
+                        .wrap(TransactionItem::new));
+        
+        Block interestblock = new Block("^(\\d{2}.\\d{2}.\\d{2}) (\\d{2}.\\d{2}.\\d{2}) (Habenzins auf \\d+ Tage) ([\\d.]+,\\d{2})\\+$");
+        type.addBlock(interestblock);
+        interestblock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction entry = new AccountTransaction();
+                            entry.setType(AccountTransaction.Type.INTEREST);
+                            return entry;
+                        })
+
+                        .section("date", "value")
+                        .match("^(\\d{2}.\\d{2}.\\d{2}) (?<date>\\d{2}.\\d{2}.\\d{2}) (Habenzins auf \\d+ Tage) (?<value>[\\d.]+,\\d{2})\\+$")
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+                            t.setDateTime(asDate(v.get("date").substring(0, 6)+context.get("century")+v.get("date").substring(6, 8))); 
+                            t.setAmount(asAmount(v.get("value")));
+                            t.setCurrencyCode(context.get("currency"));
+                        })
+
+                        .wrap(TransactionItem::new));
+        
+        Block taxblock = new Block("^(\\d{2}.\\d{2}.\\d{2}) (?<date>\\d{2}.\\d{2}.\\d{2}) (Abgeltungsteuer) (?<value>[\\d.]+,\\d{2}) \\-$");
+        type.addBlock(taxblock);
+        taxblock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction entry = new AccountTransaction();
+                            entry.setType(AccountTransaction.Type.TAXES);
+                            return entry;
+                        })
+
+                        .section("date", "value")
+                        .match("^(\\d{2}.\\d{2}.\\d{2}) (?<date>\\d{2}.\\d{2}.\\d{2}) (Abgeltungsteuer) (?<value>[\\d.]+,\\d{2}) \\-$")
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+                            t.setDateTime(asDate(v.get("date").substring(0, 6)+context.get("century")+v.get("date").substring(6, 8))); 
+                            t.setAmount(asAmount(v.get("value")));
+                            t.setCurrencyCode(context.get("currency"));
+                        })
+
+                        .wrap(TransactionItem::new));
+        
+        Block removalblock = new Block("^(\\d{2}.\\d{2}.\\d{2}) (\\d{2}.\\d{2}.\\d{2})((?! Abgeltungsteuer)).* ([\\d.]+,\\d{2}) \\-$");
+        type.addBlock(removalblock);
+        removalblock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction entry = new AccountTransaction();
+                            entry.setType(AccountTransaction.Type.REMOVAL);
+                            return entry;
+                        })
+
+                        .section("date", "value")
+                        .match("^(\\d{2}.\\d{2}.\\d{2}) (?<date>\\d{2}.\\d{2}.\\d{2})((?! Abgeltungsteuer)).* (?<value>[\\d.]+,\\d{2}) \\-$")
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+                            t.setDateTime(asDate(v.get("date").substring(0, 6)+context.get("century")+v.get("date").substring(6, 8))); 
+                            t.setAmount(asAmount(v.get("value")));
+                            t.setCurrencyCode(context.get("currency"));
+                        })
+
+                        .wrap(TransactionItem::new));
     }
 
     @Override
