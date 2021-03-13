@@ -108,6 +108,30 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
     }
 
     @Override
+    protected String getJSONDateFormatPropertyName()
+    {
+        return GenericJSONQuoteFeed.DATE_FORMAT_PROPERTY_NAME_HISTORIC;
+    }
+
+    @Override
+    protected String getJSONLowPathPropertyName()
+    {
+        return GenericJSONQuoteFeed.LOW_PROPERTY_NAME_HISTORIC;
+    }
+
+    @Override
+    protected String getJSONHighPathPropertyName()
+    {
+        return GenericJSONQuoteFeed.HIGH_PROPERTY_NAME_HISTORIC;
+    }
+
+    @Override
+    protected String getJSONVolumePathPropertyName()
+    {
+        return GenericJSONQuoteFeed.VOLUME_PROPERTY_NAME_HISTORIC;
+    }
+
+    @Override
     protected void setStatus(String status)
     {
         getModel().setStatusHistoricalQuotesProvider(status);

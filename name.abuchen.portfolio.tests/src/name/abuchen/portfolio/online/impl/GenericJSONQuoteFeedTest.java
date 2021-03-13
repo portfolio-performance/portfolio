@@ -8,6 +8,7 @@ import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -120,7 +121,7 @@ public class GenericJSONQuoteFeedTest
         GenericJSONQuoteFeed feed = new GenericJSONQuoteFeed();
 
         Object object = this.readJson(json, security, GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC);
-        LocalDate date = feed.extractDate(object);
+        LocalDate date = feed.extractDate(object, Optional.empty());
 
         assertEquals(LocalDate.of(2020, 4, 06), date);
     }
@@ -133,7 +134,7 @@ public class GenericJSONQuoteFeedTest
         GenericJSONQuoteFeed feed = new GenericJSONQuoteFeed();
 
         Object object = this.readJson(json, security, GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC);
-        LocalDate date = feed.extractDate(object);
+        LocalDate date = feed.extractDate(object, Optional.empty());
 
         assertEquals(LocalDate.of(2020, 4, 06), date);
     }
@@ -146,7 +147,7 @@ public class GenericJSONQuoteFeedTest
         GenericJSONQuoteFeed feed = new GenericJSONQuoteFeed();
 
         Object object = this.readJson(json, security, GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC);
-        LocalDate date = feed.extractDate(object);
+        LocalDate date = feed.extractDate(object, Optional.empty());
 
         assertEquals(LocalDate.of(2020, 4, 06), date);
     }
@@ -159,10 +160,37 @@ public class GenericJSONQuoteFeedTest
         GenericJSONQuoteFeed feed = new GenericJSONQuoteFeed();
 
         Object object = this.readJson(json, security, GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC);
-        LocalDate date = feed.extractDate(object);
+        LocalDate date = feed.extractDate(object, Optional.empty());
 
         assertEquals(LocalDate.of(2020, 4, 06), date);
     }
+
+    @Test
+    public void testDateExtractionMSCIFormat()
+    {
+        // Date is in milliseconds (but as double) from epoch
+        String json = "{\"data\":[{\"date\":20210313,\"close\":\"123.00\"}],\"info\":\"Json Feed for APPLE ORD\"}";
+        GenericJSONQuoteFeed feed = new GenericJSONQuoteFeed();
+
+        Object object = this.readJson(json, security, GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC);
+        LocalDate date = feed.extractDate(object, Optional.of("yyyyMMdd"));
+
+        assertEquals(LocalDate.of(2021, 3, 13), date);
+    }
+
+    @Test
+    public void testDateExtractionGermanFormat()
+    {
+        // Date is in milliseconds (but as double) from epoch
+        String json = "{\"data\":[{\"date\":14.03.2021,\"close\":\"123.00\"}],\"info\":\"Json Feed for APPLE ORD\"}";
+        GenericJSONQuoteFeed feed = new GenericJSONQuoteFeed();
+
+        Object object = this.readJson(json, security, GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC);
+        LocalDate date = feed.extractDate(object, Optional.of("dd.MM.yyyy"));
+
+        assertEquals(LocalDate.of(2021, 3, 14), date);
+    }
+
 
     @Test
     public void testDateExtractionInvalid()
@@ -172,7 +200,7 @@ public class GenericJSONQuoteFeedTest
         GenericJSONQuoteFeed feed = new GenericJSONQuoteFeed();
 
         Object object = this.readJson(json, security, GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC);
-        LocalDate date = feed.extractDate(object);
+        LocalDate date = feed.extractDate(object, Optional.empty());
 
         assertEquals(null, date);
     }
@@ -199,6 +227,43 @@ public class GenericJSONQuoteFeedTest
 
         Object object = this.readJson(json, security, GenericJSONQuoteFeed.CLOSE_PROPERTY_NAME_HISTORIC);
         long result = feed.extractValue(object);
+
+        assertEquals(0, result);
+    }
+
+    @Test
+    public void testIntValueExtractionDouble() throws ParseException
+    {
+        String json = "{\"data\":[{\"date\":1586174400,\"close\":123.234}],\"info\":\"Json Feed for APPLE ORD\"}";
+        GenericJSONQuoteFeed feed = new GenericJSONQuoteFeed();
+
+        Object object = this.readJson(json, security, GenericJSONQuoteFeed.CLOSE_PROPERTY_NAME_HISTORIC);
+        long result = feed.extractIntValue(object);
+
+        assertEquals(123, result);
+    }
+
+    @Test
+    public void testIntValueExtractionInteger() throws ParseException
+    {
+        String json = "{\"data\":[{\"date\":1586174400,\"close\":123}],\"info\":\"Json Feed for APPLE ORD\"}";
+        GenericJSONQuoteFeed feed = new GenericJSONQuoteFeed();
+
+        Object object = this.readJson(json, security, GenericJSONQuoteFeed.CLOSE_PROPERTY_NAME_HISTORIC);
+        long result = feed.extractIntValue(object);
+
+        assertEquals(123, result);
+    }
+
+    @Test
+    public void testIntValueExtractionIntegerInvalid() throws ParseException
+    {
+        // Value is an array -> invalid
+        String json = "{\"data\":[{\"date\":1586174400,\"close\":[]}],\"info\":\"Json Feed for APPLE ORD\"}";
+        GenericJSONQuoteFeed feed = new GenericJSONQuoteFeed();
+
+        Object object = this.readJson(json, security, GenericJSONQuoteFeed.CLOSE_PROPERTY_NAME_HISTORIC);
+        long result = feed.extractIntValue(object);
 
         assertEquals(0, result);
     }
