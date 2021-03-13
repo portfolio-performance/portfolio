@@ -2,7 +2,6 @@ package name.abuchen.portfolio.online.portfolioreport;
 
 public class PRAccount
 {
-    private long id;
     private String type; 
     private String name;
     private String uuid;
@@ -11,16 +10,6 @@ public class PRAccount
     private boolean active;
     private String note;
 
-    public long getId()
-    {
-        return id;
-    }
-
-    public void setId(long id)
-    {
-        this.id = id;
-    }
-    
     public String getType()
     {
         return type;  
