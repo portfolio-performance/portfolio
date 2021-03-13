@@ -262,7 +262,7 @@ public class GenericJSONQuoteFeed implements QuoteFeed
                         price.setLow(LatestSecurityPrice.NOT_AVAILABLE);
                     }
                     if(volume.isPresent()) {
-                        price.setVolume(this.extractIntValue(volume.get().get(index)));
+                        price.setVolume(this.extractIntegerValue(volume.get().get(index)));
                     } else {
                         price.setVolume(LatestSecurityPrice.NOT_AVAILABLE);
                     }
@@ -288,10 +288,17 @@ public class GenericJSONQuoteFeed implements QuoteFeed
         return 0;
     }
 
-    /* testing */ long extractIntValue(Object object) throws ParseException
+    /* testing */ long extractIntegerValue(Object object) throws ParseException
     {
+        if (object instanceof String)
+            try {
+                return Long.parseLong((String) object);
+            } catch(NumberFormatException e) {
+                // try again as Double
+                return Math.round(Double.parseDouble((String) object));
+            }
         if (object instanceof Number)
-            return Math.round(((Number) object).doubleValue());
+            return((Number) object).longValue();
         return 0;
     }
 
