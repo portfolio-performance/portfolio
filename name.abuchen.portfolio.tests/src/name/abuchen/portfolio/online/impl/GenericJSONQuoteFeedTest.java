@@ -96,6 +96,28 @@ public class GenericJSONQuoteFeedTest
     @Test
     public void testSimpleExtraction() throws IOException, URISyntaxException
     {
+        String jsonResponse = "{\"data\":[{\"date\":\"2020-04-12\",\"close\":123.88},{\"date\":2020-04-13,\"close\":124.123}],\"info\":\"Json Feed for APPLE ORD\"}";
+
+        GenericJSONQuoteFeed feed = Mockito.spy(new GenericJSONQuoteFeed());
+        Mockito.doReturn(jsonResponse).when(feed).getJson(feedUrl);
+
+        QuoteFeedData data = feed.getHistoricalQuotes(security, false);
+
+        assertTrue(data.getErrors().isEmpty()); // NOSONAR
+        assertTrue(data.getPrices().size() == 2);
+
+        SecurityPrice price = data.getPrices().get(0);
+        assertEquals(LocalDate.of(2020, 4, 12), price.getDate());
+        assertEquals(Values.Quote.factorize(123.88), price.getValue());
+
+        SecurityPrice price2 = data.getPrices().get(1);
+        assertEquals(LocalDate.of(2020, 4, 13), price2.getDate());
+        assertEquals(Values.Quote.factorize(124.123), price2.getValue());
+    }
+
+    @Test
+    public void testSimpleExtractionWithStrings() throws IOException, URISyntaxException
+    {
         String jsonResponse = "{\"data\":[{\"date\":\"2020-04-12\",\"close\":\"123.88\"},{\"date\":\"2020-04-13\",\"close\":\"124.123\"}],\"info\":\"Json Feed for APPLE ORD\"}";
 
         GenericJSONQuoteFeed feed = Mockito.spy(new GenericJSONQuoteFeed());
@@ -117,6 +139,28 @@ public class GenericJSONQuoteFeedTest
 
     @Test
     public void testSimpleExtractionDateFormat1() throws IOException, URISyntaxException
+    {
+        String jsonResponse = "{\"data\":[{\"date\":20200412,\"close\":\"123.88\"},{\"date\":\"20200413\",\"close\":\"124.123\"}],\"info\":\"Json Feed for APPLE ORD\"}";
+
+        GenericJSONQuoteFeed feed = Mockito.spy(new GenericJSONQuoteFeed());
+        Mockito.doReturn(jsonResponse).when(feed).getJson(feedUrl);
+
+        QuoteFeedData data = feed.getHistoricalQuotes(securityWithSpecialDateFormat1, false);
+
+        assertTrue(data.getErrors().isEmpty()); // NOSONAR
+        assertTrue(data.getPrices().size() == 2);
+
+        SecurityPrice price = data.getPrices().get(0);
+        assertEquals(LocalDate.of(2020, 4, 12), price.getDate());
+        assertEquals(Values.Quote.factorize(123.88), price.getValue());
+
+        SecurityPrice price2 = data.getPrices().get(1);
+        assertEquals(LocalDate.of(2020, 4, 13), price2.getDate());
+        assertEquals(Values.Quote.factorize(124.123), price2.getValue());
+    }
+
+    @Test
+    public void testSimpleExtractionDateFormat1AsString() throws IOException, URISyntaxException
     {
         String jsonResponse = "{\"data\":[{\"date\":\"20200412\",\"close\":\"123.88\"},{\"date\":\"20200413\",\"close\":\"124.123\"}],\"info\":\"Json Feed for APPLE ORD\"}";
 
