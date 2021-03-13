@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.online.portfolioreport;
 
+import java.time.Instant;
+
 public class PRAccount
 {
     private String type; 
@@ -9,6 +11,7 @@ public class PRAccount
     private String referenceAccountUuid;
     private boolean active;
     private String note;
+    private Instant updatedAt;
 
     public String getType()
     {
@@ -78,5 +81,15 @@ public class PRAccount
     public void setNote(String note)
     {
         this.note = note;
+    }
+
+    public Instant getUpdatedAt()
+    {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt)
+    {
+        this.updatedAt = updatedAt;
     }
 }

@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.online.portfolioreport;
 
+import java.time.Instant;
+
 public class PRSecurity
 {
     private String uuid;
@@ -10,6 +12,7 @@ public class PRSecurity
     private String symbol;
     private boolean active;
     private String note;
+    private Instant updatedAt;
 
     public String getUuid()
     {
@@ -89,6 +92,16 @@ public class PRSecurity
     public void setNote(String note)
     {
         this.note = note;
+    }
+
+    public Instant getUpdatedAt()
+    {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt)
+    {
+        this.updatedAt = updatedAt;
     }
 
 }

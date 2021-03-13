@@ -2,6 +2,7 @@ package name.abuchen.portfolio.online.portfolioreport;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +23,11 @@ import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
 import org.osgi.framework.FrameworkUtil;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializer;
 import com.google.gson.reflect.TypeToken;
 
 import name.abuchen.portfolio.json.JClient;
@@ -34,6 +40,7 @@ public class PRApiClient
     private static final String ENDPOINT = "https://api.portfolio-report.net";
 
     private CloseableHttpClient client;
+    private Gson gson;
 
     public PRApiClient(String token)
     {
@@ -50,6 +57,13 @@ public class PRApiClient
                         .useSystemProperties() //
                         .build();
 
+        this.gson = new GsonBuilder() //
+                        .registerTypeAdapter(Instant.class, (JsonSerializer<Instant>) (instant, type,
+                                        jsonSerializationContext) -> new JsonPrimitive(instant.toString()))
+                        .registerTypeAdapter(Instant.class,
+                                        (JsonDeserializer<Instant>) (json, type, jsonDeserializationContext) -> Instant
+                                                        .parse(json.getAsJsonPrimitive().getAsString()))
+                        .create();
     }
 
     public List<PRPortfolio> listPortfolios() throws IOException
@@ -117,33 +131,33 @@ public class PRApiClient
         if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK)
             throw asError(request, response);
 
-        return JClient.GSON.fromJson(EntityUtils.toString(response.getEntity()),
+        return this.gson.fromJson(EntityUtils.toString(response.getEntity()),
                         TypeToken.getParameterized(List.class, type).getType());
     }
 
     private <T> T create(Class<T> type, String path, T input) throws IOException
     {
         HttpPost request = new HttpPost(ENDPOINT + path);
-        request.setEntity(new StringEntity(JClient.GSON.toJson(input), StandardCharsets.UTF_8));
+        request.setEntity(new StringEntity(this.gson.toJson(input), StandardCharsets.UTF_8));
         CloseableHttpResponse response = client.execute(request);
 
         if (response.getStatusLine().getStatusCode() != HttpStatus.SC_CREATED)
             throw asError(request, response);
 
-        return JClient.GSON.fromJson(EntityUtils.toString(response.getEntity()), type);
+        return this.gson.fromJson(EntityUtils.toString(response.getEntity()), type);
     }
 
     private <T> T update(Class<T> type, String path, T input) throws IOException
     {
         HttpPut request = new HttpPut(ENDPOINT + path);
-        request.setEntity(new StringEntity(JClient.GSON.toJson(input), StandardCharsets.UTF_8));
-        
+        request.setEntity(new StringEntity(this.gson.toJson(input), StandardCharsets.UTF_8));
+
         CloseableHttpResponse response = client.execute(request);
 
         if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK)
             throw asError(request, response);
 
-        return JClient.GSON.fromJson(EntityUtils.toString(response.getEntity()), type);
+        return this.gson.fromJson(EntityUtils.toString(response.getEntity()), type);
     }
 
     private <T> T deleteEntity(Class<T> type, String path) throws IOException
@@ -154,7 +168,7 @@ public class PRApiClient
         if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK)
             throw asError(request, response);
 
-        return JClient.GSON.fromJson(EntityUtils.toString(response.getEntity()), type);
+        return this.gson.fromJson(EntityUtils.toString(response.getEntity()), type);
     }
 
     private IOException asError(HttpRequestBase request, CloseableHttpResponse response) throws IOException

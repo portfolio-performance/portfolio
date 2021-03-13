@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.online.portfolioreport;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -18,6 +19,7 @@ public class PRTransaction
     private String shares;
     private String portfolioSecurityUuid;
     private String note;
+    private Instant updatedAt;
 
     public PRTransaction()
     {
@@ -34,6 +36,7 @@ public class PRTransaction
         this.shares = source.shares;
         this.portfolioSecurityUuid = source.portfolioSecurityUuid;
         this.note = source.note;
+        this.updatedAt = source.updatedAt;
     }
 
     public String getUuid()
@@ -143,5 +146,15 @@ public class PRTransaction
     public void setNote(String note)
     {
         this.note = note;
+    }
+
+    public Instant getUpdatedAt()
+    {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt)
+    {
+        this.updatedAt = updatedAt;
     }
 }
