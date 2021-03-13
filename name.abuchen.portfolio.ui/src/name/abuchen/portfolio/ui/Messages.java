@@ -670,6 +670,11 @@ public class Messages extends NLS
     public static String LabelJSONPathHint;
     public static String LabelJSONPathToClose;
     public static String LabelJSONPathToDate;
+    public static String LabelJSONDateFormat;
+    public static String LabelJSONDateFormatHint;
+    public static String LabelJSONPathToLow;
+    public static String LabelJSONPathToHigh;
+    public static String LabelJSONPathToVolume;
     public static String LabelKeyIndicators;
     public static String LabelMaxDrawdown;
     public static String LabelMaxDrawdownDuration;

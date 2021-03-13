@@ -7,6 +7,7 @@ import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -38,9 +39,17 @@ public class GenericJSONQuoteFeed implements QuoteFeed
 {
     public static final String ID = "GENERIC-JSON"; //$NON-NLS-1$
     public static final String DATE_PROPERTY_NAME_HISTORIC = "GENERIC-JSON-DATE"; //$NON-NLS-1$
+    public static final String DATE_FORMAT_PROPERTY_NAME_HISTORIC = "GENERIC-JSON-DATE-FORMAT"; //$NON-NLS-1$
     public static final String CLOSE_PROPERTY_NAME_HISTORIC = "GENERIC-JSON-CLOSE"; //$NON-NLS-1$
+    public static final String HIGH_PROPERTY_NAME_HISTORIC = "GENERIC-JSON-HIGH"; //$NON-NLS-1$
+    public static final String LOW_PROPERTY_NAME_HISTORIC = "GENERIC-JSON-LOW"; //$NON-NLS-1$
+    public static final String VOLUME_PROPERTY_NAME_HISTORIC = "GENERIC-JSON-VOLUME"; //$NON-NLS-1$
     public static final String DATE_PROPERTY_NAME_LATEST = "GENERIC-JSON-DATE-LATEST"; //$NON-NLS-1$
+    public static final String DATE_FORMAT_PROPERTY_NAME_LATEST = "GENERIC-JSON-DATE-FORMAT-LATEST"; //$NON-NLS-1$
     public static final String CLOSE_PROPERTY_NAME_LATEST = "GENERIC-JSON-CLOSE-LATEST"; //$NON-NLS-1$
+    public static final String HIGH_PROPERTY_NAME_LATEST = "GENERIC-JSON-HIGH-LATEST"; //$NON-NLS-1$
+    public static final String LOW_PROPERTY_NAME_LATEST = "GENERIC-JSON-LOW-LATEST"; //$NON-NLS-1$
+    public static final String VOLUME_PROPERTY_NAME_LATEST = "GENERIC-JSON-VOLUME-LATEST"; //$NON-NLS-1$
 
     private final PageCache<String> cache = new PageCache<>();
 
@@ -84,8 +93,16 @@ public class GenericJSONQuoteFeed implements QuoteFeed
     {
         Optional<String> dateProperty = security.getPropertyValue(SecurityProperty.Type.FEED,
                         isLatest ? DATE_PROPERTY_NAME_LATEST : DATE_PROPERTY_NAME_HISTORIC);
+        Optional<String> dateFormatProperty = security.getPropertyValue(SecurityProperty.Type.FEED,
+                        isLatest ? DATE_FORMAT_PROPERTY_NAME_LATEST : DATE_FORMAT_PROPERTY_NAME_HISTORIC);
         Optional<String> closeProperty = security.getPropertyValue(SecurityProperty.Type.FEED,
                         isLatest ? CLOSE_PROPERTY_NAME_LATEST : CLOSE_PROPERTY_NAME_HISTORIC);
+        Optional<String> highProperty = security.getPropertyValue(SecurityProperty.Type.FEED,
+                        isLatest ? HIGH_PROPERTY_NAME_LATEST : HIGH_PROPERTY_NAME_HISTORIC);
+        Optional<String> lowProperty = security.getPropertyValue(SecurityProperty.Type.FEED,
+                        isLatest ? LOW_PROPERTY_NAME_LATEST : LOW_PROPERTY_NAME_HISTORIC);
+        Optional<String> volumeProperty = security.getPropertyValue(SecurityProperty.Type.FEED,
+                        isLatest ? VOLUME_PROPERTY_NAME_LATEST : VOLUME_PROPERTY_NAME_HISTORIC);
 
         if (!dateProperty.isPresent() || !closeProperty.isPresent())
         {
@@ -135,7 +152,8 @@ public class GenericJSONQuoteFeed implements QuoteFeed
             int sizeBefore = newPricesByDate.size();
 
             if (json != null)
-                newPricesByDate.addAll(parse(url, json, dateProperty.get(), closeProperty.get(), data));
+                newPricesByDate.addAll(parse(url, json, dateProperty.get(), closeProperty.get(), data,
+                                dateFormatProperty, lowProperty, highProperty, volumeProperty));
 
             if (newPricesByDate.size() > sizeBefore)
                 failedAttempts = 0;
@@ -176,7 +194,8 @@ public class GenericJSONQuoteFeed implements QuoteFeed
     }
 
     protected List<LatestSecurityPrice> parse(String url, String json, String datePath, String closePath,
-                    QuoteFeedData data)
+                    QuoteFeedData data, Optional<String> dateFormat, Optional<String> lowPath,
+                    Optional<String> highPath, Optional<String> volumePath)
     {
         try
         {
@@ -190,6 +209,25 @@ public class GenericJSONQuoteFeed implements QuoteFeed
 
             List<Object> dates = ctx.read(dateP);
             List<Object> close = ctx.read(closeP);
+
+            Optional<List<Object>> high = Optional.empty();
+            Optional<List<Object>> low = Optional.empty();
+            Optional<List<Object>> volume = Optional.empty();
+            if(highPath.isPresent())
+            {
+                JsonPath highP = JsonPath.compile(highPath.get());
+                high = Optional.of(ctx.read(highP));
+            }
+            if(lowPath.isPresent())
+            {
+                JsonPath lowP = JsonPath.compile(lowPath.get());
+                low = Optional.of(ctx.read(lowP));
+            }
+            if(volumePath.isPresent())
+            {
+                JsonPath volumeP = JsonPath.compile(volumePath.get());
+                volume = Optional.of(ctx.read(volumeP));
+            }
 
             if (dates.size() != close.size())
             {
@@ -208,7 +246,7 @@ public class GenericJSONQuoteFeed implements QuoteFeed
 
                 // date
                 Object object = dates.get(index);
-                price.setDate(this.extractDate(object));
+                price.setDate(this.extractDate(object, dateFormat));
 
                 // close
                 object = close.get(index);
@@ -216,9 +254,30 @@ public class GenericJSONQuoteFeed implements QuoteFeed
 
                 if (price.getDate() != null && price.getValue() > 0)
                 {
-                    price.setHigh(LatestSecurityPrice.NOT_AVAILABLE);
-                    price.setLow(LatestSecurityPrice.NOT_AVAILABLE);
-                    price.setVolume(LatestSecurityPrice.NOT_AVAILABLE);
+                    if(high.isPresent())
+                    {
+                        price.setHigh(this.extractValue(high.get().get(index)));
+                    }
+                    else
+                    {
+                        price.setHigh(LatestSecurityPrice.NOT_AVAILABLE);
+                    }
+                    if(low.isPresent())
+                    {
+                        price.setLow(this.extractValue(low.get().get(index)));
+                    }
+                    else
+                    {
+                        price.setLow(LatestSecurityPrice.NOT_AVAILABLE);
+                    }
+                    if(volume.isPresent())
+                    {
+                        price.setVolume(this.extractIntegerValue(volume.get().get(index)));
+                    }
+                    else
+                    {
+                        price.setVolume(LatestSecurityPrice.NOT_AVAILABLE);
+                    }
                     prices.add(price);
                 }
             }
@@ -241,8 +300,30 @@ public class GenericJSONQuoteFeed implements QuoteFeed
         return 0;
     }
 
-    /* testing */ LocalDate extractDate(Object object)
+    /* testing */ long extractIntegerValue(Object object) throws ParseException
     {
+        if (object instanceof String)
+            try
+            {
+                return Long.parseLong((String) object);
+            }
+            catch(NumberFormatException e)
+            {
+                // try again as Double
+                return Math.round(Double.parseDouble((String) object));
+            }
+        if (object instanceof Number)
+            return((Number) object).longValue();
+        return 0;
+    }
+
+    /* testing */ LocalDate extractDate(Object object, Optional<String> dateFormat)
+    {
+        if(dateFormat.isPresent())
+        {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateFormat.get());
+            return LocalDate.parse(object.toString(), formatter);
+        }
         if (object instanceof String)
             return YahooHelper.fromISODate((String) object);
         else if (object instanceof Long)
