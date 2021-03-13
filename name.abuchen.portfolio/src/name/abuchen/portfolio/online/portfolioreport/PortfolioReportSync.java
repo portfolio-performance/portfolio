@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.online.portfolioreport;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +26,7 @@ import name.abuchen.portfolio.model.Transaction;
 public class PortfolioReportSync
 {
     private static final String PORTFOLIO_ID_KEY = "net.portfolio-report.portfolioId";
+    private static final String SYNCHRONIZED_AT_KEY = "net.portfolio-report.synchronizedAt";
 
     private final Client client;
     private final PRApiClient api;
@@ -38,13 +40,28 @@ public class PortfolioReportSync
 
     public void sync() throws IOException
     {
+        Instant synchronizedAt;
+        try
+        {
+            synchronizedAt = Instant.parse(client.getProperty(SYNCHRONIZED_AT_KEY));
+            PortfolioLog.warning("Latest sync: " + synchronizedAt.toString());
+        }
+        catch (java.lang.NullPointerException e)
+        {
+            synchronizedAt = null;
+        }
+        Instant synchronizationStarted = Instant.now();
+
         long portfolioId = getOrCreatePortfolio();
 
-        PortfolioLog.warning("Syncing with " + portfolioId);
+        PortfolioLog.warning(
+                        "Syncing with portfolioId " + portfolioId + ", started: " + synchronizationStarted.toString());
 
         syncSecurities(portfolioId);
         syncAccounts(portfolioId);
         syncTransactions(portfolioId);
+
+        client.setProperty(SYNCHRONIZED_AT_KEY, synchronizationStarted.toString());
     }
 
     private long getOrCreatePortfolio() throws IOException
