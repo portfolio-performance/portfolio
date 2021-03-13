@@ -213,15 +213,18 @@ public class GenericJSONQuoteFeed implements QuoteFeed
             Optional<List<Object>> high = Optional.empty();
             Optional<List<Object>> low = Optional.empty();
             Optional<List<Object>> volume = Optional.empty();
-            if(highPath.isPresent()) {
+            if(highPath.isPresent())
+            {
                 JsonPath highP = JsonPath.compile(highPath.get());
                 high = Optional.of(ctx.read(highP));
             }
-            if(lowPath.isPresent()) {
+            if(lowPath.isPresent())
+            {
                 JsonPath lowP = JsonPath.compile(lowPath.get());
                 low = Optional.of(ctx.read(lowP));
             }
-            if(volumePath.isPresent()) {
+            if(volumePath.isPresent())
+            {
                 JsonPath volumeP = JsonPath.compile(volumePath.get());
                 volume = Optional.of(ctx.read(volumeP));
             }
@@ -251,19 +254,28 @@ public class GenericJSONQuoteFeed implements QuoteFeed
 
                 if (price.getDate() != null && price.getValue() > 0)
                 {
-                    if(high.isPresent()) {
+                    if(high.isPresent())
+                    {
                         price.setHigh(this.extractValue(high.get().get(index)));
-                    } else {
+                    }
+                    else
+                    {
                         price.setHigh(LatestSecurityPrice.NOT_AVAILABLE);
                     }
-                    if(low.isPresent()) {
+                    if(low.isPresent())
+                    {
                         price.setLow(this.extractValue(low.get().get(index)));
-                    } else {
+                    }
+                    else
+                    {
                         price.setLow(LatestSecurityPrice.NOT_AVAILABLE);
                     }
-                    if(volume.isPresent()) {
+                    if(volume.isPresent())
+                    {
                         price.setVolume(this.extractIntegerValue(volume.get().get(index)));
-                    } else {
+                    }
+                    else
+                    {
                         price.setVolume(LatestSecurityPrice.NOT_AVAILABLE);
                     }
                     prices.add(price);
@@ -291,9 +303,12 @@ public class GenericJSONQuoteFeed implements QuoteFeed
     /* testing */ long extractIntegerValue(Object object) throws ParseException
     {
         if (object instanceof String)
-            try {
+            try
+            {
                 return Long.parseLong((String) object);
-            } catch(NumberFormatException e) {
+            }
+            catch(NumberFormatException e)
+            {
                 // try again as Double
                 return Math.round(Double.parseDouble((String) object));
             }
@@ -304,7 +319,8 @@ public class GenericJSONQuoteFeed implements QuoteFeed
 
     /* testing */ LocalDate extractDate(Object object, Optional<String> dateFormat)
     {
-        if(dateFormat.isPresent()) {
+        if(dateFormat.isPresent())
+        {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateFormat.get());
             return LocalDate.parse(object.toString(), formatter);
         }
