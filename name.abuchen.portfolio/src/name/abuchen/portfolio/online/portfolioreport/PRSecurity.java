@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.online.portfolioreport;
 
 import java.time.Instant;
+import java.util.UUID;
 
 public class PRSecurity
 {
@@ -12,6 +13,7 @@ public class PRSecurity
     private String symbol;
     private boolean active;
     private String note;
+    private String securityUuid;
     private Instant updatedAt;
 
     public String getUuid()
@@ -102,6 +104,21 @@ public class PRSecurity
     public void setUpdatedAt(Instant updatedAt)
     {
         this.updatedAt = updatedAt;
+    }
+
+    public String getSecurityUuid()
+    {
+        return securityUuid;
+    }
+
+    @SuppressWarnings("nls")
+    public void setSecurityUuid(String securityUuid)
+    {
+        if (securityUuid != null)
+            this.securityUuid = securityUuid.replaceFirst(
+                            "([0-9a-f]{8})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]+)", "$1-$2-$3-$4-$5");
+        else
+            this.securityUuid = null;
     }
 
 }

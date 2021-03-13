@@ -3,7 +3,6 @@ package name.abuchen.portfolio.online.portfolioreport;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -126,6 +125,7 @@ public class PortfolioReportSync
                 remote.setSymbol(local.getTickerSymbol());
                 remote.setActive(!local.isRetired());
                 remote.setNote(local.getNote());
+                remote.setSecurityUuid(local.getOnlineId());
 
                 api.updateSecurity(portfolioId, remote);
             }
@@ -139,6 +139,7 @@ public class PortfolioReportSync
                 remote.setSymbol(local.getTickerSymbol());
                 remote.setActive(!local.isRetired());
                 remote.setNote(local.getNote());
+                remote.setSecurityUuid(local.getOnlineId());
 
                 api.updateSecurity(portfolioId, remote);
             }
