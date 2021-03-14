@@ -108,6 +108,30 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
     }
 
     @Override
+    protected String getJSONDateFormatPropertyName()
+    {
+        return GenericJSONQuoteFeed.DATE_FORMAT_PROPERTY_NAME_HISTORIC;
+    }
+
+    @Override
+    protected String getJSONLowPathPropertyName()
+    {
+        return GenericJSONQuoteFeed.LOW_PROPERTY_NAME_HISTORIC;
+    }
+
+    @Override
+    protected String getJSONHighPathPropertyName()
+    {
+        return GenericJSONQuoteFeed.HIGH_PROPERTY_NAME_HISTORIC;
+    }
+
+    @Override
+    protected String getJSONVolumePathPropertyName()
+    {
+        return GenericJSONQuoteFeed.VOLUME_PROPERTY_NAME_HISTORIC;
+    }
+
+    @Override
     protected void setStatus(String status)
     {
         getModel().setStatusHistoricalQuotesProvider(status);
@@ -192,7 +216,15 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
                             + String.valueOf(getModel()
                                             .getFeedProperty(GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC))
                             + String.valueOf(getModel()
-                                            .getFeedProperty(GenericJSONQuoteFeed.CLOSE_PROPERTY_NAME_HISTORIC));
+                                            .getFeedProperty(GenericJSONQuoteFeed.CLOSE_PROPERTY_NAME_HISTORIC))
+                            + String.valueOf(getModel()
+                                            .getFeedProperty(GenericJSONQuoteFeed.DATE_FORMAT_PROPERTY_NAME_HISTORIC))
+                            + String.valueOf(getModel()
+                                            .getFeedProperty(GenericJSONQuoteFeed.LOW_PROPERTY_NAME_HISTORIC))
+                            + String.valueOf(getModel()
+                                            .getFeedProperty(GenericJSONQuoteFeed.HIGH_PROPERTY_NAME_HISTORIC))
+                            + String.valueOf(getModel()
+                                            .getFeedProperty(GenericJSONQuoteFeed.VOLUME_PROPERTY_NAME_HISTORIC));
         else
             return getFeed() + getModel().getFeedURL();
     }

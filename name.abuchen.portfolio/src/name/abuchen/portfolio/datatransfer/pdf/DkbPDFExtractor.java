@@ -19,6 +19,7 @@ import name.abuchen.portfolio.money.Money;
 @SuppressWarnings("nls")
 public class DkbPDFExtractor extends AbstractPDFExtractor
 {
+    private static final String IS_JOINT_ACCOUNT = "isjointaccount"; //$NON-NLS-1$
     private static final String EXCHANGE_RATE = "exchangeRate"; //$NON-NLS-1$
     private static final String FLAG_WITHHOLDING_TAX_FOUND  = "exchangeRate"; //$NON-NLS-1$
 
@@ -43,6 +44,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         addBuyTransactionFundsSavingsPlan();
         addAdvanceTaxTransaction();
         addGiroTransactions();
+        addKreditkartenabrechnung();
     }
 
     @Override
@@ -67,7 +69,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         block.set(pdfTransaction);
         pdfTransaction.section("notation", "shares", "name", "isin", "wkn", "nameContinued")
                         .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)")
-                        .match("(?<notation>^St\\Dck|^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{1,})?) (?<name>.*) (?<isin>[^ ]*) (\\((?<wkn>.*)\\).*)$")
+                        .match("(?<notation>^St\\Dck|^\\w{3}) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{1,})?) (?<name>.*) (?<isin>[^ ]*) (\\((?<wkn>.*)\\).*)$")
                         .match("(?<nameContinued>.*)")
                         .assign((t, v) -> {
                             String notation = v.get("notation");
@@ -83,8 +85,8 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             t.setSecurity(getOrCreateSecurity(v));
                         })
 
-                        .section("date", "amount").match("(^Schlusstag)(/-Zeit)? (?<date>\\d+.\\d+.\\d{4}+) (.*)")
-                        .match("(^Ausmachender Betrag) (?<amount>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-) (?<currency>\\w{3}+)")
+                        .section("date", "amount").match("(^Schlusstag)(/-Zeit)? (?<date>\\d+.\\d+.\\d{4}) (.*)")
+                        .match("(^Ausmachender Betrag) (?<amount>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-) (?<currency>\\w{3})")
                         .assign((t, v) -> {
                             t.setDate(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -115,7 +117,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         block.set(pdfTransaction);
         pdfTransaction.section("notation", "shares", "name", "isin", "wkn", "nameContinued")
                         .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)")
-                        .match("(?<notation>^St\\Dck|^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{2,})?) (?<name>.*) (?<isin>[^ ]*) (\\((?<wkn>.*)\\).*)$")
+                        .match("(?<notation>^St\\Dck|^\\w{3}) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{2,})?) (?<name>.*) (?<isin>[^ ]*) (\\((?<wkn>.*)\\).*)$")
                         .match("(?<nameContinued>.*)")
                         .assign((t, v) -> {
                             String notation = v.get("notation");
@@ -140,20 +142,20 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("amount", "currency") //
-                        .match("(^Ausmachender Betrag) (?<amount>\\d{1,3}(\\.\\d{3})*(,\\d{2})?) (?<currency>\\w{3}+)(.*)")
+                        .match("(^Ausmachender Betrag) (?<amount>\\d{1,3}(\\.\\d{3})*(,\\d{2})?) (?<currency>\\w{3})(.*)")
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
                         .section("date").optional() //
-                        .match("^Den Gegenwert buchen wir mit Valuta (?<date>\\d+.\\d+.\\d{4}+) (.*)")
+                        .match("^Den Gegenwert buchen wir mit Valuta (?<date>\\d+.\\d+.\\d{4}) (.*)")
                         .assign((t, v) -> {
                             t.setDate(asDate(v.get("date")));
                         })
 
                         .section("date").optional() //
-                        .match("(^Schlusstag)(/-Zeit)? (?<date>\\d+.\\d+.\\d{4}+) (.*)")
+                        .match("(^Schlusstag)(/-Zeit)? (?<date>\\d+.\\d+.\\d{4}) (.*)")
                         .assign((t, v) -> {
                             t.setDate(asDate(v.get("date")));
                         })
@@ -182,7 +184,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         block.set(pdfTransaction);
         pdfTransaction.section("notation", "shares", "name", "isin", "wkn", "nameContinued")
                         .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)")
-                        .match("(?<notation>^St\\Dck|^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{2,})?) (?<name>.*) (?<isin>[^ ]*) (\\((?<wkn>.*)\\).*)$")
+                        .match("(?<notation>^St\\Dck|^\\w{3}) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{2,})?) (?<name>.*) (?<isin>[^ ]*) (\\((?<wkn>.*)\\).*)$")
                         .match("(?<nameContinued>.*)")
                         .assign((t, v) -> {
                             String notation = v.get("notation");
@@ -199,8 +201,8 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date", "amount")
-                        .match("(^Ausmachender Betrag) (?<amount>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(.*) (?<currency>\\w{3}+)")
-                        .match("(^Den Betrag buchen wir mit Wertstellung) (?<date>\\d+.\\d+.\\d{4}+) zu Gunsten des Kontos (.*)")
+                        .match("(^Ausmachender Betrag) (?<amount>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(.*) (?<currency>\\w{3})")
+                        .match("(^Den Betrag buchen wir mit Wertstellung) (?<date>\\d+.\\d+.\\d{4}) zu Gunsten des Kontos (.*)")
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -275,7 +277,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         block.set(pdfTransaction);
         pdfTransaction.section("notation", "shares", "name", "isin", "wkn", "nameContinued")
                         .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)")
-                        .match("(?<notation>^St\\Dck|^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{2,})?) (?<name>.*) (?<isin>[^ ]*) (\\((?<wkn>.*)\\).*)$")
+                        .match("(?<notation>^St\\Dck|^\\w{3}) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{2,})?) (?<name>.*) (?<isin>[^ ]*) (\\((?<wkn>.*)\\).*)$")
                         .match("(?<nameContinued>.*)")
                         .assign((t, v) -> {
                             String notation = v.get("notation");
@@ -294,8 +296,8 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date", "amount", "sign")
-                        .match("(^Ausmachender Betrag) (?<amount>\\d{1,3}(\\.\\d{3})*(,\\d{2})?[+-]) (?<currency>\\w{3}+)(.*)")
-                        .match("(^Den Betrag buchen wir mit Valuta) (?<date>\\d+.\\d+.\\d{4}+) zu (?<sign>Gunsten|Lasten) des Kontos (.*)")
+                        .match("(^Ausmachender Betrag) (?<amount>\\d{1,3}(\\.\\d{3})*(,\\d{2})?[+-]) (?<currency>\\w{3})(.*)")
+                        .match("(^Den Betrag buchen wir mit Valuta) (?<date>\\d+.\\d+.\\d{4}) zu (?<sign>Gunsten|Lasten) des Kontos (.*)")
                         .assign((t, v) -> {
                             String sign = v.get("sign");
                             if ("Lasten".equalsIgnoreCase(sign))
@@ -332,7 +334,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                         .section("notation", "shares", "name", "isin", "wkn", "nameContinued")
                         .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)")
-                        .match("(?<notation>^St\\Dck|^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{2,})?) (?<name>.*) (?<isin>[^ ]*) (\\((?<wkn>.*)\\).*)$")
+                        .match("(?<notation>^St\\Dck|^\\w{3}) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{2,})?) (?<name>.*) (?<isin>[^ ]*) (\\((?<wkn>.*)\\).*)$")
                         .match("(?<nameContinued>.*)")
                         .assign((t, v) -> {
                             String notation = v.get("notation");
@@ -348,7 +350,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             t.setSecurity(getOrCreateSecurity(v));
                         })
 
-                        .section("date").match("(^Valuta) (?<date>\\d+.\\d+.\\d{4}+) (.*)").assign((t, v) -> {
+                        .section("date").match("(^Valuta) (?<date>\\d+.\\d+.\\d{4}) (.*)").assign((t, v) -> {
                             t.setDate(asDate(v.get("date")));
                             t.setCurrencyCode(asCurrencyCode(
                                             t.getPortfolioTransaction().getSecurity().getCurrencyCode()));
@@ -400,7 +402,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                         .match("(^St\\Dck) (?<shares>[\\d,.]*) (?<name>.*)$") //
                                         .match("(?<nameContinued>.*)")
                                         .match("(?<isin>[^ ]*) \\((?<wkn>.*)\\)$") //
-                                        .match("^Ertrag pro St. [\\d,.]* (?<currency>\\w{3}+)") //
+                                        .match("^Ertrag pro St. [\\d,.]* (?<currency>\\w{3})") //
                                         .assign((t, v) -> {
                                             t.setShares(asShares(v.get("shares")));
                                             t.setSecurity(getOrCreateSecurity(v));
@@ -416,9 +418,9 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                         }))
 
                         .section("date", "amount")
-                        .match("(^Ausmachender Betrag) (?<amount>[\\d,.]*)(.*) (?<currency>\\w{3}+)")
+                        .match("(^Ausmachender Betrag) (?<amount>[\\d,.]*)(.*) (?<currency>\\w{3})")
                         .match("(^Lagerstelle) (.*)")
-                        .match("(^Den Betrag buchen wir mit Wertstellung) (?<date>\\d+.\\d+.\\d{4}+) zu (Gunsten|Lasten) des Kontos (.*)")
+                        .match("(^Den Betrag buchen wir mit Wertstellung) (?<date>\\d+.\\d+.\\d{4}) zu (Gunsten|Lasten) des Kontos (.*)")
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -434,14 +436,31 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
     private DocumentType createDocumentType(String documentTypeString)
     {
         DocumentType type = new DocumentType(documentTypeString, (context, lines) -> {
-            Pattern pattern = Pattern
-                            .compile("Devisenkurs (?<term>\\w{3}+) / (?<base>\\w{3}+) (?<exchangeRate>[\\d,.]*)(.*)");
+            Pattern pattern = Pattern.compile("Devisenkurs (?<term>\\w{3}) / (?<base>\\w{3}) (?<exchangeRate>[\\d,.]*)(.*)");
+
+            // Detect Joint Account
+            Pattern pJointAccount = Pattern.compile("Anteilige Berechnungsgrundlage für .*"); //$NON-NLS-1$
+            Boolean bJointAccount = false;
+
             for (String line : lines)
             {
                 Matcher m = pattern.matcher(line);
                 if (m.matches())
+                {
                     context.put(EXCHANGE_RATE, m.group("exchangeRate"));
+                }
+                m = pJointAccount.matcher(line);
+                if (m.matches())
+                {
+                    context.put(IS_JOINT_ACCOUNT, Boolean.TRUE.toString());
+                    bJointAccount = true;
+                    System.out.println(bJointAccount);
+                    break;
+                }
             }
+
+            if (!bJointAccount)
+                context.put(IS_JOINT_ACCOUNT, Boolean.FALSE.toString());
         });
         return type;
     }
@@ -450,7 +469,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
     {   
         final DocumentType type = new DocumentType("Halbjahresabrechnung Sparplan", (context, lines) -> {
             Pattern pSecurity = Pattern.compile("(?<name>.*) (?<isin>[^ ]*) (\\((?<wkn>.*)\\).*)$");
-            Pattern pCurrency = Pattern.compile("^(?<currency>\\w{3}+) in .*$");
+            Pattern pCurrency = Pattern.compile("^(?<currency>\\w{3}) in .*$");
             // read the current context here
             for (String line : lines)
             {
@@ -484,7 +503,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         pdfTransaction
 
                         .section("amount", "shares", "date", "fee").optional()
-                        .match("^Kauf (?<amount>[\\d,]+) [\\d]{2,10}\\/.* (?<shares>[\\d,]+) (?<date>\\d+.\\d+.\\d{4}+) .*")
+                        .match("^Kauf (?<amount>[\\d,]+) [\\d]{2,10}\\/.* (?<shares>[\\d,]+) (?<date>\\d+.\\d+.\\d{4}) .*")
                         .match(".*Provision.* (?<fee>[\\d,]+) .*")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
@@ -498,7 +517,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         })
         
                         .section("amount", "shares", "date").optional()
-                        .match("^Kauf (?<amount>[\\d,]+) [\\d]{2,10}\\/.* (?<shares>[\\d,]+) (?<date>\\d+.\\d+.\\d{4}+) .*")
+                        .match("^Kauf (?<amount>[\\d,]+) [\\d]{2,10}\\/.* (?<shares>[\\d,]+) (?<date>\\d+.\\d+.\\d{4}) .*")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
                             t.setSecurity(getOrCreateSecurity(context));
@@ -509,37 +528,97 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(BuySellEntryItem::new);
-
-
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(DocumentType documentType, T pdfTransaction)
-    {
-        pdfTransaction.section("tax", "currency").optional()
-                        .match("^Kapitalertragsteuer (.*) (\\w{3}+) (?<tax>[\\d.-]+,\\d+)(-) (?<currency>\\w{3}+)")
-                        .assign((t, v) -> addTax(documentType, t, v, "tax"))
+    {       
+        pdfTransaction
+          
+                        // Kapitalertragsteuer (Account)
+                        .section("tax", "currency").optional()
+                        .match("^Kapitalertragsteuer (.*) (\\w{3}) (?<tax>[\\d.-]+,\\d+)(-) (?<currency>\\w{3})")
+                        .assign((t, v) -> {
+                            if (!Boolean.parseBoolean(documentType.getCurrentContext().get(IS_JOINT_ACCOUNT)))
+                            {
+                                addTax(documentType, t, v, "tax");
+                            }
+                        })
 
-                        .section("soli", "currency").optional()
-                        .match("^Solidarit(.*) (\\w{3}+) (?<soli>[\\d.-]+,\\d+)(-) (?<currency>\\w{3}+)")
-                        .assign((t, v) -> addTax(documentType, t, v, "soli"))
+                        // Kapitalerstragsteuer (Joint Account)
+                        .section("tax1", "currency1", "tax2", "currency2").optional()
+                        .match("^Kapitalertragsteuer (.*) (\\w{3}) (?<tax1>[\\d.-]+,\\d+)(-) (?<currency1>\\w{3})")
+                        .match("^Kapitalertragsteuer (.*) (\\w{3}) (?<tax2>[\\d.-]+,\\d+)(-) (?<currency2>\\w{3})")
+                        .assign((t, v) -> {
+                            if (Boolean.parseBoolean(documentType.getCurrentContext().get(IS_JOINT_ACCOUNT)))
+                            {
+                                ((name.abuchen.portfolio.model.Transaction) t).addUnit(new Unit(Unit.Type.TAX,
+                                                Money.of(asCurrencyCode(v.get("currency1")), asAmount(v.get("tax1")))));
+                                ((name.abuchen.portfolio.model.Transaction) t).addUnit(new Unit(Unit.Type.TAX,
+                                                Money.of(asCurrencyCode(v.get("currency2")), asAmount(v.get("tax2")))));   
+                            }
+                        })
 
-                        .section("kirchenst", "currency").optional()
-                        .match("^Kirchensteuer (.*) (\\w{3}+) (?<kirchenst>[\\d.-]+,\\d+)(-) (?<currency>\\w{3}+)")
-                        .assign((t, v) -> addTax(documentType, t, v, "kirchenst"))
+                        // Solidaritätszuschlag (Account)
+                        .section("tax", "currency").optional()
+                        .match("^Solidarit(.*) (\\w{3}) (?<tax>[\\d.-]+,\\d+)(-) (?<currency>\\w{3})")
+                        .assign((t, v) -> {
+                            if (!Boolean.parseBoolean(documentType.getCurrentContext().get(IS_JOINT_ACCOUNT)))
+                            {
+                                addTax(documentType, t, v, "tax");
+                            }
+                        })
+
+                        // Solidaritätszuschlag (Joint Account)
+                        .section("tax1", "currency1", "tax2", "currency2").optional()
+                        .match("^Solidarit(.*) (\\w{3}) (?<tax1>[\\d.-]+,\\d+)(-) (?<currency1>\\w{3})")
+                        .match("^Solidarit(.*) (\\w{3}) (?<tax2>[\\d.-]+,\\d+)(-) (?<currency2>\\w{3})")
+                        .assign((t, v) -> {
+                            if (Boolean.parseBoolean(documentType.getCurrentContext().get(IS_JOINT_ACCOUNT)))
+                            {
+                                ((name.abuchen.portfolio.model.Transaction) t).addUnit(new Unit(Unit.Type.TAX,
+                                                Money.of(asCurrencyCode(v.get("currency1")), asAmount(v.get("tax1")))));
+                                ((name.abuchen.portfolio.model.Transaction) t).addUnit(new Unit(Unit.Type.TAX,
+                                                Money.of(asCurrencyCode(v.get("currency2")), asAmount(v.get("tax2")))));   
+                            }
+                        })
+
+                        // Kirchensteuer (Account)
+                        .section("tax", "currency").optional()
+                        .match("^Kirchensteuer (.*) (\\w{3}) (?<tax>[\\d.-]+,\\d+)(-) (?<currency>\\w{3})")
+                        .assign((t, v) -> {
+                            if (!Boolean.parseBoolean(documentType.getCurrentContext().get(IS_JOINT_ACCOUNT)))
+                            {
+                                addTax(documentType, t, v, "tax");
+                            }
+                        })
+
+                        // Kirchensteuer (Joint Account)
+                        .section("tax1", "currency1", "tax2", "currency2").optional()
+                        .match("^Kirchensteuer (.*) (\\w{3}) (?<tax1>[\\d.-]+,\\d+)(-) (?<currency1>\\w{3})")
+                        .match("^Kirchensteuer (.*) (\\w{3}) (?<tax2>[\\d.-]+,\\d+)(-) (?<currency2>\\w{3})")
+                        .assign((t, v) -> {
+                            if (Boolean.parseBoolean(documentType.getCurrentContext().get(IS_JOINT_ACCOUNT)))
+                            {
+                                ((name.abuchen.portfolio.model.Transaction) t).addUnit(new Unit(Unit.Type.TAX,
+                                                Money.of(asCurrencyCode(v.get("currency1")), asAmount(v.get("tax1")))));
+                                ((name.abuchen.portfolio.model.Transaction) t).addUnit(new Unit(Unit.Type.TAX,
+                                                Money.of(asCurrencyCode(v.get("currency2")), asAmount(v.get("tax2")))));   
+                            }
+                        })
 
                         .section("quellensteinbeh", "currency").optional()
-                        .match("^Einbehaltene Quellensteuer(.*) (\\w{3}+) (?<quellensteinbeh>[\\d.]+,\\d+)(-) (?<currency>\\w{3}+)")
+                        .match("^Einbehaltene Quellensteuer(.*) (\\w{3}) (?<quellensteinbeh>[\\d.]+,\\d+)(-) (?<currency>\\w{3})")
                         .assign((t, v) ->  {
                             documentType.getCurrentContext().put(FLAG_WITHHOLDING_TAX_FOUND, "true");
                             addTax(documentType, t, v, "quellensteinbeh");
                         })
                         
                         .section("quellenstanr", "currency").optional()
-                        .match("^Anrechenbare Quellensteuer(.*) (\\w{3}+) (?<quellenstanr>[\\d.]+,\\d+) (?<currency>\\w{3}+)")
+                        .match("^Anrechenbare Quellensteuer(.*) (\\w{3}) (?<quellenstanr>[\\d.]+,\\d+) (?<currency>\\w{3})")
                         .assign((t, v) -> addTax(documentType, t, v, "quellenstanr"))
 
                         .section("quellenstrueck", "currency").optional()
-                        .match("^(.*)ckforderbare Quellensteuer (?<quellenstrueck>[\\d.]+,\\d+) (?<currency>\\w{3}+)")
+                        .match("^(.*)ckforderbare Quellensteuer (?<quellenstrueck>[\\d.]+,\\d+) (?<currency>\\w{3})")
                         .assign((t, v) -> addTax(documentType, t, v, "quellenstrueck"));
     }
 
@@ -586,28 +665,28 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T pdfTransaction)
     {
         pdfTransaction.section("fee", "currency").optional()
-                        .match("(^Provision) (?<fee>\\d{1,3}(\\.\\d{3})*(,\\d{2})?[-]) (?<currency>\\w{3}+)")
+                        .match("(^Provision) (?<fee>\\d{1,3}(\\.\\d{3})*(,\\d{2})?[-]) (?<currency>\\w{3})")
                         .assign((t, v) -> {
                             getTransaction(t).addUnit(new Unit(Unit.Type.FEE,
                                             Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")))));
                         })
 
                         .section("fee", "currency").optional()
-                        .match("(^Transaktionsentgelt Börse) (?<fee>\\d{1,3}(\\.\\d{3})*(,\\d{2})?[-]) (?<currency>\\w{3}+)")
+                        .match("(^Transaktionsentgelt Börse) (?<fee>\\d{1,3}(\\.\\d{3})*(,\\d{2})?[-]) (?<currency>\\w{3})")
                         .assign((t, v) -> {
                             getTransaction(t).addUnit(new Unit(Unit.Type.FEE,
                                             Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")))));
                         })
                         
                         .section("fee", "currency").optional()
-                        .match(".*Namensaktien (?<fee>\\d{1,3}(\\.\\d{3})*(,\\d{2})?[-]) (?<currency>\\w{3}+)")
+                        .match(".*Namensaktien (?<fee>\\d{1,3}(\\.\\d{3})*(,\\d{2})?[-]) (?<currency>\\w{3})")
                         .assign((t, v) -> {
                             getTransaction(t).addUnit(new Unit(Unit.Type.FEE,
                                             Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")))));
                         })
 
                         .section("fee", "currency").optional()
-                        .match("(^Übertragungs-/Liefergebühr) (?<fee>\\d{1,3}(\\.\\d{3})*(,\\d{2})?[-]) (?<currency>\\w{3}+)")
+                        .match("(^Übertragungs-/Liefergebühr) (?<fee>\\d{1,3}(\\.\\d{3})*(,\\d{2})?[-]) (?<currency>\\w{3})")
                         .assign((t, v) -> {
                             getTransaction(t).addUnit(new Unit(Unit.Type.FEE,
                                             Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")))));
@@ -629,7 +708,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
     private void addTaxReturnBlock(DocumentType type)
     {
         // optional: Steuererstattung
-        Block block = new Block("^Kapitalertragsteuer (.*) (\\w{3}+) ([\\d.-]+,\\d+)(\\+) (\\w{3}+)(.*)");
+        Block block = new Block("^Kapitalertragsteuer (.*) (\\w{3}) ([\\d.-]+,\\d+)(\\+) (\\w{3})(.*)");
         type.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
 
@@ -640,24 +719,24 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("tax", "currency").optional()
-                        .match("^Kapitalertragsteuer (.*) (\\w{3}+) (?<tax>[\\d.-]+,\\d+)(\\+) (?<currency>\\w{3}+)")
+                        .match("^Kapitalertragsteuer (.*) (\\w{3}) (?<tax>[\\d.-]+,\\d+)(\\+) (?<currency>\\w{3})")
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("tax")));
                         }).section("soli", "currency").optional()
-                        .match("^Solidarit(.*) (\\w{3}+) (?<soli>[\\d.-]+,\\d+)(\\+) (?<currency>\\w{3}+)")
+                        .match("^Solidarit(.*) (\\w{3}) (?<soli>[\\d.-]+,\\d+)(\\+) (?<currency>\\w{3})")
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(t.getAmount() + asAmount(v.get("soli")));
                         }).section("kirchenst", "currency").optional()
-                        .match("^Kirchensteuer (.*) (\\w{3}+) (?<kirchenst>[\\d.-]+,\\d+)(\\+) (?<currency>\\w{3}+)")
+                        .match("^Kirchensteuer (.*) (\\w{3}) (?<kirchenst>[\\d.-]+,\\d+)(\\+) (?<currency>\\w{3})")
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(t.getAmount() + asAmount(v.get("kirchenst")));
                         })
 
                         .section("date")
-                        .match("(^Den Betrag buchen wir mit Valuta) (?<date>\\d+.\\d+.\\d{4}+) zu Lasten des Kontos (.*)")
+                        .match("(^Den Betrag buchen wir mit Valuta) (?<date>\\d+.\\d+.\\d{4}) zu Lasten des Kontos (.*)")
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             v.put("isin", type.getCurrentContext().get("isin"));
@@ -799,8 +878,8 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
             // Ausmachender Betrag 99,00 EUR
             // Den Gegenwert buchen wir mit Valuta 24.02.2021 zu Gunsten des Kontos 1123456789
             .section("taxRefund", "currency", "date").optional()
-            .match("(^Ausmachender Betrag) (?<taxRefund>\\d{1,3}(\\.\\d{3})*(,\\d{2})?) (?<currency>\\w{3}+)(.*)")
-            .match("^Den Gegenwert buchen wir mit Valuta (?<date>\\d+.\\d+.\\d{4}+) (.*)")
+            .match("(^Ausmachender Betrag) (?<taxRefund>\\d{1,3}(\\.\\d{3})*(,\\d{2})?) (?<currency>\\w{3})(.*)")
+            .match("^Den Gegenwert buchen wir mit Valuta (?<date>\\d+.\\d+.\\d{4}) (.*)")
             .assign((t, v) -> {
                 t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 t.setAmount(asAmount(v.get("taxRefund")));
@@ -817,6 +896,119 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                     return new TransactionItem(t);
                 return null;
             }));
+    }
+    
+    private void addKreditkartenabrechnung()
+    {
+        DocumentType type = new DocumentType("Ihre Abrechnung vom ", (context, lines) -> {
+            Pattern pCurrency = Pattern.compile("^(Beleg BuchungVerwendungszweck )(\\w{3})$");
+            // read the current context here
+            for (String line : lines)
+            {
+                Matcher m = pCurrency.matcher(line);
+                if (m.matches())
+                {
+                    context.put("currency", m.group(2));
+                }
+            }
+
+            Pattern pcentury = Pattern.compile("^(Ihre Abrechnung vom \\d{2}.\\d{2}.\\d{4} bis \\d{2}.\\d{2}.\\d{4} Abrechnungsdatum: \\d{2}. .*)(?<century>\\d{2})(\\d{2})$");
+            // read the current context here
+            for (String line : lines)
+            {
+                Matcher m = pcentury.matcher(line);
+                if (m.matches())
+                {
+                    // Read century
+                    context.put("century", m.group(2));
+                }
+            }
+        });
+        this.addDocumentTyp(type);
+        
+        Block depositblock = new Block("^(\\d{2}.\\d{2}.\\d{2}) (\\d{2}.\\d{2}.\\d{2})((?! Habenzins)).* ([\\d.]+,\\d{2})\\+$");
+        type.addBlock(depositblock);
+        depositblock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction entry = new AccountTransaction();
+                            entry.setType(AccountTransaction.Type.DEPOSIT);
+                            return entry;
+                        })
+
+                        .section("date", "value")
+                        .match("^(\\d{2}.\\d{2}.\\d{2}) (?<date>\\d{2}.\\d{2}.\\d{2})((?! Habenzins)).* (?<value>[\\d.]+,\\d{2})\\+$")
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+                            t.setDateTime(asDate(v.get("date").substring(0, 6)+context.get("century")+v.get("date").substring(6, 8))); 
+                            t.setAmount(asAmount(v.get("value")));
+                            t.setCurrencyCode(context.get("currency"));
+                        })
+
+                        .wrap(TransactionItem::new));
+        
+        Block interestblock = new Block("^(\\d{2}.\\d{2}.\\d{2}) (\\d{2}.\\d{2}.\\d{2}) (Habenzins auf \\d+ Tage) ([\\d.]+,\\d{2})\\+$");
+        type.addBlock(interestblock);
+        interestblock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction entry = new AccountTransaction();
+                            entry.setType(AccountTransaction.Type.INTEREST);
+                            return entry;
+                        })
+
+                        .section("date", "value")
+                        .match("^(\\d{2}.\\d{2}.\\d{2}) (?<date>\\d{2}.\\d{2}.\\d{2}) (Habenzins auf \\d+ Tage) (?<value>[\\d.]+,\\d{2})\\+$")
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+                            t.setDateTime(asDate(v.get("date").substring(0, 6)+context.get("century")+v.get("date").substring(6, 8))); 
+                            t.setAmount(asAmount(v.get("value")));
+                            t.setCurrencyCode(context.get("currency"));
+                        })
+
+                        .wrap(TransactionItem::new));
+        
+        Block taxblock = new Block("^(\\d{2}.\\d{2}.\\d{2}) (?<date>\\d{2}.\\d{2}.\\d{2}) (Abgeltungsteuer) (?<value>[\\d.]+,\\d{2}) \\-$");
+        type.addBlock(taxblock);
+        taxblock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction entry = new AccountTransaction();
+                            entry.setType(AccountTransaction.Type.TAXES);
+                            return entry;
+                        })
+
+                        .section("date", "value")
+                        .match("^(\\d{2}.\\d{2}.\\d{2}) (?<date>\\d{2}.\\d{2}.\\d{2}) (Abgeltungsteuer) (?<value>[\\d.]+,\\d{2}) \\-$")
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+                            t.setDateTime(asDate(v.get("date").substring(0, 6)+context.get("century")+v.get("date").substring(6, 8))); 
+                            t.setAmount(asAmount(v.get("value")));
+                            t.setCurrencyCode(context.get("currency"));
+                        })
+
+                        .wrap(TransactionItem::new));
+        
+        Block removalblock = new Block("^(\\d{2}.\\d{2}.\\d{2}) (\\d{2}.\\d{2}.\\d{2})((?! Abgeltungsteuer)).* ([\\d.]+,\\d{2}) \\-$");
+        type.addBlock(removalblock);
+        removalblock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction entry = new AccountTransaction();
+                            entry.setType(AccountTransaction.Type.REMOVAL);
+                            return entry;
+                        })
+
+                        .section("date", "value")
+                        .match("^(\\d{2}.\\d{2}.\\d{2}) (?<date>\\d{2}.\\d{2}.\\d{2})((?! Abgeltungsteuer)).* (?<value>[\\d.]+,\\d{2}) \\-$")
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+                            t.setDateTime(asDate(v.get("date").substring(0, 6)+context.get("century")+v.get("date").substring(6, 8))); 
+                            t.setAmount(asAmount(v.get("value")));
+                            t.setCurrencyCode(context.get("currency"));
+                        })
+
+                        .wrap(TransactionItem::new));
     }
 
     @Override

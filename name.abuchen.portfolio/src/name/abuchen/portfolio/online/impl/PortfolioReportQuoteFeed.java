@@ -97,8 +97,8 @@ public final class PortfolioReportQuoteFeed implements QuoteFeed
         try
         {
             @SuppressWarnings("nls")
-            WebAccess webaccess = new WebAccess("www.portfolio-report.net",
-                            "/api/securities/uuid/" + security.getOnlineId() + "/markets/" + market.get()) //
+            WebAccess webaccess = new WebAccess("api.portfolio-report.net",
+                            "/securities/uuid/" + security.getOnlineId() + "/markets/" + market.get()) //
                                             .addUserAgent("PortfolioPerformance/"
                                                             + FrameworkUtil.getBundle(PortfolioReportNet.class)
                                                                             .getVersion().toString())

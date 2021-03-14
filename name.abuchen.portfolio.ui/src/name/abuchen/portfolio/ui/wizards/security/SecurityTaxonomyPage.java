@@ -70,6 +70,8 @@ public class SecurityTaxonomyPage extends AbstractPage
             for (IObservableValue<?> value : observables)
             {
                 Classification classification = (Classification) value.getValue();
+                if (classification == null)
+                    continue;
                 if (!selected.add(classification))
                     return ValidationStatus.error(MessageFormat.format(
                                     Messages.EditWizardMasterDataMsgDuplicateClassification, classification.getName()));

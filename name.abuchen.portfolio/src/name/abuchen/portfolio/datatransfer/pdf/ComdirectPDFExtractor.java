@@ -52,7 +52,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Wertpapierkauf");
         this.addDocumentTyp(type);
 
-        Block block = new Block("^(\\* )?Wertpapierkauf *.*");
+        Block block = new Block("^(\\*\\s+)?Wertpapierkauf *.*");
         type.addBlock(block);
         Transaction<BuySellEntry> pdfTransaction = new Transaction<BuySellEntry>()
 
@@ -158,7 +158,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
         block.set(pdfTransaction);
 
-        addTaxRefunds(type, "^(\\* )?Wertpapierkauf *.*");
+        addTaxRefunds(type, "^(\\*\\s+)?Wertpapierkauf *.*");
     }
 
     @SuppressWarnings("nls")
@@ -256,7 +256,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Wertpapierverkauf");
         this.addDocumentTyp(type);
 
-        Block block = new Block("^(\\* )?Wertpapierverkauf *.*");
+        Block block = new Block("^(\\*\\s+)?Wertpapierverkauf *.*");
         type.addBlock(block);
         Transaction<BuySellEntry> pdfTransaction = new Transaction<BuySellEntry>()
 
@@ -336,7 +336,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
         block.set(pdfTransaction);
 
-        addTaxRefunds(type, "^(\\* )?Wertpapierverkauf *.*");
+        addTaxRefunds(type, "^(\\*\\s+)?Wertpapierverkauf *.*");
     }
 
     @SuppressWarnings("nls")
@@ -916,7 +916,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
         });
         this.addDocumentTyp(type);
 
-        Block removalblock = new Block("^(\\d+.\\d+.\\d+) ((Übertrag)|(Entgelte)|(Lastschrift)|(Visa-Umsatz))(.*) \\-([\\d.]+,\\d{2})$");
+        Block removalblock = new Block("(^|^A)(\\d+.\\d+.\\d+) ((Übertrag)|(Lastschrift)|(Visa-Umsatz)|(Auszahlung)|(Barauszahlung)|(Kartenverfügun)|(Guthabenübertr))(.*) \\-([\\d.]+,\\d{2})$");
         type.addBlock(removalblock);
         removalblock.set(new Transaction<AccountTransaction>()
 
@@ -927,7 +927,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date", "amount")
-                        .match("^(\\d+.\\d+.\\d+) ((Übertrag)|(Entgelte)|(Lastschrift)|(Visa-Umsatz))(.*) \\-(?<amount>[\\d.]+,\\d{2})$")
+                        .match("(^|^A)(\\d+.\\d+.\\d+) ((Übertrag)|(Lastschrift)|(Visa-Umsatz)|(Auszahlung)|(Barauszahlung)|(Kartenverfügun)|(Guthabenübertr))(.*) \\-(?<amount>[\\d.]+,\\d{2})$")
                         .match("^(?<date>\\d+.\\d+.\\d+)(.*)")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
@@ -937,7 +937,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(TransactionItem::new));
-        Block depositblock = new Block("^(\\d+.\\d+.\\d+) ((Kontoübertrag)|(Guthabenübertr))(.*) \\+([\\d.]+,\\d{2})$");
+        
+        Block depositblock = new Block("^(\\d+.\\d+.\\d+) ((Kontoübertrag)|(Übertrag)|(Guthabenübertr)|(Gutschrift)|(Bar))(.*) \\+([\\d.]+,\\d{2})$");
         type.addBlock(depositblock);
         depositblock.set(new Transaction<AccountTransaction>()
 
@@ -948,7 +949,29 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date", "amount")
-                        .match("^(\\d+.\\d+.\\d+) ((Kontoübertrag)|(Kontoabschluss)|(Guthabenübertr))(.*) \\+(?<amount>[\\d.]+,\\d{2})$")
+                        .match("^(\\d+.\\d+.\\d+) ((Kontoübertrag)|(Übertrag)|(Guthabenübertr)|(Gutschrift)|(Bar))(.*) \\+(?<amount>[\\d.]+,\\d{2})$")
+                        .match("^(?<date>\\d+.\\d+.\\d+)(.*)")
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(context.get("currency"));
+                        })
+
+                        .wrap(TransactionItem::new));
+        
+        Block feeblock = new Block("^(\\d+.\\d+.\\d+) ((Entgelte)|(Auslandsentgelt))(.*) \\-([\\d.]+,\\d{2})$");
+        type.addBlock(feeblock);
+        feeblock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction entry = new AccountTransaction();
+                            entry.setType(AccountTransaction.Type.FEES);
+                            return entry;
+                        })
+
+                        .section("date", "amount")
+                        .match("^(\\d+.\\d+.\\d+) ((Entgelte)|(Auslandsentgelt))(.*) \\-(?<amount>[\\d.]+,\\d{2})$")
                         .match("^(?<date>\\d+.\\d+.\\d+)(.*)")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();

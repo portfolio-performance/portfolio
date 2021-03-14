@@ -118,9 +118,10 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
 
                         .section("date", "time") // length of date is 10 or 11, example: "2 Jun 2019" or "21 Jun 2019"
                         .match("Orderausführung Datum\\/Zeit: (?<date>.{11}).*(?<time>.{8}).*").assign((t, v) -> {
-                            // if length of date is 11, we need to strip the trailing blank
+                            // TODO --> Work around DateTimeFormatter in Local.GERMAN looks like "Mär" not "Mrz" and in Local.ENGLISH like "Mar". 
+                            // if length of date is 11, we need to strip the trailing blank                
                             LocalDateTime dateTime = LocalDateTime.parse(
-                                            String.format("%s %s", stripTrailing(v.get("date")), v.get("time")), DATE_TIME_FORMAT);
+                                            String.format("%s %s", stripTrailing(v.get("date").replace("Mrz", "Mär")), v.get("time")), DATE_TIME_FORMAT);
                             t.setDate(dateTime);
                         })
                         

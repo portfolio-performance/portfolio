@@ -42,7 +42,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType newType = new DocumentType(".*Abrechnung Kauf.*");
+        DocumentType newType = new DocumentType("Wertpapier Abrechnung (Kauf|Verkauf).*");
         this.addDocumentTyp(newType);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -52,15 +52,26 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block(".*Abrechnung Kauf.*");
+        Block firstRelevantLine = new Block("Wertpapier Abrechnung (Kauf|Verkauf).*");
         newType.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
+        
+            // Is type --> "Verkauf" change from BUY to SELL
+            .section("type").optional()
+            .match(".*Abrechnung (?<type>Verkauf?).*")
+            .assign((t, v) -> {
+                if (v.get("type").equals("Verkauf"))
+                {
+                    t.setType(PortfolioTransaction.Type.SELL);
+                }
+            })
+
             // Stück 13 COMSTA.-MSCI EM.MKTS.TRN U.ETF LU0635178014 (ETF127)
             // INHABER-ANTEILE I O.N.
             .section("isin", "wkn", "name", "shares", "nameContinued")
-            .match("^(Stück) (?<shares>[\\d.,]+) (?<name>.*) (?<isin>[\\w]{12}.*) (\\((?<wkn>.*)\\).*)")
+            .match("^(St.ck) (?<shares>[\\d.,]+) (?<name>.*) (?<isin>[\\w]{12}.*) (\\((?<wkn>.*)\\).*)")
             .match("(?<nameContinued>.*)")
             .assign((t, v) -> {
                 t.setSecurity(getOrCreateSecurity(v));
@@ -69,7 +80,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
 
             // Auftrag vom 05.12.2017 00:15:28 Uhr
             .section("date", "time")
-            .match("^(Schlusstag/-Zeit) (?<date>\\d+.\\d+.\\d{4}+) (?<time>\\d+:\\d+:\\d+).*")
+            .match("^(Schlusstag/-Zeit) (?<date>\\d+.\\d+.\\d{4}) (?<time>\\d+:\\d+:\\d+).*")
             .assign((t, v) -> {
                 if (v.get("time") != null)
                     t.setDate(asDate(v.get("date"), v.get("time")));
@@ -79,14 +90,14 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
 
             // Ausmachender Betrag 50,00- EUR
             .section("currency", "amount")
-            .match("^(Ausmachender Betrag) (?<amount>[\\d.]+,\\d+)[?(-|\\+)] (?<currency>\\w{3}+)")
+            .match("^(Ausmachender Betrag) (?<amount>[\\d.]+,\\d+)[?(-|\\+)] (?<currency>\\w{3})")
             .assign((t, v) -> {
                 t.setAmount(asAmount(v.get("amount")));
                 t.setCurrencyCode(v.get("currency"));
             })
 
             // Eingebuchte sonstige negative Kapitalerträge 0,02 EUR
-            .section("tax", "currency")
+            .section("tax", "currency").optional()
             .match("^(Eingebuchte.*Kapitalerträge) (?<tax>[\\d.]+,\\d{2}) (?<currency>\\w{3})")
             .assign((t, v) -> t.getPortfolioTransaction()
                             .addUnit(new Unit(Unit.Type.TAX,
@@ -94,26 +105,51 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                                                             asAmount(v.get("tax"))))))
             
             // Provision 4,95- EUR
-            .section("fee", "currency")
-            .match("^(Provision) (?<fee>[\\d.-]+,\\d+)- (?<currency>\\w{3}+)")
+            .section("fee", "currency").optional()
+            .match("^(Provision) (?<fee>[\\d.-]+,\\d+)- (?<currency>\\w{3})")
             .assign((t, v) -> t.getPortfolioTransaction()
                             .addUnit(new Unit(Unit.Type.FEE,
                                             Money.of(asCurrencyCode(v.get("currency")),
                                                             asAmount(v.get("fee"))))))
             
             // Eigene Spesen 1,95- EUR
-            .section("fee", "currency")
-            .match("^(Eigene Spesen) (?<fee>[\\d.-]+,\\d+)- (?<currency>\\w{3}+)")
+            .section("fee", "currency").optional()
+            .match("^(Eigene Spesen) (?<fee>[\\d.-]+,\\d+)- (?<currency>\\w{3})")
             .assign((t, v) -> t.getPortfolioTransaction()
                             .addUnit(new Unit(Unit.Type.FEE,
                                             Money.of(asCurrencyCode(v.get("currency")),
                                                             asAmount(v.get("fee"))))))
+            
+            // Transaktionsentgelt Börse 0,11- EUR
+            .section("fee", "currency").optional()
+            .match("(Transaktionsentgelt B.rse) (?<fee>[\\d+,.]*)- (?<currency>[\\w]{3})")
+            .assign((t, v) -> t.getPortfolioTransaction()
+                            .addUnit(new Unit(Unit.Type.FEE,
+                                            Money.of(asCurrencyCode(v.get("currency")),
+                                                            asAmount(v.get("fee"))))))
+            
+            // Übertragungs-/Liefergebühr 0,11- EUR
+            .section("fee", "currency").optional()
+            .match("(.bertragungs-\\/Liefergeb.hr) (?<fee>[\\d+,.]*)- (?<currency>[\\w]{3})")
+            .assign((t, v) -> t.getPortfolioTransaction()
+                            .addUnit(new Unit(Unit.Type.FEE,
+                                            Money.of(asCurrencyCode(v.get("currency")),
+                                                            asAmount(v.get("fee"))))))
+
+            // Handelsentgelt 1,00- EUR
+            .section("fee", "currency").optional()
+            .match("(Handelsentgelt) (?<fee>[\\d+,.]*)- (?<currency>[\\w]{3})")
+            .assign((t, v) -> t.getPortfolioTransaction()
+                            .addUnit(new Unit(Unit.Type.FEE,
+                                            Money.of(asCurrencyCode(v.get("currency")),
+                                                            asAmount(v.get("fee"))))))
+
             .wrap(BuySellEntryItem::new);
     }
 
     private void addBuySellSavePlanTransaction()
     {
-        DocumentType newType = new DocumentType(".*Ausgabe.*");
+        DocumentType newType = new DocumentType(".*Wertpapier Abrechnung Ausgabe Investmentfonds.*");
         this.addDocumentTyp(newType);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -123,7 +159,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block(".*Ausgabe.*");
+        Block firstRelevantLine = new Block(".*Wertpapier Abrechnung Ausgabe Investmentfonds.*");
         newType.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -131,16 +167,16 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
             // Stück 13 COMSTA.-MSCI EM.MKTS.TRN U.ETF LU0635178014 (ETF127)
             // INHABER-ANTEILE I O.N.
             .section("isin", "wkn", "name", "shares", "nameContinued")
-            .match("^(Stück) (?<shares>[\\d.,]+) (?<name>.*) (?<isin>[\\w]{12}.*) (\\((?<wkn>.*)\\).*)")
+            .match("^(St.ck) (?<shares>[\\d.,]+) (?<name>.*) (?<isin>[\\w]{12}.*) (\\((?<wkn>.*)\\).*)")
             .match("(?<nameContinued>.*)")
-            .assign((t, v) -> {
+            .assign((t, v) -> {                
                 t.setSecurity(getOrCreateSecurity(v));
                 t.setShares(asShares(v.get("shares")));
             })
 
             // Auftrag vom 05.12.2017 00:15:28 Uhr
             .section("date", "time")
-            .match("^(Auftrag vom) (?<date>\\d+.\\d+.\\d{4}+) (?<time>\\d+:\\d+:\\d+) Uhr")
+            .match("^(Auftrag vom) (?<date>\\d+.\\d+.\\d{4}) (?<time>\\d+:\\d+:\\d+) Uhr")
             .assign((t, v) -> {
                 if (v.get("time") != null)
                     t.setDate(asDate(v.get("date"), v.get("time")));
@@ -148,15 +184,26 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                     t.setDate(asDate(v.get("date")));
             })
 
+            // Kundenbonifikation 100 % vom Ausgabeaufschlag 2,50 EUR            
+            .section("note1", "note2", "note3").optional()
+            .match("^(?<note1>Kundenbonifikation) [\\d.,]+ % .* (?<note2>[\\d,.]+) (?<note3>\\w{3})")
+            .assign((t, v) -> 
+            {
+                String note = v.get("note1") + " " + v.get("note2") + " - " + v.get("note3");
+                t.setNote(note);
+            })
+
             // Ausmachender Betrag 50,00- EUR
             .section("currency", "amount")
-            .match("^(Ausmachender Betrag) (?<amount>[\\d.]+,\\d+)- (?<currency>\\w{3}+)")
+            .match("^(Ausmachender Betrag) (?<amount>[\\d.]+,\\d+)- (?<currency>\\w{3})")
             .assign((t, v) -> {
                 t.setAmount(asAmount(v.get("amount")));
                 t.setCurrencyCode(v.get("currency"));
             })
 
             .wrap(BuySellEntryItem::new);
+
+        addFeesSectionsTransaction(pdfTransaction, newType);
     }
 
     private void addDividendeTransaction()
@@ -186,7 +233,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
 
             // Ausmachender Betrag 68,87+ EUR
             .section("currency", "amount")
-            .match("^(Ausmachender Betrag) (?<amount>[\\d.]+,\\d+)\\+ (?<currency>\\w{3}+)")
+            .match("^(Ausmachender Betrag) (?<amount>[\\d.]+,\\d+)\\+ (?<currency>\\w{3})")
             .assign((t, v) -> {
                 t.setAmount(asAmount(v.get("amount")));
                 t.setCurrencyCode(v.get("currency"));
@@ -194,7 +241,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
 
             // Ex-Tag 14.12.2017 Herkunftsland Irland
             .section("date")
-            .match("^Ex-Tag (?<date>\\d+.\\d+.\\d{4}+).*")
+            .match("^Ex-Tag (?<date>\\d+.\\d+.\\d{4}).*")
             .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
             // Devisenkurs EUR / USD 1,2095
@@ -257,6 +304,34 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
             .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
+    private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
+    {
+        transaction        
+
+            // Devisenkurs (EUR/USD) 1,1987 vom 02.03.2021
+            .section("exchangeRate").optional()
+            .match("^(Devisenkurs) \\(\\w{3}\\/\\w{3}\\) (?<exchangeRate>[\\d\\.]+,\\d+) .*")
+            .assign((t, v) -> {
+                BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
+            })
+
+            // Ausführungskurs 94,6879 USD Auftragserteilung/ -ort sonstige
+            // Ausgabeaufschlag pro Anteil 5,00 %
+            .section("feeInPercent", "currency", "marketValue").optional()
+            .match("^(Ausführungskurs) (?<marketValue>[\\d.,]+) (?<currency>\\w{3}) .*")
+            .match("^(Ausgabeaufschlag pro Anteil) (?<feeInPercent>[\\d\\s,.]*) %")
+            .assign((t, v) -> {
+                // Fee in percent on the market value
+                double marketValue = Double.parseDouble(v.get("marketValue").replace(',', '.'));
+                double feeInPercent = Double.parseDouble(v.get("feeInPercent").replace(',', '.'));
+                String fee =  Double.toString(marketValue / 100.0 * feeInPercent).replace('.', ',');
+                v.put("fee", fee);
+
+                processFeeEntries(t, v, type);
+            });
+    }
+
     private void processTaxEntries(Object t, Map<String, String> v, DocumentType type)
     {
         if (t instanceof name.abuchen.portfolio.model.Transaction)
@@ -268,6 +343,22 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
         {
             Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
             PDFExtractorUtils.checkAndSetTax(tax, ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
+        }
+    }
+
+    private void processFeeEntries(Object t, Map<String, String> v, DocumentType type)
+    {
+        if (t instanceof name.abuchen.portfolio.model.Transaction)
+        {
+            Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
+            PDFExtractorUtils.checkAndSetFee(fee, 
+                            (name.abuchen.portfolio.model.Transaction) t, type);
+        }
+        else
+        {
+            Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
+            PDFExtractorUtils.checkAndSetFee(fee,
+                            ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
         }
     }
 }

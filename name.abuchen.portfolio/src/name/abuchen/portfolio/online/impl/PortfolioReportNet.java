@@ -292,11 +292,11 @@ public class PortfolioReportNet
     private static final String TYPE_SHARE = "share"; //$NON-NLS-1$
     private static final String TYPE_BOND = "bond"; //$NON-NLS-1$
 
-    private static final String HOST = "www.portfolio-report.net"; //$NON-NLS-1$
+    private static final String HOST = "api.portfolio-report.net"; //$NON-NLS-1$
 
     public List<ResultItem> search(String query, SecuritySearchProvider.Type type) throws IOException
     {
-        WebAccess webAccess = new WebAccess(HOST, "/api/securities/search/" + query) //$NON-NLS-1$
+        WebAccess webAccess = new WebAccess(HOST, "/securities/search/" + query) //$NON-NLS-1$
                         .addUserAgent("PortfolioPerformance/" //$NON-NLS-1$
                                         + FrameworkUtil.getBundle(PortfolioReportNet.class).getVersion().toString());
 
@@ -319,7 +319,7 @@ public class PortfolioReportNet
     public Optional<ResultItem> getUpdatedValues(String onlineId) throws IOException
     {
         @SuppressWarnings("nls")
-        String html = new WebAccess(HOST, "/api/securities/uuid/" + onlineId)
+        String html = new WebAccess(HOST, "/securities/uuid/" + onlineId)
                         .addUserAgent("PortfolioPerformance/"
                                         + FrameworkUtil.getBundle(PortfolioReportNet.class).getVersion().toString())
                         .addHeader("X-Source",

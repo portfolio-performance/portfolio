@@ -82,14 +82,14 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
 
                         .section("wkn", "isin", "name", "name1") //
                         .match("^ISIN \\(WKN\\) (?<isin>[^ ]*) \\((?<wkn>.*)\\)$")
-                        .match("Wertpapierbezeichnung (?<name>.*)").match("(?<name1>.*)").assign((t, v) -> {
+                        .match("Wertpapierbezeichnung (?<name>.*)").match("(?<name1>.*)")
+                        .assign((t, v) -> {
                             if (!v.get("name1").startsWith("Nominale"))
                                 v.put("name", v.get("name") + " " + v.get("name1"));
                             t.setSecurity(getOrCreateSecurity(v));
                         })
 
                         .section("shares")
-                        //
                         .match("^Nominale( St.ck)? (?<shares>[\\d.]+(,\\d+)?).*")
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
@@ -100,7 +100,7 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date") //
-                        .match("(Ausf.hrungstag . -zeit|Ausf.hrungstag|Schlusstag . -zeit|Schlusstag) (?<date>\\d+.\\d+.\\d{4}+).*") //
+                        .match("(Ausf.hrungstag . -zeit|Ausf.hrungstag|Schlusstag . -zeit|Schlusstag) (?<date>\\d+.\\d+.\\d{4}).*") //
                         .assign((t, v) -> {
                             if (type.getCurrentContext().get("time") != null)
                             {
@@ -113,30 +113,33 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                         })
 
                         .section("amount", "currency") //
-                        .match("Endbetrag zu Ihren Lasten (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)") //
+                        .match("Endbetrag zu Ihren Lasten (?<currency>\\w{3}) (?<amount>[\\d.]+,\\d+)") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                         })
 
                         .section("fee", "currency").optional() //
-                        .match("Handelsplatzgeb.hr (?<currency>\\w{3}+) (?<fee>[\\d.]+,\\d+)") //
+                        .match("Handelsplatzgeb.hr (?<currency>\\w{3}) (?<fee>[\\d.]+,\\d+)") //
                         .assign((t, v) -> t.getPortfolioTransaction()
                                         .addUnit(new Unit(Unit.Type.FEE,
                                                         Money.of(asCurrencyCode(v.get("currency")),
                                                                         asAmount(v.get("fee"))))))
 
                         .section("fee", "currency").optional() //
-                        .match("Provision (?<currency>\\w{3}+) (?<fee>[\\d.]+,\\d+)") //
+                        .match("Provision (?<currency>\\w{3}) (?<fee>[\\d.]+,\\d+)") //
                         .assign((t, v) -> t.getPortfolioTransaction()
                                         .addUnit(new Unit(Unit.Type.FEE,
                                                         Money.of(asCurrencyCode(v.get("currency")),
                                                                         asAmount(v.get("fee"))))))
 
                         .section("fee", "currency").optional() //
-                        .match("Handelsentgelt (?<currency>\\w{3}+) (?<fee>[\\d.]+,\\d+)") //
-                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
+                        .match("Handelsentgelt (?<currency>\\w{3}) (?<fee>[\\d.]+,\\d+)") //
+                        .assign((t, v) -> t.getPortfolioTransaction()
+                                        .addUnit(new Unit(Unit.Type.FEE,
+                                                        Money.of(asCurrencyCode(v.get("currency")),
+                                                                        asAmount(v.get("fee"))))))
+
                         .wrap(t -> {
                             if (t.getPortfolioTransaction().getDateTime() == null)
                                 throw new IllegalArgumentException("Missing date");
@@ -158,50 +161,53 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                             BuySellEntry entry = new BuySellEntry();
                             entry.setType(PortfolioTransaction.Type.SELL);
                             return entry;
-                        }).section("wkn", "isin", "name", "name1") //
+                        })
+                        
+                        .section("wkn", "isin", "name", "name1") //
                         .match("^ISIN \\(WKN\\) (?<isin>[^ ]*) \\((?<wkn>.*)\\)$")
-                        .match("Wertpapierbezeichnung (?<name>.*)").match("(?<name1>.*)").assign((t, v) -> {
+                        .match("Wertpapierbezeichnung (?<name>.*)")
+                        .match("(?<name1>.*)")
+                        .assign((t, v) -> {
                             if (!v.get("name1").startsWith("Nominale"))
                                 v.put("name", v.get("name") + " " + v.get("name1"));
                             t.setSecurity(getOrCreateSecurity(v));
                         })
 
                         .section("shares")
-                        //
                         .match("^Nominale St.ck (?<shares>[\\d.]+(,\\d+)?)")
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         .section("date") //
-                        .match("(Ausf.hrungstag . -zeit|Ausf.hrungstag|Schlusstag . -zeit|Schlusstag) (?<date>\\d+.\\d+.\\d{4}+).*") //
+                        .match("(Ausf.hrungstag . -zeit|Ausf.hrungstag|Schlusstag . -zeit|Schlusstag) (?<date>\\d+.\\d+.\\d{4}).*") //
                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                         .section("date", "time").optional() //
-                        .match("(Ausf.hrungstag . -zeit|Ausf.hrungstag|Schlusstag . -zeit|Schlusstag) (?<date>\\d+.\\d+.\\d{4}+) .* (?<time>\\d+:\\d+:\\d+).*") //
+                        .match("(Ausf.hrungstag . -zeit|Ausf.hrungstag|Schlusstag . -zeit|Schlusstag) (?<date>\\d+.\\d+.\\d{4}) .* (?<time>\\d+:\\d+:\\d+).*") //
                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
 
                         .section("amount", "currency") //
-                        .match("Endbetrag zu Ihren Gunsten (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)") //
+                        .match("Endbetrag zu Ihren Gunsten (?<currency>\\w{3}) (?<amount>[\\d.]+,\\d+)") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                         })
 
                         .section("fee", "currency").optional() //
-                        .match("Handelsplatzgeb.hr (?<currency>\\w{3}+) (?<fee>[\\d.]+,\\d+)") //
+                        .match("Handelsplatzgeb.hr (?<currency>\\w{3}) (?<fee>[\\d.]+,\\d+)") //
                         .assign((t, v) -> t.getPortfolioTransaction()
                                         .addUnit(new Unit(Unit.Type.FEE,
                                                         Money.of(asCurrencyCode(v.get("currency")),
                                                                         asAmount(v.get("fee"))))))
 
                         .section("fee", "currency").optional() //
-                        .match("Provision (?<currency>\\w{3}+) (?<fee>[\\d.]+,\\d+)") //
+                        .match("Provision (?<currency>\\w{3}) (?<fee>[\\d.]+,\\d+)") //
                         .assign((t, v) -> t.getPortfolioTransaction()
                                         .addUnit(new Unit(Unit.Type.FEE,
                                                         Money.of(asCurrencyCode(v.get("currency")),
                                                                         asAmount(v.get("fee"))))))
 
                         .section("fee", "currency").optional() //
-                        .match("Handelsentgelt (?<currency>\\w{3}+) (?<fee>[\\d.]+,\\d+)") //
+                        .match("Handelsentgelt (?<currency>\\w{3}) (?<fee>[\\d.]+,\\d+)") //
                         .assign((t, v) -> t.getPortfolioTransaction()
                                         .addUnit(new Unit(Unit.Type.FEE,
                                                         Money.of(asCurrencyCode(v.get("currency")),
@@ -230,32 +236,28 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                         })
 
                         .section("wkn", "isin", "name")
-                        //
                         .match("^ISIN \\(WKN\\) (?<isin>[^ ]*) \\((?<wkn>.*)\\)$")
                         .match("Wertpapierbezeichnung (?<name>.*)")
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         .section("shares")
-                        //
                         .match("^Nominale (?<shares>[\\d.]+(,\\d+)?) .*")
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         .section("date") //
-                        .match("Zahltag (?<date>\\d+.\\d+.\\d{4}+)") //
+                        .match("Zahltag (?<date>\\d+.\\d+.\\d{4})") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         .section("currency") //
-                        .match("Gesamtbetrag zu Ihren (Gunsten|Lasten) (?<currency>\\w{3}+) .*") //
-                        .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                        });
+                        .match("Gesamtbetrag zu Ihren (Gunsten|Lasten) (?<currency>\\w{3}) .*") //
+                        .assign((t, v) -> t.setCurrencyCode(asCurrencyCode(v.get("currency"))));
 
         // make sure that tax elements are parsed *before* the total amount so
         // that we can convert to a TAX transaction if necessary
         addTaxSectionToAccountTransaction(type, transaction);
 
         transaction.section("amount") //
-                        .match("Gesamtbetrag zu Ihren (Gunsten|Lasten) \\w{3}+ (?<amount>(- )?[\\d.]+,\\d+)") //
+                        .match("Gesamtbetrag zu Ihren (Gunsten|Lasten) \\w{3} (?<amount>(- )?[\\d.]+,\\d+)") //
                         .assign((t, v) -> {
                             if (v.get("amount").startsWith("-"))
                             {
@@ -296,17 +298,16 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                         })
 
                         .section("wkn", "isin", "name")
-                        //
                         .match("^ISIN \\(WKN\\) (?<isin>[^ ]*) \\((?<wkn>.*)\\)$")
                         .match("Wertpapierbezeichnung (?<name>.*)")
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         .section("date") //
-                        .match("Zahltag (?<date>\\d+.\\d+.\\d{4}+)") //
+                        .match("Zahltag (?<date>\\d+.\\d+.\\d{4})") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         .section("amount", "currency") //
-                        .match("Gesamtbetrag zu Ihren Gunsten (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)") //
+                        .match("Gesamtbetrag zu Ihren Gunsten (?<currency>\\w{3}) (?<amount>[\\d.]+,\\d+)") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -334,28 +335,31 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                             return entry;
                         })
 
-                        .section("wkn", "isin", "name") //
+                        .section("wkn", "isin", "name", "name1") //
                         .match("^ISIN \\(WKN\\) (?<isin>[^ ]*) \\((?<wkn>.*)\\)$")
                         .match("Wertpapierbezeichnung (?<name>.*)")
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                        .match("(?<name1>.*)")
+                        .assign((t, v) -> {
+                            if (!v.get("name1").startsWith("Nominale"))
+                                v.put("name", v.get("name") + " " + v.get("name1"));
+                            t.setSecurity(getOrCreateSecurity(v));
+                        })
 
                         .section("shares") //
                         .match("^Nominale (?<shares>[\\d.]+(,\\d+)?) .*")
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         .section("amount", "currency") //
-                        .match("Gesamtbetrag zu Ihren Gunsten (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)") //
+                        .match("Gesamtbetrag zu Ihren Gunsten (?<currency>\\w{3}) (?<amount>[\\d.]+,\\d+)") //
                         .assign((t, v) -> {
-
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                         })
 
                         .section("fxAmount", "fxCurrency", "currency", "exchangeRate").optional() //
-                        .match("Brutto (?<fxCurrency>\\w{3}+) (?<fxAmount>[\\d\\.]+,\\d+)") //
-                        .match("Umg. z. Dev.-Kurs \\((?<exchangeRate>[\\d\\.]+,\\d+)\\) (?<currency>\\w{3}+) ([\\d\\.]+,\\d+)") //
+                        .match("Brutto (?<fxCurrency>\\w{3}) (?<fxAmount>[\\d\\.]+,\\d+)") //
+                        .match("Umg. z. Dev.-Kurs \\((?<exchangeRate>[\\d\\.]+,\\d+)\\) (?<currency>\\w{3}) ([\\d\\.]+,\\d+)") //
                         .assign((t, v) -> {
-
                             BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                             type.getCurrentContext().put(EXCHANGE_RATE, exchangeRate.toPlainString());
 
@@ -376,7 +380,7 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date") //
-                        .match("Valuta (?<date>\\d+.\\d+.\\d{4}+)") //
+                        .match("Valuta (?<date>\\d+.\\d+.\\d{4})") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         .wrap(TransactionItem::new);
@@ -388,9 +392,10 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private void addTaxSectionToBuySellEntry(DocumentType type, Transaction<BuySellEntry> transaction)
     {
-        // Kapitalerstragsteuer (Einzelkonto)
-        transaction.section("tax", "currency").optional() //
-                        .match("Kapitalertragsteuer \\d+,\\d+ ?% (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)")
+        transaction
+                        // Kapitalerstragsteuer (Einzelkonto)
+                        .section("tax", "currency").optional() //
+                        .match("Kapitalertragsteuer \\d+,\\d+ ?% (?<currency>\\w{3}) (?<tax>[\\d.]+,\\d+)")
                         .assign((t, v) -> t.getPortfolioTransaction()
                                         .addUnit(new Unit(Unit.Type.TAX,
                                                         Money.of(asCurrencyCode(v.get("currency")),
@@ -398,8 +403,8 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
 
                         // Kapitalerstragsteuer (Gemeinschaftskonto)
                         .section("tax1", "currency1", "tax2", "currency2").optional() //
-                        .match("KapSt anteilig 50,00 ?% \\d+,\\d+ ?% (?<currency1>\\w{3}+) (?<tax1>[\\d.]+,\\d+)")
-                        .match("KapSt anteilig 50,00 ?% \\d+,\\d+ ?% (?<currency2>\\w{3}+) (?<tax2>[\\d.]+,\\d+)")
+                        .match("KapSt anteilig 50,00 ?% \\d+,\\d+ ?% (?<currency1>\\w{3}) (?<tax1>[\\d.]+,\\d+)")
+                        .match("KapSt anteilig 50,00 ?% \\d+,\\d+ ?% (?<currency2>\\w{3}) (?<tax2>[\\d.]+,\\d+)")
                         .assign((t, v) -> {
                             t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX,
                                             Money.of(asCurrencyCode(v.get("currency1")), asAmount(v.get("tax1")))));
@@ -409,7 +414,7 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
 
                         // Solidaritätszuschlag (ein Eintrag bei Einzelkonto)
                         .section("tax", "currency").optional() //
-                        .match("Solidarit.tszuschlag \\d+,\\d+ ?% (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)")
+                        .match("Solidarit.tszuschlag \\d+,\\d+ ?% (?<currency>\\w{3}) (?<tax>[\\d.]+,\\d+)")
                         .assign((t, v) -> {
                             if (!Boolean.parseBoolean(type.getCurrentContext().get(IS_JOINT_ACCOUNT)))
                                 t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX,
@@ -419,8 +424,8 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                         // Solidaritätszuschlag (zwei Einträge bei
                         // Gemeinschaftskonto)
                         .section("tax1", "currency1", "tax2", "currency2").optional() //
-                        .match("Solidarit.tszuschlag \\d+,\\d+ ?% (?<currency1>\\w{3}+) (?<tax1>[\\d.]+,\\d+)")
-                        .match("Solidarit.tszuschlag \\d+,\\d+ ?% (?<currency2>\\w{3}+) (?<tax2>[\\d.]+,\\d+)")
+                        .match("Solidarit.tszuschlag \\d+,\\d+ ?% (?<currency1>\\w{3}) (?<tax1>[\\d.]+,\\d+)")
+                        .match("Solidarit.tszuschlag \\d+,\\d+ ?% (?<currency2>\\w{3}) (?<tax2>[\\d.]+,\\d+)")
                         .assign((t, v) -> {
                             t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX,
                                             Money.of(asCurrencyCode(v.get("currency1")), asAmount(v.get("tax1")))));
@@ -430,7 +435,7 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
 
                         // Kirchensteuer (ein Eintrag bei Einzelkonto)
                         .section("tax", "currency").optional() //
-                        .match("Kirchensteuer \\d+,\\d+ ?% (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)")
+                        .match("Kirchensteuer \\d+,\\d+ ?% (?<currency>\\w{3}) (?<tax>[\\d.]+,\\d+)")
                         .assign((t, v) -> {
                             if (!Boolean.parseBoolean(type.getCurrentContext().get(IS_JOINT_ACCOUNT)))
                                 t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX,
@@ -439,8 +444,8 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
 
                         // Kirchensteuer (zwei Einträge bei Gemeinschaftskonten)
                         .section("tax1", "currency1", "tax2", "currency2").optional() //
-                        .match("Kirchensteuer \\d+,\\d+ ?% (?<currency1>\\w{3}+) (?<tax1>[\\d.]+,\\d+)")
-                        .match("Kirchensteuer \\d+,\\d+ ?% (?<currency2>\\w{3}+) (?<tax2>[\\d.]+,\\d+)")
+                        .match("Kirchensteuer \\d+,\\d+ ?% (?<currency1>\\w{3}) (?<tax1>[\\d.]+,\\d+)")
+                        .match("Kirchensteuer \\d+,\\d+ ?% (?<currency2>\\w{3}) (?<tax2>[\\d.]+,\\d+)")
                         .assign((t, v) -> {
                             t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX,
                                             Money.of(asCurrencyCode(v.get("currency1")), asAmount(v.get("tax1")))));
@@ -453,16 +458,17 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private void addTaxSectionToAccountTransaction(DocumentType type, Transaction<AccountTransaction> transaction)
     {
-        // Kapitalerstragsteuer (Einzelkonto)
-        transaction.section("tax", "currency").optional() //
-                        .match("Kapitalertragsteuer \\d+,\\d+ ?% (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)")
+        transaction
+                        // Kapitalerstragsteuer (Einzelkonto)
+                        .section("tax", "currency").optional() //
+                        .match("Kapitalertragsteuer \\d+,\\d+ ?% (?<currency>\\w{3}) (?<tax>[\\d.]+,\\d+)")
                         .assign((t, v) -> t.addUnit(new Unit(Unit.Type.TAX,
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))))
 
                         // Kapitalerstragsteuer (Gemeinschaftskonto)
                         .section("tax1", "currency1", "tax2", "currency2").optional() //
-                        .match("KapSt anteilig 50,00 ?% \\d+,\\d+ ?% (?<currency1>\\w{3}+) (?<tax1>[\\d.]+,\\d+)")
-                        .match("KapSt anteilig 50,00 ?% \\d+,\\d+ ?% (?<currency2>\\w{3}+) (?<tax2>[\\d.]+,\\d+)")
+                        .match("KapSt anteilig 50,00 ?% \\d+,\\d+ ?% (?<currency1>\\w{3}) (?<tax1>[\\d.]+,\\d+)")
+                        .match("KapSt anteilig 50,00 ?% \\d+,\\d+ ?% (?<currency2>\\w{3}) (?<tax2>[\\d.]+,\\d+)")
                         .assign((t, v) -> {
                             t.addUnit(new Unit(Unit.Type.TAX,
                                             Money.of(asCurrencyCode(v.get("currency1")), asAmount(v.get("tax1")))));
@@ -472,7 +478,7 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
 
                         // Solidaritätszuschlag (ein Eintrag bei Einzelkonto)
                         .section("tax", "currency").optional() //
-                        .match("Solidarit.tszuschlag \\d+,\\d+ ?% (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)")
+                        .match("Solidarit.tszuschlag \\d+,\\d+ ?% (?<currency>\\w{3}) (?<tax>[\\d.]+,\\d+)")
                         .assign((t, v) -> {
                             if (!Boolean.parseBoolean(type.getCurrentContext().get(IS_JOINT_ACCOUNT)))
                                 t.addUnit(new Unit(Unit.Type.TAX,
@@ -482,8 +488,8 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                         // Solidaritätszuschlag (zwei Einträge bei
                         // Gemeinschaftskonto)
                         .section("tax1", "currency1", "tax2", "currency2").optional() //
-                        .match("Solidarit.tszuschlag \\d+,\\d+ ?% (?<currency1>\\w{3}+) (?<tax1>[\\d.]+,\\d+)")
-                        .match("Solidarit.tszuschlag \\d+,\\d+ ?% (?<currency2>\\w{3}+) (?<tax2>[\\d.]+,\\d+)")
+                        .match("Solidarit.tszuschlag \\d+,\\d+ ?% (?<currency1>\\w{3}) (?<tax1>[\\d.]+,\\d+)")
+                        .match("Solidarit.tszuschlag \\d+,\\d+ ?% (?<currency2>\\w{3}) (?<tax2>[\\d.]+,\\d+)")
                         .assign((t, v) -> {
                             t.addUnit(new Unit(Unit.Type.TAX,
                                             Money.of(asCurrencyCode(v.get("currency1")), asAmount(v.get("tax1")))));
@@ -493,7 +499,7 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
 
                         // Kirchensteuer (ein Eintrag bei Einzelkonto)
                         .section("tax", "currency").optional() //
-                        .match("Kirchensteuer \\d+,\\d+ ?% (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)")
+                        .match("Kirchensteuer \\d+,\\d+ ?% (?<currency>\\w{3}) (?<tax>[\\d.]+,\\d+)")
                         .assign((t, v) -> {
                             if (!Boolean.parseBoolean(type.getCurrentContext().get(IS_JOINT_ACCOUNT)))
                                 t.addUnit(new Unit(Unit.Type.TAX,
@@ -502,8 +508,8 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
 
                         // Kirchensteuer (zwei Einträge bei Gemeinschaftskonten)
                         .section("tax1", "currency1", "tax2", "currency2").optional() //
-                        .match("Kirchensteuer \\d+,\\d+ ?% (?<currency1>\\w{3}+) (?<tax1>[\\d.]+,\\d+)")
-                        .match("Kirchensteuer \\d+,\\d+ ?% (?<currency2>\\w{3}+) (?<tax2>[\\d.]+,\\d+)")
+                        .match("Kirchensteuer \\d+,\\d+ ?% (?<currency1>\\w{3}) (?<tax1>[\\d.]+,\\d+)")
+                        .match("Kirchensteuer \\d+,\\d+ ?% (?<currency2>\\w{3}) (?<tax2>[\\d.]+,\\d+)")
                         .assign((t, v) -> {
                             t.addUnit(new Unit(Unit.Type.TAX,
                                             Money.of(asCurrencyCode(v.get("currency1")), asAmount(v.get("tax1")))));
@@ -512,9 +518,8 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                         })
 
                         // Quellensteuer
-                        .section("tax", "currency", "taxTx", "currencyTx") //
-                        .optional() //
-                        .match("QuSt \\d+,\\d+ % \\((?<currencyTx>\\w{3}+) (?<taxTx>[\\d.,]*)\\) (?<currency>\\w{3}+) (?<tax>[\\d.,]*)")
+                        .section("tax", "currency", "taxTx", "currencyTx").optional() //
+                        .match("QuSt \\d+,\\d+ % \\((?<currency>\\w{3}) (?<tax>[\\d.,]*)\\) (?<currencyTx>\\w{3}) (?<taxTx>[\\d.,]*)")
                         .assign((t, v) -> {
                             String currency = asCurrencyCode(v.get("currency"));
                             String currencyTx = asCurrencyCode(v.get("currencyTx"));
@@ -534,10 +539,10 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                                 t.addUnit(new Unit(Unit.Type.TAX, Money.of(currencyTx, asAmount(v.get("taxTx")))));
                             }
                         })
+
                         // Quellensteuer ohne Fremdwährung
-                        .section("tax", "currency") //
-                        .optional() //
-                        .match("QuSt \\d+,\\d+ % (?<currency>\\w{3}+) (?<tax>[\\d.,]*)").assign((t, v) -> {
+                        .section("tax", "currency").optional() //
+                        .match("QuSt \\d+,\\d+ % (?<currency>\\w{3}) (?<tax>[\\d.,]*)").assign((t, v) -> {
                             String currency = asCurrencyCode(v.get("currency"));
                             t.addUnit(new Unit(Unit.Type.TAX, Money.of(currency, asAmount(v.get("tax")))));
                         });
