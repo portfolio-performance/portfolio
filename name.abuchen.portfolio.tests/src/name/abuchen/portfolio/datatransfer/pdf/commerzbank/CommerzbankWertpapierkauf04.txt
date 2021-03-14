@@ -1,0 +1,59 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Ihren Auftrag haben wir gemäß unseren Sonderbedingungen für
+Wertpapiergeschäfte wie nachstehend ausgeführt. Die Wertpapiere
+haben wir der Abrechnung entsprechend gebucht. Wir bitten Sie,
+XXXXXXXXXX diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zuüberprüfen und etwaige Einwendungen unverzüglich zu erheben.
+11111 HANNOVER
+Telefon IHR ANSPRECHPARTNER:: xxxxx xxxx-x
+Frau Beraterin
+Telefon: xxxxx xxxxxx
+11111 000 Filnr: 111Depotnr.: 1111111 11
+<Vorname1> <Vorname2> <Nachname> BLZ: 111 000 11
+<Str.> <Nr>
+<Plz> <Stadt>
+GESCHÄFTSABRECHNUNG VOM 12.07.2018
+f ü r I h r D i r e k t D e p o t
+*
+W e r t p a p i e r k a u f
+G e s c h ä f t s n u m m e r : 1 1 0 0 1 1 0 0 b i s 1 1 0 0 1 1 0 1
+0 1 8 4 5 3 2 8 5 9 1 0 Rechnungsnummer : 4 4 5 7 8 9 9 2 7 0 6 8 D F 9 2
+G e s c h ä f t s t a g : 1 2 . 0 7 . 2 0 1 8 A u s f ü h r u n g s p l a t z : XETRA
+W e r t p a p i e r - B e z e i c h n u n g W e r t p a p i e r k e n n n u m m e r
+A l l i a n z SE 8 4 0 4 0 0
+v i n k . N a m e n s - A k t i e n o . N .
+I h r e O r d e r w u r d e w i e f o l g t a u s g e f ü h r t :
+H a n d e l s z e i t N e n n w e r t Zum K u r s von K u r s w e r t
+1 1 : 4 6 S t . 1 4 2 EUR 1 9 1 , 0 0 EUR 2 7 . 1 2 2 , 0 0
+1 1 : 4 6 S t . 1 0 8 EUR 1 9 1 , 0 2 EUR 2 0 . 6 3 0 , 1 6
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Summe S t . 2 5 0 EUR 1 9 1 , 0 0 8 6 4 EUR 4 7 . 7 5 2 , 1 6
+( g g f . g e r u n d e t )
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+E i g e n e E n t g e l t e
+0 , 2 5 0 0 0 % G e s a m t p r o v i s i o n : EUR 1 1 9 , 3 8
+S o c k e l b e t r a g : EUR 2 , 9 0
+Summe E n t g e l t e : EUR 1 2 2 , 2 8
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+F r e m d e K o s t e n
+U m s c h r e i b e e n t g e l t : EUR 1 , 2 0
+X e t r a - E n t g e l t : EUR 2 , 7 3
+Summe K o s t e n : EUR 3 , 9 3
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+IBAN V a l u t a Zu I h r e n L a s t e n v o r S t e u e r n
+DE11 1 1 2 2 4 3 1 4 2 2 8 8 8 1 1 1 0 0 EUR 1 9 . 0 7 . 2 0 1 8 EUR 4 7 . 8 7 8 , 3 7
+V e r w a h r u n g s - A r t : GIROSAMMELDEPOT
+I h r e W e r t p a p i e r - O r d e r w u r d e ü b e r d a s O n l i n e B a n k i n g e r t e i l t .
+A b r e c h n u n g e r f o l g t m i t d e n v e r g ü n s t i g t e n K o n d i t i o n e n d e s D i r e k t D e p o t s .
+T e i l a u s f ü h r u n g I h r e r O r d e r
+D i e s e m W e r t p a p i e r g e s c h ä f t g i n g k e i n e i n d i v i d u e l l e A n l a g e e m p f e h l u n g d e r B a n k
+v o r a u s .
+I n f o r m a t i o n e n z u r s t e u e r l i c h e n B e h a n d l u n g d i e s e s G e s c h ä f t s v o r g a n g s u n d d e n a u f
+I h r e m K o n t o g e b u c h t e n E n d b e t r a g f i n d e n S i e a u f d e r s e p a r a t e n S t e u e r m i t t e i l u n g .
+C O M M E R Z B A N K
+Aktiengesellschaft
+Diese Abrechnung wird von der Bank nicht unterschrieben
+D i e L e i s t u n g i s t gemäß § 4 N r . 8 UStG u m s a t z s t e u e r f r e i . U S t - I d - N r . : DE 1 1 4 1 0 3 5 1 4
+A113
+DO151D/16/04/2010
