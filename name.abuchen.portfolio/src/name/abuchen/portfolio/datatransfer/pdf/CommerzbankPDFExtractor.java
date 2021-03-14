@@ -72,10 +72,24 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                             t.setSecurity(getOrCreateSecurity(v));
                         })
 
+                        // 1 2 : 0 6 S t . 2 3 0 EUR 1 8 4 , 1 6 EUR 4 2 . 3 5 6 , 8 0
+                        .section("time").optional()
+                        .match("^(?<time>[\\d\\s]+:[\\d\\s]+) (S t .|St.) [\\d\\s,.]* \\w{3} [\\d\\s,.]* \\w{3} [\\d\\s,.]*$")
+                        .assign((t, v) -> type.getCurrentContext().put("time", stripBlanks(v.get("time"))))
+
                         // G e s c h ä f t s t a g : 1 7 . 0 2 . 2 0 2 1 A b w i c k l u n g : F e s t p r e i s
                         .section("date").optional()
                         .match("G e s c h ä f t s t a g : (?<date>[\\d\\s]+.[\\d\\s]+.[\\d\\s]+) .*")
-                        .assign((t, v) -> t.setDate(asDate(stripBlanks(v.get("date")))))
+                        .assign((t, v) -> {
+                            if (type.getCurrentContext().get("time") != null)
+                            {
+                                t.setDate(asDate(stripBlanks(v.get("date")), type.getCurrentContext().get("time")));
+                            }
+                            else
+                            {
+                                t.setDate(asDate(stripBlanks(v.get("date"))));
+                            }
+                        })
 
                         // G e s c h ä f t s t a g : 3 1 . 0 1 . 2 0 2 1 A u s f ü h r u n g s p l a t z : FRANKFURT
                         // H a n d e l s z e i t : 1 3 : 1 0 U h r (MEZ/MESZ)
@@ -90,10 +104,15 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         // S t . 2 0 0 EUR 2 0 1 , 7 0 
-                        .section("shares")
+                        .section("shares").optional()
                         .match("(S t .|St.) (?<shares>[\\d\\s,.]*) .*")
                         .assign((t, v) -> t.setShares(asShares(stripBlanks(v.get("shares")))))
 
+                        // Summe S t . 2 5 0 EUR 1 9 1 , 0 0 8 6 4 EUR 4 7 . 7 5 2 , 1 6
+                        .section("shares").optional()
+                        .match("^(Summe) (S t .|St.) (?<shares>[\\d\\s,.]*) .*")
+                        .assign((t, v) -> t.setShares(asShares(stripBlanks(v.get("shares")))))
+                        
                         .section("amount", "currency")
                         .match(".*(Zu I h r e n L a s t e n|Zu I h r e n Guns ten).*")
                         .match(".* \\w{3} [\\d\\s]+.[\\d\\s]+.[\\d\\s]+ (?<currency>\\w{3})(?<amount>[\\d\\s,.]*)$")
@@ -105,6 +124,16 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                         // 0 , 2 5 0 0 0 % P r o v i s i o n : EUR 4 9 , 6 3
                         .section("fee", "currency").optional()
                         .match(".* [\\d\\s,.]* % P r o v i s i o n : (?<currency>\\w{3}) (?<fee>[\\d\\s,.-]*$)")
+                        .assign((t, v) -> {
+                            t.getPortfolioTransaction()
+                                    .addUnit(new Unit(Unit.Type.FEE,
+                                                    Money.of(asCurrencyCode(v.get("currency")),
+                                                                            asAmount(stripBlanks(v.get("fee"))))));
+                        })
+
+                        // 0 , 2 5 0 0 0 % G e s a m t p r o v i s i o n : EUR 1 1 9 , 3 8
+                        .section("fee", "currency").optional()
+                        .match(".* [\\d\\s,.]* % G e s a m t p r o v i s i o n : (?<currency>\\w{3}) (?<fee>[\\d\\s,.-]*$)")
                         .assign((t, v) -> {
                             t.getPortfolioTransaction()
                                     .addUnit(new Unit(Unit.Type.FEE,
@@ -145,6 +174,16 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                         // T r a n s a k t i o n s e n t g e l t : EUR 4 , 6 1 -
                         .section("fee", "currency").optional()
                         .match("T r a n s a k t i o n s e n t g e l t : (?<currency>\\w{3}) (?<fee>[\\d\\s,.-]*$)")
+                        .assign((t, v) -> {
+                            t.getPortfolioTransaction()
+                                    .addUnit(new Unit(Unit.Type.FEE,
+                                                    Money.of(asCurrencyCode(v.get("currency")),
+                                                                            asAmount(stripBlanks(v.get("fee"))))));
+                        })
+
+                        // X e t r a - E n t g e l t : EUR 2 , 7 3
+                        .section("fee", "currency").optional()
+                        .match("X e t r a - E n t g e l t : (?<currency>\\w{3}) (?<fee>[\\d\\s,.-]*$)")
                         .assign((t, v) -> {
                             t.getPortfolioTransaction()
                                     .addUnit(new Unit(Unit.Type.FEE,
@@ -204,7 +243,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
 
                     // abgeführte Steuern EUR 0 , 0 0
                     .section("currency", "tax", "sign").optional()
-                    .match("abgeführte Steuern (?<currency>\\w{3})(?<sign>[-\\s]*)?(?<tax>[\\d\\s,.]*)")
+                    .match("(abgeführte Steuern|erstattete Steuern) (?<currency>\\w{3})(?<sign>[-\\s]*)?(?<tax>[\\d\\s,.]*)")
                     .assign((t, v) -> {
                         t.setAmount(asAmount(stripBlanks(v.get("tax"))));
                         t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -274,7 +313,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                         // 2 2 , 0 0 0 % Q u e l l e n s t e u e r USD 1 9 , 0 6 -
                         // Ausmachender B e t r a g USD 6 7 , 3 3
                         // zum D e v i s e n k u r s : EUR/USD 1 ,098400 EUR 6 1 , 3 0
-                        .section("exchangeRate", "fxAmount", "fxCurrency", "amount", "currency")
+                        .section("exchangeRate", "fxAmount", "fxCurrency", "amount", "currency").optional()
                         .match("B r u t t o b e t r a g : (?<fxCurrency>\\w{3}) (?<fxAmount>[\\d\\s,.]*)$")
                         .match(".* \\w{3}\\/\\w{3} (?<exchangeRate>[\\d\\s,.]*) (?<currency>\\w{3}) (?<amount>[\\d\\s,.]*)$")                     
                         .assign((t, v) -> {
