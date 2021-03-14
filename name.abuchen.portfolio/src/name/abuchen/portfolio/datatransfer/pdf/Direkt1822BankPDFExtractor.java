@@ -184,6 +184,15 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                     t.setDate(asDate(v.get("date")));
             })
 
+            // Kundenbonifikation 100 % vom Ausgabeaufschlag 2,50 EUR            
+            .section("note1", "note2", "note3").optional()
+            .match("^(?<note1>Kundenbonifikation) [\\d.,]+ % .* (?<note2>[\\d,.]+) (?<note3>\\w{3})")
+            .assign((t, v) -> 
+            {
+                String note = v.get("note1") + " " + v.get("note2") + " - " + v.get("note3");
+                t.setNote(note);
+            })
+
             // Ausmachender Betrag 50,00- EUR
             .section("currency", "amount")
             .match("^(Ausmachender Betrag) (?<amount>[\\d.]+,\\d+)- (?<currency>\\w{3})")
@@ -191,34 +200,10 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                 t.setAmount(asAmount(v.get("amount")));
                 t.setCurrencyCode(v.get("currency"));
             })
-            
-            // Devisenkurs (EUR/USD) 1,1987 vom 02.03.2021
-            // Kurswert 52,50- EUR
-            .section("forex", "fxamount", "exchangeRate").optional()
-            .match("^(Devisenkurs) .* (?<exchangeRate>[\\d\\.]+,\\d+) .*")
-            .match("^(Kurswert) (?<fxamount>[\\d\\.]+,\\d+) (?<fxcurrency>\\w{3})")            
-            .assign((t, v) -> {                
-                String forex = asCurrencyCode(v.get("forex"));
-                if (t.getPortfolioTransaction().getSecurity().getCurrencyCode().equals(forex))
-                {
-                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                    BigDecimal reverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
-                                    RoundingMode.HALF_DOWN);
-                
-                    // gross given in forex currency
-                    long fxAmount = asAmount(v.get("fxamount"));
-                    long amount = reverseRate.multiply(BigDecimal.valueOf(fxAmount))
-                                    .setScale(0, RoundingMode.HALF_DOWN).longValue();
-                
-                    Unit grossValue = new Unit(Unit.Type.GROSS_VALUE,
-                                    Money.of(t.getPortfolioTransaction().getCurrencyCode(), amount),
-                                    Money.of(forex, fxAmount), reverseRate);
-                
-                    t.getPortfolioTransaction().addUnit(grossValue);
-                }
-            })
-            
+
             .wrap(BuySellEntryItem::new);
+
+        addFeesSectionsTransaction(pdfTransaction, newType);
     }
 
     private void addDividendeTransaction()
@@ -319,6 +304,34 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
             .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
+    private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
+    {
+        transaction        
+
+            // Devisenkurs (EUR/USD) 1,1987 vom 02.03.2021
+            .section("exchangeRate").optional()
+            .match("^(Devisenkurs) \\(\\w{3}\\/\\w{3}\\) (?<exchangeRate>[\\d\\.]+,\\d+) .*")
+            .assign((t, v) -> {
+                BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
+            })
+
+            // Ausführungskurs 94,6879 USD Auftragserteilung/ -ort sonstige
+            // Ausgabeaufschlag pro Anteil 5,00 %
+            .section("feeInPercent", "currency", "marketValue").optional()
+            .match("^(Ausführungskurs) (?<marketValue>[\\d.,]+) (?<currency>\\w{3}) .*")
+            .match("^(Ausgabeaufschlag pro Anteil) (?<feeInPercent>[\\d\\s,.]*) %")
+            .assign((t, v) -> {
+                // Fee in percent on the market value
+                double marketValue = Double.parseDouble(v.get("marketValue").replace(',', '.'));
+                double feeInPercent = Double.parseDouble(v.get("feeInPercent").replace(',', '.'));
+                String fee =  Double.toString(marketValue / 100.0 * feeInPercent).replace('.', ',');
+                v.put("fee", fee);
+
+                processFeeEntries(t, v, type);
+            });
+    }
+
     private void processTaxEntries(Object t, Map<String, String> v, DocumentType type)
     {
         if (t instanceof name.abuchen.portfolio.model.Transaction)
@@ -330,6 +343,22 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
         {
             Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
             PDFExtractorUtils.checkAndSetTax(tax, ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
+        }
+    }
+
+    private void processFeeEntries(Object t, Map<String, String> v, DocumentType type)
+    {
+        if (t instanceof name.abuchen.portfolio.model.Transaction)
+        {
+            Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
+            PDFExtractorUtils.checkAndSetFee(fee, 
+                            (name.abuchen.portfolio.model.Transaction) t, type);
+        }
+        else
+        {
+            Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
+            PDFExtractorUtils.checkAndSetFee(fee,
+                            ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
         }
     }
 }
