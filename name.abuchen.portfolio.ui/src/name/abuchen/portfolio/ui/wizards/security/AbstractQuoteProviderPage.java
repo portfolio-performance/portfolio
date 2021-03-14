@@ -389,7 +389,6 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         // create a temporary security and set all attributes
         Security security = new Security();
         model.setAttributes(security);
-        model.getSecurity().getProperties().forEach(security::addProperty);
         return security;
     }
 
