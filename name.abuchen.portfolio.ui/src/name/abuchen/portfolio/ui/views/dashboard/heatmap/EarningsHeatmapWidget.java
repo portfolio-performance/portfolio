@@ -2,6 +2,8 @@ package name.abuchen.portfolio.ui.views.dashboard.heatmap;
 
 import java.time.LocalDate;
 import java.time.Year;
+import java.time.YearMonth;
+import java.time.temporal.TemporalAdjusters;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -146,7 +148,7 @@ public class EarningsHeatmapWidget extends AbstractHeatmapWidget<Long>
         Interval calcInterval = Interval.of(
                         interval.getStart().getDayOfMonth() == interval.getStart().lengthOfMonth() ? interval.getStart()
                                         : interval.getStart().withDayOfMonth(1).minusDays(1),
-                        interval.getEnd().withDayOfMonth(interval.getEnd().lengthOfMonth()));
+                        interval.getEnd().with(TemporalAdjusters.lastDayOfMonth()));
 
         // build model
         HeatmapModel<Long> model = new HeatmapModel<>(numDashboardColumns <= 1 ? Values.Amount : Values.AmountShort);
@@ -161,9 +163,15 @@ public class EarningsHeatmapWidget extends AbstractHeatmapWidget<Long>
             String label = numDashboardColumns > 2 ? String.valueOf(year.getValue() % 100) : String.valueOf(year);
             HeatmapModel.Row<Long> row = new HeatmapModel.Row<>(label);
 
-            for (LocalDate month = LocalDate.of(year.getValue(), 1, 1); month.getYear() == year
-                            .getValue(); month = month.plusMonths(1))
-                row.addData(calcInterval.contains(month) ? 0L : null);
+            for (YearMonth month = YearMonth.of(year.getValue(), 1);
+                 month.getYear() == year.getValue();
+                 month = month.plusMonths(1))
+            {
+                if (calcInterval.intersects(Interval.of(month.atDay(1).minusDays(1), month.atEndOfMonth())))
+                    row.addData(0L);
+                else
+                    row.addData(null);
+            }
             model.addRow(row);
         }
 
