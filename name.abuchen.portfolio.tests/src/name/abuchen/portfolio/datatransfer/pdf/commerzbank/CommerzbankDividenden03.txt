@@ -1,0 +1,36 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+XXXX
+F i l n r . : XXXX
+D e p o t n r . : 011111111
+22222222 BLZ: 3333333
+Herr
+Mustermann
+Musterstrasse 
+Musterstadt
+01.02.2021
+Gutschrift fälliger Wertpapier-Erträge
+D i v i d e n d e n g u t s c h r i f t
+Depo tbes tand W e r t p a p i e r - B e z e i c h n u n g WKN/ISIN
+p e r 0 4 . 0 1 . 2 0 2 1 JPMorgan Chase & Co. 850628
+STK 1 2 0 , 0 0 0 R e g i s t e r e d Shares DL 1 US46625H1005
+E m i s s i o n s l a n d : VEREINIGTE STAATEN
+USD 0 , 9 0 D i v i d e n d e p r o S t ü c k f ü r G e s c h ä f t s j a h r 0 1 . 0 1 . 2 0 b i s 3 1 . 1 2 . 2 0
+z a h l b a r ab 0 1 . 0 2 . 2 0 2 1 Q u a r t a l s d i v i d e n d e
+Abrechnung D i v i d e n d e n g u t s c h r i f t
+B r u t t o b e t r a g : USD 1 0 8 , 0 0
+1 5 , 0 0 0 % Q u e l l e n s t e u e r USD 1 6 , 2 0 -
+Ausmachender B e t r a g USD 9 1 , 8 0
+zum D e v i s e n k u r s : EUR/USD 1 ,211200 EUR 7 5 , 7 9
+Ve r rechnung ü b e r Kon to ( I B A N ) V a l u t a Zu I h r e n Gunsten v o r S t e u e r n
+DE55 4444 3333 2222 1111 00 EUR 0 3 . 0 2 . 2 0 2 1 EUR 7 5 , 7 9
+Wegen e i n e r e v t l . E r s t a t t u n g b z w . Anrechnung d e r e i n b e h a l t e n e n Q u e l l e n s t e u e r
+wenden S i e s i c h b i t t e an d i e F i n a n z b e h ö r d e n I h r e s W o h n s i t z l a n d e s .
+I n f o r m a t i o n z u r s t e u e r l i c h e n Behand lung d i e s e s G e s c h ä f t s v o r g a n g e s und den a u f
+I h r e m Kon to gebuch ten E n d b e t r a g f i n d e n S i e a u f d e r s e p a r a t e n S t e u e r m i t t e i l u n g
+( R e f e r e n z - N r . XXXXXXXXXX).
+C O M M E R Z B A N K
+A k t i e n g e s e l l s c h a f t
+*Diese Abrechnung wird von der Bank nicht unterschrieben
+DD1111111

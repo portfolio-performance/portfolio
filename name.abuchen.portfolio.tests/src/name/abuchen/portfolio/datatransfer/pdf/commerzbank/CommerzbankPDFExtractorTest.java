@@ -586,6 +586,46 @@ public class CommerzbankPDFExtractorTest
     }
 
     @Test
+    public void testDividenden03() throws IOException
+    {
+        CommerzbankPDFExtractor extractor = new CommerzbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor
+                        .extract(PDFInputFile.loadTestCase(getClass(), "CommerzbankDividenden03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check transaction
+        AccountTransaction t = results.stream().filter(i -> i instanceof TransactionItem)
+                        .map(i -> (AccountTransaction) ((TransactionItem) i).getSubject()).findAny()
+                        .orElseThrow(IllegalArgumentException::new);
+        
+        assertThat(t.getSecurity().getName(), is("JPMorgan Chase & Co. R e g i s t e r e d Shares DL 1"));
+        assertThat(t.getSecurity().getIsin(), is("US46625H1005"));
+        assertThat(t.getSecurity().getWkn(), is("850628"));
+        assertThat(t.getSecurity().getCurrencyCode(), is(CurrencyUnit.EUR));
+        
+        assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-01-04T00:00")));
+        assertThat(t.getShares(), is(Values.Share.factorize(120)));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(75.79))));
+        assertThat(t.getUnitSum(Unit.Type.TAX), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(13.38))));
+        assertThat(t.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        CheckCurrenciesAction c = new CheckCurrenciesAction();
+        Account account = new Account();
+        account.setCurrencyCode(CurrencyUnit.EUR);
+        Status s = c.process(t, account);
+        assertThat(s, is(Status.OK_STATUS));
+    }
+
+    @Test
     public void testSteuerDividende01()
     {
         CommerzbankPDFExtractor extractor = new CommerzbankPDFExtractor(new Client());
