@@ -38,10 +38,10 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("Dividendengutschrift");
+        DocumentType type = new DocumentType("(Dividendengutschrift|Ausschüttung Investmentfonds)");
         this.addDocumentTyp(type);
 
-        Block block = new Block("Dividendengutschrift");
+        Block block = new Block("(Dividendengutschrift|Ausschüttung Investmentfonds)");
         type.addBlock(block);
         Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>()
             .subject(() -> {
@@ -64,13 +64,12 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
 
                 // Ex-Tag 22.02.2021 Art der Dividende Quartalsdividende
                 .section("date")
-                .match("^Ex-Tag (?<date>\\d+.\\d+.\\d{4}) .*")
+                .match("^Ex-Tag (?<date>\\d+.\\d+.\\d{4}).*")
                 .assign((t, v) -> {
                     t.setDateTime(asDate(v.get("date")));
                 })
 
                 // Ex-Tag 22.02.2021 Art der Dividende Quartalsdividende
-                // Geschäftsjahr 01.01.2021 - 31.12.2021
                 .section("note").optional()
                 .match("^Ex-Tag \\d+.\\d+.\\d{4} Art der Dividende (?<note>.*)")
                 .assign((t, v) -> {
@@ -91,7 +90,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                 .section("exchangeRate", "fxAmount", "fxCurrency", "amount", "currency").optional()
                 .match("^Devisenkurs .* (?<exchangeRate>[\\d.]+,\\d+)$")
                 .match("^Devisenkursdatum .*")
-                .match("^Dividendengutschrift (?<fxAmount>[\\d.]+,\\d+) (?<fxCurrency>\\w{3}) (?<amount>[\\d.]+,\\d+)\\+ (?<currency>\\w{3})$")                        
+                .match("^(Dividendengutschrift|Aussch.ttung) (?<fxAmount>[\\d.]+,\\d+) (?<fxCurrency>\\w{3}) (?<amount>[\\d.]+,\\d+)\\+ (?<currency>\\w{3})$")                        
                 .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                     if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
