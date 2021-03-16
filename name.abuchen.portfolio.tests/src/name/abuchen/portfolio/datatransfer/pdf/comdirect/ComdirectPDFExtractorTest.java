@@ -720,6 +720,105 @@ public class ComdirectPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierVerkauf6()
+    {
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "comdirectWertpapierabrechnung_Verkauf6.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getName(), is("HSBC Trinkaus & Burkhardt AG Call 14.01.11 Juniper 30"));
+        assertThat(security.getIsin(), is("DE000TB1AF62"));
+        assertThat(security.getWkn(), is("TB1AF6"));
+
+        // purchase
+        PortfolioTransaction txP = ((BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject()).getPortfolioTransaction();
+
+        assertThat(txP.getType(), is(PortfolioTransaction.Type.SELL));
+
+        assertThat(txP.getShares(), is(Values.Share.factorize(2000)));
+        assertThat(txP.getAmount(), is(Values.Amount.factorize(906.85)));
+        assertThat(txP.getDateTime(), is(LocalDateTime.parse("2008-06-11T18:54")));
+        assertThat(txP.getUnitSum(Unit.Type.FEE),
+                        is(Money.of("EUR", Values.Amount.factorize(9.90 + 2.50 + 0.75))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf7()
+    {
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "comdirectWertpapierabrechnung_Verkauf7.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getName(), is("Citigroup Global Markets Dt. KOS03/21.12.04 Allianz 80"));
+        assertThat(security.getIsin(), is("DE0009503540"));
+        assertThat(security.getWkn(), is("950354"));
+
+        // purchase
+        PortfolioTransaction txP = ((BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject()).getPortfolioTransaction();
+
+        assertThat(txP.getType(), is(PortfolioTransaction.Type.SELL));
+
+        assertThat(txP.getShares(), is(Values.Share.factorize(550)));
+        assertThat(txP.getAmount(), is(Values.Amount.factorize(1086.72)));
+        assertThat(txP.getDateTime(), is(LocalDateTime.parse("2003-12-08T00:00")));
+        assertThat(txP.getUnitSum(Unit.Type.FEE),
+                        is(Money.of("EUR", Values.Amount.factorize(0.88 + 9.90 + 2.50))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf8()
+    {
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "comdirectWertpapierabrechnung_Verkauf8.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getName(), is("Deutsche Bank AG KOS03/13.12.04 SAP 150"));
+        assertThat(security.getIsin(), is("DE0005601215"));
+        assertThat(security.getWkn(), is("560121"));
+
+        // purchase
+        PortfolioTransaction txP = ((BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject()).getPortfolioTransaction();
+
+        assertThat(txP.getType(), is(PortfolioTransaction.Type.SELL));
+
+        assertThat(txP.getShares(), is(Values.Share.factorize(300)));
+        assertThat(txP.getAmount(), is(Values.Amount.factorize(136.85)));
+        assertThat(txP.getDateTime(), is(LocalDateTime.parse("2004-03-10T00:00")));
+        assertThat(txP.getUnitSum(Unit.Type.FEE),
+                        is(Money.of("EUR", Values.Amount.factorize(0.75 + 9.90 + 2.50))));
+    }
+
+    @Test
     public void testGutschrift1()
     {
         ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
