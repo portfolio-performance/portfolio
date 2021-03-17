@@ -1,12 +1,15 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
+import java.util.Map;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -27,6 +30,7 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
 
         addBuyTransactionOld();
         addBuySellTransaction();
+        addDividendeTransaction();
     }
 
     private String stripTrailing(String value)
@@ -175,6 +179,89 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
                         .wrap(BuySellEntryItem::new);
         
         
+    }
+
+    @SuppressWarnings("nls")
+    private void addDividendeTransaction()
+    {
+        DocumentType type = new DocumentType("Dividende");
+        this.addDocumentTyp(type);
+
+        Block block = new Block("^(Dividende [^pro]).*");
+        type.addBlock(block);
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>()
+            .subject(() -> {
+                AccountTransaction entry = new AccountTransaction();
+                entry.setType(AccountTransaction.Type.DIVIDENDS);
+                return entry;
+            });
+
+        pdfTransaction
+
+                // Produktbezeichnung - Kellogg Co.:
+                // Internationale Wertpapierkennnummer US4878361082
+                .section("name", "isin")
+                .match("^Produktbezeichnung - (?<name>.*):")
+                .match("^Internationale Wertpapierkennnummer (?<isin>.*)")
+                .assign((t, v) -> {
+                    t.setSecurity(getOrCreateSecurity(v));
+                })
+
+                // Anzahl/Nominale 30,00
+                .section("shares")
+                .match("^Anzahl\\/Nominale (?<shares>[\\d.]+,\\d+)")
+                .assign((t, v) -> {
+                    t.setShares(asShares(v.get("shares")));
+                })
+
+                // Ex Datum - Tag 01. März 2021
+                .section("date")
+                .match("^Ex Datum - Tag (?<date>\\d+. .* \\d{4})")
+                .assign((t, v) -> {
+                    // Formate the date from 01. März 2021 to 01.03.2021
+                    v.put("date", DateTimeFormatter.ofPattern("dd.MM.yyyy").format(LocalDate.parse(v.get("date"), DateTimeFormatter.ofPattern("d. MMMM yyyy", Locale.GERMANY))));
+                    t.setDateTime(asDate(v.get("date")));
+                })
+
+                // Ausmachender Betrag EUR 12,15
+                .section("currency", "amount")
+                .match("^Ausmachender Betrag (?<currency>\\w{3}) (?<amount>[\\d.]+,\\d+)")
+                .assign((t, v) -> {
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(v.get("currency"));
+                })
+
+                .wrap(TransactionItem::new);
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
+
+        block.set(pdfTransaction);
+    }
+
+    @SuppressWarnings("nls")
+    private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
+    {
+        transaction
+
+            // Anrechenbare Quellensteuer EUR 2,14
+            .section("tax", "currency").optional()
+            .match("^Anrechenbare Quellensteuer (?<currency>\\w{3}) (?<tax>[.,\\d]+)$")
+            .assign((t, v) -> processTaxEntries(t, v, type));
+    }
+
+    @SuppressWarnings("nls")
+    private void processTaxEntries(Object t, Map<String, String> v, DocumentType type)
+    {
+        if (t instanceof name.abuchen.portfolio.model.Transaction)
+        {
+            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+            PDFExtractorUtils.checkAndSetTax(tax, (name.abuchen.portfolio.model.Transaction) t, type);
+        }
+        else
+        {
+            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+            PDFExtractorUtils.checkAndSetTax(tax, ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
+        }
     }
 
     @Override
