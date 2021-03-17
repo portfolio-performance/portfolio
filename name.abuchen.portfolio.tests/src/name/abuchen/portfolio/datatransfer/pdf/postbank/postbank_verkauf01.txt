@@ -1,0 +1,58 @@
+PDF Autor: 'Deutsche Postbank AG'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Postbank Köln · 51222 Köln    Seite 1 von 2
+Depotnummer
+ 379435566
+ Kundennummer 2794741214
+Maxi Mustermann Max Mustermann
+ Auftragsnummer 724152/50.00
+Frau und Herrn Datum 11.03.2021
+Maxi Mustermann und Rechnungsnummer W00860-0000761498/21
+Max Mustermann Umsatzsteuer-ID DE114103379   
+Straße 00
+00000 Ort
+ 
+Wertpapier Abrechnung Verkauf 
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 137 FRAN.LIBERTYQ EM.MAR.EQ.UC.ETF     IE00BF2B0K52 (A2DTF1)
+REGISTERED SHARES USD ACC.O.N.     
+Handels-/Ausführungsplatz Tradegate (Best Execution)
+Börsensegment XGAT
+Limit-Order
+Limit 23,15 EUR 
+Schlusstag/-Zeit 11.03.2021 16:34:51 Auftragserteilung/ -ort Online-Banking
+Ausführungskurs 23,15 EUR
+Wertpapierrechnung Lagerland Irland
+Kurswert 3.171,55 EUR
+Provision 29,95- EUR
+Übertragungs-/Liefergebühr 0,02- EUR
+Ermittlung steuerrelevante Erträge
+Veräußerungsgewinn (nach Teilfreistellung) 67,31 EUR
+Veräußerungsverlust (nach Teilfreistellung) 2,17- EUR
+Bemessungsgrundlage für die Kapitalertragsteuer 65,14 EUR
+ 
+Verrechneter Sparerpauschbetrag 65,14- EUR
+Ausmachender Betrag 3.141,58 EUR
+ 
+Den Gegenwert buchen wir mit Valuta 15.03.2021 zu Gunsten des Kontos 1234567890
+(IBAN DE00 1111 2222 3333 4444 55), BLZ 12345678 (BIC PBNKDEFFXXX).
+Die Wertpapiere entnehmen wir Ihrem Depotkonto.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+0860.03111915.0005541OR07                                                             
+Seite 2 von 2
+Depotnummer 123456789
+Kundennummer 1234567890
+Auftragsnummer 724152/50.00
+Datum 11.03.2021
+Für das Geschäft wurde keine Anlageberatung erbracht.
+ 
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verlustverrechnungstöpfe 2021 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien Sonstige
+Pauschbetrag Quellensteuer
+Nachher 00,00 0,00 0.000,00 0,00 0,00 0,00
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0860.03111915.0005542OR07

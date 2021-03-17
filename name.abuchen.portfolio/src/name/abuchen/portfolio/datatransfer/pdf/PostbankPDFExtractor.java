@@ -8,7 +8,9 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 
@@ -21,6 +23,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
 
         addBankIdentifier("Postbank"); //$NON-NLS-1$
 
+        addBuySellTransaction();
         addDividendeTransaction();
     }
 
@@ -34,6 +37,102 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
     public String getLabel()
     {
         return "Postbank"; //$NON-NLS-1$
+    }
+
+    private void addBuySellTransaction()
+    {
+        DocumentType newType = new DocumentType("Wertpapier Abrechnung (Kauf|Verkauf|Ausgabe Investmentfonds)");
+        this.addDocumentTyp(newType);
+
+        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        pdfTransaction.subject(() -> {
+            BuySellEntry entry = new BuySellEntry();
+            entry.setType(PortfolioTransaction.Type.BUY);
+            return entry;
+        });
+
+        Block firstRelevantLine = new Block("Wertpapier Abrechnung (Kauf|Verkauf|Ausgabe Investmentfonds).*");
+        newType.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction
+
+                // Is type --> "Verkauf" change from BUY to SELL
+                .section("type").optional()
+                .match("Wertpapier Abrechnung (?<type>Verkauf).*")
+                .assign((t, v) -> {
+                    if (v.get("type").equals("Verkauf"))
+                    {
+                        t.setType(PortfolioTransaction.Type.SELL);
+                    }
+                })
+
+                // Stück 158 XTR.(IE) - MSCI WORLD              IE00BJ0KDQ92 (A1XB5U)
+                // REGISTERED SHARES 1C O.N.   
+                .section("isin", "wkn", "name", "shares", "nameContinued")
+                .match("^St.ck (?<shares>[\\d.,]+) (?<name>.*) (?<isin>[\\w]{12}.*) (\\((?<wkn>.*)\\).*)")
+                .match("(?<nameContinued>.*)")
+                .assign((t, v) -> {
+                    t.setSecurity(getOrCreateSecurity(v));
+                    t.setShares(asShares(v.get("shares")));
+                })
+
+                // Schlusstag 05.02.2020
+                .section("date").optional()
+                .match("^Schlusstag (?<date>\\d+.\\d+.\\d{4})")
+                .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+
+                // Schlusstag/-Zeit 04.02.2020 08:00:04 Auftragserteilung/ -ort Online-Banking
+                .section("date", "time").optional()
+                .match("^Schlusstag\\/-Zeit (?<date>\\d+.\\d+.\\d{4}) (?<time>\\d+:\\d+:\\d+) .*")
+                .assign((t, v) -> {
+                    if (v.get("time") != null)
+                        t.setDate(asDate(v.get("date"), v.get("time")));
+                    else
+                        t.setDate(asDate(v.get("date")));
+                })
+
+                // Ausmachender Betrag 9.978,18- EUR
+                .section("amount", "currency")
+                .match("^Ausmachender Betrag (?<amount>[\\d.]+,\\d+)[\\+-]? (?<currency>\\w{3})")
+                .assign((t, v) -> {
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(v.get("currency"));
+                })
+
+                // Provision 39,95- EUR
+                .section("fee", "currency").optional()
+                .match("^Provision (?<fee>[\\d.]+,\\d+)- (?<currency>[\\w]{3}).*")
+                .assign((t, v) -> t.getPortfolioTransaction()
+                                .addUnit(new Unit(Unit.Type.FEE,
+                                                Money.of(asCurrencyCode(v.get("currency")),
+                                                                asAmount(v.get("fee"))))))
+
+                // Abwicklungskosten Börse 0,04- EUR
+                .section("fee", "currency").optional()
+                .match("^Abwicklungskosten B.rse (?<fee>[\\d.]+,\\d+)- (?<currency>[\\w]{3}).*")
+                .assign((t, v) -> t.getPortfolioTransaction()
+                                .addUnit(new Unit(Unit.Type.FEE,
+                                                Money.of(asCurrencyCode(v.get("currency")),
+                                                                asAmount(v.get("fee"))))))
+
+                // Transaktionsentgelt Börse 11,82- EUR
+                .section("fee", "currency").optional()
+                .match("^Transaktionsentgelt B.rse (?<fee>[\\d.]+,\\d+)- (?<currency>[\\w]{3}).*")
+                .assign((t, v) -> t.getPortfolioTransaction()
+                                .addUnit(new Unit(Unit.Type.FEE,
+                                                Money.of(asCurrencyCode(v.get("currency")),
+                                                                asAmount(v.get("fee"))))))
+
+                // Übertragungs-/Liefergebühr 0,65- EUR
+                .section("fee", "currency").optional()
+                .match("^.bertragungs-\\/Liefergeb.hr (?<fee>[\\d.]+,\\d+)- (?<currency>[\\w]{3}).*")
+                .assign((t, v) -> t.getPortfolioTransaction()
+                                .addUnit(new Unit(Unit.Type.FEE,
+                                                Money.of(asCurrencyCode(v.get("currency")),
+                                                                asAmount(v.get("fee"))))))
+
+                .wrap(BuySellEntryItem::new);
     }
 
     private void addDividendeTransaction()
