@@ -237,4 +237,34 @@ public class SutorPDFExtractorTest
         assertThat(t.getDateTime(), is(LocalDateTime.parse("2020-01-08T00:00")));
     }
 
+    @Test
+    public void testUmsaetze3()
+    {
+        SutorPDFExtractor extractor = new SutorPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "sutor_umsaetze_pdf3.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(70));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check securities
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getName(), is("Xtr II iBoxx Euroz Gov Bd 1-3 ETF"));
+        assertThat(security.getCurrencyCode(), is("EUR"));
+
+        // check first transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)
+                        .collect(Collectors.toList()).get(0).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.83))));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-10-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0405)));
+    }
 }

@@ -24,6 +24,7 @@ public class SutorPDFExtractor extends AbstractPDFExtractor
 
         addBankIdentifier("Sutor"); //$NON-NLS-1$
         addBankIdentifier("Sutor Bank"); //$NON-NLS-1$
+        addBankIdentifier("SUTOR BANK"); //$NON-NLS-1$
 
         addDeposit();
         addBuySellTransaction();
@@ -42,7 +43,7 @@ public class SutorPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Sutor fairriester 2.0 | Umsätze");
         this.addDocumentTyp(type);
 
-        Block block = new Block(".*(Zulage|automatischer Lastschrifteinzug|Einzahlung).*");
+        Block block = new Block(".*([^staatlichen] Zulage|automatischer Lastschrifteinzug|Einzahlung).*");
         type.addBlock(block);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
@@ -205,6 +206,6 @@ public class SutorPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Sutor Fairriester"; //$NON-NLS-1$
+        return "Sutor Bank"; //$NON-NLS-1$
     }
 }
