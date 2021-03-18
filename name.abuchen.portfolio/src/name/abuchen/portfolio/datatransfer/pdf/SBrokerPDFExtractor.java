@@ -120,12 +120,10 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
 
                     // Kurswert 509,71- EUR
                     // Kundenbonifikation 40 % vom Ausgabeaufschlag 9,71 EUR
-                    // Ausmachender Betrag 500,00- EUR
                     // Ausgabeaufschlag pro Anteil 5,00 %
-                    .section("feeFx", "feeFy", "amountFx", "amount", "currency").optional()
-                    .match("^Kurswert (?<amountFx>[.,\\d]+)[-]? \\w{3}")
+                    .section("feeFx", "feeFy", "amountFx", "currency").optional()
+                    .match("^Kurswert (?<amountFx>[.,\\d]+)[-]? (?<currency>\\w{3})")
                     .match("^Kundenbonifikation (?<feeFy>[.,\\d]+) % vom Ausgabeaufschlag [.,\\d]+ \\w{3}")
-                    .match("^Ausmachender Betrag (?<amount>[.,\\d]+)[-]? (?<currency>\\w{3})")
                     .match("^Ausgabeaufschlag pro Anteil (?<feeFx>[.,\\d]+) %")
                     .assign((t, v) -> {
                         // Fee in percent
