@@ -1,0 +1,38 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Sparkasse XXXXXX XXXXXX · Postfach XX XX XX · XXXXX XXXXXX  
+Depotnummer
+ XXXXX
+ Kundennummer XXXXX
+ XXXX XXXAuftragsnummer XXXXXX/XX.XX
+XXXX Datum 02.03.2021
+XXX XXX XXXX XXXXXX XX XX XX
+XXXXXXXXXXXXXXX
+XXXXX XXXXXXXX Telefax XXXX
+Rechnungsnummer XXXXX
+Umsatzsteuer-ID XXXXXX
+ 
+Wertpapier Abrechnung Ausgabe Investmentfonds
+Auftrag vom 27.02.2021 01:31:42 Uhr
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 7,1535 BGF - WORLD TECHNOLOGY FUND LU0171310443 (A0BMAN)
+ACT. NOM. CLASSE A2 EUR O.N. 
+Handels-/Ausführungsplatz Außerbörslich (gemäß Weisung)
+Schlusstag 01.03.2021 Auftraggeber XXXX,XXX
+Ausführungskurs 71,253 EUR Auftragserteilung/ -ort Persönlich im Institut
+Wertpapierrechnung Lagerland Luxemburg
+Kurswert 509,71- EUR
+Kundenbonifikation 40 % vom Ausgabeaufschlag 9,71 EUR
+Ausmachender Betrag 500,00- EUR
+Ausgabeaufschlag pro Anteil 5,00 %
+ 
+Den Gegenwert buchen wir mit Valuta  04.03.2021 zu Lasten des Kontos  XXXXXX, BLZ  XXXXX. 
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+IHR FONDSSPARPLAN NR. 1
+Für das Geschäft wurde keine Anlageberatung erbracht.
+Initiator der Besprechung war der Kunde.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+2248.03022115.0000778OR07
