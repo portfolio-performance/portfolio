@@ -541,6 +541,40 @@ public class BaaderBankPDFExtractorTest
     }
 
     @Test
+    public void testGratisbrokerAusschüttung01()
+    {
+        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+    
+        List<Exception> errors = new ArrayList<>();
+    
+        List<Item> results = extractor
+                        .extract(PDFInputFile.loadTestCase(getClass(), "BaaderBankGratisbrokerAusschuettung01.txt"), errors);
+    
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check transaction
+        AccountTransaction t = results.stream().filter(i -> i instanceof TransactionItem)
+                        .map(i -> (AccountTransaction) ((TransactionItem) i).getSubject()).findAny()
+                        .orElseThrow(IllegalArgumentException::new);
+        
+        assertThat(t.getSecurity().getName(), is("Deutsche Konsum REIT-AG"));
+        assertThat(t.getSecurity().getIsin(), is("DE000A14KRD3"));
+        assertThat(t.getSecurity().getWkn(), is("A14KRD"));
+        assertThat(t.getSecurity().getCurrencyCode(), is(CurrencyUnit.EUR));
+        
+        assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-03-16T00:00")));
+        assertThat(t.getShares(), is(Values.Share.factorize(35)));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(14.00))));
+        assertThat(t.getUnitSum(Unit.Type.TAX), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(t.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+    }
+
+    @Test
     public void testSteuerausgleichsrechnung1()
     {
         BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
@@ -691,6 +725,7 @@ public class BaaderBankPDFExtractorTest
         Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
 
         // assert security
+        assertThat(security.getName(), is("iShsII-J.P.M.$ EM Bond U.ETF Registered Shares o.N."));
         assertThat(security.getIsin(), is("IE00B2NPKV68"));
         assertThat(security.getWkn(), is("A0NECU"));
 
@@ -729,6 +764,7 @@ public class BaaderBankPDFExtractorTest
         Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
 
         // assert security
+        assertThat(security.getName(), is("iShares Core DAX UCITS ETF DE Inhaber-Anteile"));
         assertThat(security.getIsin(), is("DE0005933931"));
         assertThat(security.getWkn(), is("593393"));
 
@@ -767,6 +803,7 @@ public class BaaderBankPDFExtractorTest
         Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
 
         // assert security
+        assertThat(security.getName(), is("Mastercard Inc."));
         assertThat(security.getIsin(), is("US57636Q1040"));
         assertThat(security.getWkn(), is("A0F602"));
 
@@ -805,6 +842,7 @@ public class BaaderBankPDFExtractorTest
         Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
 
         // assert security
+        assertThat(security.getName(), is("Main Street Capital Corp."));
         assertThat(security.getIsin(), is("US56035L1044"));
         assertThat(security.getWkn(), is("A0X8Y3"));
 
@@ -843,6 +881,7 @@ public class BaaderBankPDFExtractorTest
         Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
 
         // assert security
+        assertThat(security.getName(), is("Deutsche Telekom AG"));
         assertThat(security.getIsin(), is("DE0005557508"));
         assertThat(security.getWkn(), is("555750"));
 
@@ -1092,6 +1131,7 @@ public class BaaderBankPDFExtractorTest
         Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
     
         // assert security
+        assertThat(security.getName(), is("SPDR S+P US Con.Sta.Sel.S.UETF"));
         assertThat(security.getIsin(), is("IE00BWBXM385"));
         assertThat(security.getWkn(), is("A14QBZ"));
     

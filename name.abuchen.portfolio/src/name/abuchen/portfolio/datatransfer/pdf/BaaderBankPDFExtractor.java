@@ -60,11 +60,13 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
             // Nominale ISIN: ES0173093024 WKN: A2ANA3 Kurs 
             // STK 70 Red Electrica Corporacion S.A. EUR 14,045
             // Acciones Port. EO -,50
-            .section("isin", "wkn", "name", "shares", "nameContinued")
+            .section("isin", "wkn", "name", "shares", "name1")
             .match("Nominale *ISIN: *(?<isin>[^ ]*) *WKN: *(?<wkn>[^ ]*) *Kurs *")
             .match("STK *(?<shares>[\\.\\d]+[,\\d]*)* (?<name>.*) (?<currency>\\w{3}) [\\d.,]+,\\d{2,}+")
-            .match("(?<nameContinued>.*)")
+            .match("(?<name1>.*)")
             .assign((t, v) -> {
+                if (!v.get("name1").startsWith("Auftraggeber"))
+                    v.put("name", v.get("name") + " " + v.get("name1"));
                 t.setSecurity(getOrCreateSecurity(v));
                 t.setShares(asShares(v.get("shares")));
             })
@@ -227,28 +229,36 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
         DocumentType type1 = new DocumentType("Fondsausschüttung");
         DocumentType type2 = new DocumentType("Ertragsthesaurierung");
         DocumentType type3 = new DocumentType("Dividendenabrechnung");
+        DocumentType type4 = new DocumentType("Ausschüttung aus");
 
         this.addDocumentTyp(type1);
         this.addDocumentTyp(type2);
         this.addDocumentTyp(type3);
+        this.addDocumentTyp(type4);
 
         Block block = new Block("^Ex-Tag.*");
         type1.addBlock(block);
         type2.addBlock(block);
         type3.addBlock(block);
+        type4.addBlock(block);
         block.set(new Transaction<AccountTransaction>().subject(() -> {
             AccountTransaction t = new AccountTransaction();
             t.setType(AccountTransaction.Type.DIVIDENDS);
             return t;
         })
 
-                        .section("isin", "wkn")
+                        // Nominale ISIN: DE000A14KRD3 WKN: A14KRD Ausschüttung
+                        // STK 35 Deutsche Konsum REIT-AG EUR 0,40 p.STK
+                        .section("isin", "wkn", "shares", "name", "name1")
                         .match("Nominale *ISIN: *(?<isin>[^ ]*) *WKN: *(?<wkn>[^ ]*) .*")
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
-
-                        .section("shares")
-                        .match("STK *(?<shares>[\\.\\d]+[,\\d]*) .*")
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        .match("STK *(?<shares>[\\.\\d]+[,\\d]*) (?<name>.*) \\w{3} .*")
+                        .match("(?<name1>.*)")
+                        .assign((t, v) -> {
+                            if (!v.get("name1").startsWith("Zahlungszeitraum"))
+                                v.put("name", v.get("name") + " " + v.get("name1"));
+                            t.setShares(asShares(v.get("shares")));
+                            t.setSecurity(getOrCreateSecurity(v));
+                        })
 
                         .section("date", "amount", "currency")
                         .match("Zu Gunsten Konto \\d+ Valuta: (?<date>\\d+.\\d+.\\d{4}) *(?<currency>\\w{3}) *(?<amount>[\\d.]+,\\d{2})")
@@ -333,10 +343,13 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
             return t;
         })
     
-                        .section("isin", "wkn", "name", "shares") //
+                        .section("isin", "wkn", "name", "shares", "name1") //
                         .match("^Nominale *ISIN: *(?<isin>[^ ]*) *WKN: *(?<wkn>[^ ]*)$") //
                         .match("^STK (?<shares>[\\.\\d]+[,\\d]*) (?<name>.*)") //
+                        .match("(?<name1>.*)")
                         .assign((t, v) -> {
+                            if (!v.get("name1").startsWith("Zahlungszeitraum"))
+                                v.put("name", v.get("name") + " " + v.get("name1"));
                             t.setSecurity(getOrCreateSecurity(v));
                             t.setShares(asShares(v.get("shares")));
                         })
