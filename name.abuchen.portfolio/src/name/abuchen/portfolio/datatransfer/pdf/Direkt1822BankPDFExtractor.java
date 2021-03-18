@@ -307,12 +307,10 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                     
                     // Kurswert 52,50- EUR
                     // Kundenbonifikation 100 % vom Ausgabeaufschlag 2,50 EUR
-                    // Ausmachender Betrag 50,00- EUR
                     // Ausgabeaufschlag pro Anteil 5,00 %
-                    .section("feeFx", "feeFy", "amountFx", "amount", "currency").optional()
-                    .match("^Kurswert (?<amountFx>[.,\\d]+)[-]? \\w{3}")
+                    .section("feeFx", "feeFy", "amountFx", "currency").optional()
+                    .match("^Kurswert (?<amountFx>[.,\\d]+)[-]? (?<currency>\\w{3})")
                     .match("^Kundenbonifikation (?<feeFy>[.,\\d]+) % vom Ausgabeaufschlag [.,\\d]+ \\w{3}")
-                    .match("^Ausmachender Betrag (?<amount>[.,\\d]+)[-]? (?<currency>\\w{3})")
                     .match("^Ausgabeaufschlag pro Anteil (?<feeFx>[.,\\d]+) %")
                     .assign((t, v) -> {
                         // Fee in percent
