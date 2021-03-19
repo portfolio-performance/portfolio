@@ -69,10 +69,12 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
 
                     // Stück 13 COMSTA.-MSCI EM.MKTS.TRN U.ETF LU0635178014 (ETF127)
                     // INHABER-ANTEILE I O.N.
-                    .section("isin", "wkn", "name", "shares", "nameContinued")
+                    .section("isin", "wkn", "name", "shares", "name1")
                     .match("^(St.ck) (?<shares>[\\d.,]+) (?<name>.*) (?<isin>[\\w]{12}.*) (\\((?<wkn>.*)\\).*)")
-                    .match("(?<nameContinued>.*)")
+                    .match("(?<name1>.*)")
                     .assign((t, v) -> {
+                        if (!v.get("name1").startsWith("B.rse"))
+                            v.put("name", v.get("name") + " " + v.get("name1"));
                         t.setSecurity(getOrCreateSecurity(v));
                         t.setShares(asShares(v.get("shares")));
                     })
@@ -165,10 +167,12 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
         pdfTransaction
                     // Stück 13 COMSTA.-MSCI EM.MKTS.TRN U.ETF LU0635178014 (ETF127)
                     // INHABER-ANTEILE I O.N.
-                    .section("isin", "wkn", "name", "shares", "nameContinued")
+                    .section("isin", "wkn", "name", "shares", "name1")
                     .match("^(St.ck) (?<shares>[\\d.,]+) (?<name>.*) (?<isin>[\\w]{12}.*) (\\((?<wkn>.*)\\).*)")
-                    .match("(?<nameContinued>.*)")
-                    .assign((t, v) -> {                
+                    .match("(?<name1>.*)")
+                    .assign((t, v) -> {
+                        if (!v.get("name1").startsWith("B.rse"))
+                            v.put("name", v.get("name") + " " + v.get("name1"));
                         t.setSecurity(getOrCreateSecurity(v));
                         t.setShares(asShares(v.get("shares")));
                     })
@@ -198,10 +202,10 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType newType = new DocumentType(".*Gutschrift.*");
+        DocumentType newType = new DocumentType("(Gutschrift|Aussch.ttung Investmentfonds).*");
         this.addDocumentTyp(newType);
 
-        Block block = new Block(".*Gutschrift.*");
+        Block block = new Block("(Gutschrift|Aussch.ttung Investmentfonds).*");
         newType.addBlock(block);
         Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>()
             .subject(() -> {
@@ -213,10 +217,12 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
         pdfTransaction
                     // Stück 920 ISHSIV-FA.AN.HI.YI.CO.BD U.ETF IE00BYM31M36 (A2AFCX)
                     // REGISTERED SHARES USD O.N.
-                    .section("isin", "wkn", "name", "shares", "nameContinued")
+                    .section("isin", "wkn", "name", "shares", "name1")
                     .match("^(Stück) (?<shares>[\\d.,]+) (?<name>.*) (?<isin>[\\w]{12}.*) (\\((?<wkn>.*)\\).*)")
-                    .match("(?<nameContinued>.*)")
+                    .match("(?<name1>.*)")
                     .assign((t, v) -> {
+                        if (!v.get("name1").startsWith("Zahlbarkeitstag"))
+                            v.put("name", v.get("name") + " " + v.get("name1"));
                         t.setSecurity(getOrCreateSecurity(v));
                         t.setShares(asShares(v.get("shares")));
                     })
@@ -237,7 +243,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                     // Devisenkurs EUR / USD 1,2095
                     // Devisenkursdatum 02.01.2018
                     // Ausschüttung 113,16 USD 93,56+ EUR
-                    .section("exchangeRate", "fxAmount", "fxCurrency", "amount", "currency")
+                    .section("exchangeRate", "fxAmount", "fxCurrency", "amount", "currency").optional()
                     .match("^(Devisenkurs) .* (?<exchangeRate>[\\d.]+,\\d+)$")
                     .match("^(Ausschüttung) (?<fxAmount>[\\d.]+,\\d+) (?<fxCurrency>\\w{3}) (?<amount>[\\d.]+,\\d+)\\+ (?<currency>\\w{3})$")                        
                     .assign((t, v) -> {
