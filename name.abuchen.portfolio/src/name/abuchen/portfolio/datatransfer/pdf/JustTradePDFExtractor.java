@@ -18,7 +18,7 @@ import name.abuchen.portfolio.money.Money;
 
 public class JustTradePDFExtractor extends AbstractPDFExtractor
 {
-
+    private static final String FLAG_WITHHOLDING_TAX_FOUND  = "false"; //$NON-NLS-1$
     private static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("d LLL yyyy HH:mm:ss", //$NON-NLS-1$
                     Locale.GERMANY);
 
@@ -177,8 +177,6 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(BuySellEntryItem::new);
-        
-        
     }
 
     @SuppressWarnings("nls")
@@ -242,26 +240,45 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction
+                // Einbehaltende Quellensteuer EUR 2,14
+                .section("quellensteinbeh", "currency").optional()
+                .match("^Einbehaltende Quellensteuer (?<currency>\\w{3}) (?<quellensteinbeh>[.,\\d]+)$")
+                .assign((t, v) ->  {
+                    type.getCurrentContext().put(FLAG_WITHHOLDING_TAX_FOUND, "true");
+                    addTax(type, t, v, "quellensteinbeh");
+                })
 
-            // Anrechenbare Quellensteuer EUR 2,14
-            .section("tax", "currency").optional()
-            .match("^Anrechenbare Quellensteuer (?<currency>\\w{3}) (?<tax>[.,\\d]+)$")
-            .assign((t, v) -> processTaxEntries(t, v, type));
+                // Anrechenbare Quellensteuer EUR 2,14
+                .section("quellenstanr", "currency").optional()
+                .match("^Anrechenbare Quellensteuer (?<currency>\\w{3}) (?<quellenstanr>[.,\\d]+)$")
+                .assign((t, v) -> addTax(type, t, v, "quellenstanr"));
     }
 
     @SuppressWarnings("nls")
-    private void processTaxEntries(Object t, Map<String, String> v, DocumentType type)
+    private void addTax(DocumentType type, Object t, Map<String, String> v, String taxtype)
     {
-        if (t instanceof name.abuchen.portfolio.model.Transaction)
+        // Wenn es 'Einbehaltene Quellensteuer' gibt, dann die weiteren
+        // Quellensteuer-Arten nicht berücksichtigen.
+        if (checkWithholdingTax(type, taxtype))
         {
-            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-            PDFExtractorUtils.checkAndSetTax(tax, (name.abuchen.portfolio.model.Transaction) t, type);
+            ((name.abuchen.portfolio.model.Transaction) t)
+                    .addUnit(new Unit(Unit.Type.TAX, 
+                                    Money.of(asCurrencyCode(v.get("currency")), 
+                                                    asAmount(v.get(taxtype)))));
         }
-        else
+    }
+
+    @SuppressWarnings("nls")
+    private boolean checkWithholdingTax(DocumentType type, String taxtype)
+    {
+        if (Boolean.valueOf(type.getCurrentContext().get(FLAG_WITHHOLDING_TAX_FOUND)))
         {
-            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-            PDFExtractorUtils.checkAndSetTax(tax, ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
+            if ("quellenstanr".equalsIgnoreCase(taxtype))
+            { 
+                return false; 
+            }
         }
+        return true;
     }
 
     @Override
