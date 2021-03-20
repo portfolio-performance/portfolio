@@ -410,23 +410,60 @@ public class DZBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
 
-        Security security = results.stream().filter(i -> i instanceof SecurityItem).findAny()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getName(), is("VANGUARD FTSE ALL-WORLD U.ETF"));
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
         assertThat(security.getIsin(), is("IE00B3RBWM25"));
         assertThat(security.getWkn(), is("A1JX52"));
+        assertThat(security.getName(), is("VANGUARD FTSE ALL-WORLD U.ETF REGISTERED SHARES USD DIS.ON"));
 
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
-                        .findAny().orElseThrow(IllegalArgumentException::new).getSubject();
+        AccountTransaction t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
-        // dividend
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-31T00:00")));
-        assertThat(transaction.getSecurity(), is(security));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(26.48)));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX).getAmount(), is(Values.Amount.factorize(2.45)));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(100)));
-        
+        assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(t.getShares(), is(Values.Share.factorize(100)));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2019-12-12T00:00")));
+        assertThat(t.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(24.03))));
+
+        assertThat(t.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(26.48))));
+        assertThat(t.getUnitSum(Unit.Type.TAX), 
+                        is(Money.of("EUR", Values.Amount.factorize(2.17 + 0.11 + 0.17))));
+        assertThat(t.getUnitSum(Unit.Type.FEE), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+    }
+
+    @Test
+    public void testDividenden1()
+    {
+        DZBankPDFExtractor extractor = new DZBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "DZBankDividenden1.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
+        assertThat(security.getIsin(), is("CA0679011084"));
+        assertThat(security.getWkn(), is("870450"));
+        assertThat(security.getName(), is("BARRICK GOLD CORP.  SHARES REGISTERED SHARES O.N."));
+
+        AccountTransaction t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(t.getShares(), is(Values.Share.factorize(205)));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-02-26T00:00")));
+        assertThat(t.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(9.92))));
+
+        assertThat(t.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(15.39))));
+        assertThat(t.getUnitSum(Unit.Type.TAX), 
+                        is(Money.of("EUR", Values.Amount.factorize(3.85 + 1.54 + 0.08))));
+        assertThat(t.getUnitSum(Unit.Type.FEE), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
     }
 
     @Test
