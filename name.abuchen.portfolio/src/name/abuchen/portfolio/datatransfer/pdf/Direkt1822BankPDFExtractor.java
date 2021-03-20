@@ -326,7 +326,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                         feeFy = (amountFx / (1 + feeFx / 100)) * (feeFx / 100) * (feeFy / 100);
                         String fee =  Double.toString((amountFx / (1 + feeFx / 100)) * (feeFx / 100) - feeFy).replace('.', ',');
                         v.put("fee", fee);
-        
+
                         processFeeEntries(t, v, type);
                     });
     }
