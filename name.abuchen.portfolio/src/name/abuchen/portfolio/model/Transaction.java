@@ -3,6 +3,7 @@ package name.abuchen.portfolio.model;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -156,9 +157,12 @@ public abstract class Transaction implements Annotated, Adaptable
 
     private List<Unit> units;
 
+    private Instant updatedAt;
+
     public Transaction()
     {
         this.uuid = UUID.randomUUID().toString();
+        this.updatedAt = Instant.now();
     }
 
     public Transaction(LocalDateTime date, String currencyCode, long amount)
@@ -177,12 +181,12 @@ public abstract class Transaction implements Annotated, Adaptable
         this.shares = shares;
         this.note = note;
     }
-    
+
     public String getUUID()
     {
         return uuid;
     }
-    
+
     void generateUUID()
     {
         uuid = UUID.randomUUID().toString();
@@ -196,6 +200,7 @@ public abstract class Transaction implements Annotated, Adaptable
     public void setDateTime(LocalDateTime date)
     {
         this.date = date;
+        this.updatedAt = Instant.now();
     }
 
     public String getCurrencyCode()
@@ -206,6 +211,7 @@ public abstract class Transaction implements Annotated, Adaptable
     public void setCurrencyCode(String currencyCode)
     {
         this.currencyCode = currencyCode;
+        this.updatedAt = Instant.now();
     }
 
     public long getAmount()
@@ -216,6 +222,7 @@ public abstract class Transaction implements Annotated, Adaptable
     public void setAmount(long amount)
     {
         this.amount = amount;
+        this.updatedAt = Instant.now();
     }
 
     public Money getMonetaryAmount()
@@ -227,6 +234,7 @@ public abstract class Transaction implements Annotated, Adaptable
     {
         this.currencyCode = value.getCurrencyCode();
         this.amount = value.getAmount();
+        this.updatedAt = Instant.now();
     }
 
     public Security getSecurity()
@@ -242,6 +250,7 @@ public abstract class Transaction implements Annotated, Adaptable
     public void setSecurity(Security security)
     {
         this.security = security;
+        this.updatedAt = Instant.now();
     }
 
     public CrossEntry getCrossEntry()
@@ -252,6 +261,7 @@ public abstract class Transaction implements Annotated, Adaptable
     /* package */void setCrossEntry(CrossEntry crossEntry)
     {
         this.crossEntry = crossEntry;
+        this.updatedAt = Instant.now();
     }
 
     public long getShares()
@@ -262,6 +272,7 @@ public abstract class Transaction implements Annotated, Adaptable
     public void setShares(long shares)
     {
         this.shares = shares;
+        this.updatedAt = Instant.now();
     }
 
     @Override
@@ -274,6 +285,17 @@ public abstract class Transaction implements Annotated, Adaptable
     public void setNote(String note)
     {
         this.note = note;
+        this.updatedAt = Instant.now();
+    }
+
+    public Instant getUpdatedAt()
+    {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt)
+    {
+        this.updatedAt = updatedAt;
     }
 
     public Stream<Unit> getUnits()
@@ -295,6 +317,7 @@ public abstract class Transaction implements Annotated, Adaptable
     public void clearUnits()
     {
         units = null;
+        this.updatedAt = Instant.now();
     }
 
     public void addUnit(Unit unit)
@@ -307,6 +330,7 @@ public abstract class Transaction implements Annotated, Adaptable
         if (units == null)
             units = new ArrayList<>();
         units.add(unit);
+        this.updatedAt = Instant.now();
     }
 
     public void addUnits(Stream<Unit> items)
@@ -315,6 +339,7 @@ public abstract class Transaction implements Annotated, Adaptable
             units = new ArrayList<>();
 
         items.forEach(units::add);
+        this.updatedAt = Instant.now();
     }
 
     public void removeUnit(Unit unit)
@@ -322,6 +347,7 @@ public abstract class Transaction implements Annotated, Adaptable
         if (units == null)
             units = new ArrayList<>();
         units.remove(unit);
+        this.updatedAt = Instant.now();
     }
 
     /**

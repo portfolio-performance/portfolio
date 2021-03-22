@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.model;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -73,6 +74,8 @@ public final class Security implements Attributable, InvestmentVehicle
 
     private boolean isRetired = false;
 
+    private Instant updatedAt;
+
     @Deprecated
     private String type;
 
@@ -131,6 +134,7 @@ public final class Security implements Attributable, InvestmentVehicle
     public void setOnlineId(String onlineId)
     {
         this.onlineId = onlineId;
+        this.updatedAt = Instant.now();
     }
 
     @Override
@@ -155,6 +159,7 @@ public final class Security implements Attributable, InvestmentVehicle
     public void setCurrencyCode(String currencyCode)
     {
         this.currencyCode = currencyCode;
+        this.updatedAt = Instant.now();
     }
 
     /**
@@ -178,6 +183,7 @@ public final class Security implements Attributable, InvestmentVehicle
     public void setTargetCurrencyCode(String targetCurrencyCode)
     {
         this.targetCurrencyCode = targetCurrencyCode;
+        this.updatedAt = Instant.now();
     }
 
     @Override
@@ -190,6 +196,7 @@ public final class Security implements Attributable, InvestmentVehicle
     public void setNote(String note)
     {
         this.note = note;
+        this.updatedAt = Instant.now();
     }
 
     public String getIsin()
@@ -200,6 +207,7 @@ public final class Security implements Attributable, InvestmentVehicle
     public void setIsin(String isin)
     {
         this.isin = isin;
+        this.updatedAt = Instant.now();
     }
 
     public String getTickerSymbol()
@@ -210,6 +218,7 @@ public final class Security implements Attributable, InvestmentVehicle
     public void setTickerSymbol(String tickerSymbol)
     {
         this.tickerSymbol = tickerSymbol;
+        this.updatedAt = Instant.now();
     }
 
     public String getWkn()
@@ -220,6 +229,7 @@ public final class Security implements Attributable, InvestmentVehicle
     public void setWkn(String wkn)
     {
         this.wkn = wkn;
+        this.updatedAt = Instant.now();
     }
 
     public String getCalendar()
@@ -230,6 +240,7 @@ public final class Security implements Attributable, InvestmentVehicle
     public void setCalendar(String calendar)
     {
         this.calendar = calendar;
+        this.updatedAt = Instant.now();
     }
 
     /**
@@ -289,6 +300,7 @@ public final class Security implements Attributable, InvestmentVehicle
     public void setFeed(String feed)
     {
         this.feed = feed;
+        this.updatedAt = Instant.now();
     }
 
     public String getFeedURL()
@@ -299,6 +311,7 @@ public final class Security implements Attributable, InvestmentVehicle
     public void setFeedURL(String feedURL)
     {
         this.feedURL = feedURL;
+        this.updatedAt = Instant.now();
     }
 
     public List<SecurityPrice> getPrices()
@@ -492,6 +505,7 @@ public final class Security implements Attributable, InvestmentVehicle
     public void setLatestFeed(String latestFeed)
     {
         this.latestFeed = latestFeed;
+        this.updatedAt = Instant.now();
     }
 
     public String getLatestFeedURL()
@@ -502,6 +516,7 @@ public final class Security implements Attributable, InvestmentVehicle
     public void setLatestFeedURL(String latestFeedURL)
     {
         this.latestFeedURL = latestFeedURL;
+        this.updatedAt = Instant.now();
     }
 
     public LatestSecurityPrice getLatest()
@@ -538,6 +553,7 @@ public final class Security implements Attributable, InvestmentVehicle
     public void setRetired(boolean isRetired)
     {
         this.isRetired = isRetired;
+        this.updatedAt = Instant.now();
     }
 
     public List<SecurityEvent> getEvents()
@@ -661,6 +677,7 @@ public final class Security implements Attributable, InvestmentVehicle
     public void setAttributes(Attributes attributes)
     {
         this.attributes = attributes;
+        this.updatedAt = Instant.now();
     }
 
     /**
@@ -741,6 +758,16 @@ public final class Security implements Attributable, InvestmentVehicle
         return false;
     }
 
+    public Instant getUpdatedAt()
+    {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt)
+    {
+        this.updatedAt = updatedAt;
+    }
+
     public Security deepCopy()
     {
         Security answer = new Security();
@@ -771,6 +798,8 @@ public final class Security implements Attributable, InvestmentVehicle
             answer.properties = new ArrayList<>(properties);
 
         answer.isRetired = isRetired;
+
+        answer.updatedAt = updatedAt;
 
         return answer;
     }
