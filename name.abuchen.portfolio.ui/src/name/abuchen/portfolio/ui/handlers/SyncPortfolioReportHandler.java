@@ -45,7 +45,7 @@ public class SyncPortfolioReportHandler
         }
 
         MenuHelper.getActiveClientInput(part).ifPresent(
-                        clientInput -> new AbstractClientJob(clientInput.getClient(), Messages.DivvyDiaryMsgUploading)
+                        clientInput -> new AbstractClientJob(clientInput.getClient(), "Sychronizing Portfolio with Portfolio Report")
                         {
                             @Override
                             protected IStatus run(IProgressMonitor monitor)
