@@ -1,7 +1,6 @@
 package name.abuchen.portfolio.online.portfolioreport;
 
 import java.time.Instant;
-import java.util.UUID;
 
 public class PRSecurity
 {
