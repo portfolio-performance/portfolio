@@ -126,6 +126,7 @@ public class PortfolioReportSync
                 remote.setActive(!local.isRetired());
                 remote.setNote(local.getNote());
                 remote.setSecurityUuid(local.getOnlineId());
+                remote.setUpdatedAt(local.getUpdatedAt());
 
                 api.updateSecurity(portfolioId, remote);
             }
@@ -140,6 +141,7 @@ public class PortfolioReportSync
                 remote.setActive(!local.isRetired());
                 remote.setNote(local.getNote());
                 remote.setSecurityUuid(local.getOnlineId());
+                remote.setUpdatedAt(local.getUpdatedAt());
 
                 api.updateSecurity(portfolioId, remote);
             }
@@ -172,8 +174,8 @@ public class PortfolioReportSync
                 remote.setName(local.getName());
                 remote.setNote(local.getNote());
                 remote.setActive(!local.isRetired());
-
                 remote.setCurrencyCode(local.getCurrencyCode());
+                remote.setUpdatedAt(local.getUpdatedAt());
 
                 api.updateAccount(portfolioId, remote);
             }
@@ -183,8 +185,8 @@ public class PortfolioReportSync
                 remote.setName(local.getName());
                 remote.setNote(local.getNote());
                 remote.setActive(!local.isRetired());
-
                 remote.setCurrencyCode(local.getCurrencyCode());
+                remote.setUpdatedAt(local.getUpdatedAt());
 
                 api.updateAccount(portfolioId, remote);
             }
@@ -204,6 +206,7 @@ public class PortfolioReportSync
                 remote.setNote(local.getNote());
                 remote.setActive(!local.isRetired());
                 remote.setReferenceAccountUuid(local.getReferenceAccount().getUUID());
+                remote.setUpdatedAt(local.getUpdatedAt());
 
                 api.updateAccount(portfolioId, remote);
             }
@@ -214,6 +217,7 @@ public class PortfolioReportSync
                 remote.setNote(local.getNote());
                 remote.setActive(!local.isRetired());
                 remote.setReferenceAccountUuid(local.getReferenceAccount().getUUID());
+                remote.setUpdatedAt(local.getUpdatedAt());
 
                 api.updateAccount(portfolioId, remote);
             }
@@ -237,6 +241,7 @@ public class PortfolioReportSync
         pr.setDatetime(pp.getDateTime());
         pr.setNote(pp.getNote());
         pr.setPortfolioSecurityUuid(pp.getSecurity().getUUID());
+        pr.setUpdatedAt(pp.getUpdatedAt());
 
         long shares = pp.getShares();
         long amount = pp.getAmount();
@@ -317,6 +322,7 @@ public class PortfolioReportSync
         pr.setAccountUuid(account.getUUID());
         pr.setDatetime(pp.getDateTime());
         pr.setNote(pp.getNote());
+        pr.setUpdatedAt(pp.getUpdatedAt());
 
         // Prepare additional transaction in case we need it later
         PRTransaction pr2 = new PRTransaction(pr);
