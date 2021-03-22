@@ -61,6 +61,8 @@ public class PortfolioReportSync
         syncTransactions(portfolioId);
 
         client.setProperty(SYNCHRONIZED_AT_KEY, synchronizationStarted.toString());
+
+        PortfolioLog.warning("Sync finished " + Instant.now().toString());
     }
 
     private long getOrCreatePortfolio() throws IOException
