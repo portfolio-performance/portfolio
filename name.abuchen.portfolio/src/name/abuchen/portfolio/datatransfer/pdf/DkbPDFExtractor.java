@@ -454,7 +454,6 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                 {
                     context.put(IS_JOINT_ACCOUNT, Boolean.TRUE.toString());
                     bJointAccount = true;
-                    System.out.println(bJointAccount);
                     break;
                 }
             }
