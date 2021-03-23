@@ -198,7 +198,7 @@ public final class TextUtil
         // b) the limit of 200 characters to search has not been hit
         // c) a prefix *and* a postfix have been found
 
-        if (start < end && start < search && end > length - search && (start > 0 && end < length - 1))
+        if (start < end && start < search && end > length - search && (start > 0 && end < length))
             return json.substring(start, end);
 
         return json;
