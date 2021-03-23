@@ -1,0 +1,44 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Abcd BIC: ECTRATWW
+Abcd Abcdefghijk Referenz: 12-123456789
+Nr. 01 Kundennummer: 12345
+1234 Abcdefghi Wertpapierdepot: 12345-1
+Austria
+Wien, 17.09.2015
+WERTPAPIERBESTÄTIGUNG
+BARDIVIDENDE
+Wertpapierdetails
+ISIN : CA0679011084
+Wertpapierbezeichnung : BARRICK GOLD CORP.
+Informationen zur Kapitalmaßnahme
+Anspruchsberechtigter : 35
+Bestand
+Preis : USD 0.02
+Ex-Tag : 27.08.2015
+Zahltag : 15.09.2015
+Lagerort : Frankfurt Am Main
+Verwahrart : WR
+Angaben zur Geld-Ausschüttung
+Gutschrift/Belastung : Gutschrift
+Valutatag : 15.09.2015
+Brutto-Betrag : USD 0.7
+Steuer : Quellensteuer
+Steuern : USD 0.18
+Steuer : KESt1
+Steuern : USD 0.07
+Gesamtbetrag : USD 0.45
+Devisenkurs : 0.888889
+Gesamtbetrag (in : EUR 0.4
+Kontowährung)
+Wir erkennen Ihr EUR Konto Nummer AT123450000000012345 mit Valuta 15.09.2015.
+Die Buchung erfolgt “Eingang vorbehalten”.
+Vorbehaltlich Eingang bzw. nachträglicher Storni/Umbuchungen seitens Lagerstelle/Partner.
+Überprüfen Sie bitte die Richtigkeit dieser Bestätigung. Sollten Sie innerhalb von 2 Monaten nach Erhalt dieser Bestätigung
+keine Einwände gegen die Richtigkeit erheben, so gelten die angeführten Erklärungen und Leistungen als genehmigt.
+BROKERJET – der Online Broker der Erste Bank
+Erste Bank der oesterreichischen Sparkassen AG (Erste Bank Oesterreich) | Graben 21 | A-1010 Wien
+Kundenverkehr Brokerjet: Mariahilfer Straße 121b | A-1060 Wien
+E-mail: brokerjet.info@erstebank.at | Fax: +43-1-53689-13550 | www.brokerjet.at
+Sitz Wien | Handelsgericht Wien | FB-Nr. 286283 f | DVR 3002133 | UID ATU63358299
