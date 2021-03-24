@@ -18,7 +18,7 @@ import name.abuchen.portfolio.money.Money;
 
 public class JustTradePDFExtractor extends AbstractPDFExtractor
 {
-    private static final String FLAG_WITHHOLDING_TAX_FOUND  = "false"; //$NON-NLS-1$
+    private static final String FLAG_WITHHOLDING_TAX_FOUND  = "exchangeRate"; //$NON-NLS-1$
     private static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("d LLL yyyy HH:mm:ss", //$NON-NLS-1$
                     Locale.GERMANY);
 
