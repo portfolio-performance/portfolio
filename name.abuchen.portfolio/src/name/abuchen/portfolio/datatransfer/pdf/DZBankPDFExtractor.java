@@ -20,7 +20,7 @@ import name.abuchen.portfolio.money.Money;
 public class DZBankPDFExtractor extends AbstractPDFExtractor
 {
     private static final String EXCHANGE_RATE = "exchangeRate"; //$NON-NLS-1$
-    private static final String FLAG_WITHHOLDING_TAX_FOUND  = "false"; //$NON-NLS-1$
+    private static final String FLAG_WITHHOLDING_TAX_FOUND  = "exchangeRate"; //$NON-NLS-1$
     
     public DZBankPDFExtractor(Client client)
     {
