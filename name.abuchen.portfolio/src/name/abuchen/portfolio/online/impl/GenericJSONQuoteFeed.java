@@ -358,7 +358,8 @@ public class GenericJSONQuoteFeed implements QuoteFeed
             // 23:20:06 can't be parsed by this method
             object = object * 24 * 60 * 60;
         }
-
+        // The following does NOT do a time zone conversion. If the API gives epochs as dates,
+        // we always convert them to dates with respect to UTC (independent of the user timezone).
         return LocalDateTime.ofEpochSecond(object, 0, ZoneOffset.UTC).toLocalDate();
     }
 }

@@ -507,10 +507,18 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private void addPortfolioTransactions()
     {
-        DocumentType type = new DocumentType("Transaktionsübersicht|Transacciones|Transacties|Transactions");
+        // -------------------------------------
+        // Information:
+        //
+        // If you make changes to the regEx, the examples will help you to adjust it correctly.
+        // Always check where and on which side the currency, amount, exchange rate and fees are!
+        // Please do not delete these examples!
+        // -------------------------------------
+
+        DocumentType type = new DocumentType("Transaktionsübersicht|Transacciones|Transacties|Transactions|Transakcje");
         this.addDocumentTyp(type);
-        
-        Block blockBuy = new Block("^\\d+-\\d+-\\d{4} \\d+:\\d+ .* \\w{12} .* (\\w{3}|\\w{3} \\w{4}) .*([.\\d]+,\\d{2}|\\w{3})$"); 
+
+        Block blockBuy = new Block("^\\d+-\\d+-\\d{4} \\d+:\\d+ .* \\w{12} .* (\\w{3}|\\w{3} \\w{4}) .*([.\\d]+,\\d{2}|\\w{3})$");
         type.addBlock(blockBuy);
 
         blockBuy.set(new Transaction<BuySellEntry>()
@@ -523,344 +531,570 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
 
                         .oneOf(
 
+                            // -------------------------------------
+                            // without exchange rate
+                            // without fee
+                            // without stock exchange place
+                            // Money        --> \d,\d OR \d.\d,\d
+                            // -------------------------------------
+                            // Formatting:
+                            // DateTime | Name | ISIN | Stock Exchange | Shares | Quote | Market value | Local market value | Total amount
+                            // -------------------------------------          
                             // 08-02-2019 13:27 ODX2 C11000.00 08FEB19 DE000C25KFE8 ERX -3 EUR 0,00 EUR 0,00 EUR 0,00 EUR 0,00
                             // 09-07-2019 14:08 VANGUARD FTSE AW IE00B3RBWM25 EAM 3 EUR 77,10 EUR -231,30 EUR -231,30 EUR -231,30
-
                             section -> section
-                                .attributes("date", "name", "isin", "shares", "currency", "amount")    //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
-                                .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) (?<name>.*) (?<isin>\\w{12}) \\w{3} (?<shares>[-]?[.\\d]+[,\\d]*)" 
-                                                // quote
+                                .attributes("date", "name", "isin", "shares", "currency", "amount")
+                                .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) "
+                                                + "(?<name>.*) "
+                                                + "(?<isin>\\w{12}) "
+                                                + "\\w{3} "
+                                                + "(?<shares>[-]?[.\\d]+[,\\d]*)" 
                                                 + " \\w{3} [-.,\\d]*" 
-                                                 // gross value transaction currency
                                                 + " \\w{3} [-.,\\d]*" 
-                                                // gross value account currency
                                                 + " \\w{3} [-.,\\d]*" 
-                                                // total amount
-                                                + " (?<currency>\\w{3}) -?(?<amount>[.,\\d]*)$") 
+                                                + " (?<currency>\\w{3}) -?(?<amount>[.,\\d]*)$")
                                 .assign((t, v) -> {
                                     t.setSecurity(getOrCreateSecurity(v));
-                                    t.setDate(asDate(v.get("date"))); 
-                                    if (v.get("shares").startsWith("-"))  
+                                    t.setDate(asDate(v.get("date")));
+                                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                    t.setAmount(asAmount(v.get("amount")));
+
+                                    if (v.get("shares").startsWith("-"))
                                     {
                                         t.setType(PortfolioTransaction.Type.SELL);
-                                        t.setShares(asShares(
-                                                        v.get("shares").replaceFirst("-", "")));   
+                                        t.setShares(asShares(v.get("shares").replaceFirst("-", "")));
                                     }
                                     else
                                     {
-                                        t.setShares(asShares(v.get("shares"))); 
+                                        t.setShares(asShares(v.get("shares")));
                                     }
-                                    t.setCurrencyCode(asCurrencyCode(v.get("currency"))); 
-                                    t.setAmount(asAmount(v.get("amount"))); 
                             }),
 
+                            // -------------------------------------
+                            // without exchange rate
+                            // without fee
+                            // without stock exchange place
+                            // Money        --> \d,\d   OR  \d.\d,\d    OR  \d\s \d\s,\d
+                            // -------------------------------------
+                            // Formatting:
+                            // DateTime | Name | ISIN | Stock Exchange | Shares | Quote | Market value | Local market value | Total amount
+                            // -------------------------------------     
+                            // 13-03-2018 00:00 BAUMOT GROUP AG O.N DE000A2DAM11 XET -350 1,84 EUR 644,00 EUR 644,00 EUR 644,00 EUR
+                            // 22-07-2020 00:00 PHARMA MAR SA ES0169501022 MAD 21 114,66 EUR -2 407,86 EUR -2 407,86 EUR -2 407,86 EUR
+                            section -> section
+                                .attributes("date", "name", "isin", "shares", "currency", "amount")
+                                .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) "
+                                                + "(?<name>.*) "
+                                                + "(?<isin>\\w{12}) "
+                                                + "\\w{3} "
+                                                + "(?<shares>[-]?[.\\d]+[,\\d]*) "
+                                                + "[-.,\\d\\s]* \\w{3} "
+                                                + "[-.,\\d\\s]* \\w{3} "
+                                                + "[-.,\\d\\s]* \\w{3} "
+                                                + "-?(?<amount>[.,\\d\\s]*) (?<currency>\\w{3})$") 
+                                .assign((t, v) -> {
+                                    v.put("amount", stripBlanks(v.get("amount")));
+
+                                    t.setSecurity(getOrCreateSecurity(v));
+                                    t.setDate(asDate(v.get("date")));
+                                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                    t.setAmount(asAmount(v.get("amount")));
+
+                                    if (v.get("shares").startsWith("-"))
+                                    {
+                                        t.setType(PortfolioTransaction.Type.SELL);
+                                        t.setShares(asShares(v.get("shares").replaceFirst("-", "")));
+                                    }
+                                    else
+                                    {
+                                        t.setShares(asShares(v.get("shares")));
+                                    }
+                            }),
+
+                            // -------------------------------------
+                            // without exchange rate
+                            // with fee
+                            // without stock exchange place
+                            // Money        --> \d,\d   OR  \d.\d,\d
+                            // -------------------------------------
+                            // Formatting:
+                            // DateTime | Name | ISIN | Stock Exchange | Shares | Quote | Market value | Local market value | Fee | Total amount
+                            // -------------------------------------  
                             // 07-02-2019 12:22 ODX2 C11200.00 08FEB19 DE000C25KFN9 ERX 1 EUR 30,00 EUR -150,00 EUR -150,00 EUR -0,90 EUR -150,90
                             // 01-04-2019 15:35 DEUTSCHE BANK AG NA O.N DE0005140008 XET -136 EUR 7,45 EUR 1.013,20 EUR 1.013,20 EUR -2,26 EUR 1.010,94
                             // 01-04-2019 12:20 DEUTSCHE BANK AG NA O.N DE0005140008 XET 18 EUR 7,353 EUR -132,35 EUR -132,35 EUR -0,03 EUR -132,38
-
                             section -> section
-                                .attributes("date", "name", "isin", "shares", "currencyFee", "fee", "currency", "amount")    //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
-                                .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) (?<name>.*) (?<isin>\\w{12}) \\w{3} (?<shares>[-]?[.\\d]+[,\\d]*)"  
-                                                // quote
-                                                + " \\w{3} [-.,\\d]*" 
-                                                // gross value transaction currency
-                                                + " \\w{3} [-.,\\d]*" 
-                                                // gross value local currency
-                                                + " \\w{3} [-.,\\d]*" 
-                                                // fees
-                                                + " (?<currencyFee>\\w{3}) -?(?<fee>[.,\\d]*)" 
-                                                // total amount
-                                                + " (?<currency>\\w{3}) -?(?<amount>[.,\\d]*)$") 
+                                .attributes("date", "name", "isin", "shares", "currencyFee", "fee", "currency", "amount")
+                                .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) "
+                                                + "(?<name>.*) "
+                                                + "(?<isin>\\w{12}) "
+                                                + "\\w{3} "
+                                                + "(?<shares>[-]?[.\\d]+[,\\d]*)"
+                                                + " \\w{3} [-.,\\d]*"
+                                                + " \\w{3} [-.,\\d]*"
+                                                + " \\w{3} [-.,\\d]*"
+                                                + " (?<currencyFee>\\w{3}) -?(?<fee>[.,\\d]*)"
+                                                + " (?<currency>\\w{3}) -?(?<amount>[.,\\d]*)$")
                                 .assign((t, v) -> {
                                     t.setSecurity(getOrCreateSecurity(v));
-                                    t.setDate(asDate(v.get("date"))); 
-                                    if (v.get("shares").startsWith("-"))   
+                                    t.setDate(asDate(v.get("date")));
+                                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                    t.setAmount(asAmount(v.get("amount")));
+
+                                    Money feeAmount = Money.of(asCurrencyCode(v.get("currencyFee")), asAmount(v.get("fee")));
+                                    t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, feeAmount));
+
+                                    if (v.get("shares").startsWith("-"))
                                     {
                                         t.setType(PortfolioTransaction.Type.SELL);
-                                        t.setShares(asShares(v.get("shares").replaceFirst("-", "")));   
+                                        t.setShares(asShares(v.get("shares").replaceFirst("-", "")));
                                     } 
-                                    else 
+                                    else
                                     {
-                                        t.setShares(asShares(v.get("shares"))); 
+                                        t.setShares(asShares(v.get("shares")));
                                     }
-                                    t.setCurrencyCode(asCurrencyCode(v.get("currency"))); 
-                                    t.setAmount(asAmount(v.get("amount")));   
-                                    Money feeAmount = Money.of(asCurrencyCode(v.get("currencyFee")), asAmount(v.get("fee")));  
-                                    t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, feeAmount));
                             }),
 
+                            // -------------------------------------
+                            // without exchange rate 
+                            // with fee
+                            // without stock exchange place
+                            // Money        --> \d,\d   OR  \d.\d,\d    OR     \d\s \d\s,\d
+                            // -------------------------------------
+                            // Formatting:
+                            // DateTime | Name | ISIN | Stock Exchange | Shares | Quote | Market value | Local market value | Fee | Total amount
+                            // -------------------------------------
+                            // 06-10-2020 12:47 ALMIRALL ES0157097017 MAD 128 10,45 EUR -1 337,60 EUR -1 337,60 EUR -4,67 EUR -1 342,27 EUR
+                            section -> section
+                                .attributes("date", "name", "isin", "shares", "currencyFee", "fee", "currency", "amount")
+                                .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) "
+                                                + "(?<name>.*) "
+                                                + "(?<isin>\\w{12}) "
+                                                + "\\w{3} "
+                                                + "(?<shares>[-]?[.\\d]+[,\\d]*) "
+                                                + "[-.,\\d\\s]* \\w{3} "
+                                                + "[-.,\\d\\s]* \\w{3} "
+                                                + "[-.,\\d\\s]* \\w{3} "
+                                                + "-?(?<fee>[.,\\d\\s]*) (?<currencyFee>\\w{3}) "
+                                                + "-?(?<amount>[.,\\d\\s]*) (?<currency>\\w{3})$") 
+                                .assign((t, v) -> {
+                                    v.put("fee", stripBlanks(v.get("fee")));
+                                    v.put("amount", stripBlanks(v.get("amount")));
+
+                                    t.setSecurity(getOrCreateSecurity(v));
+                                    t.setDate(asDate(v.get("date")));
+                                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                    t.setAmount(asAmount(v.get("amount")));
+
+                                    Money feeAmount = Money.of(asCurrencyCode(v.get("currencyFee")), asAmount(v.get("fee")));
+                                    t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, feeAmount));
+
+                                    if (v.get("shares").startsWith("-"))
+                                    {
+                                        t.setType(PortfolioTransaction.Type.SELL);
+                                        t.setShares(asShares(v.get("shares").replaceFirst("-", "")));
+                                    }
+                                    else
+                                    {
+                                        t.setShares(asShares(v.get("shares")));
+                                    }
+                            }),
+
+                            // -------------------------------------
+                            // with exchange rate
+                            // with fee
+                            // without stock exchange place
+                            // Money        --> \d,\d   OR  \d.\d,\d
+                            // exchangeRate --> \d,\d
+                            // -------------------------------------
+                            // Formatting:
+                            // DateTime | Name | ISIN | Stock Exchange | Shares | Quote | Amount in exchange rate | Market value | Local market value | Fee | Total amount
+                            // -------------------------------------
                             // 26-04-2019 17:52 TESLA MOTORS INC. - C US88160R1014 NDQ 2 USD 240,00 USD -480,00 EUR -430,69 1,1145 EUR -0,51 EUR -431,20
                             // 29-04-2019 16:11 TESLA MOTORS INC. - C US88160R1014 NDQ -3 USD 240,00 USD 720,00 EUR 645,04 1,1162 EUR -0,51 EUR 644,53
                             // 06-08-2019 20:20 WILLIAMS-SONOMA INC. US9699041011 NSY 1 USD 64,695 USD -64,70 EUR -57,85 1,1184 EUR -0,50 EUR -58,35
                             // 23-07-2019 15:30 RIO TINTO PLC COMMON S US7672041008 NSY -3 USD 61,04 USD 183,12 EUR 163,83 1,1177 EUR -0,51 EUR 163,32
-
-                            section -> section.attributes("date", "name", "isin", "shares", "currency", "amountFx", "exchangeRate", "currencyFee", "fee", "currencyAccount", "amount")
-                            .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) (?<name>.*) (?<isin>\\w{12}) \\w{3} (?<shares>[-]?[.\\d]+[,\\d]*)" 
-                                            + " \\w{3} -?[.\\d]+,\\d{2,4}" 
-                                            + " (?<currency>\\w{3}) -?(?<amountFx>[.\\d]+,\\d{2}).*" 
-                                            + " \\w{3} -?[.\\d]+,\\d{2}" 
-                                            + " (?<exchangeRate>[.\\d]+,\\d{1,6})" 
-                                            + " (?<currencyFee>\\w{3}) (?<fee>-?[.\\d]+,\\d{2})" 
-                                            + " (?<currencyAccount>\\w{3}) -?(?<amount>[.\\d]+,\\d{2})$") 
-                            .assign((t, v) -> {
+                            section -> section
+                                .attributes("date", "name", "isin", "shares", "currency", "amountFx", "exchangeRate", "currencyFee", "fee", "currencyAccount", "amount")
+                                .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) "
+                                                + "(?<name>.*) "
+                                                + "(?<isin>\\w{12}) "
+                                                + "\\w{3} "
+                                                + "(?<shares>[-]?[.\\d]+[,\\d]*)"
+                                                + " \\w{3} -?[.\\d]+,\\d{2,4}" 
+                                                + " (?<currency>\\w{3}) -?(?<amountFx>[.\\d]+,\\d{2}).*"
+                                                + " \\w{3} -?[.\\d]+,\\d{2}"
+                                                + " (?<exchangeRate>[.\\d]+,\\d{1,6})"
+                                                + " (?<currencyFee>\\w{3}) (?<fee>-?[.\\d]+,\\d{2})"
+                                                + " (?<currencyAccount>\\w{3}) -?(?<amount>[.\\d]+,\\d{2})$")
+                                .assign((t, v) -> {
                                     t.setSecurity(getOrCreateSecurity(v));
-                                    t.setDate(asDate(v.get("date"))); 
-                                    if (v.get("shares").startsWith("-"))   
+                                    t.setDate(asDate(v.get("date")));
+                                    t.setCurrencyCode(asCurrencyCode(v.get("currencyAccount")));
+                                    t.setAmount(asAmount(v.get("amount")));
+
+                                    if (v.get("shares").startsWith("-"))
                                     {
                                         t.setType(PortfolioTransaction.Type.SELL);
-                                        t.setShares(asShares(v.get("shares").replaceFirst("-", "")));   
-                                    } 
-                                    else 
-                                    {
-                                        t.setShares(asShares(v.get("shares"))); 
+                                        t.setShares(asShares(v.get("shares").replaceFirst("-", "")));
                                     }
-                                    t.setCurrencyCode(asCurrencyCode(v.get("currencyAccount"))); 
-                                    t.setAmount(asAmount(v.get("amount")));   
-                                    Money feeAmount = Money.of(asCurrencyCode(v.get("currencyFee")), asAmount(v.get("fee")));  
+                                    else
+                                    {
+                                        t.setShares(asShares(v.get("shares")));
+                                    }
+
+                                    Money feeAmount = Money.of(asCurrencyCode(v.get("currencyFee")), asAmount(v.get("fee")));
                                     t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, feeAmount));
-                                    
+
                                     long amountFx = asAmount(v.get("amountFx")); 
                                     String currencyFx = asCurrencyCode(v.get("currency")); 
 
                                     if (currencyFx.equals(t.getPortfolioTransaction().getSecurity().getCurrencyCode()))
                                     {
-                                        Money amount = Money.of(asCurrencyCode(v.get("currencyAccount")), asAmount(v.get("amount")));   
+                                        Money amount = Money.of(asCurrencyCode(v.get("currencyAccount")), asAmount(v.get("amount")));
                                         if (t.getPortfolioTransaction().getType() == PortfolioTransaction.Type.BUY)
                                         {
                                             amount = amount.subtract(feeAmount);
-                                        } 
-                                        else 
+                                        }
+                                        else
                                         {
                                             amount = amount.add(feeAmount);
                                         }
-                                        BigDecimal exchangeRate = BigDecimal.ONE.divide(asExchangeRate(v.get("exchangeRate")), 10, RoundingMode.HALF_DOWN); 
-                                        Money forex = Money.of(asCurrencyCode(v.get("currency")), amountFx); 
+                                        BigDecimal exchangeRate = BigDecimal.ONE.divide(asExchangeRate(v.get("exchangeRate")), 10, RoundingMode.HALF_DOWN);
+                                        Money forex = Money.of(asCurrencyCode(v.get("currency")), amountFx);
                                         Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, forex, exchangeRate);
                                         t.getPortfolioTransaction().addUnit(grossValue);
                                     }
                             }),
-
-                            // 22-10-2020 16:35 THE KRAFT HEINZ COMPAN  US5007541064 NDQ -40 31,21 USD 1.248,40 USD 1.054,33 EUR 1,1829 -0,64 EUR 1.053,69 EUR
-                            section -> section.attributes("date", "name", "isin", "shares", "currency", "amountFx", "exchangeRate", "currencyFee", "fee", "currencyAccount", "amount")
-                            .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) "
-                                            + "(?<name>.*) "
-                                            + "(?<isin>\\w{12}) "
-                                            + "\\w{3} "
-                                            + "(?<shares>[-]?[.\\d]+[,\\d]*) "
-                                            + "-?[.\\d]+,\\d{2,4} \\w{3} "
-                                            + "-?(?<amountFx>[.\\d]+,\\d{2}) (?<currency>\\w{3}).* "
-                                            + "-?[.\\d]+,\\d{2} \\w{3} "
-                                            + "(?<exchangeRate>[.\\d]+,\\d{1,6}) "
-                                            + "(?<fee>-?[.\\d]+,\\d{2}) (?<currencyFee>\\w{3}) "
-                                            + "-?(?<amount>[.\\d]+,\\d{2}) (?<currencyAccount>\\w{3})") 
-                            .assign((t, v) -> {
-                                    t.setSecurity(getOrCreateSecurity(v));
-                                    t.setDate(asDate(v.get("date"))); 
-                                    if (v.get("shares").startsWith("-"))   
-                                    {
-                                        t.setType(PortfolioTransaction.Type.SELL);
-                                        t.setShares(asShares(v.get("shares").replaceFirst("-", "")));   
-                                    } 
-                                    else 
-                                    {
-                                        t.setShares(asShares(v.get("shares"))); 
-                                    }
-                                    t.setCurrencyCode(asCurrencyCode(v.get("currencyAccount"))); 
-                                    t.setAmount(asAmount(v.get("amount")));   
-                                    Money feeAmount = Money.of(asCurrencyCode(v.get("currencyFee")), asAmount(v.get("fee")));  
-                                    t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, feeAmount));
-                                    
-                                    long amountFx = asAmount(v.get("amountFx")); 
-                                    String currencyFx = asCurrencyCode(v.get("currency")); 
-
-                                    if (currencyFx.equals(t.getPortfolioTransaction().getSecurity().getCurrencyCode()))
-                                    {
-                                        Money amount = Money.of(asCurrencyCode(v.get("currencyAccount")), asAmount(v.get("amount")));   
-                                        if (t.getPortfolioTransaction().getType() == PortfolioTransaction.Type.BUY)
-                                        {
-                                            amount = amount.subtract(feeAmount);
-                                        } 
-                                        else 
-                                        {
-                                            amount = amount.add(feeAmount);
-                                        }
-                                        BigDecimal exchangeRate = BigDecimal.ONE.divide(asExchangeRate(v.get("exchangeRate")), 10, RoundingMode.HALF_DOWN); 
-                                        Money forex = Money.of(asCurrencyCode(v.get("currency")), amountFx); 
-                                        Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, forex, exchangeRate);
-                                        t.getPortfolioTransaction().addUnit(grossValue);
-                                    }
-                            }),
-                            
-                            // 22-07-2019 19:16 LPL FINANCIAL HOLDINGS US50212V1008 NDQ -1 USD 85,73 USD 85,73 EUR 76,42 1,1218 EUR 76,42
-
-                            section -> section.attributes("date", "name", "isin", "shares", "currency", "amountFx", "exchangeRate", "currencyAccount", "amount")
-                            .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) (?<name>.*) (?<isin>\\w{12}) \\w{3} (?<shares>[-]?[.\\d]+[,\\d]*)"  
-                                            + " \\w{3} -?[.\\d]+,\\d{2,3}.*" 
-                                            + " (?<currency>\\w{3}) -?(?<amountFx>[.\\d]+,\\d{2}).*" 
-                                            + " \\w{3} -?[.\\d]+,\\d{2}" 
-                                            + " (?<exchangeRate>[.\\d]+,\\d{1,6})" 
-                                            + " (?<currencyAccount>\\w{3}) -?(?<amount>[.\\d]+,\\d{2})$") 
-                            .assign((t, v) -> {
-                                    t.setSecurity(getOrCreateSecurity(v));
-                                    t.setDate(asDate(v.get("date"))); 
-                                    if (v.get("shares").startsWith("-"))   
-                                    {
-                                        t.setType(PortfolioTransaction.Type.SELL);
-                                        t.setShares(asShares(v.get("shares").replaceFirst("-", "")));   
-                                    } 
-                                    else 
-                                    {
-                                        t.setShares(asShares(v.get("shares"))); 
-                                    }
-                                    t.setCurrencyCode(asCurrencyCode(v.get("currencyAccount"))); 
-                                    t.setAmount(asAmount(v.get("amount")));   
-                                    
-                                    long amountFx = asAmount(v.get("amountFx")); 
-                                    String currencyFx = asCurrencyCode(v.get("currency")); 
-
-                                    if (currencyFx.equals(t.getPortfolioTransaction().getSecurity().getCurrencyCode()))
-                                    {
-                                        Money amount = Money.of(asCurrencyCode(v.get("currencyAccount")), asAmount(v.get("amount")));  
-                                        BigDecimal exchangeRate = BigDecimal.ONE.divide(asExchangeRate(v.get("exchangeRate")), 10, RoundingMode.HALF_DOWN); 
-                                        Money forex = Money.of(asCurrencyCode(v.get("currency")), amountFx); 
-                                        Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, forex, exchangeRate);
-                                        t.getPortfolioTransaction().addUnit(grossValue);
-                                    }
-                            }),
-
-                            // #######################################################################
-                            // #---------------- @ HERE STARTS NEW FORMAT UNTIL 2021 ----------------#
-                            // #######################################################################
 
                             // -------------------------------------
-                            // with currency exchange 
+                            // with exchange rate
                             // with fee
-                            // Money        --> \d,\d
-                            // exChangeRage --> \d,\d
+                            // without stock exchange place
+                            // Money        --> \d,\d   OR  \d.\d,\d    OR  \d\s \d\s,\d
+                            // exchangeRate --> \d,\d
+                            // -------------------------------------
+                            // Formatting:
+                            // DateTime | Name | ISIN | Stock Exchange | Shares | Quote | Amount in exchange rate | Market value | Local market value | Fee | Total amount
+                            // -------------------------------------
+                            // 22-10-2020 16:35 THE KRAFT HEINZ COMPAN  US5007541064 NDQ -40 31,21 USD 1.248,40 USD 1.054,33 EUR 1,1829 -0,64 EUR 1.053,69 EUR
+                            // 22-12-2020 04:41 TCL ELECTRONICS KYG8701T1388 HKS -8000 5,78 HKD 46 240,00 HKD 4 868,15 EUR 9,489 -2,93 EUR 4 865,22 EUR
+                            section -> section
+                                .attributes("date", "name", "isin", "shares", "currency", "amountFx", "exchangeRate", "currencyFee", "fee", "currencyAccount", "amount")
+                                .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) "
+                                                + "(?<name>.*) "
+                                                + "(?<isin>\\w{12}) "
+                                                + "\\w{3} "
+                                                + "(?<shares>[-]?[.\\d]+[,\\d]*) "
+                                                + "-?[.\\d\\s]+,\\d{2,4} \\w{3} "
+                                                + "-?(?<amountFx>[.\\d\\s]+,\\d{2}) (?<currency>\\w{3}).* "
+                                                + "-?[.\\d]+,\\d{2} \\w{3} "
+                                                + "(?<exchangeRate>[.\\d]+,\\d{1,6}) "
+                                                + "(?<fee>-?[.\\d\\s]+,\\d{2}) (?<currencyFee>\\w{3}) "
+                                                + "-?(?<amount>[.\\d\\s]+,\\d{2}) (?<currencyAccount>\\w{3})$") 
+                                .assign((t, v) -> {
+                                    v.put("fee", stripBlanks(v.get("fee")));
+                                    v.put("amountFx", stripBlanks(v.get("amountFx")));
+                                    v.put("amount", stripBlanks(v.get("amount")));
+
+                                    t.setSecurity(getOrCreateSecurity(v));
+                                    t.setDate(asDate(v.get("date")));
+                                    t.setCurrencyCode(asCurrencyCode(v.get("currencyAccount")));
+                                    t.setAmount(asAmount(v.get("amount")));
+
+                                    if (v.get("shares").startsWith("-"))
+                                    {
+                                        t.setType(PortfolioTransaction.Type.SELL);
+                                        t.setShares(asShares(v.get("shares").replaceFirst("-", "")));
+                                    } 
+                                    else
+                                    {
+                                        t.setShares(asShares(v.get("shares")));
+                                    }
+
+                                    Money feeAmount = Money.of(asCurrencyCode(v.get("currencyFee")), asAmount(v.get("fee")));
+                                    t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, feeAmount));
+
+                                    long amountFx = asAmount(v.get("amountFx"));
+                                    String currencyFx = asCurrencyCode(v.get("currency"));
+
+                                    if (currencyFx.equals(t.getPortfolioTransaction().getSecurity().getCurrencyCode()))
+                                    {
+                                        Money amount = Money.of(asCurrencyCode(v.get("currencyAccount")), asAmount(v.get("amount")));
+                                        if (t.getPortfolioTransaction().getType() == PortfolioTransaction.Type.BUY)
+                                        {
+                                            amount = amount.subtract(feeAmount);
+                                        }
+                                        else
+                                        {
+                                            amount = amount.add(feeAmount);
+                                        }
+                                        BigDecimal exchangeRate = BigDecimal.ONE.divide(asExchangeRate(v.get("exchangeRate")), 10, RoundingMode.HALF_DOWN);
+                                        Money forex = Money.of(asCurrencyCode(v.get("currency")), amountFx);
+                                        Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, forex, exchangeRate);
+                                        t.getPortfolioTransaction().addUnit(grossValue);
+                                    }
+                            }),
+
+                            // -------------------------------------
+                            // with exchange rate
+                            // without fee
+                            // without stock exchange place
+                            // Money        --> \d,\d   OR  \d.\d,\d    OR  \d\s \d\s,\d
+                            // exchangeRate --> \d,\d
+                            // -------------------------------------
+                            // Formatting:
+                            // DateTime | Name | ISIN | Stock Exchange | Shares | Quote | Amount in exchange rate | Local Market value | Exchange rate | Total amount
+                            // -------------------------------------
+                            // 22-07-2019 19:16 LPL FINANCIAL HOLDINGS US50212V1008 NDQ -1 USD 85,73 USD 85,73 EUR 76,42 1,1218 EUR 76,42
+                            section -> section
+                                .attributes("date", "name", "isin", "shares", "currency", "amountFx", "exchangeRate", "currencyAccount", "amount")
+                                .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) "
+                                                + "(?<name>.*) "
+                                                + "(?<isin>\\w{12}) "
+                                                + "\\w{3} "
+                                                + "(?<shares>[-]?[.\\d]+[,\\d]*)"
+                                                + " \\w{3} -?[.\\d]+,\\d{2,3}.*" 
+                                                + " (?<currency>\\w{3}) -?(?<amountFx>[.\\d]+,\\d{2}).*"
+                                                + " \\w{3} -?[.\\d]+,\\d{2}"
+                                                + " (?<exchangeRate>[.\\d]+,\\d{1,6})"
+                                                + " (?<currencyAccount>\\w{3}) -?(?<amount>[.\\d]+,\\d{2})$")
+                                .assign((t, v) -> {
+                                    t.setSecurity(getOrCreateSecurity(v));
+                                    t.setDate(asDate(v.get("date")));
+                                    t.setCurrencyCode(asCurrencyCode(v.get("currencyAccount")));
+                                    t.setAmount(asAmount(v.get("amount")));
+
+                                    if (v.get("shares").startsWith("-"))
+                                    {
+                                        t.setType(PortfolioTransaction.Type.SELL);
+                                        t.setShares(asShares(v.get("shares").replaceFirst("-", "")));
+                                    }
+                                    else 
+                                    {
+                                        t.setShares(asShares(v.get("shares")));
+                                    }
+
+                                    long amountFx = asAmount(v.get("amountFx"));
+                                    String currencyFx = asCurrencyCode(v.get("currency"));
+
+                                    if (currencyFx.equals(t.getPortfolioTransaction().getSecurity().getCurrencyCode()))
+                                    {
+                                        Money amount = Money.of(asCurrencyCode(v.get("currencyAccount")), asAmount(v.get("amount")));
+                                        BigDecimal exchangeRate = BigDecimal.ONE.divide(asExchangeRate(v.get("exchangeRate")), 10, RoundingMode.HALF_DOWN);
+                                        Money forex = Money.of(asCurrencyCode(v.get("currency")), amountFx);
+                                        Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, forex, exchangeRate);
+                                        t.getPortfolioTransaction().addUnit(grossValue);
+                                    }
+                            }),
+
+                            // -------------------------------------
+                            // with exchange rate
+                            // without fee
+                            // without stock exchange place
+                            // Money        --> \d,\d   OR  \d.\d,\d    OR  \d\s \d\s,\d
+                            // exchangeRage --> \d,\d
+                            // -------------------------------------
+                            // Formatting:
+                            // DateTime | Name | ISIN | Stock Exchange | Shares | Quote | Amount in exchange rate | Local Market value | Exchange rate | Total amount
+                            // -------------------------------------
+                            // 14-01-2021 15:36 ALTO INGREDIENTS INC US0215131063 NDQ 2048 7,30 USD -14 950,40 USD -12 245,87 EUR 1,2209 -12 245,87 EUR
+                            // 14-12-2020 00:00 ASTON MARTIN GB00BN7CG237 LSE 51 1 417,00 GBX -72 267,00 GBX -791,47 EUR 91,3075 -791,47 EUR
+                            section -> section
+                                .attributes("date", "name", "isin", "shares", "currency", "amountFx", "exchangeRate", "currencyAccount", "amount")
+                                .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) "
+                                                + "(?<name>.*) "
+                                                + "(?<isin>\\w{12}) "
+                                                + "\\w{3} "
+                                                + "(?<shares>[-]?[.\\d]+[,\\d]*) "
+                                                + "-?[.\\d\\s]+,\\d{2,3} \\w{3} "
+                                                + "-?(?<amountFx>[.\\d\\s]+,\\d{2}) (?<currency>\\w{3}) "
+                                                + "-?[.\\d\\s]+,\\d{2} \\w{3} "
+                                                + "(?<exchangeRate>[.\\d]+,\\d{1,6}) "
+                                                + "-?(?<amount>[.\\d\\s]+,\\d{2}) (?<currencyAccount>\\w{3})$") 
+                                .assign((t, v) -> {
+                                    v.put("amountFx", stripBlanks(v.get("amountFx")));
+                                    v.put("amount", stripBlanks(v.get("amount")));
+
+                                    t.setSecurity(getOrCreateSecurity(v));
+                                    t.setDate(asDate(v.get("date")));
+                                    t.setCurrencyCode(asCurrencyCode(v.get("currencyAccount")));
+                                    t.setAmount(asAmount(v.get("amount")));
+
+                                    if (v.get("shares").startsWith("-"))
+                                    {
+                                        t.setType(PortfolioTransaction.Type.SELL);
+                                        t.setShares(asShares(v.get("shares").replaceFirst("-", "")));
+                                    }
+                                    else
+                                    {
+                                        t.setShares(asShares(v.get("shares")));
+                                    }
+
+                                    long amountFx = asAmount(v.get("amountFx"));
+                                    String currencyFx = asCurrencyCode(v.get("currency"));
+
+                                    if (currencyFx.equals(t.getPortfolioTransaction().getSecurity().getCurrencyCode()))
+                                    {
+                                        Money amount = Money.of(asCurrencyCode(v.get("currencyAccount")), asAmount(v.get("amount")));
+                                        BigDecimal exchangeRate = BigDecimal.ONE.divide(asExchangeRate(v.get("exchangeRate")), 10, RoundingMode.HALF_DOWN);
+                                        Money forex = Money.of(asCurrencyCode(v.get("currency")), amountFx);
+                                        Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, forex, exchangeRate);
+                                        t.getPortfolioTransaction().addUnit(grossValue);
+                                    }
+                            }),
+
+                            // -------------------------------------
+                            // with exchange rate
+                            // with fee
+                            // with stock exchange place
+                            // Money        --> \d,\d   OR  \d\d,\d     OR  \d\s \d\s,\d
+                            // exchangeRage --> \d,\d
+                            // -------------------------------------
+                            // Formatting:
+                            // DateTime | Name | ISIN | Stock Exchange + Place | Shares | Quote | Amount in exchange rate | Local Market value | Exchange rate | Fee | Total amount
                             // -------------------------------------
                             // 27-01-2021 20:55 APPLE INC. - COMMON ST US0378331005 NDQ XNAS 9 141,70 USD -1.275,30 USD -1.053,79 EUR 1,209 -0,53 EUR -1.054,32 EUR
                             // 27-01-2021 20:54 NIKOLA CORP US6541101050 NDQ XNAS -48 28,00 USD 1.344,00 USD 1.108,34 EUR 1,2114 -0,66 EUR 1.107,68 EUR
-                            section -> section.attributes("date", "name", "isin", "shares", "currency", "amountFx", "exchangeRate", "currencyFee", "fee", "currencyAccount", "amount")
-                            .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) "
-                                            + "(?<name>.*) "
-                                            + "(?<isin>[\\w]{12}) "
-                                            + "[\\w]{3} [\\w]{4} "
-                                            + "(?<shares>-?[.\\d]+[,\\d]*) "
-                                            + "-?[.\\d]+,\\d{2,4}.* [\\w]{3} "
-                                            + "(?<amountFx>-?[.\\d]+[,\\d]*) "
-                                            + "(?<currency>[\\w]{3}) "
-                                            + "-?[.\\d]+[,\\d]* [\\w]{3} "
-                                            + "(?<exchangeRate>[.\\d]+[,\\d]*) "
-                                            + "(?<fee>-?[.\\d]+[,\\d]*) "
-                                            + "(?<currencyFee>[\\w]{3}) "
-                                            + "(?<amount>-?[.\\d]+[,\\d]*) "
-                                            + "(?<currencyAccount>[\\w]{3})$")
-                            .assign((t, v) -> {
-                                t.setSecurity(getOrCreateSecurity(v));
-                                t.setDate(asDate(v.get("date")));
-                                if (v.get("shares").startsWith("-"))
-                                {
-                                    t.setType(PortfolioTransaction.Type.SELL);
-                                    t.setShares(asShares(v.get("shares").replaceFirst("-", "")));
-                                }
-                                else 
-                                {
-                                    t.setShares(asShares(v.get("shares")));
-                                }
-                                t.setCurrencyCode(asCurrencyCode(v.get("currencyAccount")));
-                                t.setAmount(asAmount(v.get("amount")));
-                                Money feeAmount = Money.of(asCurrencyCode(v.get("currencyFee")), asAmount(v.get("fee")));
-                                t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, feeAmount));
+                            // 23-02-2021 15:30 ALTO INGREDIENTS INC US0215131063 NDQ SOHO -224 6,30 USD 1 411,20 USD 1 159,26 EUR 1,2161 -0,74 EUR 1 158,52 EUR
+                            // 23-02-2021 09:42 ASTON MARTIN GB00BN7CG237 LSE MESI -128 2 105,00 GBX 269 440,00 GBX 3 113,71 EUR 86,4469 -5,56 EUR 3 108,15 EUR
+                            section -> section
+                                .attributes("date", "name", "isin", "shares", "currency", "amountFx", "exchangeRate", "currencyFee", "fee", "currencyAccount", "amount")
+                                .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) "
+                                                + "(?<name>.*) "
+                                                + "(?<isin>[\\w]{12}) "
+                                                + "[\\w]{3} [\\w]{4} "
+                                                + "(?<shares>-?[.\\d]+[,\\d]*) "
+                                                + "-?[.\\d\\s]+,\\d{2,4} [\\w]{3} "
+                                                + "-?(?<amountFx>([.\\d\\s]+[,\\d]*)) (?<currency>[\\w]{3}) "
+                                                + "-?[.\\d\\s]+[,\\d]* [\\w]{3} "
+                                                + "(?<exchangeRate>[.\\d]+[,\\d]*) "
+                                                + "(?<fee>-?[.\\d\\s]+[,\\d]*) (?<currencyFee>[\\w]{3}) "
+                                                + "(?<amount>-?[.\\d\\s]+[,\\d]*) (?<currencyAccount>[\\w]{3})$")
+                                .assign((t, v) -> {
+                                    v.put("fee", stripBlanks(v.get("fee")));
+                                    v.put("amountFx", stripBlanks(v.get("amountFx")));
+                                    v.put("amount", stripBlanks(v.get("amount")));
 
-                                long amountFx = asAmount(v.get("amountFx"));
-                                String currencyFx = asCurrencyCode(v.get("currency"));
+                                    t.setSecurity(getOrCreateSecurity(v));
+                                    t.setDate(asDate(v.get("date")));
+                                    t.setCurrencyCode(asCurrencyCode(v.get("currencyAccount")));
+                                    t.setAmount(asAmount(v.get("amount")));
 
-                                if (currencyFx.equals(t.getPortfolioTransaction().getSecurity().getCurrencyCode()))
-                                {
-                                    Money amount = Money.of(asCurrencyCode(v.get("currencyAccount")), asAmount(v.get("amount")));
-                                    if (t.getPortfolioTransaction().getType() == PortfolioTransaction.Type.BUY)
+                                    if (v.get("shares").startsWith("-"))
                                     {
-                                        amount = amount.subtract(feeAmount);
+                                        t.setType(PortfolioTransaction.Type.SELL);
+                                        t.setShares(asShares(v.get("shares").replaceFirst("-", "")));
                                     }
                                     else 
                                     {
-                                        amount = amount.add(feeAmount);
+                                        t.setShares(asShares(v.get("shares")));
                                     }
-                                    BigDecimal exchangeRate = BigDecimal.ONE.divide(asExchangeRate(v.get("exchangeRate")), 10, RoundingMode.HALF_DOWN);
-                                    Money forex = Money.of(asCurrencyCode(v.get("currency")), amountFx);
-                                    Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, forex, exchangeRate);
-                                    t.getPortfolioTransaction().addUnit(grossValue);
-                                }
+
+                                    Money feeAmount = Money.of(asCurrencyCode(v.get("currencyFee")), asAmount(v.get("fee")));
+                                    t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, feeAmount));
+
+                                    long amountFx = asAmount(v.get("amountFx"));
+                                    String currencyFx = asCurrencyCode(v.get("currency"));
+
+                                    if (currencyFx.equals(t.getPortfolioTransaction().getSecurity().getCurrencyCode()))
+                                    {
+                                        Money amount = Money.of(asCurrencyCode(v.get("currencyAccount")), asAmount(v.get("amount")));
+                                        if (t.getPortfolioTransaction().getType() == PortfolioTransaction.Type.BUY)
+                                        {
+                                            amount = amount.subtract(feeAmount);
+                                        }
+                                        else
+                                        {
+                                            amount = amount.add(feeAmount);
+                                        }
+                                        BigDecimal exchangeRate = BigDecimal.ONE.divide(asExchangeRate(v.get("exchangeRate")), 10, RoundingMode.HALF_DOWN);
+                                        Money forex = Money.of(asCurrencyCode(v.get("currency")), amountFx);
+                                        Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, forex, exchangeRate);
+                                        t.getPortfolioTransaction().addUnit(grossValue);
+                                    }
                             }),
 
                             // -------------------------------------
-                            // with currency exchange 
+                            // with exchange rate
                             // with fee
-                            // Money        --> \d.\d or \d,\d.\d
-                            // exChangeRage --> \d.\d
+                            // with stock exchange place
+                            // Money        --> \d.\d   OR  \d,\d.\d
+                            // exchangeRage --> \d.\d
+                            // -------------------------------------
+                            // Formatting:
+                            // DateTime | Name | ISIN | Stock Exchange + Place | Shares | Quote | Amount in exchange rate | Local Market value | Exchange rate | Fee | Total amount
                             // -------------------------------------
                             // 02-02-2021 17:39 NRG ENERGY INC. COMMO US6293775085 NSY XNAS 25 43.30 USD -1,082.50 USD -972.53 CHF 1.112 -0.63 CHF -973.16 CHF
                             // 02-02-2021 16:14 AMERICAN STATES WATER US0298991011 NSY XNAS 10 80.35 USD -803.50 USD -721.95 CHF 1.1118 -0.04 CHF -721.99 CHF
-                            section -> section.attributes("date", "name", "isin", "shares", "currency", "amountFx", "exchangeRate", "currencyFee", "fee", "currencyAccount", "amount")
-                            .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) "
-                                            + "(?<name>.*) "
-                                            + "(?<isin>[\\w]{12}) "
-                                            + "[\\w]{3} [\\w]{4} "
-                                            + "(?<shares>-?[.\\d]+[.\\d]*) "
-                                            + "-?([\\d]+,[\\d]{3}.\\d+|\\d+.\\d+) [\\w]{3} "
-                                            + "(?<amountFx>-?([\\d]+,[\\d]{3}.\\d+|\\d+.\\d+)) "
-                                            + "(?<currency>[\\w]{3}) "
-                                            + "-?([\\d]+,[\\d]{3}.\\d+|\\d+.\\d+) [\\w]{3} "
-                                            + "(?<exchangeRate>[.\\d]+[.\\d]*) "
-                                            + "(?<fee>-?([\\d]+,[\\d]{3}.\\d+|\\d+.\\d+)) "
-                                            + "(?<currencyFee>[\\w]{3}) "
-                                            + "(?<amount>-?([\\d]+,[\\d]{3}.\\d+|\\d+.\\d+)) "
-                                            + "(?<currencyAccount>[\\w]{3})$")
-                            .assign((t, v) -> {
-                                t.setSecurity(getOrCreateSecurity(v));
-                                t.setDate(asDate(v.get("date"))); 
-                                if (v.get("shares").startsWith("-"))
-                                {
-                                    t.setType(PortfolioTransaction.Type.SELL);
-                                    t.setShares(asShares(v.get("shares").replaceFirst("-", "")));
-                                }
-                                else 
-                                {
-                                    t.setShares(asShares(v.get("shares")));
-                                }
-                                t.setCurrencyCode(asCurrencyCode(v.get("currencyAccount")));
-                                t.setAmount(asAmount(convertAmount(v.get("amount"))));
-                                Money feeAmount = Money.of(asCurrencyCode(v.get("currencyFee")), asAmount(convertAmount(v.get("fee"))));
-                                t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, feeAmount));
+                            section -> section
+                                .attributes("date", "name", "isin", "shares", "currency", "amountFx", "exchangeRate", "currencyFee", "fee", "currencyAccount", "amount")
+                                .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) "
+                                                + "(?<name>.*) "
+                                                + "(?<isin>[\\w]{12}) "
+                                                + "[\\w]{3} [\\w]{4} "
+                                                + "(?<shares>-?[.\\d]+[.\\d]*) "
+                                                + "-?([\\d]+,[\\d]{3}.\\d+|\\d+.\\d+) [\\w]{3} "
+                                                + "(?<amountFx>-?([\\d]+,[\\d]{3}.\\d+|\\d+.\\d+)) "
+                                                + "(?<currency>[\\w]{3}) "
+                                                + "-?([\\d]+,[\\d]{3}.\\d+|\\d+.\\d+) [\\w]{3} "
+                                                + "(?<exchangeRate>[.\\d]+[.\\d]*) "
+                                                + "(?<fee>-?([\\d]+,[\\d]{3}.\\d+|\\d+.\\d+)) "
+                                                + "(?<currencyFee>[\\w]{3}) "
+                                                + "(?<amount>-?([\\d]+,[\\d]{3}.\\d+|\\d+.\\d+)) "
+                                                + "(?<currencyAccount>[\\w]{3})$")
+                                .assign((t, v) -> {
+                                    t.setSecurity(getOrCreateSecurity(v));
+                                    t.setDate(asDate(v.get("date")));
+                                    t.setCurrencyCode(asCurrencyCode(v.get("currencyAccount")));
+                                    t.setAmount(asAmount(convertAmount(v.get("amount"))));
 
-                                long amountFx = asAmount(convertAmount(v.get("amountFx")));
-                                String currencyFx = asCurrencyCode(v.get("currency"));
-
-                                if (currencyFx.equals(t.getPortfolioTransaction().getSecurity().getCurrencyCode()))
-                                {
-                                    Money amount = Money.of(asCurrencyCode(v.get("currencyAccount")), asAmount(convertAmount(v.get("amount"))));
-                                    if (t.getPortfolioTransaction().getType() == PortfolioTransaction.Type.BUY)
+                                    if (v.get("shares").startsWith("-"))
                                     {
-                                        amount = amount.subtract(feeAmount);
+                                        t.setType(PortfolioTransaction.Type.SELL);
+                                        t.setShares(asShares(v.get("shares").replaceFirst("-", "")));
                                     }
                                     else 
                                     {
-                                        amount = amount.add(feeAmount);
+                                        t.setShares(asShares(v.get("shares")));
                                     }
-                                    BigDecimal exchangeRate = BigDecimal.ONE.divide(asExchangeRate(convertExchangeRate(v.get("exchangeRate"))), 10, RoundingMode.HALF_DOWN);
-                                    Money forex = Money.of(asCurrencyCode(v.get("currency")), amountFx);
-                                    Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, forex, exchangeRate);
-                                    t.getPortfolioTransaction().addUnit(grossValue);
-                                }
+
+                                    Money feeAmount = Money.of(asCurrencyCode(v.get("currencyFee")), asAmount(convertAmount(v.get("fee"))));
+                                    t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, feeAmount));
+
+                                    long amountFx = asAmount(convertAmount(v.get("amountFx")));
+                                    String currencyFx = asCurrencyCode(v.get("currency"));
+
+                                    if (currencyFx.equals(t.getPortfolioTransaction().getSecurity().getCurrencyCode()))
+                                    {
+                                        Money amount = Money.of(asCurrencyCode(v.get("currencyAccount")), asAmount(convertAmount(v.get("amount"))));
+                                        if (t.getPortfolioTransaction().getType() == PortfolioTransaction.Type.BUY)
+                                        {
+                                            amount = amount.subtract(feeAmount);
+                                        }
+                                        else
+                                        {
+                                            amount = amount.add(feeAmount);
+                                        }
+                                        BigDecimal exchangeRate = BigDecimal.ONE.divide(asExchangeRate(convertExchangeRate(v.get("exchangeRate"))), 10, RoundingMode.HALF_DOWN);
+                                        Money forex = Money.of(asCurrencyCode(v.get("currency")), amountFx);
+                                        Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, forex, exchangeRate);
+                                        t.getPortfolioTransaction().addUnit(grossValue);
+                                    }
                             }),
 
                             // -------------------------------------
-                            // without currency exchange 
+                            // without exchange rate
                             // with fee
-                            // Money        --> .\d,\d
+                            // with stock exchange place
+                            // Money        --> .\d,\d  OR  \d\s \d\s,\d
+                            // -------------------------------------
+                            // Formatting:
+                            // DateTime | Name | ISIN | Stock Exchange + Place | Shares | Quote | Market value | Local Market value | Fee | Total amount
                             // -------------------------------------
                             // 07-01-2021 09:00 K&S AG DE000KSAG888 XET XETA 20 9,748 EUR -194,96 EUR -194,96 EUR -2,04 EUR -197,00 EUR
                             // 21-12-2020 10:33 VARTA AG DE000A0TGJ55 XET XETA -11 111,60 EUR 1.227,60 EUR 1.227,60 EUR -2,22 EUR 1.225,38 EUR
+                            // 23-02-2021 15:56 INVESCO EQQQ NASDAQ-100 IE0032077012 XET XETA 8 260,00 EUR -2 080,00 EUR -2 080,00 EUR -2,62 EUR -2 082,62 EUR
                             section -> section
                                 .attributes("date", "name", "isin", "shares", "currencyFee", "fee", "currency", "amount")
                                 .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) "
@@ -868,161 +1102,220 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 + "(?<isin>[\\w]{12}) "
                                                 + "[\\w]{3} [\\w]{4} "
                                                 + "(?<shares>-?[.\\d]+[,\\d]*) "  
-                                                + "[-.,\\d]* [\\w]{3} " 
-                                                + "[-.,\\d]* [\\w]{3} " 
-                                                + "[-.,\\d]* [\\w]{3} " 
-                                                + "-?(?<fee>[.\\d]+,[\\d]*) (?<currencyFee>[\\w]{3}) " 
-                                                + "-?(?<amount>[.\\d]+,[\\d]*) (?<currency>[\\w]{3})$")
+                                                + "[-.,\\d\\s]* [\\w]{3} " 
+                                                + "[-.,\\d\\s]* [\\w]{3} " 
+                                                + "[-.,\\d\\s]* [\\w]{3} " 
+                                                + "-?(?<fee>[.\\d\\s]+,[\\d]*) (?<currencyFee>[\\w]{3}) "
+                                                + "-?(?<amount>[.\\d\\s]+,[\\d]*) (?<currency>[\\w]{3})$")
                                 .assign((t, v) -> {
+                                    v.put("fee", stripBlanks(v.get("fee")));
+                                    v.put("amount", stripBlanks(v.get("amount")));
+
                                     t.setSecurity(getOrCreateSecurity(v));
-                                    t.setDate(asDate(v.get("date"))); 
-                                    if (v.get("shares").startsWith("-"))   
+                                    t.setDate(asDate(v.get("date")));
+                                    t.setCurrencyCode(asCurrencyCode(v.get("currency"))); 
+                                    t.setAmount(asAmount(v.get("amount")));
+
+                                    if (v.get("shares").startsWith("-"))
                                     {
                                         t.setType(PortfolioTransaction.Type.SELL);
-                                        t.setShares(asShares(v.get("shares").replaceFirst("-", "")));   
+                                        t.setShares(asShares(v.get("shares").replaceFirst("-", "")));
+                                    }
+                                    else
+                                    {
+                                        t.setShares(asShares(v.get("shares")));
+                                    }
+
+                                    Money feeAmount = Money.of(asCurrencyCode(v.get("currencyFee")), asAmount(v.get("fee")));
+                                    t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, feeAmount));
+                            }),
+
+                            // -------------------------------------
+                            // without exchange rate
+                            // with fee
+                            // with stock exchange place
+                            // Money        --> \d.\d   OR  \d,\d.\d
+                            // -------------------------------------
+                            // Formatting:
+                            // DateTime | Name | ISIN | Stock Exchange + Place | Shares | Quote | Market value | Local Market value | Fee | Total amount
+                            // -------------------------------------
+                            // 07-01-2021 09:00 K&S AG DE000KSAG888 XET XETA 25 9.748 EUR -1,082.50 EUR -972.53 EUR -0.63 EUR -973.16 EUR
+                            section -> section
+                                .attributes("date", "name", "isin", "shares", "currencyFee", "fee", "currency", "amount")
+                                .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) "
+                                                + "(?<name>.*) "
+                                                + "(?<isin>[\\w]{12}) "
+                                                + "[\\w]{3} [\\w]{4} "
+                                                + "(?<shares>-?[.\\d]+[,\\d]*) "
+                                                + "[-.,\\d]* [\\w]{3} "
+                                                + "[-.,\\d]* [\\w]{3} "
+                                                + "[-.,\\d]* [\\w]{3} "
+                                                + "-?(?<fee>([\\d]+,[\\d]{3}.\\d+|\\d+.\\d+)*) (?<currencyFee>[\\w]{3}) "
+                                                + "-?(?<amount>([\\d]+,[\\d]{3}.\\d+|\\d+.\\d+)*) (?<currency>[\\w]{3})$")
+                                .assign((t, v) -> {
+                                    v.put("fee", stripBlanks(v.get("fee")));
+                                    v.put("amount", stripBlanks(v.get("amount")));
+
+                                    t.setSecurity(getOrCreateSecurity(v));
+                                    t.setDate(asDate(v.get("date")));
+                                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                    t.setAmount(asAmount(convertAmount(v.get("amount"))));
+
+                                    if (v.get("shares").startsWith("-"))
+                                    {
+                                        t.setType(PortfolioTransaction.Type.SELL);
+                                        t.setShares(asShares(v.get("shares").replaceFirst("-", "")));
+                                    }
+                                    else
+                                    {
+                                        t.setShares(asShares(v.get("shares")));
+                                    }
+                                    Money feeAmount = Money.of(asCurrencyCode(v.get("currencyFee")), asAmount(convertAmount(v.get("fee"))));
+                                    t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, feeAmount));
+                            }),
+
+                            // -------------------------------------
+                            // with exchange rate
+                            // without fee
+                            // with stock exchange place
+                            // Money        --> \d,\d   OR  \d.\d,\d
+                            // exchangeRage --> \d,\d
+                            // -------------------------------------
+                            // Formatting:
+                            // DateTime | Name | ISIN | Stock Exchange + Place | Shares | Quote | Amount in exchange rate | Local Market value | Exchange rate | Total amount
+                            // -------------------------------------
+                            // 03-02-2021 21:18 UPWORK INC. CMN US91688F1049 NDQ SOHO -1 47,00 USD 47,00 USD 39,00 EUR 1,2038 39,00 EUR
+                            section -> section
+                                .attributes("date", "name", "isin", "shares", "currency", "amountFx", "exchangeRate", "currencyAccount", "amount")
+                                .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) "
+                                                + "(?<name>.*) "
+                                                + "(?<isin>[\\w]{12}) "
+                                                + "[\\w]{3} [\\w]{4} "
+                                                + "(?<shares>-?[.\\d]+[,\\d]*) "
+                                                + "-?[.\\d]+,\\d{2,3} [\\w]{3}.* "
+                                                + "-?(?<amountFx>[.\\d]+,\\d{2}) (?<currency>[\\w]{3}).* "
+                                                + "-?[.\\d]+,\\d{2} [\\w]{3} "
+                                                + "(?<exchangeRate>[.\\d]+,\\d{1,6}) "
+                                                + "-?(?<amount>[.\\d]+,\\d{2}) (?<currencyAccount>[\\w]{3})$")
+                                .assign((t, v) -> {
+                                    t.setSecurity(getOrCreateSecurity(v));
+                                    t.setDate(asDate(v.get("date")));
+                                    t.setCurrencyCode(asCurrencyCode(v.get("currencyAccount")));
+                                    t.setAmount(asAmount(v.get("amount")));
+
+                                    if (v.get("shares").startsWith("-"))
+                                    {
+                                        t.setType(PortfolioTransaction.Type.SELL);
+                                        t.setShares(asShares(v.get("shares").replaceFirst("-", "")));
                                     }
                                     else 
                                     {
                                         t.setShares(asShares(v.get("shares")));
                                     }
-                                    t.setCurrencyCode(asCurrencyCode(v.get("currency"))); 
-                                    t.setAmount(asAmount(v.get("amount")));
-                                    Money feeAmount = Money.of(asCurrencyCode(v.get("currencyFee")), asAmount(v.get("fee")));  
-                                    t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, feeAmount));
-                            }),
 
-                                // -------------------------------------
-                                // without currency exchange
-                                // with fee
-                                // Money        --> \d.\d or \d,\d.\d
-                                // -------------------------------------
-                                // 07-01-2021 09:00 K&S AG DE000KSAG888 XET XETA 25 9.748 EUR -1,082.50 EUR -972.53 EUR -0.63 EUR -973.16 EUR
-                                section -> section
-                                    .attributes("date", "name", "isin", "shares", "currencyFee", "fee", "currency", "amount")
-                                    .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) "
-                                                    + "(?<name>.*) "
-                                                    + "(?<isin>[\\w]{12}) "
-                                                    + "[\\w]{3} [\\w]{4} "
-                                                    + "(?<shares>-?[.\\d]+[,\\d]*) "  
-                                                    + "[-.,\\d]* [\\w]{3} " 
-                                                    + "[-.,\\d]* [\\w]{3} " 
-                                                    + "[-.,\\d]* [\\w]{3} " 
-                                                    + "-?(?<fee>([\\d]+,[\\d]{3}.\\d+|\\d+.\\d+)*) (?<currencyFee>[\\w]{3}) " 
-                                                    + "-?(?<amount>([\\d]+,[\\d]{3}.\\d+|\\d+.\\d+)*) (?<currency>[\\w]{3})$") 
-                                    .assign((t, v) -> {
-                                        t.setSecurity(getOrCreateSecurity(v));
-                                        t.setDate(asDate(v.get("date"))); 
-                                        if (v.get("shares").startsWith("-"))   
-                                        {
-                                            t.setType(PortfolioTransaction.Type.SELL);
-                                            t.setShares(asShares(v.get("shares").replaceFirst("-", "")));   
-                                        }
-                                        else 
-                                        {
-                                            t.setShares(asShares(v.get("shares")));
-                                        }
-                                        t.setCurrencyCode(asCurrencyCode(v.get("currency"))); 
-                                        t.setAmount(asAmount(convertAmount(v.get("amount"))));
-                                        Money feeAmount = Money.of(asCurrencyCode(v.get("currencyFee")), asAmount(convertAmount(v.get("fee"))));  
-                                        t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, feeAmount));
-                                }),
+                                    long amountFx = asAmount(v.get("amountFx"));
+                                    String currencyFx = asCurrencyCode(v.get("currency"));
 
-                            // -------------------------------------
-                            // with currency exchange 
-                            // without fee
-                            // Money        --> \d,\d
-                            // exChangeRage --> \d,\d
-                            // -------------------------------------
-                            // 03-02-2021 21:18 UPWORK INC. CMN US91688F1049 NDQ SOHO -1 47,00 USD 47,00 USD 39,00 EUR 1,2038 39,00 EUR
-                            section -> section.attributes("date", "name", "isin", "shares", "currency", "amountFx", "exchangeRate", "currencyAccount", "amount")
-                            .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) "
-                                            + "(?<name>.*) "
-                                            + "(?<isin>[\\w]{12}) "
-                                            + "[\\w]{3} [\\w]{4} "
-                                            + "(?<shares>-?[.\\d]+[,\\d]*) "  
-                                            + "-?[.\\d]+,\\d{2,3} [\\w]{3}.* " 
-                                            + "-?(?<amountFx>[.\\d]+,\\d{2}) "
-                                            + "(?<currency>[\\w]{3}).* " 
-                                            + "-?[.\\d]+,\\d{2} [\\w]{3} " 
-                                            + "(?<exchangeRate>[.\\d]+,\\d{1,6}) " 
-                                            + "-?(?<amount>[.\\d]+,\\d{2}) "
-                                            + "(?<currencyAccount>[\\w]{3})$")
-                            .assign((t, v) -> {
-                                t.setSecurity(getOrCreateSecurity(v));
-                                t.setDate(asDate(v.get("date"))); 
-                                if (v.get("shares").startsWith("-"))   
-                                {
-                                    t.setType(PortfolioTransaction.Type.SELL);
-                                    t.setShares(asShares(v.get("shares").replaceFirst("-", "")));   
-                                }
-                                else 
-                                {
-                                    t.setShares(asShares(v.get("shares"))); 
-                                }
-                                t.setCurrencyCode(asCurrencyCode(v.get("currencyAccount"))); 
-                                t.setAmount(asAmount(v.get("amount")));
-
-                                long amountFx = asAmount(v.get("amountFx")); 
-                                String currencyFx = asCurrencyCode(v.get("currency")); 
-
-                                if (currencyFx.equals(t.getPortfolioTransaction().getSecurity().getCurrencyCode()))
-                                {
-                                    Money amount = Money.of(asCurrencyCode(v.get("currencyAccount")), asAmount(v.get("amount")));  
-                                    BigDecimal exchangeRate = BigDecimal.ONE.divide(asExchangeRate(v.get("exchangeRate")), 10, RoundingMode.HALF_DOWN); 
-                                    Money forex = Money.of(asCurrencyCode(v.get("currency")), amountFx);
-                                    Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, forex, exchangeRate);
-                                    t.getPortfolioTransaction().addUnit(grossValue);
-                                }
+                                    if (currencyFx.equals(t.getPortfolioTransaction().getSecurity().getCurrencyCode()))
+                                    {
+                                        Money amount = Money.of(asCurrencyCode(v.get("currencyAccount")), asAmount(v.get("amount")));
+                                        BigDecimal exchangeRate = BigDecimal.ONE.divide(asExchangeRate(v.get("exchangeRate")), 10, RoundingMode.HALF_DOWN);
+                                        Money forex = Money.of(asCurrencyCode(v.get("currency")), amountFx);
+                                        Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, forex, exchangeRate);
+                                        t.getPortfolioTransaction().addUnit(grossValue);
+                                    }
                             }),
 
                             // -------------------------------------
-                            // with currency exchange 
+                            // with exchange rate
                             // without fee
-                            // Money        --> \d.\d or \d,\d.\d
-                            // exChangeRage --> \d.\d
+                            // with stock exchange place
+                            // Money        --> \d.\d   OR  \d,\d.\d
+                            // exchangeRage --> \d.\d
+                            // -------------------------------------
+                            // Formatting:
+                            // DateTime | Name | ISIN | Stock Exchange + Place | Shares | Quote | Amount in exchange rate | Local Market value | Exchange rate | Total amount
                             // -------------------------------------
                             // 03-08-2020 09:30 VANGUARD FTSE AW IE00B3RBWM25 EAM XAMS 15 77.09 EUR -1,156.35 EUR -1,248.40 CHF 0.9253 -1,248.40 CHF
-                            section -> section.attributes("date", "name", "isin", "shares", "currency", "amountFx", "exchangeRate", "currencyAccount", "amount")
-                            .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) "
-                                            + "(?<name>.*) "
-                                            + "(?<isin>[\\w]{12}) "
-                                            + "[\\w]{3} [\\w]{4} "
-                                            + "(?<shares>-?[.\\d]+[.\\d]*) "
-                                            + "-?([\\d]+,[\\d]{3}.\\d+|\\d+.\\d+) "
-                                            + "[\\w]{3}.* "
-                                            + "-?(?<amountFx>([\\d]+,[\\d]{3}.\\d+|\\d+.\\d+)) "
-                                            + "(?<currency>[\\w]{3}).* "
-                                            + "-?([\\d]+,[\\d]{3}.\\d+|\\d+.\\d+) "
-                                            + "[\\w]{3} "
-                                            + "(?<exchangeRate>[.\\d]+[.\\d]*) "
-                                            + "-?(?<amount>([\\d]+,[\\d]{3}.\\d+|\\d+.\\d+)) "
-                                            + "(?<currencyAccount>[\\w]{3})$")
-                            .assign((t, v) -> {
-                                t.setSecurity(getOrCreateSecurity(v));
-                                t.setDate(asDate(v.get("date")));
-                                if (v.get("shares").startsWith("-"))   
-                                {
-                                    t.setType(PortfolioTransaction.Type.SELL);
-                                    t.setShares(asShares(v.get("shares").replaceFirst("-", "")));   
-                                }
-                                else 
-                                {
-                                    t.setShares(asShares(v.get("shares"))); 
-                                }
-                                t.setCurrencyCode(asCurrencyCode(v.get("currencyAccount"))); 
-                                t.setAmount(asAmount(convertAmount(v.get("amount"))));
+                            section -> section
+                                .attributes("date", "name", "isin", "shares", "currency", "amountFx", "exchangeRate", "currencyAccount", "amount")
+                                .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) "
+                                                + "(?<name>.*) "
+                                                + "(?<isin>[\\w]{12}) "
+                                                + "[\\w]{3} [\\w]{4} "
+                                                + "(?<shares>-?[.\\d]+[.\\d]*) "
+                                                + "-?([\\d]+,[\\d]{3}.\\d+|\\d+.\\d+) [\\w]{3}.* "
+                                                + "-?(?<amountFx>([\\d]+,[\\d]{3}.\\d+|\\d+.\\d+)) (?<currency>[\\w]{3}).* "
+                                                + "-?([\\d]+,[\\d]{3}.\\d+|\\d+.\\d+) [\\w]{3} "
+                                                + "(?<exchangeRate>[.\\d]+[.\\d]*) "
+                                                + "-?(?<amount>([\\d]+,[\\d]{3}.\\d+|\\d+.\\d+)) (?<currencyAccount>[\\w]{3})$")
+                                .assign((t, v) -> {
+                                    t.setSecurity(getOrCreateSecurity(v));
+                                    t.setDate(asDate(v.get("date")));
+                                    t.setCurrencyCode(asCurrencyCode(v.get("currencyAccount")));
+                                    t.setAmount(asAmount(convertAmount(v.get("amount"))));
 
-                                long amountFx = asAmount(convertAmount(v.get("amountFx"))); 
-                                String currencyFx = asCurrencyCode(v.get("currency"));
+                                    if (v.get("shares").startsWith("-"))
+                                    {
+                                        t.setType(PortfolioTransaction.Type.SELL);
+                                        t.setShares(asShares(v.get("shares").replaceFirst("-", "")));
+                                    }
+                                    else
+                                    {
+                                        t.setShares(asShares(v.get("shares")));
+                                    }
 
-                                if (currencyFx.equals(t.getPortfolioTransaction().getSecurity().getCurrencyCode()))
-                                {
-                                    Money amount = Money.of(asCurrencyCode(v.get("currencyAccount")), asAmount(convertAmount(v.get("amount"))));  
-                                    BigDecimal exchangeRate = BigDecimal.ONE.divide(asExchangeRate(convertExchangeRate(v.get("exchangeRate"))), 10, RoundingMode.HALF_DOWN); 
-                                    Money forex = Money.of(asCurrencyCode(v.get("currency")), amountFx);
-                                    Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, forex, exchangeRate);
-                                    t.getPortfolioTransaction().addUnit(grossValue);
-                                }
+                                    long amountFx = asAmount(convertAmount(v.get("amountFx")));
+                                    String currencyFx = asCurrencyCode(v.get("currency"));
+
+                                    if (currencyFx.equals(t.getPortfolioTransaction().getSecurity().getCurrencyCode()))
+                                    {
+                                        Money amount = Money.of(asCurrencyCode(v.get("currencyAccount")), asAmount(convertAmount(v.get("amount"))));
+                                        BigDecimal exchangeRate = BigDecimal.ONE.divide(asExchangeRate(convertExchangeRate(v.get("exchangeRate"))), 10, RoundingMode.HALF_DOWN);
+                                        Money forex = Money.of(asCurrencyCode(v.get("currency")), amountFx);
+                                        Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, forex, exchangeRate);
+                                        t.getPortfolioTransaction().addUnit(grossValue);
+                                    }
+                            }),
+
+                            // -------------------------------------
+                            // without exchange rate
+                            // without fee
+                            // with stock exchange place
+                            // Money        --> \d,\d   OR  \d.\d,\d    OR  \d\s \d\s,\d
+                            // -------------------------------------
+                            // Formatting:
+                            // DateTime | Name | ISIN | Stock Exchange + Place | Shares | Quote | Local Market value | Total amount
+                            // -------------------------------------
+                            // 28-02-2020 09:00 TOMTOM NL0013332471 EAM XAMS 1 8,933 EUR -8,93 EUR -8,93 EUR -8,93 EUR
+                            section -> section
+                                .attributes("date", "name", "isin", "shares", "currency", "amount")
+                                .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) "
+                                                + "(?<name>.*) (?<isin>\\w{12}) "
+                                                + "\\w{3} \\w{4} "
+                                                + "(?<shares>[-]?[.\\d\\s]+[,\\d]*) "
+                                                + "[-.,\\d\\s]* \\w{3} "
+                                                + "[-.,\\d\\s]* \\w{3} "
+                                                + "[-.,\\d\\s]* \\w{3} "
+                                                + "-?(?<amount>[.,\\d\\s]*) (?<currency>\\w{3})$") 
+                                .assign((t, v) -> {
+                                    v.put("amount", stripBlanks(v.get("amount")));
+
+                                    t.setSecurity(getOrCreateSecurity(v));
+                                    t.setDate(asDate(v.get("date")));
+                                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                    t.setAmount(asAmount(v.get("amount")));
+
+                                    if (v.get("shares").startsWith("-"))
+                                    {
+                                        t.setType(PortfolioTransaction.Type.SELL);
+                                        t.setShares(asShares(
+                                                        v.get("shares").replaceFirst("-", "")));
+                                    }
+                                    else
+                                    {
+                                        t.setShares(asShares(v.get("shares")));
+                                    }
                             })
                         )
 
@@ -1043,6 +1336,11 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
     {
         // 1.112    --> 1,112
         return inputExchangeRate.replace(".", ",");
+    }
+
+    private String stripBlanks(String input)
+    {
+        return input.replaceAll(" ", ""); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     @Override

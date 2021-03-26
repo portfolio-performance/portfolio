@@ -301,7 +301,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         .section("amount", "currency") //
-                        .find(".*(Zu Ihren Gunsten vor Steuern|Zu Ihren Lasten vor Steuern) *") //
+                        .find(".*(Zu Ihren Gunsten vor Steuern|Zu Ihren Lasten vor Steuern|Zu Ihren Gunsten) *") //
                         .match(".* \\d+.\\d+.\\d{4}+ *(?<currency>\\w{3}) *(?<amount>[\\d\\.]+,\\d+-?).*") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -419,6 +419,13 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
                         .section("fee", "currency").optional()
                         .match(".*Umschreibeentgelt *: *(?<currency>\\w{3}) *(?<fee>[\\d\\.-]+,\\d+)-? *") //
+                        .assign((t, v) -> t.getPortfolioTransaction()
+                                        .addUnit(new Unit(Unit.Type.FEE,
+                                                        Money.of(asCurrencyCode(v.get("currency")),
+                                                                        asAmount(v.get("fee"))))))
+
+                        .section("fee", "currency").optional()
+                        .match(".*Maklercourtage *: *(?<currency>\\w{3}) *(?<fee>[\\d\\.-]+,\\d+)-? *") //
                         .assign((t, v) -> t.getPortfolioTransaction()
                                         .addUnit(new Unit(Unit.Type.FEE,
                                                         Money.of(asCurrencyCode(v.get("currency")),

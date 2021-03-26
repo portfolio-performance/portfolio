@@ -51,9 +51,11 @@ public class PDFImportAssistant
         extractors.add(new HelloBankPDFExtractor(client));
         extractors.add(new INGDiBaExtractor(client));
         extractors.add(new JustTradePDFExtractor(client));
+        extractors.add(new KeytradeBankPDFExtractor(client));
         extractors.add(new MLPBankingAGPDFExtractor(client));
         extractors.add(new LGTBankPDFExtractor(client));
         extractors.add(new OnvistaPDFExtractor(client));
+        extractors.add(new PostbankPDFExtractor(client));
         extractors.add(new PostfinancePDFExtractor(client));
         extractors.add(new QuirionPDFExtractor(client));
         extractors.add(new SBrokerPDFExtractor(client));
@@ -70,7 +72,6 @@ public class PDFImportAssistant
         extractors.add(new JSONPDFExtractor(client, "trade-republic-dividends.json")); //$NON-NLS-1$
         extractors.add(new JSONPDFExtractor(client, "trade-republic-investmentplan.json")); //$NON-NLS-1$
         extractors.add(new JSONPDFExtractor(client, "ebase.json")); //$NON-NLS-1$
-        extractors.add(new JSONPDFExtractor(client, "postbank-purchase.json")); //$NON-NLS-1$
         extractors.add(new JSONPDFExtractor(client, "weberbank-dividends.json")); //$NON-NLS-1$
     }
 

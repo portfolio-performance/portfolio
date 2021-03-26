@@ -8,6 +8,7 @@ import java.time.format.DateTimeParseException;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
@@ -21,7 +22,7 @@ public class YahooHelperTest
 
         long result = YahooHelper.asPrice(priceFromYahoo);
 
-        assertEquals(result, -1L);
+        assertEquals(result, LatestSecurityPrice.NOT_AVAILABLE);
     }
 
     @Test
@@ -31,7 +32,17 @@ public class YahooHelperTest
 
         long result = YahooHelper.asPrice(priceFromYahoo);
 
-        assertEquals(result, -1L);
+        assertEquals(result, LatestSecurityPrice.NOT_AVAILABLE);
+    }
+
+    @Test
+    public void asPriceNaNTest() throws ParseException
+    {
+        String priceFromYahoo = "NaN";
+
+        long result = YahooHelper.asPrice(priceFromYahoo);
+
+        assertEquals(result, LatestSecurityPrice.NOT_AVAILABLE);
     }
 
     @Test
