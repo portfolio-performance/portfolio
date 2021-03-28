@@ -1,12 +1,15 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
+import java.util.Map;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -15,7 +18,7 @@ import name.abuchen.portfolio.money.Money;
 
 public class JustTradePDFExtractor extends AbstractPDFExtractor
 {
-
+    private static final String FLAG_WITHHOLDING_TAX_FOUND  = "exchangeRate"; //$NON-NLS-1$
     private static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("d LLL yyyy HH:mm:ss", //$NON-NLS-1$
                     Locale.GERMANY);
 
@@ -27,6 +30,7 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
 
         addBuyTransactionOld();
         addBuySellTransaction();
+        addDividendeTransaction();
     }
 
     private String stripTrailing(String value)
@@ -173,8 +177,108 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(BuySellEntryItem::new);
-        
-        
+    }
+
+    @SuppressWarnings("nls")
+    private void addDividendeTransaction()
+    {
+        DocumentType type = new DocumentType("Dividende");
+        this.addDocumentTyp(type);
+
+        Block block = new Block("^(Dividende [^pro]).*");
+        type.addBlock(block);
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>()
+            .subject(() -> {
+                AccountTransaction entry = new AccountTransaction();
+                entry.setType(AccountTransaction.Type.DIVIDENDS);
+                return entry;
+            });
+
+        pdfTransaction
+
+                // Produktbezeichnung - Kellogg Co.:
+                // Internationale Wertpapierkennnummer US4878361082
+                .section("name", "isin")
+                .match("^Produktbezeichnung - (?<name>.*):")
+                .match("^Internationale Wertpapierkennnummer (?<isin>.*)")
+                .assign((t, v) -> {
+                    t.setSecurity(getOrCreateSecurity(v));
+                })
+
+                // Anzahl/Nominale 30,00
+                .section("shares")
+                .match("^Anzahl\\/Nominale (?<shares>[\\d.]+,\\d+)")
+                .assign((t, v) -> {
+                    t.setShares(asShares(v.get("shares")));
+                })
+
+                // Ex Datum - Tag 01. März 2021
+                .section("date")
+                .match("^Ex Datum - Tag (?<date>\\d+. .* \\d{4})")
+                .assign((t, v) -> {
+                    // Formate the date from 01. März 2021 to 01.03.2021
+                    v.put("date", DateTimeFormatter.ofPattern("dd.MM.yyyy").format(LocalDate.parse(v.get("date"), DateTimeFormatter.ofPattern("d. MMMM yyyy", Locale.GERMANY))));
+                    t.setDateTime(asDate(v.get("date")));
+                })
+
+                // Ausmachender Betrag EUR 12,15
+                .section("currency", "amount")
+                .match("^Ausmachender Betrag (?<currency>\\w{3}) (?<amount>[\\d.]+,\\d+)")
+                .assign((t, v) -> {
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(v.get("currency"));
+                })
+
+                .wrap(TransactionItem::new);
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
+
+        block.set(pdfTransaction);
+    }
+
+    @SuppressWarnings("nls")
+    private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
+    {
+        transaction
+                // Einbehaltende Quellensteuer EUR 2,14
+                .section("quellensteinbeh", "currency").optional()
+                .match("^Einbehaltende Quellensteuer (?<currency>\\w{3}) (?<quellensteinbeh>[.,\\d]+)$")
+                .assign((t, v) ->  {
+                    type.getCurrentContext().put(FLAG_WITHHOLDING_TAX_FOUND, "true");
+                    addTax(type, t, v, "quellensteinbeh");
+                })
+
+                // Anrechenbare Quellensteuer EUR 2,14
+                .section("quellenstanr", "currency").optional()
+                .match("^Anrechenbare Quellensteuer (?<currency>\\w{3}) (?<quellenstanr>[.,\\d]+)$")
+                .assign((t, v) -> addTax(type, t, v, "quellenstanr"));
+    }
+
+    @SuppressWarnings("nls")
+    private void addTax(DocumentType type, Object t, Map<String, String> v, String taxtype)
+    {
+        // Wenn es 'Einbehaltene Quellensteuer' gibt, dann die weiteren
+        // Quellensteuer-Arten nicht berücksichtigen.
+        if (checkWithholdingTax(type, taxtype))
+        {
+            ((name.abuchen.portfolio.model.Transaction) t)
+                    .addUnit(new Unit(Unit.Type.TAX, 
+                                    Money.of(asCurrencyCode(v.get("currency")), 
+                                                    asAmount(v.get(taxtype)))));
+        }
+    }
+
+    @SuppressWarnings("nls")
+    private boolean checkWithholdingTax(DocumentType type, String taxtype)
+    {
+        if (Boolean.valueOf(type.getCurrentContext().get(FLAG_WITHHOLDING_TAX_FOUND)))
+        {
+            if ("quellenstanr".equalsIgnoreCase(taxtype))
+            { 
+                return false; 
+            }
+        }
+        return true;
     }
 
     @Override
