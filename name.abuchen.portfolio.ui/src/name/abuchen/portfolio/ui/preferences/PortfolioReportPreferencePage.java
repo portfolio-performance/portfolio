@@ -33,11 +33,11 @@ public class PortfolioReportPreferencePage extends FieldEditorPreferencePage
             @Override
             public void widgetSelected(final SelectionEvent event)
             {
-                DesktopAPI.browse("https://api.portfolio-report.net/doc/"); //$NON-NLS-1$
+                DesktopAPI.browse("https://app.portfolio-report.net/"); //$NON-NLS-1$
             }
         });
 
         addField(new StringFieldEditor(UIConstants.Preferences.PORTFOLIO_REPORT_API_KEY, //
-                        "Portfolio Report Session Token", getFieldEditorParent()));
+                        "Portfolio Report Session Key", getFieldEditorParent()));
     }
 }
