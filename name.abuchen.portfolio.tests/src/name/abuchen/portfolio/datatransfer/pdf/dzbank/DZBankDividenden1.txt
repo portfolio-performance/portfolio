@@ -1,0 +1,58 @@
+﻿PDFBox Version: 1.8.16
+-----------------------------------------
+Volksbank Viersen eG · Neumarkt 6-6a · 41751 Viersen    Seite 1
+Depotnummer
+ 0000000
+ Kundennummer 0000
+xxxxx xxxxxx
+ Abrechnungsnr. 00000000000
+xxxxxxx xxxxxx Datum 16.03.2021
+xxxxxxxxstr. 00 Ihr Berater Herr xxxxx Rxxxxx
+40040 xxxxxxx Telefon 02000    00000-0000   
+Telefax 00000 40000-000           
+ 
+Dividendengutschrift
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 205 BARRICK GOLD CORP.  SHARES CA0679011084 (870450)
+REGISTERED SHARES O.N.
+Zahlbarkeitstag 15.03.2021 Dividende pro Stück 0,09 USD
+Bestandsstichtag 25.02.2021 Herkunftsland Kanada
+Ex-Tag 26.02.2021 Art der Dividende Quartalsdividende
+Geschäftsjahr 01.01.2020 - 31.12.2020
+Devisenkurs EUR / USD  1,1989
+Devisenkursdatum 16.03.2021
+Dividendengutschrift 18,45 USD 15,39+ EUR
+Umrechnung in EUR 15,39 EUR
+Einbehaltene Quellensteuer 25 % auf 18,45 USD 3,85- EUR
+Anrechenbare Quellensteuer 15 % auf 15,39 EUR 2,31 EUR
+Kapitalertragsteuerpflichtige Dividende 15,39 EUR
+Verrechnete anrechenbare ausländische Quellensteuer
+(Verhältnis 100/25) auf 2,31 EUR 9,24 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 6,15 EUR
+Kapitalertragsteuer 25 % auf 6,15 EUR 1,54- EUR
+Solidaritätszuschlag 5,5 % auf 1,54 EUR 0,08- EUR
+Ausmachender Betrag 9,92+ EUR
+10 % rückforderbare Quellensteuer 1,85 USD
+Lagerstelle CBF w/7268 w/DZ Bank (600502 / 72680000)
+Den Betrag buchen wir mit Wertstellung 17.03.2021 zu Gunsten des Kontos 0000000 (IBAN DE87 0000 0000 0001 2220
+15), BLZ 314 602 90 (BIC GENODED1VSN). 
+Bitte ggf. Rückseite beachten.
+7525.03170101.0000003ER01
+
+Seite 2
+Depotnummer 0000000
+Kundennummer 0000
+Abrechnungsnr. 57506854250
+Datum 16.03.2021
+Keine Steuerbescheinigung. 
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2021 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 210.115,92
+Ertrag 2,31
+0,00 0,00 0,00 2,31- 6,15
+Nachher 0,00 0,00 0,00 0,00 210.122,07
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+7525.03170101.0000004ER01 ````
