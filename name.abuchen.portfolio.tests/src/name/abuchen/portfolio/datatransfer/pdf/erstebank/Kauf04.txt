@@ -1,0 +1,35 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Ab. BLZ: 12345
+Abcd Abcdefghijk Referenz Nr: 12-1234567-1
+Nr. 01 Kunden Nr.: 12345
+1234 Abcdefghi Depot Nr.: 12345-01 
+Austria
+Wien,  23. November 2009
+ 
+WERTPAPIERBESTÄTIGUNG 
+IHR KAUF 
+ 
+Ausserbörslich Kurswert: EUR 99,97
+Wertpapier: DWS TOP 50 WELT
+WP-Kenn-Nr. : DE0009769794
+Gesamtbetrag: EUR 99,97
+Stück: 2,004
+NAV: EUR 49,0002
+Preis: EUR 49,8827
+Handelstag: 20. November 2009
+Valutatag: 24. November 2009
+Lagerort: Wien
+Verwahrart: WR
+Abrechnung:
+Wir belasten Ihr EUR Konto Nummer  12345 mit Valuta 24. November 2009.
+Wir erkennen Ihr Wertpapierdepot Nummer  12345-1.
+Ausführung:
+Ausführungsdatum: 23. November 2009 Ausführungszeit: 18:00:00
+Überprüfen Sie bitte die Richtigkeit dieser Bestätigung. Sollten Sie innerhalb von 6 Wochen nach Erhalt dieser Bestätigung keine
+Einwände gegen die Richtigkeit erheben, so gelten die angeführten Erklärungen und Leistungen als genehmigt.
+ecetra  Central European e-Finance AG | Mariahilferstraße 121B | A-1060 Wien 
+e-mail: support@ecetra.com | Fax: +43-1-53689-13550 | www.ecetra.com
+Sitz Wien  |  Handelsgericht Wien  |  FB-Nr. 193944m  |  DVR 1052322  |  UID ATU49227901
+Ein Unternehmen der ERSTE BANK GRUPPE

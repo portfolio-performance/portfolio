@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -14,8 +16,12 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 
+@SuppressWarnings("nls")
 public class DZBankPDFExtractor extends AbstractPDFExtractor
 {
+    private static final String EXCHANGE_RATE = "exchangeRate"; //$NON-NLS-1$
+    private static final String FLAG_WITHHOLDING_TAX_FOUND  = "exchangeRate"; //$NON-NLS-1$
+    
     public DZBankPDFExtractor(Client client)
     {
         super(client);
@@ -27,7 +33,7 @@ public class DZBankPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("Union Investment Service Bank AG"); //$NON-NLS-1$
 
         addBuySellTransaction();
-        addAusschuettungTransaction();
+        addDividendeTransaction();
         addSalesTurnoverTransaction();
     }
 
@@ -42,8 +48,7 @@ public class DZBankPDFExtractor extends AbstractPDFExtractor
     {
         return "DZBank"; //$NON-NLS-1$
     }
-    
-    @SuppressWarnings("nls")
+
     private void addBuySellTransaction()
     {
         DocumentType type = new DocumentType("Wertpapier Abrechnung (Kauf|Verkauf)");
@@ -82,14 +87,15 @@ public class DZBankPDFExtractor extends AbstractPDFExtractor
             // Nominale Wertpapierbezeichnung ISIN (WKN)
             // Stück 1 NETFLIX INC.                       US64110L1061 (552484)
             // REGISTERED SHARES DL -,001  
-            .section("shares", "name", "isin", "wkn", "nameContinued")
+            .section("shares", "name", "isin", "wkn", "name1")
             .match("(Nominale Wertpapierbezeichnung ISIN \\(WKN\\))")
-            .match("(St.ck) (?<shares>[\\d.]+(,\\d+)?) (?<name>.*)\\s+(?<isin>.*) \\((?<wkn>.*)\\).*")
-            .match("(?<nameContinued>.*)")
+            .match("(St.ck) (?<shares>[\\d.]+(,\\d+)?) (?<name>.*) (?<isin>.*) \\((?<wkn>.*)\\).*")
+            .match("(?<name1>.*)")
             .assign((t, v) -> {
-                v.put("isin", v.get("isin"));
-                v.put("wkn", v.get("wkn"));
-                v.put("name", v.get("name"));                            
+                v.put("name", v.get("name").trim());
+                                
+                if (!v.get("name1").startsWith("Handels-\\/Ausf.hrungsplatz"))
+                    v.put("name", v.get("name") + " " + v.get("name1"));                           
                 t.setSecurity(getOrCreateSecurity(v));
                 t.setShares(asShares(v.get("shares")));
             })
@@ -146,62 +152,97 @@ public class DZBankPDFExtractor extends AbstractPDFExtractor
         
         block.set(pdfTransaction);
     }
-    
-    @SuppressWarnings("nls")
-    private void addAusschuettungTransaction()
+
+    private void addDividendeTransaction()
     {
-        DocumentType dividende = new DocumentType("Ausschüttung Investmentfonds");
-        this.addDocumentTyp(dividende);
+        DocumentType type = new DocumentType("(Dividendengutschrift|Aussch.ttung Investmentfonds)");
+        this.addDocumentTyp(type);
 
-        Block block = new Block(
-                        "Aussch.ttung Investmentfonds.*");
-        dividende.addBlock(block);
-        block.set(new Transaction<AccountTransaction>()
-
+        Block block = new Block("(Dividendengutschrift|Ausschüttung Investmentfonds)");
+        type.addBlock(block);
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>()
                         .subject(() -> {
-                            AccountTransaction t = new AccountTransaction();
-                            t.setType(AccountTransaction.Type.DIVIDENDS);
-                            return t;
+                            AccountTransaction entry = new AccountTransaction();
+                            entry.setType(AccountTransaction.Type.DIVIDENDS);
+                            return entry;
+                        });
+
+        pdfTransaction
+                        // Nominale Wertpapierbezeichnung ISIN (WKN)
+                        // Stück 100 VANGUARD FTSE ALL-WORLD U.ETF IE00B3RBWM25 (A1JX52)
+                        // REGISTERED SHARES USD DIS.ON
+                        .section("shares", "name", "isin", "wkn", "name1")
+                        .match("^Nominale Wertpapierbezeichnung ISIN \\(WKN\\)")
+                        .match("^St.ck (?<shares>[\\d.]+(,\\d+)?) (?<name>.*)\\s+(?<isin>.*) \\((?<wkn>.*)\\).*")
+                        .match("(?<name1>.*)")
+                        .assign((t, v) -> {
+                            if (!v.get("name1").startsWith("Zahlbarkeitstag"))
+                                v.put("name", v.get("name") + " " + v.get("name1"));                           
+                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setShares(asShares(v.get("shares")));
                         })
 
+                        // Ex-Tag 12.12.2019 fonds) 0,208116300 USD
                         .section("date")
-                        .match(".*(Wertstellung) (?<date>\\d+.\\d+.\\d{4}+).*")
+                        .match("^Ex-Tag (?<date>\\d+.\\d+.\\d{4}+).*")
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                         })
                         
-                        .section("shares", "name", "isin", "wkn")
-                        .match("(Nominale Wertpapierbezeichnung ISIN \\(WKN\\))")
-                        .match("(St.ck) (?<shares>[\\d.]+(,\\d+)?) (?<name>.*)\\s+(?<isin>.*) \\((?<wkn>.*)\\).*")
-                        .assign((t, v) -> {
-                            v.put("isin", v.get("isin"));
-                            v.put("wkn", v.get("wkn"));
-                            v.put("name", v.get("name"));                            
-                            t.setSecurity(getOrCreateSecurity(v));
-                            t.setShares(asShares(v.get("shares")));
-                        })
-                        
-                        .section("currency", "amount") //
-                        .find("^(Aussch.ttung) (?<amountfx>[\\d.]+(,[\\d]+)?) (USD) (?<amount>[\\d.]+(,[\\d]+)?)\\+ (?<currency>.*)$") //
+                        // Ausmachender Betrag 9,92+ EUR
+                        .section("currency", "amount")
+                        .find("^Ausmachender Betrag (?<amount>[\\d.]+(,[\\d]+)?)\\+ (?<currency>.*)$")
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                        })
-                        
-                        .section("currency", "amountaftertax") //
-                        .find(".*(Ausmachender Betrag) (?<amountaftertax>[\\d.]+(,[\\d]+)?)\\+ (?<currency>.*)$")
-                        .assign((t, v) -> {
-                            long gross = t.getAmount();
-                            long tax = gross - asAmount(v.get("amountaftertax"));
-                            
-                            if (tax > 0)
-                                t.addUnit(new Unit(Unit.Type.TAX, Money.of(asCurrencyCode(v.get("currency")), tax)));
+                            t.setCurrencyCode(v.get("currency"));
                         })
 
-                        .wrap(TransactionItem::new));
+                        // Devisenkurs EUR / USD 1,2095
+                        // Devisenkursdatum 02.01.2018
+                        // Ausschüttung 113,16 USD 93,56+ EUR
+                        .section("exchangeRate", "fxAmount", "fxCurrency", "amount", "currency").optional()
+                        .match("^Devisenkurs .* (?<exchangeRate>[\\d.]+,\\d+)$")
+                        .match("^Aussch.ttung (?<fxAmount>[\\d.]+,\\d+) (?<fxCurrency>\\w{3}) (?<amount>[\\d.]+,\\d+)\\+ (?<currency>\\w{3})$")                        
+                        .assign((t, v) -> {
+                            BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                            if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
+                            {
+                                exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+                            }
+
+                            type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
+
+                            if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
+                            {
+                                BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
+                                                RoundingMode.HALF_DOWN);
+
+                                // check, if forex currency is transaction
+                                // currency or not and swap amount, if necessary
+                                Unit grossValue;
+                                if (!asCurrencyCode(v.get("fxCurrency")).equals(t.getCurrencyCode()))
+                                {
+                                    Money fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")),asAmount(v.get("fxAmount")));
+                                    Money amount = Money.of(asCurrencyCode(v.get("currency")),asAmount(v.get("amount")));
+                                    grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
+                                }
+                                else
+                                {
+                                    Money amount = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxAmount")));
+                                    Money fxAmount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
+                                    grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
+                                }
+                                t.addUnit(grossValue);
+                            }
+                        })
+
+                        .wrap(TransactionItem::new);
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
+
+        block.set(pdfTransaction);
     }
-    
-    @SuppressWarnings("nls")
+
     private void addSalesTurnoverTransaction()
     {
         DocumentType type = new DocumentType("Umsatzübersicht", (context, lines) -> {
@@ -268,7 +309,6 @@ public class DZBankPDFExtractor extends AbstractPDFExtractor
             .wrap(BuySellEntryItem::new));
     }
 
-    @SuppressWarnings("nls")
     private void addTaxRefundForSell(DocumentType type)
     {
         Block block = new Block("Wertpapier Abrechnung (Kauf|Verkauf).*");
@@ -284,14 +324,13 @@ public class DZBankPDFExtractor extends AbstractPDFExtractor
             // Nominale Wertpapierbezeichnung ISIN (WKN)
             // Stück 5 ETSY INC.                          US29786A1060 (A14P98)
             // REGISTERED SHARES DL -,001  
-            .section("shares", "name", "isin", "wkn", "nameContinued").optional()
+            .section("shares", "name", "isin", "wkn", "name1").optional()
             .match("(Nominale Wertpapierbezeichnung ISIN \\(WKN\\))")
             .match("(St.ck) (?<shares>[\\d.]+(,\\d+)?) (?<name>.*)\\s+(?<isin>.*) \\((?<wkn>.*)\\).*")
-            .match("(?<nameContinued>.*)")
+            .match("(?<name1>.*)")
             .assign((t, v) -> {
-                v.put("isin", v.get("isin"));
-                v.put("wkn", v.get("wkn"));
-                v.put("name", v.get("name"));                            
+                if (!v.get("name1").startsWith("Zahlbarkeitstag"))
+                    v.put("name", v.get("name") + " " + v.get("name1"));                            
                 t.setSecurity(getOrCreateSecurity(v));
                 t.setShares(asShares(v.get("shares")));
             })
@@ -316,5 +355,108 @@ public class DZBankPDFExtractor extends AbstractPDFExtractor
                     return new TransactionItem(t);
                 return null;
             }));
+    }
+
+    private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
+    {
+        transaction  
+                    // Kapitalertragsteuer 25 % auf 93,63 EUR 23,41- EUR
+                    .section("tax", "currency").optional()
+                    .match("^(Kapitalertragsteuer) [.,\\d]+ % .* (?<tax>[\\d.]+,\\d+)- (?<currency>\\w{3})$")
+                    .assign((t, v) -> processTaxEntries(t, v, type))
+                    
+                    // Solidaritätszuschlag 5,5 % auf 23,41 EUR 1,28- EUR
+                    .section("tax", "currency").optional()
+                    .match("^(Solidaritätszuschlag) [.,\\d]+ % .* (?<tax>[\\d.]+,\\d+)- (?<currency>\\w{3})$")
+                    .assign((t, v) -> processTaxEntries(t, v, type))
+        
+                    // Kirchensteuer 5,5 % auf 23,41 EUR 1,28- EUR
+                    .section("tax", "currency").optional()
+                    .match("^(Kirchensteuer) [.,\\d]+ % .* (?<tax>[\\d.]+,\\d+)- (?<currency>\\w{3})$")
+                    .assign((t, v) -> processTaxEntries(t, v, type))
+
+                    // Einbehaltene Quellensteuer 25 % auf 18,45 USD 3,85- EUR
+                    .section("quellensteinbeh", "currency").optional()
+                    .match("^Einbehaltene Quellensteuer(.*) (\\w{3}) (?<quellensteinbeh>[\\d.]+,\\d+)(-) (?<currency>\\w{3})")
+                    .assign((t, v) ->  {
+                        type.getCurrentContext().put(FLAG_WITHHOLDING_TAX_FOUND, "true");
+                        addTax(type, t, v, "quellensteinbeh");
+                    })
+                    
+                    // Anrechenbare Quellensteuer 15 % auf 15,39 EUR 2,31 EUR
+                    .section("quellenstanr", "currency").optional()
+                    .match("^Anrechenbare Quellensteuer(.*) (\\w{3}) (?<quellenstanr>[\\d.]+,\\d+) (?<currency>\\w{3})")
+                    .assign((t, v) -> addTax(type, t, v, "quellenstanr"))
+            
+                    // 10 % rückforderbare Quellensteuer 1,85 USD
+                    .section("quellenstrueck", "currency").optional()
+                    .match("^(.*) r.ckforderbare Quellensteuer (?<quellenstrueck>[\\d.]+,\\d+) (?<currency>\\w{3})")
+                    .assign((t, v) -> addTax(type, t, v, "quellenstrueck"));
+    }
+
+    private void addTax(DocumentType type, Object t, Map<String, String> v, String taxtype)
+    {
+        // Wenn es 'Einbehaltene Quellensteuer' gibt, dann die weiteren
+        // Quellensteuer-Arten nicht berücksichtigen.
+        // Die Berechnung der Gesamt-Quellensteuer anhand der anrechenbaren- und
+        // der rückforderbaren Steuer kann ansonsten zu Rundungsfehlern führen.
+        if (checkWithholdingTax(type, taxtype))
+        {
+
+            name.abuchen.portfolio.model.Transaction tx = getTransaction(t);
+
+            String currency = asCurrencyCode(v.get("currency"));
+            long amount = asAmount(v.get(taxtype));
+
+            if (!currency.equals(tx.getCurrencyCode()) && type.getCurrentContext().containsKey(EXCHANGE_RATE))
+            {
+                BigDecimal rate = BigDecimal.ONE.divide(
+                                asExchangeRate(type.getCurrentContext().get(EXCHANGE_RATE)), 10,
+                                RoundingMode.HALF_DOWN);
+
+                currency = tx.getCurrencyCode();
+                amount = rate.multiply(BigDecimal.valueOf(amount)).setScale(0, RoundingMode.HALF_DOWN).longValue();
+            }
+
+            tx.addUnit(new Unit(Unit.Type.TAX, Money.of(currency, amount)));
+        }
+    }
+
+    private boolean checkWithholdingTax(DocumentType documentType, String taxtype)
+    {
+        if (Boolean.valueOf(documentType.getCurrentContext().get(FLAG_WITHHOLDING_TAX_FOUND)))
+        {
+            if ("quellenstanr".equalsIgnoreCase(taxtype) || ("quellenstrueck".equalsIgnoreCase(taxtype)))
+            { 
+                return false; 
+            }
+        }
+        return true;
+    }
+
+    private name.abuchen.portfolio.model.Transaction getTransaction(Object t)
+    {
+        if (t instanceof name.abuchen.portfolio.model.Transaction)
+        {
+            return ((name.abuchen.portfolio.model.Transaction) t);
+        }
+        else
+        {
+            return ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction();
+        }
+    }
+
+    private void processTaxEntries(Object t, Map<String, String> v, DocumentType type)
+    {
+        if (t instanceof name.abuchen.portfolio.model.Transaction)
+        {
+            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+            PDFExtractorUtils.checkAndSetTax(tax, (name.abuchen.portfolio.model.Transaction) t, type);
+        }
+        else
+        {
+            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+            PDFExtractorUtils.checkAndSetTax(tax, ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
+        }
     }
 }

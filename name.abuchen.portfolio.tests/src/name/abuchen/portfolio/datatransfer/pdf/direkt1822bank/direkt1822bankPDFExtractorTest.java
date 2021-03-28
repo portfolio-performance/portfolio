@@ -110,6 +110,44 @@ public class direkt1822bankPDFExtractorTest
     }
 
     @Test
+    public void testAusschuettung02()
+    {
+        Direkt1822BankPDFExtractor extractor = new Direkt1822BankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Ausschüttung02.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        AccountTransaction t = results.stream().filter(i -> i instanceof TransactionItem)
+                        .map(i -> (AccountTransaction) ((TransactionItem) i).getSubject()).findAny()
+                        .orElseThrow(IllegalArgumentException::new);
+        
+        assertThat(t.getSecurity().getIsin(), is("DE000ETFL078"));
+        assertThat(t.getSecurity().getWkn(), is("ETFL07"));
+        assertThat(t.getSecurity().getName(), is("DEKA EO STOXX SEL.DIV.30 U.ETF INHABER-ANTEILE"));
+
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(7.13))));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(118.901)));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-10T00:00")));
+
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        
+        CheckCurrenciesAction c = new CheckCurrenciesAction();
+        Account account = new Account();
+        account.setCurrencyCode(CurrencyUnit.EUR);
+        Status s = c.process(t, account);
+        assertThat(s, is(Status.OK_STATUS));
+    }
+
+    @Test
     public void testWertpapierSparplan01()
     {
         Direkt1822BankPDFExtractor extractor = new Direkt1822BankPDFExtractor(new Client());
@@ -173,7 +211,7 @@ public class direkt1822bankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.95))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
     }
 
     @Test
