@@ -50,6 +50,7 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
         addErtragsgutschrift();
         addZinsgutschrift();
         addDividendengutschrift();
+        addAdvanceFeeTransaction();
     }
 
     @Override
@@ -546,5 +547,70 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                             String currency = asCurrencyCode(v.get("currency"));
                             t.addUnit(new Unit(Unit.Type.TAX, Money.of(currency, asAmount(v.get("tax")))));
                         });
+    }
+
+    @SuppressWarnings("nls")
+    private void addAdvanceFeeTransaction()
+    {
+        DocumentType type = new DocumentType("Vorabpauschale");
+        this.addDocumentTyp(type);
+
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+
+        Block firstRelevantLine = new Block("Vorabpauschale");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction
+                    .subject(() -> {
+                        AccountTransaction t = new AccountTransaction();
+                        t.setType(AccountTransaction.Type.TAXES);
+                        return t;
+                    })
+
+                    // ISIN (WKN) IE00BKPT2S34 (A2P1KU)
+                    // Wertpapierbezeichnung iShsIII-Gl.Infl.L.Gov.Bd U.ETF
+                    // Reg. Shs HGD EUR Acc. oN
+                    // Nominale 378,00 Stück
+                    .section("wkn", "isin", "name", "name1")
+                    .match("^ISIN \\(WKN\\) (?<isin>[^ ]*) \\((?<wkn>.*)\\)$")
+                    .match("^Wertpapierbezeichnung (?<name>.*)")
+                    .match("(?<name1>.*)")
+                    .assign((t, v) -> {
+                        if (!v.get("name1").startsWith("Nominale"))
+                            v.put("name", v.get("name") + " " + v.get("name1"));
+                        t.setSecurity(getOrCreateSecurity(v));
+                    })
+
+                    // Nominale 378,00 Stück
+                    .section("shares")
+                    .match("^Nominale (?<shares>[\\d.]+(,\\d+)?) .*")
+                    .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                    // Ex-Tag 04.01.2021
+                    .section("date")
+                    .match("^Ex-Tag (?<date>\\d+.\\d+.\\d{4})")
+                    .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                    // Gesamtbetrag zu Ihren Lasten EUR - 0,16
+                    .section("currency", "tax", "sign").optional()
+                    .match("^Gesamtbetrag zu Ihren Lasten (?<currency>[\\w]{3}) (?<sign>[-\\s]*)?(?<tax>[.,\\d]*)")
+                    .assign((t, v) -> {
+                        t.setAmount(asAmount(v.get("tax")));
+                        t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+
+                        String sign = v.get("sign").trim();
+                        if ("".equals(sign))
+                        {
+                            // change type for withdrawals
+                            t.setType(AccountTransaction.Type.TAX_REFUND);
+                        }
+                    })
+
+                    .wrap(t -> {
+                        if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                            return new TransactionItem(t);
+                        return null;
+                    });
     }
 }
