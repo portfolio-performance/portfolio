@@ -17,6 +17,8 @@ import name.abuchen.portfolio.money.Money;
 @SuppressWarnings("nls")
 public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
 {
+    private static final String FLAG_WITHHOLDING_TAX_FOUND  = "exchangeRate"; //$NON-NLS-1$
+
     public Direkt1822BankPDFExtractor(Client client)
     {
         super(client);
@@ -42,8 +44,8 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType newType = new DocumentType("Wertpapier Abrechnung (Kauf|Verkauf).*");
-        this.addDocumentTyp(newType);
+        DocumentType type = new DocumentType("Wertpapier Abrechnung (Kauf|Verkauf).*");
+        this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
         pdfTransaction.subject(() -> {
@@ -53,7 +55,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
         });
 
         Block firstRelevantLine = new Block("Wertpapier Abrechnung (Kauf|Verkauf).*");
-        newType.addBlock(firstRelevantLine);
+        type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
@@ -70,7 +72,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                     // Stück 13 COMSTA.-MSCI EM.MKTS.TRN U.ETF LU0635178014 (ETF127)
                     // INHABER-ANTEILE I O.N.
                     .section("isin", "wkn", "name", "shares", "name1")
-                    .match("^(St.ck) (?<shares>[\\d.,]+) (?<name>.*) (?<isin>[\\w]{12}.*) (\\((?<wkn>.*)\\).*)")
+                    .match("^(St.ck) (?<shares>[.,\\d]+) (?<name>.*) (?<isin>[\\w]{12}.*) (\\((?<wkn>.*)\\).*)")
                     .match("(?<name1>.*)")
                     .assign((t, v) -> {
                         if (!v.get("name1").startsWith("B.rse"))
@@ -91,7 +93,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
 
                     // Ausmachender Betrag 50,00- EUR
                     .section("currency", "amount")
-                    .match("^(Ausmachender Betrag) (?<amount>[\\d.]+,\\d+)[?(-|\\+)] (?<currency>\\w{3})")
+                    .match("^(Ausmachender Betrag) (?<amount>[.,\\d.]+)[?(-|\\+)] (?<currency>[\\w]{3})")
                     .assign((t, v) -> {
                         t.setAmount(asAmount(v.get("amount")));
                         t.setCurrencyCode(v.get("currency"));
@@ -99,7 +101,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
 
                     // Eingebuchte sonstige negative Kapitalerträge 0,02 EUR
                     .section("tax", "currency").optional()
-                    .match("^(Eingebuchte.*Kapitalerträge) (?<tax>[\\d.]+,\\d{2}) (?<currency>\\w{3})")
+                    .match("^(Eingebuchte.*Kapitalerträge) (?<tax>[.,\\d]+) (?<currency>[\\w]{3})")
                     .assign((t, v) -> t.getPortfolioTransaction()
                                     .addUnit(new Unit(Unit.Type.TAX,
                                                     Money.of(asCurrencyCode(v.get("currency")),
@@ -107,7 +109,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
 
                     // Provision 4,95- EUR
                     .section("fee", "currency").optional()
-                    .match("^(Provision) (?<fee>[\\d.-]+,\\d+)- (?<currency>\\w{3})")
+                    .match("^(Provision) (?<fee>[.,\\d]+)- (?<currency>[\\w]{3})")
                     .assign((t, v) -> t.getPortfolioTransaction()
                                     .addUnit(new Unit(Unit.Type.FEE,
                                                     Money.of(asCurrencyCode(v.get("currency")),
@@ -115,7 +117,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
 
                     // Eigene Spesen 1,95- EUR
                     .section("fee", "currency").optional()
-                    .match("^(Eigene Spesen) (?<fee>[\\d.-]+,\\d+)- (?<currency>\\w{3})")
+                    .match("^(Eigene Spesen) (?<fee>[.,\\d]+)- (?<currency>[\\w]{3})")
                     .assign((t, v) -> t.getPortfolioTransaction()
                                     .addUnit(new Unit(Unit.Type.FEE,
                                                     Money.of(asCurrencyCode(v.get("currency")),
@@ -123,7 +125,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
 
                     // Transaktionsentgelt Börse 0,11- EUR
                     .section("fee", "currency").optional()
-                    .match("(Transaktionsentgelt B.rse) (?<fee>[\\d+,.]*)- (?<currency>[\\w]{3})")
+                    .match("(Transaktionsentgelt B.rse) (?<fee>[.,\\d]+)- (?<currency>[\\w]{3})")
                     .assign((t, v) -> t.getPortfolioTransaction()
                                     .addUnit(new Unit(Unit.Type.FEE,
                                                     Money.of(asCurrencyCode(v.get("currency")),
@@ -131,7 +133,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
 
                     // Übertragungs-/Liefergebühr 0,11- EUR
                     .section("fee", "currency").optional()
-                    .match("(.bertragungs-\\/Liefergeb.hr) (?<fee>[\\d+,.]*)- (?<currency>[\\w]{3})")
+                    .match("(.bertragungs-\\/Liefergeb.hr) (?<fee>[.,\\d]+)- (?<currency>[\\w]{3})")
                     .assign((t, v) -> t.getPortfolioTransaction()
                                     .addUnit(new Unit(Unit.Type.FEE,
                                                     Money.of(asCurrencyCode(v.get("currency")),
@@ -139,7 +141,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
 
                     // Handelsentgelt 1,00- EUR
                     .section("fee", "currency").optional()
-                    .match("(Handelsentgelt) (?<fee>[\\d+,.]*)- (?<currency>[\\w]{3})")
+                    .match("(Handelsentgelt) (?<fee>[.,\\d]+)- (?<currency>[\\w]{3})")
                     .assign((t, v) -> t.getPortfolioTransaction()
                                     .addUnit(new Unit(Unit.Type.FEE,
                                                     Money.of(asCurrencyCode(v.get("currency")),
@@ -150,8 +152,8 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellSavePlanTransaction()
     {
-        DocumentType newType = new DocumentType(".*Wertpapier Abrechnung Ausgabe Investmentfonds.*");
-        this.addDocumentTyp(newType);
+        DocumentType type = new DocumentType(".*Wertpapier Abrechnung Ausgabe Investmentfonds.*");
+        this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
         pdfTransaction.subject(() -> {
@@ -161,7 +163,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
         });
 
         Block firstRelevantLine = new Block(".*Wertpapier Abrechnung Ausgabe Investmentfonds.*");
-        newType.addBlock(firstRelevantLine);
+        type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
@@ -188,8 +190,8 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                     })
 
                     // Ausmachender Betrag 50,00- EUR
-                    .section("currency", "amount")
-                    .match("^(Ausmachender Betrag) (?<amount>[\\d.]+,\\d+)- (?<currency>\\w{3})")
+                    .section("amount", "currency")
+                    .match("^(Ausmachender Betrag) (?<amount>[.,\\d]+)- (?<currency>[\\w]{3})")
                     .assign((t, v) -> {
                         t.setAmount(asAmount(v.get("amount")));
                         t.setCurrencyCode(v.get("currency"));
@@ -197,16 +199,16 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
 
                     .wrap(BuySellEntryItem::new);
 
-        addFeesSectionsTransaction(pdfTransaction, newType);
+        addFeesSectionsTransaction(pdfTransaction, type);
     }
 
     private void addDividendeTransaction()
     {
-        DocumentType newType = new DocumentType("(Gutschrift|Aussch.ttung Investmentfonds).*");
-        this.addDocumentTyp(newType);
+        DocumentType type = new DocumentType("(Gutschrift von .*|Aussch.ttung Investmentfonds|Dividendengutschrift)");
+        this.addDocumentTyp(type);
 
-        Block block = new Block("(Gutschrift|Aussch.ttung Investmentfonds).*");
-        newType.addBlock(block);
+        Block block = new Block("(Gutschrift von .*|Aussch.ttung Investmentfonds|Dividendengutschrift)");
+        type.addBlock(block);
         Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>()
             .subject(() -> {
                 AccountTransaction entry = new AccountTransaction();
@@ -229,7 +231,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
 
                     // Ausmachender Betrag 68,87+ EUR
                     .section("currency", "amount")
-                    .match("^(Ausmachender Betrag) (?<amount>[\\d.]+,\\d+)\\+ (?<currency>\\w{3})")
+                    .match("^(Ausmachender Betrag) (?<amount>[.,\\d]+)\\+ (?<currency>[\\w]{3})")
                     .assign((t, v) -> {
                         t.setAmount(asAmount(v.get("amount")));
                         t.setCurrencyCode(v.get("currency"));
@@ -244,8 +246,8 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                     // Devisenkursdatum 02.01.2018
                     // Ausschüttung 113,16 USD 93,56+ EUR
                     .section("exchangeRate", "fxAmount", "fxCurrency", "amount", "currency").optional()
-                    .match("^(Devisenkurs) .* (?<exchangeRate>[\\d.]+,\\d+)$")
-                    .match("^(Ausschüttung) (?<fxAmount>[\\d.]+,\\d+) (?<fxCurrency>\\w{3}) (?<amount>[\\d.]+,\\d+)\\+ (?<currency>\\w{3})$")                        
+                    .match("^(Devisenkurs) .* (?<exchangeRate>[.,\\d]+)$")
+                    .match("^(Ausschüttung) (?<fxAmount>[.,\\d]+) (?<fxCurrency>[\\w]{3}) (?<amount>[.,\\d]+)\\+ (?<currency>[\\w]{3})$")                        
                     .assign((t, v) -> {
                         BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                         if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
@@ -253,7 +255,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                             exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
                         }
 
-                        newType.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
+                        type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
 
                         if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
                         {
@@ -281,7 +283,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
 
                     .wrap(TransactionItem::new);
 
-        addTaxesSectionsTransaction(pdfTransaction, newType);
+        addTaxesSectionsTransaction(pdfTransaction, type);
 
         block.set(pdfTransaction);
     }
@@ -291,13 +293,26 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
         transaction
                     // Kapitalertragsteuer 25 % auf 93,63 EUR 23,41- EUR
                     .section("tax", "currency").optional()
-                    .match("^(Kapitalertragsteuer) [\\d.]+ .* (?<tax>[\\d.]+,\\d+)- (?<currency>\\w{3})$")
+                    .match("^(Kapitalertragsteuer) [.,\\d]+ % .* (?<tax>[.,\\d]+)- (?<currency>[\\w]{3})$")
                     .assign((t, v) -> processTaxEntries(t, v, type))
                     
                     // Solidaritätszuschlag 5,5 % auf 23,41 EUR 1,28- EUR
                     .section("tax", "currency").optional()
-                    .match("^(Solidaritätszuschlag) [\\d.]+,\\d+ .* (?<tax>[\\d.]+,\\d+)- (?<currency>\\w{3})$")
-                    .assign((t, v) -> processTaxEntries(t, v, type));
+                    .match("^(Solidaritätszuschlag) [.,\\d]+ .* (?<tax>[.,\\d]+)- (?<currency>[\\w]{3})$")
+                    .assign((t, v) -> processTaxEntries(t, v, type))
+
+                    // Einbehaltene Quellensteuer 15 % auf 5,22 USD 0,66- EUR
+                    .section("quellensteinbeh", "currency").optional()
+                    .match("^Einbehaltende Quellensteuer [.,\\d]+ .* (?<quellensteinbeh>[.,\\d]+) (?<currency>[\\w]{3})$")
+                    .assign((t, v) ->  {
+                        type.getCurrentContext().put(FLAG_WITHHOLDING_TAX_FOUND, "true");
+                        addTax(type, t, v, "quellensteinbeh");
+                    })
+                    
+                    // Anrechenbare Quellensteuer 15 % auf 4,38 EUR 0,66 EUR
+                    .section("quellenstanr", "currency").optional()
+                    .match("^Anrechenbare Quellensteuer [.,\\d]+ .* (?<quellenstanr>[.,\\d]+) (?<currency>[\\w]{3})$")
+                    .assign((t, v) -> addTax(type, t, v, "quellenstanr"));
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
@@ -305,7 +320,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
         transaction
                     // Devisenkurs (EUR/USD) 1,1987 vom 02.03.2021
                     .section("exchangeRate").optional()
-                    .match("^(Devisenkurs) \\(\\w{3}\\/\\w{3}\\) (?<exchangeRate>[\\d\\.]+,\\d+) .*")
+                    .match("^(Devisenkurs) \\([\\w]{3}\\/[\\w]{3}\\) (?<exchangeRate>[.,\\d]+) .*")
                     .assign((t, v) -> {
                         BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                         type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
@@ -315,8 +330,8 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                     // Kundenbonifikation 100 % vom Ausgabeaufschlag 2,50 EUR
                     // Ausgabeaufschlag pro Anteil 5,00 %
                     .section("feeFx", "feeFy", "amountFx", "currency").optional()
-                    .match("^Kurswert (?<amountFx>[.,\\d]+)[-]? (?<currency>\\w{3})")
-                    .match("^Kundenbonifikation (?<feeFy>[.,\\d]+) % vom Ausgabeaufschlag [.,\\d]+ \\w{3}")
+                    .match("^Kurswert (?<amountFx>[.,\\d]+)[-]? (?<currency>[\\w]{3})")
+                    .match("^Kundenbonifikation (?<feeFy>[.,\\d]+) % vom Ausgabeaufschlag [.,\\d]+ [\\w]{3}")
                     .match("^Ausgabeaufschlag pro Anteil (?<feeFx>[.,\\d]+) %")
                     .assign((t, v) -> {
                         // Fee in percent
@@ -329,6 +344,31 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
 
                         processFeeEntries(t, v, type);
                     });
+    }
+
+    private void addTax(DocumentType type, Object t, Map<String, String> v, String taxtype)
+    {
+        // Wenn es 'Einbehaltene Quellensteuer' gibt, dann die weiteren
+        // Quellensteuer-Arten nicht berücksichtigen.
+        if (checkWithholdingTax(type, taxtype))
+        {
+            ((name.abuchen.portfolio.model.Transaction) t)
+                    .addUnit(new Unit(Unit.Type.TAX, 
+                                    Money.of(asCurrencyCode(v.get("currency")), 
+                                                    asAmount(v.get(taxtype)))));
+        }
+    }
+
+    private boolean checkWithholdingTax(DocumentType type, String taxtype)
+    {
+        if (Boolean.valueOf(type.getCurrentContext().get(FLAG_WITHHOLDING_TAX_FOUND)))
+        {
+            if ("quellenstanr".equalsIgnoreCase(taxtype))
+            { 
+                return false; 
+            }
+        }
+        return true;
     }
 
     private void processTaxEntries(Object t, Map<String, String> v, DocumentType type)
