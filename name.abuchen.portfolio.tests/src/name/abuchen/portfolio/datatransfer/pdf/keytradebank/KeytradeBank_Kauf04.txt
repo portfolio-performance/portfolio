@@ -1,0 +1,22 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Keytrade Bank Luxembourg S.A. T +352 45 04 39
+62, Rue Charles Martel F +352 45 04 49
+L-2134 - Luxembourg info@keytradebank.lu
+Grand Duché de Luxembourg www.keytradebank.lu
+RCS B69935 Skype keytradebank.lu
+Wertschriftenkonto 260745
+Belegnummer 1800539
+Kauf 22 SARTORIUS AG O.N. (DE0007165607) für 277 EUR
+Instrument: Aktien
+Auftragserstellung : 13/05/2020 09:49:13 CET
+Auftragstyp : Limit (277 EUR)
+Gültigkeit : GTC
+Ausführungsdatum und -zeit : 13/05/2020 09:56:05 CET 
+Ausführungsort : XETRA
+Bruttobetrag 6.094,00 EUR
+Transaktionskosten 24,95 EUR
+6.118,95 EUR
+Lastschrift 6.118,95 EUR Valutadatum 15/05/2020
+DUPLICATE

@@ -1,0 +1,19 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Keytrade Bank Luxembourg S.A. T +352 45 04 39
+62, Rue Charles Martel F +352 45 04 49
+L-2134 - Luxembourg info@keytradebank.lu
+Grand Duché de Luxembourg www.keytradebank.lu
+RCS B69935 Skype keytradebank.lu
+Betrag: 5,67 EUR
+Zuteilungsjahr 2020
+Einkommensart: Foreign stocks
+Guthaben Kupons Ex-Kupon 29/06/2020
+22 SARTORIUS AG O.N. NR 200629 0,35 EUR
+Bruttobetrag 7,70 EUR
+Verrechnungssteuer 26,38 % 2,03 EUR
+Steuerliche Bemessungsgrundlage falls zutreffend 5,67 EUR
+Nettoguthaben 5,67 EUR Datum  01/07/2020
+Wertschriftenkonto:4/260745 Wertpapier:79010788/DE0007165607 Belegnr.: CPN / 555091
+DUPLICATE
