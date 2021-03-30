@@ -9,7 +9,6 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 
 @SuppressWarnings("nls")
@@ -102,15 +101,10 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                 .match("^(Auftragstyp|Type d' ordre) : (?<note>.*)$")
                 .assign((t, v) -> t.setNote(v.get("note")))
 
-                // Transaktionskosten 14,95 EUR
-                .section("fee", "currency").optional()
-                .match("^(Transaktionskosten|Frais de transaction) (?<fee>[.,\\d]+) (?<currency>[\\w]{3})$")
-                .assign((t, v) -> t.getPortfolioTransaction()
-                                .addUnit(new Unit(Unit.Type.FEE,
-                                                Money.of(asCurrencyCode(v.get("currency")),
-                                                                asAmount(v.get("fee"))))))
-
                 .wrap(BuySellEntryItem::new);
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
+        addFeesSectionsTransaction(pdfTransaction, type);
     }
 
     private void addDividendeTransaction()
@@ -158,6 +152,7 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                 .wrap(TransactionItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
+        addFeesSectionsTransaction(pdfTransaction, type);
 
         block.set(pdfTransaction);
     }
@@ -165,12 +160,20 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction
+                // Verrechnungssteuer 26,38 % 2,03 EUR
+                // Impôt à la source 26,38 % 16,35 EUR
+                .section("tax", "currency").optional()
+                .match("^(Verrechnungssteuer|Impôt à la source) [.,\\d]+ % (?<tax>[.,\\d]+) (?<currency>\\w{3})$")
+                .assign((t, v) -> processTaxEntries(t, v, type));
+    }
 
-            // Verrechnungssteuer 26,38 % 2,03 EUR
-            // Impôt à la source 26,38 % 16,35 EUR
-            .section("tax", "currency").optional()
-            .match("^(Verrechnungssteuer|Impôt à la source) [.,\\d]+ % (?<tax>[.,\\d]+) (?<currency>\\w{3})$")
-            .assign((t, v) -> processTaxEntries(t, v, type));
+    private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
+    {
+        transaction
+                // Transaktionskosten 14,95 EUR
+                .section("fee", "currency").optional()
+                .match("^(Transaktionskosten|Frais de transaction) (?<fee>[.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
     private void processTaxEntries(Object t, Map<String, String> v, DocumentType type)
@@ -184,6 +187,22 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
         {
             Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
             PDFExtractorUtils.checkAndSetTax(tax, ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
+        }
+    }
+
+    private void processFeeEntries(Object t, Map<String, String> v, DocumentType type)
+    {
+        if (t instanceof name.abuchen.portfolio.model.Transaction)
+        {
+            Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
+            PDFExtractorUtils.checkAndSetFee(fee, 
+                            (name.abuchen.portfolio.model.Transaction) t, type);
+        }
+        else
+        {
+            Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
+            PDFExtractorUtils.checkAndSetFee(fee,
+                            ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
         }
     }
 }
