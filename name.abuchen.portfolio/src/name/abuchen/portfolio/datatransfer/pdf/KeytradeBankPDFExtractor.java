@@ -122,9 +122,7 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
             });
 
         pdfTransaction
-
                 // 22 SARTORIUS AG O.N. NR 200629 0,35 EUR
-
                 // Wertschriftenkonto:4/260745 Wertpapier:79010788/DE0007165607 Belegnr.: CPN / 555091
                 // Compte-titres:4/260745 Titre:79137418/DE000A0JL9W6 Nr. Quit.: CPN / 583554
                 .section("shares", "name", "isin")
@@ -163,7 +161,7 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                 // Verrechnungssteuer 26,38 % 2,03 EUR
                 // Impôt à la source 26,38 % 16,35 EUR
                 .section("tax", "currency").optional()
-                .match("^(Verrechnungssteuer|Impôt à la source) [.,\\d]+ % (?<tax>[.,\\d]+) (?<currency>\\w{3})$")
+                .match("^(Verrechnungssteuer|Impôt à la source) [.,\\d]+ % (?<tax>[.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
