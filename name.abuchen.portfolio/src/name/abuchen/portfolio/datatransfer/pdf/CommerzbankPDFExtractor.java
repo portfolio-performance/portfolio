@@ -121,92 +121,10 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(stripBlanks(v.get("amount"))));
                         })
 
-                        // 0 , 2 5 0 0 0 % P r o v i s i o n : EUR 4 9 , 6 3
-                        .section("fee", "currency").optional()
-                        .match(".* [\\d\\s,.]* % P r o v i s i o n : (?<currency>\\w{3}) (?<fee>[\\d\\s,.-]*$)")
-                        .assign((t, v) -> {
-                            t.getPortfolioTransaction()
-                                    .addUnit(new Unit(Unit.Type.FEE,
-                                                    Money.of(asCurrencyCode(v.get("currency")),
-                                                                            asAmount(stripBlanks(v.get("fee"))))));
-                        })
-
-                        // 0 , 2 5 0 0 0 % G e s a m t p r o v i s i o n : EUR 1 1 9 , 3 8
-                        .section("fee", "currency").optional()
-                        .match(".* [\\d\\s,.]* % G e s a m t p r o v i s i o n : (?<currency>\\w{3}) (?<fee>[\\d\\s,.-]*$)")
-                        .assign((t, v) -> {
-                            t.getPortfolioTransaction()
-                                    .addUnit(new Unit(Unit.Type.FEE,
-                                                    Money.of(asCurrencyCode(v.get("currency")),
-                                                                            asAmount(stripBlanks(v.get("fee"))))));
-                        })
-
-                        // S o c k e l b e t r a g : EUR 4 , 9 0
-                        .section("fee", "currency").optional()
-                        .match("S o c k e l b e t r a g : (?<currency>\\w{3}) (?<fee>[\\d\\s,.-]*$)")
-                        .assign((t, v) -> {
-                            t.getPortfolioTransaction()
-                                    .addUnit(new Unit(Unit.Type.FEE,
-                                                    Money.of(asCurrencyCode(v.get("currency")),
-                                                                            asAmount(stripBlanks(v.get("fee"))))));
-                        })
-
-                        // U m s c h r e i b e e n t g e l t : EUR 0 , 6 0
-                        .section("fee", "currency").optional()
-                        .match("U m s c h r e i b e e n t g e l t : (?<currency>\\w{3}) (?<fee>[\\d\\s,.-]*$)")
-                        .assign((t, v) -> {
-                            t.getPortfolioTransaction()
-                                    .addUnit(new Unit(Unit.Type.FEE,
-                                                    Money.of(asCurrencyCode(v.get("currency")),
-                                                                            asAmount(stripBlanks(v.get("fee"))))));
-                        })
-
-                        // 0 , 0 5 9 9 7 % V a r i a b l e B ö r s e n s p e s e n : EUR 2 4 , 1 9 -
-                        .section("fee", "currency").optional()
-                        .match(".* [\\d\\s,.]* % V a r i a b l e B ö r s e n s p e s e n : (?<currency>\\w{3}) (?<fee>[\\d\\s,.-]*$)")
-                        .assign((t, v) -> {
-                            t.getPortfolioTransaction()
-                                    .addUnit(new Unit(Unit.Type.FEE,
-                                                    Money.of(asCurrencyCode(v.get("currency")),
-                                                                            asAmount(stripBlanks(v.get("fee"))))));
-                        })
-
-                        // T r a n s a k t i o n s e n t g e l t : EUR 4 , 6 1 -
-                        .section("fee", "currency").optional()
-                        .match("T r a n s a k t i o n s e n t g e l t : (?<currency>\\w{3}) (?<fee>[\\d\\s,.-]*$)")
-                        .assign((t, v) -> {
-                            t.getPortfolioTransaction()
-                                    .addUnit(new Unit(Unit.Type.FEE,
-                                                    Money.of(asCurrencyCode(v.get("currency")),
-                                                                            asAmount(stripBlanks(v.get("fee"))))));
-                        })
-
-                        // X e t r a - E n t g e l t : EUR 2 , 7 3
-                        .section("fee", "currency").optional()
-                        .match("X e t r a - E n t g e l t : (?<currency>\\w{3}) (?<fee>[\\d\\s,.-]*$)")
-                        .assign((t, v) -> {
-                            t.getPortfolioTransaction()
-                                    .addUnit(new Unit(Unit.Type.FEE,
-                                                    Money.of(asCurrencyCode(v.get("currency")),
-                                                                            asAmount(stripBlanks(v.get("fee"))))));
-                        })
-
-                        .section("feeInPercent", "currency", "marketValue").optional()
-                        .match("(S t .|St.) [\\d\\s,.]* (?<currency>\\w{3}) (?<marketValue>[\\d\\s,.]*)$")
-                        .match("I n dem K u r s w e r t s i n d (?<feeInPercent>[\\d\\s,.]*) % A u s g a b e a u f s c h l a g d e r B a n k e n t h a l t e n.*")
-                        .assign((t, v) -> {
-                            // Fee in percent on the market value
-                            double marketValue = Double.parseDouble(stripBlanks(v.get("marketValue")).replace(',', '.'));
-                            double feeInPercent = Double.parseDouble(stripBlanks(v.get("feeInPercent")).replace(',', '.'));
-                            String fee =  Double.toString(marketValue / 100.0 * feeInPercent).replace('.', ',');
-
-                            t.getPortfolioTransaction()
-                                    .addUnit(new Unit(Unit.Type.FEE,
-                                                    Money.of(asCurrencyCode(v.get("currency")),
-                                                                            asAmount(fee))));
-                        })
-
                         .wrap(BuySellEntryItem::new);
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
+        addFeesSectionsTransaction(pdfTransaction, type);
     }
 
     private void addTaxTreatmentTransaction()
@@ -450,6 +368,75 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                         .match(".* Spesen (?<currency>\\w{3}) (?<fee>[\\d\\s,.-]*)$")
                         .assign((t, v) -> {
                             v.put("fee", stripBlanks(v.get("fee")));
+                            processFeeEntries(t, v, type);
+                        })
+
+                        // 0 , 2 5 0 0 0 % P r o v i s i o n : EUR 4 9 , 6 3
+                        .section("fee", "currency").optional()
+                        .match(".* [\\d\\s,.]* % P r o v i s i o n : (?<currency>\\w{3}) (?<fee>[\\d\\s,.-]*$)")
+                        .assign((t, v) -> {
+                            v.put("fee", stripBlanks(v.get("fee")));
+                            processFeeEntries(t, v, type);
+                        })
+
+                        // 0 , 2 5 0 0 0 % G e s a m t p r o v i s i o n : EUR 1 1 9 , 3 8
+                        .section("fee", "currency").optional()
+                        .match(".* [\\d\\s,.]* % G e s a m t p r o v i s i o n : (?<currency>\\w{3}) (?<fee>[\\d\\s,.-]*$)")
+                        .assign((t, v) -> {
+                            v.put("fee", stripBlanks(v.get("fee")));
+                            processFeeEntries(t, v, type);
+                        })
+
+                        // S o c k e l b e t r a g : EUR 4 , 9 0
+                        .section("fee", "currency").optional()
+                        .match("S o c k e l b e t r a g : (?<currency>\\w{3}) (?<fee>[\\d\\s,.-]*$)")
+                        .assign((t, v) -> {
+                            v.put("fee", stripBlanks(v.get("fee")));
+                            processFeeEntries(t, v, type);
+                        })
+
+                        // U m s c h r e i b e e n t g e l t : EUR 0 , 6 0
+                        .section("fee", "currency").optional()
+                        .match("U m s c h r e i b e e n t g e l t : (?<currency>\\w{3}) (?<fee>[\\d\\s,.-]*$)")
+                        .assign((t, v) -> {
+                            v.put("fee", stripBlanks(v.get("fee")));
+                            processFeeEntries(t, v, type);
+                        })
+
+                        // 0 , 0 5 9 9 7 % V a r i a b l e B ö r s e n s p e s e n : EUR 2 4 , 1 9 -
+                        .section("fee", "currency").optional()
+                        .match(".* [\\d\\s,.]* % V a r i a b l e B ö r s e n s p e s e n : (?<currency>\\w{3}) (?<fee>[\\d\\s,.-]*$)")
+                        .assign((t, v) -> {
+                            v.put("fee", stripBlanks(v.get("fee")));
+                            processFeeEntries(t, v, type);
+                        })
+
+                        // T r a n s a k t i o n s e n t g e l t : EUR 4 , 6 1 -
+                        .section("fee", "currency").optional()
+                        .match("T r a n s a k t i o n s e n t g e l t : (?<currency>\\w{3}) (?<fee>[\\d\\s,.-]*$)")
+                        .assign((t, v) -> {
+                            v.put("fee", stripBlanks(v.get("fee")));
+                            processFeeEntries(t, v, type);
+                        })
+
+                        // X e t r a - E n t g e l t : EUR 2 , 7 3
+                        .section("fee", "currency").optional()
+                        .match("X e t r a - E n t g e l t : (?<currency>\\w{3}) (?<fee>[\\d\\s,.-]*$)")
+                        .assign((t, v) -> {
+                            v.put("fee", stripBlanks(v.get("fee")));
+                            processFeeEntries(t, v, type);
+                        })
+
+                        .section("feeInPercent", "currency", "marketValue").optional()
+                        .match("(S t .|St.) [\\d\\s,.]* (?<currency>\\w{3}) (?<marketValue>[\\d\\s,.]*)$")
+                        .match("I n dem K u r s w e r t s i n d (?<feeInPercent>[\\d\\s,.]*) % A u s g a b e a u f s c h l a g d e r B a n k e n t h a l t e n.*")
+                        .assign((t, v) -> {
+                            // Fee in percent on the market value
+                            double marketValue = Double.parseDouble(stripBlanks(v.get("marketValue")).replace(',', '.'));
+                            double feeInPercent = Double.parseDouble(stripBlanks(v.get("feeInPercent")).replace(',', '.'));
+                            String fee =  Double.toString(marketValue / 100.0 * feeInPercent).replace('.', ',');
+
+                            v.put("fee", fee);
                             processFeeEntries(t, v, type);
                         });
     }
