@@ -1,0 +1,37 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+ 
+Depotnummer
+ XXXXXXXXXX
+ Kundennummer XXXXXXXXXX
+ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXX Datum 26.03.2021
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX 
+ 
+Wertpapier Abrechnung Kauf 
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 4.440 NEL ASA NO0010081235 (A0B733)
+NAVNE-AKSJER NK -,20 
+Handels-/Ausführungsplatz Tradegate (Best Execution)
+Börsensegment XGAT
+Market-Order
+Limit billigst
+Schlusstag/-Zeit 26.03.2021 15:14:29 Auftraggeber XXXXXXXXXXXXX
+Ausführungskurs 2,175 EUR Auftragserteilung/ -ort Persönlich im Institut
+Wertpapierrechnung Lagerland Norwegen
+Kurswert 9.657,00- EUR
+Ausmachender Betrag 9.657,00- EUR
+ 
+Den Gegenwert buchen wir mit Valuta 30.03.2021 zu Lasten des Kontos XXXXXXXXXX
+(IBAN DE69 XXXXXXXXXXXXXXXXXXXXXX), BLZ 10120100 (BIC WELADED1WBB).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+Für das Geschäft wurde keine Anlageberatung erbracht.
+Initiator der Besprechung war der Kunde.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0858.03262053.0000209OR07  
