@@ -213,15 +213,6 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction
-                // At this time there are no known taxes (except withholding tax) in the PDF debugs.
-                // IF you found some, add this here like
-                
-                // Example
-                // some tax
-                // .section("tax", "currency").optional()
-                // .match("^ABC (?<tax>[.,\\d]+)[-]? (?<currency>[\\w]{3})$")
-                // .assign((t, v) -> processTaxEntries(t, v, type));
-        
                 // Einbehaltene Quellensteuer 15 % auf 12,12 USD 1,53- EUR
                 .section("quellensteinbeh", "currency").optional()
                 .match("^Einbehaltende Quellensteuer [.,\\d]+ % .* (?<quellensteinbeh>[.,\\d]+)- (?<currency>[\\w]{3})$")
