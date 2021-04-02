@@ -287,7 +287,7 @@ public class JustTradePDFExtractorTest
         Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
         assertThat(security.getIsin(), is("IE00B1FZS350"));
         assertThat(security.getWkn(), is("A0LEW8"));
-        assertThat(security.getName(), is("ISHSII-DEV.MKTS PROP.YLD U.ETF"));
+        assertThat(security.getName(), is("ISHSII-DEV.MKTS PROP.YLD U.ETF REGISTERED SHS USD (DIST) O.N."));
 
         // check transaction
         item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
@@ -297,7 +297,7 @@ public class JustTradePDFExtractorTest
         assertThat(tx.getType(), is(PortfolioTransaction.Type.BUY));
 
         assertThat(tx.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1340.64))));
-        assertThat(tx.getDateTime(), is(LocalDateTime.parse("2020-01-02T00:00")));
+        assertThat(tx.getDateTime(), is(LocalDateTime.parse("2020-01-02T10:49:34")));
         assertThat(tx.getShares(), is(Values.Share.factorize(53)));
         assertThat(tx.getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0))));
     }
