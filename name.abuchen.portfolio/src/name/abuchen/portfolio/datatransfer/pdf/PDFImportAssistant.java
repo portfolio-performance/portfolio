@@ -60,7 +60,6 @@ public class PDFImportAssistant
         extractors.add(new PostfinancePDFExtractor(client));
         extractors.add(new QuirionPDFExtractor(client));
         extractors.add(new SBrokerPDFExtractor(client));
-        extractors.add(new SutorPDFExtractor(client));
         extractors.add(new SwissquotePDFExtractor(client));
         extractors.add(new TargobankPDFExtractor(client));
         extractors.add(new TradeRepublicPDFExtractor(client));
