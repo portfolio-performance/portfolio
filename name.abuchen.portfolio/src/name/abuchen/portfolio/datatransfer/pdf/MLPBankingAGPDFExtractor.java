@@ -77,14 +77,6 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
                     t.setCurrencyCode(v.get("currency"));
                 })
 
-                // Ihr Ausgabeaufschlag betraegt:
-                // 0,00 EUR (0,000 Prozent)
-                .section("fee", "currency")
-                .match("^(?<fee>[\\d.-]+,\\d+) (?<currency>[\\w]{3}) \\([\\d.-]+,\\d+ \\w+\\)$")
-                .assign((t, v) -> t.getPortfolioTransaction()
-                                .addUnit(new Unit(Unit.Type.FEE,
-                                                Money.of(asCurrencyCode(v.get("currency")),
-                                                                asAmount(v.get("fee"))))))
                 .wrap(BuySellEntryItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
