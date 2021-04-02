@@ -72,7 +72,7 @@ public class PDFImportAssistant
         extractors.add(new JSONPDFExtractor(client, "trade-republic-dividends.json")); //$NON-NLS-1$
         extractors.add(new JSONPDFExtractor(client, "trade-republic-investmentplan.json")); //$NON-NLS-1$
         extractors.add(new JSONPDFExtractor(client, "ebase.json")); //$NON-NLS-1$
-	extractors.add(new JSONPDFExtractor(client, "weberbank-dividends.json")); //$NON-NLS-1$
+        extractors.add(new JSONPDFExtractor(client, "weberbank-dividends.json")); //$NON-NLS-1$
     }
 
     public Map<Extractor, List<Item>> run(IProgressMonitor monitor, Map<File, List<Exception>> errors)
