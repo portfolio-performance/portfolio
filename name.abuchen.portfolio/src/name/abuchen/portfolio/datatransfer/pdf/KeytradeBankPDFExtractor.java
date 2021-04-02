@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Map;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
@@ -9,6 +11,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 
 @SuppressWarnings("nls")
@@ -67,11 +70,11 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                 // Achat 310 HOME24 SE  INH O.N. (DE000A14KEB5) à 15,9324 EUR
                 // Vente 310 VERBIO VER.BIOENERGIE ON (DE000A0JL9W6) à 33,95 EUR
                 // Verkauf 22 SARTORIUS AG O.N. (DE0007165607) für 247 EUR
-                .section("isin", "name", "shares")
-                .match("^(Kauf|Achat|Verkauf|Vente) (?<shares>[\\d.,]+) (?<name>.*) \\((?<isin>[\\w]{12})\\) .*$")
+                .section("isin", "name", "shares", "currency")
+                .match("^(Kauf|Achat|Verkauf|Vente) (?<shares>[\\d.,]+) (?<name>.*) \\((?<isin>[\\w]{12})\\) .* (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    t.setSecurity(getOrCreateSecurity(v));
                     t.setShares(asShares(v.get("shares")));
+                    t.setSecurity(getOrCreateSecurity(v));
                 })
 
                 // Ausführungsdatum und -zeit : 15/03/2021 12:31:50 CET
@@ -94,6 +97,28 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(v.get("currency"));
+                })
+
+                // Wechselkurs EUR/USD 1.123000 849,47 EUR
+                // Lastschrift 953,95 USD Valutadatum 21/06/2016
+                .section("amount", "currency", "exchangeRate", "forexCurrency", "forexAmount").optional()
+                .match("^(Wechselkurs) [\\w]{3}\\/[\\w]{3} (?<exchangeRate>[.,\\d]+) (?<forexAmount>[.,\\d]+) (?<forexCurrency>[\\w]{3})$")
+                .match("^(Gutschrift|Crédit|Lastschrift|Débit) (?<amount>[.,\\d]+) (?<currency>[\\w]{3}) .*$")
+                .assign((t, v) -> {
+                     Money forex = Money.of(asCurrencyCode(v.get("forexCurrency")), asAmount(v.get("forexAmount")));
+                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                     Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
+                    
+                     // only add gross value with forex if the security
+                     // is actually denoted in the foreign currency
+                     // (often users actually have the quotes in their
+                     // home country currency)
+                     if (forex.getCurrencyCode()
+                                     .equals(t.getPortfolioTransaction().getSecurity().getCurrencyCode()))
+                     {
+                         t.getPortfolioTransaction()
+                                         .addUnit(new Unit(Unit.Type.GROSS_VALUE, gross, forex, exchangeRate));
+                     }
                 })
 
                 // Auftragstyp : Limit (16 EUR)
@@ -125,8 +150,8 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                 // 22 SARTORIUS AG O.N. NR 200629 0,35 EUR
                 // Wertschriftenkonto:4/260745 Wertpapier:79010788/DE0007165607 Belegnr.: CPN / 555091
                 // Compte-titres:4/260745 Titre:79137418/DE000A0JL9W6 Nr. Quit.: CPN / 583554
-                .section("shares", "name", "isin")
-                .match("^(?<shares>[.,\\d]+) (?<name>.*) NR .*$")
+                .section("shares", "name", "isin", "currency")
+                .match("^(?<shares>[.,\\d]+) (?<name>.*) NR .* [.,\\d]+ (?<currency>[\\w]{3})$")
                 .match("^(Wertschriftenkonto|Compte-titres):.* (Wertpapier|Titre):[\\d]+\\/(?<isin>[\\w]{12}) .*$")
                 .assign((t, v) -> {
                     t.setShares(asShares(v.get("shares")));
@@ -136,15 +161,53 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                 // Guthaben Kupons Ex-Kupon 29/06/2020
                 // CREDIT COUPONS Ex-coupon 01/02/2021
                 .section("date")
-                .match("^.* (Ex-Kupon|Ex-coupon) (?<date>\\d+/\\d+/\\d{4})$")
+                .match("^.* (Ex-Kupon|Ex-coupon|Kupons)(.*)? (?<date>\\d+/\\d+/\\d{4})$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date").replaceAll("/", "."))))
 
                 // Nettoguthaben 5,67 EUR Datum  01/07/2020
-                .section("amount", "currency")
+                .section("amount", "currency").optional()
                 .match("^(Nettoguthaben|Net CREDIT) (?<amount>[.,\\d]+) (?<currency>[\\w]{3}) .*$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(v.get("currency"));
+                })
+                
+                // Bruttobetrag 1,25 USD
+                // Wechselkurs 1,05 1,01 EUR
+                .section("exchangeRate", "fxAmount", "fxCurrency", "amount", "currency").optional()
+                .match("^(Wechselkurs) (?<exchangeRate>[.,\\d]+) (?<fxAmount>[.,\\d]+) (?<fxCurrency>[\\w]{3})$")
+                .match("^(Nettoguthaben|Net CREDIT) (?<amount>[.,\\d]+) (?<currency>[\\w]{3}) .*$")
+                .assign((t, v) -> {
+                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                    if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
+                    {
+                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+                    }
+
+                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
+
+                    if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
+                    {
+                        BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
+                                        RoundingMode.HALF_DOWN);
+
+                        // check, if forex currency is transaction
+                        // currency or not and swap amount, if necessary
+                        Unit grossValue;
+                        if (!asCurrencyCode(v.get("fxCurrency")).equals(t.getCurrencyCode()))
+                        {
+                            Money fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")),asAmount(v.get("fxAmount")));
+                            Money amount = Money.of(asCurrencyCode(v.get("currency")),asAmount(v.get("amount")));
+                            grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
+                        }
+                        else
+                        {
+                            Money amount = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxAmount")));
+                            Money fxAmount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
+                            grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
+                        }
+                        t.addUnit(grossValue);
+                    }
                 })
 
                 .wrap(TransactionItem::new);

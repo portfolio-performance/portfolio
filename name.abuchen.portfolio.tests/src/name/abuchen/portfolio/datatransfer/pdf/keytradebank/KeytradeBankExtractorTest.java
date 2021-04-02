@@ -166,6 +166,45 @@ public class KeytradeBankExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf05()
+    {
+        KeytradeBankPDFExtractor extractor = new KeytradeBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KeytradeBank_Kauf05.txt"), errors);
+
+        // check security
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
+        assertThat(security.getIsin(), is("US6516391066"));
+        assertThat(security.getName(), is("NEWMONT MINING CORPORATION"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+
+        // check transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-06-16T09:45:18")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(25)));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(953.95))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(29.95))));
+
+//        Unit gross = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
+//                        .orElseThrow(IllegalArgumentException::new);
+//        assertThat(gross.getAmount(), is( Values.Amount.factorize(0.00)));
+//        assertThat(gross.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(953.95))));
+    }
+
+    @Test
     public void testWertpapierVerkauf01()
     {
         KeytradeBankPDFExtractor extractor = new KeytradeBankPDFExtractor(new Client());
@@ -238,6 +277,42 @@ public class KeytradeBankExtractorTest
     }
 
     @Test
+    public void testWertpapierVerkauf03()
+    {
+        KeytradeBankPDFExtractor extractor = new KeytradeBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KeytradeBank_Verkauf03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.USD);
+
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("US6516391066"));
+        assertThat(security.getName(), is("NEWMONT MINING CORPORATION"));
+
+        // check buy sell transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-09-11T11:09:35")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(25)));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(938.83))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(29.95))));
+    }
+
+    @Test
     public void testDividende01()
     {
         Client client = new Client();
@@ -264,8 +339,12 @@ public class KeytradeBankExtractorTest
         assertThat(t.getShares(), is(Values.Share.factorize(22)));
         assertThat(t.getDateTime(), is(LocalDateTime.parse("2020-06-29T00:00")));
 
-        assertThat(t.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7.70))));
-        assertThat(t.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.03))));
+        assertThat(t.getGrossValue(), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7.70))));
+        assertThat(t.getUnitSum(Unit.Type.TAX), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.03))));
+        assertThat(t.getUnitSum(Unit.Type.FEE), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -299,5 +378,42 @@ public class KeytradeBankExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(62.00))));
         assertThat(t.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(16.35))));
+        assertThat(t.getUnitSum(Unit.Type.FEE), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+    }
+
+    @Test
+    public void testDividende03()
+    {
+        Client client = new Client();
+
+        KeytradeBankPDFExtractor extractor = new KeytradeBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KeytradeBank_Dividende03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "USD");
+
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
+        assertThat(security.getIsin(), is("US6516391066"));
+        assertThat(security.getName(), is("NEWMONT MINING CORPORATION"));
+
+        AccountTransaction t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        
+        assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2016-12-08T00:00")));
+        assertThat(t.getShares(), is(Values.Share.factorize(25)));
+        assertThat(t.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1.06))));
+        assertThat(t.getGrossValue(), 
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1.25))));
+        assertThat(t.getUnitSum(Unit.Type.TAX), 
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.19))));
+        assertThat(t.getUnitSum(Unit.Type.FEE), 
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
     }
 }
