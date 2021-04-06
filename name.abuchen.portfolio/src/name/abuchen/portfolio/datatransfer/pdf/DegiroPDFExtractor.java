@@ -141,7 +141,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                         .wrap(t -> new TransactionItem(t)));
         
         // 05-08-2019 00:09 05-08-2019 Auszahlung EUR -1.000,00 EUR 1.445,06
-        Block blockRemoval = new Block("^.* Auszahlung .*$"); 
+        Block blockRemoval = new Block("^(?!.* Abgelehnte).* Auszahlung .*$");
         type.addBlock(blockRemoval);
         blockRemoval.set(new Transaction<AccountTransaction>().subject(() -> {
             AccountTransaction t = new AccountTransaction();
