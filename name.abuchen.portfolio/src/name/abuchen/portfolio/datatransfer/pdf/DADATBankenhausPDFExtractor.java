@@ -79,7 +79,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
 
                 // Handelszeit: 17.2.2021 um 20:49:54 Uhr
                 .section("date", "time")
-                .match("^Handelszeit: (?<date>\\d+.\\d+.\\d{4}+) .* (?<time>\\d+:\\d+:\\d+) .*$")
+                .match("^Handelszeit: (?<date>\\d+.\\d+.\\d{4}+) .* (?<time>\\d+:\\d+:\\d+).*$")
                 .assign((t, v) -> {
                     if (v.get("time") != null)
                         t.setDate(asDate(v.get("date"), v.get("time")));
@@ -89,7 +89,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
 
                 // Zu Lasten IBAN IBAN-NR -1.800,-- EUR 
                 .section("currency", "amount")
-                .match("^Zu Lasten .* -(?<amount>[.\\d]+(,[\\d]{2})?).* (?<currency>[\\w]{3}) .*$")
+                .match("^Zu Lasten .* -(?<amount>[.\\d]+(,[\\d]{2})?).* (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> {
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
