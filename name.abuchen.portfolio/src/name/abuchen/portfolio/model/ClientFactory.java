@@ -598,34 +598,11 @@ public class ClientFactory
                 addDecimalPlacesToQuotes(client);
             case 49:
                 fixLimitQuotesWith4AdditionalDecimalPlaces(client);
+            case 50:
+                assignTxUUIDsAndUpdateAtInstants(client);
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
-            case 50:
-                for (Account a : client.getAccounts())
-                {
-                    a.setUpdatedAt(Instant.now());
-                    for (Transaction t : a.getTransactions())
-                    {
-                        t.setUpdatedAt(Instant.now());
-                        t.generateUUID();
-                    }
-                }
-
-                for (Portfolio p : client.getPortfolios())
-                {
-                    p.setUpdatedAt(Instant.now());
-                    for (Transaction t : p.getTransactions())
-                    {
-                        t.setUpdatedAt(Instant.now());
-                        t.generateUUID();
-                    }
-                }
-
-                for (Security s : client.getSecurities())
-                {
-                    s.setUpdatedAt(Instant.now());
-                }
             case Client.CURRENT_VERSION:
                 break;
             default:
@@ -1156,6 +1133,34 @@ public class ClientFactory
                 }
             }
         });
+    }
+
+    private static void assignTxUUIDsAndUpdateAtInstants(Client client)
+    {
+        for (Account a : client.getAccounts())
+        {
+            a.setUpdatedAt(Instant.now());
+            for (Transaction t : a.getTransactions())
+            {
+                t.setUpdatedAt(Instant.now());
+                t.generateUUID();
+            }
+        }
+
+        for (Portfolio p : client.getPortfolios())
+        {
+            p.setUpdatedAt(Instant.now());
+            for (Transaction t : p.getTransactions())
+            {
+                t.setUpdatedAt(Instant.now());
+                t.generateUUID();
+            }
+        }
+
+        for (Security s : client.getSecurities())
+        {
+            s.setUpdatedAt(Instant.now());
+        }
     }
 
     @SuppressWarnings("nls")
