@@ -9,6 +9,8 @@ import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+
 import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -28,37 +30,46 @@ public class PortfolioReportSync
     private static final String SYNCHRONIZED_AT_KEY = "net.portfolio-report.synchronizedAt";
 
     private final Client client;
+    private final String filename;
     private final PRApiClient api;
 
-    public PortfolioReportSync(String apiKey, Client client)
+    public PortfolioReportSync(String apiKey, Client client, String filename)
     {
         this.client = client;
+        this.filename = filename;
 
         this.api = new PRApiClient(apiKey);
     }
 
-    public void sync() throws IOException
+    public void sync(IProgressMonitor monitor) throws IOException
     {
-        Instant synchronizedAt;
+        monitor.beginTask("Syncing with Portfolio Report", 4);
+
+        Instant synchronizedAt = null;
         try
         {
             synchronizedAt = Instant.parse(client.getProperty(SYNCHRONIZED_AT_KEY));
             PortfolioLog.warning("Latest sync: " + synchronizedAt.toString());
         }
-        catch (java.lang.NullPointerException e)
+        catch (NullPointerException ignore)
         {
-            synchronizedAt = null;
+            // assume no previous synchronization
         }
+
         Instant synchronizationStarted = Instant.now();
 
         long portfolioId = getOrCreatePortfolio();
+        monitor.worked(1);
 
         PortfolioLog.warning(
                         "Syncing with portfolioId " + portfolioId + ", started: " + synchronizationStarted.toString());
 
         syncSecurities(portfolioId);
+        monitor.worked(1);
         syncAccounts(portfolioId);
+        monitor.worked(1);
         syncTransactions(portfolioId);
+        monitor.worked(1);
 
         client.setProperty(SYNCHRONIZED_AT_KEY, synchronizationStarted.toString());
 
@@ -88,7 +99,7 @@ public class PortfolioReportSync
         if (remote == null)
         {
             PRPortfolio newPortfolio = new PRPortfolio();
-            newPortfolio.setName("Synced Portfolio");
+            newPortfolio.setName(filename);
             newPortfolio.setNote("automatically created by PP");
             newPortfolio.setBaseCurrencyCode(client.getBaseCurrency());
 
@@ -105,7 +116,7 @@ public class PortfolioReportSync
         List<PRSecurity> remoteSecurities = api.listSecurities(portfolioId);
 
         Map<String, PRSecurity> unmatchedRemoteSecuritiesByUuid = remoteSecurities.stream()
-                        .collect(Collectors.toMap(s -> s.getUuid(), s -> s));
+                        .collect(Collectors.toMap(PRSecurity::getUuid, s -> s));
 
         for (Security local : client.getSecurities())
         {
@@ -161,7 +172,7 @@ public class PortfolioReportSync
         List<PRAccount> remoteAccounts = api.listAccounts(portfolioId);
 
         Map<String, PRAccount> unmatchedRemoteAccountsByUuid = remoteAccounts.stream()
-                        .collect(Collectors.toMap(s -> s.getUuid(), s -> s));
+                        .collect(Collectors.toMap(PRAccount::getUuid, s -> s));
 
         for (Account local : client.getAccounts())
         {
@@ -316,7 +327,7 @@ public class PortfolioReportSync
     private List<PRTransaction> convertAccountTransaction(AccountTransaction pp, Account account,
                     String remotePartnerTransactionUuid)
     {
-        List<PRTransaction> ret = new ArrayList<PRTransaction>();
+        List<PRTransaction> ret = new ArrayList<>();
         PRTransaction pr = new PRTransaction();
         ret.add(pr);
 
@@ -479,11 +490,7 @@ public class PortfolioReportSync
     private <T> List<T> filterWithCaution(List<T> input, Predicate<T> predicate)
     {
         List<T> filteredList = filter(input, predicate);
-
-        if (filteredList.size() > 0)
-            return filteredList;
-        else
-            return input;
+        return filteredList.isEmpty() ? input : filteredList;
     }
 
     /**
@@ -549,13 +556,13 @@ public class PortfolioReportSync
     {
         List<PRTransaction> remoteTransactions = api.listTransactions(portfolioId);
 
-        List<String> remoteTransactionsUuids = remoteTransactions.stream().map(t -> t.getUuid())
+        List<String> remoteTransactionsUuids = remoteTransactions.stream().map(PRTransaction::getUuid)
                         .collect(Collectors.toList());
 
         Map<String, PRTransaction> unmatchedRemoteTransactionsByUuid = remoteTransactions.stream()
-                        .collect(Collectors.toMap(s -> s.getUuid(), s -> s));
+                        .collect(Collectors.toMap(PRTransaction::getUuid, s -> s));
 
-        List<PRTransaction> retryUpdateTransactions = new ArrayList<PRTransaction>();
+        List<PRTransaction> retryUpdateTransactions = new ArrayList<>();
 
         for (Portfolio portfolio : client.getPortfolios())
         {
