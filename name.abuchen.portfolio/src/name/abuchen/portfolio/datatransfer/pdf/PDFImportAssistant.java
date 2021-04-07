@@ -41,6 +41,7 @@ public class PDFImportAssistant
         extractors.add(new ConsorsbankPDFExtractor(client));
         extractors.add(new ConsorsbankPre2009PDFExtractor(client));
         extractors.add(new DABPDFExtractor(client));
+        extractors.add(new DADATBankenhausPDFExtractor(client));
         extractors.add(new DegiroPDFExtractor(client));
         extractors.add(new DeutscheBankPDFExtractor(client));
         extractors.add(new Direkt1822BankPDFExtractor(client));
