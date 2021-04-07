@@ -17,6 +17,8 @@ import name.abuchen.portfolio.money.Money;
 @SuppressWarnings("nls")
 public class PostbankPDFExtractor extends AbstractPDFExtractor
 {
+    private static final String FLAG_WITHHOLDING_TAX_FOUND  = "exchangeRate"; //$NON-NLS-1$
+
     public PostbankPDFExtractor(Client client)
     {
         super(client);
@@ -41,8 +43,8 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType newType = new DocumentType("Wertpapier Abrechnung (Kauf|Verkauf|Ausgabe Investmentfonds)");
-        this.addDocumentTyp(newType);
+        DocumentType type = new DocumentType("Wertpapier Abrechnung (Kauf|Verkauf|Ausgabe Investmentfonds)");
+        this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
         pdfTransaction.subject(() -> {
@@ -52,7 +54,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
         });
 
         Block firstRelevantLine = new Block("Wertpapier Abrechnung (Kauf|Verkauf|Ausgabe Investmentfonds).*");
-        newType.addBlock(firstRelevantLine);
+        type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
@@ -69,10 +71,13 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
 
                 // Stück 158 XTR.(IE) - MSCI WORLD              IE00BJ0KDQ92 (A1XB5U)
                 // REGISTERED SHARES 1C O.N.   
-                .section("isin", "wkn", "name", "shares", "nameContinued")
+                .section("isin", "wkn", "name", "shares", "name1")
                 .match("^St.ck (?<shares>[\\d.,]+) (?<name>.*) (?<isin>[\\w]{12}.*) (\\((?<wkn>.*)\\).*)")
-                .match("(?<nameContinued>.*)")
+                .match("(?<name1>.*)")
                 .assign((t, v) -> {
+                    if (!v.get("name1").startsWith("Handels-/Ausf.hrungsplatz"))
+                        v.put("name", v.get("name").trim() + " " + v.get("name1"));
+
                     t.setSecurity(getOrCreateSecurity(v));
                     t.setShares(asShares(v.get("shares")));
                 })
@@ -94,45 +99,16 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
 
                 // Ausmachender Betrag 9.978,18- EUR
                 .section("amount", "currency")
-                .match("^Ausmachender Betrag (?<amount>[\\d.]+,\\d+)[\\+-]? (?<currency>\\w{3})")
+                .match("^Ausmachender Betrag (?<amount>[.,\\d]+)[\\+-]? (?<currency>[\\w]{3})")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(v.get("currency"));
                 })
 
-                // Provision 39,95- EUR
-                .section("fee", "currency").optional()
-                .match("^Provision (?<fee>[\\d.]+,\\d+)- (?<currency>[\\w]{3}).*")
-                .assign((t, v) -> t.getPortfolioTransaction()
-                                .addUnit(new Unit(Unit.Type.FEE,
-                                                Money.of(asCurrencyCode(v.get("currency")),
-                                                                asAmount(v.get("fee"))))))
-
-                // Abwicklungskosten Börse 0,04- EUR
-                .section("fee", "currency").optional()
-                .match("^Abwicklungskosten B.rse (?<fee>[\\d.]+,\\d+)- (?<currency>[\\w]{3}).*")
-                .assign((t, v) -> t.getPortfolioTransaction()
-                                .addUnit(new Unit(Unit.Type.FEE,
-                                                Money.of(asCurrencyCode(v.get("currency")),
-                                                                asAmount(v.get("fee"))))))
-
-                // Transaktionsentgelt Börse 11,82- EUR
-                .section("fee", "currency").optional()
-                .match("^Transaktionsentgelt B.rse (?<fee>[\\d.]+,\\d+)- (?<currency>[\\w]{3}).*")
-                .assign((t, v) -> t.getPortfolioTransaction()
-                                .addUnit(new Unit(Unit.Type.FEE,
-                                                Money.of(asCurrencyCode(v.get("currency")),
-                                                                asAmount(v.get("fee"))))))
-
-                // Übertragungs-/Liefergebühr 0,65- EUR
-                .section("fee", "currency").optional()
-                .match("^.bertragungs-\\/Liefergeb.hr (?<fee>[\\d.]+,\\d+)- (?<currency>[\\w]{3}).*")
-                .assign((t, v) -> t.getPortfolioTransaction()
-                                .addUnit(new Unit(Unit.Type.FEE,
-                                                Money.of(asCurrencyCode(v.get("currency")),
-                                                                asAmount(v.get("fee"))))))
-
                 .wrap(BuySellEntryItem::new);
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
+        addFeesSectionsTransaction(pdfTransaction, type);
     }
 
     private void addDividendeTransaction()
@@ -229,6 +205,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                 .wrap(TransactionItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
+        addFeesSectionsTransaction(pdfTransaction, type);
 
         block.set(pdfTransaction);
     }
@@ -236,11 +213,67 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction
+                // Einbehaltene Quellensteuer 15 % auf 12,12 USD 1,53- EUR
+                .section("quellensteinbeh", "currency").optional()
+                .match("^Einbehaltende Quellensteuer [.,\\d]+ % .* (?<quellensteinbeh>[.,\\d]+)- (?<currency>[\\w]{3})$")
+                .assign((t, v) ->  {
+                    type.getCurrentContext().put(FLAG_WITHHOLDING_TAX_FOUND, "true");
+                    addTax(type, t, v, "quellensteinbeh");
+                })
 
-            // Anrechenbare Quellensteuer 15 % auf 10,17 EUR 1,53 EUR
-            .section("tax", "currency").optional()
-            .match("^Anrechenbare Quellensteuer [.,\\d]+ % .* [.,\\d]+ \\w{3} (?<tax>[.,\\d]+) (?<currency>\\w{3})$")
-            .assign((t, v) -> processTaxEntries(t, v, type));
+                // Anrechenbare Quellensteuer 15 % auf 10,17 EUR 1,53 EUR
+                .section("quellenstanr", "currency").optional()
+                .match("^Anrechenbare Quellensteuer [.,\\d]+ % .* [.,\\d]+ \\w{3} (?<quellenstanr>[.,\\d]+) (?<currency>\\w{3})$")
+                .assign((t, v) -> addTax(type, t, v, "quellenstanr"));
+    }
+
+    private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
+    {
+        transaction
+                // Provision 39,95- EUR
+                .section("fee", "currency").optional()
+                .match("^Provision (?<fee>[.,\\d]+)- (?<currency>[\\w]{3}).*")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+        
+                // Abwicklungskosten Börse 0,04- EUR
+                .section("fee", "currency").optional()
+                .match("^Abwicklungskosten B.rse (?<fee>[.,\\d]+)- (?<currency>[\\w]{3}).*")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+        
+                // Transaktionsentgelt Börse 11,82- EUR
+                .section("fee", "currency").optional()
+                .match("^Transaktionsentgelt B.rse (?<fee>[.,\\d]+)- (?<currency>[\\w]{3}).*")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+        
+                // Übertragungs-/Liefergebühr 0,65- EUR
+                .section("fee", "currency").optional()
+                .match("^.bertragungs-\\/Liefergeb.hr (?<fee>[.,\\d]+)- (?<currency>[\\w]{3}).*")
+                .assign((t, v) -> processFeeEntries(t, v, type));
+    }
+
+    private void addTax(DocumentType type, Object t, Map<String, String> v, String taxtype)
+    {
+        // Wenn es 'Einbehaltene Quellensteuer' gibt, dann die weiteren
+        // Quellensteuer-Arten nicht berücksichtigen.
+        if (checkWithholdingTax(type, taxtype))
+        {
+            ((name.abuchen.portfolio.model.Transaction) t)
+                    .addUnit(new Unit(Unit.Type.TAX, 
+                                    Money.of(asCurrencyCode(v.get("currency")), 
+                                                    asAmount(v.get(taxtype)))));
+        }
+    }
+
+    private boolean checkWithholdingTax(DocumentType type, String taxtype)
+    {
+        if (Boolean.valueOf(type.getCurrentContext().get(FLAG_WITHHOLDING_TAX_FOUND)))
+        {
+            if ("quellenstanr".equalsIgnoreCase(taxtype))
+            { 
+                return false; 
+            }
+        }
+        return true;
     }
 
     private void processTaxEntries(Object t, Map<String, String> v, DocumentType type)
@@ -254,6 +287,22 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
         {
             Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
             PDFExtractorUtils.checkAndSetTax(tax, ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
+        }
+    }
+
+    private void processFeeEntries(Object t, Map<String, String> v, DocumentType type)
+    {
+        if (t instanceof name.abuchen.portfolio.model.Transaction)
+        {
+            Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
+            PDFExtractorUtils.checkAndSetFee(fee, 
+                            (name.abuchen.portfolio.model.Transaction) t, type);
+        }
+        else
+        {
+            Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
+            PDFExtractorUtils.checkAndSetFee(fee,
+                            ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
         }
     }
 }
