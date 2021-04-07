@@ -86,6 +86,7 @@
         <children xsi:type="menu:MenuSeparator" xmi:id="_OvJsIL3OEeqoTtTaIzseTQ" elementId="name.abuchen.portfolio.bootstrap.menuseparator.6"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_PV6KIL3OEeqoTtTaIzseTQ" elementId="name.abuchen.portfolio.ui.menu.online.uploadToDivvyDiary" label="%menu.online.divvydiary.label" iconURI="platform:/plugin/name.abuchen.portfolio.ui/icons/divvydiary.com-logo.png" command="_ZWCyUL3OEeqoTtTaIzseTQ"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_uCcK8E9wEeuKH4ThcNC3ug" elementId="name.abuchen.portfolio.bootstrap.handledmenuitem.syncfrometf-datacom" label="%menu.online.etf-data.label" iconURI="platform:/plugin/name.abuchen.portfolio.ui/icons/etf-data_logo.png" command="_BPIxsE9jEeuKH4ThcNC3ug"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_CB6bwHmPEeuiO8_BzX84yg" elementId="name.abuchen.portfolio.ui.menu.online.syncPortfolioReport" label="Sync with portfolio-report.net" command="_m720cHmOEeuiO8_BzX84yg"/>
       </children>
       <children xsi:type="menu:Menu" xmi:id="_6KeHEBiPEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.menu.help" label="%menu.help.label">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_oALicB3VEeOYjJVcrtNJyA" elementId="name.abuchen.portfolio.ui.menu.help.about" label="%command.about.name" tooltip="%command.about.tooltip" command="_Vr7H8B3VEeOYjJVcrtNJyA"/>
@@ -158,6 +159,7 @@
   <handlers xmi:id="_QjA2cL3OEeqoTtTaIzseTQ" elementId="name.abuchen.portfolio.ui.handler.uploadToDivvyDiary" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.UploadToDivvyDiaryHandler" command="_ZWCyUL3OEeqoTtTaIzseTQ"/>
   <handlers xmi:id="_YLz7IDFOEeuGXeKVI3KJtQ" elementId="name.abuchen.portfolio.handler.selectAll" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.SelectAllHandler" command="_gxx18DFPEeuGXeKVI3KJtQ"/>
   <handlers xmi:id="_FWEK0E9jEeuKH4ThcNC3ug" elementId="name.abuchen.portfolio.ui.handler.downloadETFData" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.DownloadETFDataHandler" command="_BPIxsE9jEeuKH4ThcNC3ug"/>
+  <handlers xmi:id="_toGqAHmOEeuiO8_BzX84yg" elementId="name.abuchen.portfolio.ui.handler.syncPortfolioReport" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.SyncPortfolioReportHandler" command="_m720cHmOEeuiO8_BzX84yg"/>
   <bindingTables xmi:id="_uK6dcBiSEeO8gYEHAOvLsA" elementId="" bindingContext="_7d8q4RjAEeO8gYEHAOvLsA">
     <bindings xmi:id="_yNkakBiSEeO8gYEHAOvLsA" elementId="" keySequence="M1+O" command="_3CjQwBfHEeOders_POVQHQ"/>
     <bindings xmi:id="_0WsqQBiSEeO8gYEHAOvLsA" elementId="" keySequence="M1+N" command="_LiZuIBiOEeOR1rNFCzC82A"/>
@@ -239,6 +241,7 @@
   <commands xmi:id="_ZWCyUL3OEeqoTtTaIzseTQ" elementId="name.abuchen.portfolio.ui.command.uploadToDivvyDiary" commandName="uploadToDivvyDiary"/>
   <commands xmi:id="_gxx18DFPEeuGXeKVI3KJtQ" elementId="name.abuchen.portfolio.ui.command.selectAll" commandName="selectAll"/>
   <commands xmi:id="_BPIxsE9jEeuKH4ThcNC3ug" elementId="name.abuchen.portfolio.ui.command.downloadETFData" commandName="downloadETFData"/>
+  <commands xmi:id="_m720cHmOEeuiO8_BzX84yg" elementId="name.abuchen.portfolio.ui.command.syncPortfolioReport" commandName="syncPortfolioReport"/>
   <addons xmi:id="_4SwvYLOQEeWe1a5u3oOf1Q" elementId="name.abuchen.portfolio.ui.addon.proxy" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.ProxyAddon"/>
   <addons xmi:id="_B_-6cKH7EeO9F5tUX5UqjQ" elementId="name.abuchen.portfolio.ui.addon.log" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.StartupAddon"/>
   <addons xmi:id="_D8SDoRfFEeOders_POVQHQ" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
