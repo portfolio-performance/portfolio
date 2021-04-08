@@ -21,7 +21,7 @@
         <map/>
       </attributes>
       <events/>
-      <isRetired>true</isRetired>
+      <isRetired>false</isRetired>
     </security>
     <security>
       <uuid>381e03f2-f019-4686-bac5-2444576e2df2</uuid>
@@ -42,7 +42,7 @@
         <map/>
       </attributes>
       <events/>
-      <isRetired>true</isRetired>
+      <isRetired>false</isRetired>
     </security>
     <security>
       <uuid>79ea3186-48d7-4be2-9ccc-494af9c7eca7</uuid>
@@ -63,7 +63,7 @@
         <map/>
       </attributes>
       <events/>
-      <isRetired>true</isRetired>
+      <isRetired>false</isRetired>
     </security>
     <security>
       <uuid>dfd4a396-34fe-484c-8130-4fecde91039d</uuid>
@@ -77,7 +77,7 @@
         <map/>
       </attributes>
       <events/>
-      <isRetired>true</isRetired>
+      <isRetired>false</isRetired>
     </security>
     <security>
       <uuid>c770a389-0a84-442c-ad85-2a58c3066924</uuid>
