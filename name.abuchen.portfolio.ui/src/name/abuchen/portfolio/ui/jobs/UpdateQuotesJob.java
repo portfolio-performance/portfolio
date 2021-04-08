@@ -3,12 +3,13 @@ package name.abuchen.portfolio.ui.jobs;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -109,25 +110,25 @@ public final class UpdateQuotesJob extends AbstractClientJob
     }
 
     private final Set<Target> target;
-    private final List<Security> securities;
+    private Predicate<Security> filter;
     private long repeatPeriod;
 
     public UpdateQuotesJob(Client client, Set<Target> target)
     {
-        this(client, client.getSecurities(), target);
+        this(client, s -> true, target);
     }
 
     public UpdateQuotesJob(Client client, Security security)
     {
-        this(client, Arrays.asList(security), EnumSet.allOf(Target.class));
+        this(client, s -> s.equals(security), EnumSet.allOf(Target.class));
     }
 
-    public UpdateQuotesJob(Client client, List<Security> securities, Set<Target> target)
+    public UpdateQuotesJob(Client client, Predicate<Security> filter, Set<Target> target)
     {
         super(client, Messages.JobLabelUpdateQuotes);
 
         this.target = target;
-        this.securities = new ArrayList<>(securities);
+        this.filter = filter;
     }
 
     public UpdateQuotesJob repeatEvery(long milliseconds)
@@ -141,16 +142,18 @@ public final class UpdateQuotesJob extends AbstractClientJob
     {
         monitor.beginTask(Messages.JobLabelUpdating, IProgressMonitor.UNKNOWN);
 
+        List<Security> securities = getClient().getSecurities().stream().filter(filter).collect(Collectors.toList());
+
         Dirtyable dirtyable = new Dirtyable(getClient());
         List<Job> jobs = new ArrayList<>();
 
         // include historical quotes
         if (target.contains(Target.HISTORIC))
-            addHistoricalQuotesJobs(dirtyable, jobs);
+            addHistoricalQuotesJobs(securities, dirtyable, jobs);
 
         // include latest quotes
         if (target.contains(Target.LATEST))
-            addLatestQuotesJobs(dirtyable, jobs);
+            addLatestQuotesJobs(securities, dirtyable, jobs);
 
         if (monitor.isCanceled())
             return Status.CANCEL_STATUS;
@@ -186,7 +189,7 @@ public final class UpdateQuotesJob extends AbstractClientJob
         }
     }
 
-    private void addLatestQuotesJobs(Dirtyable dirtyable, List<Job> jobs)
+    private void addLatestQuotesJobs(List<Security> securities, Dirtyable dirtyable, List<Job> jobs)
     {
         for (Security s : securities)
         {
@@ -243,19 +246,19 @@ public final class UpdateQuotesJob extends AbstractClientJob
         };
     }
 
-    private void addHistoricalQuotesJobs(Dirtyable dirtyable, List<Job> jobs)
+    private void addHistoricalQuotesJobs(List<Security> securities, Dirtyable dirtyable, List<Job> jobs)
     {
         // randomize list in case LRU cache size of HTMLTableQuote feed is too
         // small; otherwise entries would be evicted in order
         Collections.shuffle(securities);
 
         int jobCounter = 0;
-        
+
         for (Security security : securities)
         {
             jobCounter++;
-            
-            Job job = new Job("#" + jobCounter + " / " + security.getName())  //$NON-NLS-1$//$NON-NLS-2$
+
+            Job job = new Job("#" + jobCounter + " / " + security.getName()) //$NON-NLS-1$//$NON-NLS-2$
             {
                 @Override
                 protected IStatus run(IProgressMonitor monitor)
