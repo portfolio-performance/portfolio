@@ -1356,6 +1356,7 @@ public class FinTechGroupBankPDFExtractorTest
                         hasProperty("type", is(PortfolioTransaction.Type.SELL)), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4416.52)))))));
+        assertThat(tx.get(0).getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(148.87))));
         assertThat(tx.get(0).getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(8.41))));
     }
 
