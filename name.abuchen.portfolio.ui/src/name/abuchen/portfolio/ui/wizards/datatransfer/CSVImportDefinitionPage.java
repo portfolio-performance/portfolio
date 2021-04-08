@@ -758,8 +758,9 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
             ComboViewer mappedTo = new ComboViewer(composite, SWT.READ_ONLY);
             mappedTo.setContentProvider(ArrayContentProvider.getInstance());
             List<Field> fields = new ArrayList<>();
-            fields.add(EMPTY);
             fields.addAll(importer.getExtractor().getFields());
+            Collections.sort(fields, (r, l) -> r.getName().compareTo(l.getName()));
+            fields.add(0, EMPTY);
             mappedTo.setInput(fields);
             GridDataFactory.fillDefaults().grab(true, false).applyTo(mappedTo.getControl());
 
