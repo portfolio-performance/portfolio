@@ -458,7 +458,41 @@ public class TradeRepublicPDFExtractorTest
         assertThat(tx.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.292))));
         assertThat(tx.getDateTime(), is(LocalDateTime.parse("2020-09-12T12:19")));
         assertThat(tx.getShares(), is(Values.Share.factorize(0.0068)));
+    }
+
+    @Test
+    public void testVerkauf05()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
     
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf05.txt"), errors);
+    
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+    
+        // check security
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
+        assertThat(security.getIsin(), is("DE000A3H2333"));
+        assertThat(security.getName(), is("HAMBORNER REIT AG Namens-Aktien o.N."));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+    
+        // check transaction
+        item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
+        PortfolioTransaction tx = entry.getPortfolioTransaction();
+    
+        assertThat(tx.getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+    
+        assertThat(tx.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.17))));
+        assertThat(tx.getDateTime(), is(LocalDateTime.parse("2021-02-26T11:44")));
+        assertThat(tx.getShares(), is(Values.Share.factorize(0.3632)));
+        assertThat(tx.getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.00))));
+
     }
 
     @Test

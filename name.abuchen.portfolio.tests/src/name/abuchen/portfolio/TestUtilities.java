@@ -1,6 +1,8 @@
 package name.abuchen.portfolio;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Scanner;
 
 public class TestUtilities
@@ -15,5 +17,12 @@ public class TestUtilities
         {
             return scanner.useDelimiter("\\A").next(); //$NON-NLS-1$
         }
+    }
+
+    @SuppressWarnings("nls")
+    public static Collection<Object[]> availableLanguages()
+    {
+        return Arrays.asList(new String[] { "de" }, new String[] { "en" }, new String[] { "es" }, new String[] { "pt" },
+                        new String[] { "nl" }, new String[] { "fr" }, new String[] { "it" });
     }
 }

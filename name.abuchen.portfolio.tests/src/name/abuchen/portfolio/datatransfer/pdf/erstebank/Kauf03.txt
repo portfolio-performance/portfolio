@@ -1,0 +1,35 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Abcd BIC: ECTRATWW
+Abcd Abcdefghijk Referenz Nr.: 12-12345678
+Nr. 01
+1234  Abcdefghi Kunden Nr.: 12345
+Austria Depot Nr.: 12345-1
+Wien, 22.07.2014
+WERTPAPIERBESTÄTIGUNG
+IHR KAUF
+Ausserbörslich: SE SAV - AT Funds Kurswert: EUR 98,19052
+Wertpapier: DWS TOP 50 WELT Tradinggebühren: EUR 1,77
+Gesamtbetrag: EUR 99,96052
+WP-Kenn-Nr.: DE0009769794
+Stück: 1,363
+NAV: EUR 72,04
+Preis: EUR 73,339
+Handelstag: 21.07.2014
+Valutatag: 23.07.2014
+Lagerort: Wien
+Verwahrart: WR
+Bemerkungen:
+Abrechnung:
+Wir belasten Ihr EUR IBAN AT123450000000012345 mit Valuta 23.07.2014.
+Wir erkennen Ihr Wertpapierdepot Nummer 12345-1.
+Ausführung:
+Ausführungsdatum: 21.07.2014 Ausführungszeit: 18:00:00
+Vorbehaltlich Eingang bzw. nachträglicher Storni/Umbuchungen seitens Lagerstelle/Partner.
+Überprüfen Sie bitte die Richtigkeit dieser Bestätigung. Sollten Sie innerhalb von 6 Wochen nach Erhalt dieser Bestätigung
+keine Einwände gegen die Richtigkeit erheben, so gelten die angeführten Erklärungen und Leistungen als genehmigt.
+Brokerjet Bank AG | Mariahilfer Straße 121B | A-1060 Wien
+e-mail: support@brokerjet.at | Fax: +43-1-53689-13550 | www.brokerjet.at
+Sitz Wien | Handelsgericht Wien | FB-Nr. 193944m | DVR 1052322 | UID ATU49227901
+Online Broker Erste Group

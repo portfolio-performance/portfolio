@@ -41,28 +41,32 @@ public class PDFImportAssistant
         extractors.add(new ConsorsbankPDFExtractor(client));
         extractors.add(new ConsorsbankPre2009PDFExtractor(client));
         extractors.add(new DABPDFExtractor(client));
+        extractors.add(new DADATBankenhausPDFExtractor(client));
         extractors.add(new DegiroPDFExtractor(client));
         extractors.add(new DeutscheBankPDFExtractor(client));
         extractors.add(new Direkt1822BankPDFExtractor(client));
         extractors.add(new DkbPDFExtractor(client));
         extractors.add(new DreiBankenEDVPDFExtractor(client));
         extractors.add(new DZBankPDFExtractor(client));
+        extractors.add(new ErsteBankPDFExtractor(client));
         extractors.add(new FinTechGroupBankPDFExtractor(client));
         extractors.add(new HelloBankPDFExtractor(client));
         extractors.add(new INGDiBaExtractor(client));
         extractors.add(new JustTradePDFExtractor(client));
+        extractors.add(new KeytradeBankPDFExtractor(client));
         extractors.add(new MLPBankingAGPDFExtractor(client));
         extractors.add(new LGTBankPDFExtractor(client));
         extractors.add(new OnvistaPDFExtractor(client));
+        extractors.add(new PostbankPDFExtractor(client));
         extractors.add(new PostfinancePDFExtractor(client));
         extractors.add(new QuirionPDFExtractor(client));
         extractors.add(new SBrokerPDFExtractor(client));
-        extractors.add(new SutorPDFExtractor(client));
         extractors.add(new SwissquotePDFExtractor(client));
         extractors.add(new TargobankPDFExtractor(client));
         extractors.add(new TradeRepublicPDFExtractor(client));
         extractors.add(new UnicreditPDFExtractor(client));
         extractors.add(new ViacPDFExtractor(client));
+        extractors.add(new WeberbankPDFExtractor(client));
 
         extractors.add(new JSONPDFExtractor(client, "deutsche-bank-purchase.json")); //$NON-NLS-1$
         extractors.add(new JSONPDFExtractor(client, "deutsche-bank-sale.json")); //$NON-NLS-1$
@@ -70,8 +74,6 @@ public class PDFImportAssistant
         extractors.add(new JSONPDFExtractor(client, "trade-republic-dividends.json")); //$NON-NLS-1$
         extractors.add(new JSONPDFExtractor(client, "trade-republic-investmentplan.json")); //$NON-NLS-1$
         extractors.add(new JSONPDFExtractor(client, "ebase.json")); //$NON-NLS-1$
-        extractors.add(new JSONPDFExtractor(client, "postbank-purchase.json")); //$NON-NLS-1$
-        extractors.add(new JSONPDFExtractor(client, "weberbank-dividends.json")); //$NON-NLS-1$
     }
 
     public Map<Extractor, List<Item>> run(IProgressMonitor monitor, Map<File, List<Exception>> errors)

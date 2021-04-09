@@ -54,6 +54,13 @@ DE63MUC00001787612
 H0218248F1742 Girokonto auf Visa-Karte
 633/2 End-to-End-Ref.: nicht
 angegeben
+30.10.2017 Auszahlung BANK Auszahlung -50,00
+30.10.2017 1DB173030000 Bank//Ort/DE
+0000/00000 0000-00-00TT00:00:00 KFN 0 VJ 0000
+26.03.2018 Kartenverfügun Kartenzahlung -9,00
+26.03.2018 g Markts Ort Straße//Ort
+00000000s000 0000-00-00T00:00:00 KFN 0
+0411/722
 05.09.2018 Entgelte Entgelt für Änderung der -5,90
 05.09.2018 3RF18248J0000 PIN bei der VISA-Karte
 909/255 ZUORDN. 118 9900160 20
@@ -76,7 +83,7 @@ Finanzreport Nr. 9 per 01.10.2018 - Seite 4
 Kundennummer 102 0000000
 Buchungstag Vorgang Auftraggeber/Empfänger Buchungstext Ausgang
 Valuta Referenz IBAN/BIC Eingang
-21.09.2018 Übertrag / Handelskrankenkasse (hkk) Kunden werben Kunden 20.00 +20,00
+21.09.2018 Übertrag / Firma Verwendungszweck 20.00 +20,00
 21.09.2018 Überweisung End-to-End-Ref.:
 HO218264G310 3620043175000000
 8996/17200
@@ -131,9 +138,28 @@ Alter Saldo 03.09.2018 +120,33
 05.09.2018 ag
 1180905480000
 01
+26.03.2019 Guthabenübertr UEBERTRAG AUF GIROKONTO -100,00
+26.03.2019 ag
+1190326500000
+01
 18.09.2018 Visa-Umsatz Lidl Vertriebs GmbH & Co.Ort000 -2,18
 17.09.2018 1180918490000
 01
+27.07.2018 Auslandsentgelt 1.75 PROZ.AUSLANDSENTGELT -0,45
+27.07.2018 0000000000000
+01
+23.07.2019 Gutschrift Firma Ort 9 007 +71,93
+22.07.2019 1190723500000
+01
+A30.09.2019 Visa-Umsatz Firma Ort 000 -3,94
+A 119093157242901
+28.09.2019
+28.10.2019 Barauszahlung ATMS Bank Country City 000 Betrag: -70,00 PEN Kurs: -19,21
+24.10.2019 119102909170000 3,6438
+01.01.2020 Bar BARGELDEINZAHLUNG KARTE 0 +5.432,10
+01.01.2020 00A00000000 EINZAHLAUTOMAT 000000
+355/1 EINZAHLUNG 01.01.2020 00:00
+Ort Straße
 Neuer Saldo 01.10.2018 +368,31
 comdirect bank AG USt-ID: DE 812 279 461
 25449 Quickborn

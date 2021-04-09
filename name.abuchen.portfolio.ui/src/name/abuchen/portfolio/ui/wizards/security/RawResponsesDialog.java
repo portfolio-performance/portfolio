@@ -76,8 +76,10 @@ public class RawResponsesDialog extends Dialog
             }
         });
         comboURL.setInput(rawResponses);
-        comboURL.addSelectionChangedListener(event -> rawText
-                        .setText(((RawResponse) event.getStructuredSelection().getFirstElement()).getContent()));
+        comboURL.addSelectionChangedListener(event -> {
+            RawResponse response = (RawResponse) event.getStructuredSelection().getFirstElement();
+            rawText.setText(response.getContent() != null ? response.getContent() : ""); //$NON-NLS-1$
+        });
 
         rawText = new Text(editArea, SWT.READ_ONLY | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
 

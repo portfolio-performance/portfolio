@@ -50,6 +50,7 @@ public class TextUtilTest
 
         assertThat(TextUtil.stripJavaScriptCallback(json), is(json));
         assertThat(TextUtil.stripJavaScriptCallback("callback(" + json + ");"), is(json));
+        assertThat(TextUtil.stripJavaScriptCallback("angular.callbacks._u(" + json + ")"), is(json));
         assertThat(TextUtil.stripJavaScriptCallback("sd" + json), is("sd" + json));
         assertThat(TextUtil.stripJavaScriptCallback("]something["), is("]something["));
     }

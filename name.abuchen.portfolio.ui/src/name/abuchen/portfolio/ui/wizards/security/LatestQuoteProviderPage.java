@@ -196,6 +196,30 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
     }
 
     @Override
+    protected String getJSONDateFormatPropertyName()
+    {
+        return GenericJSONQuoteFeed.DATE_FORMAT_PROPERTY_NAME_LATEST;
+    }
+
+    @Override
+    protected String getJSONLowPathPropertyName()
+    {
+        return GenericJSONQuoteFeed.LOW_PROPERTY_NAME_LATEST;
+    }
+
+    @Override
+    protected String getJSONHighPathPropertyName()
+    {
+        return GenericJSONQuoteFeed.HIGH_PROPERTY_NAME_LATEST;
+    }
+
+    @Override
+    protected String getJSONVolumePathPropertyName()
+    {
+        return GenericJSONQuoteFeed.VOLUME_PROPERTY_NAME_LATEST;
+    }
+
+    @Override
     protected List<QuoteFeed> getAvailableFeeds()
     {
         List<QuoteFeed> feeds = new ArrayList<>();

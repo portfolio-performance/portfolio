@@ -1,0 +1,49 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Kundennr. /BLZ Bezeichnung
+11 1000 1 <Vorname1> <Vorname2> <Nachname>
+111 000 11 <Str.> <Nr.><Plz> <Stadt>
+abweichend wirtschaftlich Berechtigter
+Postadresse:
+----
+Commerzbank AG
+11111 Hannover
+000 00000
+Ansprechpartner: Frau Beraterin
+Telefon: 05531 128940
+Herrn Datum: 02.03.2018
+<Vorname1> <Vorname2> <Nachname> Depotnummer: 1111111 11
+<Str.> <Nr.>
+<Plz> <Stadt> Referenz-Nummer: 0U7QASH3SPP000RP
+Steuerliche Behandlung: Wertpapierverkauf Nr. 11001100 vom 02.03.2018
+Stk. 250 ALLIANZ SE NA O.N. , WKN / ISIN: 840400 / DE0008404005
+Zu Ihren Gunsten vor Steuern: EUR 4 5 . 9 1 8 , 9 7
+Steuerbemessungsgrundlage EUR - 1 . 9 5 9 , 4 0
+Kapitalertragsteuer (2) (8) EUR 4 7 9 , 0 7
+Solidaritätszuschlag EUR 2 6 , 3 3
+Kirchensteuer EUR 4 3 , 1 1
+erstattete Steuern EUR 5 4 8 , 5 1
+Zu Ihren Gunsten nach Steuern: EUR 4 6 . 4 6 7 , 4 8
+Die Gutschrift erfolgt mit Valuta 06.03.2018 auf Konto EUR mit der IBAN DE11 2222 0000 1111 0000 11
+(2) Durch die Berücksichtigung der Kirchensteuer (8% bzw. 9%) als Sonderausgabe reduziert sich der Kapitalertragsteuersatz auf 24,51% bzw. 24,45%.
+(8) Aufgrund des mit diesem Geschäft realisierten Verlustes erstatten wir Ihnen bereits abgeführte Steuern.
+KEINE STEUERBESCHEINIGUNG ...
+Bisher einbehaltene bzw. angerechnete Steuer in EUR (4)
+in 2018 einbehaltene einbehaltener einbehaltene angerechneteKapitalertragsteuer Solidaritätszuschlag Kirchensteuer ausländische Quellensteuer
+vor Ermittlung 7.225,67 397,39 650,28 0,00
+nach Ermittlung 6.746,60 371,06 607,17 0,00
+Verrechnungssalden in EUR (4)
+2018 Gewinne / Verluste sonstige anrechenbare verfügbarerin aus Aktien Gewinne / Verluste ausländische Quellensteuer Freistellungsauftrag
+vor Ermittlung 28.884,92 2.220,00 0,00 0,00
+nach Ermittlung 26.925,52 2.220,00 0,00 0,00
+Hinweise zur Ermittlung der Steuerbemessungsgrundlage:
+zu Ihren Gunsten vor Steuern EUR 4 5 . 9 1 8 , 9 7
+A n s c h a f f u n g vom 1 1 . 1 1 . 2 0 1 1 2 5 0 , 0 0 S t ü c k EUR - 4 7 . 8 7 8 , 3 7
+Summe der Anschaffungskosten aus Anschaffungsvorgängen nach
+abgeltungsteuerrelevantem Stichtag EUR - 4 7 . 8 7 8 , 3 7
+Steuerbemessungsgrundlage vor Verlustverrechnung EUR - 1 . 9 5 9 , 4 0
+Commerzbank AG
+Diese Abrechnung ist maschinell erstellt und wird nicht unterschrieben.
+(4) Die ausgewiesenen EUR-Beträge spiegeln den Stand zum Abrechnungszeitpunkt wider.
+KEINE STEUERBESCHEINIGUNG

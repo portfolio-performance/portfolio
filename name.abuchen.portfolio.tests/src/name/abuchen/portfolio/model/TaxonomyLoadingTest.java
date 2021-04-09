@@ -4,7 +4,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.Map;
@@ -15,15 +14,15 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import name.abuchen.portfolio.TestUtilities;
+
 @RunWith(Parameterized.class)
 public class TaxonomyLoadingTest
 {
-    @SuppressWarnings("nls")
     @Parameters(name = "{index}: {0}")
     public static Collection<Object[]> getLanguages()
     {
-        return Arrays.asList(new String[] { "de" }, new String[] { "en" }, new String[] { "es" }, new String[] { "pt" },
-                        new String[] { "nl" }, new String[] { "fr" });
+        return TestUtilities.availableLanguages();
     }
 
     private String language;

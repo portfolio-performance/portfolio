@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.model;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,8 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
     private List<AccountTransaction> transactions = new ArrayList<>();
 
     private Attributes attributes;
+
+    private Instant updatedAt;
 
     public Account()
     {
@@ -52,6 +55,7 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
     public void setName(String name)
     {
         this.name = name;
+        this.updatedAt = Instant.now();
     }
 
     @Override
@@ -64,6 +68,7 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
     public void setCurrencyCode(String currencyCode)
     {
         this.currencyCode = currencyCode;
+        this.updatedAt = Instant.now();
     }
 
     @Override
@@ -76,6 +81,7 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
     public void setNote(String note)
     {
         this.note = note;
+        this.updatedAt = Instant.now();
     }
 
     @Override
@@ -88,6 +94,7 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
     public void setRetired(boolean isRetired)
     {
         this.isRetired = isRetired;
+        this.updatedAt = Instant.now();
     }
 
     @Override
@@ -102,6 +109,17 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
     public void setAttributes(Attributes attributes)
     {
         this.attributes = attributes;
+        this.updatedAt = Instant.now();
+    }
+
+    public Instant getUpdatedAt()
+    {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt)
+    {
+        this.updatedAt = updatedAt;
     }
 
     @Override

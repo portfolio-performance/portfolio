@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.views.trades;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -12,6 +13,7 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -69,6 +71,71 @@ public class TradeDetailsView extends AbstractFinanceView
         }
     }
 
+    /*
+     * We need a reference to the value in the buttons but the native Boolean
+     * class is immutable.
+     */
+    private class MutableBoolean
+    {
+        private boolean value;
+
+        public MutableBoolean(boolean value)
+        {
+            this.value = value;
+        }
+
+        public void setValue(boolean value)
+        {
+            this.value = value;
+        }
+
+        public void invert()
+        {
+            value = !value;
+        }
+
+        public boolean isTrue()
+        {
+            return value;
+        }
+    }
+
+    private class FilterAction extends Action
+    {
+        private MutableBoolean criterion;
+
+        private DropDown theMenu;
+        private FilterAction counterpart;
+
+        public FilterAction(String label, MutableBoolean criterion, DropDown theMenu)
+        {
+            super(label);
+            this.criterion = criterion;
+            this.theMenu = theMenu;
+            this.setChecked(criterion.isTrue());
+        }
+
+        public void setCounterpart(FilterAction counterpart)
+        {
+            this.counterpart = counterpart;
+        }
+
+        @Override
+        public void run()
+        {
+            criterion.invert();
+
+            if (counterpart != null && criterion.isTrue())
+            {
+                counterpart.criterion.setValue(false);
+                counterpart.setChecked(false);
+            }
+
+            update();
+            updateFilterButtonImage(theMenu);
+        }
+    }
+
     private static final String ID_WARNING_TOOL_ITEM = "warning"; //$NON-NLS-1$
 
     private Input input;
@@ -82,11 +149,20 @@ public class TradeDetailsView extends AbstractFinanceView
         return Messages.LabelTrades;
     }
 
+    private MutableBoolean usePreselectedTrades = new MutableBoolean(false);
+
+    private MutableBoolean onlyOpen = new MutableBoolean(false);
+    private MutableBoolean onlyClosed = new MutableBoolean(false);
+
+    private MutableBoolean onlyProfitable = new MutableBoolean(false);
+    private MutableBoolean onlyLossMaking = new MutableBoolean(false);
+
     @Inject
     @Optional
     public void setTrades(@Named(UIConstants.Parameter.VIEW_PARAMETER) Input input)
     {
         this.input = input;
+        this.usePreselectedTrades.setValue(true);
     }
 
     @PostConstruct
@@ -105,7 +181,7 @@ public class TradeDetailsView extends AbstractFinanceView
         // of trades, for example when the user navigates from the dashboard to
         // the detailed trades
         if (input == null || !input.getTrades().equals(table.getInput()))
-            updateFrom(collectAllTrades());
+            update();
 
         if (!table.getTableViewer().getTable().isDisposed())
             table.getTableViewer().refresh(true);
@@ -114,34 +190,64 @@ public class TradeDetailsView extends AbstractFinanceView
     @Override
     protected void addButtons(ToolBarManager toolBarManager)
     {
-        boolean hasPreselectedTrades = input != null;
-        if (hasPreselectedTrades)
-        {
-            DropDown dropDown = new DropDown(input.getInterval().toString(), Images.FILTER_ON, SWT.NONE);
+        addFilterButton(toolBarManager);
 
-            dropDown.setMenuListener(manager -> {
-                manager.add(new SimpleAction(input.getInterval().toString(), a -> {
-                    updateFrom(input);
-                    dropDown.setImage(Images.FILTER_ON);
-                }));
-
-                manager.add(new SimpleAction(Messages.LabelAllTrades, a -> {
-                    updateFrom(collectAllTrades());
-                    dropDown.setImage(Images.FILTER_OFF);
-                }));
-            });
-
-            toolBarManager.add(dropDown);
-        }
-
-        toolBarManager.add(new DropDown(Messages.MenuExportData, Images.EXPORT, SWT.NONE, manager -> {
-            manager.add(new SimpleAction(Messages.LabelTrades + " (CSV)", //$NON-NLS-1$
-                            a -> new TableViewerCSVExporter(table.getTableViewer())
-                                            .export(Messages.LabelTrades + ".csv"))); //$NON-NLS-1$
-        }));
+        toolBarManager.add(new DropDown(Messages.MenuExportData, Images.EXPORT, SWT.NONE,
+                        manager -> manager.add(new SimpleAction(Messages.LabelTrades + " (CSV)", //$NON-NLS-1$
+                                        a -> new TableViewerCSVExporter(table.getTableViewer())
+                                                        .export(Messages.LabelTrades + ".csv"))) //$NON-NLS-1$
+        ));
 
         toolBarManager.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE,
                         manager -> table.getShowHideColumnHelper().menuAboutToShow(manager)));
+    }
+
+    private void updateFilterButtonImage(DropDown dropDown)
+    {
+        boolean isOn = usePreselectedTrades.isTrue() || onlyOpen.isTrue() || onlyClosed.isTrue()
+                        || onlyProfitable.isTrue() || onlyLossMaking.isTrue();
+        dropDown.setImage(isOn ? Images.FILTER_ON : Images.FILTER_OFF);
+    }
+
+    private void addFilterButton(ToolBarManager manager)
+    {
+        boolean hasPreselectedTrades = input != null;
+
+        DropDown filterDropDowMenu = new DropDown(Messages.MenuFilterTrades, Images.FILTER_OFF, SWT.NONE);
+        updateFilterButtonImage(filterDropDowMenu);
+
+        filterDropDowMenu.setMenuListener(mgr -> {
+
+            if (hasPreselectedTrades)
+            {
+                mgr.add(new FilterAction(input.getInterval().toString(), usePreselectedTrades, filterDropDowMenu));
+                mgr.add(new Separator());
+            }
+
+            FilterAction onlyOpenAction = new FilterAction(Messages.FilterOnlyOpenTrades, onlyOpen,
+                            filterDropDowMenu);
+            FilterAction onlyClosedAction = new FilterAction(Messages.FilterOnlyClosedTrades, onlyClosed,
+                            filterDropDowMenu);
+
+            onlyOpenAction.setCounterpart(onlyClosedAction);
+            onlyClosedAction.setCounterpart(onlyOpenAction);
+
+            FilterAction onlyProfitableAction = new FilterAction(Messages.FilterOnlyProfitableTrades, onlyProfitable,
+                            filterDropDowMenu);
+            FilterAction onlyLossMakingAction = new FilterAction(Messages.FilterOnlyLossMakingTrades, onlyLossMaking,
+                            filterDropDowMenu);
+
+            onlyProfitableAction.setCounterpart(onlyLossMakingAction);
+            onlyLossMakingAction.setCounterpart(onlyProfitableAction);
+
+            mgr.add(onlyOpenAction);
+            mgr.add(onlyClosedAction);
+            mgr.add(new Separator());
+            mgr.add(onlyProfitableAction);
+            mgr.add(onlyLossMakingAction);
+        });
+
+        manager.add(filterDropDowMenu);
     }
 
     @Override
@@ -151,7 +257,7 @@ public class TradeDetailsView extends AbstractFinanceView
 
         Control control = table.createViewControl(parent, TradesTableViewer.ViewMode.MULTIPLE_SECURITES);
 
-        updateFrom(input != null ? input : collectAllTrades());
+        update();
 
         new ContextMenu(table.getTableViewer().getControl(), this::fillContextMenu).hook();
 
@@ -169,9 +275,22 @@ public class TradeDetailsView extends AbstractFinanceView
         new SecurityContextMenu(this).menuAboutToShow(manager, trade.getSecurity(), trade.getPortfolio());
     }
 
-    private void updateFrom(Input data)
+    private void update()
     {
-        table.setInput(data.getTrades());
+        Input data = usePreselectedTrades.isTrue() ? input : collectAllTrades();
+
+        Stream<Trade> filteredTrades = data.getTrades().stream();
+
+        if (onlyClosed.isTrue())
+            filteredTrades = filteredTrades.filter(Trade::isClosed);
+        if (onlyOpen.isTrue())
+            filteredTrades = filteredTrades.filter(t -> !t.isClosed());
+        if (onlyLossMaking.isTrue())
+            filteredTrades = filteredTrades.filter(Trade::isLoss);
+        if (onlyProfitable.isTrue())
+            filteredTrades = filteredTrades.filter(t -> !t.isLoss());
+
+        table.setInput(filteredTrades.collect(Collectors.toList()));
 
         ToolBarManager toolBar = getToolBarManager();
 

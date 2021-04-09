@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.model;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.ResourceBundle;
@@ -94,6 +95,7 @@ public class AccountTransaction extends Transaction
     public void setType(Type type)
     {
         this.type = type;
+        setUpdatedAt(Instant.now());
     }
 
     /**
