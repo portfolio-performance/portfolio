@@ -1,0 +1,33 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Ab. BLZ: 12345
+Abcd Abcdefghijk Referenz Nr: 12-1234567-1
+Nr. 01 Kunden Nr.: 12345
+1234 Abcdefghi Depot Nr.: 12345-01 
+Austria
+Wien,  16. April 2010
+ 
+WERTPAPIERBESTÄTIGUNG
+IHR VERKAUF
+ 
+Börse: Vienna Stock Exchange Kurswert: EUR 1.164,60
+Wertpapier: EVN STAMMAKTIEN O.N. WP-Kommission: EUR 9,99-
+WP-Kenn-Nr. : AT0000741053
+Stück: 90 Gesamtbetrag: EUR 1.154,61
+Preis: EUR 12,9400
+Handelstag: 16. April 2010
+Valutatag: 21. April 2010
+Lagerort: WIEN
+Verwahrart: SV
+Abrechnung:
+Wir erkennen Ihr EUR Konto Nummer  12345 mit Valuta 21. April 2010.
+Wir belasten Ihr Wertpapierdepot Nummer  12345-1.
+Ausführung:
+Ausführungsdatum: 16. April 2010 Ausführungszeit: 15:27:19
+Überprüfen Sie bitte die Richtigkeit dieser Bestätigung. Sollten Sie innerhalb von 6 Wochen nach Erhalt dieser Bestätigung keine
+Einwände gegen die Richtigkeit erheben, so gelten die angeführten Erklärungen und Leistungen als genehmigt.
+ecetra  Central European e-Finance AG | Mariahilferstraße 121B | A-1060 Wien 
+e-mail: support@ecetra.com | Fax: +43-1-53689-13550 | www.ecetra.com
+Sitz Wien  |  Handelsgericht Wien  |  FB-Nr. 193944m  |  DVR 1052322  |  UID ATU49227901
+Ein Unternehmen der ERSTE BANK GRUPPE

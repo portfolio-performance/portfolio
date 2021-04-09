@@ -76,11 +76,33 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                 // Gesamtbetrag: EUR 3.217,22
                 // WP-Kenn-Nr.: AT0000937503
                 .section("name", "name1", "isin").optional()
-                .match("^Wertpapier: (?<name>.*) (Tradinggebühren|WP-Kommission): [\\w]{3} [.,\\d]+[-]?")
-                .match("(?<name1>.*)")
-                .match("^WP-Kenn-Nr.* (?<isin>[\\w]{12})")
+                .match("^Wertpapier: (?<name>.*) (Tradinggeb.hren|WP-Kommission|Gesamtbetrag|Devisenprovision): [\\w]{3} [.,\\d]+[-]?$")
+                .match("(?<name1>.*)$")
+                .match("^WP-Kenn-Nr.* (?<isin>[\\w]{12})$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Gesamtbetrag"))
+                        v.put("name", v.get("name") + " " + v.get("name1"));
+                    t.setSecurity(getOrCreateSecurity(v));
+                })
+
+                // Wertpapier: EVN STAMMAKTIEN O.N. WP-Kommission: EUR 9,99
+                // WP-Kenn-Nr. : AT0000741053
+                .section("name", "isin").optional()
+                .match("^Wertpapier: (?<name>.*) (Tradinggeb.hren|WP-Kommission|Gesamtbetrag|Devisenprovision): [\\w]{3} [.,\\d]+[-]?$")
+                .match("^WP-Kenn-Nr.* (?<isin>[\\w]{12})$")
+                .assign((t, v) -> {
+                    t.setSecurity(getOrCreateSecurity(v));
+                })
+
+                // Wertpapier: TELEKOM AUSTRIA AKT.
+                // O.N.
+                // WP-Kenn-Nr. : AT0000720008 Gesamtbetrag: EUR 1.049,40
+                .section("name", "name1", "isin").optional()
+                .match("^Wertpapier: (?<name>.*)$")
+                .match("(?<name1>.*)$")
+                .match("^WP-Kenn-Nr.* (?<isin>[\\w]{12}) (Tradinggeb.hren|WP-Kommission|Gesamtbetrag|Devisenprovision): [\\w]{3} [.,\\d]+[-]?$")
+                .assign((t, v) -> {
+                    if (!v.get("name1").startsWith("WP-Kenn-Nr.*"))
                         v.put("name", v.get("name") + " " + v.get("name1"));
                     t.setSecurity(getOrCreateSecurity(v));
                 })
@@ -88,15 +110,16 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                 // Wertpapier: DWS TOP 50 WELT
                 // WP-Kenn-Nr. : DE0009769794
                 .section("name", "isin").optional()
-                .match("^Wertpapier: (?<name>.*)")
-                .match("^WP-Kenn-Nr.* (?<isin>[\\w]{12})")
+                .match("^Wertpapier: (?<name>.*)$")
+                .match("^WP-Kenn-Nr.* (?<isin>[\\w]{12})$")
                 .assign((t, v) -> {
                     t.setSecurity(getOrCreateSecurity(v));
                 })
 
                 // Stück: 105,00
+                // Stück: 90 Gesamtbetrag: EUR 1.142,19
                 .section("shares")
-                .match("^St.ck: (?<shares>[.,\\d]+)")
+                .match("^St.ck: (?<shares>[.,\\d]+)(.*)?$")
                 .assign((t, v) -> {
                     t.setShares(asShares(v.get("shares")));
                 })
@@ -124,8 +147,8 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                 })
 
                 // Gesamtbetrag: EUR 3.217,22
-                .section("currency", "amount")
-                .match("^Gesamtbetrag: (?<currency>[\\w]{3}) (?<amount>[\\d.-]+,\\d+)")
+                .section("currency", "amount").optional()
+                .match("^(.*)?Gesamtbetrag: (?<currency>[\\w]{3}) (?<amount>[.,\\d]+)$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(v.get("currency"));
@@ -145,19 +168,18 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
         Block block = new Block("BARDIVIDENDE");
         type.addBlock(block);
         Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>()
-
-                        .subject(() -> {
-                            AccountTransaction entry = new AccountTransaction();
-                            entry.setType(AccountTransaction.Type.DIVIDENDS);
-                            return entry;
-                        });
+            .subject(() -> {
+                AccountTransaction entry = new AccountTransaction();
+                entry.setType(AccountTransaction.Type.DIVIDENDS);
+                return entry;
+            });
 
         pdfTransaction
                 // ISIN : CA0679011084
                 // Wertpapierbezeichnung : BARRICK GOLD CORP.
                 .section("isin", "name").optional()
-                .match("^ISIN : (?<isin>[\\w]{12})")
-                .match("^Wertpapierbezeichnung : (?<name>.*)")
+                .match("^ISIN : (?<isin>[\\w]{12})$")
+                .match("^Wertpapierbezeichnung : (?<name>.*)$")
                 .assign((t, v) -> {
                     t.setSecurity(getOrCreateSecurity(v));
                 })
@@ -165,29 +187,29 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                 // Wertpapier : MUENCH.RUECKVERS.VNA O.N. Dividende Brutto : EUR 201,25
                 // WP-Kenn-Nr. : DE0008430026 Fremde Steuer : EUR 53,08
                 .section("isin", "name").optional()
-                .match("^Wertpapier : (?<name>.*) Dividende Brutto : [\\w]{3} [.,\\d]+")
-                .match("^WP-Kenn-Nr.* : (?<isin>[\\w]{12}) Fremde Steuer : [\\w]{3} [.,\\d]+")
+                .match("^Wertpapier : (?<name>.*) Dividende Brutto : [\\w]{3} [.,\\d]+$")
+                .match("^WP-Kenn-Nr.* : (?<isin>[\\w]{12}) (Fremde Steuer|KESt) : [\\w]{3} [.,\\d]+$")
                 .assign((t, v) -> {
                     t.setSecurity(getOrCreateSecurity(v));
                 })
 
                 // Anspruchsberechtigter : 35
                 .section("shares").optional()
-                .match("^Anspruchsberechtigter : (?<shares>[.,\\d]+)")
+                .match("^Anspruchsberechtigter : (?<shares>[.,\\d]+)$")
                 .assign((t, v) -> {
                     t.setShares(asShares(v.get("shares")));
                 })
 
                 // WP-Bestand : 35,000 Dividendenbetrag : EUR 148,17
                 .section("shares").optional()
-                .match("^WP-Bestand : (?<shares>[.,\\d]+) .*")
+                .match("^WP-Bestand : (?<shares>[.,\\d]+) .*$")
                 .assign((t, v) -> {
                     t.setShares(asShares(v.get("shares")));
                 })
 
                 // Ex-Tag : 27.08.2015
                 .section("date").optional()
-                .match("^Ex-Tag : (?<date>\\d+.\\d+.\\d{4})")
+                .match("^Ex-Tag : (?<date>\\d+.\\d+.\\d{4})$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                 // Ex-Tag : 29. April 2010 Zahlungsprovision : EUR 0,50
@@ -201,7 +223,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
 
                 // Gesamtbetrag (in : EUR 0.4
                 .section("currency", "amount").optional()
-                .match("^Gesamtbetrag .in : (?<currency>[\\w]{3}) (?<amount>['.,\\d]+)")
+                .match("^Gesamtbetrag .in : (?<currency>[\\w]{3}) (?<amount>['.,\\d]+)$")
                 .assign((t, v) -> {
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                     t.setAmount(asAmount(convertAmount(v.get("amount"))));
@@ -209,7 +231,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
 
                 // Dividende Netto : EUR 127,54
                 .section("currency", "amount").optional()
-                .match("^Dividende Netto : (?<currency>[\\w]{3}) (?<amount>['.,\\d]+)")
+                .match("^(.*)?Dividende Netto : (?<currency>[\\w]{3}) (?<amount>['.,\\d]+)$")
                 .assign((t, v) -> {
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                     t.setAmount(asAmount(convertAmount(v.get("amount"))));
@@ -219,16 +241,61 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                 // Devisenkurs : 0.888889
                 // Gesamtbetrag (in : EUR 0.4
                 .section("exchangeRate", "fxAmount", "fxCurrency", "amount", "currency").optional()
-                .match("^Brutto-Betrag : (?<fxCurrency>[\\w]{3}) (?<fxAmount>['.,\\d]+)")
-                .match("^Devisenkurs : (?<exchangeRate>[.\\d]+)")
-                .match("^Gesamtbetrag .in : (?<currency>[\\w]{3}) (?<amount>['.,\\d]+)")
+                .match("^Brutto-Betrag : (?<fxCurrency>[\\w]{3}) (?<fxAmount>['.,\\d]+)$")
+                .match("^Devisenkurs : (?<exchangeRate>[.,\\d]+)$")
+                .match("^Gesamtbetrag .in : (?<currency>[\\w]{3}) (?<amount>['.,\\d]+)$")
                 .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(convertExchangeRate(v.get("exchangeRate")));
                     if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
                     {
                         exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
                     }
+                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
 
+                    if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
+                    {
+                        BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
+                                        RoundingMode.HALF_DOWN);
+
+                        // check, if forex currency is transaction
+                        // currency or not and swap amount, if necessary
+                        Unit grossValue;
+                        if (!asCurrencyCode(v.get("fxCurrency")).equals(t.getCurrencyCode()))
+                        {
+                            Money fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")),
+                                            asAmount(convertAmount(v.get("fxAmount"))));
+                            Money amount = Money.of(asCurrencyCode(v.get("currency")),
+                                            asAmount(convertAmount(v.get("amount"))));
+                            grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
+                        }
+                        else
+                        {
+                            Money amount = Money.of(asCurrencyCode(v.get("fxCurrency")), 
+                                            asAmount(convertAmount(v.get("fxAmount"))));
+                            Money fxAmount = Money.of(asCurrencyCode(v.get("currency")), 
+                                            asAmount(convertAmount(v.get("amount"))));
+                            grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
+                        }
+                        t.addUnit(grossValue);
+                    }
+                })
+
+                // Wertpapier : MORGAN ST., DEAN W. DL-01 Dividende Brutto : USD 3,00
+                // Verwahrart : WR Devisenkurs : 1,2859000
+                // Dividende Netto : EUR 1,73
+                .section("exchangeRate", "fxAmount", "fxCurrency", "amount", "currency").optional()
+                .match("^.* Dividende Brutto : (?<fxCurrency>[\\w]{3}) (?<fxAmount>['.,\\d]+)$")
+                .match("^.* Devisenkurs : (?<exchangeRate>[.,\\d]+)$")
+                .match("^Dividende Netto : (?<currency>[\\w]{3}) (?<amount>['.,\\d]+)$")
+                .assign((t, v) -> {
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                    t.setAmount(asAmount(convertAmount(v.get("amount"))));
+
+                    BigDecimal exchangeRate = asExchangeRate(convertExchangeRate(v.get("exchangeRate")));
+                    if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
+                    {
+                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+                    }
                     type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
 
                     if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
@@ -311,12 +378,17 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
 
                 // Wertpapier: VOESTALPINE AG AKT. Tradinggebühren: EUR 9,99
                 .section("currency", "fee").optional()
-                .match(".* Tradinggebühren: (?<currency>[\\w]{3}) (?<fee>[\\d.-]+,\\d+)[-]?")
+                .match(".* Tradinggeb.hren: (?<currency>[\\w]{3}) (?<fee>[\\d.-]+,\\d+)[-]?")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Wertpapier: BAY.MOTOREN WERKE AG WP-Kommission: EUR 9,99
                 .section("currency", "fee").optional()
                 .match(".* WP-Kommission: (?<currency>[\\w]{3}) (?<fee>[\\d.-]+,\\d+)[-]?")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+
+                // Wertpapier: INVESCO ASIAN INF. A Devisenprovision: USD 0,44
+                .section("currency", "fee").optional()
+                .match(".* Devisenprovision: (?<currency>[\\w]{3}) (?<fee>[\\d.-]+,\\d+)[-]?")
                 .assign((t, v) -> processFeeEntries(t, v, type));
     }
 

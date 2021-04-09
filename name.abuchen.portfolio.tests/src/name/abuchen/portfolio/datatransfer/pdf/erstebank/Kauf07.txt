@@ -1,0 +1,32 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Abcd BLZ: 12345
+Abcd Abcdefghijk Referenz Nr.: 12-12345678
+Nr. 01
+Abcd  Abcdefghi Kunden Nr.: 12345
+Austria Depot Nr.: 12345-1
+Wien, 06.03.2012
+WERTPAPIERBESTÄTIGUNG
+IHR KAUF
+Ausserbörslich: Vienna Stock Exchange Kurswert: EUR 397,50
+Wertpapier: CONWERT IMMO. AKT. O.N Gesamtbetrag: EUR 397,50
+WP-Kenn-Nr.: AT0000697750
+Stück: 50,00
+Preis: EUR 7,95
+Handelstag: 06.03.2012
+Valutatag: 09.03.2012
+Lagerort: WIEN
+Verwahrart: WR
+Abrechnung:
+Wir belasten Ihr EUR Konto 12345 mit Valuta 09.03.2012.
+Wir erkennen Ihr Wertpapierdepot Nummer 12345-1.
+Ausführung:
+Ausführungsdatum: 06.03.2012 Ausführungszeit: 16:57:08
+Vorbehaltlich Eingang bzw. nachträglicher Storni/Umbuchungen seitens Lagerstelle/Partner.
+Überprüfen Sie bitte die Richtigkeit dieser Bestätigung. Sollten Sie innerhalb von 6 Wochen nach Erhalt dieser Bestätigung
+keine Einwände gegen die Richtigkeit erheben, so gelten die angeführten Erklärungen und Leistungen als genehmigt.
+ecetra Central European e-Finance AG | Mariahilferstraße 121B | A-1060 Wien
+e-mail: info@brokerjet.at | Fax: +43-1-53689-13550 | www.ecetra.com
+Sitz Wien | Handelsgericht Wien | FB-Nr. 193944m | DVR 1052322 | UID ATU49227901
+Ein Unternehmen der ERSTE BANK GRUPPE
