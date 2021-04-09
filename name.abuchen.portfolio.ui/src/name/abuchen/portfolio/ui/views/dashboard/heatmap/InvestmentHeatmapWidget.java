@@ -27,10 +27,10 @@ public class InvestmentHeatmapWidget extends AbstractHeatmapWidget<Long>
 {
     enum EarningType
     {
-        EARNINGS("Investitionen", //$NON-NLS-1$
-                        t -> t.getType() == AccountTransaction.Type.BUY), //
-        DIVIDENDS("Investitionen minus Verkäufe", t -> t.getType() == AccountTransaction.Type.BUY || t.getType() == AccountTransaction.Type.SELL);
         
+        INVESTMENTS_MINUS_REVENUE(Messages.LabelHeatmapInvestmentsNoSellings, 
+                        t -> t.getType() == AccountTransaction.Type.BUY || t.getType() == AccountTransaction.Type.SELL),
+        INVESTMENTS(Messages.LabelHeatmapInvestmentsDirect,t -> t.getType() == AccountTransaction.Type.BUY);
 
         private String label;
         private Predicate<AccountTransaction> predicate;
@@ -188,13 +188,16 @@ public class InvestmentHeatmapWidget extends AbstractHeatmapWidget<Long>
                             int row = t.getDateTime().getYear() - startYear;
                             int col = t.getDateTime().getMonth().getValue() - 1;
 
+                                                        
                             Long value = converter.convert(t.getDateTime(), grossNet.getValue(t)).getAmount();
-                            if (t.getType().isDebit())
+                            if (t.getType() == AccountTransaction.Type.SELL)
+                            {
                                 value = -value;
-
+                            }
+                            
                             Long oldValue = model.getRow(row).getData(col);
 
-                            model.getRow(row).setData(col, -(oldValue + value));
+                            model.getRow(row).setData(col, oldValue + value);
                         });
 
         // sum
