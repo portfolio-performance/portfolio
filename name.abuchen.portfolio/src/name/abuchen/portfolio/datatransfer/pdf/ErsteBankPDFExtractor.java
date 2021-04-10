@@ -71,12 +71,25 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                     }
                 })
 
+                // Wertpapier: MORGAN ST., DEAN W. FX-Kommission: USD 3,75-
+                // DL-01 WP-Kommission: USD 22,67-
+                // WP-Kenn-Nr. : US6174464486
+                .section("name", "name1", "isin").optional()
+                .match("^Wertpapier: (?<name>.*) (Tradinggeb.hren|WP-Kommission|Gesamtbetrag|Devisenprovision|FX-Kommission): [\\w]{3} [.,\\d]+[-]?$")
+                .match("(?<name1>.*) (Tradinggeb.hren|WP-Kommission|Gesamtbetrag|Devisenprovision|FX-Kommission): [\\w]{3} [.,\\d]+[-]?")
+                .match("^WP-Kenn-Nr.* (?<isin>[\\w]{12})$")
+                .assign((t, v) -> {
+                    if (!v.get("name1").startsWith("WP-Kommission"))
+                        v.put("name", v.get("name") + " " + v.get("name1"));
+                    t.setSecurity(getOrCreateSecurity(v));
+                })
+
                 // Wertpapier: VOESTALPINE AG AKT. Tradinggebühren: EUR 9,99
                 // O.N.
                 // Gesamtbetrag: EUR 3.217,22
                 // WP-Kenn-Nr.: AT0000937503
                 .section("name", "name1", "isin").optional()
-                .match("^Wertpapier: (?<name>.*) (Tradinggeb.hren|WP-Kommission|Gesamtbetrag|Devisenprovision): [\\w]{3} [.,\\d]+[-]?$")
+                .match("^Wertpapier: (?<name>.*) (Tradinggeb.hren|WP-Kommission|Gesamtbetrag|Devisenprovision|FX-Kommission): [\\w]{3} [.,\\d]+[-]?$")
                 .match("(?<name1>.*)$")
                 .match("^WP-Kenn-Nr.* (?<isin>[\\w]{12})$")
                 .assign((t, v) -> {
@@ -88,8 +101,17 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                 // Wertpapier: EVN STAMMAKTIEN O.N. WP-Kommission: EUR 9,99
                 // WP-Kenn-Nr. : AT0000741053
                 .section("name", "isin").optional()
-                .match("^Wertpapier: (?<name>.*) (Tradinggeb.hren|WP-Kommission|Gesamtbetrag|Devisenprovision): [\\w]{3} [.,\\d]+[-]?$")
+                .match("^Wertpapier: (?<name>.*) (Tradinggeb.hren|WP-Kommission|Gesamtbetrag|Devisenprovision|FX-Kommission): [\\w]{3} [.,\\d]+[-]?$")
                 .match("^WP-Kenn-Nr.* (?<isin>[\\w]{12})$")
+                .assign((t, v) -> {
+                    t.setSecurity(getOrCreateSecurity(v));
+                })
+
+                // Wertpapier: CATERPILLAR INC. DL 1 FX-Kommission: USD 5,24
+                // WP-Kenn-Nr. : US1491231015 WP-Kommission: USD 25,62
+                .section("name", "isin").optional()
+                .match("^Wertpapier: (?<name>.*) (Tradinggeb.hren|WP-Kommission|Gesamtbetrag|Devisenprovision|FX-Kommission): [\\w]{3} [.,\\d]+[-]?$")
+                .match("^WP-Kenn-Nr.* (?<isin>[\\w]{12}) (Tradinggeb.hren|WP-Kommission|Gesamtbetrag|Devisenprovision|FX-Kommission): [\\w]{3} [.,\\d]+[-]?$")
                 .assign((t, v) -> {
                     t.setSecurity(getOrCreateSecurity(v));
                 })
@@ -100,7 +122,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                 .section("name", "name1", "isin").optional()
                 .match("^Wertpapier: (?<name>.*)$")
                 .match("(?<name1>.*)$")
-                .match("^WP-Kenn-Nr.* (?<isin>[\\w]{12}) (Tradinggeb.hren|WP-Kommission|Gesamtbetrag|Devisenprovision): [\\w]{3} [.,\\d]+[-]?$")
+                .match("^WP-Kenn-Nr.* (?<isin>[\\w]{12}) (Tradinggeb.hren|WP-Kommission|Gesamtbetrag|Devisenprovision|FX-Kommission): [\\w]{3} [.,\\d]+[-]?$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("WP-Kenn-Nr.*"))
                         v.put("name", v.get("name") + " " + v.get("name1"));
@@ -152,6 +174,46 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(v.get("currency"));
+                })
+
+                // Börse: New York Stock Exchange Kurswert: USD 2.069,90
+                // Valutatag: 08. Dezember 2009 Devisenkurs: 0,6654265
+                .section("currency", "amount", "fxcurrency", "fxamount", "exchangeRate").optional()
+                .match("^.* Kurswert: (?<fxcurrency>[\\w]{3}) (?<fxamount>[.,\\d]+)[-]?$")
+                .match("^(.*)?Devisenkurs: (?<exchangeRate>[.,\\d]+)$")
+                .match("^(.*)?Gesamtbetrag : (?<currency>[\\w]{3}) (?<amount>[.,\\d]+)$")
+                .assign((t, v) -> {
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(v.get("currency"));
+                    
+                    // read the forex currency, exchange rate and gross
+                    // amount in forex currency
+                    String forex = asCurrencyCode(v.get("fxcurrency"));
+                    if (t.getPortfolioTransaction().getSecurity().getCurrencyCode().equals(forex))
+                    {
+                        BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                        BigDecimal reverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
+                                        RoundingMode.HALF_DOWN);
+
+                        // gross given in forex currency
+                        long fxAmount = asAmount(v.get("fxamount"));
+                        long amount = reverseRate.multiply(BigDecimal.valueOf(fxAmount))
+                                        .setScale(0, RoundingMode.HALF_DOWN).longValue();
+
+                        Unit grossValue = new Unit(Unit.Type.GROSS_VALUE,
+                                        Money.of(t.getPortfolioTransaction().getCurrencyCode(), amount),
+                                        Money.of(forex, fxAmount), reverseRate);
+
+                        t.getPortfolioTransaction().addUnit(grossValue);
+                    }
+                })
+
+                // Valutatag: 08. Dezember 2009 Devisenkurs: 0,6654265
+                .section("exchangeRate").optional()
+                .match("^(.*)?Devisenkurs: (?<exchangeRate>[.,\\d]+)$")
+                .assign((t, v) -> {
+                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
                 })
 
                 .wrap(BuySellEntryItem::new);
@@ -378,17 +440,22 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
 
                 // Wertpapier: VOESTALPINE AG AKT. Tradinggebühren: EUR 9,99
                 .section("currency", "fee").optional()
-                .match(".* Tradinggeb.hren: (?<currency>[\\w]{3}) (?<fee>[\\d.-]+,\\d+)[-]?")
+                .match(".* Tradinggeb.hren: (?<currency>[\\w]{3}) (?<fee>[.,\\d]+)[-]?")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Wertpapier: BAY.MOTOREN WERKE AG WP-Kommission: EUR 9,99
                 .section("currency", "fee").optional()
-                .match(".* WP-Kommission: (?<currency>[\\w]{3}) (?<fee>[\\d.-]+,\\d+)[-]?")
+                .match(".* WP-Kommission: (?<currency>[\\w]{3}) (?<fee>[.,\\d]+)[-]?")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+
+                // Wertpapier: CATERPILLAR INC. DL 1 FX-Kommission: USD 5,24
+                .section("currency", "fee").optional()
+                .match(".* FX-Kommission: (?<currency>[\\w]{3}) (?<fee>[.,\\d]+)[-]?")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Wertpapier: INVESCO ASIAN INF. A Devisenprovision: USD 0,44
                 .section("currency", "fee").optional()
-                .match(".* Devisenprovision: (?<currency>[\\w]{3}) (?<fee>[\\d.-]+,\\d+)[-]?")
+                .match(".* Devisenprovision: (?<currency>[\\w]{3}) (?<fee>[.,\\d]+)[-]?")
                 .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
