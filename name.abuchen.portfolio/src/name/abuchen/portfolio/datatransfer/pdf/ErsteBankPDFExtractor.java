@@ -181,7 +181,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                 .section("currency", "amount", "fxcurrency", "fxamount", "exchangeRate").optional()
                 .match("^.* Kurswert: (?<fxcurrency>[\\w]{3}) (?<fxamount>[.,\\d]+)[-]?$")
                 .match("^(.*)?Devisenkurs: (?<exchangeRate>[.,\\d]+)$")
-                .match("^(.*)?Gesamtbetrag : (?<currency>[\\w]{3}) (?<amount>[.,\\d]+)$")
+                .match("^(.*)?Gesamtbetrag[\\s+]?: (?<currency>[\\w]{3}) (?<amount>[.,\\d]+)$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(v.get("currency"));
