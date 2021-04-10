@@ -584,6 +584,73 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf18() // NOSONAR
+    {
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexDegiroSammelabrechnungKauf18.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check securities
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getIsin(), is("US17275R1023"));
+        assertThat(security.getName(), is("CISCO SYSTEMS    DL-,001"));
+        assertThat(security.getWkn(), is("878841"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        item = results.stream().filter(i -> i instanceof SecurityItem).skip(1).findFirst();
+        assertThat(item.isPresent(), is(true));
+        security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getIsin(), is("US88339J1051"));
+        assertThat(security.getName(), is("THE TRA.DESK A DL-,000001"));
+        assertThat(security.getWkn(), is("A2ARCV"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check 1st buy sell transactions
+        Optional<Item> t = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        assertThat(t.isPresent(), is(true));
+        assertThat(t.get().getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry entry = (BuySellEntry) t.get().getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-09T17:40")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(41)));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1796.12))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.90 + 2.00))));
+
+        // check 2nd buy sell transactions
+        t = results.stream().filter(i -> i instanceof BuySellEntryItem).skip(1).findFirst();
+        assertThat(t.isPresent(), is(true));
+        assertThat(t.get().getSubject(), instanceOf(BuySellEntry.class));
+        entry = (BuySellEntry) t.get().getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-09T17:37")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3)));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1737.50))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.90 + 2.00))));
+    }
+
+    @Test
     public void testKontoauszug()
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
