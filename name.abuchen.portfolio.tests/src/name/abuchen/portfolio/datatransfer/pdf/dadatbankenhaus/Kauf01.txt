@@ -1,0 +1,40 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Abrechnungsauskunft
+45790178-17.2.2021
+Depot-Nr.: XXXXXXXXXXX
+VORNAME NACHNAME                 
+01/5020
+DADAT-Bank                         
+Herrn
+VORNAME NACHNAME
+STRASSE
+PLZ ORT                                                                                                                                                                                                         
+Wir haben für Sie am 17.2.2021 unten angeführtes Geschäft abgerechnet:
+Geschäftsart: Kauf
+Auftrags-Nr.: 45247499-17.2.2021
+Auftragseingang: 17.2.2021-20:49:53
+Zugang: 3 Stk
+Titel: US09247X1019  B L A C K R O C K  I NC.                     
+Reg. Shares Class A DL -,01        
+Kurs: 600 EUR 
+Handelsplatz: Außerbörslich
+Handelszeit: 17.2.2021 um 20:49:54 Uhr
+Verwahrart: WR
+Positionsdaten: Loco: München                            
+Kurswert: -1.800,-- EUR 
+Zu Lasten IBAN IBAN-NR -1.800,-- EUR 
+Valuta 19.2.2021
+Schlusstag: 17.2.2021
+Kassatag: 19.2.2021
+Bestand nach Buchung:
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden 
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 3 Stk
+steuerlicher Anschaffungswert: 1.800,-- EUR
+Freundliche Grüße
+DADAT - Bankhaus Schelhammer & Schattera AG
+16.3.2021 Seite 1
+DVR 0060011 ,HG WIEN ,FN58248i, Irrtum vorbehalten! Dieser Beleg wird von der Bank
+nicht unterschrieben!
+Doknr: ON00-045-0000000001
