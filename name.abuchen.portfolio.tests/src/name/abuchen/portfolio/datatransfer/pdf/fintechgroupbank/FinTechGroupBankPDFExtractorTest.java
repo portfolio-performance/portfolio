@@ -67,58 +67,63 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertFourthTransaction(results.stream().filter(i -> i instanceof TransactionItem) //
                         .collect(Collectors.toList()).get(0));
-
     }
 
     private void assertFirstTransaction(Optional<Item> item)
     {
         assertThat(item.isPresent(), is(true));
         BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
+        PortfolioTransaction transaction = entry.getPortfolioTransaction();
 
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(transaction.getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 5893_10L)));
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2014-01-28T12:50")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(150)));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 5_90L)));
-        assertThat(entry.getPortfolioTransaction().getGrossPricePerShare(),
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2014-01-28T12:50")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(150)));
+        assertThat(transaction.getGrossPricePerShare(),
                         is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(39.248))));
+
+        checkBuySellValues(transaction, CurrencyUnit.EUR, 5887.2, 5893.1, 0, 5.9);
     }
 
     private void assertSecondTransaction(Item item)
     {
         assertThat(item.getSubject(), instanceOf(BuySellEntry.class));
         BuySellEntry entry = (BuySellEntry) item.getSubject();
+        PortfolioTransaction transaction = entry.getPortfolioTransaction();
 
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(transaction.getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 5954_80L)));
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2014-01-28T12:58")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 5_90L)));
-        assertThat(entry.getPortfolioTransaction().getGrossPricePerShare(),
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2014-01-28T12:58")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(100)));
+        assertThat(transaction.getGrossPricePerShare(),
                         is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(59.489))));
+
+        checkBuySellValues(transaction, CurrencyUnit.EUR, 5948.9, 5954.8, 0, 5.9);
     }
 
     private void assertThirdTransaction(Item item)
     {
         assertThat(item.getSubject(), instanceOf(BuySellEntry.class));
         BuySellEntry entry = (BuySellEntry) item.getSubject();
+        PortfolioTransaction tx = entry.getPortfolioTransaction();
 
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(tx.getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 5943_00L)));
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2014-01-28T12:58")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 5_90L)));
+        assertThat(tx.getDateTime(), is(LocalDateTime.parse("2014-01-28T12:58")));
+        assertThat(tx.getShares(), is(Values.Share.factorize(100)));
+
         // keine Steuer, sondern Steuererstattung!
         // assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
         // is(Money.of(CurrencyUnit.EUR, 100_00L)));
-        assertThat(entry.getPortfolioTransaction().getGrossPricePerShare(),
-                        is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(59.489))));
+
+        assertThat(tx.getGrossPricePerShare(), is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(59.489))));
+
+        // net value here is broken due to the tax refunds - it should be 6043 instead of 5943
+        // see the commented assert above
+        checkBuySellValues(tx, CurrencyUnit.EUR, 5948.9, 5943, 0, 5.9);
     }
 
     private void assertFourthTransaction(Item item)
@@ -182,11 +187,11 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(50.30)));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-12-03T13:59")));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(5.90))));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(10)));
+
+        // net value (44.4 is different than in the test file, but the math in the file doesn't match?)
+        checkBuySellValues(entry.getPortfolioTransaction(), CurrencyUnit.EUR, 44.40, 50.3, 0, 5.9);
     }
 
     @Test
@@ -211,10 +216,10 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(PortfolioTransaction.Type.BUY));
 
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(1050)));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-12-15T00:00")));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0))));
         assertThat(transaction.getShares(), is(Values.Share.factorize(19.334524)));
+
+        checkBuySellValues(transaction, CurrencyUnit.EUR, 1050, 1050, 0, 0);
     }
 
     @Test
@@ -239,10 +244,10 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(PortfolioTransaction.Type.BUY));
 
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(800)));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-06-16T00:00")));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0))));
         assertThat(transaction.getShares(), is(Values.Share.factorize(13.268957)));
+
+        checkBuySellValues(transaction, CurrencyUnit.EUR, 800, 800, 0, 0);
     }
 
     @Test
@@ -266,10 +271,10 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(PortfolioTransaction.Type.BUY));
 
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(1000)));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-06-15T00:00")));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.9))));
         assertThat(transaction.getShares(), is(Values.Share.factorize(9.703363)));
+
+        checkBuySellValues(transaction, CurrencyUnit.EUR, 999.1, 1000, 0, 0.9);
     }
 
     @Test
@@ -292,9 +297,9 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(tx, hasItem(allOf( //
                         hasProperty("dateTime", is(LocalDateTime.parse("2017-11-01T14:41"))), //
-                        hasProperty("type", is(PortfolioTransaction.Type.BUY)), //
-                        hasProperty("monetaryAmount",
-                                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3008.9)))))));
+                        hasProperty("type", is(PortfolioTransaction.Type.BUY)))));
+
+        checkBuySellValues(tx.get(0), CurrencyUnit.EUR, 3003, 3008.9, 0, 5.9);
     }
 
     @Test
@@ -317,8 +322,9 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(tx, hasItem(allOf( //
                         hasProperty("dateTime", is(LocalDateTime.parse("2018-01-09T15:00"))), //
-                        hasProperty("type", is(PortfolioTransaction.Type.BUY)), //
-                        hasProperty("monetaryAmount", is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(6.16)))))));
+                        hasProperty("type", is(PortfolioTransaction.Type.BUY)))));
+
+        checkBuySellValues(tx.get(0), CurrencyUnit.EUR, 6.16, 6.16, 0, 0);
     }
 
     @Test
@@ -342,15 +348,15 @@ public class FinTechGroupBankPDFExtractorTest
         item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
         assertThat(item.isPresent(), is(true));
         BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
+        PortfolioTransaction transaction = entry.getPortfolioTransaction();
 
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(transaction.getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(2.72)));
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-01-09T15:00")));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0))));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.025361)));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-01-09T15:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(0.025361)));
+
+        checkBuySellValues(transaction, CurrencyUnit.EUR, 2.72, 2.72, 0, 0);
     }
 
     @Test
@@ -371,15 +377,15 @@ public class FinTechGroupBankPDFExtractorTest
         Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
         assertThat(item.isPresent(), is(true));
         BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
+        PortfolioTransaction transaction = entry.getPortfolioTransaction();
 
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(transaction.getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(1000.00)));
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-01-02T00:00")));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0))));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(7.979324)));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-01-02T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(7.979324)));
+
+        checkBuySellValues(transaction, CurrencyUnit.EUR, 1000, 1000, 0, 0);
     }
 
     @Test
@@ -400,15 +406,15 @@ public class FinTechGroupBankPDFExtractorTest
         Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
         assertThat(item.isPresent(), is(true));
         BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
+        PortfolioTransaction transaction = entry.getPortfolioTransaction();
 
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(transaction.getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(1000.00)));
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-01-02T00:00")));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(1.5))));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(22.973458)));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-01-02T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(22.973458)));
+
+        checkBuySellValues(transaction, CurrencyUnit.EUR, 998.5, 1000, 0, 1.5);
     }
 
     @Test
@@ -429,15 +435,15 @@ public class FinTechGroupBankPDFExtractorTest
         Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
         assertThat(item.isPresent(), is(true));
         BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
+        PortfolioTransaction transaction = entry.getPortfolioTransaction();
 
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(transaction.getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(1023.90)));
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-08-13T16:20")));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(3.9))));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2000)));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-08-13T16:20")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(2000)));
+
+        checkBuySellValues(transaction, CurrencyUnit.EUR, 1020, 1023.9, 0, 3.9);
     }
 
     @Test
@@ -458,15 +464,15 @@ public class FinTechGroupBankPDFExtractorTest
         Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
         assertThat(item.isPresent(), is(true));
         BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
+        PortfolioTransaction transaction = entry.getPortfolioTransaction();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(52.50)));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-01-03T00:00")));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.0))));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.43414)));
+
+        checkBuySellValues(transaction, CurrencyUnit.EUR, 52.5, 52.5, 0, 0);
     }
 
     @Test
@@ -487,15 +493,15 @@ public class FinTechGroupBankPDFExtractorTest
         Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
         assertThat(item.isPresent(), is(true));
         BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
+        PortfolioTransaction transaction = entry.getPortfolioTransaction();
 
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(transaction.getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(1279.55)));
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-01-17T17:52")));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(8.61))));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(61)));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-01-17T17:52")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(61)));
+
+        checkBuySellValues(transaction, CurrencyUnit.EUR, 1270.94, 1279.55, 0, 8.61);
     }
 
     @Test
@@ -517,15 +523,15 @@ public class FinTechGroupBankPDFExtractorTest
         Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
         assertThat(item.isPresent(), is(true));
         BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
+        PortfolioTransaction transaction = entry.getPortfolioTransaction();
 
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(transaction.getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(760.09)));
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-04-10T17:30")));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(8.41))));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(29)));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-04-10T17:30")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(29)));
+
+        checkBuySellValues(transaction, CurrencyUnit.EUR, 751.68, 760.09, 0, 8.41);
     }
 
     @Test
@@ -574,13 +580,15 @@ public class FinTechGroupBankPDFExtractorTest
         Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
         assertThat(item.isPresent(), is(true));
         BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
+        PortfolioTransaction transaction = entry.getPortfolioTransaction();
 
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(transaction.getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(250.00)));
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-08-01T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.460378)));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-08-01T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(2.460378)));
+
+        checkBuySellValues(transaction, CurrencyUnit.EUR, 250, 250, 0, 0);
     }
 
     @Test
@@ -604,7 +612,6 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-01-29T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 1100_00L)));
-
     }
 
     @Test
@@ -1204,15 +1211,15 @@ public class FinTechGroupBankPDFExtractorTest
         Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
         assertThat(item.isPresent(), is(true));
         BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
+        PortfolioTransaction transaction = entry.getPortfolioTransaction();
 
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(transaction.getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(16508.16)));
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-01-22T16:14")));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(5.90))));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(250)));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-01-22T16:14")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(250)));
+
+        checkBuySellValues(transaction, "EUR", 16514.06, 16508.16, 0, 5.9);
     }
 
     @Test
@@ -1233,15 +1240,18 @@ public class FinTechGroupBankPDFExtractorTest
         Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
         assertThat(item.isPresent(), is(true));
         BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
+        PortfolioTransaction transaction = entry.getPortfolioTransaction();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(10.12)));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-12-22T19:51")));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(5.90))));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1)));
+
+        // the math here doesn't match with the file, it is 16.02 instead of 10.75
+        // what is wrong, the file or the code?
+        checkBuySellValues(transaction, "EUR", 16.02, 10.12, 0, 5.9);
     }
 
     @Test
@@ -1262,15 +1272,15 @@ public class FinTechGroupBankPDFExtractorTest
         Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
         assertThat(item.isPresent(), is(true));
         BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
+        PortfolioTransaction transaction = entry.getPortfolioTransaction();
 
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(transaction.getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(4840.15)));
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-07-04T14:23")));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(5.90))));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(121)));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-07-04T14:23")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(121)));
+
+        checkBuySellValues(transaction, "EUR", 4846.05, 4840.15, 0, 5.9);
     }
 
     @Test
@@ -1296,10 +1306,9 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(tx, hasItem(allOf( //
                         hasProperty("dateTime", is(LocalDateTime.parse("2018-01-09T15:00"))), //
-                        hasProperty("type", is(PortfolioTransaction.Type.SELL)), //
-                        hasProperty("monetaryAmount", is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.95)))))));
+                        hasProperty("type", is(PortfolioTransaction.Type.SELL)))));
 
-        assertThat(tx.get(0).getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0))));
+        checkBuySellValues(tx.get(0), "EUR", 0.95, 0.95, 0, 0);
     }
 
     @Test
@@ -1327,7 +1336,7 @@ public class FinTechGroupBankPDFExtractorTest
                         hasProperty("dateTime", is(LocalDateTime.parse("2019-02-06T00:00"))), //
                         hasProperty("type", is(PortfolioTransaction.Type.SELL)))));
 
-        checkValues(tx.get(0), CurrencyUnit.EUR, 15.38, 9.48, 0, 5.9);
+        checkBuySellValues(tx.get(0), CurrencyUnit.EUR, 15.38, 9.48, 0, 5.9);
     }
 
     @Test
@@ -1355,7 +1364,7 @@ public class FinTechGroupBankPDFExtractorTest
                         hasProperty("dateTime", is(LocalDateTime.parse("2019-04-09T16:52"))), //
                         hasProperty("type", is(PortfolioTransaction.Type.SELL)))));
 
-        checkValues(tx.get(0), CurrencyUnit.EUR, 4573.8, 4416.52, 148.87, 8.41);
+        checkBuySellValues(tx.get(0), CurrencyUnit.EUR, 4573.8, 4416.52, 148.87, 8.41);
     }
 
     @Test
@@ -1383,7 +1392,7 @@ public class FinTechGroupBankPDFExtractorTest
                         hasProperty("dateTime", is(LocalDateTime.parse("2019-06-20T09:08"))), //
                         hasProperty("type", is(PortfolioTransaction.Type.SELL))))); //
 
-        checkValues(tx.get(0), CurrencyUnit.EUR, 9538.22, 9529.81, 0, 8.41);
+        checkBuySellValues(tx.get(0), CurrencyUnit.EUR, 9538.22, 9529.81, 0, 8.41);
     }
 
     @Test
@@ -1412,19 +1421,17 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(tx, hasItem(allOf( //
                         hasProperty("dateTime", is(LocalDateTime.parse("2020-11-30T18:09"))), //
-                        hasProperty("type", is(PortfolioTransaction.Type.SELL)), //
-                        hasProperty("monetaryAmount",
-                                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(4773.36)))))));
-        assertThat(tx.get(0).getUnitSum(Unit.Type.FEE), is(Money.of("USD", Values.Amount.factorize(7.14))));
-        assertThat(tx.get(0).getUnitSum(Unit.Type.TAX), is(Money.of("USD", Values.Amount.factorize(0.00))));
+                        hasProperty("type", is(PortfolioTransaction.Type.SELL)))));
+
+        checkBuySellValues(tx.get(0), CurrencyUnit.USD, 4780.5, 4773.36, 0, 7.14);
 
         assertThat(tx, hasItem(allOf( //
                         hasProperty("dateTime", is(LocalDateTime.parse("2020-11-30T18:09"))), //
-                        hasProperty("type", is(PortfolioTransaction.Type.SELL)), //
-                        hasProperty("monetaryAmount",
-                                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(955.98)))))));
-        assertThat(tx.get(1).getUnitSum(Unit.Type.FEE), is(Money.of("USD", Values.Amount.factorize(0.02))));
-        assertThat(tx.get(1).getUnitSum(Unit.Type.TAX), is(Money.of("USD", Values.Amount.factorize(1.00))));
+                        hasProperty("type", is(PortfolioTransaction.Type.SELL)))));
+
+        // test file has 956 as the gross value, while the calculation here says 957
+        // what is wrong, code or file?
+        checkBuySellValues(tx.get(1), CurrencyUnit.USD, 957, 955.98, 1, 0.02);
     }
 
     @Test
@@ -1450,17 +1457,15 @@ public class FinTechGroupBankPDFExtractorTest
         Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
         assertThat(item.orElseThrow(IllegalArgumentException::new).getSubject(), instanceOf(BuySellEntry.class));
         BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
+        PortfolioTransaction transaction = entry.getPortfolioTransaction();
 
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(transaction.getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(5681.04)));
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-02-19T09:22")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(425)));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), 
-                        is(Money.of("EUR", Values.Amount.factorize(9.90 + 2.51))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX), 
-                        is(Money.of("EUR", Values.Amount.factorize(305.85))));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-19T09:22")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(425)));
+
+        checkBuySellValues(transaction, CurrencyUnit.EUR, 5999.3, 5681.04, 305.85, 9.90 + 2.51);
     }
 
     @Test
@@ -1951,7 +1956,7 @@ public class FinTechGroupBankPDFExtractorTest
         return security;
     }
 
-    private void checkValues(PortfolioTransaction tx, String currency, double gross, double net, double tax, double fee)
+    private void checkBuySellValues(PortfolioTransaction tx, String currency, double gross, double net, double tax, double fee)
     {
         assertThat(tx.getMonetaryAmount(),       is(Money.of(currency, Values.Amount.factorize(net))));
         assertThat(tx.getGrossValue(),           is(Money.of(currency, Values.Amount.factorize(gross))));
