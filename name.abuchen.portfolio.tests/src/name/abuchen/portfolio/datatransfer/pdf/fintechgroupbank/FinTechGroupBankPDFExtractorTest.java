@@ -1325,9 +1325,9 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(tx, hasItem(allOf( //
                         hasProperty("dateTime", is(LocalDateTime.parse("2019-02-06T00:00"))), //
-                        hasProperty("type", is(PortfolioTransaction.Type.SELL)), //
-                        hasProperty("monetaryAmount", is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9.48)))))));
-        assertThat(tx.get(0).getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(5.9))));
+                        hasProperty("type", is(PortfolioTransaction.Type.SELL)))));
+
+        checkValues(tx.get(0), CurrencyUnit.EUR, 15.38, 9.48, 0, 5.9);
     }
 
     @Test
@@ -1355,7 +1355,7 @@ public class FinTechGroupBankPDFExtractorTest
                         hasProperty("dateTime", is(LocalDateTime.parse("2019-04-09T16:52"))), //
                         hasProperty("type", is(PortfolioTransaction.Type.SELL)))));
 
-        checkValues(tx.get(0), 4416.52, 4573.8, 148.87, 8.41);
+        checkValues(tx.get(0), CurrencyUnit.EUR, 4573.8, 4416.52, 148.87, 8.41);
     }
 
     @Test
@@ -1383,19 +1383,7 @@ public class FinTechGroupBankPDFExtractorTest
                         hasProperty("dateTime", is(LocalDateTime.parse("2019-06-20T09:08"))), //
                         hasProperty("type", is(PortfolioTransaction.Type.SELL))))); //
 
-        checkValues(tx.get(0), 9529.81, 9538.22, 0, 8.41);
-    }
-
-    public void checkValues(PortfolioTransaction tx, double monetary, double gross, double tax, double fee)
-    {
-        assertThat(tx.getMonetaryAmount(),
-                is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(monetary))));
-        assertThat(tx.getGrossValue(),
-                is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(gross))));
-        assertThat(tx.getUnitSum(Unit.Type.TAX),
-                is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(tax))));
-        assertThat(tx.getUnitSum(Unit.Type.FEE),
-                is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(fee))));
+        checkValues(tx.get(0), CurrencyUnit.EUR, 9538.22, 9529.81, 0, 8.41);
     }
 
     @Test
@@ -1961,5 +1949,13 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getName(), is(name));
         assertThat(security.getCurrencyCode(), is(currencyUnit));
         return security;
+    }
+
+    private void checkValues(PortfolioTransaction tx, String currency, double gross, double net, double tax, double fee)
+    {
+        assertThat(tx.getMonetaryAmount(),       is(Money.of(currency, Values.Amount.factorize(net))));
+        assertThat(tx.getGrossValue(),           is(Money.of(currency, Values.Amount.factorize(gross))));
+        assertThat(tx.getUnitSum(Unit.Type.TAX), is(Money.of(currency, Values.Amount.factorize(tax))));
+        assertThat(tx.getUnitSum(Unit.Type.FEE), is(Money.of(currency, Values.Amount.factorize(fee))));
     }
 }
