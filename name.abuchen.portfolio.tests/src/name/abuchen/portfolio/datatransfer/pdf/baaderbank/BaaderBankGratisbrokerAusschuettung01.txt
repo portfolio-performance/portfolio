@@ -1,0 +1,52 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Seite 1/2
+München
+17.03.2021
+DonauCapital Wertpapier GmbH
+GRATISBROKER GmbH 
+wg. GRATISBROKER GmbH service@gratisbroker.de
+Passauer Str. 5
+Vorname Nachname
+94161 Ruderting Stamm-Nr.: 1111111    Portfolio: 1
+Depot-Nr.: 1111111111
+Vorgangs-Nr.: 1111111
+Referenz-Nr.: 11111111
+Ausschüttung aus REIT KOPIE
+Ex-Tag: 12.03.2021
+Nominale ISIN: DE000A14KRD3 WKN: A14KRD Ausschüttung
+STK 35 Deutsche Konsum REIT-AG EUR 0,40 p.STK
+Zahlungszeitraum: 01.10.2019 - 30.09.2020 
+Zahltag: 16.03.2021
+Bruttobetrag EUR 14,00
+Zu Gunsten Konto 11111111111 Valuta: 16.03.2021 EUR 14,00
+Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 67 AWV.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+GRATISBROKER GmbH | Geschäftsführer: Malte Rubruck, Stefan Mross, Philipp Röben | HRB 242583 Amtsgericht München | USt-IdNr. DE319411410
+GRATISBROKER GmbH erbringt Anlagevermittlung als vertraglich gebundener Vermittler der DonauCapital Wertpapier GmbH
+Baader Bank Aktiengesellschaft Weihenstephaner Straße 4 85716 Unterschleißheim Deutschland T 00800 00 222 337* F +49 89 5150 2442
+service@baaderbank.de www.baaderbank.de 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft. DCUP-050.041
+Ausschüttung aus REIT KOPIE
+Fortsetzung: Seite 2/2
+Darstellung der steuerlichen Berechnungsgrundlagen:
+Merkposten / Steuertöpfe vorher Erhöhung/Reduktion nachher
+inl. Div. REIT
+Freistellungsauftrag EUR 22,94 EUR 14,00 - EUR 8,94
+inl. Div. REIT
+Ausnutzung FSA EUR 21,87 - EUR 14,00 - EUR 35,87 -
+Bemessungsgrundlagen Steuerpflicht brutto Steuerpflicht netto
+inl. Div. REIT EUR 14,00 EUR 0,00
+AbgSt inl. Div. Zahlstelle ohne KiSt EUR 14,00 EUR 0,00
+Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 67 AWV.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+GRATISBROKER GmbH | Geschäftsführer: Malte Rubruck, Stefan Mross, Philipp Röben | HRB 242583 Amtsgericht München | USt-IdNr. DE319411410
+GRATISBROKER GmbH erbringt Anlagevermittlung als vertraglich gebundener Vermittler der DonauCapital Wertpapier GmbH
+Baader Bank Aktiengesellschaft Weihenstephaner Straße 4 85716 Unterschleißheim Deutschland T 00800 00 222 337* F +49 89 5150 2442
+service@baaderbank.de www.baaderbank.de 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft. DCUP-050.041

@@ -97,13 +97,13 @@ public class TradesTableViewer
             public String getText(Object e)
             {
                 Trade t = (Trade) e;
-                return t.getEnd().isPresent() ? Values.DateTime.format(t.getEnd().get()) : Messages.LabelOpenTrade; // NOSONAR
+                return t.isClosed() ? Values.DateTime.format(t.getEnd().get()) : Messages.LabelOpenTrade; // NOSONAR
             }
 
             @Override
             public Color getBackground(Object e)
             {
-                return ((Trade) e).getEnd().isPresent() ? null : Colors.theme().warningBackground();
+                return ((Trade) e).isClosed() ? null : Colors.theme().warningBackground();
             }
         });
         column.setSorter(ColumnViewerSorter.create(e -> {
@@ -181,6 +181,12 @@ public class TradesTableViewer
         column.setLabelProvider(
                         new MoneyColorLabelProvider(element -> ((Trade) element).getProfitLoss(), view.getClient()));
         column.setSorter(ColumnViewerSorter.create(e -> ((Trade) e).getProfitLoss()));
+        support.addColumn(column);
+        
+        column = new Column("gpl", Messages.ColumnGrossProfitLoss, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setLabelProvider(
+                        new MoneyColorLabelProvider(element -> ((Trade) element).getGrossProfitLoss(), view.getClient()));
+        column.setSorter(ColumnViewerSorter.create(e -> ((Trade) e).getGrossProfitLoss()));
         support.addColumn(column);
 
         column = new Column("holdingperiod", Messages.ColumnHoldingPeriod, SWT.RIGHT, 80); //$NON-NLS-1$

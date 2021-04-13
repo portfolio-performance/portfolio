@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>name.abuchen.portfolio</groupId>
 		<artifactId>portfolio-app</artifactId>
-		<version>0.51.1</version>
+		<version>0.51.4-SNAPSHOT</version>
 		<relativePath>../portfolio-app</relativePath>
 	</parent>
 
@@ -41,7 +41,7 @@
 						<macosx-bundled>true</macosx-bundled>
 					</profileProperties>
 					<extraArtifactRepositoryProperties>
-						<p2.statsURI>https://www.portfolio-report.net/api/stats/update</p2.statsURI>
+						<p2.statsURI>https://api.portfolio-report.net/stats/update</p2.statsURI>
 					</extraArtifactRepositoryProperties>
 				</configuration>
 			</plugin>
