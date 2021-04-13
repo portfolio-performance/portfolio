@@ -1353,11 +1353,21 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(tx, hasItem(allOf( //
                         hasProperty("dateTime", is(LocalDateTime.parse("2019-04-09T16:52"))), //
-                        hasProperty("type", is(PortfolioTransaction.Type.SELL)), //
-                        hasProperty("monetaryAmount",
-                                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4416.52)))))));
-        assertThat(tx.get(0).getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(148.87))));
-        assertThat(tx.get(0).getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(8.41))));
+                        hasProperty("type", is(PortfolioTransaction.Type.SELL)))));
+
+        checkValues(tx.get(0), 4416.52, 4573.8, 148.87, 8.41);
+    }
+
+    public void checkValues(PortfolioTransaction tx, double monetary, double gross, double tax, double fee)
+    {
+        assertThat(tx.getMonetaryAmount(),
+                is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(monetary))));
+        assertThat(tx.getGrossValue(),
+                is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(gross))));
+        assertThat(tx.getUnitSum(Unit.Type.TAX),
+                is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(tax))));
+        assertThat(tx.getUnitSum(Unit.Type.FEE),
+                is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(fee))));
     }
 
     @Test
