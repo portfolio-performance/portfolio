@@ -3,6 +3,7 @@ package name.abuchen.portfolio.model;
 import java.io.Serializable;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -17,6 +18,7 @@ import java.util.stream.Stream;
 
 import com.google.common.base.Strings;
 
+import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.util.Pair;
 
@@ -397,7 +399,8 @@ public final class Security implements Attributable, InvestmentVehicle
         if (newPrices.isEmpty())
             return false;
 
-        LocalDate now = LocalDate.now();
+        LocalDate now = LocalDate.now(ZoneOffset.UTC); // Assumes all quotes are
+                                                       // provided as UTC.
 
         LocalDate last = null;
         if (!this.prices.isEmpty())
@@ -411,6 +414,11 @@ public final class Security implements Attributable, InvestmentVehicle
                 boolean doOverwrite = p.getDate().equals(last);
                 boolean isAdded = addPrice(p, doOverwrite);
                 isUpdated = isUpdated || isAdded;
+            }
+            else
+            {
+                PortfolioLog.error("A security price was not added because its date (" + p.getDate() //$NON-NLS-1$
+                                + ") lies in the future. Does the quote provider provide use UTC timezone?"); //$NON-NLS-1$
             }
         }
         return isUpdated;
