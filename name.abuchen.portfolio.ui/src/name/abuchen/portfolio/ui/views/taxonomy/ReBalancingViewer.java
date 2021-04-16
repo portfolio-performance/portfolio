@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 
 import javax.inject.Inject;
 
@@ -180,7 +181,7 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                 if (security == null || security.getCurrencyCode() == null)
                     return null;
 
-                SecurityPrice price = security.getSecurityPrice(LocalDate.now());
+                SecurityPrice price = security.getSecurityPrice(LocalDate.now(ZoneOffset.UTC));
                 return Values.Quote.format(security.getCurrencyCode(), price.getValue(), getModel().getCurrencyCode());
             }
         });
@@ -226,7 +227,7 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                     return null;
 
                 String priceCurrency = security.getCurrencyCode();
-                long price = security.getSecurityPrice(LocalDate.now()).getValue();
+                long price = security.getSecurityPrice(LocalDate.now(ZoneOffset.UTC)).getValue();
                 long weightedPrice = Math.round(node.getWeight() * price / (double) Classification.ONE_HUNDRED_PERCENT);
                 if (weightedPrice == 0L)
                     return Values.Share.format(0L);
@@ -240,7 +241,7 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                 if (!deltaCurrency.equals(priceCurrency))
                 {
                     delta = getModel().getCurrencyConverter().with(priceCurrency)
-                                    .convert(LocalDate.now(), Money.of(deltaCurrency, delta)).getAmount();
+                                    .convert(LocalDate.now(ZoneOffset.UTC), Money.of(deltaCurrency, delta)).getAmount();
                 }
 
                 long shares = Math

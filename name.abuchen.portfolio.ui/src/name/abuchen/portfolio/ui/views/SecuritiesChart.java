@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAmount;
@@ -328,7 +329,7 @@ public class SecuritiesChart
         addConfigButton(buttons);
 
         Function<TemporalAmount, ChartInterval> nowMinus = temporalAmount -> {
-            LocalDate now = LocalDate.now();
+            LocalDate now = LocalDate.now(ZoneOffset.UTC);
             return new ChartInterval(now.minus(temporalAmount), now);
         };
 
@@ -349,7 +350,7 @@ public class SecuritiesChart
         addButton(buttons, Messages.SecurityTabChart10Y, Messages.SecurityTabChart10YToolTip,
                         s -> nowMinus.apply(Period.ofYears(10)));
         addButton(buttons, Messages.SecurityTabChartYTD, Messages.SecurityTabChartYTDToolTip,
-                        s -> nowMinus.apply(Period.ofDays(LocalDate.now().getDayOfYear() - 1)));
+                        s -> nowMinus.apply(Period.ofDays(LocalDate.now(ZoneOffset.UTC).getDayOfYear() - 1)));
 
         addButton(buttons, Messages.SecurityTabChartHoldingPeriod, Messages.SecurityTabChartHoldingPeriodToolTip, s -> {
             List<TransactionPair<?>> tx = s.getTransactions(client);
@@ -357,11 +358,11 @@ public class SecuritiesChart
                 return null;
 
             Collections.sort(tx, new TransactionPair.ByDate());
-            boolean hasHoldings = ClientSnapshot.create(client, converter, LocalDate.now()).getPositionsByVehicle()
+            boolean hasHoldings = ClientSnapshot.create(client, converter, LocalDate.now(ZoneOffset.UTC)).getPositionsByVehicle()
                             .containsKey(s);
 
             return new ChartInterval(tx.get(0).getTransaction().getDateTime().toLocalDate(),
-                            hasHoldings ? LocalDate.now()
+                            hasHoldings ? LocalDate.now(ZoneOffset.UTC)
                                             : tx.get(tx.size() - 1).getTransaction().getDateTime().toLocalDate());
 
         });
@@ -721,7 +722,7 @@ public class SecuritiesChart
             if (chartIntervalFunction != null)
                 chartInterval = chartIntervalFunction.apply(security);
             if (chartInterval == null)
-                chartInterval = new ChartInterval(LocalDate.now().minusYears(2), LocalDate.now());
+                chartInterval = new ChartInterval(LocalDate.now(ZoneOffset.UTC).minusYears(2), LocalDate.now(ZoneOffset.UTC));
 
             // determine index range for given interval in prices list
 
@@ -1482,7 +1483,7 @@ public class SecuritiesChart
             return Optional.empty();
 
         return getPurchasePrice(new ClientSecurityFilter(security).filter(client),
-                        converter.with(security.getCurrencyCode()), LocalDate.now());
+                        converter.with(security.getCurrencyCode()), LocalDate.now(ZoneOffset.UTC));
     }
 
     private Optional<Double> getPurchasePrice(Client filteredClient, CurrencyConverter currencyConverter,

@@ -8,6 +8,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -265,7 +266,7 @@ public class CrossEntryCheckTest
 
         applyFixes(client, issues);
 
-        ClientSnapshot.create(client, new TestCurrencyConverter(), LocalDate.now());
+        ClientSnapshot.create(client, new TestCurrencyConverter(), LocalDate.now(ZoneOffset.UTC));
     }
 
     private void applyFixes(Client client, List<Issue> issues)

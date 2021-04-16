@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.dialogs;
 
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.Objects;
 import java.util.function.Predicate;
 
@@ -17,7 +18,7 @@ import name.abuchen.portfolio.ui.Messages;
 
 public class DateSelectionDialog extends Dialog
 {
-    private LocalDate selection = LocalDate.now();
+    private LocalDate selection = LocalDate.now(ZoneOffset.UTC);
     private Predicate<LocalDate> validator;
 
     public DateSelectionDialog(Shell parentShell)

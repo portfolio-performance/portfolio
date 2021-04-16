@@ -44,7 +44,7 @@ public final class BitfinexQuoteFeed implements QuoteFeed
     @Override
     public Optional<LatestSecurityPrice> getLatestQuote(Security security)
     {
-        QuoteFeedData data = getHistoricalQuotes(security, false, LocalDate.now());
+        QuoteFeedData data = getHistoricalQuotes(security, false, LocalDate.now(ZoneOffset.UTC));
 
         if (!data.getErrors().isEmpty())
             PortfolioLog.error(data.getErrors());
@@ -73,7 +73,7 @@ public final class BitfinexQuoteFeed implements QuoteFeed
     @Override
     public QuoteFeedData previewHistoricalQuotes(Security security)
     {
-        return getHistoricalQuotes(security, true, LocalDate.now().minusMonths(2));
+        return getHistoricalQuotes(security, true, LocalDate.now(ZoneOffset.UTC).minusMonths(2));
     }
 
     @SuppressWarnings("unchecked")
@@ -143,7 +143,7 @@ public final class BitfinexQuoteFeed implements QuoteFeed
         QuoteFeedData data = new QuoteFeedData();
 
         final Long tickerStartEpochSeconds = start.atStartOfDay(ZoneOffset.UTC).toEpochSecond();
-        final String histLatest = ((start.compareTo(LocalDate.now()) == 0) ? "last" : "hist"); //$NON-NLS-1$ //$NON-NLS-2$
+        final String histLatest = ((start.compareTo(LocalDate.now(ZoneOffset.UTC)) == 0) ? "last" : "hist"); //$NON-NLS-1$ //$NON-NLS-2$
         try
         {
             // Ticker: BTCUSD, IOTUSD, ...

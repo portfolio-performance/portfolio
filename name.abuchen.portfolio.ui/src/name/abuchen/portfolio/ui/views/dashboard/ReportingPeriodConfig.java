@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.views.dashboard;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 
@@ -102,7 +103,7 @@ public class ReportingPeriodConfig implements WidgetConfig
         label.append(Messages.LabelReportingPeriod).append(": "); //$NON-NLS-1$
         label.append(getReportingPeriod().toString());
 
-        Interval interval = getReportingPeriod().toInterval(LocalDate.now());
+        Interval interval = getReportingPeriod().toInterval(LocalDate.now(ZoneOffset.UTC));
         label.append(" (").append(formatter.format(interval.getStart())) //$NON-NLS-1$
                         .append(" - ") //$NON-NLS-1$
                         .append(formatter.format(interval.getEnd())).append(")"); //$NON-NLS-1$

@@ -7,6 +7,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.Month;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -73,9 +74,9 @@ public class YahooFinanceQuoteFeedTest
         LocalDate date = feed.caculateStart(security);
         assertThat(date, equalTo(nineteenHundred));
 
-        security.addPrice(new SecurityPrice(LocalDate.now(), 100));
+        security.addPrice(new SecurityPrice(LocalDate.now(ZoneOffset.UTC), 100));
         date = feed.caculateStart(security);
-        assertThat(date, equalTo(LocalDate.now()));
+        assertThat(date, equalTo(LocalDate.now(ZoneOffset.UTC)));
     }
 
     @Test

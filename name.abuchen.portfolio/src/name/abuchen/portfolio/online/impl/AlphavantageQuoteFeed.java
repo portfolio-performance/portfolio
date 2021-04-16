@@ -7,6 +7,7 @@ import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.Optional;
@@ -157,7 +158,7 @@ public class AlphavantageQuoteFeed implements QuoteFeed
         if (!security.getPrices().isEmpty())
         {
             SecurityPrice lastHistoricalQuote = security.getPrices().get(security.getPrices().size() - 1);
-            int days = Dates.daysBetween(lastHistoricalQuote.getDate(), LocalDate.now());
+            int days = Dates.daysBetween(lastHistoricalQuote.getDate(), LocalDate.now(ZoneOffset.UTC));
             outputSize = days >= DAYS_THRESHOLD ? OutputSize.FULL : OutputSize.COMPACT;
         }
 
@@ -167,7 +168,7 @@ public class AlphavantageQuoteFeed implements QuoteFeed
     @Override
     public QuoteFeedData previewHistoricalQuotes(Security security)
     {
-        LocalDate now = LocalDate.now();
+        LocalDate now = LocalDate.now(ZoneOffset.UTC);
         int days = Dates.daysBetween(now.minusMonths(2), now);
         return getHistoricalQuotes(security, true, days >= DAYS_THRESHOLD ? OutputSize.FULL : OutputSize.COMPACT);
     }

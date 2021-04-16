@@ -12,6 +12,7 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -80,17 +81,17 @@ public class SecurityTest
         Security security = new Security();
         assertThat(security.setLatest(null), is(false));
 
-        LatestSecurityPrice latest = new LatestSecurityPrice(LocalDate.now(), 1);
+        LatestSecurityPrice latest = new LatestSecurityPrice(LocalDate.now(ZoneOffset.UTC), 1);
         assertThat(security.setLatest(latest), is(true));
         assertThat(security.setLatest(latest), is(false));
         assertThat(security.setLatest(null), is(true));
         assertThat(security.setLatest(null), is(false));
 
-        LatestSecurityPrice second = new LatestSecurityPrice(LocalDate.now(), 2);
+        LatestSecurityPrice second = new LatestSecurityPrice(LocalDate.now(ZoneOffset.UTC), 2);
         assertThat(security.setLatest(latest), is(true));
         assertThat(security.setLatest(second), is(true));
 
-        LatestSecurityPrice same = new LatestSecurityPrice(LocalDate.now(), 2);
+        LatestSecurityPrice same = new LatestSecurityPrice(LocalDate.now(ZoneOffset.UTC), 2);
         assertThat(security.setLatest(same), is(false));
     }
 
@@ -167,9 +168,9 @@ public class SecurityTest
 
         assertThat(security.getLatestTwoSecurityPrices().isPresent(), is(false));
 
-        SecurityPrice pYesterday = new SecurityPrice(LocalDate.now().plusDays(-2), 90);
-        SecurityPrice pToday = new LatestSecurityPrice(LocalDate.now(), 100);
-        SecurityPrice pTommorrow = new SecurityPrice(LocalDate.now().plusDays(1), 110);
+        SecurityPrice pYesterday = new SecurityPrice(LocalDate.now(ZoneOffset.UTC).plusDays(-2), 90);
+        SecurityPrice pToday = new LatestSecurityPrice(LocalDate.now(ZoneOffset.UTC), 100);
+        SecurityPrice pTommorrow = new SecurityPrice(LocalDate.now(ZoneOffset.UTC).plusDays(1), 110);
 
         // test that nothing is returned if only the latest security price
         // exists

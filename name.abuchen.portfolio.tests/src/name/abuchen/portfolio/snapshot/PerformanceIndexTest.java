@@ -6,6 +6,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 import org.junit.Test;
 
@@ -28,7 +29,7 @@ public class PerformanceIndexTest
         private PerformanceIndexStub(LocalDate[] dates, long[] totals, double[] delta)
         {
             super(new Client(), new TestCurrencyConverter(),
-                            new ReportingPeriod.LastX(1, 0).toInterval(LocalDate.now()));
+                            new ReportingPeriod.LastX(1, 0).toInterval(LocalDate.now(ZoneOffset.UTC)));
 
             this.dates = dates;
             this.totals = totals;
@@ -78,8 +79,8 @@ public class PerformanceIndexTest
     @Test
     public void testTransactionsOnTheFirstDayOfIntervalAreIncludedInAbsoluteInvestedCapital()
     {
-        LocalDate[] dates = new LocalDate[] { LocalDate.now().minusYears(1),
-                        LocalDate.now().minusYears(1).plusDays(1) };
+        LocalDate[] dates = new LocalDate[] { LocalDate.now(ZoneOffset.UTC).minusYears(1),
+                        LocalDate.now(ZoneOffset.UTC).minusYears(1).plusDays(1) };
         long[] totals = new long[] { 1000, 1100 };
         double[] delta = new double[] { 0, 0.1 };
 
@@ -92,7 +93,7 @@ public class PerformanceIndexTest
         account.addTransaction(new AccountTransaction(LocalDateTime.now().minusYears(1).withHour(10), CurrencyUnit.EUR,
                         Values.Amount.factorize(1), null, AccountTransaction.Type.DEPOSIT));
 
-        account.addTransaction(new AccountTransaction(LocalDate.now().minusYears(1).plusDays(1).atStartOfDay(),
+        account.addTransaction(new AccountTransaction(LocalDate.now(ZoneOffset.UTC).minusYears(1).plusDays(1).atStartOfDay(),
                         CurrencyUnit.EUR, Values.Amount.factorize(1), null, AccountTransaction.Type.DEPOSIT));
 
         Portfolio portfolio = new Portfolio();

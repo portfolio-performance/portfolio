@@ -4,6 +4,7 @@ import java.text.MessageFormat;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
@@ -89,7 +90,7 @@ import name.abuchen.portfolio.money.Money;
         // determine remaining fields
         LocalDateTime date = getDate(Messages.CSVColumn_DateValue, Messages.CSVColumn_Time, rawValues, field2column);
         if (date == null)
-            date = LocalDate.now().atStartOfDay();
+            date = LocalDate.now(ZoneOffset.UTC).atStartOfDay();
 
         String note = getText(Messages.CSVColumn_Note, rawValues, field2column);
 

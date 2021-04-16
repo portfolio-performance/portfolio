@@ -2,6 +2,7 @@ package name.abuchen.portfolio.money.impl;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -12,7 +13,7 @@ import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
 
 public class EmptyExchangeRateTimeSeries implements ExchangeRateTimeSeries
 {
-    private final ExchangeRate exchangeRate = new ExchangeRate(LocalDate.now(), BigDecimal.ONE);
+    private final ExchangeRate exchangeRate = new ExchangeRate(LocalDate.now(ZoneOffset.UTC), BigDecimal.ONE);
     private final String baseCurrency;
     private final String termCurrency;
     

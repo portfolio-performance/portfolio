@@ -69,7 +69,7 @@ public final class FinnhubQuoteFeed implements QuoteFeed
         if (!security.getPrices().isEmpty())
         {
             LocalDate startDate = security.getPrices().get(security.getPrices().size() - 1).getDate();
-            count = Dates.daysBetween(startDate, LocalDate.now()) + 5;
+            count = Dates.daysBetween(startDate, LocalDate.now(ZoneOffset.UTC)) + 5;
         }
 
         return getHistoricalQuotes(security, collectRawResponse, count);

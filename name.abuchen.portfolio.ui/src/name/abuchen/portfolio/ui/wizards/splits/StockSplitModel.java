@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.wizards.splits;
 
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.List;
 
 import name.abuchen.portfolio.model.Client;
@@ -14,7 +15,7 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
 public class StockSplitModel extends BindingHelper.Model
 {
     private Security security;
-    private LocalDate exDate = LocalDate.now();
+    private LocalDate exDate = LocalDate.now(ZoneOffset.UTC);
     private int newShares = 1;
     private int oldShares = 1;
 

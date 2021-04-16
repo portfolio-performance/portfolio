@@ -7,6 +7,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 
 import org.junit.Test;
 
@@ -24,20 +25,20 @@ public class ExchangeRateProviderGBXTest
 
         // default value EUR -> GBP is 0.72666
         ExchangeRateTimeSeries eur_gbx = factory.getTimeSeries("EUR", "GBX");
-        assertThat(eur_gbx.lookupRate(LocalDate.now()).get().getValue(), comparesEqualTo(new BigDecimal("72.666")));
+        assertThat(eur_gbx.lookupRate(LocalDate.now(ZoneOffset.UTC)).get().getValue(), comparesEqualTo(new BigDecimal("72.666")));
 
         // inverse of default EUR -> GBP
         ExchangeRateTimeSeries gbx_eur = factory.getTimeSeries("GBX", "EUR");
-        assertThat(gbx_eur.lookupRate(LocalDate.now()).get().getValue(),
+        assertThat(gbx_eur.lookupRate(LocalDate.now(ZoneOffset.UTC)).get().getValue(),
                         comparesEqualTo(BigDecimal.ONE.divide(new BigDecimal("72.666"), 12, RoundingMode.HALF_DOWN)));
 
         // GBX -> GBP
         ExchangeRateTimeSeries gbx_gbp = factory.getTimeSeries("GBX", "GBP");
-        assertThat(gbx_gbp.lookupRate(LocalDate.now()).get().getValue(), comparesEqualTo(new BigDecimal("0.01")));
+        assertThat(gbx_gbp.lookupRate(LocalDate.now(ZoneOffset.UTC)).get().getValue(), comparesEqualTo(new BigDecimal("0.01")));
 
         // GBP -> GBX
         ExchangeRateTimeSeries gbp_gbx = factory.getTimeSeries("GBP", "GBX");
-        assertThat(gbp_gbx.lookupRate(LocalDate.now()).get().getValue(), comparesEqualTo(new BigDecimal(100.0)));
+        assertThat(gbp_gbx.lookupRate(LocalDate.now(ZoneOffset.UTC)).get().getValue(), comparesEqualTo(new BigDecimal(100.0)));
 
         // GBX -> USD
         // default value EUR -> GBP is 0.72666
@@ -45,14 +46,14 @@ public class ExchangeRateProviderGBXTest
         double calculatedRate = 0.01d * (1 / 0.72666d) * 1.0836d;
 
         ExchangeRateTimeSeries gbx_usd = factory.getTimeSeries("GBX", "USD");
-        assertThat(gbx_usd.lookupRate(LocalDate.now()).get().getValue().doubleValue(),
+        assertThat(gbx_usd.lookupRate(LocalDate.now(ZoneOffset.UTC)).get().getValue().doubleValue(),
                         closeTo(calculatedRate, 0.00000001));
 
         // USD -> GBX
         calculatedRate = (1 / 1.0836d) * 0.72666d * 100;
 
         ExchangeRateTimeSeries usd_gbx = factory.getTimeSeries("USD", "GBX");
-        assertThat(usd_gbx.lookupRate(LocalDate.now()).get().getValue().doubleValue(),
+        assertThat(usd_gbx.lookupRate(LocalDate.now(ZoneOffset.UTC)).get().getValue().doubleValue(),
                         closeTo(calculatedRate, 0.00000001));
 
     }

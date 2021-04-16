@@ -4,6 +4,7 @@ import static name.abuchen.portfolio.ui.util.FormDataFactory.startingWith;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -52,7 +53,7 @@ public class CurrencyConverterTab implements AbstractTabbedView.Tab
         private String baseCurrency = CurrencyUnit.EUR;
         private long termValue;
         private String termCurrency = CurrencyUnit.USD;
-        private LocalDate date = LocalDate.now();
+        private LocalDate date = LocalDate.now(ZoneOffset.UTC);
 
         @Override
         public void applyChanges()

@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.earnings;
 
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -131,7 +132,7 @@ public class EarningsPerYearChartTab extends AbstractChartTab
     private void updateCategorySeries()
     {
         int startYear = model.getStartYear();
-        String[] labels = new String[LocalDate.now().getYear() - startYear + 1];
+        String[] labels = new String[LocalDate.now(ZoneOffset.UTC).getYear() - startYear + 1];
         for (int ii = 0; ii < labels.length; ii++)
             labels[ii] = String.valueOf(startYear + ii);
         getChart().getAxisSet().getXAxis(0).setCategorySeries(labels);
@@ -144,7 +145,7 @@ public class EarningsPerYearChartTab extends AbstractChartTab
 
         int startYear = model.getStartYear();
 
-        double[] series = new double[LocalDate.now().getYear() - startYear + 1];
+        double[] series = new double[LocalDate.now(ZoneOffset.UTC).getYear() - startYear + 1];
 
         boolean hasNegativeNumber = false;
 
@@ -178,7 +179,7 @@ public class EarningsPerYearChartTab extends AbstractChartTab
                 IBarSeries barSeries = (IBarSeries) getChart().getSeriesSet().createSeries(SeriesType.BAR,
                                 String.valueOf(year));
 
-                double[] seriesX = new double[LocalDate.now().getYear() - startYear + 1];
+                double[] seriesX = new double[LocalDate.now(ZoneOffset.UTC).getYear() - startYear + 1];
                 seriesX[i] = series[i];
 
                 barSeries.setYSeries(seriesX);

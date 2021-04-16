@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -59,7 +60,7 @@ import name.abuchen.portfolio.util.Dates;
         {
             LocalDate lastModified = LocalDate
                             .from(Instant.ofEpochMilli(data.getLastModified()).atZone(ZoneId.systemDefault()));
-            int days = Dates.daysBetween(lastModified, LocalDate.now());
+            int days = Dates.daysBetween(lastModified, LocalDate.now(ZoneOffset.UTC));
 
             if (days <= 1)
                 f = Feeds.DAILY;

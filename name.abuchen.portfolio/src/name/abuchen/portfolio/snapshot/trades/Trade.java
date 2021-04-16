@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -82,7 +83,7 @@ public class Trade implements Adaptable
         }
         else
         {
-            LocalDate now = LocalDate.now();
+            LocalDate now = LocalDate.now(ZoneOffset.UTC);
 
             long marketValue = BigDecimal.valueOf(shares) //
                             .movePointLeft(Values.Share.precision()) //
@@ -129,7 +130,7 @@ public class Trade implements Adaptable
 
         if (end == null)
         {
-            dates.add(LocalDate.now());
+            dates.add(LocalDate.now(ZoneOffset.UTC));
             values.add(exitValue.getAmount() / Values.Amount.divider());
         }
 

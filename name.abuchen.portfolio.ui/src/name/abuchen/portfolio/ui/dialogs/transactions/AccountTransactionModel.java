@@ -5,6 +5,7 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneOffset;
 
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
@@ -45,7 +46,7 @@ public class AccountTransactionModel extends AbstractModel
 
     private Security security;
     private Account account;
-    private LocalDate date = LocalDate.now();
+    private LocalDate date = LocalDate.now(ZoneOffset.UTC);
     private LocalTime time = LocalTime.MIDNIGHT;
     private long shares;
 

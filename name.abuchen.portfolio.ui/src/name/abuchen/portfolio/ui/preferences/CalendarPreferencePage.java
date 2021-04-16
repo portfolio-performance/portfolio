@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.preferences;
 
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -86,7 +87,7 @@ public class CalendarPreferencePage extends FieldEditorPreferencePage
         if (calendar == null)
             return ""; //$NON-NLS-1$
 
-        Collection<Holiday> holidays = calendar.getHolidays(LocalDate.now().getYear());
+        Collection<Holiday> holidays = calendar.getHolidays(LocalDate.now(ZoneOffset.UTC).getYear());
 
         StringBuilder buffer = new StringBuilder();
         holidays.stream().sorted((r, l) -> r.getDate().compareTo(l.getDate()))

@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.views.dashboard;
 
 import java.text.MessageFormat;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -160,7 +161,7 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
     {
         return () -> {
             PerformanceIndex index = getDashboardData().calculate(get(DataSeriesConfig.class).getDataSeries(),
-                            get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now()));
+                            get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now(ZoneOffset.UTC)));
             return index.getClientPerformanceSnapshot().orElseThrow(IllegalArgumentException::new);
         };
     }

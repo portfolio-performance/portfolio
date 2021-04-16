@@ -5,6 +5,7 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneOffset;
 
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
@@ -44,7 +45,7 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
 
     protected Portfolio portfolio;
     protected Security security;
-    protected LocalDate date = LocalDate.now();
+    protected LocalDate date = LocalDate.now(ZoneOffset.UTC);
     protected LocalTime time = LocalTime.MIDNIGHT;
     protected long shares;
     protected BigDecimal quote = BigDecimal.ONE;

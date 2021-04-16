@@ -5,6 +5,7 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneOffset;
 import java.util.Optional;
 
 import org.eclipse.core.databinding.validation.ValidationStatus;
@@ -38,7 +39,7 @@ public class AccountTransferModel extends AbstractModel
 
     private Account sourceAccount;
     private Account targetAccount;
-    private LocalDate date = LocalDate.now();
+    private LocalDate date = LocalDate.now(ZoneOffset.UTC);
     private LocalTime time = LocalTime.MIDNIGHT;
 
     private long fxAmount;

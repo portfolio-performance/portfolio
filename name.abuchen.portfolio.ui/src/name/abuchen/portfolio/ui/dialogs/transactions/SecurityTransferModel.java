@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneOffset;
 
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
@@ -38,7 +39,7 @@ public class SecurityTransferModel extends AbstractModel
     private Security security;
     private Portfolio sourcePortfolio;
     private Portfolio targetPortfolio;
-    private LocalDate date = LocalDate.now();
+    private LocalDate date = LocalDate.now(ZoneOffset.UTC);
     private LocalTime time = LocalTime.MIDNIGHT;
 
     private long shares;

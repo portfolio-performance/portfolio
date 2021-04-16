@@ -7,6 +7,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 
 import org.junit.Test;
 
@@ -23,10 +24,10 @@ public class ExchangeRateProviderAEDTest
         ExchangeRateProviderFactory factory = new ExchangeRateProviderFactory(new Client());
 
         ExchangeRateTimeSeries usd_aed = factory.getTimeSeries("USD", "AED");
-        assertThat(usd_aed.lookupRate(LocalDate.now()).get().getValue(), comparesEqualTo(new BigDecimal("3.6725")));
+        assertThat(usd_aed.lookupRate(LocalDate.now(ZoneOffset.UTC)).get().getValue(), comparesEqualTo(new BigDecimal("3.6725")));
 
         ExchangeRateTimeSeries aed_usd = factory.getTimeSeries("AED", "USD");
-        assertThat(aed_usd.lookupRate(LocalDate.now()).get().getValue(),
+        assertThat(aed_usd.lookupRate(LocalDate.now(ZoneOffset.UTC)).get().getValue(),
                         comparesEqualTo(BigDecimal.ONE.divide(new BigDecimal("3.6725"), 10, RoundingMode.HALF_DOWN)));
 
         // EUR -> USD -> AED
@@ -34,7 +35,7 @@ public class ExchangeRateProviderAEDTest
         double calculatedRate = 1.0836d * 3.6725d;
 
         ExchangeRateTimeSeries eur_aed = factory.getTimeSeries("EUR", "AED");
-        assertThat(eur_aed.lookupRate(LocalDate.now()).get().getValue().doubleValue(),
+        assertThat(eur_aed.lookupRate(LocalDate.now(ZoneOffset.UTC)).get().getValue().doubleValue(),
                         closeTo(calculatedRate, 0.00000001));
     }
 }

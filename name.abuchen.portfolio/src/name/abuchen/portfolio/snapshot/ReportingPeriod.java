@@ -3,6 +3,7 @@ package name.abuchen.portfolio.snapshot;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.function.Predicate;
@@ -448,7 +449,7 @@ public abstract class ReportingPeriod
         @Override
         public Interval toInterval(LocalDate relativeTo)
         {
-            LocalDate startDate = LocalDate.now().withDayOfMonth(1).minusDays(1);
+            LocalDate startDate = LocalDate.now(ZoneOffset.UTC).withDayOfMonth(1).minusDays(1);
 
             if (startDate.isBefore(relativeTo))
                 return Interval.of(startDate, relativeTo);
@@ -494,7 +495,7 @@ public abstract class ReportingPeriod
         {
             // a reporting period is half-open, i.e. it excludes the first day
             // but includes the last day
-            LocalDate startDate = LocalDate.now().withDayOfMonth(1).withMonth(1).minusDays(1);
+            LocalDate startDate = LocalDate.now(ZoneOffset.UTC).withDayOfMonth(1).withMonth(1).minusDays(1);
 
             if (startDate.isBefore(relativeTo))
                 return Interval.of(startDate, relativeTo);

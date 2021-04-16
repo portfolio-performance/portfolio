@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.util;
 
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.List;
 
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -42,7 +43,7 @@ public class QuotesTableViewer
 
         // for sorting purposes: if the element is a string (i.e. an error
         // message) then use the current date
-        ColumnViewerSorter.create(element -> element instanceof String ? LocalDate.now()
+        ColumnViewerSorter.create(element -> element instanceof String ? LocalDate.now(ZoneOffset.UTC)
                         : ((LatestSecurityPrice) element).getDate()).attachTo(tableViewer, viewerColumn, SWT.UP);
 
         TableColumn column = new TableColumn(tableViewer.getTable(), SWT.None);

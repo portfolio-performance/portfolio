@@ -6,6 +6,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 
 import org.junit.Test;
 
@@ -23,20 +24,20 @@ public class ExchangeRateProviderILATest
 
         // default value EUR -> ILS is 422.10
         ExchangeRateTimeSeries eur_ILA = factory.getTimeSeries("EUR", "ILA");
-        assertThat(eur_ILA.lookupRate(LocalDate.now()).get().getValue(), comparesEqualTo(new BigDecimal("422.1")));
+        assertThat(eur_ILA.lookupRate(LocalDate.now(ZoneOffset.UTC)).get().getValue(), comparesEqualTo(new BigDecimal("422.1")));
 
         // inverse of default EUR -> ILS
         ExchangeRateTimeSeries ILA_eur = factory.getTimeSeries("ILA", "EUR");
-        assertThat(ILA_eur.lookupRate(LocalDate.now()).get().getValue(), comparesEqualTo(
+        assertThat(ILA_eur.lookupRate(LocalDate.now(ZoneOffset.UTC)).get().getValue(), comparesEqualTo(
                         BigDecimal.ONE.divide(new BigDecimal("422.099999949897"), 12, RoundingMode.HALF_DOWN)));
 
         // ILA -> ILS
         ExchangeRateTimeSeries ILA_ILS = factory.getTimeSeries("ILA", "ILS");
-        assertThat(ILA_ILS.lookupRate(LocalDate.now()).get().getValue(), comparesEqualTo(new BigDecimal("0.01")));
+        assertThat(ILA_ILS.lookupRate(LocalDate.now(ZoneOffset.UTC)).get().getValue(), comparesEqualTo(new BigDecimal("0.01")));
 
         // ILS -> ILA
         ExchangeRateTimeSeries ILS_ILA = factory.getTimeSeries("ILS", "ILA");
-        assertThat(ILS_ILA.lookupRate(LocalDate.now()).get().getValue(), comparesEqualTo(new BigDecimal(100.0)));
+        assertThat(ILS_ILA.lookupRate(LocalDate.now(ZoneOffset.UTC)).get().getValue(), comparesEqualTo(new BigDecimal(100.0)));
 
     }
 }

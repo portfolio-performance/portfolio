@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.wizards.events;
 
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
@@ -10,7 +11,7 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
 public class CustomEventModel extends BindingHelper.Model
 {
     private Security security;
-    private LocalDate date = LocalDate.now();
+    private LocalDate date = LocalDate.now(ZoneOffset.UTC);
     private SecurityEvent.Type type = SecurityEvent.Type.NOTE;
     private String message = ""; //$NON-NLS-1$
 

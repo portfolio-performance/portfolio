@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.views;
 
 import java.beans.PropertyChangeListener;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -59,7 +60,7 @@ public class StatementOfAssetsView extends AbstractFinanceView
     public void notifyModelUpdated()
     {
         CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
-        assetViewer.setInput(clientFilter.getSelectedFilter(), snapshotDate.orElse(LocalDate.now()), converter);
+        assetViewer.setInput(clientFilter.getSelectedFilter(), snapshotDate.orElse(LocalDate.now(ZoneOffset.UTC)), converter);
         updateTitle(getDefaultTitle());
     }
 
@@ -121,7 +122,7 @@ public class StatementOfAssetsView extends AbstractFinanceView
     {
         DropDown dropDown = new DropDown(Messages.LabelPortfolioTimeMachine, Images.CALENDAR_OFF, SWT.NONE);
         dropDown.setMenuListener(manager -> {
-            manager.add(new LabelOnly(Values.Date.format(snapshotDate.orElse(LocalDate.now()))));
+            manager.add(new LabelOnly(Values.Date.format(snapshotDate.orElse(LocalDate.now(ZoneOffset.UTC)))));
             manager.add(new Separator());
 
             SimpleAction action = new SimpleAction(Messages.LabelToday, a -> {
@@ -134,13 +135,13 @@ public class StatementOfAssetsView extends AbstractFinanceView
 
             manager.add(new SimpleAction(Messages.MenuPickOtherDate, a -> {
                 DateSelectionDialog dialog = new DateSelectionDialog(getActiveShell());
-                dialog.setSelection(snapshotDate.orElse(LocalDate.now()));
+                dialog.setSelection(snapshotDate.orElse(LocalDate.now(ZoneOffset.UTC)));
                 if (dialog.open() != DateSelectionDialog.OK)
                     return;
                 if (snapshotDate.isPresent() && snapshotDate.get().equals(dialog.getSelection()))
                     return;
 
-                snapshotDate = LocalDate.now().equals(dialog.getSelection()) ? Optional.empty()
+                snapshotDate = LocalDate.now(ZoneOffset.UTC).equals(dialog.getSelection()) ? Optional.empty()
                                 : Optional.of(dialog.getSelection());
                 notifyModelUpdated();
                 dropDown.setImage(!snapshotDate.isPresent() ? Images.CALENDAR_OFF : Images.CALENDAR_ON);

@@ -6,6 +6,7 @@ import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 
 import javax.annotation.PostConstruct;
 
@@ -168,7 +169,7 @@ public class PerformanceChartView extends AbstractHistoricView
 
     private void setChartSeries()
     {
-        Interval interval = getReportingPeriod().toInterval(LocalDate.now());
+        Interval interval = getReportingPeriod().toInterval(LocalDate.now(ZoneOffset.UTC));
         Lists.reverse(picker.getSelectedDataSeries())
                         .forEach(series -> seriesBuilder.build(series, interval, aggregationPeriod));
     }
@@ -256,7 +257,7 @@ public class PerformanceChartView extends AbstractHistoricView
                     protected void writeToFile(File file) throws IOException
                     {
                         PerformanceIndex index = seriesBuilder.getCache().lookup(series,
-                                        getReportingPeriod().toInterval(LocalDate.now()));
+                                        getReportingPeriod().toInterval(LocalDate.now(ZoneOffset.UTC)));
                         if (aggregationPeriod != null)
                             index = Aggregation.aggregate(index, aggregationPeriod);
                         index.exportTo(file);

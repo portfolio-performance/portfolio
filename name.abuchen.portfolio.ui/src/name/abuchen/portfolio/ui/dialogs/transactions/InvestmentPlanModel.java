@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.dialogs.transactions;
 
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
@@ -37,7 +38,7 @@ public class InvestmentPlanModel extends AbstractModel
 
     private boolean autoGenerate;
 
-    private LocalDate start = LocalDate.now();
+    private LocalDate start = LocalDate.now(ZoneOffset.UTC);
 
     private int interval = 1;
     private long amount;

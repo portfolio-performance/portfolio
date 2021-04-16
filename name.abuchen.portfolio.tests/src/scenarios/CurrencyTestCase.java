@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.Optional;
 
 import org.hamcrest.number.IsCloseTo;
@@ -174,7 +175,7 @@ public class CurrencyTestCase
         ReportingPeriod period = new ReportingPeriod.FromXtoY(LocalDate.parse("2015-01-02"),
                         LocalDate.parse("2015-01-14"));
         ClientPerformanceSnapshot performance = new ClientPerformanceSnapshot(client, converter,
-                        period.toInterval(LocalDate.now()));
+                        period.toInterval(LocalDate.now(ZoneOffset.UTC)));
 
         // calculating the totals is tested with #testClientSnapshot
         assertThat(performance.getValue(CategoryType.INITIAL_VALUE), is(Money.of(CurrencyUnit.EUR, 4131_99)));

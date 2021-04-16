@@ -4,6 +4,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -31,7 +32,7 @@ public class FormattedDateTest
     @Test
     public void testVariations()
     {
-        LocalDate date = LocalDate.now();
+        LocalDate date = LocalDate.now(ZoneOffset.UTC);
         assertVariations(new Security(),
                         Arrays.asList(date, date.minusMonths(1), date.minusMonths(2), date.minusMonths(3)));
 

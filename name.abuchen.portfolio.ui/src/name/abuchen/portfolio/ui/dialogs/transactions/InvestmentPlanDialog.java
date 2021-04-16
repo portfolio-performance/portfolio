@@ -7,6 +7,7 @@ import static name.abuchen.portfolio.ui.util.SWTHelper.widest;
 
 import java.text.MessageFormat;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -205,7 +206,7 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
         startingWith(lblName).width(widest);
 
         WarningMessages warnings = new WarningMessages(this);
-        warnings.add(() -> model().getStart().isAfter(LocalDate.now()) ? Messages.MsgDateIsInTheFuture : null);
+        warnings.add(() -> model().getStart().isAfter(LocalDate.now(ZoneOffset.UTC)) ? Messages.MsgDateIsInTheFuture : null);
         warnings.add(() -> model().getSecurity() != null && model().getSecurity().getPrices().isEmpty()
                         ? Messages.MsgSecurityHasNoQuotes
                         : null);

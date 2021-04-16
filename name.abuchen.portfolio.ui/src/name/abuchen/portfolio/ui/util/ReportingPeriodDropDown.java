@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.util;
 
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Objects;
 
@@ -43,7 +44,7 @@ public final class ReportingPeriodDropDown extends DropDown implements IMenuList
 
         setMenuListener(this);
         setLabel(selected.toString());
-        setToolTip(selected.toInterval(LocalDate.now()).toString());
+        setToolTip(selected.toInterval(LocalDate.now(ZoneOffset.UTC)).toString());
     }
 
     @Override
@@ -101,7 +102,7 @@ public final class ReportingPeriodDropDown extends DropDown implements IMenuList
         selected = period;
         part.setSelectedPeriod(period);
         setLabel(period.toString());
-        setToolTip(selected.toInterval(LocalDate.now()).toString());
+        setToolTip(selected.toInterval(LocalDate.now(ZoneOffset.UTC)).toString());
     }
 
     private Action createActionFor(final ReportingPeriod period)

@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.views.dashboard.heatmap;
 import java.time.LocalDate;
 import java.time.Year;
 import java.time.YearMonth;
+import java.time.ZoneOffset;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Objects;
 import java.util.function.Function;
@@ -141,7 +142,7 @@ public class EarningsHeatmapWidget extends AbstractHeatmapWidget<Long>
     {
         int numDashboardColumns = getDashboardData().getDashboard().getColumns().size();
 
-        Interval interval = get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now());
+        Interval interval = get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now(ZoneOffset.UTC));
 
         // adapt interval to include the first and last month fully
 

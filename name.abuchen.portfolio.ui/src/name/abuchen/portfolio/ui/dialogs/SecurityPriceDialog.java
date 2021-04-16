@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.dialogs;
 
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
@@ -16,7 +17,7 @@ public class SecurityPriceDialog extends AbstractDialog
     static class SecurityPriceModel extends BindingHelper.Model
     {
         private final Security security;
-        private LocalDate date = LocalDate.now();
+        private LocalDate date = LocalDate.now(ZoneOffset.UTC);
         private long price;
 
         public SecurityPriceModel(Client client, Security security)

@@ -2,6 +2,7 @@ package name.abuchen.portfolio.online.impl;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,7 +30,7 @@ public class DivvyDiaryUploader
         if (apiKey == null)
             return;
 
-        ClientSnapshot snapshot = ClientSnapshot.create(client, converter, LocalDate.now());
+        ClientSnapshot snapshot = ClientSnapshot.create(client, converter, LocalDate.now(ZoneOffset.UTC));
         PortfolioSnapshot portfolio = snapshot.getJointPortfolio();
 
         List<JSONObject> payload = portfolio.getPositions().stream() //

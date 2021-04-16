@@ -5,6 +5,7 @@ import java.lang.reflect.Type;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -52,7 +53,7 @@ public final class PortfolioReportQuoteFeed implements QuoteFeed
     @Override
     public Optional<LatestSecurityPrice> getLatestQuote(Security security)
     {
-        List<LatestSecurityPrice> prices = getHistoricalQuotes(security, true, LocalDate.now()).getLatestPrices();
+        List<LatestSecurityPrice> prices = getHistoricalQuotes(security, true, LocalDate.now(ZoneOffset.UTC)).getLatestPrices();
         return prices.isEmpty() ? Optional.empty() : Optional.of(prices.get(prices.size() - 1));
     }
 
@@ -72,7 +73,7 @@ public final class PortfolioReportQuoteFeed implements QuoteFeed
     @Override
     public QuoteFeedData previewHistoricalQuotes(Security security)
     {
-        return getHistoricalQuotes(security, true, LocalDate.now().minusMonths(2));
+        return getHistoricalQuotes(security, true, LocalDate.now(ZoneOffset.UTC).minusMonths(2));
     }
 
     @SuppressWarnings("unchecked")

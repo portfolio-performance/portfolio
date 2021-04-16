@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.views.dashboard;
 
 import java.text.DecimalFormat;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
@@ -233,7 +234,7 @@ public class ChartWidget extends WidgetDelegate<Object>
         List<DataSeries> series = new DataSeriesSerializer().fromString(dataSeriesSet,
                         get(ChartConfig.class).getData());
 
-        Interval interval = get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now());
+        Interval interval = get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now(ZoneOffset.UTC));
 
         return () -> {
             series.forEach(s -> cache.lookup(s, interval));
@@ -259,7 +260,7 @@ public class ChartWidget extends WidgetDelegate<Object>
                             new DataSeriesSerializer().fromString(dataSeriesSet, get(ChartConfig.class).getData()));
 
             Interval reportingPeriod = get(ReportingPeriodConfig.class).getReportingPeriod()
-                            .toInterval(LocalDate.now());
+                            .toInterval(LocalDate.now(ZoneOffset.UTC));
 
             switch (useCase)
             {

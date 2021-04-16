@@ -162,7 +162,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     @Override
     public QuoteFeedData previewHistoricalQuotes(Security security)
     {
-        return internalGetQuotes(security, LocalDate.now().minusMonths(2));
+        return internalGetQuotes(security, LocalDate.now(ZoneOffset.UTC).minusMonths(2));
     }
 
     private QuoteFeedData internalGetQuotes(Security security, LocalDate startDate)
@@ -188,7 +188,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     @SuppressWarnings("nls")
     private String requestData(Security security, LocalDate startDate) throws IOException
     {
-        int days = Dates.daysBetween(startDate, LocalDate.now());
+        int days = Dates.daysBetween(startDate, LocalDate.now(ZoneOffset.UTC));
 
         // "max" only returns a sample of quotes
         String range = "10y"; //$NON-NLS-1$

@@ -12,6 +12,7 @@ import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.Year;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
@@ -703,7 +704,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
             spec.column.setValue(cells.get(spec.index), price, languageHint);
 
         if (price.getDate() == null)
-            price.setDate(LocalDate.now());
+            price.setDate(LocalDate.now(ZoneOffset.UTC));
 
         return price;
     }

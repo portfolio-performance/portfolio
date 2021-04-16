@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.views;
 
 import java.text.MessageFormat;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -238,7 +239,7 @@ public class PortfolioListView extends AbstractListView implements ModificationL
             @Override
             public String getText(Object element)
             {
-                PortfolioSnapshot snapshot = PortfolioSnapshot.create((Portfolio) element, converter, LocalDate.now());
+                PortfolioSnapshot snapshot = PortfolioSnapshot.create((Portfolio) element, converter, LocalDate.now(ZoneOffset.UTC));
                 return Values.Money.format(snapshot.getValue(), getClient().getBaseCurrency());
             }
         });
@@ -246,8 +247,8 @@ public class PortfolioListView extends AbstractListView implements ModificationL
         column.setSorter(ColumnViewerSorter.create((o1, o2) -> {
             CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
 
-            PortfolioSnapshot p1 = PortfolioSnapshot.create((Portfolio) o1, converter, LocalDate.now());
-            PortfolioSnapshot p2 = PortfolioSnapshot.create((Portfolio) o2, converter, LocalDate.now());
+            PortfolioSnapshot p1 = PortfolioSnapshot.create((Portfolio) o1, converter, LocalDate.now(ZoneOffset.UTC));
+            PortfolioSnapshot p2 = PortfolioSnapshot.create((Portfolio) o2, converter, LocalDate.now(ZoneOffset.UTC));
 
             if (p1 == null)
                 return p2 == null ? 0 : -1;
@@ -285,14 +286,14 @@ public class PortfolioListView extends AbstractListView implements ModificationL
 
                 ClientFilter clientFilter = new PortfolioClientFilter(portfolio);
 
-                statementOfAssets.setInput(clientFilter, LocalDate.now(), converter);
+                statementOfAssets.setInput(clientFilter, LocalDate.now(ZoneOffset.UTC), converter);
             }
             else
             {
                 transactions.setInput(null);
                 transactions.refresh();
                 CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
-                statementOfAssets.setInput(new EmptyFilter(), LocalDate.now(), converter);
+                statementOfAssets.setInput(new EmptyFilter(), LocalDate.now(ZoneOffset.UTC), converter);
             }
         });
 

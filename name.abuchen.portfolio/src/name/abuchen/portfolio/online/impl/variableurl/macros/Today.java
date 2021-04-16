@@ -2,6 +2,7 @@ package name.abuchen.portfolio.online.impl.variableurl.macros;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAmount;
 import java.util.regex.Matcher;
@@ -46,6 +47,6 @@ public class Today implements Macro
     @Override
     public CharSequence resolve(Security security)
     {
-        return formatter.format(LocalDate.now().plus(delta));
+        return formatter.format(LocalDate.now(ZoneOffset.UTC).plus(delta));
     }
 }

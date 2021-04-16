@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.views.dashboard;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.function.Supplier;
@@ -48,7 +49,7 @@ public class MaxDrawdownDurationWidget extends AbstractIndicatorWidget<Performan
     {
         return () -> getDashboardData().getDataSeriesCache() //
                         .lookup(get(DataSeriesConfig.class).getDataSeries(), get(ReportingPeriodConfig.class)
-                                        .getReportingPeriod().toInterval(LocalDate.now()));
+                                        .getReportingPeriod().toInterval(LocalDate.now(ZoneOffset.UTC)));
     }
 
     @Override

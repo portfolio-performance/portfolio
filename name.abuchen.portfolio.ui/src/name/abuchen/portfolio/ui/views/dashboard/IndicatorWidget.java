@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
@@ -118,7 +119,7 @@ public class IndicatorWidget<N extends Number> extends AbstractIndicatorWidget<N
 
         if (tooltip != null)
             InfoToolTip.attach(indicator, () -> tooltip.apply(get(DataSeriesConfig.class).getDataSeries(),
-                            get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now())));
+                            get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now(ZoneOffset.UTC))));
 
         return container;
     }
@@ -127,7 +128,7 @@ public class IndicatorWidget<N extends Number> extends AbstractIndicatorWidget<N
     public Supplier<N> getUpdateTask()
     {
         return () -> provider.apply(get(DataSeriesConfig.class).getDataSeries(),
-                        get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now()));
+                        get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now(ZoneOffset.UTC)));
     }
 
     @Override

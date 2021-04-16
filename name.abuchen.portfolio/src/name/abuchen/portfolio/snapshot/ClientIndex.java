@@ -2,6 +2,7 @@ package name.abuchen.portfolio.snapshot;
 
 import java.text.MessageFormat;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.List;
@@ -29,10 +30,10 @@ import name.abuchen.portfolio.util.Interval;
         Interval interval = getReportInterval();
 
         // the actual interval should not extend into the future
-        if (interval.getEnd().isAfter(LocalDate.now()))
+        if (interval.getEnd().isAfter(LocalDate.now(ZoneOffset.UTC)))
         {
             LocalDate start = interval.getStart();
-            LocalDate end = LocalDate.now();
+            LocalDate end = LocalDate.now(ZoneOffset.UTC);
 
             if (start.isAfter(end))
                 start = end;

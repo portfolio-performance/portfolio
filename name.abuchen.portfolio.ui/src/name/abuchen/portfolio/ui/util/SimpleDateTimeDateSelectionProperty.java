@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.util;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.Date;
 
 import org.eclipse.jface.databinding.swt.WidgetValueProperty;
@@ -42,7 +43,7 @@ public class SimpleDateTimeDateSelectionProperty extends WidgetValueProperty<Con
             // cannot be removed. PP always needs a date, however. Therefore the
             // date is set to today if missing.
 
-            LocalDate now = LocalDate.now();
+            LocalDate now = LocalDate.now(ZoneOffset.UTC);
             if (date == null)
             {
                 doSetValue(source, now);

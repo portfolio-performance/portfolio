@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -24,7 +25,7 @@ public class AccountTest
         account.setCurrencyCode(CurrencyUnit.EUR);
 
         this.transaction = new AccountTransaction();
-        transaction.setDateTime(LocalDate.now().atStartOfDay());
+        transaction.setDateTime(LocalDate.now(ZoneOffset.UTC).atStartOfDay());
         transaction.setType(AccountTransaction.Type.DEPOSIT);
         transaction.setAmount(10000);
         transaction.setCurrencyCode(CurrencyUnit.EUR);

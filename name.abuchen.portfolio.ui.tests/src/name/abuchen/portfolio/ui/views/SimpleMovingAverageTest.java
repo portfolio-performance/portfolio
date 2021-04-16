@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Locale;
@@ -57,7 +58,7 @@ public class SimpleMovingAverageTest
     @Test
     public void testSecurityHasOnlyOnePrice()
     {
-        ChartInterval interval = new ChartInterval(securityOnePrice.getPrices().get(0).getDate(), LocalDate.now());
+        ChartInterval interval = new ChartInterval(securityOnePrice.getPrices().get(0).getDate(), LocalDate.now(ZoneOffset.UTC));
         ChartLineSeriesAxes sma = new SimpleMovingAverage(200, this.securityOnePrice, interval).getSMA();
         assertThat(sma.getDates(), is(IsNull.nullValue()));
     }
@@ -65,7 +66,7 @@ public class SimpleMovingAverageTest
     @Test
     public void testSecurityIsNull()
     {
-        ChartInterval interval = new ChartInterval(securityOnePrice.getPrices().get(0).getDate(), LocalDate.now());
+        ChartInterval interval = new ChartInterval(securityOnePrice.getPrices().get(0).getDate(), LocalDate.now(ZoneOffset.UTC));
         ChartLineSeriesAxes sma = new SimpleMovingAverage(200, null, interval).getSMA();
         assertThat(sma.getDates(), is(IsNull.nullValue()));
     }
@@ -73,7 +74,7 @@ public class SimpleMovingAverageTest
     @Test
     public void testCorrectSMAEntries()
     {
-        ChartInterval interval = new ChartInterval(securityTenPrices.getPrices().get(0).getDate(), LocalDate.now());
+        ChartInterval interval = new ChartInterval(securityTenPrices.getPrices().get(0).getDate(), LocalDate.now(ZoneOffset.UTC));
         ChartLineSeriesAxes sma = new SimpleMovingAverage(10, this.securityTenPrices, interval).getSMA();
         assertThat(sma, is(IsNull.notNullValue()));
         assertThat(sma.getValues().length, is(1));
@@ -92,7 +93,7 @@ public class SimpleMovingAverageTest
             date = date.plusDays(1);
         }
 
-        ChartInterval interval = new ChartInterval(security.getPrices().get(0).getDate(), LocalDate.now());
+        ChartInterval interval = new ChartInterval(security.getPrices().get(0).getDate(), LocalDate.now(ZoneOffset.UTC));
 
         ChartLineSeriesAxes sma = new SimpleMovingAverage(10, security, interval).getSMA();
         assertThat(sma, is(IsNull.notNullValue()));
@@ -112,7 +113,7 @@ public class SimpleMovingAverageTest
         }
         LocalDate startDate = LocalDate.parse("2016-06-01");
         Date isStartDate = java.sql.Date.valueOf(startDate);
-        ChartLineSeriesAxes sma = new SimpleMovingAverage(10, security, new ChartInterval(startDate, LocalDate.now()))
+        ChartLineSeriesAxes sma = new SimpleMovingAverage(10, security, new ChartInterval(startDate, LocalDate.now(ZoneOffset.UTC)))
                         .getSMA();
         assertThat(sma, is(IsNull.notNullValue()));
         assertThat(sma.getDates()[0], is(isStartDate));

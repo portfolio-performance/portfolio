@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views;
 
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
@@ -52,7 +53,7 @@ public class HoldingsPieChartView extends AbstractFinanceView
                         HoldingsPieChartView.class.getSimpleName(), filter -> notifyModelUpdated());
 
         Client filteredClient = clientFilter.getSelectedFilter().filter(getClient());
-        snapshot = ClientSnapshot.create(filteredClient, converter, LocalDate.now());
+        snapshot = ClientSnapshot.create(filteredClient, converter, LocalDate.now(ZoneOffset.UTC));
     }
 
     @Override
@@ -65,7 +66,7 @@ public class HoldingsPieChartView extends AbstractFinanceView
     public void notifyModelUpdated()
     {
         Client filteredClient = clientFilter.getSelectedFilter().filter(getClient());
-        snapshot = ClientSnapshot.create(filteredClient, converter, LocalDate.now());
+        snapshot = ClientSnapshot.create(filteredClient, converter, LocalDate.now(ZoneOffset.UTC));
 
         browser.refresh();
         updateWarningInToolBar();

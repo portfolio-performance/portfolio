@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 
 import org.junit.Test;
 
@@ -18,34 +19,34 @@ public class TodayMacroTest
     public void testToday()
     {
         Today today = new Today("TODAY");
-        assertThat(today.resolve(new Security()), is(LocalDate.now().toString()));
+        assertThat(today.resolve(new Security()), is(LocalDate.now(ZoneOffset.UTC).toString()));
     }
 
     @Test
     public void testTodayWithFormat()
     {
         Today today = new Today("TODAY:yyyy-MM-dd");
-        assertThat(today.resolve(new Security()), is(LocalDate.now().toString()));
+        assertThat(today.resolve(new Security()), is(LocalDate.now(ZoneOffset.UTC).toString()));
     }
 
     @Test
     public void testMinusOneYear()
     {
         Today today = new Today("TODAY:yyyy-MM-dd:-P1Y");
-        assertThat(today.resolve(new Security()), is(LocalDate.now().minusYears(1).toString()));
+        assertThat(today.resolve(new Security()), is(LocalDate.now(ZoneOffset.UTC).minusYears(1).toString()));
     }
 
     @Test
     public void testPlusTwoYears()
     {
         Today today = new Today("TODAY:yyyy-MM-dd:P2Y");
-        assertThat(today.resolve(new Security()), is(LocalDate.now().plusYears(2).toString()));
+        assertThat(today.resolve(new Security()), is(LocalDate.now(ZoneOffset.UTC).plusYears(2).toString()));
     }
 
     @Test
     public void testMinusTwoMonths()
     {
         Today today = new Today("TODAY:yyyy-MM-dd:-P2M");
-        assertThat(today.resolve(new Security()), is(LocalDate.now().minusMonths(2).toString()));
+        assertThat(today.resolve(new Security()), is(LocalDate.now(ZoneOffset.UTC).minusMonths(2).toString()));
     }
 }

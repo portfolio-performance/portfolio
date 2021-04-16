@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.columns;
 
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -188,7 +189,7 @@ public class AttributeColumn extends Column
             if (limit == null)
                 return null;
 
-            SecurityPrice latestSecurityPrice = security.getSecurityPrice(LocalDate.now());
+            SecurityPrice latestSecurityPrice = security.getSecurityPrice(LocalDate.now(ZoneOffset.UTC));
             if (latestSecurityPrice == null)
                 return null;
 
@@ -338,7 +339,7 @@ public class AttributeColumn extends Column
                     return null;
 
                 LocalDate value = (LocalDate) attributable.getAttributes().get(attribute);
-                return value == null ? null : String.valueOf(ChronoUnit.DAYS.between(value, LocalDate.now()));
+                return value == null ? null : String.valueOf(ChronoUnit.DAYS.between(value, LocalDate.now(ZoneOffset.UTC)));
             }
         });
 

@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.earnings;
 
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -31,7 +32,7 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
     @Override
     public void menuAboutToShow(IMenuManager manager)
     {
-        int now = LocalDate.now().getYear();
+        int now = LocalDate.now(ZoneOffset.UTC).getYear();
 
         for (int ii = 0; ii < 10; ii++)
         {

@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.views.earnings;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.time.ZoneOffset;
 
 import org.eclipse.swt.SWT;
 import org.swtchart.ILineSeries;
@@ -22,7 +23,7 @@ public class EarningsAccumulatedChartTab extends AbstractChartTab
     @Override
     protected void createSeries()
     {
-        LocalDate now = LocalDate.now();
+        LocalDate now = LocalDate.now(ZoneOffset.UTC);
         boolean isJanuary = now.getMonth() == Month.JANUARY;
 
         for (int index = 0; index < model.getNoOfMonths(); index += 12)

@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.views;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -317,7 +318,7 @@ public final class SecuritiesTable implements ModificationListener
             public String getText(Object e)
             {
                 Security security = (Security) e;
-                SecurityPrice latest = security.getSecurityPrice(LocalDate.now());
+                SecurityPrice latest = security.getSecurityPrice(LocalDate.now(ZoneOffset.UTC));
                 if (latest == null)
                     return null;
 
@@ -329,8 +330,8 @@ public final class SecuritiesTable implements ModificationListener
             }
         });
         column.setSorter(ColumnViewerSorter.create((o1, o2) -> {
-            SecurityPrice p1 = ((Security) o1).getSecurityPrice(LocalDate.now());
-            SecurityPrice p2 = ((Security) o2).getSecurityPrice(LocalDate.now());
+            SecurityPrice p1 = ((Security) o1).getSecurityPrice(LocalDate.now(ZoneOffset.UTC));
+            SecurityPrice p2 = ((Security) o2).getSecurityPrice(LocalDate.now(ZoneOffset.UTC));
 
             if (p1 == null)
                 return p2 == null ? 0 : -1;
@@ -474,7 +475,7 @@ public final class SecuritiesTable implements ModificationListener
             @Override
             public String getText(Object element)
             {
-                SecurityPrice latest = ((Security) element).getSecurityPrice(LocalDate.now());
+                SecurityPrice latest = ((Security) element).getSecurityPrice(LocalDate.now(ZoneOffset.UTC));
                 return latest != null ? Values.Date.format(latest.getDate()) : null;
             }
 
@@ -482,7 +483,7 @@ public final class SecuritiesTable implements ModificationListener
             public Color getBackground(Object element)
             {
                 Security security = (Security) element;
-                SecurityPrice latest = security.getSecurityPrice(LocalDate.now());
+                SecurityPrice latest = security.getSecurityPrice(LocalDate.now(ZoneOffset.UTC));
                 if (latest == null)
                     return null;
 
@@ -490,13 +491,13 @@ public final class SecuritiesTable implements ModificationListener
                 if (QuoteFeed.MANUAL.equals(feed))
                     return null;
 
-                LocalDate sevenDaysAgo = LocalDate.now().minusDays(7);
+                LocalDate sevenDaysAgo = LocalDate.now(ZoneOffset.UTC).minusDays(7);
                 return latest.getDate().isBefore(sevenDaysAgo) ? Colors.theme().warningBackground() : null;
             }
         });
         column.setSorter(ColumnViewerSorter.create((o1, o2) -> {
-            SecurityPrice p1 = ((Security) o1).getSecurityPrice(LocalDate.now());
-            SecurityPrice p2 = ((Security) o2).getSecurityPrice(LocalDate.now());
+            SecurityPrice p1 = ((Security) o1).getSecurityPrice(LocalDate.now(ZoneOffset.UTC));
+            SecurityPrice p2 = ((Security) o2).getSecurityPrice(LocalDate.now(ZoneOffset.UTC));
 
             if (p1 == null)
                 return p2 == null ? 0 : -1;
@@ -538,7 +539,7 @@ public final class SecuritiesTable implements ModificationListener
                     return null;
 
                 SecurityPrice latest = prices.get(prices.size() - 1);
-                if (!((Security) element).isRetired() && latest.getDate().isBefore(LocalDate.now().minusDays(7)))
+                if (!((Security) element).isRetired() && latest.getDate().isBefore(LocalDate.now(ZoneOffset.UTC).minusDays(7)))
                     return Colors.theme().warningBackground();
                 else
                     return null;
@@ -568,7 +569,7 @@ public final class SecuritiesTable implements ModificationListener
 
         BiFunction<Object, ReportingPeriod, Double> valueProvider = (element, option) -> {
 
-            Interval interval = option.toInterval(LocalDate.now());
+            Interval interval = option.toInterval(LocalDate.now(ZoneOffset.UTC));
 
             Security security = (Security) element;
 

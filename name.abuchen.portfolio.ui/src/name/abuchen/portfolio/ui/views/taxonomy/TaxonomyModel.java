@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -115,7 +116,7 @@ public final class TaxonomyModel
         this.converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
 
         this.filteredClient = client;
-        this.snapshot = ClientSnapshot.create(client, converter, LocalDate.now());
+        this.snapshot = ClientSnapshot.create(client, converter, LocalDate.now(ZoneOffset.UTC));
 
         this.attachedModels.add(new RecalculateTargetsAttachedModel());
         this.attachedModels.add(new ExpectedReturnsAttachedModel());
@@ -368,7 +369,7 @@ public final class TaxonomyModel
             this.converter = new CurrencyConverterImpl(factory, filteredClient.getBaseCurrency());
 
         this.filteredClient = filteredClient;
-        this.snapshot = ClientSnapshot.create(filteredClient, converter, LocalDate.now());
+        this.snapshot = ClientSnapshot.create(filteredClient, converter, LocalDate.now(ZoneOffset.UTC));
 
         recalculate();
         fireTaxonomyModelChange(getVirtualRootNode());

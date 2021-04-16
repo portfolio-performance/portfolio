@@ -489,7 +489,7 @@ public final class Security implements Attributable, InvestmentVehicle
         if (list.size() < 2)
             return Optional.empty();
 
-        LocalDate now = LocalDate.now();
+        LocalDate now = LocalDate.now(ZoneOffset.UTC);
 
         SecurityPrice today = null;
 

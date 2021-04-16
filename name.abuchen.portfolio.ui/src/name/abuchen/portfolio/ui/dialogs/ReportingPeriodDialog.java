@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.dialogs;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.Year;
+import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.List;
 
@@ -230,7 +231,7 @@ public class ReportingPeriodDialog extends Dialog
         else
             throw new IllegalArgumentException();
 
-        Interval interval = template.toInterval(LocalDate.now());
+        Interval interval = template.toInterval(LocalDate.now(ZoneOffset.UTC));
 
         dateFrom.setSelection(interval.getStart());
         dateSince.setSelection(interval.getStart());

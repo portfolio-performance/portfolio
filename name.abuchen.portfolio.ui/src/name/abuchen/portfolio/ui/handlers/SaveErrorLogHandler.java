@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 
 import javax.inject.Named;
 
@@ -34,7 +35,7 @@ public class SaveErrorLogHandler
 
         FileDialog dialog = new FileDialog(shell, SWT.SAVE);
         dialog.setOverwrite(true);
-        dialog.setFileName(MessageFormat.format("pp-error-{0}.log", LocalDate.now().toString())); //$NON-NLS-1$
+        dialog.setFileName(MessageFormat.format("pp-error-{0}.log", LocalDate.now(ZoneOffset.UTC).toString())); //$NON-NLS-1$
         dialog.setFilterPath(System.getProperty("user.home")); //$NON-NLS-1$
 
         String path = dialog.open();

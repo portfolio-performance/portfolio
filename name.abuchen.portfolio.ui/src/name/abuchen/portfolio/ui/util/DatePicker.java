@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.util;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.Date;
 
 import org.eclipse.core.runtime.Platform;
@@ -77,9 +78,9 @@ public class DatePicker
 
             if (d == null)
             {
-                Date now = Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant());
+                Date now = Date.from(LocalDate.now(ZoneOffset.UTC).atStartOfDay(ZoneId.systemDefault()).toInstant());
                 ((CDateTime) control).setSelection(now);
-                return LocalDate.now();
+                return LocalDate.now(ZoneOffset.UTC);
             }
             else
             {

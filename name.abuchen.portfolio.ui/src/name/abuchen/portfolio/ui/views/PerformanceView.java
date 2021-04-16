@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.views;
 
 import java.text.MessageFormat;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.function.Function;
 
 import javax.inject.Inject;
@@ -117,7 +118,7 @@ public class PerformanceView extends AbstractHistoricView
     @Override
     public void reportingPeriodUpdated()
     {
-        Interval period = getReportingPeriod().toInterval(LocalDate.now());
+        Interval period = getReportingPeriod().toInterval(LocalDate.now(ZoneOffset.UTC));
         CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
         Client filteredClient = clientFilter.getSelectedFilter().filter(getClient());
 

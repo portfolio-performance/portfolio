@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.views.dashboard;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -230,7 +231,7 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
     @Override
     public Supplier<List<TransactionPair<?>>> getUpdateTask()
     {
-        Interval interval = get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now());
+        Interval interval = get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now(ZoneOffset.UTC));
         ClientFilter clientFilter = get(ClientFilterConfig.class).getSelectedFilter();
         CacheKey key = new CacheKey(TransactionPair.class, clientFilter, interval);
 
@@ -255,7 +256,7 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
             toolTip.setDefaultValueFormat(new DecimalFormat(chartType == ChartType.COUNT ? "#" : "#,##0.00")); //$NON-NLS-1$ //$NON-NLS-2$
 
             IAxis xAxis = chart.getAxisSet().getXAxis(0);
-            Interval interval = get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now());
+            Interval interval = get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now(ZoneOffset.UTC));
             List<YearMonth> yearMonths = interval.getYearMonths();
 
             chart.setData(yearMonths);

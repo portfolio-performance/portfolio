@@ -3,13 +3,14 @@ package name.abuchen.portfolio.money;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.Objects;
 
 import name.abuchen.portfolio.Messages;
 
 public class CurrencyConverterImpl implements CurrencyConverter
 {
-    private static final ExchangeRate FALLBACK_EXCHANGE_RATE = new ExchangeRate(LocalDate.now(), BigDecimal.ONE);
+    private static final ExchangeRate FALLBACK_EXCHANGE_RATE = new ExchangeRate(LocalDate.now(ZoneOffset.UTC), BigDecimal.ONE);
 
     private final ExchangeRateProviderFactory factory;
     private final String termCurrency;

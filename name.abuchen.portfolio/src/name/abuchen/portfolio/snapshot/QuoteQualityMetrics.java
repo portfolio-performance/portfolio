@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.snapshot;
 
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -77,7 +78,7 @@ public class QuoteQualityMetrics
 
         final LocalDate start = copy.get(0).getDate();
         final LocalDate end = QuoteFeed.MANUAL.equals(security.getFeed()) ? copy.get(copy.size() - 1).getDate()
-                        : LocalDate.now();
+                        : LocalDate.now(ZoneOffset.UTC);
 
         this.checkInterval = Interval.of(start, end);
 

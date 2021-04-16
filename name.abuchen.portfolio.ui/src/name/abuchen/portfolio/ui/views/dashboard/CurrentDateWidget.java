@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.views.dashboard;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.function.Supplier;
@@ -60,6 +61,6 @@ public class CurrentDateWidget extends WidgetDelegate<Object>
     @Override
     public void update(Object data)
     {
-        this.title.setText(TextUtil.tooltip(getWidget().getLabel()) + ' ' + formatter.format(LocalDate.now()));
+        this.title.setText(TextUtil.tooltip(getWidget().getLabel()) + ' ' + formatter.format(LocalDate.now(ZoneOffset.UTC)));
     }
 }

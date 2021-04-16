@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.views.earnings;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -268,7 +269,7 @@ public class EarningsViewModel
     private void calculate()
     {
         // determine the number of full months within period
-        LocalDate now = LocalDate.now();
+        LocalDate now = LocalDate.now(ZoneOffset.UTC);
         if (startYear > now.getYear())
             throw new IllegalArgumentException();
         this.noOfmonths = (now.getYear() - startYear) * 12 + now.getMonthValue();

@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
@@ -91,7 +92,7 @@ import name.abuchen.portfolio.util.TextUtil;
     @Override
     public Supplier<TradeDetailsView.Input> getUpdateTask()
     {
-        Interval interval = get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now());
+        Interval interval = get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now(ZoneOffset.UTC));
         ClientFilter clientFilter = get(ClientFilterConfig.class).getSelectedFilter();
         CacheKey key = new CacheKey(TradeCollector.class, clientFilter, interval);
 

@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views;
 
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
@@ -112,7 +113,7 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
         GridDataFactory.fillDefaults().grab(true, true).applyTo(chart);
         GridDataFactory.fillDefaults().grab(true, false).align(SWT.CENTER, SWT.FILL).applyTo(legend);
 
-        Interval interval = getReportingPeriod().toInterval(LocalDate.now());
+        Interval interval = getReportingPeriod().toInterval(LocalDate.now(ZoneOffset.UTC));
         Lists.reverse(configurator.getSelectedDataSeries()).forEach(series -> seriesBuilder.build(series, interval));
 
         return composite;
@@ -158,7 +159,7 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
             for (ISeries s : chart.getSeriesSet().getSeries())
                 chart.getSeriesSet().deleteSeries(s.getId());
 
-            Interval interval = getReportingPeriod().toInterval(LocalDate.now());
+            Interval interval = getReportingPeriod().toInterval(LocalDate.now(ZoneOffset.UTC));
             Lists.reverse(configurator.getSelectedDataSeries())
                             .forEach(series -> seriesBuilder.build(series, interval));
 

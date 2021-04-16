@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotEquals;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 
 import org.junit.Test;
 
@@ -39,7 +40,7 @@ public class YearToDateTest
     @Test
     public void testToInterval() throws IOException
     {
-        LocalDate today = LocalDate.now();
+        LocalDate today = LocalDate.now(ZoneOffset.UTC);
         LocalDate intervalStart = LocalDate.of(today.getYear(), 1, 1).minusDays(1);
         LocalDate intervalEnd = LocalDate.of(today.getYear(), 12, 31);
         ReportingPeriod period = ReportingPeriod.from("X");

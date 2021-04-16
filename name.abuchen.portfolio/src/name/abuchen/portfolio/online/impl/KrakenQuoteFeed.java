@@ -42,7 +42,7 @@ public final class KrakenQuoteFeed implements QuoteFeed
     @Override
     public Optional<LatestSecurityPrice> getLatestQuote(Security security)
     {
-        QuoteFeedData data = getHistoricalQuotes(security, false, LocalDate.now());
+        QuoteFeedData data = getHistoricalQuotes(security, false, LocalDate.now(ZoneOffset.UTC));
 
         if (!data.getErrors().isEmpty())
             PortfolioLog.error(data.getErrors());
@@ -65,7 +65,7 @@ public final class KrakenQuoteFeed implements QuoteFeed
     @Override
     public QuoteFeedData previewHistoricalQuotes(Security security)
     {
-        return getHistoricalQuotes(security, true, LocalDate.now().minusMonths(2));
+        return getHistoricalQuotes(security, true, LocalDate.now(ZoneOffset.UTC).minusMonths(2));
     }
 
     @SuppressWarnings("unchecked")

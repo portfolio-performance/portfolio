@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -601,7 +602,7 @@ import name.abuchen.portfolio.util.TextUtil;
                     return null;
 
                 CurrencyConverter converter = getModel().getCurrencyConverter();
-                ExchangeRate rate = converter.getRate(LocalDate.now(), baseCurrency);
+                ExchangeRate rate = converter.getRate(LocalDate.now(ZoneOffset.UTC), baseCurrency);
 
                 if (useIndirectQuotation)
                     rate = rate.inverse();
@@ -651,7 +652,7 @@ import name.abuchen.portfolio.util.TextUtil;
                     return Values.Money.format(
                                     getModel().getCurrencyConverter()
                                                     .with(node.getAssignment().getInvestmentVehicle().getCurrencyCode())
-                                                    .convert(LocalDate.now(), node.getActual()),
+                                                    .convert(LocalDate.now(ZoneOffset.UTC), node.getActual()),
                                     getModel().getCurrencyCode());
                 }
                 else

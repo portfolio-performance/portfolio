@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.views.dashboard.heatmap;
 
 import java.time.LocalDate;
 import java.time.Year;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -33,7 +34,7 @@ public class YearlyPerformanceHeatmapWidget extends AbstractHeatmapWidget<Double
     {
         int numDashboardColumns = getDashboardData().getDashboard().getColumns().size();
 
-        LocalDate now = LocalDate.now();
+        LocalDate now = LocalDate.now(ZoneOffset.UTC);
 
         // fill the table lines according to the supplied period
         // calculate the performance with a temporary reporting period

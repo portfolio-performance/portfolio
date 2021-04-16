@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,20 +46,20 @@ public class VINISExporter
         final String baseCurrency = client.getBaseCurrency();
         CurrencyConverter converter = new CurrencyConverterImpl(factory, baseCurrency);
 
-        LocalDate lastYear = LocalDate.now().minusYears(1);
-        LocalDate firstYear = LocalDate.now().minusYears(100);
+        LocalDate lastYear = LocalDate.now(ZoneOffset.UTC).minusYears(1);
+        LocalDate firstYear = LocalDate.now(ZoneOffset.UTC).minusYears(100);
 
         ReportingPeriod periodCurrentYear = new ReportingPeriod.YearToDate();
         ReportingPeriod periodLastYear = new ReportingPeriod.YearX(lastYear.getYear());
         ReportingPeriod periodAllYears = new ReportingPeriod.FromXtoY(
-                        firstYear.with(TemporalAdjusters.firstDayOfYear()), LocalDate.now());
+                        firstYear.with(TemporalAdjusters.firstDayOfYear()), LocalDate.now(ZoneOffset.UTC));
 
         ClientPerformanceSnapshot performanceAllYears = new ClientPerformanceSnapshot(client, converter,
-                        periodAllYears.toInterval(LocalDate.now()));
+                        periodAllYears.toInterval(LocalDate.now(ZoneOffset.UTC)));
         ClientPerformanceSnapshot performanceCurrentYear = new ClientPerformanceSnapshot(client, converter,
-                        periodCurrentYear.toInterval(LocalDate.now()));
+                        periodCurrentYear.toInterval(LocalDate.now(ZoneOffset.UTC)));
         ClientPerformanceSnapshot performanceLastYear = new ClientPerformanceSnapshot(client, converter,
-                        periodLastYear.toInterval(LocalDate.now()));
+                        periodLastYear.toInterval(LocalDate.now(ZoneOffset.UTC)));
 
         Money earningsCurrentYear = performanceCurrentYear.getValue(CategoryType.EARNINGS);
         Money earningsLastYear = performanceLastYear.getValue(CategoryType.EARNINGS);
@@ -78,12 +79,12 @@ public class VINISExporter
         MutableMoney currentTotalValue = MutableMoney.of(baseCurrency);
 
         SecurityPerformanceSnapshot securityPerformance = SecurityPerformanceSnapshot.create(client, converter,
-                        Interval.of(LocalDate.MIN, LocalDate.now()), SecurityPerformanceIndicator.Costs.class);
+                        Interval.of(LocalDate.MIN, LocalDate.now(ZoneOffset.UTC)), SecurityPerformanceIndicator.Costs.class);
 
         List<AssetPosition> assets = performanceCurrentYear.getEndClientSnapshot().getAssetPositions()
                         .collect(Collectors.toList());
 
-        MonetaryOperator toBaseCurrency = converter.at(LocalDate.now());
+        MonetaryOperator toBaseCurrency = converter.at(LocalDate.now(ZoneOffset.UTC));
 
         for (AssetPosition asset : assets)
         {

@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -165,7 +166,7 @@ public class InvestmentPlanTest
     public void testNoGenerationWithStartInFuture() throws IOException
     {
         investmentPlan.setAccount(account);
-        investmentPlan.setStart(LocalDate.now().minusMonths(6));
+        investmentPlan.setStart(LocalDate.now(ZoneOffset.UTC).minusMonths(6));
         investmentPlan.setInterval(12);
 
         investmentPlan.generateTransactions(new TestCurrencyConverter());
@@ -174,7 +175,7 @@ public class InvestmentPlanTest
         // given is an investment plan with existing transactions,
         // the user changes the start date to be in the future
 
-        investmentPlan.setStart(LocalDate.now().plusMonths(12));
+        investmentPlan.setStart(LocalDate.now(ZoneOffset.UTC).plusMonths(12));
         investmentPlan.setInterval(1);
         investmentPlan.generateTransactions(new TestCurrencyConverter());
 
@@ -182,7 +183,7 @@ public class InvestmentPlanTest
         assertThat(investmentPlan.getTransactions(), hasSize(previousTransactionCount));
 
         // generation resumes at start date
-        LocalDate resumeDate = LocalDate.now().minusMonths(1).minusDays(10);
+        LocalDate resumeDate = LocalDate.now(ZoneOffset.UTC).minusMonths(1).minusDays(10);
         investmentPlan.setStart(resumeDate);
         investmentPlan.generateTransactions(new TestCurrencyConverter());
         assertThat(investmentPlan.getTransactions(), hasSize(previousTransactionCount + 2));

@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.views.taxonomy;
 
 import java.text.DecimalFormat;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -124,12 +125,12 @@ public class StackedChartViewer extends AbstractChartPage
     {
         super(model, renderer);
 
-        Interval interval = part.getSelectedPeriod().toInterval(LocalDate.now());
+        Interval interval = part.getSelectedPeriod().toInterval(LocalDate.now(ZoneOffset.UTC));
 
         Period weekly = Aggregation.Period.WEEKLY;
 
         final LocalDate start = interval.getStart();
-        final LocalDate now = LocalDate.now();
+        final LocalDate now = LocalDate.now(ZoneOffset.UTC);
         final LocalDate end = interval.getEnd().isAfter(now) ? now : interval.getEnd();
         LocalDate current = weekly.getStartDateFor(start);
 

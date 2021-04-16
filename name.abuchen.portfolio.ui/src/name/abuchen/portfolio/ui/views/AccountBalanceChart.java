@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views;
 
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
@@ -45,7 +46,7 @@ public class AccountBalanceChart extends TimelineChart // NOSONAR
             if (tx.isEmpty())
                 return;
 
-            LocalDate now = LocalDate.now();
+            LocalDate now = LocalDate.now(ZoneOffset.UTC);
             LocalDate start = tx.get(0).getDateTime().toLocalDate();
             LocalDate end = tx.get(tx.size() - 1).getDateTime().toLocalDate();
 

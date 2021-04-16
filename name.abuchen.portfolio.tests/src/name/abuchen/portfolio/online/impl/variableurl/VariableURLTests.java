@@ -5,6 +5,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 
@@ -41,7 +42,7 @@ public class VariableURLTests
 
         assertTrue(iter.hasNext());
         assertThat(iter.next(), is("https://www.server.de/LU0635178014/historische_kurse?month="
-                        + LocalDate.now().format(FORMATTER) + "&currency=EUR"));
+                        + LocalDate.now(ZoneOffset.UTC).format(FORMATTER) + "&currency=EUR"));
     }
 
     @Test
@@ -55,7 +56,7 @@ public class VariableURLTests
         Iterator<String> iter = url.iterator();
 
         assertTrue(iter.hasNext());
-        assertThat(iter.next(), is("https://www.server.de/historische_kurse?month=" + LocalDate.now().format(FORMATTER)
+        assertThat(iter.next(), is("https://www.server.de/historische_kurse?month=" + LocalDate.now(ZoneOffset.UTC).format(FORMATTER)
                         + "&isin=LU0635178014"));
     }
 
@@ -72,7 +73,7 @@ public class VariableURLTests
         assertTrue(iter.hasNext());
         assertThat(iter.next(),
                         is("https://www.server.de/historische_kurse?month="
-                                        + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-32"))
+                                        + LocalDate.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyy-MM-32"))
                                         + "&isin=LU0635178014&ticker=E127&wkn=ETF127&currency=EUR"));
     }
 }

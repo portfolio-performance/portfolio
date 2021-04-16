@@ -8,6 +8,7 @@ import static name.abuchen.portfolio.ui.util.SWTHelper.widest;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -201,7 +202,7 @@ public class AccountTransferDialog extends AbstractTransactionDialog // NOSONAR
         });
 
         WarningMessages warnings = new WarningMessages(this);
-        warnings.add(() -> model().getDate().isAfter(LocalDate.now()) ? Messages.MsgDateIsInTheFuture : null);
+        warnings.add(() -> model().getDate().isAfter(LocalDate.now(ZoneOffset.UTC)) ? Messages.MsgDateIsInTheFuture : null);
         model.addPropertyChangeListener(Properties.date.name(), e -> warnings.check());
 
         model.firePropertyChange(Properties.exchangeRateCurrencies.name(), "", model().getExchangeRateCurrencies()); //$NON-NLS-1$

@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.earnings;
 
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.EnumSet;
 
 import javax.annotation.PostConstruct;
@@ -58,7 +59,7 @@ public class EarningsView extends AbstractFinanceView
         model = new EarningsViewModel(preferences, converter, client);
 
         int year = preferences.getInt(KEY_YEAR);
-        LocalDate now = LocalDate.now();
+        LocalDate now = LocalDate.now(ZoneOffset.UTC);
         if (year < 1900 || year > now.getYear())
             year = now.getYear() - 2;
 

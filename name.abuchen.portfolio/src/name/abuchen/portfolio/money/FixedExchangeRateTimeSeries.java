@@ -2,6 +2,7 @@ package name.abuchen.portfolio.money;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -52,7 +53,7 @@ public class FixedExchangeRateTimeSeries implements ExchangeRateTimeSeries
     {
         List<ExchangeRate> answer = new ArrayList<>();
         answer.add(new ExchangeRate(seriesStart, rate));
-        answer.add(new ExchangeRate(LocalDate.now(), rate));
+        answer.add(new ExchangeRate(LocalDate.now(ZoneOffset.UTC), rate));
         return answer;
     }
 

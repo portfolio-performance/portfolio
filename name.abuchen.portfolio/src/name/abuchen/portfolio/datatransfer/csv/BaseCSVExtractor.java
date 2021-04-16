@@ -5,6 +5,7 @@ import java.text.MessageFormat;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -173,7 +174,7 @@ import name.abuchen.portfolio.util.TextUtil;
 
         LocalDateTime date = getDate(dateField, null, rawValues, field2column);
         if (date == null)
-            date = LocalDate.now().atStartOfDay();
+            date = LocalDate.now(ZoneOffset.UTC).atStartOfDay();
 
         return Optional.of(new SecurityPrice(date.toLocalDate(), Math.abs(amount)));
     }

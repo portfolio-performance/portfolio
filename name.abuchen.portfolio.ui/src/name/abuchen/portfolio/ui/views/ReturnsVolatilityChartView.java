@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.function.ToDoubleFunction;
 
 import javax.annotation.PostConstruct;
@@ -255,7 +256,7 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
 
     private void setChartSeries()
     {
-        Interval interval = getReportingPeriod().toInterval(LocalDate.now());
+        Interval interval = getReportingPeriod().toInterval(LocalDate.now(ZoneOffset.UTC));
 
         Lists.reverse(configurator.getSelectedDataSeries()).forEach(series -> {
             PerformanceIndex index = cache.lookup(series, interval);
@@ -306,7 +307,7 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
                 @Override
                 protected void writeToFile(File file) throws IOException
                 {
-                    PerformanceIndex index = cache.lookup(series, getReportingPeriod().toInterval(LocalDate.now()));
+                    PerformanceIndex index = cache.lookup(series, getReportingPeriod().toInterval(LocalDate.now(ZoneOffset.UTC)));
                     index.exportVolatilityData(file);
                 }
 

@@ -5,6 +5,7 @@ import name.abuchen.portfolio.online.impl.variableurl.iterators.DateIterator;
 import name.abuchen.portfolio.online.impl.variableurl.macros.Macro;
 
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -35,7 +36,7 @@ public class DateURL extends BaseURL
     public Iterator<String> iterator()
     {
         List<SecurityPrice> prices = security.getPrices();
-        LocalDate now = LocalDate.now();
+        LocalDate now = LocalDate.now(ZoneOffset.UTC);
 
         if (prices.isEmpty())
             return new DateIterator(this, now, LocalDate.MIN, -1);

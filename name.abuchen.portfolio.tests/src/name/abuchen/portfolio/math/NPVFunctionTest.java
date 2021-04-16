@@ -5,6 +5,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -21,7 +22,7 @@ public class NPVFunctionTest
     @Test(expected = UnsupportedOperationException.class)
     public void testInvalidArguments()
     {
-        new NPVFunction(Arrays.asList(LocalDate.now()), new ArrayList<Double>());
+        new NPVFunction(Arrays.asList(LocalDate.now(ZoneOffset.UTC)), new ArrayList<Double>());
     }
 
     @Test(expected = UnsupportedOperationException.class)

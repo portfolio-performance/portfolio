@@ -6,6 +6,7 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 
@@ -42,7 +43,7 @@ public class PortfolioTest
     {
         transaction = new PortfolioTransaction();
         transaction.setType(Type.DELIVERY_INBOUND);
-        transaction.setDateTime(LocalDate.now().atStartOfDay());
+        transaction.setDateTime(LocalDate.now(ZoneOffset.UTC).atStartOfDay());
         transaction.setSecurity(security);
 
         portfolio.addTransaction(transaction);
@@ -52,7 +53,7 @@ public class PortfolioTest
     {
         transactionWithPlan = new PortfolioTransaction();
         transactionWithPlan.setType(Type.DELIVERY_INBOUND);
-        transactionWithPlan.setDateTime(LocalDate.now().atStartOfDay());
+        transactionWithPlan.setDateTime(LocalDate.now(ZoneOffset.UTC).atStartOfDay());
         transactionWithPlan.setSecurity(security);
 
         plan.getTransactions().add(transactionWithPlan);
