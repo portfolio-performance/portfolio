@@ -213,7 +213,7 @@ public class ECBExchangeRateProvider implements ExchangeRateProvider
             {
                 if (xstream == null)
                 {
-                    xstream = new XStream();
+                    XStream xstream = new XStream();
 
                     xstream.setClassLoader(ECBExchangeRateProvider.class.getClassLoader());
 
@@ -227,7 +227,8 @@ public class ECBExchangeRateProvider implements ExchangeRateProvider
                     xstream.aliasField("t", ExchangeRate.class, "time");
                     xstream.useAttributeFor(ExchangeRate.class, "value");
                     xstream.aliasField("v", ExchangeRate.class, "value");
-
+                    
+                    this.xstream = xstream;
                 }
             }
         }
