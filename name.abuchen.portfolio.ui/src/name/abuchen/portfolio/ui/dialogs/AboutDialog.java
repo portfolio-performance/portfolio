@@ -78,7 +78,7 @@ public class AboutDialog extends Dialog
     {
         String aboutText = MessageFormat.format(Messages.AboutText,
                         PortfolioPlugin.getDefault().getBundle().getVersion().toString(), //
-                        DateTimeFormatter.ofPattern("MMM YYYY").format(BuildInfo.INSTANCE.getBuildTime()), //$NON-NLS-1$
+                        DateTimeFormatter.ofPattern("MMM yyyy").format(BuildInfo.INSTANCE.getBuildTime()), //$NON-NLS-1$
                         System.getProperty("osgi.os"), //$NON-NLS-1$
                         System.getProperty("osgi.arch"), //$NON-NLS-1$
                         System.getProperty("java.vm.version"), //$NON-NLS-1$
