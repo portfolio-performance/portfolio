@@ -173,8 +173,6 @@ public enum WidgetFactory
                     YearlyPerformanceHeatmapWidget::new),
 
     HEATMAP_EARNINGS(Messages.LabelHeatmapEarnings, Messages.LabelEarnings, EarningsHeatmapWidget::new),
-    
-    HEATMAP_INVESTMENTS(Messages.LabelHeatmapInvestments, Messages.LabelTrades, InvestmentHeatmapWidget::new),
 
     TRADES_BASIC_STATISTICS(Messages.LabelTradesBasicStatistics, Messages.LabelTrades, TradesWidget::new),
 
