@@ -773,7 +773,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         });
         this.addDocumentTyp(type);
 
-        Block removalblock = new Block("(\\d+.\\d+.) (\\d+.\\d+.) (Überweisung|Dauerauftrag|Basislastschrift|Kartenzahlung) ([\\d.]+,\\d{2})");
+        Block removalblock = new Block("(\\d+.\\d+.) (\\d+.\\d+.) (Überweisung|Dauerauftrag|Basislastschrift|Kartenzahlung|Kreditkartenabr.|Abrechnung (\\d+.\\d+.\\d+)) ([\\d.]+,\\d{2})");
         type.addBlock(removalblock);
         removalblock.set(new Transaction<AccountTransaction>()
 
@@ -784,7 +784,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("day", "month", "value")
-                        .match("(\\d+.\\d+.) (?<day>\\d+).(?<month>\\d+). (Überweisung|Dauerauftrag|Basislastschrift|Kartenzahlung) (?<value>[\\d.]+,\\d{2})")
+                        .match("(\\d+.\\d+.) (?<day>\\d+).(?<month>\\d+). (Überweisung|Dauerauftrag|Basislastschrift|Kartenzahlung|Kreditkartenabr.|Abrechnung (\\d+.\\d+.\\d+)) (?<value>[\\d.]+,\\d{2})")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
                             // since year is not within the date correction necessary in first receipt of year
