@@ -477,22 +477,65 @@ public class JustTradePDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, "EUR");
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
 
+        // check security
         Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
         assertThat(security.getIsin(), is("US4878361082"));
         assertThat(security.getName(), is("Kellogg Co."));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         AccountTransaction t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
+        // check dividends transaction
         assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(t.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(12.15))));
-        assertThat(t.getShares(), is(Values.Share.factorize(30)));
         assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-03-01T00:00")));
+        assertThat(t.getShares(), is(Values.Share.factorize(30)));
+        assertThat(t.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(12.15))));
+        assertThat(t.getGrossValue(), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(14.29))));
+        assertThat(t.getUnitSum(Unit.Type.TAX), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.14))));
+        assertThat(t.getUnitSum(Unit.Type.FEE), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+    }
 
-        assertThat(t.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(14.29))));
-        assertThat(t.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(2.14))));
-        assertThat(t.getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+    @Test
+    public void testDividende02()
+    {
+        JustTradePDFExtractor extractor = new JustTradePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("US92936U1097"));
+        assertThat(security.getName(), is("W.P. Carey Inc."));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check dividends transaction
+        AccountTransaction t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-03-30T00:00")));
+        assertThat(t.getShares(), is(Values.Share.factorize(20)));
+        assertThat(t.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(13.00))));
+        assertThat(t.getGrossValue(), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(17.46))));
+        assertThat(t.getUnitSum(Unit.Type.TAX), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.46))));
+        assertThat(t.getUnitSum(Unit.Type.FEE), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
     }
 }
