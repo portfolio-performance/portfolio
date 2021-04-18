@@ -937,6 +937,7 @@ public class Messages extends NLS
     public static String PrefDescriptionQuandl;
     public static String PrefDivvyDiaryAPIKey;
     public static String PrefFinnhubAPIKey;
+    public static String PrefLabelEnableExperimentalFeatures;
     public static String PrefLabelNote;
     public static String PrefLabelProxyHost;
     public static String PrefLabelProxyPort;

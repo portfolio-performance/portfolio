@@ -89,7 +89,9 @@
         <children xsi:type="menu:MenuSeparator" xmi:id="_OvJsIL3OEeqoTtTaIzseTQ" elementId="name.abuchen.portfolio.bootstrap.menuseparator.6"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_PV6KIL3OEeqoTtTaIzseTQ" elementId="name.abuchen.portfolio.ui.menu.online.uploadToDivvyDiary" label="%menu.online.divvydiary.label" iconURI="platform:/plugin/name.abuchen.portfolio.ui/icons/divvydiary.com-logo.png" command="_ZWCyUL3OEeqoTtTaIzseTQ"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_uCcK8E9wEeuKH4ThcNC3ug" elementId="name.abuchen.portfolio.bootstrap.handledmenuitem.syncfrometf-datacom" label="%menu.online.etf-data.label" iconURI="platform:/plugin/name.abuchen.portfolio.ui/icons/etf-data_logo.png" command="_BPIxsE9jEeuKH4ThcNC3ug"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_CB6bwHmPEeuiO8_BzX84yg" elementId="name.abuchen.portfolio.ui.menu.online.syncPortfolioReport" label="Sync with portfolio-report.net" command="_m720cHmOEeuiO8_BzX84yg"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_CB6bwHmPEeuiO8_BzX84yg" elementId="name.abuchen.portfolio.ui.menu.online.syncPortfolioReport" label="Sync with portfolio-report.net" command="_m720cHmOEeuiO8_BzX84yg">
+          <visibleWhen xsi:type="ui:ImperativeExpression" xmi:id="_J5pDQKBuEeuHadwYWq-bDQ" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.preferences.ExperimentalFeaturesEnabledExpression"/>
+        </children>
       </children>
       <children xsi:type="menu:Menu" xmi:id="_6KeHEBiPEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.menu.help" label="%menu.help.label">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_oALicB3VEeOYjJVcrtNJyA" elementId="name.abuchen.portfolio.ui.menu.help.about" label="%command.about.name" tooltip="%command.about.tooltip" command="_Vr7H8B3VEeOYjJVcrtNJyA"/>
