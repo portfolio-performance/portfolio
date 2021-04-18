@@ -1,0 +1,32 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Ab. BLZ: 12345
+Abcd Abcdefghijk Referenz Nr: 12-123456
+Nr. 01 Kunden Nr.: 12345
+1234 Abcdefghi Depot Nr.: 12345-01 
+Austria
+Wien,  13. August 2010
+ 
+ERTRÄGNISGUTSCHRIFT
+BARDIVIDENDE
+ 
+Wertpapier : MORGAN ST., DEAN W. DL-01 Dividende Brutto : USD 3,00
+WP-Kenn-Nr. : US6174464486 Fremde Steuer : USD 0,45
+WP-Bestand : 60,000 Dividendenbetrag : USD 2,55
+Dividende : USD 0,050000 KESt : USD 0,30
+Ex-Tag : 28. Juli 2010 Zahlungsprovision : USD 0,01
+Zahltag : 13. August 2010 Devisen Kommission : USD 0,01
+Dividende Netto : USD 2,23
+Lagerort : 8152 Opfikon
+Verwahrart : WR Devisenkurs : 1,2859000
+Dividende Netto : EUR 1,73
+Abrechnung:
+Wir erkennen Ihr EUR Konto Nummer 12345 mit Valuta 17. August 2010.
+Die Buchung wurde "Eingang vorbehalten" ausgeführt.
+Überprüfen Sie bitte die Richtigkeit dieser Bestätigung. Sollten Sie innerhalb von 6 Wochen nach Erhalt dieser Bestätigung keine
+Einwände gegen die Richtigkeit erheben, so gelten die angeführten Erklärungen und Leistungen als genehmigt.
+ecetra  Central European e-Finance AG | Mariahilferstraße 121B | A-1060 Wien 
+e-mail: support@ecetra.com | Fax: +43-1-53689-13550 | www.ecetra.com
+Sitz Wien  |  Handelsgericht Wien  |  FB-Nr. 193944m  |  DVR 1052322  |  UID ATU49227901
+Ein Unternehmen der ERSTE BANK GRUPPE

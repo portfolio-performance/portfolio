@@ -1,0 +1,33 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Abcd BLZ: 18700
+Abcd Abcdefghijk Referenz Nr.: 12-12345678
+Nr. 01
+1234  Abcdefghi Kunden Nr.: 12345
+Austria Depot Nr.: 12345-1
+Wien, 06.12.2012
+WERTPAPIERBESTÄTIGUNG
+VERKAUF
+Börse: Vienna Stock Exchange Kurswert: EUR 1.121,25
+Wertpapier: ERSTE GROUP BK Gesamtbetrag: EUR 1.121,25
+ST.AKT.ON
+WP-Kenn-Nr.: AT0000652011
+Stück: 50,00
+Preis: EUR 22,425
+Handelstag: 06.12.2012
+Valutatag: 11.12.2012
+Lagerort: WIEN
+Verwahrart: WR
+Abrechnung:
+Wir erkennen Ihr EUR Konto 12345 mit Valuta 11.12.2012.
+Wir belasten Ihr Wertpapierdepot Nummer 12345-1.
+Ausführung:
+Ausführungsdatum: 06.12.2012 Ausführungszeit: 16:52:18
+Vorbehaltlich Eingang bzw. nachträglicher Storni/Umbuchungen seitens Lagerstelle/Partner.
+Überprüfen Sie bitte die Richtigkeit dieser Bestätigung. Sollten Sie innerhalb von 6 Wochen nach Erhalt dieser Bestätigung
+keine Einwände gegen die Richtigkeit erheben, so gelten die angeführten Erklärungen und Leistungen als genehmigt.
+Brokerjet Bank AG | Mariahilfer Straße 121B | A-1060 Wien
+e-mail: support@brokerjet.at | Fax: +43-1-53689-13550 | www.brokerjet.at
+Sitz Wien | Handelsgericht Wien | FB-Nr. 193944m | DVR 1052322 | UID ATU49227901
+Online Broker Erste Group
