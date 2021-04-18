@@ -1,0 +1,34 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Ab. BLZ: 12345
+Abcd Abcdefghijk Referenz Nr: 12-1234567-1
+Nr. 01 Kunden Nr.: 12345
+1234 Abcdefghi Depot Nr.: 12345-01 
+Austria
+Wien,  03. Dezember 2009
+ 
+WERTPAPIERBESTÄTIGUNG 
+IHR KAUF 
+ 
+Börse: New York Stock Exchange Kurswert: USD 2.069,90
+Wertpapier: CATERPILLAR INC. DL 1 FX-Kommission: USD 5,24
+WP-Kenn-Nr. : US1491231015 WP-Kommission: USD 25,62
+Stück: 35
+Gesamtbetrag: USD 2.100,76
+Preis: USD 59,1400
+Handelstag: 03. Dezember 2009
+Valutatag: 08. Dezember 2009 Devisenkurs: 0,6654265
+Lagerort: Opfikon Gesamtbetrag : EUR 1.397,90
+Verwahrart: WR
+Abrechnung:
+Wir belasten Ihr EUR Konto Nummer  12345 mit Valuta 08. Dezember 2009.
+Wir erkennen Ihr Wertpapierdepot Nummer  12345-1.
+Ausführung:
+Ausführungsdatum: 03. Dezember 2009 Ausführungszeit: 16:42:22
+Überprüfen Sie bitte die Richtigkeit dieser Bestätigung. Sollten Sie innerhalb von 6 Wochen nach Erhalt dieser Bestätigung keine
+Einwände gegen die Richtigkeit erheben, so gelten die angeführten Erklärungen und Leistungen als genehmigt.
+ecetra  Central European e-Finance AG | Mariahilferstraße 121B | A-1060 Wien 
+e-mail: support@ecetra.com | Fax: +43-1-53689-13550 | www.ecetra.com
+Sitz Wien  |  Handelsgericht Wien  |  FB-Nr. 193944m  |  DVR 1052322  |  UID ATU49227901
+Ein Unternehmen der ERSTE BANK GRUPPE

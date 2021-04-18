@@ -139,6 +139,8 @@ public interface UIConstants
          */
         String STORE_SETTINGS_NEXT_TO_FILE = "STORE_SETTINGS_NEXT_TO_FILE"; //$NON-NLS-1$
 
+        String ENABLE_EXPERIMENTAL_FEATURES = "ENABLE_EXPERIMENTAL_FEATURES"; //$NON-NLS-1$
+
         String ALPHAVANTAGE_API_KEY = "ALPHAVANTAGE_API_KEY"; //$NON-NLS-1$
         String ALPHAVANTAGE_CALL_FREQUENCY_LIMIT = "ALPHAVANTAGE_CALL_FREQUENCY_LIMIT"; //$NON-NLS-1$
 
@@ -147,6 +149,8 @@ public interface UIConstants
         String FINNHUB_API_KEY = "FINNHUB_API_KEY"; //$NON-NLS-1$
 
         String DIVVYDIARY_API_KEY = "DIVVYDIARY_API_KEY"; //$NON-NLS-1$
+
+        String PORTFOLIO_REPORT_API_KEY = "PORTFOLIO_REPORT_API_KEY"; //$NON-NLS-1$
 
         /**
          * Preference key whether to store settings (standard calendar)

@@ -219,6 +219,7 @@ public class PostbankPDFExtractorTest
 
         assertThat(t.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(10.17))));
         assertThat(t.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(1.53))));
+        assertThat(t.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -251,6 +252,40 @@ public class PostbankPDFExtractorTest
 
         assertThat(t.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(4.40))));
         assertThat(t.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(t.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+    }
+
+    @Test
+    public void testDividende03()
+    {
+        Client client = new Client();
+
+        PostbankPDFExtractor extractor = new PostbankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "postbank_dividende03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
+        assertThat(security.getIsin(), is("DE0005557508"));
+        assertThat(security.getWkn(), is("555750"));
+        assertThat(security.getName(), is("DEUTSCHE TELEKOM AG NAMENS-AKTIEN O.N."));
+
+        AccountTransaction t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        
+        assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(t.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(68.40))));
+        assertThat(t.getShares(), is(Values.Share.factorize(114)));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-04-06T00:00")));
+
+        assertThat(t.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(68.40))));
+        assertThat(t.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(t.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -283,5 +318,6 @@ public class PostbankPDFExtractorTest
 
         assertThat(t.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(9.65))));
         assertThat(t.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(t.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 }

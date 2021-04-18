@@ -1,0 +1,30 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Ab. BLZ: 12345
+Abcd Abcdefghijk Referenz Nr: 12-12345
+Nr. 01 Kunden Nr.: 12345
+1234 Abcdefghi Depot Nr.: 12345-01 
+Austria
+Wien,  29. Januar 2010
+ 
+ERTRÄGNISGUTSCHRIFT
+BARDIVIDENDE
+ 
+Wertpapier : EVN STAMMAKTIEN O.N. Dividende Brutto : EUR 33,30
+WP-Kenn-Nr. : AT0000741053 KESt : EUR 8,33
+WP-Bestand : 90,000 Dividendenbetrag : EUR 24,97
+Dividende : EUR 0,370000
+Ex-Tag : 26. Januar 2010 Dividende Netto : EUR 24,97
+Zahltag : 29. Januar 2010
+Lagerort : 1011
+Verwahrart : SV
+Abrechnung:
+Wir erkennen Ihr EUR Konto Nummer 12345 mit Valuta 01. Februar 2010.
+Die Buchung wurde "Eingang vorbehalten" ausgeführt.
+Überprüfen Sie bitte die Richtigkeit dieser Bestätigung. Sollten Sie innerhalb von 6 Wochen nach Erhalt dieser Bestätigung keine
+Einwände gegen die Richtigkeit erheben, so gelten die angeführten Erklärungen und Leistungen als genehmigt.
+ecetra  Central European e-Finance AG | Mariahilferstraße 121B | A-1060 Wien 
+e-mail: support@ecetra.com | Fax: +43-1-53689-13550 | www.ecetra.com
+Sitz Wien  |  Handelsgericht Wien  |  FB-Nr. 193944m  |  DVR 1052322  |  UID ATU49227901
+Ein Unternehmen der ERSTE BANK GRUPPE

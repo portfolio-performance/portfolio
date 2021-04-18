@@ -27,6 +27,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("biw AG"); //$NON-NLS-1$
         addBankIdentifier("FinTech Group Bank AG"); //$NON-NLS-1$
         addBankIdentifier("flatex Bank AG"); //$NON-NLS-1$
+        addBankIdentifier("flatexDEGIRO Bank AG"); //$NON-NLS-1$
 
         addBuySellTransaction();
         addBuyTransaction();
@@ -44,13 +45,25 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         addVorabpauschaleTransaction();
     }
 
+    @Override
+    public String getPDFAuthor()
+    {
+        return ""; //$NON-NLS-1$
+    }
+
+    @Override
+    public String getLabel()
+    {
+        return "flatexDEGIRO Bank AG / FinTech Group Bank AG / biw AG"; //$NON-NLS-1$
+    }
+
     @SuppressWarnings("nls")
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("Sammelabrechnung \\(Wertpapierkauf/-verkauf\\)");
+        DocumentType type = new DocumentType("Sammelabrechnung \\(Wertpapierkauf\\/-verkauf\\)");
         this.addDocumentTyp(type);
 
-        Block block = new Block("Nr.(\\d*)/(\\d*) *Kauf.*");
+        Block block = new Block("Nr.(\\d*)\\/(\\d*) *Kauf.*");
         type.addBlock(block);
         block.set(new Transaction<BuySellEntry>()
 
@@ -104,7 +117,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(BuySellEntryItem::new));
 
-        block = new Block("Nr.(\\d*)/(\\d*) *Verkauf.*");
+        block = new Block("Nr.(\\d*)\\/(\\d*) *Verkauf.*");
         type.addBlock(block);
         block.set(new Transaction<BuySellEntry>()
 
@@ -1400,11 +1413,5 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                 return new TransactionItem(t);
                             return null;
                         }));
-    }
-
-    @Override
-    public String getLabel()
-    {
-        return "FinTech Group Bank AG / flatex / Whitebox"; //$NON-NLS-1$
     }
 }

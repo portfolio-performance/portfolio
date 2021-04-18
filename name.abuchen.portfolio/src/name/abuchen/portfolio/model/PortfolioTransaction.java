@@ -2,6 +2,7 @@ package name.abuchen.portfolio.model;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -95,6 +96,7 @@ public class PortfolioTransaction extends Transaction
     public void setType(Type type)
     {
         this.type = type;
+        setUpdatedAt(Instant.now());
     }
 
     /**

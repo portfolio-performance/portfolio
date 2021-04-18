@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.handlers;
 import javax.inject.Named;
 
 import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.preference.PreferenceManager;
@@ -15,6 +16,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.preferences.AlphaVantagePreferencePage;
 import name.abuchen.portfolio.ui.preferences.CalendarPreferencePage;
 import name.abuchen.portfolio.ui.preferences.DivvyDiaryPreferencePage;
@@ -22,6 +24,7 @@ import name.abuchen.portfolio.ui.preferences.FinnhubPreferencePage;
 import name.abuchen.portfolio.ui.preferences.FormattingPreferencePage;
 import name.abuchen.portfolio.ui.preferences.GeneralPreferencePage;
 import name.abuchen.portfolio.ui.preferences.LanguagePreferencePage;
+import name.abuchen.portfolio.ui.preferences.PortfolioReportPreferencePage;
 import name.abuchen.portfolio.ui.preferences.PresentationPreferencePage;
 import name.abuchen.portfolio.ui.preferences.ProxyPreferencePage;
 import name.abuchen.portfolio.ui.preferences.QuandlPreferencePage;
@@ -44,7 +47,8 @@ public class OpenPreferenceDialogHandler
     }
 
     @Execute
-    public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell)
+    public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell,
+                    @Preference(UIConstants.Preferences.ENABLE_EXPERIMENTAL_FEATURES) boolean enableExperimentalFeatures)
     {
         PreferenceManager pm = new PreferenceManager('/');
         pm.addToRoot(new PreferenceNode("general", new GeneralPreferencePage())); //$NON-NLS-1$
@@ -55,9 +59,12 @@ public class OpenPreferenceDialogHandler
 
         pm.addToRoot(new PreferenceNode("api", new APIKeyPreferencePage())); //$NON-NLS-1$
         pm.addTo("api", new PreferenceNode("alphavantage", new AlphaVantagePreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
-        pm.addTo("api", new PreferenceNode("quandl", new QuandlPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
-        pm.addTo("api", new PreferenceNode("finnhub", new FinnhubPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
         pm.addTo("api", new PreferenceNode("divvydiary", new DivvyDiaryPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
+        pm.addTo("api", new PreferenceNode("finnhub", new FinnhubPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
+
+        if (enableExperimentalFeatures)
+            pm.addTo("api", new PreferenceNode("portfolio-report", new PortfolioReportPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
+        pm.addTo("api", new PreferenceNode("quandl", new QuandlPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
 
         pm.addToRoot(new PreferenceNode("proxy", new ProxyPreferencePage())); //$NON-NLS-1$
         pm.addToRoot(new PreferenceNode("updates", new UpdatePreferencePage())); //$NON-NLS-1$

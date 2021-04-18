@@ -5,7 +5,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +32,7 @@ import name.abuchen.portfolio.money.Values;
 public class SBrokerPDFExtractorTest
 {
     @Test
-    public void testWertpapierKauf1() throws IOException
+    public void testWertpapierKauf1()
     {
         SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
 
@@ -58,14 +57,17 @@ public class SBrokerPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 1930_17)));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1930.17))));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2014-10-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(16)));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 377L)));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.77))));
     }
 
     @Test
-    public void testWertpapierKauf2() throws IOException
+    public void testWertpapierKauf2()
     {
         SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
 
@@ -90,14 +92,17 @@ public class SBrokerPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 1249_30)));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1249.30))));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2011-11-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(18)));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 1090L)));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.90))));
     }
 
     @Test
-    public void testWertpapierKauf3() throws IOException
+    public void testWertpapierKauf3()
     {
         SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
 
@@ -135,7 +140,7 @@ public class SBrokerPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierVerkauf1() throws IOException
+    public void testWertpapierVerkauf1()
     {
         SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
 
@@ -160,14 +165,17 @@ public class SBrokerPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 5648_24)));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5648.24))));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-06-04T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(47)));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 821L)));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(8.21))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
     }
 
     @Test
-    public void testErtragsgutschrift1() throws IOException
+    public void testErtragsgutschrift1()
     {
         SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
 
@@ -190,13 +198,17 @@ public class SBrokerPDFExtractorTest
 
         assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 12_70)));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(12.70))));
         assertThat(t.getDateTime(), is(LocalDateTime.parse("2014-11-17T00:00")));
         assertThat(t.getShares(), is(Values.Share.factorize(16)));
+        assertThat(t.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(t.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
     }
 
     @Test
-    public void testErtragsgutschrift2() throws IOException
+    public void testErtragsgutschrift2()
     {
         SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
 
@@ -219,8 +231,15 @@ public class SBrokerPDFExtractorTest
 
         assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 52_36)));
-        assertThat(t.getDateTime(), is(LocalDateTime.parse("2014-12-15T00:00")));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(70.32))));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2014-11-26T00:00")));
         assertThat(t.getShares(), is(Values.Share.factorize(103)));
+
+        assertThat(t.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(88.28))));
+        assertThat(t.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7.03 + 0.38 + 10.55))));
+        assertThat(t.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
     }
 }

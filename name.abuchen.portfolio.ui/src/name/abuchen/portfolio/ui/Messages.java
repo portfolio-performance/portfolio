@@ -665,6 +665,9 @@ public class Messages extends NLS
     public static String LabelHeading;
     public static String LabelHeatmap;
     public static String LabelHeatmapEarnings;
+    public static String LabelHeatmapInvestments;
+    public static String LabelHeatmapInvestmentsDirect;
+    public static String LabelHeatmapInvestmentsNoSellings;
     public static String LabelHeatmapOrnament;
     public static String LabelHistoricalReturnsAndVolatiltity;
     public static String LabelJSONPathHint;
@@ -934,6 +937,7 @@ public class Messages extends NLS
     public static String PrefDescriptionQuandl;
     public static String PrefDivvyDiaryAPIKey;
     public static String PrefFinnhubAPIKey;
+    public static String PrefLabelEnableExperimentalFeatures;
     public static String PrefLabelNote;
     public static String PrefLabelProxyHost;
     public static String PrefLabelProxyPort;
