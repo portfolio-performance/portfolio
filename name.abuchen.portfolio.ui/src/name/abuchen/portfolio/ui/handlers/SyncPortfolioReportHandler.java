@@ -36,6 +36,7 @@ public class SyncPortfolioReportHandler
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_PART) MPart part,
                     @Named(IServiceConstants.ACTIVE_SHELL) Shell shell,
+                    @org.eclipse.e4.core.di.annotations.Optional @Preference(value = UIConstants.Preferences.PORTFOLIO_REPORT_API_URL) String portfolioReportApiUrl,
                     @org.eclipse.e4.core.di.annotations.Optional @Preference(value = UIConstants.Preferences.PORTFOLIO_REPORT_API_KEY) String portfolioReportApiKey)
     {
         if (portfolioReportApiKey == null)
@@ -53,8 +54,8 @@ public class SyncPortfolioReportHandler
         IRunnableWithProgress operation = monitor -> {
             try
             {
-                new PortfolioReportSync(portfolioReportApiKey, clientInput.getClient(), clientInput.getLabel())
-                                .sync(monitor);
+                new PortfolioReportSync(portfolioReportApiUrl, portfolioReportApiKey, clientInput.getClient(),
+                                clientInput.getLabel()).sync(monitor);
             }
             catch (IOException e)
             {

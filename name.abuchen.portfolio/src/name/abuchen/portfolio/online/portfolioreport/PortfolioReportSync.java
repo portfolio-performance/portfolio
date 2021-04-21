@@ -33,12 +33,12 @@ public class PortfolioReportSync
     private final String filename;
     private final PRApiClient api;
 
-    public PortfolioReportSync(String apiKey, Client client, String filename)
+    public PortfolioReportSync(String apiUrl, String apiKey, Client client, String filename)
     {
         this.client = client;
         this.filename = filename;
 
-        this.api = new PRApiClient(apiKey);
+        this.api = new PRApiClient(apiUrl, apiKey);
     }
 
     public void sync(IProgressMonitor monitor) throws IOException

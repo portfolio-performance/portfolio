@@ -38,6 +38,9 @@ public class PortfolioReportPreferencePage extends FieldEditorPreferencePage
             }
         });
 
+        addField(new StringFieldEditor(UIConstants.Preferences.PORTFOLIO_REPORT_API_URL, //
+                        "Portfolio Report API URL", getFieldEditorParent()));
+
         addField(new StringFieldEditor(UIConstants.Preferences.PORTFOLIO_REPORT_API_KEY, //
                         "Portfolio Report Session Key", getFieldEditorParent()));
 
