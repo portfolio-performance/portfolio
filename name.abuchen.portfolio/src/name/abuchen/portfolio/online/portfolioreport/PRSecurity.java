@@ -15,6 +15,12 @@ public class PRSecurity
     private String securityUuid;
     private Instant updatedAt;
 
+    public String calendar;
+    public String feed;
+    public String feedUrl;
+    public String latestFeed;
+    public String latestFeedUrl;
+
     public String getUuid()
     {
         return uuid;

@@ -141,6 +141,12 @@ public class PortfolioReportSync
                 remote.setSecurityUuid(local.getOnlineId());
                 remote.setUpdatedAt(local.getUpdatedAt());
 
+                remote.calendar = local.getCalendar();
+                remote.feed = local.getFeed();
+                remote.feedUrl = local.getFeedURL();
+                remote.latestFeed = local.getLatestFeed();
+                remote.latestFeedUrl = local.getLatestFeedURL();
+
                 api.updateSecurity(portfolioId, remote);
             }
             else
@@ -155,6 +161,12 @@ public class PortfolioReportSync
                 remote.setNote(local.getNote());
                 remote.setSecurityUuid(local.getOnlineId());
                 remote.setUpdatedAt(local.getUpdatedAt());
+
+                remote.calendar = local.getCalendar();
+                remote.feed = local.getFeed();
+                remote.feedUrl = local.getFeedURL();
+                remote.latestFeed = local.getLatestFeed();
+                remote.latestFeedUrl = local.getLatestFeedURL();
 
                 api.updateSecurity(portfolioId, remote);
             }
