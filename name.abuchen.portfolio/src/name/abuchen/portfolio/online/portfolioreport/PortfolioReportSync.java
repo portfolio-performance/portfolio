@@ -33,12 +33,12 @@ public class PortfolioReportSync
     private final String filename;
     private final PRApiClient api;
 
-    public PortfolioReportSync(String apiKey, Client client, String filename)
+    public PortfolioReportSync(String apiUrl, String apiKey, Client client, String filename)
     {
         this.client = client;
         this.filename = filename;
 
-        this.api = new PRApiClient(apiKey);
+        this.api = new PRApiClient(apiUrl, apiKey);
     }
 
     public void sync(IProgressMonitor monitor) throws IOException
@@ -141,6 +141,12 @@ public class PortfolioReportSync
                 remote.setSecurityUuid(local.getOnlineId());
                 remote.setUpdatedAt(local.getUpdatedAt());
 
+                remote.calendar = local.getCalendar();
+                remote.feed = local.getFeed();
+                remote.feedUrl = local.getFeedURL();
+                remote.latestFeed = local.getLatestFeed();
+                remote.latestFeedUrl = local.getLatestFeedURL();
+
                 api.updateSecurity(portfolioId, remote);
             }
             else
@@ -155,6 +161,12 @@ public class PortfolioReportSync
                 remote.setNote(local.getNote());
                 remote.setSecurityUuid(local.getOnlineId());
                 remote.setUpdatedAt(local.getUpdatedAt());
+
+                remote.calendar = local.getCalendar();
+                remote.feed = local.getFeed();
+                remote.feedUrl = local.getFeedURL();
+                remote.latestFeed = local.getLatestFeed();
+                remote.latestFeedUrl = local.getLatestFeedURL();
 
                 api.updateSecurity(portfolioId, remote);
             }

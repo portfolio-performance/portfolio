@@ -1,11 +1,13 @@
 package name.abuchen.portfolio.ui.preferences;
 
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Link;
 
 import name.abuchen.portfolio.ui.Messages;
@@ -38,11 +40,14 @@ public class PortfolioReportPreferencePage extends FieldEditorPreferencePage
             }
         });
 
+        addField(new StringFieldEditor(UIConstants.Preferences.PORTFOLIO_REPORT_API_URL, //
+                        "Portfolio Report API URL", getFieldEditorParent()));
+
         addField(new StringFieldEditor(UIConstants.Preferences.PORTFOLIO_REPORT_API_KEY, //
                         "Portfolio Report Session Key", getFieldEditorParent()));
 
-        createNoteComposite(getFieldEditorParent().getFont(), getFieldEditorParent(), //
+        Composite note = createNoteComposite(getFieldEditorParent().getFont(), getFieldEditorParent(), //
                         Messages.PrefLabelNote, "Keep the session key secret!");
-
+        GridDataFactory.fillDefaults().span(2, 1).grab(true, false).applyTo(note);
     }
 }
