@@ -5,6 +5,9 @@ import java.util.Objects;
 
 public final class Money implements Comparable<Money>
 {
+    // Special value representing a zero balance. No need to worry about the currency in this case ;).
+    public static final Money ZERO = of("", 0); //$NON-NLS-1$
+    
     private final String currencyCode;
     private final long amount;
 
@@ -49,14 +52,14 @@ public final class Money implements Comparable<Money>
     public boolean isGreaterOrEqualThan(Money other)
     {
         Objects.requireNonNull(other);
-        if (!other.getCurrencyCode().equals(currencyCode))
+        if (!other.getCurrencyCode().equals(currencyCode) && other.amount != 0)
             throw new MonetaryException();
         return amount >= other.getAmount();
     }
 
     public Money add(Money monetaryAmount)
     {
-        if (!monetaryAmount.getCurrencyCode().equals(currencyCode))
+        if (!monetaryAmount.getCurrencyCode().equals(currencyCode) && monetaryAmount.amount != 0)
             throw new MonetaryException(MessageFormat.format("Illegal addition: {0} + {1}", //$NON-NLS-1$
                             Values.Money.format(this), Values.Money.format(monetaryAmount)));
 
@@ -65,7 +68,7 @@ public final class Money implements Comparable<Money>
 
     public Money subtract(Money monetaryAmount)
     {
-        if (!monetaryAmount.getCurrencyCode().equals(currencyCode))
+        if (!monetaryAmount.getCurrencyCode().equals(currencyCode) && monetaryAmount.amount != 0)
             throw new MonetaryException(MessageFormat.format("Illegal subtraction: {0} - {1}", //$NON-NLS-1$
                             Values.Money.format(this), Values.Money.format(monetaryAmount)));
 

@@ -11,9 +11,11 @@ import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import name.abuchen.portfolio.math.Rebalancer;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Classification.Assignment;
@@ -90,7 +92,7 @@ public final class TaxonomyModel
     private ClientSnapshot snapshot;
 
     private TaxonomyNode virtualRootNode;
-    private TaxonomyNode classificationRootNode;
+    private TaxonomyNode.ClassificationNode classificationRootNode;
     private TaxonomyNode unassignedNode;
     private Map<InvestmentVehicle, Assignment> investmentVehicle2weight = new HashMap<>();
 
@@ -106,6 +108,8 @@ public final class TaxonomyModel
     private List<AttachedModel> attachedModels = new ArrayList<>();
     private List<TaxonomyModelUpdatedListener> listeners = new ArrayList<>();
     private List<DirtyListener> dirtyListener = new ArrayList<>();
+    
+    private Rebalancer.RebalancingSolution rebalancingSolution;
 
     @Inject
     /* package */ TaxonomyModel(ExchangeRateProviderFactory factory, Client client, Taxonomy taxonomy)
@@ -244,6 +248,7 @@ public final class TaxonomyModel
     private void runRecalculations()
     {
         this.attachedModels.forEach(m -> m.recalculate(this));
+        rebalance();
     }
 
     public boolean isUnassignedCategoryInChartsExcluded()
@@ -462,5 +467,69 @@ public final class TaxonomyModel
             return getWeightByInvestmentVehicle(
                             node.getAssignment().getInvestmentVehicle()) != Classification.ONE_HUNDRED_PERCENT;
         }
+    }
+    
+    public Rebalancer.RebalancingSolution getRebalancingSolution()
+    {
+        return rebalancingSolution;
+    }
+
+    private void rebalance()
+    {
+        Rebalancer rebalancer = new Rebalancer();
+        collectConstraints(classificationRootNode, rebalancer, Collections.emptyMap());
+        rebalancingSolution = rebalancer.solve();
+    }
+
+    private void collectConstraints(TaxonomyNode.ClassificationNode node, Rebalancer rebalancer,
+                    Map<InvestmentVehicle, Double> investmentVehiclesInParentNodes)
+    {
+        double thisWeight = node.getWeight() / (double) Classification.ONE_HUNDRED_PERCENT;
+        List<TaxonomyNode> allChildren = node.getChildren();
+        List<TaxonomyNode.AssignmentNode> assignmentChildren = allChildren.stream()
+                        .filter(child -> child.isAssignment())
+                        .map(child -> (TaxonomyNode.AssignmentNode) child)
+                        .collect(Collectors.toList());
+        List<TaxonomyNode.ClassificationNode> classificationChildren = allChildren.stream()
+                        .filter(child -> child.isClassification())
+                        .map(child -> (TaxonomyNode.ClassificationNode) child)
+                        .collect(Collectors.toList());
+        if (classificationChildren.size() == 0)
+        {
+            // lowest level classification. We have to add a constraint.
+            Map<InvestmentVehicle, Double> equation = new HashMap<>(assignmentChildren.size());
+            for (AssignmentNode assignmentNode : assignmentChildren)
+                addToMap(equation, assignmentNode.getAssignment().getInvestmentVehicle(),
+                                assignmentNode.getWeight() / (double) Classification.ONE_HUNDRED_PERCENT);
+
+            // The investment vehicles in parent nodes implicitly lower the
+            // weight for this node. We have to take this into account.
+            for (Map.Entry<InvestmentVehicle, Double> entry : investmentVehiclesInParentNodes.entrySet())
+                addToMap(equation, entry.getKey(), entry.getValue() * thisWeight);
+
+            rebalancer.addConstraint(new Rebalancer.RebalancingConstraint(equation,
+                            node.getTarget().subtract(node.getActual())));
+        }
+        else
+        {
+            // Node has classification children. We can not add any constraint
+            // yet.
+            investmentVehiclesInParentNodes = new HashMap<>(investmentVehiclesInParentNodes);
+            for (Map.Entry<InvestmentVehicle, Double> entry : investmentVehiclesInParentNodes.entrySet())
+                entry.setValue(entry.getValue() * thisWeight);
+
+            for (AssignmentNode assignmentNode : assignmentChildren)
+                addToMap(investmentVehiclesInParentNodes, assignmentNode.getAssignment().getInvestmentVehicle(),
+                                (double) assignmentNode.getWeight() / (double) Classification.ONE_HUNDRED_PERCENT);
+            for (ClassificationNode child : classificationChildren)
+                collectConstraints(child, rebalancer,
+                                new HashMap<InvestmentVehicle, Double>(investmentVehiclesInParentNodes));
+        }
+    }
+
+    // Helper method for building the rebalancer.
+    private static void addToMap(Map<InvestmentVehicle, Double> map, InvestmentVehicle investmentVehicle, double weight)
+    {
+        map.put(investmentVehicle, map.getOrDefault(investmentVehicle, 0d) + weight);
     }
 }

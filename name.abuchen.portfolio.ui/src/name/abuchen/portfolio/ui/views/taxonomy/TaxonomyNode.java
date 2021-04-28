@@ -116,11 +116,18 @@ public abstract class TaxonomyNode implements Adaptable
         {
             return getName();
         }
+
+        @Override
+        public boolean isPrimary()
+        {
+            return true;
+        }
     }
 
     /* protected */static class AssignmentNode extends TaxonomyNode
     {
         private Assignment assignment;
+        TaxonomyNode firstNodeWithThisSecurity;
 
         public AssignmentNode(TaxonomyNode parent, Assignment assignment)
         {
@@ -221,6 +228,29 @@ public abstract class TaxonomyNode implements Adaptable
                 return type.cast(assignment.getInvestmentVehicle());
             else
                 return super.adapt(type);
+        }
+
+        @Override
+        public boolean isPrimary()
+        {
+            if(getWeight() == Classification.ONE_HUNDRED_PERCENT)
+                return true; // This is the only node
+            
+            firstNodeWithThisSecurity = null; // Recalculate, taxonomy might have changed
+            
+            // Find first node with the same security:
+            TaxonomyNode thisNode = this;
+            this.getRoot().accept(new NodeVisitor()
+            {
+                
+                @Override
+                public void visit(TaxonomyNode node)
+                {
+                    if(firstNodeWithThisSecurity == null && node.getBackingSecurity() == thisNode.getBackingSecurity())
+                        firstNodeWithThisSecurity = node;
+                }
+            });
+            return firstNodeWithThisSecurity == this;
         }
     }
 
@@ -361,6 +391,13 @@ public abstract class TaxonomyNode implements Adaptable
     public abstract int getRank();
 
     public abstract void setRank(int rank);
+    
+    /**
+     * A security can be the backed security of multiple assignment nodes. For
+     * each security, exactly one their assignment nodes of them is primary.
+     * Classifications are always primary.
+     */
+    public abstract boolean isPrimary();
 
     public abstract String getColor();
 

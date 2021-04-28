@@ -35,6 +35,7 @@
         <unit id="org.objenesis" version="2.6.0.v20180420-1519"/>
         <unit id="org.objenesis.source" version="2.6.0.v20180420-1519"/>
 		<unit id="org.objectweb.asm" version="5.0.1.v201404251740"/>
+		<unit id="org.apache.commons.math3" version="3.5.0.v20190611-1023"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<repository location="https://download.eclipse.org/nebula/releases/2.3.0"/>
