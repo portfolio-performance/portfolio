@@ -11,14 +11,14 @@ import name.abuchen.portfolio.model.Classification.Assignment;
 
 public class Taxonomy
 {
-    public static class Visitor
+    public static interface Visitor
     {
-        public void visit(Classification classification)
+        default void visit(Classification classification)
         {
             // to be sub-classed
         }
 
-        public void visit(Classification classification, Assignment assignment)
+        default void visit(Classification classification, Assignment assignment)
         {
             // to be sub-classed
         }

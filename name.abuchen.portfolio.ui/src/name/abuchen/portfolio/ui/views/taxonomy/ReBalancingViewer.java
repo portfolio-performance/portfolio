@@ -34,6 +34,10 @@ import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
 
 public class ReBalancingViewer extends AbstractNodeTreeViewer
 {
+    private static final Color BG_COLOR_AMBIGOUS = new Color(255, 255, 100);
+    private static final Color BG_COLOR_INEXACT = new Color(255, 171, 49);
+    private static final Color FG_COLOR_DUPLICATED_SECURITY = new Color(128, 128, 128);
+    
     @Inject
     public ReBalancingViewer(AbstractFinanceView view, TaxonomyModel model, TaxonomyNodeRenderer renderer)
     {
@@ -168,6 +172,75 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
         });
         support.addColumn(column);
 
+        column = new Column("rebalanceAmount", Messages.ColumnRebalanceAmount, SWT.RIGHT, 100); //$NON-NLS-1$
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+
+                // no delta shares for unassigned securities
+                if (node.getParent() != null && node.getParent().isUnassignedCategory())
+                    return null;
+
+                Security security = node.getBackingSecurity();
+                if (security == null)
+                    return null;
+
+                Money rebalancingAmount = getModel().getRebalancingSolution().getMoney(security);
+                return Values.Money.format(rebalancingAmount);
+                
+            }
+            
+            @Override
+            public Color getBackground(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+                
+                Security security = node.getBackingSecurity();
+                if (security == null)
+                    return null;
+
+                if (getModel().getRebalancingSolution().isAmbigous(security))
+                    return BG_COLOR_AMBIGOUS;
+                if (!getModel().getRebalancingSolution().isExact(security))
+                    return BG_COLOR_INEXACT;
+                return null;
+            }
+            
+            @Override
+            public Color getForeground(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+                
+                Security security = node.getBackingSecurity();
+                if (security == null)
+                    return null;
+
+                if(! node.isPrimary())
+                    return FG_COLOR_DUPLICATED_SECURITY;
+                return null;
+            }
+            
+            @Override
+            public String getToolTipText(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+                
+                Security security = node.getBackingSecurity();
+                if (security == null)
+                    return null;
+
+                if (getModel().getRebalancingSolution().isAmbigous(security))
+                    return Messages.RebalanceAmbiguousTooltip;
+                if (!getModel().getRebalancingSolution().isExact(security))
+                    return Messages.RebalanceInexactTooltip;
+                return null;
+            }
+        });
+        support.addColumn(column);
+
         column = new Column("quote", Messages.ColumnQuote, SWT.RIGHT, 60); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
@@ -227,12 +300,13 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
 
                 String priceCurrency = security.getCurrencyCode();
                 long price = security.getSecurityPrice(LocalDate.now()).getValue();
-                long weightedPrice = Math.round(node.getWeight() * price / (double) Classification.ONE_HUNDRED_PERCENT);
-                if (weightedPrice == 0L)
+                if (price == 0L)
                     return Values.Share.format(0L);
 
-                String deltaCurrency = node.getActual().getCurrencyCode();
-                long delta = node.getParent().getTarget().getAmount() - node.getParent().getActual().getAmount();
+
+                Money rebalancingAmount = getModel().getRebalancingSolution().getMoney(security);
+                String deltaCurrency = rebalancingAmount.getCurrencyCode();
+                long delta = rebalancingAmount.getAmount();
 
                 // if currency of the data (here: deltaCurrency) does not match
                 // the currency of the security (here: priceCurrency), convert
@@ -244,8 +318,54 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                 }
 
                 long shares = Math
-                                .round(delta * Values.Share.divider() * Values.Quote.dividerToMoney() / weightedPrice);
+                                .round(delta * Values.Share.divider() * Values.Quote.dividerToMoney() / price);
                 return Values.Share.format(shares);
+            }
+            
+            @Override
+            public Color getBackground(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+                
+                Security security = node.getBackingSecurity();
+                if (security == null)
+                    return null;
+
+                if (getModel().getRebalancingSolution().isAmbigous(security))
+                    return BG_COLOR_AMBIGOUS;
+                if (!getModel().getRebalancingSolution().isExact(security))
+                    return BG_COLOR_INEXACT;
+                return null;
+            }
+            
+            @Override
+            public Color getForeground(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+                
+                Security security = node.getBackingSecurity();
+                if (security == null)
+                    return null;
+
+                if(! node.isPrimary())
+                    return FG_COLOR_DUPLICATED_SECURITY;
+                return null;
+            }
+            
+            @Override
+            public String getToolTipText(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+                
+                Security security = node.getBackingSecurity();
+                if (security == null)
+                    return null;
+
+                if (getModel().getRebalancingSolution().isAmbigous(security))
+                    return Messages.RebalanceAmbiguousTooltip;
+                if (!getModel().getRebalancingSolution().isExact(security))
+                    return Messages.RebalanceInexactTooltip;
+                return null;
             }
         });
         support.addColumn(column);

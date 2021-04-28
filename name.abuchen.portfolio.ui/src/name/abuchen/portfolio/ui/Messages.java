@@ -142,6 +142,9 @@ public class Messages extends NLS
     public static String ColumnDeltaPercentRelative;
     public static String ColumnDeltaPercentRelative_Description;
     public static String ColumnDeltaShares;
+    public static String ColumnRebalanceAmount;
+    public static String RebalanceAmbiguousTooltip;
+    public static String RebalanceInexactTooltip;
     public static String ColumnDeltaValue;
     public static String ColumnDesiredAllocation;
     public static String ColumnDesiredAllocation_Description;

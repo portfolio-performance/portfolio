@@ -34,6 +34,7 @@
 		<unit id="org.objenesis.source" version="2.6.0.v20180420-1519"/>
 		<unit id="org.mockito" version="2.23.0.v20200310-1642"/>
 		<unit id="org.mockito.source" version="2.23.0.v20200310-1642"/>
+		<unit id="org.apache.commons.math3" version="3.5.0.v20190611-1023"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<repository location="https://download.eclipse.org/nebula/releases/2.4.2"/>
