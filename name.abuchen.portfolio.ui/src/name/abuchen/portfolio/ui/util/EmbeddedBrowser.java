@@ -51,7 +51,8 @@ public class EmbeddedBrowser
         this.htmlpage = htmlpage;
     }
 
-    public Control createControl(Composite parent, Consumer<Browser> functions)
+    @SafeVarargs
+    public final Control createControl(Composite parent, Consumer<Browser>... functions)
     {
         Composite container = new Composite(parent, SWT.NONE);
         GridLayoutFactory.fillDefaults().applyTo(container);
@@ -63,7 +64,10 @@ public class EmbeddedBrowser
             GridDataFactory.fillDefaults().grab(true, true).applyTo(browser);
 
             if (functions != null)
-                functions.accept(browser);
+            {
+                for (int ii = 0; ii < functions.length; ii++)
+                    functions[ii].accept(browser);
+            }
 
             browser.setText(loadHTML(htmlpage));
             browser.addTraverseListener(event -> event.doit = true);
