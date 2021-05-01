@@ -566,7 +566,7 @@ public class TaxonomyModelTest
     //   - Classification Y (25 %)
     //     - Security A (25 %)
     //     - Security B (10 %)
-    //   - Classification Y (50 %)
+    //   - Classification Z (50 %)
     //     - Security A (25 %)
     //     - Security B (80 %)
     // @formatter:on
@@ -1571,10 +1571,10 @@ public class TaxonomyModelTest
         assertEquals(asSet(A,B), rebalancingResult.getInvestmentVehicles());
         assertFalse(rebalancingResult.isExact(A));
         assertFalse(rebalancingResult.isAmbigous(A));
-        assertEquals(Money.of(CURRENCY_UNIT, -400), rebalancingResult.getMoney(A));
+        assertEquals(Money.of(CURRENCY_UNIT, 206), rebalancingResult.getMoney(A));
         assertFalse(rebalancingResult.isExact(B));
         assertFalse(rebalancingResult.isAmbigous(B));
-        assertEquals(Money.of(CURRENCY_UNIT, -364), rebalancingResult.getMoney(B));
+        assertEquals(Money.of(CURRENCY_UNIT, -206), rebalancingResult.getMoney(B));
     }
 
     @Test
@@ -1588,10 +1588,10 @@ public class TaxonomyModelTest
         assertEquals(asSet(A,B), rebalancingResult.getInvestmentVehicles());
         assertFalse(rebalancingResult.isExact(A));
         assertFalse(rebalancingResult.isAmbigous(A));
-        assertEquals(Money.of(CURRENCY_UNIT, -5200), rebalancingResult.getMoney(A));
+        assertEquals(Money.of(CURRENCY_UNIT, -4897), rebalancingResult.getMoney(A));
         assertFalse(rebalancingResult.isExact(B));
         assertFalse(rebalancingResult.isAmbigous(B));
-        assertEquals(Money.of(CURRENCY_UNIT, 4818), rebalancingResult.getMoney(B));
+        assertEquals(Money.of(CURRENCY_UNIT, 4897), rebalancingResult.getMoney(B));
     }
 
     @Test
@@ -1606,10 +1606,10 @@ public class TaxonomyModelTest
         assertEquals(asSet(A,B), rebalancingResult.getInvestmentVehicles());
         assertFalse(rebalancingResult.isExact(A));
         assertFalse(rebalancingResult.isAmbigous(A));
-        assertEquals(Money.of(CURRENCY_UNIT, -5600), rebalancingResult.getMoney(A));
+        assertEquals(Money.of(CURRENCY_UNIT, -4691), rebalancingResult.getMoney(A));
         assertFalse(rebalancingResult.isExact(B));
         assertFalse(rebalancingResult.isAmbigous(B));
-        assertEquals(Money.of(CURRENCY_UNIT, 4455), rebalancingResult.getMoney(B));
+        assertEquals(Money.of(CURRENCY_UNIT, 4691), rebalancingResult.getMoney(B));
     }
 
     @Test

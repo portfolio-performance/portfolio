@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import name.abuchen.portfolio.math.Rebalancer;
+import name.abuchen.portfolio.math.Rebalancer.FixedSumRebalancer;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Classification.Assignment;
@@ -476,12 +477,12 @@ public final class TaxonomyModel
 
     private void rebalance()
     {
-        Rebalancer rebalancer = new Rebalancer();
+        FixedSumRebalancer rebalancer = new FixedSumRebalancer(Money.of(this.getCurrencyCode(), 0));
         collectConstraints(classificationRootNode, rebalancer, Collections.emptyMap());
         rebalancingSolution = rebalancer.solve();
     }
 
-    private void collectConstraints(TaxonomyNode.ClassificationNode node, Rebalancer rebalancer,
+    private void collectConstraints(TaxonomyNode.ClassificationNode node, FixedSumRebalancer rebalancer,
                     Map<InvestmentVehicle, Double> investmentVehiclesInParentNodes)
     {
         double thisWeight = node.getWeight() / (double) Classification.ONE_HUNDRED_PERCENT;

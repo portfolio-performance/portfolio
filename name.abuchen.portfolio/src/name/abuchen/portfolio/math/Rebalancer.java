@@ -6,8 +6,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
+import name.abuchen.portfolio.math.Rebalancer.RebalancingConstraint;
+import name.abuchen.portfolio.math.Rebalancer.RebalancingSolution;
 import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.money.MonetaryException;
 import name.abuchen.portfolio.money.Money;
@@ -238,5 +241,93 @@ public class Rebalancer
         else
             ambigousResults = Collections.emptySet();
         return new RebalancingSolution(solutionMap, ambigousResults, inexactResults);
+    }
+    
+    /**
+     * Rebalancer that works very similar to {@link Rebalancer}, but guarantees
+     * that the rebalancing solution adds up to fixed value, if there is no exact solution. This is especially
+     * useful when no exact rebalancing is possible, because this rebalancer
+     * minimizes the mean square error while respecting the desired rebalancing
+     * sum (while {@link Rebalancer} only minimizes the mean squarde error
+     * without respecting the desired rebalancing sum).
+     */
+    public static class FixedSumRebalancer
+    {
+        // This rebalancer contains the unmodified constraints. It is used to
+        // determine which results are ambiguous and which ones are inexact.
+        private Rebalancer normalRebalancer;
+        private Money totalSum;
+
+        public FixedSumRebalancer(Money totalSum)
+        {
+            this.totalSum = totalSum;
+            normalRebalancer = new Rebalancer();
+        }
+
+        public void addConstraint(RebalancingConstraint constraint)
+        {
+            normalRebalancer.addConstraint(constraint);
+        }
+
+        public RebalancingSolution solve()
+        {
+            RebalancingSolution normalSolution = normalRebalancer.solve();
+
+            // This rebalancer does not contain “removedInvestmentVehicle”. The
+            // result for the removedInvestementVehicle can be determined from
+            // the total sum.
+            Rebalancer reducedRebalancer = new Rebalancer();
+            InvestmentVehicle removedInvestmentVehicle;
+
+            if (normalSolution.inexactResults.size() == 0)
+                return normalSolution; // exact solution found => Return it
+            else
+                removedInvestmentVehicle = normalSolution.inexactResults.iterator().next(); // Pick any inexact solution
+            
+            Money inexactTotalSum = totalSum;
+            for(Map.Entry<InvestmentVehicle, Money> entry : normalSolution.solution.entrySet())
+                if(normalSolution.isExact(entry.getKey()))
+                    inexactTotalSum = inexactTotalSum.subtract(entry.getValue());
+
+            // Re-solve all inexact solutions
+            for (RebalancingConstraint oldConstraint : normalRebalancer.constraintsToSolve)
+            {
+                if(! Collections.disjoint(oldConstraint.linearEquation.keySet(), normalSolution.inexactResults))
+                {
+                    double removedInvestmentVehicleFactor = oldConstraint.linearEquation
+                                    .getOrDefault(removedInvestmentVehicle, 0d);
+                    Map<InvestmentVehicle, Double> newLinearEquation = new HashMap<>(oldConstraint.linearEquation);
+                    newLinearEquation.remove(removedInvestmentVehicle);
+                    if (removedInvestmentVehicleFactor > Precision.EPSILON)
+                    {
+                        for (InvestmentVehicle investmentVehicle : normalSolution.inexactResults)
+                            if(investmentVehicle != removedInvestmentVehicle)
+                                addToMap(newLinearEquation, investmentVehicle, - removedInvestmentVehicleFactor);
+                    }
+    
+                    Money moneyToSubtract = Money.of(inexactTotalSum.getCurrencyCode(),
+                                    Math.round(inexactTotalSum.getAmount() * removedInvestmentVehicleFactor));
+                    RebalancingConstraint newConstraint = new RebalancingConstraint(newLinearEquation,
+                                    oldConstraint.targetAmount.subtract(moneyToSubtract));
+                    reducedRebalancer.addConstraint(newConstraint);
+                }
+            }
+
+            RebalancingSolution reducedSolution = reducedRebalancer.solve();
+            Money reducedSolutionSum = Money.of(normalRebalancer.currency, 0);
+            for (Map.Entry<InvestmentVehicle, Money> entry : reducedSolution.solution.entrySet())
+            {
+                normalSolution.solution.put(entry.getKey(), entry.getValue());
+                reducedSolutionSum = reducedSolutionSum.add(entry.getValue());
+            }
+            normalSolution.solution.put(removedInvestmentVehicle, inexactTotalSum.subtract(reducedSolutionSum));
+            
+            return normalSolution;
+        }
+    }
+
+    private static void addToMap(Map<InvestmentVehicle, Double> map, InvestmentVehicle investmentVehicle, double weight)
+    {
+        map.put(investmentVehicle, map.getOrDefault(investmentVehicle, 0d) + weight);
     }
 }
