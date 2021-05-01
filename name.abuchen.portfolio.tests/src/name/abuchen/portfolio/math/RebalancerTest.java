@@ -13,6 +13,7 @@ import java.util.Set;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.math.Rebalancer.FixedSumRebalancer;
 import name.abuchen.portfolio.math.Rebalancer.RebalancingConstraint;
 import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Security;
@@ -534,6 +535,275 @@ public class RebalancerTest
         assertFalse(solution.isAmbigous(C));
         assertFalse(solution.isExact(C));
         assertEquals(Money.of(CURRENCY_UNIT, 150000), solution.getMoney(C));
+        assertFalse(solution.isAmbigous(D));
+        assertTrue(solution.isExact(D));
+        assertEquals(AMOUNT_1, solution.getMoney(D));
+    }
+    
+    // From here on tests for the fixedSumRebalancer
+    
+    @Test
+    public void testFixedSumRebalancerUnsolvableConstraintSumZero()
+    {
+        FixedSumRebalancer rebalancer = new FixedSumRebalancer(AMOUNT_0);
+        Map<InvestmentVehicle, Double> map = new HashMap<>();
+        map.put(A, 1d);
+        rebalancer.addConstraint(new RebalancingConstraint(map, AMOUNT_2));
+        Map<InvestmentVehicle, Double> map2 = new HashMap<>();
+        map2.put(A, 1d);
+        rebalancer.addConstraint(new RebalancingConstraint(map2, AMOUNT_0));
+        Rebalancer.RebalancingSolution solution = rebalancer.solve();
+        
+        assertEquals(Collections.singleton(A), solution.getInvestmentVehicles());
+        assertFalse(solution.isAmbigous(A));
+        assertFalse(solution.isExact(A));
+        assertEquals(AMOUNT_0, solution.getMoney(A));
+    }
+    
+    @Test
+    public void testFixedSumRebalancerUnsolvableConstraintSumOne()
+    {
+        FixedSumRebalancer rebalancer = new FixedSumRebalancer(AMOUNT_1);
+        Map<InvestmentVehicle, Double> map = new HashMap<>();
+        map.put(A, 1d);
+        rebalancer.addConstraint(new RebalancingConstraint(map, AMOUNT_2));
+        Map<InvestmentVehicle, Double> map2 = new HashMap<>();
+        map2.put(A, 1d);
+        rebalancer.addConstraint(new RebalancingConstraint(map2, AMOUNT_0));
+        Rebalancer.RebalancingSolution solution = rebalancer.solve();
+        
+        assertEquals(Collections.singleton(A), solution.getInvestmentVehicles());
+        assertFalse(solution.isAmbigous(A));
+        assertFalse(solution.isExact(A));
+        assertEquals(AMOUNT_1, solution.getMoney(A));
+    }
+    
+    @Test
+    public void testFixedSumRebalancerUnsolvableConstraint2SumZero()
+    {
+        FixedSumRebalancer rebalancer = new FixedSumRebalancer(AMOUNT_0);
+        Map<InvestmentVehicle, Double> map = new HashMap<>();
+        map.put(A, 1d);
+        rebalancer.addConstraint(new RebalancingConstraint(map, AMOUNT_1));
+        Map<InvestmentVehicle, Double> map2 = new HashMap<>();
+        map2.put(B, 1d);
+        rebalancer.addConstraint(new RebalancingConstraint(map2, AMOUNT_1));
+        Map<InvestmentVehicle, Double> map3 = new HashMap<>();
+        map3.put(A, 1d);
+        map3.put(B, 1d);
+        rebalancer.addConstraint(new RebalancingConstraint(map3, AMOUNT_1));
+        Rebalancer.RebalancingSolution solution = rebalancer.solve();
+        
+        assertEquals(asSet(A,B), solution.getInvestmentVehicles());
+        assertFalse(solution.isAmbigous(A));
+        assertFalse(solution.isExact(A));
+        assertEquals(AMOUNT_0, solution.getMoney(A));
+        assertFalse(solution.isAmbigous(B));
+        assertFalse(solution.isExact(B));
+        assertEquals(AMOUNT_0, solution.getMoney(B));
+    }
+    
+    @Test
+    public void testFixedSumRebalancerUnsolvableConstraint2SumTwo()
+    {
+        FixedSumRebalancer rebalancer = new FixedSumRebalancer(AMOUNT_2);
+        Map<InvestmentVehicle, Double> map = new HashMap<>();
+        map.put(A, 1d);
+        rebalancer.addConstraint(new RebalancingConstraint(map, AMOUNT_1));
+        Map<InvestmentVehicle, Double> map2 = new HashMap<>();
+        map2.put(B, 1d);
+        rebalancer.addConstraint(new RebalancingConstraint(map2, AMOUNT_1));
+        Map<InvestmentVehicle, Double> map3 = new HashMap<>();
+        map3.put(A, 1d);
+        map3.put(B, 1d);
+        rebalancer.addConstraint(new RebalancingConstraint(map3, AMOUNT_1));
+        Rebalancer.RebalancingSolution solution = rebalancer.solve();
+        
+        assertEquals(asSet(A,B), solution.getInvestmentVehicles());
+        assertFalse(solution.isAmbigous(A));
+        assertFalse(solution.isExact(A));
+        assertEquals(AMOUNT_1, solution.getMoney(A));
+        assertFalse(solution.isAmbigous(B));
+        assertFalse(solution.isExact(B));
+        assertEquals(AMOUNT_1, solution.getMoney(B));
+    }
+    
+    @Test
+    public void testFixedSumRebalancerPartiallyUnsolvableConstraintSumZero()
+    {
+        FixedSumRebalancer rebalancer = new FixedSumRebalancer(AMOUNT_0);
+        Map<InvestmentVehicle, Double> map = new HashMap<>();
+        map.put(A, 1d);
+        rebalancer.addConstraint(new RebalancingConstraint(map, AMOUNT_2));
+        Map<InvestmentVehicle, Double> map2 = new HashMap<>();
+        map2.put(A, 1d);
+        rebalancer.addConstraint(new RebalancingConstraint(map2, AMOUNT_0));
+        Map<InvestmentVehicle, Double> map3 = new HashMap<>();
+        map3.put(C, 1d);
+        rebalancer.addConstraint(new RebalancingConstraint(map3, AMOUNT_0));
+        Rebalancer.RebalancingSolution solution = rebalancer.solve();
+        
+        assertEquals(asSet(A,C), solution.getInvestmentVehicles());
+        assertFalse(solution.isAmbigous(A));
+        assertFalse(solution.isExact(A));
+        assertEquals(AMOUNT_0, solution.getMoney(A));
+        assertFalse(solution.isAmbigous(C));
+        assertTrue(solution.isExact(C));
+        assertEquals(AMOUNT_0, solution.getMoney(C));
+    }
+    
+    @Test
+    public void testFixedSumRebalancerPartiallyUnsolvableConstraintSumOne()
+    {
+        FixedSumRebalancer rebalancer = new FixedSumRebalancer(AMOUNT_1);
+        Map<InvestmentVehicle, Double> map = new HashMap<>();
+        map.put(A, 1d);
+        rebalancer.addConstraint(new RebalancingConstraint(map, AMOUNT_2));
+        Map<InvestmentVehicle, Double> map2 = new HashMap<>();
+        map2.put(A, 1d);
+        rebalancer.addConstraint(new RebalancingConstraint(map2, AMOUNT_0));
+        Map<InvestmentVehicle, Double> map3 = new HashMap<>();
+        map3.put(C, 1d);
+        rebalancer.addConstraint(new RebalancingConstraint(map3, AMOUNT_0));
+        Rebalancer.RebalancingSolution solution = rebalancer.solve();
+        
+        assertEquals(asSet(A,C), solution.getInvestmentVehicles());
+        assertFalse(solution.isAmbigous(A));
+        assertFalse(solution.isExact(A));
+        assertEquals(AMOUNT_1, solution.getMoney(A));
+        assertFalse(solution.isAmbigous(C));
+        assertTrue(solution.isExact(C));
+        assertEquals(AMOUNT_0, solution.getMoney(C));
+    }
+    
+    @Test
+    public void testFixedSumRebalancerPartiallyUnsolvableConstraint2()
+    {
+        FixedSumRebalancer rebalancer = new FixedSumRebalancer(Money.of(CURRENCY_UNIT, 400000));
+        Map<InvestmentVehicle, Double> map = new HashMap<>();
+        map.put(A, 1d);
+        rebalancer.addConstraint(new RebalancingConstraint(map, AMOUNT_1));
+        Map<InvestmentVehicle, Double> map2 = new HashMap<>();
+        map2.put(B, 1d);
+        rebalancer.addConstraint(new RebalancingConstraint(map2, AMOUNT_1));
+        Map<InvestmentVehicle, Double> map3 = new HashMap<>();
+        map3.put(A, 1d);
+        map3.put(B, 1d);
+        rebalancer.addConstraint(new RebalancingConstraint(map3, AMOUNT_1));
+        Map<InvestmentVehicle, Double> map4 = new HashMap<>();
+        map4.put(C, .1d);
+        map4.put(D, .9d);
+        rebalancer.addConstraint(new RebalancingConstraint(map4, AMOUNT_1));
+        Map<InvestmentVehicle, Double> map5 = new HashMap<>();
+        map5.put(C, .9d);
+        map5.put(D, .1d);
+        rebalancer.addConstraint(new RebalancingConstraint(map5, AMOUNT_1));
+        Rebalancer.RebalancingSolution solution = rebalancer.solve();
+        
+        assertEquals(asSet(A,B,C,D), solution.getInvestmentVehicles());
+        assertFalse(solution.isAmbigous(A));
+        assertFalse(solution.isExact(A));
+        assertEquals(AMOUNT_1, solution.getMoney(A));
+        assertFalse(solution.isAmbigous(B));
+        assertFalse(solution.isExact(B));
+        assertEquals(AMOUNT_1, solution.getMoney(B));
+        assertFalse(solution.isAmbigous(C));
+        assertTrue(solution.isExact(C));
+        assertEquals(AMOUNT_1, solution.getMoney(C));
+        assertFalse(solution.isAmbigous(D));
+        assertTrue(solution.isExact(D));
+        assertEquals(AMOUNT_1, solution.getMoney(C));
+    }
+    
+    @Test
+    public void testFixedSumRebalancerPartiallyAmbigousPartiallyUnsolvable()
+    {
+        FixedSumRebalancer rebalancer = new FixedSumRebalancer(Money.of(CURRENCY_UNIT, 300000));
+        Map<InvestmentVehicle, Double> map = new HashMap<>();
+        map.put(A, .5d);
+        map.put(B, .5d);
+        rebalancer.addConstraint(new RebalancingConstraint(map, AMOUNT_1));
+        Map<InvestmentVehicle, Double> map2 = new HashMap<>();
+        map2.put(C, 1d);
+        rebalancer.addConstraint(new RebalancingConstraint(map2, AMOUNT_1));
+        Map<InvestmentVehicle, Double> map3 = new HashMap<>();
+        map3.put(C, 1d);
+        rebalancer.addConstraint(new RebalancingConstraint(map3, AMOUNT_2));
+        Rebalancer.RebalancingSolution solution = rebalancer.solve();
+        
+        assertEquals(asSet(A,B,C), solution.getInvestmentVehicles());
+        assertTrue(solution.isAmbigous(A));
+        assertTrue(solution.isExact(A));
+        assertTrue(solution.isAmbigous(B));
+        assertTrue(solution.isExact(B));
+        assertEquals(AMOUNT_2, solution.getMoney(A).add(solution.getMoney(B)));
+        assertFalse(solution.isAmbigous(C));
+        assertFalse(solution.isExact(C));
+        assertEquals(AMOUNT_1, solution.getMoney(C));
+    }
+    
+    @Test
+    public void testFixedSumRebalancerPartiallyAmbigousPartiallyUnsolvable2()
+    {
+        FixedSumRebalancer rebalancer = new FixedSumRebalancer(Money.of(CURRENCY_UNIT, 250000));
+        Map<InvestmentVehicle, Double> map2 = new HashMap<>();
+        map2.put(C, 1d);
+        rebalancer.addConstraint(new RebalancingConstraint(map2, AMOUNT_1));
+        Map<InvestmentVehicle, Double> map = new HashMap<>();
+        map.put(A, 2d);
+        map.put(B, 2d);
+        rebalancer.addConstraint(new RebalancingConstraint(map, AMOUNT_1));
+        Map<InvestmentVehicle, Double> map3 = new HashMap<>();
+        map3.put(D, 1d);
+        rebalancer.addConstraint(new RebalancingConstraint(map3, AMOUNT_1));
+        Map<InvestmentVehicle, Double> map4 = new HashMap<>();
+        map4.put(C, 1d);
+        map4.put(D, 1d);
+        rebalancer.addConstraint(new RebalancingConstraint(map4, AMOUNT_1));
+        Rebalancer.RebalancingSolution solution = rebalancer.solve();
+        
+        assertEquals(asSet(A,B,C,D), solution.getInvestmentVehicles());
+        assertTrue(solution.isAmbigous(A));
+        assertTrue(solution.isExact(A));
+        assertTrue(solution.isAmbigous(B));
+        assertTrue(solution.isExact(B));
+        assertEquals(Money.of(CURRENCY_UNIT, 50000), solution.getMoney(A).add(solution.getMoney(B)));
+        assertFalse(solution.isAmbigous(C));
+        assertFalse(solution.isExact(C));
+        assertEquals(AMOUNT_1, solution.getMoney(C));
+        assertFalse(solution.isAmbigous(D));
+        assertFalse(solution.isExact(D));
+        assertEquals(AMOUNT_1, solution.getMoney(D));
+    }
+    
+    @Test
+    public void testFixedSumRebalancerPartiallyAmbigousPartiallyUnsolvablePartiallyExact()
+    {
+        FixedSumRebalancer rebalancer = new FixedSumRebalancer(Money.of(CURRENCY_UNIT, 250000));
+        Map<InvestmentVehicle, Double> map2 = new HashMap<>();
+        map2.put(C, 1d);
+        rebalancer.addConstraint(new RebalancingConstraint(map2, AMOUNT_1));
+        Map<InvestmentVehicle, Double> map = new HashMap<>();
+        map.put(A, 2d);
+        map.put(B, 2d);
+        rebalancer.addConstraint(new RebalancingConstraint(map, AMOUNT_1));
+        Map<InvestmentVehicle, Double> map3 = new HashMap<>();
+        map3.put(D, 1d);
+        rebalancer.addConstraint(new RebalancingConstraint(map3, AMOUNT_1));
+        Map<InvestmentVehicle, Double> map4 = new HashMap<>();
+        map4.put(C, 1d);
+        rebalancer.addConstraint(new RebalancingConstraint(map4, AMOUNT_2));
+        Rebalancer.RebalancingSolution solution = rebalancer.solve();
+        
+        assertEquals(asSet(A,B,C,D), solution.getInvestmentVehicles());
+        assertTrue(solution.isAmbigous(A));
+        assertTrue(solution.isExact(A));
+        assertTrue(solution.isAmbigous(B));
+        assertTrue(solution.isExact(B));
+        assertEquals(Money.of(CURRENCY_UNIT, 50000), solution.getMoney(A).add(solution.getMoney(B)));
+        assertFalse(solution.isAmbigous(C));
+        assertFalse(solution.isExact(C));
+        assertEquals(AMOUNT_1, solution.getMoney(C));
         assertFalse(solution.isAmbigous(D));
         assertTrue(solution.isExact(D));
         assertEquals(AMOUNT_1, solution.getMoney(D));
