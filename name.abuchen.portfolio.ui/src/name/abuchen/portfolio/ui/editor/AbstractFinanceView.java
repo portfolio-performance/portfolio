@@ -30,6 +30,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.ToolBar;
 
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.swt.SashLayout;
 import name.abuchen.portfolio.ui.util.swt.SashLayoutData;
@@ -148,6 +149,7 @@ public abstract class AbstractFinanceView
         GridDataFactory.fillDefaults().grab(true, true).applyTo(sash);
 
         SashLayout sashLayout = new SashLayout(sash, SWT.VERTICAL | SWT.END);
+        sashLayout.setTag(UIConstants.Tag.INFORMATIONPANE);
         sash.setLayout(sashLayout);
 
         createBody(sash);

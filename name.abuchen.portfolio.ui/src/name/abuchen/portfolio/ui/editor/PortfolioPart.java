@@ -143,6 +143,7 @@ public class PortfolioPart implements ClientInputListener
 
         Composite sash = new Composite(container, SWT.NONE);
         SashLayout sashLayout = new SashLayout(sash, SWT.HORIZONTAL | SWT.BEGINNING);
+        sashLayout.setTag(UIConstants.Tag.SIDEBAR);
         sash.setLayout(sashLayout);
 
         Composite navigationBar = new Composite(sash, SWT.NONE);
