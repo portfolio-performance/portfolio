@@ -281,6 +281,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
     public void notifyModelUpdated()
     {
         Client filteredClient = this.clientFilter.filter(getClient());
+        setToContext(UIConstants.Context.FILTERED_CLIENT, filteredClient);
         model.updateClientSnapshot(filteredClient);
     }
 

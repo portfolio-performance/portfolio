@@ -14,6 +14,7 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.eclipse.e4.core.contexts.ContextFunction;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
@@ -371,11 +372,12 @@ public class PortfolioPart implements ClientInputListener
     public void onRecalculationNeeded()
     {
         if (view != null && view.getControl() != null && !view.getControl().isDisposed())
-            view.notifyModelUpdated();
+            view.onRecalculationNeeded();
     }
 
     @Inject
-    public void setQuotePrecision(@Preference(value = UIConstants.Preferences.FORMAT_CALCULATED_QUOTE_DIGITS) int quotePrecision)
+    public void setQuotePrecision(
+                    @Preference(value = UIConstants.Preferences.FORMAT_CALCULATED_QUOTE_DIGITS) int quotePrecision)
     {
         onRecalculationNeeded();
     }
@@ -521,6 +523,20 @@ public class PortfolioPart implements ClientInputListener
         viewContext.set(PortfolioPart.class, this);
         viewContext.set(ExchangeRateProviderFactory.class, this.clientInput.getExchangeRateProviderFacory());
         viewContext.set(PartPersistedState.class, new PartPersistedState(part.getPersistedState()));
+
+        ContextFunction lookup = new ContextFunction()
+        {
+            @Override
+            public Object compute(IEclipseContext context, String contextKey)
+            {
+                Object filteredClient = context.get(UIConstants.Context.FILTERED_CLIENT);
+                if (filteredClient != null)
+                    return filteredClient;
+                else
+                    return context.get(Client.class);
+            }
+        };
+        viewContext.set(UIConstants.Context.ACTIVE_CLIENT, lookup);
 
         if (parameter != null)
             viewContext.set(UIConstants.Parameter.VIEW_PARAMETER, parameter);

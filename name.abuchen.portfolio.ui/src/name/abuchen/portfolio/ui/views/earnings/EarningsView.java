@@ -55,7 +55,7 @@ public class EarningsView extends AbstractFinanceView
     public void setupModel()
     {
         CurrencyConverterImpl converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
-        model = new EarningsViewModel(preferences, converter, client);
+        model = new EarningsViewModel(this, preferences, converter, client);
 
         int year = preferences.getInt(KEY_YEAR);
         LocalDate now = LocalDate.now();

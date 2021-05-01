@@ -29,6 +29,8 @@ import name.abuchen.portfolio.snapshot.trades.TradeCollector;
 import name.abuchen.portfolio.snapshot.trades.TradeCollectorException;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.util.Interval;
 
@@ -120,6 +122,7 @@ public class EarningsViewModel
 
     private List<UpdateListener> listeners = new ArrayList<>();
 
+    private final AbstractFinanceView view;
     private CurrencyConverter converter;
     private final Client client;
 
@@ -136,8 +139,10 @@ public class EarningsViewModel
     private boolean useGrossValue = true;
     private boolean useConsolidateRetired = true;
 
-    public EarningsViewModel(IPreferenceStore preferences, CurrencyConverter converter, Client client)
+    public EarningsViewModel(AbstractFinanceView view, IPreferenceStore preferences, CurrencyConverter converter,
+                    Client client)
     {
+        this.view = view;
         this.converter = converter;
         this.client = client;
 
@@ -283,6 +288,7 @@ public class EarningsViewModel
         this.transactions = new ArrayList<>();
 
         Client filteredClient = clientFilter.getSelectedFilter().filter(client);
+        view.setToContext(UIConstants.Context.FILTERED_CLIENT, filteredClient);
 
         EnumSet<Mode> processGainTx = EnumSet.of(Mode.TRADES, Mode.ALL);
         if (processGainTx.contains(mode))

@@ -49,6 +49,7 @@ import name.abuchen.portfolio.snapshot.GroupEarningsByAccount;
 import name.abuchen.portfolio.snapshot.filter.WithoutTaxesFilter;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.selection.SelectionService;
 import name.abuchen.portfolio.ui.util.ClientFilterDropDown;
@@ -124,6 +125,8 @@ public class PerformanceView extends AbstractHistoricView
         if (preTax)
             filteredClient = new WithoutTaxesFilter().filter(filteredClient);
 
+        setToContext(UIConstants.Context.FILTERED_CLIENT, filteredClient);
+
         ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(filteredClient, converter, period);
 
         try
@@ -138,6 +141,7 @@ public class PerformanceView extends AbstractHistoricView
             calculation.getTree().setRedraw(true);
         }
 
+        // FIXME - shouldn't it include the (optional) WithoutTaxesFilter?
         snapshotStart.setInput(clientFilter.getSelectedFilter(), snapshot.getStartClientSnapshot().getTime(),
                         converter);
         snapshotEnd.setInput(clientFilter.getSelectedFilter(), snapshot.getEndClientSnapshot().getTime(), converter);

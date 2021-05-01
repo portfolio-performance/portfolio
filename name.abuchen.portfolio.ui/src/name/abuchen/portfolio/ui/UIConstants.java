@@ -36,6 +36,13 @@ public interface UIConstants
         }
     }
 
+    interface Context // NOSONAR
+    {
+        String FILTERED_CLIENT = "FILTERED_CLIENT"; //$NON-NLS-1$
+
+        String ACTIVE_CLIENT = "ACTIVE_CLIENT"; //$NON-NLS-1$
+    }
+
     interface File // NOSONAR
     {
         String ENCRYPTED_EXTENSION = "portfolio"; //$NON-NLS-1$
