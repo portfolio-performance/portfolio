@@ -113,7 +113,7 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
 
                 /***
                  * If we have the "Internet-Vergünstigung",
-                 * we subtract it from the amount and reset it.
+                 * we add up it from the amount and reset it.
                  * The "Internet discount" is then posted as a fee refund.
                  * 
                  * If changes are made in this area, 
@@ -125,7 +125,7 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                 .section("feeRefund", "currency").optional()
                 .match("^Internet-Verg.nstigung (?<currency>[\\w]{3}) ([-\\s]+)?(?<feeRefund>[.,\\d]+)$")
                 .assign((t, v) -> {
-                    t.setAmount(t.getPortfolioTransaction().getAmount() - asAmount(convertAmount(v.get("feeRefund"))));
+                    t.setAmount(t.getPortfolioTransaction().getAmount() + asAmount(convertAmount(v.get("feeRefund"))));
                 })
 
                 .wrap(t -> new BuySellEntryItem(t));

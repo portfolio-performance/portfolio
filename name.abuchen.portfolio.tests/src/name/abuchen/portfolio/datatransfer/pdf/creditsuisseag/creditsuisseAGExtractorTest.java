@@ -67,9 +67,9 @@ public class creditsuisseAGExtractorTest
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(900)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(27692.89))));
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(27776.51))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(27188.38))));
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(27272.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(40.91))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
@@ -121,9 +121,9 @@ public class creditsuisseAGExtractorTest
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2000)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(190101.53))));
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(190182.49))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(188405.15))));
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(188486.11))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(282.73))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
@@ -215,9 +215,9 @@ public class creditsuisseAGExtractorTest
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1000)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(111629.14))));
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(111718.52))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(112642.92))));
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(112732.30))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(168.96))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
