@@ -892,7 +892,8 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
                 // **oben genannten Bestand haben wir wertlos ausgebucht
                 .section().optional()
-                .match("(.*)Bestand haben wir wertlos ausgebucht(.*)").assign((t, v) -> {
+                .match("(.*)Bestand haben wir wertlos ausgebucht(.*)")
+                .assign((t, v) -> {
                     t.setCurrencyCode(t.getAccountTransaction().getSecurity().getCurrencyCode());
                     t.setAmount(0L);
                     t.getPortfolioTransaction().setType(PortfolioTransaction.Type.TRANSFER_OUT);
