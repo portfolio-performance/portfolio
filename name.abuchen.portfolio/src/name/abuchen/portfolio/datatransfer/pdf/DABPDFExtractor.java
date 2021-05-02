@@ -5,6 +5,7 @@ import java.math.RoundingMode;
 import java.util.Map;
 import java.util.Optional;
 
+import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -14,6 +15,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 
 public class DABPDFExtractor extends AbstractPDFExtractor
 {
@@ -26,6 +28,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
 
         addBuySellTransaction();
         addDividendTransaction();
+        addTransferOutInTransaction();
     }
 
     @Override
@@ -330,6 +333,88 @@ public class DABPDFExtractor extends AbstractPDFExtractor
     }
 
     @SuppressWarnings("nls")
+    private void addTransferOutInTransaction()
+    {
+        DocumentType type = new DocumentType("Einbuchung|Ihr Depotbestand");
+        this.addDocumentTyp(type);
+
+        Transaction<PortfolioTransaction> pdfTransaction = new Transaction<>();
+        pdfTransaction.subject(() -> {
+            PortfolioTransaction entry = new PortfolioTransaction();
+            entry.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
+            return entry;
+        });
+
+        Block firstRelevantLine = new Block("^(Einbuchung|Ihr Depotbestand:)$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction
+                // Gattungsbezeichnung ISIN
+                // Solutiance AG Inhaber-Aktien o.N. DE0006926504
+                .section("isin", "name", "name1", "shares", "currency").optional()
+                .find("Gattungsbezeichnung ISIN")
+                .match("^(?<name>.*) (?<isin>[\\w]{12})$")
+                .match("^(?<name1>.*)")
+                .match("STK (?<shares>[.,\\d]+) (?<currency>[\\w]{3}) [.,\\d]+$")
+                .assign((t, v) -> {
+                    if (!v.get("name1").startsWith("Nominal"))
+                        v.put("name", v.get("name") + " " + v.get("name1"));
+
+                    t.setShares(asShares(v.get("shares")));
+                    t.setSecurity(getOrCreateSecurity(v));
+                })
+
+                // Gattungsbezeichnung ISIN
+                // BNP P.Easy-MSCI Pac.x.Jap.x.CW Nam.-Ant.UCITS ETF CAP EUR LU1291106356
+                // o.N
+                .section("isin", "name", "name1", "shares", "currency").optional()
+                .find("Gattungsbezeichnung ISIN")
+                .match("^(?<name>.*) (?<currency>[\\w]{3}) (?<isin>[\\w]{12})$")
+                .match("^(?<name1>.*)")
+                .match("STK (?<shares>[.,\\d]+)$")
+                .assign((t, v) -> {
+                    if (!v.get("name1").startsWith("Nominal"))
+                        v.put("name", v.get("name") + " " + v.get("name1"));
+
+                    t.setShares(asShares(v.get("shares")));
+                    t.setSecurity(getOrCreateSecurity(v));
+                })
+
+                // 11.03.2021 3331111113 EUR 27,50
+                .section("date", "amount", "currency").optional()
+                .match("^(?<date>\\d+.\\d+.\\d{4}) [\\d]+ (?<currency>[\\w]{3}) (?<amount>[.,\\d]+)$")
+                .assign((t, v) -> {
+                    t.setDateTime(asDate(v.get("date")));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                    t.setAmount(asAmount(v.get("amount")));
+                })
+
+                // STK 0,0722 04.12.2018
+                .section("date").optional()
+                .match("^STK [.,\\d]+ (?<date>\\d+.\\d+.\\d{4})$")
+                .assign((t, v) -> {
+                    t.setDateTime(asDate(v.get("date")));
+                })
+
+                /***
+                 * Deposit without amount (share split)
+                 */
+                // Wir haben Ihrem Depot im Verhältnis 1 : 22 folgende Stücke zugebucht (hinzugefügt):
+                .section("note").optional()
+                .match("^Wir haben Ihrem Depot im (?<note>Verh.ltnis [\\d]+ : [\\d]+) .*$")
+                .assign((t, v) -> {
+                    t.setCurrencyCode(t.getSecurity().getCurrencyCode());
+                    t.setAmount(0L);
+                })
+
+                .wrap(TransactionItem::new);
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
+        addFeesSectionsTransaction(pdfTransaction, type);
+    }
+
+    @SuppressWarnings("nls")
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
         // if we have a tax return, we set a flag and don't book tax below
@@ -439,6 +524,16 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 // Verwahrart Wertpapierrechnung Abwicklungskosten Ausland USD 0,10-
                 .section("fee", "currency").optional()
                 .match("^.* Abwicklungskosten.* (?<currency>[\\w]{3}) (?<fee>[.,\\d]+)-$")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+
+                // Verwahrart Girosammelverwahrung Gebühr EUR 0,50-
+                .section("fee", "currency").optional()
+                .match("^Verwahrart Girosammelverwahrung Geb.hr (?<currency>[\\w]{3}) (?<fee>[.,\\d]+)-$")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+
+                // Börse außerbörslich Bezugspreis EUR 27,00-
+                .section("fee", "currency").optional()
+                .match("^B.rse außerb.rslich Bezugspreis (?<currency>[\\w]{3}) (?<fee>[.,\\d]+)-$")
                 .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
