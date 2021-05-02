@@ -38,7 +38,7 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("K a u f");
+        DocumentType type = new DocumentType("K a u f|V e r k a u f");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -48,11 +48,21 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^W e r t p a p i e r - A b r e c h n u n g ([\\s]+)?K a u f.*$");
+        Block firstRelevantLine = new Block("^W e r t p a p i e r - A b r e c h n u n g ([\\s]+)?(K a u f| V e r k a u f).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
+                // Is type --> "Verkauf" change from BUY to SELL
+                .section("type").optional()
+                .match("^W e r t p a p i e r - A b r e c h n u n g ([\\s]+)?(?<type>V e r k a u f).*$")
+                .assign((t, v) -> {
+                    if (v.get("type").equals("V e r k a u f"))
+                    {
+                        t.setType(PortfolioTransaction.Type.SELL);
+                    }
+                })
+
                 // Nennbetrag Wertpapierbezeichnung Wertpapierkennnummer/ISIN
                 // SANOFI S.A. 920657
                 // ST 22
@@ -74,12 +84,10 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
                 // Kurswert EUR 4.803,50 
                 .section("name", "name2", "wkn", "isin", "shares").optional()
                 .find("^Nennbetrag Wertpapierbezeichnung ([\\s]+)?Wertpapierkennnummer\\/ISIN.*$")
-                .match("^ST (?<shares>[.,\\d]+) (?<name>.*)  ([\\s]{2,})?(?<wkn>[\\w]{6})  ([\\s]{2,})?(?<name2>.*) (?<isin>[\\w]{12})$")
+                .match("^ST (?<shares>[.,\\d]+) (?<name>.*) ([\\s]+)?(?<wkn>[\\w]{6}) ([\\s]+)?(?<name2>.*) (?<isin>[\\w]{12})$")
                 .match("^Kurswert (?<currency>[\\w]{3}) [.,\\d]+.*$")
                 .assign((t, v) -> {
                     v.put("name", v.get("name").trim() + " " + v.get("name2").trim());
-                    java.lang.System.out.println(v.get("name"));
-                    java.lang.System.out.println(v.get("name2"));
 
                     t.setShares(asShares(v.get("shares")));
                     t.setSecurity(getOrCreateSecurity(v));
@@ -94,14 +102,20 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
 
                 // Zum Kurs von Ausführungstag/Zeit Ausführungsort Verwahrart
                 // EUR 192,14 20.04.2021  03.53.15 WP-Rechnung GS
-                .section("date").optional()
+                .section("date", "time").optional()
                 .find("^Zum Kurs von .*$")
-                .match("^[\\w]{3} [.,\\d]+ (?<date>\\d+.\\d+.\\d{4}) .*$")
-                .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                .match("^[\\w]{3} [.,\\d]+ (?<date>\\d+.\\d+.\\d{4}) ([\\s]+)?(?<time>\\d+.\\d+.\\d+).*$")
+                .assign((t, v) -> {
+                    if (v.get("time") != null)
+                        t.setDate(asDate(v.get("date"), v.get("time").replace(".", ":")));
+                    else
+                        t.setDate(asDate(v.get("date")));  
+                })
 
                 // Belastung (vor Steuern) EUR 1.560,83
+                // Gutschrift (vor Steuern) EUR 8.175,91 
                 .section("currency", "amount")
-                .match("^Belastung \\(vor Steuern\\) (?<currency>[\\w]{3}) (?<amount>[.,\\d]+)(.*)?$")
+                .match("^(Belastung|Gutschrift) \\(vor Steuern\\) (?<currency>[\\w]{3}) (?<amount>[.,\\d]+)(.*)?$")
                 .assign((t, v) -> {
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
@@ -121,8 +135,8 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
 
         // Example
         // some tax's
-        // .section("tax's", "currency").optional()
-        // .match("^ABC (?<fee>[.,\\d]+) (?<currency>[\\w]{3})$")
+        // .section("tax", "currency").optional()
+        // .match("^ABC (?<tax>[.,\\d]+) (?<currency>[\\w]{3})$")
         // .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
