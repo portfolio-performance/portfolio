@@ -16,6 +16,8 @@ import org.eclipse.jface.preference.IPreferenceStore;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.Adaptable;
+import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Portfolio;
@@ -80,7 +82,7 @@ public class EarningsViewModel
         void onUpdate();
     }
 
-    public static class Line
+    public static class Line implements Adaptable
     {
         private InvestmentVehicle vehicle;
         private boolean consolidateRetired;
@@ -117,6 +119,12 @@ public class EarningsViewModel
         public int getNoOfMonths()
         {
             return values.length;
+        }
+
+        @Override
+        public <T> T adapt(Class<T> type)
+        {
+            return Adaptor.adapt(type, vehicle);
         }
     }
 
