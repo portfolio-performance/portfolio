@@ -126,7 +126,8 @@ public abstract class AbstractFinanceView
 
     public void setInformationPaneInput(Object input)
     {
-        pane.setInput(input);
+        if (pane != null)
+            pane.setInput(input);
     }
 
     public Shell getActiveShell()

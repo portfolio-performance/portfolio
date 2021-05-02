@@ -21,6 +21,7 @@ import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
 import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.browser.BrowserFunction;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
@@ -36,6 +37,32 @@ import name.abuchen.portfolio.util.TokenReplacingReader;
 @SuppressWarnings("restriction")
 public class EmbeddedBrowser
 {
+    public static final class ItemSelectedFunction extends BrowserFunction
+    {
+        private Consumer<String> uuidConsumer;
+
+        public ItemSelectedFunction(Browser browser, Consumer<String> uuidConsumer) // NOSONAR
+        {
+            super(browser, "onItemSelected"); //$NON-NLS-1$
+            this.uuidConsumer = uuidConsumer;
+        }
+
+        @Override
+        public Object function(Object[] arguments) // NOSONAR
+        {
+            if (arguments == null || arguments.length == 0)
+                return null;
+
+            String uuid = String.valueOf(arguments[0]);
+            if (uuid == null || uuid.isEmpty())
+                return null;
+
+            uuidConsumer.accept(uuid);
+
+            return null;
+        }
+    }
+
     private String htmlpage;
     private Browser browser;
     private IThemeEngine themeEngine;

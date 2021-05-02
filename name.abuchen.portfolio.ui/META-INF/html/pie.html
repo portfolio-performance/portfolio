@@ -232,8 +232,8 @@ var thePieChart = {
     },
     
     click: function(d) {
-        if (typeof onPieSelected === 'function') {
-            onPieSelected(d.data.uuid);
+        if (typeof onItemSelected === 'function') {
+            onItemSelected(d.data.uuid);
         }
     }
 }
