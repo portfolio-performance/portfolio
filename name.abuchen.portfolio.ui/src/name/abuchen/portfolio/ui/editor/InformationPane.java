@@ -25,6 +25,7 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class InformationPane
 {
@@ -169,7 +170,7 @@ public class InformationPane
         currentInput = input;
 
         Named named = Adaptor.adapt(Named.class, input);
-        label.setText(named != null ? named.getName() : ""); //$NON-NLS-1$
+        label.setText(named != null ? TextUtil.tooltip(named.getName()) : ""); //$NON-NLS-1$
 
         InformationPanePage page = (InformationPanePage) pagebook.getPage()
                         .getData(InformationPanePage.class.getName());
@@ -182,7 +183,7 @@ public class InformationPane
     /* package */ void onRecalculationNeeded()
     {
         Named named = Adaptor.adapt(Named.class, currentInput);
-        label.setText(named != null ? named.getName() : ""); //$NON-NLS-1$
+        label.setText(named != null ? TextUtil.tooltip(named.getName()) : ""); //$NON-NLS-1$
 
         InformationPanePage page = (InformationPanePage) pagebook.getPage()
                         .getData(InformationPanePage.class.getName());
