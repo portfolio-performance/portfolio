@@ -33,7 +33,7 @@ public class RaifeisenBankgruppePDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Raiffeisenverband Salzburg"; //$NON-NLS-1$
+        return "Raiffeisenbank Bankgruppe"; //$NON-NLS-1$
     }
 
     private void addBuySellTransaction()
