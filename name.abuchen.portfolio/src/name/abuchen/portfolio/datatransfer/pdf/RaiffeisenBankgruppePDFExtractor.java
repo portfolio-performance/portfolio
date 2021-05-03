@@ -12,9 +12,9 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.money.Money;
 
 @SuppressWarnings("nls")
-public class RaifeisenBankgruppePDFExtractor extends AbstractPDFExtractor
+public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
 {
-    public RaifeisenBankgruppePDFExtractor(Client client)
+    public RaiffeisenBankgruppePDFExtractor(Client client)
     {
         super(client);
 

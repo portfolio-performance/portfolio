@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.datatransfer.pdf.raifeisenbankgruppe;
+package name.abuchen.portfolio.datatransfer.pdf.raiffeisenbankgruppe;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -17,7 +17,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
-import name.abuchen.portfolio.datatransfer.pdf.RaifeisenBankgruppePDFExtractor;
+import name.abuchen.portfolio.datatransfer.pdf.RaiffeisenBankgruppePDFExtractor;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -29,13 +29,13 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
-public class raifeisenbankgruppePDFExtractorTest
+public class raiffeisenbankgruppePDFExtractorTest
 {
     
     @Test
     public void testWertpapierKauf01()
     {
-        RaifeisenBankgruppePDFExtractor extractor = new RaifeisenBankgruppePDFExtractor(new Client());
+        RaiffeisenBankgruppePDFExtractor extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -75,7 +75,7 @@ public class raifeisenbankgruppePDFExtractorTest
     @Test
     public void testWertpapierDividende01()
     {
-        RaifeisenBankgruppePDFExtractor extractor = new RaifeisenBankgruppePDFExtractor(new Client());
+        RaiffeisenBankgruppePDFExtractor extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
