@@ -1,0 +1,63 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+CREDIT SUISSE (Schweiz) AG
+CH-8070 Zürich Telefon +41 44 333 99 99
+credit-suisse.com
+BIC CRESCHZZ80A
+Depot-Nr. 0000- 000000-00
+Ihre Beraterin Herr Max Muster Herr A
+Telefon 044 222 22 22 Moritz Kunde
+Strasse 5b
+8001 Zürich
+Wertschriftenabrechnung 22.02.2021
+Ihr Verkauf Seite 1/2
+Ort(e) siehe Ausführungsdetails
+Datum 22.02.2021
+USD 100,000 6.15 % Notes Teva Pharmaceutical Finance
+LLC 2006-1.2.36 Gtd Sr
+Valor 2429251, TEVA.GL, ISIN US88163VAD10
+zum Kurs von 112.25 %
+Bei: Euroclear (DST: 0164)
+Werte ex Depot
+Kurswert USD 112,250.00
+Zins 23 Tage USD 392.92
+USD 112,642.92
+Kommission Schweiz USD - 844.82
+Eidgenössische Umsatzabgabe USD - 168.96
+Internet-Vergünstigung USD 44.69
+Valuta 24.02.2021
+Konto 0000- 000000-00
+IBAN CH66 0000 0000 0000 0000 0
+Kontokorrent Bonviva
+Sparen USD 111,673.83
+Gutschrift USD 111,673.83
+Aufgrund der uns vorliegenden Angaben zu Ihren Kenntnissen und Erfahrungen erachten wir die Transaktion /das Produkt /die
+Dienstleistung als für Sie nicht angemessen. Darüber haben wir Sie entsprechend informiert. Sie haben uns dennoch
+beauftragt, Ihre Instruktion auszuführen.
+Die Erfüllung bzw. Gutschrift steht bei sämtlichen Transaktionen unter der Bedingung, dass die Gegenpartei auf der Marktseite
+ihre Leistungsverpflichtungen gegenüber der Bank erfüllt.
+Wir danken Ihnen für Ihren Auftrag.
+Ausführungsdetails
+Anzahl Handels-ID Lokale Ort zum Kurse von
+Ausführungszeit
+100,000 BAER:20210222:4:5:12 09:00:55 BTFE 112.25 %
+Order type: LIMIT
+Fortsetzung siehe nächstes Blatt Auftrags-Nr. DN01-20210221-00-00000
+SLW-Ref: R8UXNU
+WI01
+Wertschriftenabrechnung Ihr Verkauf
+Moritz Kunde, Zürich
+Depot-Nr. 0000- 000000-00
+22.02.2021
+Seite  2/2
+Ein Glossar der Abkürzungen der Ausführungsplätze, die in diesem Dokument verwendet werden, ist unter folgendem Link
+zugänglich:
+https://www.credit-suisse.com/media/assets/sites/finfrag/execution-venues-list.pdf
+Bitte beachten Sie, dass bei Investitionen in strukturierte Produkte oder festverzinsliche Wertpapiere (Anleihen) Ihre Gegenpartei
+eine Einheit der Credit Suisse Gruppe sein kann. Wenn Sie weitere Informationen darüber wünschen, ob Ihre Gegenpartei in
+diesem Fall eine Einheit der Credit Suisse Gruppe war, wenden Sie sich bitte an Ihren Kundenberater.
+FFrreeuunnddlliicchhee  GGrrüüssssee
+CCRREEDDIITT  SSUUIISSSSEE  ((SScchhwweeiizz))  AAGG
+Formular ohne Unterschrift Auftrags-Nr. DN01-20210221-70-00000
+WI01
