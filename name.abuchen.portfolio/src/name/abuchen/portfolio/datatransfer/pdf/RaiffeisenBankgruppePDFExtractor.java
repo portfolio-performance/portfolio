@@ -38,7 +38,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("Kauf");
+        DocumentType type = new DocumentType("Kauf|Verkauf");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -48,11 +48,21 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^Gesch.ftsart: Kauf .*$");
+        Block firstRelevantLine = new Block("^Gesch.ftsart: (Kauf|Verkauf) .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
+                // Is type --> "Verkauf" change from BUY to SELL
+                .section("type").optional()
+                .match("Gesch.ftsart: (?<type>Verkauf) .*$")
+                .assign((t, v) -> {
+                    if (v.get("type").equals("Verkauf"))
+                    {
+                        t.setType(PortfolioTransaction.Type.SELL);
+                    }
+                })
+
                 // Titel: DE000BAY0017 Bayer AG
                 // Namens-Aktien o.N.
                 // Kurs: 53,47 EUR
@@ -68,8 +78,9 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                 })
 
                 // Zugang: 2 Stk   
+                // Abgang: 4.500 Stk   
                 .section("shares")
-                .match("^Zugang: (?<shares>[.,\\d]+)(.*)?$")
+                .match("^(Zugang|Abgang): (?<shares>[.,\\d]+)(.*)?$")
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 // Handelszeit: 03.05.2021 13:45:18 
@@ -83,8 +94,9 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                 })
 
                 // Zu Lasten IBAN AT99 9999 9000 0011 1110 -107,26 EUR  
+                // Zu Gunsten IBAN AT27 3284 2000 0011 1111 36.115,76 EUR 
                 .section("amount", "currency")
-                .match("^Zu Lasten .* -(?<amount>[.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .match("^Zu (Lasten|Gunsten) .* ([-])?(?<amount>[.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(v.get("currency"));
@@ -164,6 +176,11 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                 // Auslands-KESt: -22,50 EUR 
                 .section("tax", "currency").optional()
                 .match("^Auslands-KESt: -(?<tax>[.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .assign((t, v) -> processTaxEntries(t, v, type))
+
+                // Kursgewinn-KESt: -696,65 EUR 
+                .section("tax", "currency").optional()
+                .match("^Kursgewinn-KESt: -(?<tax>[.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
                 .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
