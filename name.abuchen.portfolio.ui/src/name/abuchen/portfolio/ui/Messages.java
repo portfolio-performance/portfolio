@@ -668,6 +668,9 @@ public class Messages extends NLS
     public static String LabelHeading;
     public static String LabelHeatmap;
     public static String LabelHeatmapEarnings;
+    public static String LabelHeatmapInvestments;
+    public static String LabelHeatmapInvestmentsDirect;
+    public static String LabelHeatmapInvestmentsNoSellings;
     public static String LabelHeatmapOrnament;
     public static String LabelHistoricalReturnsAndVolatiltity;
     public static String LabelJSONPathHint;
@@ -779,6 +782,7 @@ public class Messages extends NLS
     public static String MenuExportChartData;
     public static String MenuExportData;
     public static String MenuExportDiagram;
+    public static String MenuHideInformationPane;
     public static String MenuHideSidebar;
     public static String MenuLabelSetAsStartPage;
     public static String MenuNewDashboard;
@@ -802,6 +806,7 @@ public class Messages extends NLS
     public static String MenuSettingsNew;
     public static String MenuShow;
     public static String MenuShowHideColumns;
+    public static String MenuShowInformationPane;
     public static String MenuShowSidebar;
     public static String MenuSwitchCurrencies;
     public static String MenuTaxonomyAssignmentRemove;
@@ -937,6 +942,7 @@ public class Messages extends NLS
     public static String PrefDescriptionQuandl;
     public static String PrefDivvyDiaryAPIKey;
     public static String PrefFinnhubAPIKey;
+    public static String PrefLabelEnableExperimentalFeatures;
     public static String PrefLabelNote;
     public static String PrefLabelProxyHost;
     public static String PrefLabelProxyPort;

@@ -55,6 +55,7 @@ import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy;
+import name.abuchen.portfolio.model.TransactionOwner;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.Money;
@@ -1085,6 +1086,10 @@ public class StatementOfAssetsViewer
                     return type.cast(getAccount());
                 else
                     return null;
+            }
+            else if (type == Account.class || type == TransactionOwner.class)
+            {
+                return isAccount() ? type.cast(getAccount()) : null;
             }
             else
             {

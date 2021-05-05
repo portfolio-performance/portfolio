@@ -407,12 +407,32 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
         transaction
                 // Kapitalertragssteuer: €0,73
                 .section("tax").optional()
-                .match("Kapitalertragssteuer: (\\W{1})(?<tax>([0-9.]+)\\,([0-9]{2}))")
+                .match("Kapitalertragssteuer: (\\W{1})(?<tax>[.,\\d]+)")
+                .assign((t, v) -> processTaxEntries(t, v, type))
+
+                // Kapitalertragssteuer EUR 1,75
+                .section("currency", "tax").optional()
+                .match("Kapitalertragssteuer (?<currency>[\\w]{3}) (?<tax>[.,\\d]+)")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
                 // Solidaritätszuschlag: €0,04
                 .section("tax").optional()
-                .match("Solidaritätszuschlag: (\\W{1})(?<tax>([0-9.]+)\\,([0-9]{2}))")
+                .match("Solidarit.tszuschlag: (\\W{1})(?<tax>[.,\\d]+)")
+                .assign((t, v) -> processTaxEntries(t, v, type))
+
+                // Solidaritätszuschlag EUR 0,09
+                .section("currency", "tax").optional()
+                .match("Solidarit.tszuschlag (?<currency>[\\w]{3}) (?<tax>[.,\\d]+)")
+                .assign((t, v) -> processTaxEntries(t, v, type))
+
+                // Kirchensteuer: €1,00
+                .section("tax").optional()
+                .match("Kirchensteuer: (\\W{1})(?<tax>[.,\\d]+)")
+                .assign((t, v) -> processTaxEntries(t, v, type))
+
+                // Kirchensteuer EUR 1,00
+                .section("currency", "tax").optional()
+                .match("Kirchensteuer (?<currency>[\\w]{3}) (?<tax>[.,\\d]+)")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
                 // Einbehaltende Quellensteuer EUR 2,14
@@ -440,12 +460,12 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
 
                 // Wertpapier: VOESTALPINE AG AKT. Tradinggebühren: EUR 9,99
                 .section("currency", "fee").optional()
-                .match(".* Tradinggebühren: (?<currency>[\\w]{3}) (?<fee>[\\d.-]+,\\d+)[-]?")
+                .match(".* Tradinggebühren: (?<currency>[\\w]{3}) (?<fee>[.,\\d]+)[-]?")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Wertpapier: BAY.MOTOREN WERKE AG WP-Kommission: EUR 9,99
                 .section("currency", "fee").optional()
-                .match(".* WP-Kommission: (?<currency>[\\w]{3}) (?<fee>[\\d.-]+,\\d+)[-]?")
+                .match(".* WP-Kommission: (?<currency>[\\w]{3}) (?<fee>[.,\\d]+)[-]?")
                 .assign((t, v) -> processFeeEntries(t, v, type));
     }
 

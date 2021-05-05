@@ -17,7 +17,7 @@ Ausf.platz/-art   KAG/außerbörsl.
 Wertpapierabrechnung Kauf Fonds/Zertifikate
 Ihre Depotnummer  100XXXXXXX
 Depotinhaber      Nachname, Vorname
-Nr.92212XXX/1  Kauf            ISHSIII-S+P SM.CAP600 DLD (IE00B2QWCY14/A0Q1YY)
+Nr.92212123/1  Kauf            ISHSIII-S+P SM.CAP600 DLD (IE00B2QWCY14/A0Q1YY)
 Ausgeführt     19,334524 St.           Kurswert       EUR             1.050,00
 Kurs           54,307000 EUR           Provision
 Devisenkurs                            Eigene Spesen

@@ -26,7 +26,7 @@ import name.abuchen.portfolio.util.TextUtil;
     private Chart chart;
     private Menu contextMenu;
     
-    private static int lastUsedFileExtension = 0;
+    private static int lastUsedFileExtension = 2;
 
     public ChartContextMenu(Chart chart)
     {

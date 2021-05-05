@@ -1,0 +1,90 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+flatexDEGIRO Bank AG
+Postfach 100551
+41405 Neuss
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 (0)9221 - 7035898
+E-Mail: kunden@flatex.de
+flatexDEGIRO Bank AG -  Rotfeder-Ring 7 - 60327 Frankfurt am Main
+030350200000196XXXXX80
+Herrn
+Max Mustermann
+          Frankfurt, 10.04.2021
+Sammelabrechnung (Wertpapierkauf/-verkauf)
+Ihre Depotnummer: 101XXXXX34
+Depotinhaber:     Max Mustermann
+Nr.171111181/1    Verkauf      THE TRA.DESK A DL-,000001 (US88339J1051/A2ARCV)
+Ordervolumen  : 3,00 St.                Handelsplatz  :              Tradegate
+davon ausgef. : 3,00 St.                Schlusstag    :  09.04.2021, 17:37 Uhr
+Kurs          : 581,8000 EUR            Kurswert      :           1.745,40 EUR
+Devisenkurs   :                         Provision     :               5,90 EUR
+Bew-Faktor    : 1,0000                  Eigene Spesen :
+Verwahrart    : GS-Verwahrung          *Fremde Spesen :               2,00 EUR
+Lagerstelle   : Clearstream Nat.
+Lagerland     : USA                     Bemessungs-
+Gewinn/Verlust: 94,70 EUR               grundlage     :              76,27 EUR
+Valuta        : 13.04.2021            **Einbeh. Steuer:               0,00 EUR
+                                        Endbetrag     :           1.737,50 EUR
+*   Enthalten sind folgende Gebühren
+                                Courtage                :             0,00 EUR
+                                Tradinggebühr           :             0,00 EUR
+                                Regulierung             :             2,00 EUR
+                                Schlussnoten            :             0,00 EUR
+                                Finanztransaktionssteuer:             0,00 EUR
+                                Sonstige                :             0,00 EUR
+**  Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+                                Kapitalertragsteuer   :               0,00 EUR
+                                Solidaritätszuschlag  :               0,00 EUR
+                                Kirchensteuer         :               0,00 EUR
+    Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+    229XXXXX43.
+______________________________________________________________________________
+                                                                     Seite 1/2
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Jörn Engelmann, Steffen Jentsch
+2000001968682980 0113303500000101
+Nr.171111135/1    Kauf          CISCO SYSTEMS    DL-,001 (US17275R1023/878841)
+Ordervolumen  : 41,00 St.               Handelsplatz  :              Tradegate
+davon ausgef. : 41,00 St.               Schlusstag    :  09.04.2021, 17:40 Uhr
+Kurs          : 43,6150 EUR             Kurswert      :           1.788,22 EUR
+Devisenkurs   :                         Provision     :               5,90 EUR
+Bew-Faktor    : 1,0000                  Eigene Spesen :
+Verwahrart    : GS-Verwahrung          *Fremde Spesen :               2,00 EUR
+Lagerstelle   : Clearstream Nat.
+Lagerland     : USA                     Bemessungs-
+Gewinn/Verlust: 0,00 EUR                grundlage     :               0,00 EUR
+Valuta        : 13.04.2021            **Einbeh. Steuer:               0,00 EUR
+                                        Endbetrag     :          -1.796,12 EUR
+*   Enthalten sind folgende Gebühren
+                                Courtage                :             0,00 EUR
+                                Tradinggebühr           :             0,00 EUR
+                                Regulierung             :             2,00 EUR
+                                Schlussnoten            :             0,00 EUR
+                                Finanztransaktionssteuer:             0,00 EUR
+                                Sonstige                :             0,00 EUR
+**  Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+                                Kapitalertragsteuer   :               0,00 EUR
+                                Solidaritätszuschlag  :               0,00 EUR
+                                Kirchensteuer         :               0,00 EUR
+    Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+    229XXXXX95.
+Die Verrechnung der Endbeträge erfolgt über Ihr Konto Nr.: 101XXXXX27
+Die Wertpapiere sowie den Gegenwert werden wir entsprechend der Abrechnung mit
+dem angegebenen Valutatag buchen. Bitte prüfen Sie diese Abrechnung auf
+Richtigkeit und Vollständigkeit. Etwaige Einwendungen gegen diese Abrechnung
+müssen unverzüglich nach Zugang bei der Bank erhoben werden. Die
+Unterlassung rechtzeitiger Einwendung gilt als Genehmigung. Bitte beachten
+Sie mögliche Hinweise des Emittenten hinsichtlich vorzeitiger Fälligstellung,
+beispielsweise wegen Knock-Out, in den jeweiligen Optionsscheinbedingungen und
+informieren Sie sich rechtzeitig, welche spezielle Fälligkeitsregelung auf die
+von Ihnen gehaltenen Wertpapiere zutreffen. Kapitalerträge sind ESt-pflichtig.
+Diese Mitteilung ist maschinell erstellt und wird nicht unterschrieben.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+______________________________________________________________________________
+                                                                     Seite 2/2
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Jörn Engelmann, Steffen Jentsch
+2000001968682980

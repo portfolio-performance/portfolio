@@ -31,13 +31,17 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
  */
 /* package */ class ToolBarPlusChevronLayout extends Layout implements IMenuListener
 {
+    private int alignment = SWT.LEFT;
     private ImageHyperlink chevron;
     private Menu chevronMenu;
 
     private List<ContributionItem> invisible = new ArrayList<>();
 
-    public ToolBarPlusChevronLayout(Composite host)
+    public ToolBarPlusChevronLayout(Composite host, int alignment)
     {
+        if (alignment == SWT.RIGHT)
+            this.alignment = SWT.RIGHT;
+
         this.chevron = new ImageHyperlink(host, SWT.PUSH);
         this.chevron.setImage(Images.CHEVRON.image());
         this.chevron.addHyperlinkListener(new HyperlinkAdapter()
@@ -132,7 +136,10 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
             availableBounds.width -= chevronSize.x;
         }
 
-        toolBar.setBounds(availableBounds.width - width, 0, width, availableBounds.height);
+        if (alignment == SWT.LEFT)
+            toolBar.setBounds(0, 0, width, availableBounds.height);
+        else
+            toolBar.setBounds(availableBounds.width - width, 0, width, availableBounds.height);
     }
 
     private ToolBar getToolBar(Composite composite)
@@ -162,10 +169,19 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
             {
                 DropDown dropDown = (DropDown) item;
 
-                MenuManager subMenu = new MenuManager(dropDown.getLabel());
-                subMenu.setImageDescriptor(dropDown.getImage().descriptor());
-                dropDown.getMenuListener().menuAboutToShow(subMenu);
-                manager.add(subMenu);
+                if (dropDown.getMenuListener() != null)
+                {
+                    MenuManager subMenu = new MenuManager(dropDown.getLabel());
+                    if (dropDown.getImage() != null)
+                        subMenu.setImageDescriptor(dropDown.getImage().descriptor());
+                    dropDown.getMenuListener().menuAboutToShow(subMenu);
+                    manager.add(subMenu);
+                }
+                else
+                {
+                    dropDown.fill(manager);
+                }
+
             }
             else if (item instanceof ActionContributionItem)
             {

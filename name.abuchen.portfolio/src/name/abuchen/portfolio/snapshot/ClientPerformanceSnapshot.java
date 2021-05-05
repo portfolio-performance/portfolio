@@ -15,6 +15,8 @@ import java.util.stream.Collectors;
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.Adaptable;
+import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -38,7 +40,7 @@ import name.abuchen.portfolio.util.Interval;
 
 public class ClientPerformanceSnapshot
 {
-    public static class Position implements TrailProvider
+    public static class Position implements TrailProvider, Adaptable
     {
         public static final String TRAIL_VALUE = "value"; //$NON-NLS-1$
         public static final String TRAIL_FOREX_GAIN = "forexGain"; //$NON-NLS-1$
@@ -110,6 +112,12 @@ public class ClientPerformanceSnapshot
                 default:
                     return Optional.empty();
             }
+        }
+
+        @Override
+        public <T> T adapt(Class<T> type)
+        {
+            return Adaptor.adapt(type, security);
         }
     }
 

@@ -193,10 +193,8 @@ public class Trade implements Adaptable
 
     public Money getGrossProfitLoss()
     {
-        if (exitGrossValue == null) 
-        {
+        if (exitGrossValue == null)
             return null;
-        }
         return exitGrossValue.subtract(entryGrossValue);
     }
 
@@ -214,7 +212,7 @@ public class Trade implements Adaptable
     {
         return (exitValue.getAmount() / (double) entryValue.getAmount()) - 1;
     }
-    
+
     /**
      * @brief Checks if the trade is closed
      * @return True if the trade has been closed, false otherwise
@@ -223,7 +221,7 @@ public class Trade implements Adaptable
     {
         return this.getEnd().isPresent();
     }
-    
+
     /**
      * @brief Checks if the trade made a net loss
      * @return True if the trade resulted in a net loss
@@ -232,9 +230,9 @@ public class Trade implements Adaptable
     {
         return this.getProfitLoss().isNegative();
     }
-    
+
     /**
-     * @brief Check if the trade man a gross gross 
+     * @brief Check if the trade made a gross gross
      * @return True if the trade result in a gross loss
      */
     public boolean isGrossLoss()
@@ -245,7 +243,7 @@ public class Trade implements Adaptable
     @Override
     public <T> T adapt(Class<T> type)
     {
-        if (type == Named.class)
+        if (type == Security.class || type == Named.class)
             return type.cast(security);
         else
             return null;

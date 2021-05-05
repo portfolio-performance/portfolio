@@ -1,0 +1,37 @@
+DF Autor: 'DAB-BNP-Paribas'
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=3331111113
+Wertpapierabrechnung DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=DRUCK
+ADRESSZEILE1=Herr
+Umtausch/Bezug   ADRESSZEILE2=Micky Maus
+ADRESSZEILE3=Am Brunnen 8
+ADRESSZEILE4=37881 Brakel
+Depot-Nr. Abrechnungs-Nr. ADRESSZEILE5=
+3331111113 84747170 / 19.03.2021 ADRESSZEILE6=
+Herr BELEGNUMMER=825
+Micky Maus SEITENNUMMER=1
+Am Brunnen 8 STEUERERSTATTUNG=N
+3781 Brakel Depotinhaber
+Micky Maus
+München, 19.03.2021
+Einbuchung
+Gattungsbezeichnung ISIN
+Solutiance AG Inhaber-Aktien o.N. DE0006926504
+Nominal Kurs
+STK 20,000 EUR 1,3500
+Börse außerbörslich Bezugspreis EUR 27,00-
+Verwahrart Girosammelverwahrung Gebühr EUR 0,50-
+Wert Konto-Nr. Betrag zu Ihren Lasten
+11.03.2021 3331111113 EUR 27,50
+Lieferung der Aktien gemäß Ihrer Weisung zum Überbezug
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+BNP Paribas S.A. Niederlassung Deutschland > Standort: München > Landsberger Straße 300 > 80687 München > Sitz: Nürnberg HRB Nürnberg 31129 > USt.-Ident-Nr.: DE 
+191528929 > Sitz der Hauptniederlassung der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449 > Président du 
+Conseil d‘Administration: Jean Lemierre, Directeur Général: Jean-Laurent Bonnafé
+3.19/ABREABRCRECHUMTA/ITS/000825/190321/110656

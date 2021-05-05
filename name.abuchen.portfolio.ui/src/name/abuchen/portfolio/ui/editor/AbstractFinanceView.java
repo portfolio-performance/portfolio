@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.editor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.inject.Inject;
 
@@ -29,11 +30,17 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.ToolBar;
 
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.swt.SashLayout;
+import name.abuchen.portfolio.ui.util.swt.SashLayoutData;
+import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
 import name.abuchen.portfolio.util.TextUtil;
 
 public abstract class AbstractFinanceView
 {
+    private final String identifier = getClass().getSimpleName() + "-newsash"; //$NON-NLS-1$
+
     @Inject
     private IEclipseContext context;
 
@@ -41,6 +48,7 @@ public abstract class AbstractFinanceView
     private PortfolioPart part;
 
     private Composite top;
+    private InformationPane pane;
 
     /**
      * The unescaped text of the title label.
@@ -83,6 +91,14 @@ public abstract class AbstractFinanceView
         }
     }
 
+    public final void onRecalculationNeeded()
+    {
+        notifyModelUpdated();
+
+        if (pane != null && pane.getControl() != null && !pane.getControl().isDisposed())
+            pane.onRecalculationNeeded();
+    }
+
     /** called when some other view modifies the model */
     public void notifyModelUpdated()
     {
@@ -108,6 +124,12 @@ public abstract class AbstractFinanceView
         part.markDirty();
     }
 
+    public void setInformationPaneInput(Object input)
+    {
+        if (pane != null)
+            pane.setInput(input);
+    }
+
     public Shell getActiveShell()
     {
         return Display.getDefault().getActiveShell();
@@ -124,8 +146,24 @@ public abstract class AbstractFinanceView
         Control header = createHeader(top);
         GridDataFactory.fillDefaults().grab(true, false).applyTo(header);
 
-        Control body = createBody(top);
-        GridDataFactory.fillDefaults().grab(true, true).applyTo(body);
+        Composite sash = new Composite(top, SWT.NONE);
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(sash);
+
+        SashLayout sashLayout = new SashLayout(sash, SWT.VERTICAL | SWT.END);
+        sashLayout.setTag(UIConstants.Tag.INFORMATIONPANE);
+        sash.setLayout(sashLayout);
+
+        createBody(sash);
+
+        pane = new InformationPane();
+        pane.createViewControl(sash);
+        pane.setView(this);
+        pane.setLayoutData(new SashLayoutData(-200));
+
+        int size = getPreferenceStore().getInt(identifier);
+        pane.setLayoutData(new SashLayoutData(size != 0 ? size : -200));
+        sash.addDisposeListener(e -> getPreferenceStore().setValue(identifier,
+                        ((SashLayoutData) pane.getLayoutData()).getSize()));
 
         top.addDisposeListener(e -> dispose());
     }
@@ -156,7 +194,7 @@ public abstract class AbstractFinanceView
         tb1.setBackground(header.getBackground());
 
         // create layout *after* the toolbar to keep the tab order right
-        wrapper.setLayout(new ToolBarPlusChevronLayout(wrapper));
+        wrapper.setLayout(new ToolBarPlusChevronLayout(wrapper, SWT.RIGHT));
 
         actionToolBar = new ToolBarManager(SWT.FLAT | SWT.RIGHT);
         addButtons(actionToolBar);
@@ -188,6 +226,19 @@ public abstract class AbstractFinanceView
     protected ToolBarManager getToolBarManager()
     {
         return this.actionToolBar;
+    }
+
+    protected void addPanePages(List<InformationPanePage> pages)
+    {
+    }
+
+    /**
+     * Returns a given InformationPane page but only if the view control already
+     * has been instantiated, i.e. the page actually has been shown previously.
+     */
+    protected <P extends InformationPanePage> Optional<P> lookup(Class<P> type)
+    {
+        return pane.lookup(type);
     }
 
     protected final void hookContextMenu(Control control, IMenuListener listener)
@@ -264,4 +315,10 @@ public abstract class AbstractFinanceView
     {
         return context.get(clazz);
     }
+
+    public void setToContext(String key, Object value)
+    {
+        context.set(key, value);
+    }
+
 }
