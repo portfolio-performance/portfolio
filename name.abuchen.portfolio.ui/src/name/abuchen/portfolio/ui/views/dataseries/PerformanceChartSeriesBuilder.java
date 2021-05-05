@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.views.dataseries;
 
+import java.util.Arrays;
+
 import org.swtchart.IBarSeries;
 import org.swtchart.ILineSeries;
 
@@ -30,7 +32,7 @@ public class PerformanceChartSeriesBuilder extends AbstractChartSeriesBuilder
             if (aggregationPeriod != null)
                 index = Aggregation.aggregate(index, aggregationPeriod);
 
-            ILineSeries lineSeries = getChart().addDateSeries(index.getDates(), index.getAccumulatedPercentage(),
+            ILineSeries lineSeries = getChart().addDateSeries(index.getDates(), performanceIndexToDataSeries(index),
                             series.getLabel());
             configure(series, lineSeries);
         }
@@ -45,7 +47,7 @@ public class PerformanceChartSeriesBuilder extends AbstractChartSeriesBuilder
         switch ((ClientDataSeries) series.getInstance())
         {
             case TOTALS:
-                ILineSeries lineSeries = getChart().addDateSeries(index.getDates(), index.getAccumulatedPercentage(),
+                ILineSeries lineSeries = getChart().addDateSeries(index.getDates(), performanceIndexToDataSeries(index),
                                 series.getLabel());
                 configure(series, lineSeries);
                 break;
@@ -61,5 +63,10 @@ public class PerformanceChartSeriesBuilder extends AbstractChartSeriesBuilder
             default:
                 break;
         }
+    }
+    
+    private double[] performanceIndexToDataSeries(PerformanceIndex index)
+    {
+        return Arrays.stream(index.getAccumulatedPercentage()).map(x -> x + 1d).toArray();
     }
 }

@@ -3,15 +3,18 @@ package name.abuchen.portfolio.ui.views;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.text.FieldPosition;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.EnumSet;
 
 import javax.annotation.PostConstruct;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -24,9 +27,11 @@ import org.swtchart.ISeries;
 
 import com.google.common.collect.Lists;
 
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.Aggregation;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
+import name.abuchen.portfolio.snapshot.filter.ReadOnlyClient;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -46,8 +51,45 @@ public class PerformanceChartView extends AbstractHistoricView
 {
     private static final String KEY_AGGREGATION_PERIOD = "performance-chart-aggregation-period"; //$NON-NLS-1$
 
+    private static class MinusOneDecimalFormat extends DecimalFormat
+    {
+        public MinusOneDecimalFormat(String format)
+        {
+            super(format);
+        }
+        
+        @Override
+        public StringBuffer format(double number, StringBuffer result, FieldPosition fieldPosition)
+        {
+            return super.format(number - 1d, result, fieldPosition);
+        }
+    }
+    
+    private enum ChartDetails
+    {
+        SCALING_LINEAR(Messages.LabelChartDetailChartScalingLinear),
+        SCALING_LOG(Messages.LabelChartDetailChartScalingLog);
+
+        private final String label;
+
+        private ChartDetails(String label)
+        {
+            this.label = label;
+        }
+
+        @Override
+        public String toString()
+        {
+            return label;
+        }
+    }
+
+    private static final String PREF_KEY = "performance-chart-details"; //$NON-NLS-1$
+
     private TimelineChart chart;
     private DataSeriesConfigurator picker;
+    
+    private EnumSet<ChartDetails> chartConfig = EnumSet.of(ChartDetails.SCALING_LINEAR);
 
     private Aggregation.Period aggregationPeriod;
 
@@ -83,8 +125,60 @@ public class PerformanceChartView extends AbstractHistoricView
         super.addButtons(toolBar);
         toolBar.add(new AggregationPeriodDropDown());
         toolBar.add(new ExportDropDown());
-        toolBar.add(new DropDown(Messages.MenuConfigureChart, Images.CONFIG, SWT.NONE,
-                        manager -> picker.configMenuAboutToShow(manager)));
+        toolBar.add(new DropDown(Messages.MenuConfigureChart, Images.CONFIG, SWT.NONE, new IMenuListener()
+        {
+            @Override
+            public void menuAboutToShow(IMenuManager manager)
+            {
+                picker.configMenuAboutToShow(manager);
+
+                manager.add(new Separator());
+                MenuManager subMenuChartScaling = new MenuManager(Messages.LabelChartDetailChartScaling, null);
+                subMenuChartScaling.add(addMenuAction(ChartDetails.SCALING_LINEAR));
+                subMenuChartScaling.add(addMenuAction(ChartDetails.SCALING_LOG));
+                manager.add(subMenuChartScaling);
+            }
+        }));
+        
+    }
+    
+    private Action addMenuAction(ChartDetails detail)
+    {
+        Action action = new SimpleAction(detail.toString(), a -> {
+            boolean isActive = chartConfig.contains(detail);
+
+            if (isActive)
+                chartConfig.remove(detail);
+            else
+                chartConfig.add(detail);
+
+            if (!isActive)
+            {
+                switch (detail)
+                {
+                    case SCALING_LINEAR:
+                        chartConfig.remove(ChartDetails.SCALING_LOG);
+                        break;
+                    case SCALING_LOG:
+                        chartConfig.remove(ChartDetails.SCALING_LINEAR);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            if (!chartConfig.contains(ChartDetails.SCALING_LINEAR) && !chartConfig.contains(ChartDetails.SCALING_LOG))
+                chartConfig.add(ChartDetails.SCALING_LINEAR);
+
+            // If we would have a client object, we could store the configuration this way.
+            //ReadOnlyClient.unwrap(client).setProperty(PREF_KEY, String.join(",", //$NON-NLS-1$
+            //                chartConfig.stream().map(ChartDetails::name).collect(Collectors.toList())));
+
+            updateChart();
+
+        });
+
+        action.setChecked(chartConfig.contains(detail));
+        return action;
     }
 
     @Override
@@ -96,8 +190,8 @@ public class PerformanceChartView extends AbstractHistoricView
         chart = new TimelineChart(composite);
         chart.getTitle().setText(getTitle());
         chart.getTitle().setVisible(false);
-        chart.getAxisSet().getYAxis(0).getTick().setFormat(new DecimalFormat("0.#%")); //$NON-NLS-1$
-        chart.getToolTip().setDefaultValueFormat(new DecimalFormat(Values.Percent2.pattern()));
+        chart.getAxisSet().getYAxis(0).getTick().setFormat(new MinusOneDecimalFormat("0.#%")); //$NON-NLS-1$
+        chart.getToolTip().setDefaultValueFormat(new MinusOneDecimalFormat(Values.Percent2.pattern()));
         chart.getToolTip().reverseLabels(true);
 
         DataSeriesCache cache = make(DataSeriesCache.class);
@@ -141,6 +235,29 @@ public class PerformanceChartView extends AbstractHistoricView
         updateChart();
     }
 
+    // If we would have a client object, we could load the configuration this way.
+    private final void readChartConfig(Client client)
+    {
+        String pref = ReadOnlyClient.unwrap(client).getProperty(PREF_KEY);
+        if (pref == null)
+            return;
+
+        chartConfig.clear();
+        for (String key : pref.split(",")) //$NON-NLS-1$
+        {
+            try
+            {
+                chartConfig.add(ChartDetails.valueOf(key));
+            }
+            catch (IllegalArgumentException ignore)
+            {
+                // do not print exception to the log as it confuses users. The
+                // old SMA200 label has been renamed, nothing we can change
+                // anymore
+            }
+        }
+    }
+
     private void updateChart()
     {
         try
@@ -160,6 +277,8 @@ public class PerformanceChartView extends AbstractHistoricView
         {
             chart.suspendUpdate(false);
         }
+        chart.getAxisSet().getYAxis(0).enableLogScale(chartConfig.contains(ChartDetails.SCALING_LOG));
+        
         chart.redraw();
 
         // re-layout in case chart legend changed
