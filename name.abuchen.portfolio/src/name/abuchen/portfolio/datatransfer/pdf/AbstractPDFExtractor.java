@@ -29,7 +29,8 @@ public abstract class AbstractPDFExtractor implements Extractor
 {
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy", Locale.GERMANY); //$NON-NLS-1$
     private static final DateTimeFormatter DATE_FORMAT_DASHES = DateTimeFormatter.ofPattern("yyyy-M-d", Locale.GERMANY); //$NON-NLS-1$
-    private static final DateTimeFormatter DATE_FORMAT_DASHES_REVERSE = DateTimeFormatter.ofPattern("d-M-yyyy", Locale.GERMANY); //$NON-NLS-1$
+    private static final DateTimeFormatter DATE_FORMAT_DASHES_REVERSE = DateTimeFormatter.ofPattern("d-M-yyyy", //$NON-NLS-1$
+                    Locale.GERMANY);
     private static final DateTimeFormatter DATE_TIME_SECONDS_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy HH:mm", //$NON-NLS-1$
                     Locale.GERMANY);
     private static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy HH:mm:ss", //$NON-NLS-1$
@@ -113,7 +114,7 @@ public abstract class AbstractPDFExtractor implements Extractor
                 else
                     item.getSubject().setNote(item.getSubject().getNote().concat(" | ").concat(filename)); //$NON-NLS-1$
             }
-            
+
             return items;
         }
         catch (IllegalArgumentException e)
@@ -168,6 +169,10 @@ public abstract class AbstractPDFExtractor implements Extractor
         if (isin != null)
             isin = isin.trim();
 
+        String currency = values.get("currency"); //$NON-NLS-1$
+        if (currency != null)
+            currency = currency.trim();
+
         String tickerSymbol = values.get("tickerSymbol"); //$NON-NLS-1$
         if (tickerSymbol != null)
             tickerSymbol = tickerSymbol.trim();
@@ -184,9 +189,8 @@ public abstract class AbstractPDFExtractor implements Extractor
         if (nameRowTwo != null)
             name = name + " " + nameRowTwo.trim(); //$NON-NLS-1$
 
-        Security security = securityCache.lookup(isin, tickerSymbol, wkn, name, () -> {
+        Security security = securityCache.lookup(isin, tickerSymbol, wkn, name, asCurrencyCode(currency), () -> {
             Security s = new Security();
-            s.setCurrencyCode(asCurrencyCode(values.get("currency"))); //$NON-NLS-1$
             return s;
         });
 

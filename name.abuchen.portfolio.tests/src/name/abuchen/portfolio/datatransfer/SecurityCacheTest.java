@@ -24,6 +24,13 @@ public class SecurityCacheTest
         security.setName("Security Name");
         security.setIsin("DE0007164600");
         security.setWkn("716460");
+        security.setCurrencyCode("EUR");
+        client.addSecurity(security);
+
+        security = new Security();
+        security.setName("Security Name USD");
+        security.setIsin("DE0007164600");
+        security.setCurrencyCode("USD");
         client.addSecurity(security);
     }
 
@@ -49,5 +56,38 @@ public class SecurityCacheTest
         SecurityCache cache = new SecurityCache(client);
         Security lookup = cache.lookup(null, null, null, "Security Name", () -> new Security());
         assertThat(client.getSecurities().get(0), is(lookup));
+    }
+
+    @Test
+    public void testThatSecurityIsMatchedByISINUnique()
+    {
+        SecurityCache cache = new SecurityCache(client);
+        try
+        {
+            cache.lookup("DE0007164600", null, null, null, null, () -> new Security());
+            assertThat(true, is(false));
+        }
+        catch (IllegalArgumentException e)
+        {
+            assertThat(true, is(true));
+        }
+    }
+
+    @Test
+    public void testThatSecurityIsMatchedByISINandName()
+    {
+        SecurityCache cache = new SecurityCache(client);
+        Security lookup = cache.lookup("DE0007164600", null, null, "Security Name", () -> new Security());
+        assertThat(client.getSecurities().get(0), is(lookup));
+        assertThat(client.getSecurities().get(1), not(is(lookup)));
+    }
+
+    @Test
+    public void testThatSecurityIsMatchedByISINandCurrency()
+    {
+        SecurityCache cache = new SecurityCache(client);
+        Security lookup = cache.lookup("DE0007164600", null, null, null, "USD", () -> new Security());
+        assertThat(client.getSecurities().get(0), not(is(lookup)));
+        assertThat(client.getSecurities().get(1), is(lookup));
     }
 }
