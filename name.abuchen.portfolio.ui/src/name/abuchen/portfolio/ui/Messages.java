@@ -984,10 +984,11 @@ public class Messages extends NLS
     public static String SecurityMenuDebugGetHistoricalQuotes;
     public static String SecurityMenuDeleteAllPrices;
     public static String SecurityMenuDeleteLatestQuote;
-    public static String SecurityMenuDeletePrice;
-    public static String SecurityMenuDeleteSecurity;
-    public static String SecurityMenuDeleteSingleSecurityConfirm;
+    public static String SecurityMenuDeleteMultipleSecurity;
     public static String SecurityMenuDeleteMultipleSecurityConfirm;
+    public static String SecurityMenuDeletePrice;
+    public static String SecurityMenuDeleteSingleSecurity;
+    public static String SecurityMenuDeleteSingleSecurityConfirm;
     public static String SecurityMenuDividends;
     public static String SecurityMenuEditSecurity;
     public static String SecurityMenuErrorMessageRoundingMustBeBetween0AndX;
@@ -1002,6 +1003,14 @@ public class Messages extends NLS
     public static String SecurityMenuRoundToXDecimalPlaces;
     public static String SecurityMenuSearch4Securities;
     public static String SecurityMenuSell;
+    public static String SecurityMenuSetMultipleSecurityActive;
+    public static String SecurityMenuSetMultipleSecurityActiveConfirm;
+    public static String SecurityMenuSetMultipleSecurityInactive;
+    public static String SecurityMenuSetMultipleSecurityInactiveConfirm;
+    public static String SecurityMenuSetSingleSecurityActive;
+    public static String SecurityMenuSetSingleSecurityActiveConfirm;
+    public static String SecurityMenuSetSingleSecurityInactive;
+    public static String SecurityMenuSetSingleSecurityInactiveConfirm;
     public static String SecurityMenuStockSplit;
     public static String SecurityMenuAddEvent;
     public static String SecurityMenuLabelNumberOfDecimalPlaces;
@@ -1086,9 +1095,6 @@ public class Messages extends NLS
     public static String HoldingsWarningAssetsWithNegativeValuation;
     public static String HoldingsWarningAssetsWithNegativeValuationDetails;
     public static String YearlyPerformanceHeatmapToolTip;
-    public static String SecurityMenuSetSecurityInactive;
-    public static String SecurityMenuSetMultipleSecurityInactiveConfirm;
-    public static String SecurityMenuSetSingleSecurityInactiveConfirm;
     static
     {
         // initialize resource bundle
