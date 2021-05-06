@@ -1776,6 +1776,50 @@ public class DkbPDFExtractorTest
     }
 
     @Test
+    public void testGiroKontoauszug4() throws IOException
+    {
+        // this test case is especially for the first Kontoauszug of the year
+        // and checks for correct date interpretation
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DkbKontoauszugGiro4.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // check transaction
+        // get transactions
+        Iterator<Extractor.Item> iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
+        assertThat(results.stream().filter(i -> i instanceof TransactionItem).count(), is(2L));       
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-04-23T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(15.00)));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-04-21T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(3450.00)));
+        }
+    }
+
+    @Test
     public void testKreditkartenabrechnung1() throws IOException
     {
         // this test case is especially for the first Kontoauszug of the year
