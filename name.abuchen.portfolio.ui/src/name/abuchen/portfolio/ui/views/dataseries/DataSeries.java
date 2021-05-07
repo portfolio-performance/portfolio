@@ -8,7 +8,9 @@ import org.eclipse.swt.graphics.RGB;
 import org.swtchart.LineStyle;
 
 import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.Adaptable;
 import name.abuchen.portfolio.model.Classification;
+import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Images;
@@ -18,7 +20,7 @@ import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 /**
  * A data series available to add to charts.
  */
-public final class DataSeries
+public final class DataSeries implements Adaptable
 {
     /**
      * The use case determines the selection of data series available.
@@ -221,6 +223,19 @@ public final class DataSeries
     public String getUUID()
     {
         return this.type.buildUUID(instance);
+    }
+
+    @Override
+    public <T> T adapt(Class<T> type)
+    {
+        if (type == Named.class && instance instanceof Named)
+            return type.cast(instance);
+        else if (type == Security.class && instance instanceof Security)
+            return type.cast(instance);
+        else if (type == Account.class && instance instanceof Account)
+            return type.cast(instance);
+        else
+            return null;
     }
 
     @Override

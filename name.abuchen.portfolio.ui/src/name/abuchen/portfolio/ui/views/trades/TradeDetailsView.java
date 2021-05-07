@@ -38,6 +38,11 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.views.SecurityContextMenu;
 import name.abuchen.portfolio.ui.views.TradesTableViewer;
+import name.abuchen.portfolio.ui.views.panes.HistoricalPricesPane;
+import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
+import name.abuchen.portfolio.ui.views.panes.SecurityEventsPane;
+import name.abuchen.portfolio.ui.views.panes.SecurityPriceChartPane;
+import name.abuchen.portfolio.ui.views.panes.TransactionsPane;
 import name.abuchen.portfolio.util.Interval;
 
 public class TradeDetailsView extends AbstractFinanceView
@@ -224,8 +229,7 @@ public class TradeDetailsView extends AbstractFinanceView
                 mgr.add(new Separator());
             }
 
-            FilterAction onlyOpenAction = new FilterAction(Messages.FilterOnlyOpenTrades, onlyOpen,
-                            filterDropDowMenu);
+            FilterAction onlyOpenAction = new FilterAction(Messages.FilterOnlyOpenTrades, onlyOpen, filterDropDowMenu);
             FilterAction onlyClosedAction = new FilterAction(Messages.FilterOnlyClosedTrades, onlyClosed,
                             filterDropDowMenu);
 
@@ -257,11 +261,24 @@ public class TradeDetailsView extends AbstractFinanceView
 
         Control control = table.createViewControl(parent, TradesTableViewer.ViewMode.MULTIPLE_SECURITES);
 
+        table.getTableViewer().addSelectionChangedListener(
+                        e -> setInformationPaneInput(e.getStructuredSelection().getFirstElement()));
+
         update();
 
         new ContextMenu(table.getTableViewer().getControl(), this::fillContextMenu).hook();
 
         return control;
+    }
+
+    @Override
+    protected void addPanePages(List<InformationPanePage> pages)
+    {
+        super.addPanePages(pages);
+        pages.add(make(SecurityPriceChartPane.class));
+        pages.add(make(HistoricalPricesPane.class));
+        pages.add(make(TransactionsPane.class));
+        pages.add(make(SecurityEventsPane.class));
     }
 
     private void fillContextMenu(IMenuManager manager)

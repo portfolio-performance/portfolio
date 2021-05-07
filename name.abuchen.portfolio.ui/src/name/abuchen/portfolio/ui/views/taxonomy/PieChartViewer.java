@@ -16,18 +16,23 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
+import name.abuchen.portfolio.ui.util.EmbeddedBrowser.ItemSelectedFunction;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.util.ColorConversion;
 
 /* package */class PieChartViewer extends AbstractChartPage
 {
+    private AbstractFinanceView view;
+
     private EmbeddedBrowser browser;
 
     @Inject
-    public PieChartViewer(TaxonomyModel model, TaxonomyNodeRenderer renderer)
+    public PieChartViewer(AbstractFinanceView view, TaxonomyModel model, TaxonomyNodeRenderer renderer)
     {
         super(model, renderer);
+        this.view = view;
     }
 
     @Override
@@ -48,7 +53,9 @@ import name.abuchen.portfolio.util.ColorConversion;
     {
         browser = make(EmbeddedBrowser.class);
         browser.setHtmlpage("/META-INF/html/flare.html"); //$NON-NLS-1$
-        return browser.createControl(container, b -> new LoadDataFunction(b, "loadData")); //$NON-NLS-1$
+        return browser.createControl(container, LoadDataFunction::new,
+                        b -> new ItemSelectedFunction(b, uuid -> getModel().getVirtualRootNode().getNodeById(uuid)
+                                        .ifPresent(n -> view.setInformationPaneInput(n))));
     }
 
     @Override
@@ -77,9 +84,9 @@ import name.abuchen.portfolio.util.ColorConversion;
 
     private final class LoadDataFunction extends BrowserFunction
     {
-        private LoadDataFunction(Browser browser, String name)
+        private LoadDataFunction(Browser browser) // NOSONAR
         {
-            super(browser, name);
+            super(browser, "loadData"); //$NON-NLS-1$
         }
 
         @Override
@@ -115,13 +122,14 @@ import name.abuchen.portfolio.util.ColorConversion;
 
             if (excludeSecurities && node.isAssignment())
             {
-                buffer.append("{\"name\":\"\",\"caption\":\"\",");
+                buffer.append("{\"uuid\":\"\",\"name\":\"\",\"caption\":\"\",");
                 buffer.append("\"value\":").append(node.getActual().getAmount());
                 buffer.append(",\"color\":\"#FFFFFF\"");
             }
             else
             {
-                buffer.append("{\"name\":\"").append(name);
+                buffer.append("{\"uuid\":\"").append(node.getId());
+                buffer.append("\",\"name\":\"").append(name);
                 buffer.append("\",\"caption\":\"");
                 buffer.append(name).append(" ").append(Values.Amount.format(actual)).append(" (")
                                 .append(Values.Percent2.format(actual / (double) base)).append(totalPercentage)

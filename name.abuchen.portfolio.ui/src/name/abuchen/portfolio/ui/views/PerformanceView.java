@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.views;
 
 import java.text.MessageFormat;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.function.Function;
 
 import javax.inject.Inject;
@@ -64,6 +65,12 @@ import name.abuchen.portfolio.ui.util.viewers.MoneyTrailToolTipSupport;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
+import name.abuchen.portfolio.ui.views.panes.HistoricalPricesPane;
+import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
+import name.abuchen.portfolio.ui.views.panes.SecurityEventsPane;
+import name.abuchen.portfolio.ui.views.panes.SecurityPriceChartPane;
+import name.abuchen.portfolio.ui.views.panes.TradesPane;
+import name.abuchen.portfolio.ui.views.panes.TransactionsPane;
 import name.abuchen.portfolio.util.Interval;
 
 public class PerformanceView extends AbstractHistoricView
@@ -165,8 +172,15 @@ public class PerformanceView extends AbstractHistoricView
         CTabFolder folder = new CTabFolder(parent, SWT.BORDER);
 
         createCalculationItem(folder, Messages.PerformanceTabCalculation);
+
         snapshotStart = createStatementOfAssetsItem(folder, Messages.PerformanceTabAssetsAtStart);
+        snapshotStart.getTableViewer().addSelectionChangedListener(
+                        e -> setInformationPaneInput(e.getStructuredSelection().getFirstElement()));
+
         snapshotEnd = createStatementOfAssetsItem(folder, Messages.PerformanceTabAssetsAtEnd);
+        snapshotEnd.getTableViewer().addSelectionChangedListener(
+                        e -> setInformationPaneInput(e.getStructuredSelection().getFirstElement()));
+
         earnings = createTransactionViewer(folder, Messages.PerformanceTabEarnings);
         createEarningsByAccountsItem(folder, Messages.PerformanceTabEarningsByAccount);
         taxes = createTransactionViewer(folder, Messages.PerformanceTabTaxes);
@@ -348,6 +362,7 @@ public class PerformanceView extends AbstractHistoricView
 
         calculation.addSelectionChangedListener(event -> {
             Object selection = ((IStructuredSelection) event.getSelection()).getFirstElement();
+            setInformationPaneInput(selection);
             if (selection instanceof ClientPerformanceSnapshot.Position
                             && ((ClientPerformanceSnapshot.Position) selection).getSecurity() != null)
                 selectionService.setSelection(new SecuritySelection(getClient(),
@@ -450,6 +465,9 @@ public class PerformanceView extends AbstractHistoricView
         transactionViewer.getTable().setLinesVisible(true);
 
         transactionViewer.setContentProvider(ArrayContentProvider.getInstance());
+
+        transactionViewer.addSelectionChangedListener(
+                        e -> setInformationPaneInput(e.getStructuredSelection().getFirstElement()));
 
         CTabItem item = new CTabItem(folder, SWT.NONE);
         item.setText(title);
@@ -734,9 +752,23 @@ public class PerformanceView extends AbstractHistoricView
 
         earningsByAccount.setContentProvider(ArrayContentProvider.getInstance());
 
+        earningsByAccount.addSelectionChangedListener(
+                        e -> setInformationPaneInput(e.getStructuredSelection().getFirstElement()));
+
         CTabItem item = new CTabItem(folder, SWT.NONE);
         item.setText(title);
         item.setControl(container);
+    }
+
+    @Override
+    protected void addPanePages(List<InformationPanePage> pages)
+    {
+        super.addPanePages(pages);
+        pages.add(make(SecurityPriceChartPane.class));
+        pages.add(make(HistoricalPricesPane.class));
+        pages.add(make(TransactionsPane.class));
+        pages.add(make(TradesPane.class));
+        pages.add(make(SecurityEventsPane.class));
     }
 
     private static class PerformanceContentProvider implements ITreeContentProvider

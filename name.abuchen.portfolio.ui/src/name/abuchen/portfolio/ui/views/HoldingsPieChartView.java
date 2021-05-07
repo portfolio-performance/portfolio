@@ -33,6 +33,7 @@ import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.ClientFilterDropDown;
 import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
+import name.abuchen.portfolio.ui.util.EmbeddedBrowser.ItemSelectedFunction;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.views.panes.HistoricalPricesPane;
 import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
@@ -95,7 +96,10 @@ public class HoldingsPieChartView extends AbstractFinanceView
         browser = make(EmbeddedBrowser.class);
         browser.setHtmlpage("/META-INF/html/pie.html"); //$NON-NLS-1$
         updateWarningInToolBar();
-        return browser.createControl(parent, LoadDataFunction::new, PieSelectedFunction::new);
+        return browser.createControl(parent, LoadDataFunction::new,
+                        b -> new ItemSelectedFunction(b, uuid -> snapshot.getAssetPositions()
+                                        .filter(p -> uuid.equals(p.getInvestmentVehicle().getUUID())).findAny()
+                                        .ifPresent(p -> setInformationPaneInput(p.getInvestmentVehicle()))));
     }
 
     private void updateWarningInToolBar()
@@ -211,30 +215,6 @@ public class HoldingsPieChartView extends AbstractFinanceView
                 PortfolioPlugin.log(e);
                 return "[]"; //$NON-NLS-1$
             }
-        }
-    }
-
-    private final class PieSelectedFunction extends BrowserFunction
-    {
-        private PieSelectedFunction(Browser browser) // NOSONAR
-        {
-            super(browser, "onPieSelected"); //$NON-NLS-1$
-        }
-
-        @Override
-        public Object function(Object[] arguments) // NOSONAR
-        {
-            if (arguments == null || arguments.length == 0)
-                return null;
-
-            String uuid = String.valueOf(arguments[0]);
-            if (uuid == null)
-                return null;
-
-            snapshot.getAssetPositions().filter(p -> uuid.equals(p.getInvestmentVehicle().getUUID())).findAny()
-                            .ifPresent(p -> setInformationPaneInput(p.getInvestmentVehicle()));
-
-            return null;
         }
     }
 }

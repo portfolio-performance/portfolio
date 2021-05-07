@@ -400,6 +400,7 @@ import name.abuchen.portfolio.util.TextUtil;
 
         nodeViewer.addSelectionChangedListener(event -> {
             TaxonomyNode node = ((TaxonomyNode) ((IStructuredSelection) event.getSelection()).getFirstElement());
+            view.setInformationPaneInput(node);
             if (node != null && node.getBackingSecurity() != null)
                 selectionService.setSelection(new SecuritySelection(getModel().getClient(), node.getBackingSecurity()));
         });

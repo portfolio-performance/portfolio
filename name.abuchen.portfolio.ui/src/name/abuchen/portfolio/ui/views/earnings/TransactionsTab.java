@@ -31,6 +31,7 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.selection.SelectionService;
 import name.abuchen.portfolio.ui.util.Colors;
@@ -46,6 +47,9 @@ public class TransactionsTab implements EarningsTab
 {
     @Inject
     private Client client;
+
+    @Inject
+    private AbstractFinanceView view;
 
     @Inject
     private EarningsViewModel model;
@@ -100,6 +104,9 @@ public class TransactionsTab implements EarningsTab
         tableViewer.addSelectionChangedListener(event -> {
             TransactionPair<?> tx = ((TransactionPair<?>) ((IStructuredSelection) event.getSelection())
                             .getFirstElement());
+
+            view.setInformationPaneInput(tx);
+
             if (tx != null && tx.getTransaction().getSecurity() != null)
                 selectionService.setSelection(
                                 new SecuritySelection(model.getClient(), tx.getTransaction().getSecurity()));

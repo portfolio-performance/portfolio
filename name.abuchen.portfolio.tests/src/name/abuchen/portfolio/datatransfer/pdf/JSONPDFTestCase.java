@@ -37,7 +37,7 @@ public class JSONPDFTestCase
     @Parameters(name = "{index}: {0}")
     public static Collection<Object[]> getFiles() throws IOException, URISyntaxException
     {
-        Path testDir = Paths.get(JSONPDFTestCase.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+        Path testDir = Paths.get(new File(JSONPDFTestCase.class.getProtectionDomain().getCodeSource().getLocation().getFile()).toURI());
         Collection<Object[]> params = new ArrayList<>();
 
         // look up test cases in such a way that it works in the Eclipse IDE,
