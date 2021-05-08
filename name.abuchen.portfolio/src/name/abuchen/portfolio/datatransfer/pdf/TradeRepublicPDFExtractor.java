@@ -325,7 +325,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         });
         this.addDocumentTyp(type);
 
-        Block payInBlock = new Block("\\d+.\\d+.\\d{4} Accepted PayIn.*");
+        Block payInBlock = new Block("\\d+.\\d+.\\d{4} (Accepted PayIn|Einzahlung akzeptiert).*");
         type.addBlock(payInBlock);
         payInBlock.set(new Transaction<AccountTransaction>()
 
@@ -336,7 +336,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date", "amount")
-                        .match("(?<date>\\d+\\.\\d+\\.\\d{4}|\\d{4}-\\d+-\\d+) Accepted PayIn:.* to.* (?<amount>[\\d+,.]*)")
+                        .match("(?<date>\\d+\\.\\d+\\.\\d{4}|\\d{4}-\\d+-\\d+) (Accepted PayIn|Einzahlung akzeptiert):.* (to|auf).* (?<amount>[\\d+,.]*)")
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));

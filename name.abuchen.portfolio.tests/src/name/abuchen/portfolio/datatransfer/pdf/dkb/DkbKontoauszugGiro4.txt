@@ -1,0 +1,26 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Deutsche Kreditbank, Taubenstr. 7-9, 10117 Berlin
+Max Mustermann
+Muster Str. 3 IHR DISPOKREDIT EUR 2.000,00
+01234 CITY
+DKB-Cash
+Kontoauszug Nummer 005 / 2021 vom 02.04.2021 bis 04.05.2021
+Kontonummer 1011111111 / IBAN DE45 1203 0000 1011 1111 11
+Bu.Tag Wert Wir haben für Sie gebucht Belastung in EUR Gutschrift in EUR
+21.04. 21.04. Bareinzahlung am GA 3.450,00
+SB-EINZAHLUNG DKB DDGA 2030 / 21.04.21
+16.04.321069566428 / 2412 /0 / 0
+23.04. 23.04. Rechnung 15,00
+RechnungEntgelt auf Ihre Bargeldeinzahlung vom
+ALTER KONTOSTAND 1000,00 H EUR
+NEUER KONTOSTAND 1000,00 H EUR
+Gemäß dem Finanzkonten-Informationsaustauschgesetz (FKAustG) ermittelt die DKB AG die nach diesem Gesetz
+erforderlichen Daten zur steuerlichen Ansässigkeit und meldet diese, soweit aufgrund des Gesetzes
+erforderlich, jährlich an das Bundeszentralamt für Steuern (BZSt), das diese dann ggf. an zuständige
+ausländische Steuerbehörden weiterleitet. Gemeldet werden die erforderlichen Kundendaten, Steuer-
+Identifikationsnummer sowie Konto- und Depotnummern, Kontosalden sowie gutgeschriebene Kapitalerträge.
+DEUTSCHE KREDITBANK AG IBAN: DE45120300001011111111 Seite 3 von 3
+TAUBENSTRASSE 7-9 BIC: BYLADEM1001
+10117 BERLIN USt-ID: DE137178746

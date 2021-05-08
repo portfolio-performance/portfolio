@@ -91,6 +91,7 @@ var thePieChart = {
             .on("mouseover", function(d) { that.mouseover(d); })
             .on("mousemove", function(d) { that.mousemove(d); })
             .on("mouseout", function(d) { that.mouseout(d); })
+            .on("click", function(d) { that.click(d); })
             .transition();
 
         this.path.exit()
@@ -193,7 +194,8 @@ var thePieChart = {
             .text(function(d) { return d.data.valueLabel; })
             .on("mouseover", function(d) { that.mouseover(d); })
             .on("mousemove", function(d) { that.mousemove(d); })
-            .on("mouseout", function(d) { that.mouseout(d); });
+            .on("mouseout", function(d) { that.mouseout(d); })
+            .on("click", function(d) { that.click(d); });
 
         this.valueLabels.exit()
             .remove();
@@ -227,6 +229,12 @@ var thePieChart = {
         this.tooltip.transition()
           .duration(250)
           .style("opacity", 0);
+    },
+    
+    click: function(d) {
+        if (typeof onItemSelected === 'function') {
+            onItemSelected(d.data.uuid);
+        }
     }
 }
 

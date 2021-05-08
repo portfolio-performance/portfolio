@@ -37,6 +37,12 @@ import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.views.panes.HistoricalPricesPane;
+import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
+import name.abuchen.portfolio.ui.views.panes.SecurityEventsPane;
+import name.abuchen.portfolio.ui.views.panes.SecurityPriceChartPane;
+import name.abuchen.portfolio.ui.views.panes.TradesPane;
+import name.abuchen.portfolio.ui.views.panes.TransactionsPane;
 
 public class TaxonomyView extends AbstractFinanceView implements PropertyChangeListener
 {
@@ -52,6 +58,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
             this.clientFilterMenu = new ClientFilterMenu(getClient(), getPreferenceStore());
 
             Consumer<ClientFilter> listener = filter -> {
+                setInformationPaneInput(null);
                 Client filteredClient = filter.filter(getClient());
                 model.updateClientSnapshot(filteredClient);
             };
@@ -281,6 +288,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
     public void notifyModelUpdated()
     {
         Client filteredClient = this.clientFilter.filter(getClient());
+        setToContext(UIConstants.Context.FILTERED_CLIENT, filteredClient);
         model.updateClientSnapshot(filteredClient);
     }
 
@@ -344,5 +352,16 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
 
             getPart().getPreferenceStore().setValue(identifierView, index);
         }
+    }
+
+    @Override
+    protected void addPanePages(List<InformationPanePage> pages)
+    {
+        super.addPanePages(pages);
+        pages.add(make(SecurityPriceChartPane.class));
+        pages.add(make(HistoricalPricesPane.class));
+        pages.add(make(TransactionsPane.class));
+        pages.add(make(TradesPane.class));
+        pages.add(make(SecurityEventsPane.class));
     }
 }

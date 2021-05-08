@@ -36,6 +36,13 @@ public interface UIConstants
         }
     }
 
+    interface Context // NOSONAR
+    {
+        String FILTERED_CLIENT = "FILTERED_CLIENT"; //$NON-NLS-1$
+
+        String ACTIVE_CLIENT = "ACTIVE_CLIENT"; //$NON-NLS-1$
+    }
+
     interface File // NOSONAR
     {
         String ENCRYPTED_EXTENSION = "portfolio"; //$NON-NLS-1$
@@ -83,6 +90,7 @@ public interface UIConstants
         String NAME = "name.abuchen.portfolio.ui.param.name"; //$NON-NLS-1$
         String VIEW_PARAMETER = "name.abuchen.portfolio.ui.param.viewparameter"; //$NON-NLS-1$
         String URL = "name.abuchen.portfolio.ui.param.url"; //$NON-NLS-1$
+        String TAG = "name.abuchen.portfolio.ui.param.tag"; //$NON-NLS-1$
     }
 
     interface Preferences // NOSONAR
@@ -139,6 +147,8 @@ public interface UIConstants
          */
         String STORE_SETTINGS_NEXT_TO_FILE = "STORE_SETTINGS_NEXT_TO_FILE"; //$NON-NLS-1$
 
+        String ENABLE_EXPERIMENTAL_FEATURES = "ENABLE_EXPERIMENTAL_FEATURES"; //$NON-NLS-1$
+
         String ALPHAVANTAGE_API_KEY = "ALPHAVANTAGE_API_KEY"; //$NON-NLS-1$
         String ALPHAVANTAGE_CALL_FREQUENCY_LIMIT = "ALPHAVANTAGE_CALL_FREQUENCY_LIMIT"; //$NON-NLS-1$
 
@@ -149,6 +159,7 @@ public interface UIConstants
         String DIVVYDIARY_API_KEY = "DIVVYDIARY_API_KEY"; //$NON-NLS-1$
 
         String PORTFOLIO_REPORT_API_KEY = "PORTFOLIO_REPORT_API_KEY"; //$NON-NLS-1$
+        String PORTFOLIO_REPORT_API_URL = "PORTFOLIO_REPORT_API_URL"; //$NON-NLS-1$
 
         /**
          * Preference key whether to store settings (standard calendar)
@@ -159,5 +170,11 @@ public interface UIConstants
     interface CSS // NOSONAR
     {
         String CLASS_NAME = "org.eclipse.e4.ui.css.CssClassName"; //$NON-NLS-1$
+    }
+
+    interface Tag // NOSONAR
+    {
+        String SIDEBAR = "sidebar"; //$NON-NLS-1$
+        String INFORMATIONPANE = "informationpane"; //$NON-NLS-1$
     }
 }

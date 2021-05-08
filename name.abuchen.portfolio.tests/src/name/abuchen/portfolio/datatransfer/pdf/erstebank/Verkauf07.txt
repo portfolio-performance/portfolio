@@ -1,0 +1,36 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Ab. BLZ: 12345
+Abcd Abcdefghijk Referenz Nr: 12-1234567-1
+Nr. 01 Kunden Nr.: 12345
+1234 Abcdefghi Depot Nr.: 12345-01 
+Austria
+Wien,  03. Dezember 2010
+ 
+WERTPAPIERBESTÄTIGUNG
+IHR VERKAUF
+ 
+Börse: New York Stock Exchange Kurswert: USD 1.522,80
+Wertpapier: MORGAN ST., DEAN W. FX-Kommission: USD 3,75-
+DL-01 WP-Kommission: USD 22,67-
+WP-Kenn-Nr. : US6174464486
+Stück: 60 Gesamtbetrag: USD 1.496,38
+Preis: USD 25,3800
+Handelstag: 03. Dezember 2010
+Devisenkurs: 0,7463201
+Valutatag: 08. Dezember 2010
+Gesamtbetrag : EUR 1.116,78
+Lagerort: Opfikon
+Verwahrart: WR
+Abrechnung:
+Wir erkennen Ihr EUR Konto Nummer  12345 mit Valuta 08. Dezember 2010.
+Wir belasten Ihr Wertpapierdepot Nummer  12345-1.
+Ausführung:
+Ausführungsdatum: 03. Dezember 2010 Ausführungszeit: 15:30:14
+Überprüfen Sie bitte die Richtigkeit dieser Bestätigung. Sollten Sie innerhalb von 6 Wochen nach Erhalt dieser Bestätigung keine
+Einwände gegen die Richtigkeit erheben, so gelten die angeführten Erklärungen und Leistungen als genehmigt.
+ecetra  Central European e-Finance AG | Mariahilferstraße 121B | A-1060 Wien 
+e-mail: support@ecetra.com | Fax: +43-1-53689-13550 | www.ecetra.com
+Sitz Wien  |  Handelsgericht Wien  |  FB-Nr. 193944m  |  DVR 1052322  |  UID ATU49227901
+Ein Unternehmen der ERSTE BANK GRUPPE

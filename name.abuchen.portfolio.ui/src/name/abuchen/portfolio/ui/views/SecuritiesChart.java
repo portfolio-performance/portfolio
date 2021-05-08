@@ -34,6 +34,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Layout;
@@ -278,6 +279,7 @@ public class SecuritiesChart
 
     private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("d LLL"); //$NON-NLS-1$
 
+    private Composite container;
     private Menu contextMenu;
 
     private Client client;
@@ -308,8 +310,10 @@ public class SecuritiesChart
 
         readChartConfig(client);
 
-        chart = new TimelineChart(parent);
-        chart.getTitle().setText("..."); //$NON-NLS-1$
+        container = new Composite(parent, SWT.NONE);
+
+        chart = new TimelineChart(container);
+        chart.getTitle().setVisible(false);
 
         chart.getPlotArea().addPaintListener(event -> customPaintListeners.forEach(l -> l.paintControl(event)));
         chart.getPlotArea().addPaintListener(event -> customBehindPaintListener.forEach(l -> l.paintControl(event)));
@@ -320,7 +324,7 @@ public class SecuritiesChart
         legend.setPosition(SWT.BOTTOM);
         legend.setVisible(true);
 
-        Composite buttons = new Composite(parent, SWT.NONE);
+        Composite buttons = new Composite(container, SWT.NONE);
         buttons.setBackground(Colors.WHITE);
         RowLayoutFactory.fillDefaults().type(SWT.VERTICAL).spacing(2).margins(2, 2).fill(true).wrap(true)
                         .applyTo(buttons);
@@ -372,7 +376,7 @@ public class SecuritiesChart
                             : new ChartInterval(prices.get(0).getDate(), prices.get(prices.size() - 1).getDate());
         });
 
-        parent.setLayout(new CustomLayout(chart, buttons));
+        container.setLayout(new CustomLayout(chart, buttons));
     }
 
     private void setupTooltip()
@@ -400,18 +404,16 @@ public class SecuritiesChart
         DecimalFormat calculatedFormat = new DecimalFormat(Values.CalculatedQuote.pattern());
         calculatedFormat.setMinimumFractionDigits(precision);
         calculatedFormat.setMaximumFractionDigits(precision);
-        for (String period : new String[] {
-                        Messages.LabelChartDetailMovingAverage_5days,
-                        Messages.LabelChartDetailMovingAverage_20days,
-                        Messages.LabelChartDetailMovingAverage_30days,
-                        Messages.LabelChartDetailMovingAverage_38days,
-                        Messages.LabelChartDetailMovingAverage_50days,
+        for (String period : new String[] { Messages.LabelChartDetailMovingAverage_5days,
+                        Messages.LabelChartDetailMovingAverage_20days, Messages.LabelChartDetailMovingAverage_30days,
+                        Messages.LabelChartDetailMovingAverage_38days, Messages.LabelChartDetailMovingAverage_50days,
                         Messages.LabelChartDetailMovingAverage_100days,
-                        Messages.LabelChartDetailMovingAverage_200days,
-        })
+                        Messages.LabelChartDetailMovingAverage_200days, })
         {
-            toolTip.overrideValueFormat(String.format("%s (%s)", Messages.LabelChartDetailMovingAverageEMA, period), calculatedFormat); //$NON-NLS-1$
-            toolTip.overrideValueFormat(String.format("%s (%s)", Messages.LabelChartDetailMovingAverageSMA, period), calculatedFormat); //$NON-NLS-1$
+            toolTip.overrideValueFormat(String.format("%s (%s)", Messages.LabelChartDetailMovingAverageEMA, period), //$NON-NLS-1$
+                            calculatedFormat);
+            toolTip.overrideValueFormat(String.format("%s (%s)", Messages.LabelChartDetailMovingAverageSMA, period), //$NON-NLS-1$
+                            calculatedFormat);
         }
         toolTip.overrideValueFormat(Messages.LabelChartDetailIndicatorBollingerBandsLower, calculatedFormat);
         toolTip.overrideValueFormat(Messages.LabelChartDetailIndicatorBollingerBandsUpper, calculatedFormat);
@@ -686,6 +688,11 @@ public class SecuritiesChart
         updateChart();
     }
 
+    public Control getControl()
+    {
+        return container;
+    }
+
     private void updateChart()
     {
         chart.setRedraw(false);
@@ -705,12 +712,9 @@ public class SecuritiesChart
 
             if (security == null || security.getPrices().isEmpty())
             {
-                chart.getTitle().setText(security == null ? "..." : security.getName()); //$NON-NLS-1$
                 chart.redraw();
                 return;
             }
-
-            chart.getTitle().setText(security.getName());
 
             boolean showAreaRelativeToFirstQuote = chartConfig.contains(ChartDetails.CLOSING)
                             || chartConfig.contains(ChartDetails.PURCHASEPRICE);

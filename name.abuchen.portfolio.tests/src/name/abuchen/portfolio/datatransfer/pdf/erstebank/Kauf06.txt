@@ -1,0 +1,34 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Ab. BLZ: 12345
+Abcd Abcdefghijk Referenz Nr: 12-1234567-2
+Nr. 01 Kunden Nr.: 12345
+1234 Abcdefghi Depot Nr.: 12345-01 
+Austria
+Wien,  20. November 2009
+ 
+WERTPAPIERBESTÄTIGUNG 
+IHR KAUF 
+ 
+Börse: Vienna Stock Exchange Kurswert: EUR 1.049,40
+Wertpapier: TELEKOM AUSTRIA AKT.
+O.N.
+WP-Kenn-Nr. : AT0000720008 Gesamtbetrag: EUR 1.049,40
+Stück: 90
+Preis: EUR 11,6600
+Handelstag: 20. November 2009
+Valutatag: 25. November 2009
+Lagerort: WIEN
+Verwahrart: SV
+Abrechnung:
+Wir belasten Ihr EUR Konto Nummer  12345 mit Valuta 25. November 2009.
+Wir erkennen Ihr Wertpapierdepot Nummer  12345-1.
+Ausführung:
+Ausführungsdatum: 20. November 2009 Ausführungszeit: 16:28:24
+Überprüfen Sie bitte die Richtigkeit dieser Bestätigung. Sollten Sie innerhalb von 6 Wochen nach Erhalt dieser Bestätigung keine
+Einwände gegen die Richtigkeit erheben, so gelten die angeführten Erklärungen und Leistungen als genehmigt.
+ecetra  Central European e-Finance AG | Mariahilferstraße 121B | A-1060 Wien 
+e-mail: support@ecetra.com | Fax: +43-1-53689-13550 | www.ecetra.com
+Sitz Wien  |  Handelsgericht Wien  |  FB-Nr. 193944m  |  DVR 1052322  |  UID ATU49227901
+Ein Unternehmen der ERSTE BANK GRUPPE
