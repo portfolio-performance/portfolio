@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -44,7 +45,7 @@ public class ECBStatisticalDataWarehouseQuoteProvider implements QuoteFeed
     private static final String ECB_SDW_DATA_PATH = "/service/data/"; //$NON-NLS-1$
     private static final String ECB_SDW_DATE_FORMAT = "yyyy-MM-dd"; //$NON-NLS-1$
 
-    public static enum ECBSDWSeries
+    public enum ECBSDWSeries
     {
         EONIA(new Exchange("ECB,EON,1.0/D.EONIA_TO.RATE", Messages.LabelEONIA)); //$NON-NLS-1$
 
@@ -117,7 +118,9 @@ public class ECBStatisticalDataWarehouseQuoteProvider implements QuoteFeed
     private void extractQuotes(String responseBody, QuoteFeedData data)
                     throws ParserConfigurationException, SAXException, IOException
     {
-        DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+        dbFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+        DocumentBuilder builder = dbFactory.newDocumentBuilder();
         Document document = builder.parse(new InputSource(new StringReader(responseBody)));
 
         Element root = document.getDocumentElement();

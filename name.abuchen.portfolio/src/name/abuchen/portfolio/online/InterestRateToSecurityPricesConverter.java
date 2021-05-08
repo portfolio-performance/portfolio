@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import name.abuchen.portfolio.model.LatestSecurityPrice;
@@ -13,7 +12,7 @@ import name.abuchen.portfolio.util.Pair;
 
 public class InterestRateToSecurityPricesConverter
 {
-    public static enum InterestRateType
+    public enum InterestRateType
     {
         /**
          * act/360: On each actual date (i.e. 365 or 366 times per year), apply
@@ -34,17 +33,11 @@ public class InterestRateToSecurityPricesConverter
 
     public Collection<LatestSecurityPrice> convert(List<Pair<LocalDate, Double>> interestRates)
     {
-        Collections.sort(interestRates, new Comparator<Pair<LocalDate, Double>>()
-        {
-            @Override
-            public int compare(Pair<LocalDate, Double> o1, Pair<LocalDate, Double> o2)
-            {
-                return o1.getLeft().compareTo(o2.getLeft());
-            }
-        });
-
-        if (interestRates.size() == 0)
+        if (interestRates.isEmpty())
             return Collections.emptyList();
+
+        Collections.sort(interestRates, (o1, o2) -> o1.getLeft().compareTo(o2.getLeft()));
+
         LocalDate lastDate = interestRates.get(0).getKey();
         long lastValue = START_VALUE;
         List<LatestSecurityPrice> results = new ArrayList<>();
@@ -53,11 +46,12 @@ public class InterestRateToSecurityPricesConverter
         do
         {
             while ((nextInterestRateIndex + 1) < interestRates.size()
-                            && ! interestRates.get(nextInterestRateIndex + 1).getLeft().isAfter(lastDate))
+                            && !interestRates.get(nextInterestRateIndex + 1).getLeft().isAfter(lastDate))
                 nextInterestRateIndex++;
-            
+
             double overNightInterestRate = interestRates.get(nextInterestRateIndex).getRight();
             long overNightReturn = 0;
+
             switch (interestRateType)
             {
                 case ACT_360:
@@ -65,10 +59,11 @@ public class InterestRateToSecurityPricesConverter
                     break;
                 default: // Necessary for checkstyle
             }
+
             lastDate = lastDate.plusDays(1);
             lastValue += overNightReturn;
             results.add(toLatestSecurityPrice(lastDate, lastValue));
-            
+
         }
         while (nextInterestRateIndex + 1 < interestRates.size());
         return results;
