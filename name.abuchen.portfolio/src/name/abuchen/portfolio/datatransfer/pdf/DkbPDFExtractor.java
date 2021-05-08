@@ -816,7 +816,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             }
                             else
                             {
-                            return null;
+                                return null;
                             }
                         }));
 
