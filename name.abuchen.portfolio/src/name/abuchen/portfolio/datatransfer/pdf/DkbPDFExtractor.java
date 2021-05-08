@@ -773,7 +773,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         });
         this.addDocumentTyp(type);
 
-        Block removalblock = new Block("(\\d+.\\d+.) (\\d+.\\d+.) (Überweisung|Dauerauftrag|Basislastschrift|Kartenzahlung|Kreditkartenabr.|Abrechnung (\\d+.\\d+.\\d+)) ([\\d.]+,\\d{2})");
+        Block removalblock = new Block("(\\d+.\\d+.) (\\d+.\\d+.) (Überweisung|Dauerauftrag|Basislastschrift|Kartenzahlung|Kreditkartenabr.|Abrechnung (\\d+.\\d+.\\d+)|Rechnung) ([\\d.]+,\\d{2})");
         type.addBlock(removalblock);
         removalblock.set(new Transaction<AccountTransaction>()
 
@@ -784,7 +784,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("day", "month", "value")
-                        .match("(\\d+.\\d+.) (?<day>\\d+).(?<month>\\d+). (Überweisung|Dauerauftrag|Basislastschrift|Kartenzahlung|Kreditkartenabr.|Abrechnung (\\d+.\\d+.\\d+)) (?<value>[\\d.]+,\\d{2})")
+                        .match("(\\d+.\\d+.) (?<day>\\d+).(?<month>\\d+). (Überweisung|Dauerauftrag|Basislastschrift|Kartenzahlung|Kreditkartenabr.|Abrechnung (\\d+.\\d+.\\d+)|Rechnung) (?<value>[\\d.]+,\\d{2})")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
                             // since year is not within the date correction necessary in first receipt of year
@@ -802,8 +802,8 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(TransactionItem::new));
-        
-        Block depositblock = new Block("(\\d+.\\d+.) (\\d+.\\d+.) ((Lohn, Gehalt, Rente)|(Zahlungseingang)) ([\\d.]+,\\d{2})");
+
+        Block depositblock = new Block("(\\d+.\\d+.) (\\d+.\\d+.) ((Lohn, Gehalt, Rente)|(Zahlungseingang)|(Bareinzahlung am GA)) ([\\d.]+,\\d{2})");
         type.addBlock(depositblock);
         depositblock.set(new Transaction<AccountTransaction>()
 
@@ -814,7 +814,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("day", "month", "value")
-                        .match("(\\d+.\\d+.) (?<day>\\d+).(?<month>\\d+). ((Lohn, Gehalt, Rente)|(Zahlungseingang)) (?<value>[\\d.]+,\\d{2})")
+                        .match("(\\d+.\\d+.) (?<day>\\d+).(?<month>\\d+). ((Lohn, Gehalt, Rente)|(Zahlungseingang)|(Bareinzahlung am GA)) (?<value>[\\d.]+,\\d{2})")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
                             if (context.get("nr").compareTo("001") == 0  && Integer.parseInt(v.get("month")) < 3)
@@ -831,7 +831,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(TransactionItem::new));
-        
+
         Block taxreturnblock = new Block("(\\d+.\\d+.) (\\d+.\\d+.) \\d+ (Steuerausgleich) ([\\d.]+,\\d{2})");
         type.addBlock(taxreturnblock);
         taxreturnblock.set(new Transaction<AccountTransaction>()
