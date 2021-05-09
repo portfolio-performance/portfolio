@@ -930,26 +930,28 @@ public final class SecuritiesTable implements ModificationListener
 
         manager.add(new Separator());
 
-        // if any retired security in selection, add "unretire/activate all" option
-        if (Streams.stream((Iterable<?>)selection).anyMatch(s -> ((Security)s).isRetired()))
+        // if any retired security in selection, add "unretire/activate all"
+        // option
+        if (Streams.stream((Iterable<?>) selection).anyMatch(s -> ((Security) s).isRetired()))
         {
             manager.add(new ConfirmActionWithSelection(Messages.SecurityMenuSetSingleSecurityActive,
                             Messages.SecurityMenuSetMultipleSecurityActive,
                             MessageFormat.format(Messages.SecurityMenuSetSingleSecurityActiveConfirm,
                                             selection.getFirstElement()),
                             Messages.SecurityMenuSetMultipleSecurityActiveConfirm, selection,
-                            (s, a) -> unretireSecurity(selection)));
+                            (s, a) -> setRetireStatus(selection, false)));
         }
 
-        // if any active (non-retired) security in selection, add "retire all" option
-        if (Streams.stream((Iterable<?>)selection).anyMatch(s -> !((Security)s).isRetired()))
+        // if any active (non-retired) security in selection, add "retire all"
+        // option
+        if (Streams.stream((Iterable<?>) selection).anyMatch(s -> !((Security) s).isRetired()))
         {
             manager.add(new ConfirmActionWithSelection(Messages.SecurityMenuSetSingleSecurityInactive,
-                                Messages.SecurityMenuSetMultipleSecurityInactive,
-                                MessageFormat.format(Messages.SecurityMenuSetSingleSecurityInactiveConfirm,
-                                                selection.getFirstElement()),
-                                Messages.SecurityMenuSetMultipleSecurityInactiveConfirm, selection,
-                                (s, a) -> retireSecurity(selection)));
+                            Messages.SecurityMenuSetMultipleSecurityInactive,
+                            MessageFormat.format(Messages.SecurityMenuSetSingleSecurityInactiveConfirm,
+                                            selection.getFirstElement()),
+                            Messages.SecurityMenuSetMultipleSecurityInactiveConfirm, selection,
+                            (s, a) -> setRetireStatus(selection, true)));
         }
 
         if (watchlist == null)
@@ -1056,22 +1058,12 @@ public final class SecuritiesTable implements ModificationListener
         manager.add(new Separator());
     }
 
-    private void retireSecurity(IStructuredSelection selection)
+    private void setRetireStatus(IStructuredSelection selection, boolean isRetired)
     {
         for (Object obj : selection)
         {
             Security security = (Security) obj;
-            security.setRetired(true);
-        }
-        securities.refresh();
-    }
-
-    private void unretireSecurity(IStructuredSelection selection)
-    {
-        for (Object obj : selection)
-        {
-            Security security = (Security) obj;
-            security.setRetired(false);
+            security.setRetired(isRetired);
         }
         securities.refresh();
     }
@@ -1159,8 +1151,7 @@ public final class SecuritiesTable implements ModificationListener
 
         abstract Dialog createDialog(Security security);
     }
-    
-    
+
     private final class EditSecurityAction extends AbstractDialogAction
     {
         private EditSecurityAction()
