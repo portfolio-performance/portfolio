@@ -69,8 +69,7 @@ public class ImportPDFHandler
     private static List<File> unzipFileToTempDir(File zipfile, File tempDir) throws IOException
     {
         List<File> extractedFiles = new ArrayList<>();
-        try (FileInputStream zipfs = new FileInputStream(zipfile);
-             ZipInputStream zipin = new ZipInputStream(zipfs))
+        try (FileInputStream zipfs = new FileInputStream(zipfile); ZipInputStream zipin = new ZipInputStream(zipfs))
         {
             ZipEntry entry;
             while ((entry = zipin.getNextEntry()) != null)
@@ -79,6 +78,7 @@ public class ImportPDFHandler
                     continue;
 
                 Path tempFile = Paths.get(tempDir.getAbsolutePath(), entry.getName());
+                Files.createDirectories(tempFile);
                 Files.copy(zipin, tempFile, StandardCopyOption.REPLACE_EXISTING);
                 extractedFiles.add(tempFile.toFile());
             }
