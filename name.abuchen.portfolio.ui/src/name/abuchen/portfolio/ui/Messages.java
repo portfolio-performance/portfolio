@@ -590,6 +590,7 @@ public class Messages extends NLS
     public static String LabelLinkToPortfolioReportNet;
     public static String LabelNamePlusCopy;
     public static String LabelNet;
+    public static String LabelNetInvest;
     public static String LabelNewClassification;
     public static String LabelNewFieldByType;
     public static String LabelNewTaxonomy;
@@ -661,7 +662,9 @@ public class Messages extends NLS
     public static String LabelGreenWhiteRed;
     public static String LabelGreenYellowRed;
     public static String LabelGross;
+    public static String LabelGrossInvest;
     public static String LabelGrossNetCalculation;
+    public static String LabelGrossNetInvestCalculation;
     public static String LabelHeading;
     public static String LabelHeatmap;
     public static String LabelHeatmapEarnings;
