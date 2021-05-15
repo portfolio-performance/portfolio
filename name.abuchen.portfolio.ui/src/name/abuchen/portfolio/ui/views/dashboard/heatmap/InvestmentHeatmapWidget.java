@@ -69,8 +69,12 @@ public class InvestmentHeatmapWidget extends AbstractHeatmapWidget<Long>
 
     enum GrossNetType
     {
-        NET(Messages.LabelNet, t -> t.getMonetaryAmount()), //
-        GROSS(Messages.LabelGross, t -> t.getGrossValue());
+        /***
+         * Net investment = gross investment minus costs
+         * Gross investment = total of all investments made
+         */
+        NET(Messages.LabelNetInvest, t -> t.getGrossValue()),
+        GROSS(Messages.LabelGrossInvest, t -> t.getMonetaryAmount());
 
         private String label;
         private Function<PortfolioTransaction, Money> valueExtractor;
@@ -97,7 +101,7 @@ public class InvestmentHeatmapWidget extends AbstractHeatmapWidget<Long>
     {
         public GrossNetConfig(WidgetDelegate<?> delegate)
         {
-            super(delegate, Messages.LabelGrossNetCalculation, GrossNetType.class, Dashboard.Config.NET_GROSS,
+            super(delegate, Messages.LabelGrossNetInvestCalculation, GrossNetType.class, Dashboard.Config.NET_GROSS,
                             Policy.EXACTLY_ONE);
         }
     }
