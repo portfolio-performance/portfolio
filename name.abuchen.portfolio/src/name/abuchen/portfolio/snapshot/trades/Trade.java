@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -101,8 +102,7 @@ public class Trade implements Adaptable
 
         // let's sort again because the list might not be sorted anymore due to
         // transfers
-        Collections.sort(transactions,
-                        (p1, p2) -> p1.getTransaction().getDateTime().compareTo(p2.getTransaction().getDateTime()));
+        Collections.sort(transactions, Comparator.comparing(p -> p.getTransaction().getDateTime()));
 
         // re-set start date from first entry after sorting
         this.setStart(transactions.get(0).getTransaction().getDateTime());
@@ -174,6 +174,13 @@ public class Trade implements Adaptable
     public List<TransactionPair<PortfolioTransaction>> getTransactions()
     {
         return transactions;
+    }
+
+
+    public TransactionPair<PortfolioTransaction> getLastTransaction()
+    {
+        // transactions have been sorted by calculate(), which is called once after creation
+        return transactions.get(transactions.size() - 1);
     }
 
     public Money getEntryValue()
