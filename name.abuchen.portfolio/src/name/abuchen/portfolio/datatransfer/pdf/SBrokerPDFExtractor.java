@@ -50,7 +50,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
         
-        Block firstRelevantLine = new Block("(Kauf(.*)?|Verkauf(.*)?|Wertpapier Abrechnung Ausgabe Investmentfonds)");
+        Block firstRelevantLine = new Block("^(Kauf(.*)?|Verkauf(.*)?|Wertpapier Abrechnung Ausgabe Investmentfonds)$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -69,7 +69,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                     // iS.EO G.B.C.1.5-10.5y.U.ETF DE Inhaber-Anteile DE000A0H0785
                     .section("isin", "name").optional()
                     .match("^Gattungsbezeichnung ISIN$")
-                    .match("^(?<name>.*)\\W+(?<isin>[\\w]{12})$")
+                    .match("^(?<name>.*) (?<isin>[\\w]{12})$")
                     .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                     // Nominale Wertpapierbezeichnung ISIN (WKN)
@@ -120,8 +120,8 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                     // Wert Konto-Nr. Betrag zu Ihren Lasten
                     // 01.10.2014 10/0000/000 EUR 1.930,17
                     .section("amount", "currency").optional()
-                    .match("^.* zu Ihren (Gunsten|Lasten).*$")
-                    .match("^\\d+.\\d+.\\d{4} \\d{2}\\/\\d{4}\\/\\d{3} (?<currency>[\\w]{3}) (?<amount>[.,\\d]+)$")
+                    .match("^Wert Konto-Nr. Betrag zu Ihren (Gunsten|Lasten).*$")
+                    .match("^\\d+.\\d+.\\d{4} [\\/\\d]+ (?<currency>[\\w]{3}) (?<amount>[.,\\d]+)$")
                     .assign((t, v) -> {
                         t.setAmount(asAmount(v.get("amount")));
                         t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -131,14 +131,15 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
+        addTaxReturnBlock(type);
     }
 
     private void addDividendTransaction()
     {
-        DocumentType type = new DocumentType("Erträgnisgutschrift");
+        DocumentType type = new DocumentType("Dividendengutschrift|Aussch.ttung");
         this.addDocumentTyp(type);
 
-        Block block = new Block("Erträgnisgutschrift.*EMAILVERSAND.*");
+        Block block = new Block("^(Dividendengutschrift|Aussch.ttung f.r).*$");
         type.addBlock(block);
         Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>()
                         .subject(() -> {
@@ -152,7 +153,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                     // iS.EO G.B.C.1.5-10.5y.U.ETF DE Inhaber-Anteile DE000A0H0785
                     .section("isin", "name")
                     .find("^Gattungsbezeichnung ISIN$")
-                    .match("^(?<name>.*)\\W+(?<isin>[\\w]{12})$")
+                    .match("^(?<name>.*) (?<isin>[\\w]{12})$")
                     .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                     // STK 16,000 17.11.2014 17.11.2014 EUR 0,793806
@@ -196,23 +197,117 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
         block.set(pdfTransaction);
     }
 
+    private void addTaxReturnBlock(DocumentType type)
+    {
+        Block block = new Block("^(Kauf(.*)?|Verkauf(.*)?|Wertpapier Abrechnung Ausgabe Investmentfonds)$");
+        type.addBlock(block);
+        block.set(new Transaction<AccountTransaction>()
+
+                .subject(() -> {
+                    AccountTransaction t = new AccountTransaction();
+                    t.setType(AccountTransaction.Type.TAX_REFUND);
+                    return t;
+                })
+
+                // Gattungsbezeichnung ISIN
+                // iS.EO G.B.C.1.5-10.5y.U.ETF DE Inhaber-Anteile DE000A0H0785
+                .section("isin", "name").optional()
+                .match("^Gattungsbezeichnung ISIN$")
+                .match("^(?<name>.*) (?<isin>[\\w]{12})$")
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                                
+
+                // Wert Konto-Nr. Abrechnungs-Nr. Betrag zu Ihren Gunsten
+                // 03.06.2015 10/3874/009 87966195 EUR 11,48
+                .section("date", "amount", "currency").optional()
+                .match("^Wert Konto-Nr. Abrechnungs-Nr. Betrag zu Ihren Gunsten$")
+                .match("^(?<date>\\d+.\\d+.\\d{4}) [\\/\\d]+ [\\d]+ (?<currency>[\\w]{3}) (?<amount>[.,\\d]+)$")
+                .assign((t, v) -> {
+                    t.setDateTime(asDate(v.get("date")));
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                })
+
+                .wrap(t -> {
+                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                        return new TransactionItem(t);
+                    return null;
+                }));
+    }
+
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
+        /***
+         * if we have a tax return, 
+         * we set a flag and don't book tax below
+         */
+        transaction
+                .section("n").optional()
+                .match("zu versteuern \\(negativ\\) (?<n>.*)")
+                .assign((t, v) -> {
+                    type.getCurrentContext().put("negative", "X");
+                });
+
         transaction
                 // einbehaltene Kapitalertragsteuer EUR 7,03
                 .section("tax", "currency").optional()
                 .match("^einbehaltene Kapitalertragsteuer (?<currency>[\\w]{3}) (?<tax>[.,\\d]+)$")
-                .assign((t, v) -> processTaxEntries(t, v, type))
+                .assign((t, v) -> {
+                    if (!"X".equals(type.getCurrentContext().get("negative")))
+                    {
+                        processTaxEntries(t, v, type);
+                    }
+                })
+
+                // Kapitalertragsteuer EUR 70,16
+                .section("tax", "currency").optional()
+                .match("^Kapitalertragsteuer (?<currency>[\\w]{3}) (?<tax>[.,\\d]+)$")
+                .assign((t, v) -> {
+                    if (!"X".equals(type.getCurrentContext().get("negative")))
+                    {
+                        processTaxEntries(t, v, type);
+                    }
+                })
 
                 // einbehaltener Solidaritätszuschlag EUR 0,38
                 .section("tax", "currency").optional()
                 .match("^einbehaltener Solidaritätszuschlag (?<currency>[\\w]{3}) (?<tax>[.,\\d]+)$")
-                .assign((t, v) -> processTaxEntries(t, v, type))
+                .assign((t, v) -> {
+                    if (!"X".equals(type.getCurrentContext().get("negative")))
+                    {
+                        processTaxEntries(t, v, type);
+                    }
+                })
 
-                // US-Quellensteuer 15% USD 13,13
+                // Solidaritätszuschlag EUR 3,86
                 .section("tax", "currency").optional()
-                .match("^US-Quellensteuer [.,\\d]+% (?<currency>[\\w]{3}) (?<tax>[.,\\d]+)$")
-                .assign((t, v) -> processTaxEntries(t, v, type));
+                .match("^Solidarit.tszuschlag (?<currency>[\\w]{3}) (?<tax>[.,\\d]+)$")
+                .assign((t, v) -> {
+                    if (!"X".equals(type.getCurrentContext().get("negative")))
+                    {
+                        processTaxEntries(t, v, type);
+                    }
+                })
+
+                // Kirchensteuer EUR 1,00
+                .section("tax", "currency").optional()
+                .match("^Kirchensteuer (?<currency>[\\w]{3}) (?<tax>[.,\\d]+)$")
+                .assign((t, v) -> {
+                    if (!"X".equals(type.getCurrentContext().get("negative")))
+                    {
+                        processTaxEntries(t, v, type);
+                    }
+                })
+
+                // davon anrechenbare US-Quellensteuer 15% USD 13,13
+                .section("tax", "currency").optional()
+                .match("^davon anrechenbare US-Quellensteuer [.,\\d]+% (?<currency>[\\w]{3}) (?<tax>[.,\\d]+)$")
+                .assign((t, v) -> {
+                    if (!"X".equals(type.getCurrentContext().get("negative")))
+                    {
+                        processTaxEntries(t, v, type);
+                    }
+                });
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
