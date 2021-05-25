@@ -289,6 +289,16 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                     }
                 })
 
+                // einbehaltener Kirchensteuer EUR 1,00
+                .section("tax", "currency").optional()
+                .match("^einbehaltener Kirchensteuer (?<currency>[\\w]{3}) (?<tax>[.,\\d]+)$")
+                .assign((t, v) -> {
+                    if (!"X".equals(type.getCurrentContext().get("negative")))
+                    {
+                        processTaxEntries(t, v, type);
+                    }
+                })
+
                 // Kirchensteuer EUR 1,00
                 .section("tax", "currency").optional()
                 .match("^Kirchensteuer (?<currency>[\\w]{3}) (?<tax>[.,\\d]+)$")
