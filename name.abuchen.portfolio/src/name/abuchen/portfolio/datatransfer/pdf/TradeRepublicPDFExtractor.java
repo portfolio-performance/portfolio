@@ -179,6 +179,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                     t.setAmount(t.getPortfolioTransaction().getAmount() - asAmount(v.get("amount")));
                 })
 
+                // Kapitalertragsteuer Optimierung 4,56 EUR
+                .section("amount", "currency").optional()
+                .match("^Kapitalertragsteuer Optimierung (?<amount>[.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    t.setAmount(t.getPortfolioTransaction().getAmount() - asAmount(v.get("amount")));
+                })
+
                 // Solidaritätszuschlag Optimierung 1,13 EUR
                 .section("amount", "currency").optional()
                 .match("^Solidarit.tszuschlag Optimierung (?<amount>[.,\\d]+) (?<currency>[\\w]{3})$")
@@ -412,8 +419,19 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
+                // Kapitalertragssteuer Optimierung 3,75 EUR
+                .section("amount", "currency", "date").optional()
+                .match("Kapitalertragssteuer Optimierung (?<amount>[.,\\d]+) (?<currency>[\\w]{3})")
+                .match("VERRECHNUNGSKONTO VALUTA BETRAG")
+                .match(".* (?<date>\\d+.\\d+.\\d{4}|\\d{4}-\\d+-\\d+) [.,\\d]+")
+                .assign((t, v) -> {
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                    t.setDateTime(asDate(v.get("date")));
+                })
+
                 // Kapitalertragsteuer Optimierung 3,75 EUR
-                .section("amount", "currency", "date")
+                .section("amount", "currency", "date").optional()
                 .match("Kapitalertragsteuer Optimierung (?<amount>[.,\\d]+) (?<currency>[\\w]{3})")
                 .match("VERRECHNUNGSKONTO VALUTA BETRAG")
                 .match(".* (?<date>\\d+.\\d+.\\d{4}|\\d{4}-\\d+-\\d+) [.,\\d]+")
@@ -543,6 +561,14 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 })
 
+                // Kapitalertragsteuer Optimierung 4,56 EUR
+                .section("amount", "currency").optional()
+                .match("^Kapitalertragsteuer Optimierung (?<amount>[.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                })
+
                 // Solidaritätszuschlag Optimierung 1,13 EUR
                 .section("amount", "currency").optional()
                 .match("^Solidarit.tszuschlag Optimierung (?<amount>[.,\\d]+) (?<currency>[\\w]{3})$")
@@ -571,7 +597,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         /***
          * If changes are made in this area,
          * the liquidation transaction function must be adjusted.
-         * addRepaymentTransaction();
+         * addLiquidationTransaction();
          */
         Block block = new Block("^TILGUNG$");
         type.addBlock(block);
@@ -603,6 +629,14 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 // 2 Kapitalertragssteuer Optimierung 29,24 EUR
                 .section("amount", "currency").optional()
                 .match("^([\\d]+ )?Kapitalertragssteuer Optimierung (?<amount>[.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                })
+
+                // 2 Kapitalertragsteuer Optimierung 1,00 EUR
+                .section("amount", "currency").optional()
+                .match("^([\\d]+ )?Kapitalertragsteuer Optimierung (?<amount>[.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
