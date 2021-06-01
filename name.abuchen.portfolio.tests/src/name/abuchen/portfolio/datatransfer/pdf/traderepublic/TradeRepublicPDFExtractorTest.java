@@ -199,6 +199,46 @@ public class TradeRepublicPDFExtractorTest
     }
 
     @Test
+    public void testKauf05()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("US7561091049"));
+        assertThat(security.getName(), is("Realty Income Corp. Registered Shares DL 1"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check buy sell transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)
+                        .collect(Collectors.toList()).get(0).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-11-21T15:57")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(20)));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1396.60))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1395.60))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.00))));
+    }
+
+    @Test
     public void testKontoauszug()
     {
         TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
