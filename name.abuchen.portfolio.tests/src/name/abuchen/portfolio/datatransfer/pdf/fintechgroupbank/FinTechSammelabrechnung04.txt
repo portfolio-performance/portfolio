@@ -29,7 +29,7 @@ Verwahrart    : GS-Verwahrung          *Fremde Spesen :
 Lagerstelle   : Clearstream Nat.
 Lagerland     : Deutschland             Bemessungs-
                                     grundlage     :               0,00 EUR
-Valuta        : 15.08.2018            **Einbeh. Steuer:               0,00 EUR
+Valuta        : 15.08.2018            **Einbeh. Steuer:              0,00 EUR
                                     Endbetrag     :          -1.023,90 EUR
 *   Enthalten sind folgende Gebühren    Courtage      :               0,00 EUR
                                     Tradinggebühr :               0,00 EUR

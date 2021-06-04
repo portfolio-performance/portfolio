@@ -23,6 +23,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         addBuyTransaction();
         addSellTransaction();
+        addSellWithNegativeAmountTransaction();
         addLiquidationTransaction();
         addAccountStatementTransaction();
         addTaxStatementTransaction();
@@ -101,15 +102,33 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                             t.setShares(asShares(v.get("shares")));
                         })
 
+                        /***
+                         * If the amount is negative, 
+                         * then the gross value is set.
+                         * 
+                         * Fees are processed in a separate transaction
+                         */
+                        .section("negative").optional()
+                        .match("GESAMT [.,\\d]+ [\\w]{3}")
+                        .match("GESAMT (?<negative>[-])[.,\\d]+ [\\w]{3}")
+                        .assign((t, v) -> {
+                            type.getCurrentContext().put("negative", "X");
+                        })
+                        
                         // there might be two lines with "GESAMT" - one for gross and
                         // one for the net value - pick the second
-
-                        .section("amount", "currency").optional() //
-                        .match("GESAMT ([\\d+,.]*) (\\w{3})") //
-                        .match("GESAMT (?<amount>[\\d+,.]*) (?<currency>\\w{3})") //
+                        .section("fxAmount", "fxCurrency", "amount", "currency").optional()
+                        .match("GESAMT (?<fxAmount>[.,\\d]+) (?<fxCurrency>[\\w]{3})")
+                        .match("GESAMT (?<amount>[.,\\d]+) (?<currency>[\\w]{3})")
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            
+                            if ("X".equals(type.getCurrentContext().get("negative")))
+                            {
+                                t.setAmount(asAmount(v.get("fxAmount")));
+                                t.setCurrencyCode(asCurrencyCode(v.get("fxCurrency")));
+                            }
                         })
 
                         // in case there is no tax, only one line with "GESAMT"
@@ -131,10 +150,15 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                         .section("fee", "currency").optional() //
                         .match("Fremdkostenzuschlag -(?<fee>[\\d+,.]*) (?<currency>\\w{3})")
-                        .assign((t, v) -> t.getPortfolioTransaction()
+                        .assign((t, v) -> {
+                            if (!"X".equals(type.getCurrentContext().get("negative")))
+                            {
+                                t.getPortfolioTransaction()
                                         .addUnit(new Unit(Unit.Type.FEE,
                                                         Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("fee"))))))
+                                                                        asAmount(v.get("fee")))));
+                            }
+                        })
 
                         .section("tax", "currency").optional() //
                         .match("Kapitalertragssteuer -(?<tax>[\\d+,.]*) (?<currency>\\w{3})")
@@ -325,7 +349,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         });
         this.addDocumentTyp(type);
 
-        Block payInBlock = new Block("\\d+.\\d+.\\d{4} Accepted PayIn.*");
+        Block payInBlock = new Block("\\d+.\\d+.\\d{4} (Accepted PayIn|Einzahlung akzeptiert).*");
         type.addBlock(payInBlock);
         payInBlock.set(new Transaction<AccountTransaction>()
 
@@ -336,7 +360,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date", "amount")
-                        .match("(?<date>\\d+\\.\\d+\\.\\d{4}|\\d{4}-\\d+-\\d+) Accepted PayIn:.* to.* (?<amount>[\\d+,.]*)")
+                        .match("(?<date>\\d+\\.\\d+\\.\\d{4}|\\d{4}-\\d+-\\d+) (Accepted PayIn|Einzahlung akzeptiert):.* (to|auf).* (?<amount>[\\d+,.]*)")
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -476,6 +500,69 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
             })
 
             .wrap(t -> new TransactionItem(t)));
+    }
+
+    @SuppressWarnings("nls")
+    private void addSellWithNegativeAmountTransaction()
+    {
+
+        DocumentType type = new DocumentType("Verkauf");
+        this.addDocumentTyp(type);
+
+        Block block = new Block("(.*Order Verkauf.*|Verkauf.*)");
+        type.addBlock(block);
+        block.set(new Transaction<AccountTransaction>().subject(() -> {
+            AccountTransaction t = new AccountTransaction();
+            t.setType(AccountTransaction.Type.FEES);
+            return t;
+        })
+
+                        .section("name", "isin", "shares", "nameContinued").optional()
+                        .find("POSITION ANZAHL KURS BETRAG")
+                        .match("(?<name>.*) (?<shares>[\\d+,.]*) Stk. ([\\d+,.]*) (\\w{3}) ([\\d+,.]*) (\\w{3})$")
+                        .match("(?<nameContinued>.*)") //
+                        .match("(ISIN:)?(?<isin>.*)")
+                        .assign((t, v) -> {
+                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setShares(asShares(v.get("shares")));
+                        })
+
+                        .section("date", "time").optional()
+                        .match("^(.*Order Verkauf|Verkauf) am (?<date>\\d+\\.\\d+\\.\\d{4}|\\d{4}-\\d+-\\d+), um (?<time>\\d+:\\d+) Uhr.*")
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"), v.get("time"))))
+
+                        .section("negative").optional()
+                        .match("^GESAMT [.,\\d]+ [\\w]{3}$")
+                        .match("^GESAMT (?<negative>[-])[.,\\d]+ [\\w]{3}$")
+                        .assign((t, v) -> {
+                            type.getCurrentContext().put("negative", "X");
+                        })
+
+                        .section("negative").optional()
+                        .match("^GESAMT (?<negative>[-])[.,\\d]+ [\\w]{3}$")
+                        .assign((t, v) -> {
+                            if (!"X".equals(type.getCurrentContext().get("negative")))
+                            {
+                                type.getCurrentContext().put("negative", "X");
+                            }
+                        })
+
+                        // Fremdkostenzuschlag -1,00 EUR
+                        .section("currency", "amount").optional()
+                        .match("^Fremdkostenzuschlag -(?<amount>[.,\\d]+) (?<currency>[\\w]{3})$")
+                        .assign((t, v) -> {                            
+                            if ("X".equals(type.getCurrentContext().get("negative")))
+                            {
+                                t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                t.setAmount(asAmount(v.get("amount")));
+                            }
+                        })
+
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        }));
     }
 
     @Override

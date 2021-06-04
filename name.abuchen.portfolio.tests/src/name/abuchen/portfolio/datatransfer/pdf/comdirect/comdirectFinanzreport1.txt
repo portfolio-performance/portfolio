@@ -61,9 +61,14 @@ angegeben
 26.03.2018 g Markts Ort Straße//Ort
 00000000s000 0000-00-00T00:00:00 KFN 0
 0411/722
+29.09.2014 Gebühr Barauszahlung BARGELDAUSZAHLUNGSGEB. -5,90
+29.09.2014 114092956162601
 05.09.2018 Entgelte Entgelt für Änderung der -5,90
 05.09.2018 3RF18248J0000 PIN bei der VISA-Karte
 909/255 ZUORDN. 118 9900160 20
+23.10.2015 Gebühren/Spesen Entgelt für Änderung der -5,90
+22.10.2015 4SE10000J0000810/000 PIN bei der VISA-Karte
+ZUORDN. 000 0000000 00
 comdirect bank AG USt-ID: DE 812 279 461
 25449 Quickborn
 Finanzreport Nr. 9 per 01.10.2018 - Seite 3
@@ -111,6 +116,8 @@ Finanzreport Nr. 9 per 01.10.2018 - Seite 6
 Kundennummer 102 0000000
 Buchungstag Vorgang Auftraggeber/Empfänger Buchungstext Ausgang
 Valuta Referenz IBAN/BIC Eingang
+31.12.2015 Kontoabschluss Abschluss Zinsen Kto -0,07
+31.12.2015 6BF1600000000000/000 383096500EUR
 28.09.2018 Kontoabschluss Abschluss Zinsen Kto 000000005EUR +0,14
 30.09.2018 1PF18271L0000 von 30.06.2018 bis 30.09.2018
 052/2794 Habenzinsen
@@ -148,6 +155,14 @@ Alter Saldo 03.09.2018 +120,33
 27.07.2018 Auslandsentgelt 1.75 PROZ.AUSLANDSENTGELT -0,45
 27.07.2018 0000000000000
 01
+31.03.2016 Kontoabschluss Kontoführung -0,70
+31.03.2016 5DF00000J0453148/00000 Konto 00000000 EUR
+vom 01.01.2016 bis 31.03.2016
+Kontoführung 0,00 EUR
+Sonderentgelte
+Versandpauschale 0,70- EUR
+Abschlussrechnung 0,70- EUR
+Saldo nach Abschluss 192,17 EUR
 23.07.2019 Gutschrift Firma Ort 9 007 +71,93
 22.07.2019 1190723500000
 01

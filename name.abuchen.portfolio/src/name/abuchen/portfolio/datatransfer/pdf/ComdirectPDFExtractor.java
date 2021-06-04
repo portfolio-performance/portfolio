@@ -915,9 +915,17 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
             // read the current context here
             for (int i = 0; i < lines.length; i++)
             {
+                //after 2013: Ihre aktuellen Salden IBAN Saldo in
+                // EUR
                 if (lines[i].compareTo("Ihre aktuellen Salden IBAN Saldo in") == 0)
                 {
                     context.put("currency", lines[i+1]);
+                }
+                //until 2013: Ihre aktuellen Salden Saldo in
+                // IBAN EUR
+                if ((lines[i].compareTo("Ihre aktuellen Salden Saldo in") == 0) && (lines[i+1].substring(0,4).compareTo("IBAN") == 0))
+                {
+                    context.put("currency", lines[i+1].substring(5, 8));
                 }
             }
         });
@@ -967,7 +975,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
         
-        Block feeblock = new Block("^(\\d+.\\d+.\\d+) ((Entgelte)|(Auslandsentgelt))(.*) \\-([\\d.]+,\\d{2})$");
+        Block feeblock = new Block("^(\\d+.\\d+.\\d+) ((Kontoabschluss Kontoführung)|(Gebühren\\/Spesen)|(Gebühr Barauszahlung)|(Entgelte)|(Auslandsentgelt))(.*) \\-([\\d.]+,\\d{2})$");
         type.addBlock(feeblock);
         feeblock.set(new Transaction<AccountTransaction>()
 
@@ -978,7 +986,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date", "amount")
-                        .match("^(\\d+.\\d+.\\d+) ((Entgelte)|(Auslandsentgelt))(.*) \\-(?<amount>[\\d.]+,\\d{2})$")
+                        .match("^(\\d+.\\d+.\\d+) ((Kontoabschluss Kontoführung)|(Gebühren\\/Spesen)|(Gebühr Barauszahlung)|(Entgelte)|(Auslandsentgelt))(.*) \\-(?<amount>[\\d.]+,\\d{2})$")
                         .match("^(?<date>\\d+.\\d+.\\d+)(.*)")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
@@ -1022,6 +1030,27 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                 t.addUnit(new Unit(Unit.Type.TAX, soli));
                         })
                         
+                        .wrap(TransactionItem::new));
+        
+        Block interestchargeblock = new Block("^(\\d+.\\d+.\\d+) (Kontoabschluss Abschluss Zinsen)(.*) \\-([\\d.]+,\\d{2})$");
+        type.addBlock(interestchargeblock);
+        interestchargeblock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction entry = new AccountTransaction();
+                            entry.setType(AccountTransaction.Type.INTEREST_CHARGE);
+                            return entry;
+                        })
+
+                        .section("date", "amount")
+                        .match("^(\\d+.\\d+.\\d+) (Kontoabschluss Abschluss Zinsen)(.*) \\-(?<amount>[\\d.]+,\\d{2})$")
+                        .match("^(?<date>\\d+.\\d+.\\d+)(.*)")
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(context.get("currency"));
+                        })
                         .wrap(TransactionItem::new));
     }
 

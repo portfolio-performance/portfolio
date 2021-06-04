@@ -2,14 +2,13 @@ package name.abuchen.portfolio.ui.views;
 
 import java.text.MessageFormat;
 import java.time.LocalDate;
-import java.util.stream.Collectors;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -18,29 +17,24 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CTabFolder;
-import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Portfolio;
-import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
-import name.abuchen.portfolio.snapshot.filter.ClientFilter;
-import name.abuchen.portfolio.snapshot.filter.EmptyFilter;
-import name.abuchen.portfolio.snapshot.filter.PortfolioClientFilter;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.handlers.ImportPDFHandler;
 import name.abuchen.portfolio.ui.util.ConfirmAction;
 import name.abuchen.portfolio.ui.util.DropDown;
@@ -55,8 +49,11 @@ import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
+import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
+import name.abuchen.portfolio.ui.views.panes.StatementOfAssetsPane;
+import name.abuchen.portfolio.ui.views.panes.TransactionsPane;
 
-public class PortfolioListView extends AbstractListView implements ModificationListener
+public class PortfolioListView extends AbstractFinanceView implements ModificationListener
 {
     private static final String FILTER_INACTIVE_PORTFOLIOS = "filter-retired-portfolios"; //$NON-NLS-1$
 
@@ -64,8 +61,6 @@ public class PortfolioListView extends AbstractListView implements ModificationL
     private ExchangeRateProviderFactory factory;
 
     private TableViewer portfolios;
-    private StatementOfAssetsViewer statementOfAssets;
-    private TransactionsViewer transactions;
 
     private ShowHideColumnHelper portfolioColumns;
 
@@ -81,12 +76,6 @@ public class PortfolioListView extends AbstractListView implements ModificationL
     public void setup()
     {
         isFiltered = getPreferenceStore().getBoolean(FILTER_INACTIVE_PORTFOLIOS);
-    }
-
-    @Override
-    protected int getSashStyle()
-    {
-        return SWT.VERTICAL | SWT.BEGINNING;
     }
 
     private void setInput()
@@ -172,15 +161,8 @@ public class PortfolioListView extends AbstractListView implements ModificationL
 
     private void addConfigButton(final ToolBarManager toolBar)
     {
-        toolBar.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE, manager -> {
-            MenuManager m = new MenuManager(Messages.LabelPortfolios);
-            portfolioColumns.menuAboutToShow(m);
-            manager.add(m);
-
-            m = new MenuManager(Messages.LabelTransactions);
-            transactions.getColumnSupport().menuAboutToShow(m);
-            manager.add(m);
-        }));
+        toolBar.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE,
+                        manager -> portfolioColumns.menuAboutToShow(manager)));
     }
 
     // //////////////////////////////////////////////////////////////
@@ -188,7 +170,7 @@ public class PortfolioListView extends AbstractListView implements ModificationL
     // //////////////////////////////////////////////////////////////
 
     @Override
-    protected void createTopTable(Composite parent)
+    protected Control createBody(Composite parent)
     {
         Composite container = new Composite(parent, SWT.NONE);
         TableColumnLayout layout = new TableColumnLayout();
@@ -275,28 +257,12 @@ public class PortfolioListView extends AbstractListView implements ModificationL
         portfolios.addSelectionChangedListener(event -> {
             Portfolio portfolio = (Portfolio) ((IStructuredSelection) event.getSelection()).getFirstElement();
 
-            if (portfolio != null)
-            {
-                transactions.setInput(portfolio.getTransactions().stream().map(t -> new TransactionPair<>(portfolio, t))
-                                .collect(Collectors.toList()));
-                transactions.refresh();
-                CurrencyConverter converter = new CurrencyConverterImpl(factory,
-                                portfolio.getReferenceAccount().getCurrencyCode());
-
-                ClientFilter clientFilter = new PortfolioClientFilter(portfolio);
-
-                statementOfAssets.setInput(clientFilter, LocalDate.now(), converter);
-            }
-            else
-            {
-                transactions.setInput(null);
-                transactions.refresh();
-                CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
-                statementOfAssets.setInput(new EmptyFilter(), LocalDate.now(), converter);
-            }
+            setInformationPaneInput(portfolio);
         });
 
         hookContextMenu(portfolios.getTable(), this::fillPortfolioContextMenu);
+
+        return container;
     }
 
     private void addAttributeColumns(ShowHideColumnHelper support)
@@ -347,28 +313,10 @@ public class PortfolioListView extends AbstractListView implements ModificationL
     // //////////////////////////////////////////////////////////////
 
     @Override
-    protected void createBottomTable(Composite parent)
+    protected void addPanePages(List<InformationPanePage> pages)
     {
-        CTabFolder folder = new CTabFolder(parent, SWT.BORDER);
-
-        CTabItem item = new CTabItem(folder, SWT.NONE);
-        item.setText(Messages.LabelStatementOfAssets);
-        statementOfAssets = make(StatementOfAssetsViewer.class);
-        item.setControl(statementOfAssets.createControl(folder));
-
-        hookContextMenu(statementOfAssets.getTableViewer().getControl(),
-                        manager -> statementOfAssets.hookMenuListener(manager, PortfolioListView.this));
-
-        item = new CTabItem(folder, SWT.NONE);
-        item.setText(Messages.TabTransactions);
-        transactions = new TransactionsViewer(folder, this);
-        inject(transactions);
-        item.setControl(transactions.getControl());
-
-        folder.setSelection(0);
-
-        if (!getClient().getActivePortfolios().isEmpty())
-            portfolios.setSelection(new StructuredSelection(portfolios.getElementAt(0)), true);
+        super.addPanePages(pages);
+        pages.add(make(TransactionsPane.class));
+        pages.add(make(StatementOfAssetsPane.class));
     }
-
 }

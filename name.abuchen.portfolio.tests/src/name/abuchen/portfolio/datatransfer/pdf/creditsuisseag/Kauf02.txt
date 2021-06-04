@@ -1,0 +1,54 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+CREDIT SUISSE (Schweiz) AG
+CH-8070 Zürich Telefon +41 44 333 99 99
+credit-suisse.com
+BIC CRESCHZZ80A
+Depot-Nr. 0000- 000000-00
+Ihr Berater Herr Max G. Muster Herr A
+Telefon 044 222 22 22 Moritz Kunde
+Strasse 5b
+8001 Zürich
+Wertschriftenabrechnung 16.09.2019
+Ihr Kauf Seite 1/2
+Ort(e) siehe Ausführungsdetails
+Datum 16.09.2019
+USD 200,000 6.25 % Fixed Rate Notes Norddeutsche
+Landesbank Girozentrale 2014-10.4.24 Reg-S
+Subord.
+Valor 24160639, NDKH, ISIN XS1055787680
+zum Kurs von 91.50 %
+Bei: Euroclear (DST: 0164)
+Werte ins Depot
+Kurswert USD 183,000.00
+Zins 158 Tage USD 5,486.11
+USD 188,486.11
+Kommission Schweiz USD 1,413.65
+Eidgenössische Umsatzabgabe USD 282.73
+Internet-Vergünstigung USD - 40.48
+Valuta 18.09.2019
+Konto 0000- 000000-00
+IBAN CH66 0000 0000 0000 0000 0
+Kontokorrent Bonviva USD 190,142.01
+Belastung USD 190,142.01
+Der Auftrag zur Ausführung dieser Transaktion wurde ohne vorgängige Beratung unsererseits erteilt.
+Die Erfüllung bzw. Gutschrift steht bei sämtlichen Transaktionen unter der Bedingung, dass die Gegenpartei auf der Marktseite
+ihre Leistungsverpflichtungen gegenüber der Bank erfüllt.
+Wir danken Ihnen für Ihren Auftrag.
+Ausführungsdetails
+Fortsetzung siehe nächstes Blatt Auftrags-Nr. DN02-20190914-00-00000
+SLW-Ref: Q65A5T
+WI01
+Wertschriftenabrechnung Ihr Kauf
+Moritz Kunde, Zürich
+Depot-Nr. 0000- 000000-00
+16.09.2019
+Seite  2/2
+Anzahl Handels-ID Lokale Ort zum Kurse von
+Ausführungszeit
+200,000 20190916:32:5:12 09:31:35 BMTF 91.50 %
+FFrreeuunnddlliicchhee  GGrrüüssssee
+CCRREEDDIITT  SSUUIISSSSEE  ((SScchhwweeiizz))  AAGG
+Formular ohne Unterschrift Auftrags-Nr. DN02-20190914-00-00000
+WI01

@@ -113,10 +113,10 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("(Dividendengutschrift|Ausschüttung Investmentfonds)");
+        DocumentType type = new DocumentType("(Dividendengutschrift|Ausschüttung Investmentfonds|Ertragsgutschrift)");
         this.addDocumentTyp(type);
 
-        Block block = new Block("(Dividendengutschrift|Ausschüttung Investmentfonds)");
+        Block block = new Block("(Dividendengutschrift|Ausschüttung Investmentfonds|Ertragsgutschrift .*)");
         type.addBlock(block);
         Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>()
             .subject(() -> {
@@ -129,10 +129,13 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
 
                 // Stück 12 JOHNSON & JOHNSON  SHARES US4781601046 (853260)
                 // REGISTERED SHARES DL 1
-                .section("isin", "wkn", "name", "shares", "nameContinued")
+                .section("isin", "wkn", "name", "shares", "name1")
                 .match("^St.ck (?<shares>[\\d.,]+) (?<name>.*) (?<isin>[\\w]{12}.*) (\\((?<wkn>.*)\\).*)")
-                .match("(?<nameContinued>.*)")
+                .match("(?<name1>.*)")
                 .assign((t, v) -> {
+                    if (!v.get("name1").startsWith("Zahlbarkeitstag"))
+                        v.put("name", v.get("name").trim() + " " + v.get("name1"));
+                    
                     t.setSecurity(getOrCreateSecurity(v));
                     t.setShares(asShares(v.get("shares")));
                 })

@@ -16,6 +16,8 @@ import org.eclipse.jface.preference.IPreferenceStore;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.Adaptable;
+import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Portfolio;
@@ -29,6 +31,8 @@ import name.abuchen.portfolio.snapshot.trades.TradeCollector;
 import name.abuchen.portfolio.snapshot.trades.TradeCollectorException;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.util.Interval;
 
@@ -78,7 +82,7 @@ public class EarningsViewModel
         void onUpdate();
     }
 
-    public static class Line
+    public static class Line implements Adaptable
     {
         private InvestmentVehicle vehicle;
         private boolean consolidateRetired;
@@ -116,10 +120,17 @@ public class EarningsViewModel
         {
             return values.length;
         }
+
+        @Override
+        public <T> T adapt(Class<T> type)
+        {
+            return Adaptor.adapt(type, vehicle);
+        }
     }
 
     private List<UpdateListener> listeners = new ArrayList<>();
 
+    private final AbstractFinanceView view;
     private CurrencyConverter converter;
     private final Client client;
 
@@ -136,8 +147,10 @@ public class EarningsViewModel
     private boolean useGrossValue = true;
     private boolean useConsolidateRetired = true;
 
-    public EarningsViewModel(IPreferenceStore preferences, CurrencyConverter converter, Client client)
+    public EarningsViewModel(AbstractFinanceView view, IPreferenceStore preferences, CurrencyConverter converter,
+                    Client client)
     {
+        this.view = view;
         this.converter = converter;
         this.client = client;
 
@@ -283,6 +296,7 @@ public class EarningsViewModel
         this.transactions = new ArrayList<>();
 
         Client filteredClient = clientFilter.getSelectedFilter().filter(client);
+        view.setToContext(UIConstants.Context.FILTERED_CLIENT, filteredClient);
 
         EnumSet<Mode> processGainTx = EnumSet.of(Mode.TRADES, Mode.ALL);
         if (processGainTx.contains(mode))
