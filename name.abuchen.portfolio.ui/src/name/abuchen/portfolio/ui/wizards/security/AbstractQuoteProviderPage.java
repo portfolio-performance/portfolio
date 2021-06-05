@@ -51,7 +51,7 @@ import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.impl.AlphavantageQuoteFeed;
 import name.abuchen.portfolio.online.impl.BinanceQuoteFeed;
 import name.abuchen.portfolio.online.impl.CSQuoteFeed;
-import name.abuchen.portfolio.online.impl.ECBStatisticalDataWarehouseQuoteProvider;
+import name.abuchen.portfolio.online.impl.ECBStatisticalDataWarehouseQuoteFeed;
 import name.abuchen.portfolio.online.impl.EurostatHICPQuoteFeed;
 import name.abuchen.portfolio.online.impl.FinnhubQuoteFeed;
 import name.abuchen.portfolio.online.impl.GenericJSONQuoteFeed;
@@ -319,7 +319,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
         if (comboExchange != null && feed.getId() != null
                         && (feed.getId().startsWith(YAHOO) || feed.getId().equals(EurostatHICPQuoteFeed.ID)
-                                        || feed.getId().equals(ECBStatisticalDataWarehouseQuoteProvider.ID)))
+                                        || feed.getId().equals(ECBStatisticalDataWarehouseQuoteFeed.ID)))
         {
             Exchange exchange = (Exchange) ((IStructuredSelection) comboExchange.getSelection()).getFirstElement();
             if (exchange != null)
@@ -456,7 +456,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
     {
         boolean dropDown = feed != null && feed.getId() != null
                         && (feed.getId().startsWith(YAHOO) || feed.getId().equals(EurostatHICPQuoteFeed.ID)
-                                        || feed.getId().equals(ECBStatisticalDataWarehouseQuoteProvider.ID)
+                                        || feed.getId().equals(ECBStatisticalDataWarehouseQuoteFeed.ID)
                                         || feed.getId().equals(PortfolioReportQuoteFeed.ID));
 
         boolean feedURL = feed != null && feed.getId() != null && (feed.getId().equals(HTMLTableQuoteFeed.ID)
@@ -532,7 +532,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
                 public String getText(Object element)
                 {
                     Exchange exchange = (Exchange) element;
-                    return MessageFormat.format("{0} ({1})", exchange.getId(), exchange.getName()); //$NON-NLS-1$
+                    return exchange.getDisplayName();
                 }
             });
             GridDataFactory.fillDefaults().span(2, 1).hint(300, SWT.DEFAULT).applyTo(comboExchange.getControl());
@@ -706,7 +706,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
         if (model.getTickerSymbol() != null && feed != null && feed.getId() != null
                         && (feed.getId().startsWith(YAHOO) || feed.getId().equals(EurostatHICPQuoteFeed.ID)
-                                        || feed.getId().equals(ECBStatisticalDataWarehouseQuoteProvider.ID)))
+                                        || feed.getId().equals(ECBStatisticalDataWarehouseQuoteFeed.ID)))
         {
             Exchange exchange = new Exchange(model.getTickerSymbol(), model.getTickerSymbol());
             ArrayList<Exchange> input = new ArrayList<>();
