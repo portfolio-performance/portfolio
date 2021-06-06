@@ -238,164 +238,165 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
         Block blockDividends = new Block("^\\d+-\\d+-\\d{4} \\d+:\\d+ (\\d+-\\d+-\\d{4} )?.*Dividende .*");
         type.addBlock(blockDividends);
         blockDividends.set(new Transaction<AccountTransaction>()
+
                         .subject(() -> {
                             AccountTransaction t = new AccountTransaction();
                             t.setType(AccountTransaction.Type.DIVIDENDS);
                             return t;
                         })
 
-                    .section("date", "name", "isin", "currency", "amount")
-                    .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) (\\d+-\\d+-\\d{4} )?(?<name>.*) (?<isin>[\\w]{12}) (Dividende|Fondsaussch.ttung) (?<currency>[\\w]{3}) -?(?<amount>[.,\\d]+) [\\w]{3} -?[.,\\d]+$")
-                    .assign((t, v) -> {
-                        t.setDateTime(asDate(v.get("date")));
-                        t.setSecurity(getOrCreateSecurity(v));
+                        .section("date", "name", "isin", "currency", "amount")
+                        .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) (\\d+-\\d+-\\d{4} )?(?<name>.*) (?<isin>[\\w]{12}) (Dividende|Fondsaussch.ttung) (?<currency>[\\w]{3}) -?(?<amount>[.,\\d]+) [\\w]{3} -?[.,\\d]+$")
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setSecurity(getOrCreateSecurity(v));
 
-                        Map<String, String> context = type.getCurrentContext();
-                        FxChange fxChange = getFxChangeFromContext(context, v.get("date"), v.get("currency"), v.get("amount"));
+                            Map<String, String> context = type.getCurrentContext();
+                            FxChange fxChange = getFxChangeFromContext(context, v.get("date"), v.get("currency"), v.get("amount"));
 
-                        if (!v.get("currency").equalsIgnoreCase(getClient().getBaseCurrency())
-                                        && fxChange != null)
-                        {
-                            String currencyCodeFx = asCurrencyCode(fxChange.getMoney().getCurrencyCode());
-
-                            t.setAmount(asAmount(fxChange.getAmountBase()));
-                            t.setCurrencyCode(getClient().getBaseCurrency());
-
-                            BigDecimal exchangeRate = asExchangeRate(fxChange.getExchangeRate());
-                            BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
-                                            RoundingMode.HALF_DOWN);
-
-                            long partialAmountDividend = inverseRate
-                                            .multiply(BigDecimal.valueOf(asAmount(v.get("amount"))))
-                                            .setScale(0, RoundingMode.HALF_DOWN).longValue();
-
-                            t.addUnit(new Unit(Unit.Type.GROSS_VALUE,
-                                            Money.of(getClient().getBaseCurrency(), partialAmountDividend),
-                                            Money.of(currencyCodeFx, asAmount(v.get("amount"))), inverseRate));
-
-                            context.put("FX_RATE_FOR_TAX_FEES", fxChange.getExchangeRate());
-                        }
-                        else if (v.get("currency").equalsIgnoreCase(getClient().getBaseCurrency()))
-                        {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
-                        }
-                    })
-
-                    // 14-06-2019 07:55 14-06-2019 THE KRAFT HEINZ COMPAN US5007541064 Dividendensteuer USD -0,06 USD -0,06
-                    // nicht  17-07-2017 00:00 ISH.S.EU.SEL.DIV.30 U.ETF DE0002635299 Dividendensteuer EUR -0,55 EUR 519,34
-                    .section("isin", "currencyTax", "tax").optional()
-                    .match("^(\\d+-\\d+-\\d{4} \\d+:\\d+) (\\d+-\\d+-\\d{4} )?(.*) (?<isin>[\\w]{12}) .*Dividendensteuer (?<currencyTax>[\\w]{3}) -?(?<tax>[.,\\d]+) [\\w]{3} -?[.,\\d]+$")
-                    .assign((t, v) -> {
-                        Map<String, String> context = type.getCurrentContext();
-
-                        if (!v.get("currencyTax").equalsIgnoreCase(getClient().getBaseCurrency())
-                                        && context.get("FX_RATE_FOR_TAX_FEES") != null
-                                        && v.get("isin").equalsIgnoreCase(t.getSecurity().getIsin()))
-                        {
-                            BigDecimal exchangeRate = asExchangeRate(context.get("FX_RATE_FOR_TAX_FEES"));
-                            BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
-                                            RoundingMode.HALF_DOWN);
-
-                            String currencyCodeFx = asCurrencyCode(v.get("currencyTax"));
-
-                            Money mTaxesFx = Money.of(currencyCodeFx, asAmount(v.get("tax")));
-
-                            long taxesFxInEUR = BigDecimal.valueOf(mTaxesFx.getAmount())
-                                            .divide(exchangeRate, 10, RoundingMode.HALF_DOWN)
-                                            .setScale(0, RoundingMode.HALF_DOWN).longValue();
-
-                            t.addUnit(new Unit(Unit.Type.TAX,
-                                            Money.of(t.getCurrencyCode(), taxesFxInEUR), mTaxesFx,inverseRate));
-                        }
-                        else if (v.get("currencyTax").equalsIgnoreCase(getClient().getBaseCurrency()))
-                        {
-                            t.addUnit(new Unit(Unit.Type.TAX,
-                                            Money.of(asCurrencyCode(v.get("currencyTax")), asAmount(v.get("tax")))));
-                        }
-                    })
-
-                    //  06-06-2019 09:00 05-06-2019 SONY CORPORATION COMMO US8356993076 ADR/GDR Weitergabegebühr USD -0,04 USD -0,040
-                    .section("isin", "currencyFee", "feeFx").optional()
-                    .match("^(\\d+-\\d+-\\d{4} \\d+:\\d+) (\\d+-\\d+-\\d{4} )?(.*) (?<isin>[\\w]{12}) ADR/GDR Weitergabegebühr (?<currencyFee>[\\w]{3}) -?(?<feeFx>[.,\\d]+) [\\w]{3} -?[.,\\d]+$")
-                    .assign((t, v) -> {
-                        Map<String, String> context = type.getCurrentContext();
-                        if (!v.get("currencyFee").equalsIgnoreCase(getClient().getBaseCurrency())
-                                        && context.get("FX_RATE_FOR_TAX_FEES") != null
-                                        && v.get("isin").equalsIgnoreCase(t.getSecurity().getIsin()))
-                        {
-
-                            BigDecimal exchangeRate = asExchangeRate(context.get("FX_RATE_FOR_TAX_FEES"));
-                            BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
-                                            RoundingMode.HALF_DOWN);
-
-                            String currencyCodeFx = asCurrencyCode(v.get("currencyFee"));
-
-                            Money mFeesFx = Money.of(currencyCodeFx, asAmount(v.get("feeFx")));
- 
-                            long feesFxInEUR = BigDecimal.valueOf(mFeesFx.getAmount())
-                                            .divide(exchangeRate, 10, RoundingMode.HALF_DOWN)
-                                            .setScale(0, RoundingMode.HALF_DOWN).longValue();
-
-                            t.addUnit(new Unit(Unit.Type.FEE,
-                                            Money.of(t.getCurrencyCode(), feesFxInEUR), mFeesFx, inverseRate));
-                        }
-                        else if (v.get("currencyFee").equalsIgnoreCase(getClient().getBaseCurrency()))
-                        {
-                            t.addUnit(new Unit(Unit.Type.FEE,
-                                            Money.of(asCurrencyCode(v.get("currencyFee")), asAmount(v.get("feeFx")))));
-                        }
-                    })
-
-                    .wrap(t -> {
-                        type.getCurrentContext().remove("FX_RATE_FOR_TAX_FEES");
-
-                        // check if there is a delta between the gross
-                        // amount and the sum of fees and taxs
-                        Optional<Unit> grossValue = t.getUnit(Unit.Type.GROSS_VALUE);
-                        Optional<Unit> feesAndTaxesValue = t.getUnits().filter(u -> u.getType() == Unit.Type.TAX || u.getType() == Unit.Type.FEE).findAny();
-                        if (grossValue.isPresent() && feesAndTaxesValue.isPresent())
-                        {
-                            long net = t.getAmount();
-                            long gross = grossValue.get().getAmount().getAmount();
-
-                            long feesAndTaxes = t.getUnits()
-                                            .filter(u -> u.getType() == Unit.Type.TAX || u.getType() == Unit.Type.FEE)
-                                            .mapToLong(u -> u.getAmount().getAmount()).sum();
-
-                            long delta = gross - feesAndTaxes - net;
-
-                            if (delta == 1 || delta == -1 )
+                            if (!v.get("currency").equalsIgnoreCase(getClient().getBaseCurrency())
+                                            && fxChange != null)
                             {
-                                // pick the first unit and make it fit;see
-                                // discussion
-                                // https://github.com/buchen/portfolio/pull/1198
-                                Unit unit = t.getUnits()
-                                                .filter(u -> u.getType() == Unit.Type.TAX || u.getType() == Unit.Type.FEE)
-                                                .filter(u -> u.getExchangeRate() != null)
-                                                .findFirst().orElseThrow(IllegalArgumentException::new);
+                                String currencyCodeFx = asCurrencyCode(fxChange.getMoney().getCurrencyCode());
 
-                                t.removeUnit(unit);
+                                t.setAmount(asAmount(fxChange.getAmountBase()));
+                                t.setCurrencyCode(getClient().getBaseCurrency());
 
-                                long amountPlusDelta = unit.getAmount().getAmount() + delta;
-                                long forexPlusDelta = BigDecimal.ONE
-                                                .divide(unit.getExchangeRate(), 10, RoundingMode.HALF_DOWN)
-                                                .multiply(BigDecimal.valueOf(amountPlusDelta))
+                                BigDecimal exchangeRate = asExchangeRate(fxChange.getExchangeRate());
+                                BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
+                                                RoundingMode.HALF_DOWN);
+
+                                long partialAmountDividend = inverseRate
+                                                .multiply(BigDecimal.valueOf(asAmount(v.get("amount"))))
                                                 .setScale(0, RoundingMode.HALF_DOWN).longValue();
 
-                                Unit newUnit = new Unit(unit.getType(),
-                                                Money.of(unit.getAmount().getCurrencyCode(), amountPlusDelta),
-                                                Money.of(unit.getForex().getCurrencyCode(),forexPlusDelta), unit.getExchangeRate());
+                                t.addUnit(new Unit(Unit.Type.GROSS_VALUE,
+                                                Money.of(getClient().getBaseCurrency(), partialAmountDividend),
+                                                Money.of(currencyCodeFx, asAmount(v.get("amount"))), inverseRate));
 
-                                t.addUnit(newUnit);
+                                context.put("FX_RATE_FOR_TAX_FEES", fxChange.getExchangeRate());
+                            }
+                            else if (v.get("currency").equalsIgnoreCase(getClient().getBaseCurrency()))
+                            {
+                                t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                t.setAmount(asAmount(v.get("amount")));
+                            }
+                        })
+
+                        // 14-06-2019 07:55 14-06-2019 THE KRAFT HEINZ COMPAN US5007541064 Dividendensteuer USD -0,06 USD -0,06
+                        // nicht  17-07-2017 00:00 ISH.S.EU.SEL.DIV.30 U.ETF DE0002635299 Dividendensteuer EUR -0,55 EUR 519,34
+                        .section("isin", "currencyTax", "tax").optional()
+                        .match("^(\\d+-\\d+-\\d{4} \\d+:\\d+) (\\d+-\\d+-\\d{4} )?(.*) (?<isin>[\\w]{12}) .*Dividendensteuer (?<currencyTax>[\\w]{3}) -?(?<tax>[.,\\d]+) [\\w]{3} -?[.,\\d]+$")
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+
+                            if (!v.get("currencyTax").equalsIgnoreCase(getClient().getBaseCurrency())
+                                            && context.get("FX_RATE_FOR_TAX_FEES") != null
+                                            && v.get("isin").equalsIgnoreCase(t.getSecurity().getIsin()))
+                            {
+                                BigDecimal exchangeRate = asExchangeRate(context.get("FX_RATE_FOR_TAX_FEES"));
+                                BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
+                                                RoundingMode.HALF_DOWN);
+
+                                String currencyCodeFx = asCurrencyCode(v.get("currencyTax"));
+
+                                Money mTaxesFx = Money.of(currencyCodeFx, asAmount(v.get("tax")));
+
+                                long taxesFxInEUR = BigDecimal.valueOf(mTaxesFx.getAmount())
+                                                .divide(exchangeRate, 10, RoundingMode.HALF_DOWN)
+                                                .setScale(0, RoundingMode.HALF_DOWN).longValue();
+
+                                t.addUnit(new Unit(Unit.Type.TAX,
+                                                Money.of(t.getCurrencyCode(), taxesFxInEUR), mTaxesFx,inverseRate));
+                            }
+                            else if (v.get("currencyTax").equalsIgnoreCase(getClient().getBaseCurrency()))
+                            {
+                                t.addUnit(new Unit(Unit.Type.TAX,
+                                                Money.of(asCurrencyCode(v.get("currencyTax")), asAmount(v.get("tax")))));
+                            }
+                        })
+
+                        //  06-06-2019 09:00 05-06-2019 SONY CORPORATION COMMO US8356993076 ADR/GDR Weitergabegebühr USD -0,04 USD -0,040
+                        .section("isin", "currencyFee", "feeFx").optional()
+                        .match("^(\\d+-\\d+-\\d{4} \\d+:\\d+) (\\d+-\\d+-\\d{4} )?(.*) (?<isin>[\\w]{12}) ADR/GDR Weitergabegebühr (?<currencyFee>[\\w]{3}) -?(?<feeFx>[.,\\d]+) [\\w]{3} -?[.,\\d]+$")
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+                            if (!v.get("currencyFee").equalsIgnoreCase(getClient().getBaseCurrency())
+                                            && context.get("FX_RATE_FOR_TAX_FEES") != null
+                                            && v.get("isin").equalsIgnoreCase(t.getSecurity().getIsin()))
+                            {
+
+                                BigDecimal exchangeRate = asExchangeRate(context.get("FX_RATE_FOR_TAX_FEES"));
+                                BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
+                                                RoundingMode.HALF_DOWN);
+
+                                String currencyCodeFx = asCurrencyCode(v.get("currencyFee"));
+
+                                Money mFeesFx = Money.of(currencyCodeFx, asAmount(v.get("feeFx")));
+
+                                long feesFxInEUR = BigDecimal.valueOf(mFeesFx.getAmount())
+                                                .divide(exchangeRate, 10, RoundingMode.HALF_DOWN)
+                                                .setScale(0, RoundingMode.HALF_DOWN).longValue();
+
+                                t.addUnit(new Unit(Unit.Type.FEE,
+                                                Money.of(t.getCurrencyCode(), feesFxInEUR), mFeesFx, inverseRate));
+                            }
+                            else if (v.get("currencyFee").equalsIgnoreCase(getClient().getBaseCurrency()))
+                            {
+                                t.addUnit(new Unit(Unit.Type.FEE,
+                                                Money.of(asCurrencyCode(v.get("currencyFee")), asAmount(v.get("feeFx")))));
+                            }
+                        })
+
+                        .wrap(t -> {
+                            type.getCurrentContext().remove("FX_RATE_FOR_TAX_FEES");
+
+                            // check if there is a delta between the gross
+                            // amount and the sum of fees and taxs
+                            Optional<Unit> grossValue = t.getUnit(Unit.Type.GROSS_VALUE);
+                            Optional<Unit> feesAndTaxesValue = t.getUnits().filter(u -> u.getType() == Unit.Type.TAX || u.getType() == Unit.Type.FEE).findAny();
+                            if (grossValue.isPresent() && feesAndTaxesValue.isPresent())
+                            {
+                                long net = t.getAmount();
+                                long gross = grossValue.get().getAmount().getAmount();
+
+                                long feesAndTaxes = t.getUnits()
+                                                .filter(u -> u.getType() == Unit.Type.TAX || u.getType() == Unit.Type.FEE)
+                                                .mapToLong(u -> u.getAmount().getAmount()).sum();
+
+                                long delta = gross - feesAndTaxes - net;
+
+                                if (delta == 1 || delta == -1 )
+                                {
+                                    // pick the first unit and make it fit;see
+                                    // discussion
+                                    // https://github.com/buchen/portfolio/pull/1198
+                                    Unit unit = t.getUnits()
+                                                    .filter(u -> u.getType() == Unit.Type.TAX || u.getType() == Unit.Type.FEE)
+                                                    .filter(u -> u.getExchangeRate() != null)
+                                                    .findFirst().orElseThrow(IllegalArgumentException::new);
+
+                                    t.removeUnit(unit);
+
+                                    long amountPlusDelta = unit.getAmount().getAmount() + delta;
+                                    long forexPlusDelta = BigDecimal.ONE
+                                                    .divide(unit.getExchangeRate(), 10, RoundingMode.HALF_DOWN)
+                                                    .multiply(BigDecimal.valueOf(amountPlusDelta))
+                                                    .setScale(0, RoundingMode.HALF_DOWN).longValue();
+
+                                    Unit newUnit = new Unit(unit.getType(),
+                                                    Money.of(unit.getAmount().getCurrencyCode(), amountPlusDelta),
+                                                    Money.of(unit.getForex().getCurrencyCode(),forexPlusDelta), unit.getExchangeRate());
+
+                                    t.addUnit(newUnit);
+                                  }
                               }
-                          }
-                        if (t.getCurrencyCode() != null && t.getAmount() != 0L)
-                        {
-                            return new TransactionItem(t);
-                        }
-                        return null;
-                    }));
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0L)
+                            {
+                                return new TransactionItem(t);
+                            }
+                            return null;
+                        }));
 
         //31-07-2017 00:00 Zinsen EUR -0,07 EUR -84,16
         //05-12-2018 16:07 30-11-2018 Zinsen für Leerverkauf EUR -0,04 EUR 220,63
@@ -526,7 +527,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                t.setAmount(asAmount(v.get("amount")));
+                            t.setAmount(asAmount(v.get("amount")));
                         })
                         .wrap(t -> new TransactionItem(t)));
     }
