@@ -850,7 +850,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
 
-        Block depositblock = new Block("(\\d+.\\d+.) (\\d+.\\d+.) ((Lohn, Gehalt, Rente)|(Zahlungseingang)|(Bareinzahlung am GA)|(sonstige Buchung)) ([\\d.]+,\\d{2})");
+        Block depositblock = new Block("(\\d+.\\d+.) (\\d+.\\d+.) ((Lohn, Gehalt, Rente)|(Zahlungseingang)|(Bareinzahlung am GA)|(sonstige Buchung)|(Eingang Echtzeitüberw)) ([\\d.]+,\\d{2})");
         type.addBlock(depositblock);
         depositblock.set(new Transaction<AccountTransaction>()
 
@@ -861,7 +861,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("day", "month", "value")
-                        .match("(\\d+.\\d+.) (?<day>\\d+).(?<month>\\d+). ((Lohn, Gehalt, Rente)|(Zahlungseingang)|(Bareinzahlung am GA)|(sonstige Buchung)) (?<value>[\\d.]+,\\d{2})")
+                        .match("(\\d+.\\d+.) (?<day>\\d+).(?<month>\\d+). ((Lohn, Gehalt, Rente)|(Zahlungseingang)|(Bareinzahlung am GA)|(sonstige Buchung)|(Eingang Echtzeitüberw)) (?<value>[\\d.]+,\\d{2})")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
                             if (context.get("nr").compareTo("001") == 0  && Integer.parseInt(v.get("month")) < 3)
