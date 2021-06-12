@@ -31,6 +31,8 @@ public class InformationPane
 {
     private static class PaneLayout extends Layout
     {
+        private static final int MARGIN = 5;
+
         @Override
         protected Point computeSize(Composite composite, int wHint, int hHint, boolean flushCache)
         {
@@ -50,20 +52,28 @@ public class InformationPane
             int y = 0;
 
             Point label = children[0].computeSize(SWT.DEFAULT, SWT.DEFAULT);
-            children[0].setBounds(0, 0, Math.min(label.x, availableBounds.width), label.y);
+            Point toolbarPanes = children[1].computeSize(SWT.DEFAULT, SWT.DEFAULT);
+            Point toolbarControls = children[2].computeSize(SWT.DEFAULT, SWT.DEFAULT);
+
+            children[0].setBounds(MARGIN, 0, Math.min(label.x, availableBounds.width - 2 * MARGIN), label.y);
             y += label.y + 2;
 
-            Point toolbar = children[1].computeSize(SWT.DEFAULT, SWT.DEFAULT);
-            children[1].setBounds(0, y, Math.min(toolbar.x, availableBounds.width), toolbar.y);
-            y += toolbar.y + 2;
+            int rigthToolbarWidth = Math.max(0, Math.min(toolbarControls.x, availableBounds.width - 50));
 
-            children[2].setBounds(0, y, availableBounds.width, availableBounds.height - y);
+            children[1].setBounds(MARGIN, y, availableBounds.width - 2 * MARGIN - rigthToolbarWidth, toolbarPanes.y);
+            children[2].setBounds(availableBounds.width - rigthToolbarWidth - MARGIN, y, rigthToolbarWidth,
+                            toolbarControls.y);
+
+            y += Math.max(toolbarPanes.y, toolbarControls.y) + 2;
+
+            children[3].setBounds(0, y, availableBounds.width, availableBounds.height - y);
         }
     }
 
     private Composite area;
     private CLabel label;
-    private ToolBarManager toolBar;
+    private ToolBarManager toolBarPaneSelection;
+    private ToolBarManager toolBarPaneControls;
     private PageBook pagebook;
 
     private Object currentInput;
@@ -75,21 +85,34 @@ public class InformationPane
         area = new Composite(parent, SWT.NONE);
         area.setLayout(new PaneLayout());
 
+        // label
+
         label = new CLabel(area, SWT.NONE);
         Font newFont = FontDescriptor.createFrom(parent.getFont()).setStyle(SWT.BOLD).createFont(parent.getDisplay());
         label.addDisposeListener(e -> newFont.dispose());
         label.setFont(newFont);
 
+        // toolbar: pane selection + chevron
+
         Composite wrapper = new Composite(area, SWT.NONE);
         wrapper.setBackground(area.getBackground());
 
-        toolBar = new ToolBarManager(SWT.FLAT | SWT.RIGHT);
+        toolBarPaneSelection = new ToolBarManager(SWT.FLAT | SWT.RIGHT);
 
-        ToolBar tb = toolBar.createControl(wrapper);
+        ToolBar tb = toolBarPaneSelection.createControl(wrapper);
         tb.setBackground(parent.getBackground());
 
         // create layout *after* the toolbar to keep the tab order right
         wrapper.setLayout(new ToolBarPlusChevronLayout(wrapper, SWT.LEFT));
+
+        // toolbar: pane controls
+
+        toolBarPaneControls = new ToolBarManager(SWT.FLAT | SWT.RIGHT);
+
+        tb = toolBarPaneControls.createControl(area);
+        tb.setBackground(parent.getBackground());
+
+        // panes
 
         pagebook = new PageBook(area, SWT.NONE);
         pagebook.setBackground(area.getBackground());
@@ -104,36 +127,16 @@ public class InformationPane
 
         label.setText(view.getTitle());
 
-        toolBar.removeAll();
+        toolBarPaneSelection.removeAll();
 
         for (InformationPanePage page : pages)
         {
             DropDown dropdown = new DropDown(page.getLabel(), Images.VIEW, SWT.PUSH);
-            dropdown.setDefaultAction(new SimpleAction(a -> {
-                Control control = page2control.computeIfAbsent(page, p -> {
-                    Control c = p.createViewControl(pagebook);
-                    c.setData(InformationPanePage.class.getName(), p);
-                    return c;
-                });
-
-                // important: refresh input when showing the page b/c pages
-                // currently not visible are not updated if data changes
-
-                page.setInput(currentInput);
-                pagebook.showPage(control);
-
-                for (IContributionItem item : toolBar.getItems())
-                {
-                    if (item == dropdown)
-                        dropdown.setImage(Images.VIEW_SELECTED);
-                    else if (item instanceof DropDown)
-                        ((DropDown) item).setImage(Images.VIEW);
-                }
-            }));
-            toolBar.add(dropdown);
+            dropdown.setDefaultAction(new SimpleAction(a -> selectPage(page, dropdown)));
+            toolBarPaneSelection.add(dropdown);
         }
 
-        toolBar.update(true);
+        toolBarPaneSelection.update(true);
 
         Control firstControl = null;
         if (!pages.isEmpty())
@@ -143,7 +146,9 @@ public class InformationPane
             firstControl.setData(InformationPanePage.class.getName(), firstPage);
             page2control.put(firstPage, firstControl);
 
-            ((DropDown) toolBar.getItems()[0]).setImage(Images.VIEW_SELECTED);
+            ((DropDown) toolBarPaneSelection.getItems()[0]).setImage(Images.VIEW_SELECTED);
+
+            firstPage.addButtons(toolBarPaneSelection);
         }
         else
         {
@@ -163,6 +168,38 @@ public class InformationPane
         }
 
         pagebook.getParent().layout();
+    }
+
+    private void selectPage(InformationPanePage page, DropDown dropdown)
+    {
+        Control control = page2control.computeIfAbsent(page, p -> {
+            Control c = p.createViewControl(pagebook);
+            c.setData(InformationPanePage.class.getName(), p);
+            return c;
+        });
+
+        // update toolbar with pane controls
+
+        if (!toolBarPaneControls.getControl().isDisposed())
+        {
+            toolBarPaneControls.removeAll();
+            page.addButtons(toolBarPaneControls);
+            toolBarPaneControls.update(true);
+        }
+
+        // important: refresh input when showing the page b/c pages
+        // currently not visible are not updated if data changes
+
+        page.setInput(currentInput);
+        pagebook.showPage(control);
+
+        for (IContributionItem item : toolBarPaneSelection.getItems())
+        {
+            if (item == dropdown)
+                dropdown.setImage(Images.VIEW_SELECTED);
+            else if (item instanceof DropDown)
+                ((DropDown) item).setImage(Images.VIEW);
+        }
     }
 
     /* package */ void setInput(Object input)

@@ -127,8 +127,9 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
         }
         else
         {
-            chevron.setBounds(availableBounds.width - chevronSize.x, (availableBounds.height - chevronSize.y) / 2,
-                            chevronSize.x, chevronSize.y);
+            int x = alignment == SWT.LEFT ? width : availableBounds.width - chevronSize.x;
+
+            chevron.setBounds(x, (availableBounds.height - chevronSize.y) / 2, chevronSize.x, chevronSize.y);
 
             if (!chevron.isVisible())
                 chevron.setVisible(true);
