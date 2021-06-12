@@ -2,6 +2,7 @@ package name.abuchen.portfolio.snapshot.reportingperiod;
 
 import static java.time.DayOfWeek.FRIDAY;
 import static java.time.DayOfWeek.MONDAY;
+import static java.time.DayOfWeek.SUNDAY;
 import static java.time.temporal.TemporalAdjusters.nextOrSame;
 import static java.time.temporal.TemporalAdjusters.previousOrSame;
 import static org.junit.Assert.assertEquals;
@@ -46,13 +47,30 @@ public class CurrentWeekTest
     {
         LocalDate today = LocalDate.now();
         LocalDate monday = today.with(previousOrSame(MONDAY));
-        LocalDate friday = today.with(nextOrSame(FRIDAY));
+        LocalDate sunday = today.with(nextOrSame(SUNDAY));
 
         ReportingPeriod period = ReportingPeriod.from("W");
 
         Interval result = period.toInterval(today);
 
-        assertEquals(result, Interval.of(monday, friday));
+        assertEquals(result, Interval.of(monday, sunday));
+    }
+    
+    @Test
+    public void testToIntervalWithStaticDate() throws IOException
+    {
+        // random, static Wednesday
+        LocalDate date = LocalDate.of(2021, 6, 9);
+        LocalDate monday = date.with(previousOrSame(MONDAY));
+        LocalDate sunday = date.with(nextOrSame(SUNDAY));
+
+        ReportingPeriod period = ReportingPeriod.from("W");
+
+        Interval result = period.toInterval(date);
+        
+        assertEquals(result, Interval.of(monday, sunday));
+        assertEquals(result.getStart(), LocalDate.of(2021, 6, 7));
+        assertEquals(result.getEnd(), LocalDate.of(2021, 6, 13));
     }
 
     @Test

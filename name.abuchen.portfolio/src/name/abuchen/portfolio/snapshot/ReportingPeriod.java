@@ -1,7 +1,7 @@
 package name.abuchen.portfolio.snapshot;
 
-import static java.time.DayOfWeek.FRIDAY;
 import static java.time.DayOfWeek.MONDAY;
+import static java.time.DayOfWeek.SUNDAY;
 import static java.time.temporal.TemporalAdjusters.nextOrSame;
 import static java.time.temporal.TemporalAdjusters.previousOrSame;
 
@@ -10,7 +10,6 @@ import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.time.temporal.TemporalAdjuster;
 import java.util.function.Predicate;
 
 import com.google.common.base.Objects;
@@ -457,9 +456,9 @@ public abstract class ReportingPeriod
         public Interval toInterval(LocalDate relativeTo)
         {
             LocalDate monday = relativeTo.with(previousOrSame(MONDAY));
-            LocalDate friday = relativeTo.with(nextOrSame(FRIDAY));
+            LocalDate sunday = relativeTo.with(nextOrSame(SUNDAY));
 
-            return Interval.of(monday, friday);
+            return Interval.of(monday, sunday);
         }
 
         @Override
