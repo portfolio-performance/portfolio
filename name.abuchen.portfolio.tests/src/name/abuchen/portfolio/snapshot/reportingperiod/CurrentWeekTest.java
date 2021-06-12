@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.snapshot.reportingperiod;
 
-import static java.time.DayOfWeek.FRIDAY;
 import static java.time.DayOfWeek.MONDAY;
 import static java.time.DayOfWeek.SUNDAY;
 import static java.time.temporal.TemporalAdjusters.nextOrSame;
@@ -14,7 +13,6 @@ import java.time.LocalDate;
 import org.junit.Test;
 
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
-import name.abuchen.portfolio.snapshot.ReportingPeriod.CurrentMonth;
 import name.abuchen.portfolio.snapshot.ReportingPeriod.CurrentWeek;
 import name.abuchen.portfolio.util.Interval;
 
