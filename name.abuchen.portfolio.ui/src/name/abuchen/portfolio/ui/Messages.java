@@ -535,6 +535,8 @@ public class Messages extends NLS
     public static String LabelCurrencyConverter;
     public static String LabelCurrentDate;
     public static String LabelCurrentMonth;
+    public static String LabelCurrentQuarter;
+    public static String LabelCurrentWeek;
     public static String LabelDashboard;
     public static String LabelDataSeries;
     public static String LabelDateXToY;
