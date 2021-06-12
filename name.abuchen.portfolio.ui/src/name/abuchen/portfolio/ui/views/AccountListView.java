@@ -54,8 +54,8 @@ import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 import name.abuchen.portfolio.ui.views.panes.AccountBalancePane;
+import name.abuchen.portfolio.ui.views.panes.AccountTransactionsPane;
 import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
-import name.abuchen.portfolio.ui.views.panes.TransactionsPane;
 
 public class AccountListView extends AbstractFinanceView implements ModificationListener
 {
@@ -306,7 +306,7 @@ public class AccountListView extends AbstractFinanceView implements Modification
     protected void addPanePages(List<InformationPanePage> pages)
     {
         super.addPanePages(pages);
-        pages.add(make(TransactionsPane.class));
+        pages.add(make(AccountTransactionsPane.class));
         pages.add(make(AccountBalancePane.class));
     }
 

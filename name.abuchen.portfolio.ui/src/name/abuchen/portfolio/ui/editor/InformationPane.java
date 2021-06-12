@@ -148,7 +148,8 @@ public class InformationPane
 
             ((DropDown) toolBarPaneSelection.getItems()[0]).setImage(Images.VIEW_SELECTED);
 
-            firstPage.addButtons(toolBarPaneSelection);
+            firstPage.addButtons(toolBarPaneControls);
+            toolBarPaneControls.update(true);
         }
         else
         {
