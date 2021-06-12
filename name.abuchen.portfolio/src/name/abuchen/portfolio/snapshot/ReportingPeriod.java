@@ -1,10 +1,16 @@
 package name.abuchen.portfolio.snapshot;
 
+import static java.time.DayOfWeek.FRIDAY;
+import static java.time.DayOfWeek.MONDAY;
+import static java.time.temporal.TemporalAdjusters.nextOrSame;
+import static java.time.temporal.TemporalAdjusters.previousOrSame;
+
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.time.temporal.TemporalAdjuster;
 import java.util.function.Predicate;
 
 import com.google.common.base.Objects;
@@ -39,6 +45,8 @@ public abstract class ReportingPeriod
             return new SinceX(code);
         else if (type == YearX.CODE)
             return new YearX(code);
+        else if (type == CurrentWeek.CODE)
+            return new CurrentWeek();
         else if (type == CurrentMonth.CODE)
             return new CurrentMonth();
         else if (type == YearToDate.CODE)
@@ -441,6 +449,48 @@ public abstract class ReportingPeriod
         }
     }
 
+    public static class CurrentWeek extends ReportingPeriod
+    {
+        private static final char CODE = 'W';
+
+        @Override
+        public Interval toInterval(LocalDate relativeTo)
+        {
+            LocalDate monday = relativeTo.with(previousOrSame(MONDAY));
+            LocalDate friday = relativeTo.with(nextOrSame(FRIDAY));
+
+            return Interval.of(monday, friday);
+        }
+
+        @Override
+        public void writeTo(StringBuilder buffer)
+        {
+            buffer.append(CODE);
+        }
+
+        @Override
+        public String toString()
+        {
+            return Messages.LabelReportingPeriodCurrentWeek;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hashCode(CODE);
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            return getClass() == obj.getClass();
+        }
+    }
+    
     public static class CurrentMonth extends ReportingPeriod
     {
         private static final char CODE = 'M';

@@ -51,6 +51,8 @@ public class ReportingPeriodDialog extends Dialog
     private Button radioYearX;
     private Spinner year;
 
+    private Button radioCurrentWeek;
+    
     private Button radioCurrentMonth;
 
     private Button radioYTD;
@@ -127,7 +129,10 @@ public class ReportingPeriodDialog extends Dialog
 
         radioCurrentMonth = new Button(editArea, SWT.RADIO);
         radioCurrentMonth.setText(Messages.LabelCurrentMonth);
-
+        
+        radioCurrentWeek = new Button(editArea, SWT.RADIO);
+        radioCurrentWeek.setText(Messages.LabelCurrentWeek);
+        
         radioYTD = new Button(editArea, SWT.RADIO);
         radioYTD.setText(Messages.LabelYTD);
 
@@ -168,7 +173,9 @@ public class ReportingPeriodDialog extends Dialog
 
         FormDataFactory.startingWith(radioYearX).top(new FormAttachment(radioSinceX, 20)).thenRight(year);
 
-        FormDataFactory.startingWith(radioCurrentMonth).top(new FormAttachment(radioYearX, 20));
+        FormDataFactory.startingWith(radioCurrentWeek).top(new FormAttachment(radioYearX, 20));
+        
+        FormDataFactory.startingWith(radioCurrentMonth).top(new FormAttachment(radioCurrentWeek, 20));
 
         FormDataFactory.startingWith(radioYTD).top(new FormAttachment(radioCurrentMonth, 20));
 
@@ -179,7 +186,7 @@ public class ReportingPeriodDialog extends Dialog
         presetFromTemplate();
 
         radioBtnList = Arrays.asList(radioLast, radioLastDays, radioLastTradingDays, radioFromXtoY, radioSinceX,
-                        radioYearX, radioCurrentMonth, radioYTD);
+                        radioYearX, radioCurrentWeek, radioCurrentMonth, radioYTD);
         activateRadioOnChange(radioLast, years, months);
         activateRadioOnChange(radioLastDays, days);
         activateRadioOnChange(radioLastTradingDays, tradingDays);
@@ -223,6 +230,8 @@ public class ReportingPeriodDialog extends Dialog
             radioSinceX.setSelection(true);
         else if (template instanceof ReportingPeriod.YearX)
             radioYearX.setSelection(true);
+        else if (template instanceof ReportingPeriod.CurrentWeek)
+            radioCurrentWeek.setSelection(true);
         else if (template instanceof ReportingPeriod.CurrentMonth)
             radioCurrentMonth.setSelection(true);
         else if (template instanceof ReportingPeriod.YearToDate)
@@ -282,6 +291,10 @@ public class ReportingPeriodDialog extends Dialog
         else if (radioYearX.getSelection())
         {
             result = new ReportingPeriod.YearX(year.getSelection());
+        }
+        else if (radioCurrentWeek.getSelection())
+        {
+            result = new ReportingPeriod.CurrentWeek();
         }
         else if (radioCurrentMonth.getSelection())
         {
