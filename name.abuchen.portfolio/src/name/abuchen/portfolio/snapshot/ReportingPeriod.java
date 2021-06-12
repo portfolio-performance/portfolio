@@ -2,6 +2,8 @@ package name.abuchen.portfolio.snapshot;
 
 import static java.time.DayOfWeek.MONDAY;
 import static java.time.DayOfWeek.SUNDAY;
+import static java.time.temporal.IsoFields.DAY_OF_QUARTER;
+import static java.time.temporal.TemporalAdjusters.lastDayOfMonth;
 import static java.time.temporal.TemporalAdjusters.nextOrSame;
 import static java.time.temporal.TemporalAdjusters.previousOrSame;
 
@@ -48,6 +50,8 @@ public abstract class ReportingPeriod
             return new CurrentWeek();
         else if (type == CurrentMonth.CODE)
             return new CurrentMonth();
+        else if (type == CurrentQuarter.CODE)
+            return new CurrentQuarter();
         else if (type == YearToDate.CODE)
             return new YearToDate();
 
@@ -523,6 +527,48 @@ public abstract class ReportingPeriod
             return Objects.hashCode(CODE);
         }
 
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            return getClass() == obj.getClass();
+        }
+    }
+    
+    public static class CurrentQuarter extends ReportingPeriod
+    {
+        private static final char CODE = 'Q';
+        
+        @Override
+        public Interval toInterval(LocalDate relativeTo)
+        {
+            LocalDate firstDayOfQuarter = relativeTo.with(DAY_OF_QUARTER, 1L);
+            LocalDate lastDayOfQuarter = firstDayOfQuarter.plusMonths(2).with(lastDayOfMonth());
+                    
+            return Interval.of(firstDayOfQuarter, lastDayOfQuarter);
+        }
+        
+        @Override
+        public void writeTo(StringBuilder buffer)
+        {
+            buffer.append(CODE);
+        }
+        
+        @Override
+        public String toString()
+        {
+            return Messages.LabelReportingPeriodCurrentQuarter;
+        }
+        
+        @Override
+        public int hashCode()
+        {
+            return Objects.hashCode(CODE);
+        }
+        
         @Override
         public boolean equals(Object obj)
         {
