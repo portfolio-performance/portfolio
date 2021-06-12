@@ -22,6 +22,8 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.DropDown;
+import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.views.TradesTableViewer;
 
 public class TradesPane implements InformationPanePage
@@ -56,6 +58,9 @@ public class TradesPane implements InformationPanePage
     @Override
     public void addButtons(ToolBarManager toolBar)
     {
+        toolBar.add(new SimpleAction(Messages.MenuExportData, Images.EXPORT,
+                        a -> new TableViewerCSVExporter(trades.getTableViewer()).export(getLabel(), source)));
+
         toolBar.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE,
                         manager -> trades.getShowHideColumnHelper().menuAboutToShow(manager)));
     }
