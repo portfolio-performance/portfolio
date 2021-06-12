@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.snapshot.reportingperiod;
 
+import static java.time.temporal.TemporalAdjusters.firstDayOfMonth;
+import static java.time.temporal.TemporalAdjusters.lastDayOfMonth;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
@@ -39,15 +41,15 @@ public class CurrentMonthTest
     @Test
     public void testToInterval() throws IOException
     {
-        LocalDate today = LocalDate.now();
-        LocalDate intervalStart = LocalDate.of(today.getYear(), today.getMonthValue(), 1).minusDays(1);
-        LocalDate intervalEnd = LocalDate.of(today.getYear(), today.getMonthValue(), today.lengthOfMonth());
+        LocalDate now = LocalDate.now();
+        LocalDate firstOfMonth = now.with(firstDayOfMonth());
+        LocalDate lastOfMonth = now.with(lastDayOfMonth());
 
         ReportingPeriod period = ReportingPeriod.from("M");
 
-        Interval result = period.toInterval(intervalEnd);
+        Interval result = period.toInterval(now);
 
-        assertEquals(result, Interval.of(intervalStart, intervalEnd));
+        assertEquals(result, Interval.of(firstOfMonth, lastOfMonth));
     }
 
     @Test

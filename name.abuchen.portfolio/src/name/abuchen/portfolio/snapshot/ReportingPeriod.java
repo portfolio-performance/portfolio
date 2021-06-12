@@ -3,6 +3,7 @@ package name.abuchen.portfolio.snapshot;
 import static java.time.DayOfWeek.MONDAY;
 import static java.time.DayOfWeek.SUNDAY;
 import static java.time.temporal.IsoFields.DAY_OF_QUARTER;
+import static java.time.temporal.TemporalAdjusters.firstDayOfMonth;
 import static java.time.temporal.TemporalAdjusters.lastDayOfMonth;
 import static java.time.temporal.TemporalAdjusters.nextOrSame;
 import static java.time.temporal.TemporalAdjusters.previousOrSame;
@@ -501,12 +502,10 @@ public abstract class ReportingPeriod
         @Override
         public Interval toInterval(LocalDate relativeTo)
         {
-            LocalDate startDate = LocalDate.now().withDayOfMonth(1).minusDays(1);
+            LocalDate firstOfMonth = relativeTo.with(firstDayOfMonth());
+            LocalDate lastOfMonth = relativeTo.with(lastDayOfMonth());
 
-            if (startDate.isBefore(relativeTo))
-                return Interval.of(startDate, relativeTo);
-            else
-                return Interval.of(startDate, startDate); // FIXME
+            return Interval.of(firstOfMonth, lastOfMonth);
         }
 
         @Override
