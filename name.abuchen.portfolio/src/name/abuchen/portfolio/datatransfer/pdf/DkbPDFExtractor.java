@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -772,8 +773,54 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
             }
         });
         this.addDocumentTyp(type);
+        
+        Block interestchargeblock = new Block("(\\d+.\\d+.) (\\d+.\\d+.) (Abrechnung (\\d+.\\d+.\\d+)) ([\\d.]+,\\d{2})");
+        type.addBlock(interestchargeblock);
+        interestchargeblock.set(new Transaction<AccountTransaction>()
 
-        Block removalblock = new Block("(\\d+.\\d+.) (\\d+.\\d+.) (Überweisung|Dauerauftrag|Basislastschrift|Kartenzahlung|Kreditkartenabr.|Abrechnung (\\d+.\\d+.\\d+)|Rechnung) ([\\d.]+,\\d{2})");
+                        .subject(() -> {
+                            AccountTransaction entry = new AccountTransaction();
+                            entry.setType(AccountTransaction.Type.REMOVAL);
+                            return entry;
+                        })
+
+                        .section("day", "month", "value")
+                        .match("(\\d+.\\d+.) (?<day>\\d+).(?<month>\\d+). (Abrechnung (\\d+.\\d+.\\d+)) (?<value>[\\d.]+,\\d{2})")
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+                            // since year is not within the date correction necessary in first receipt of year
+                            if (context.get("nr").compareTo("001") == 0  && Integer.parseInt(v.get("month")) < 3)
+                            {
+                                Integer year = Integer.parseInt(context.get("year")) + 1;
+                                t.setDateTime(asDate(v.get("day")+"."+v.get("month")+"."+year.toString()));
+                            }
+                            else 
+                            {
+                                t.setDateTime(asDate(v.get("day")+"."+v.get("month")+"."+context.get("year")));                                
+                            }
+                            t.setAmount(asAmount(v.get("value")));
+                            t.setCurrencyCode(context.get("currency"));
+                        })
+                        
+                        .section("value").optional()
+                        .match("^(Zinsen für eingeräumte Kontoüberziehung) +(?<value>[\\d.]+,\\d{2})\\-$")
+                        .assign((t, v) -> {
+                            t.setType(AccountTransaction.Type.INTEREST_CHARGE);
+                        })
+                        
+
+                        .wrap(t -> {
+                            if (t.getAmount()>0)
+                            {
+                                return new TransactionItem(t);
+                            }
+                            else
+                            {
+                                return null;
+                            }
+                        }));
+
+        Block removalblock = new Block("(\\d+.\\d+.) (\\d+.\\d+.) (Überweisung|Dauerauftrag|Basislastschrift|Kartenzahlung|Kreditkartenabr.|Rechnung) ([\\d.]+,\\d{2})");
         type.addBlock(removalblock);
         removalblock.set(new Transaction<AccountTransaction>()
 
@@ -784,7 +831,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("day", "month", "value")
-                        .match("(\\d+.\\d+.) (?<day>\\d+).(?<month>\\d+). (Überweisung|Dauerauftrag|Basislastschrift|Kartenzahlung|Kreditkartenabr.|Abrechnung (\\d+.\\d+.\\d+)|Rechnung) (?<value>[\\d.]+,\\d{2})")
+                        .match("(\\d+.\\d+.) (?<day>\\d+).(?<month>\\d+). (Überweisung|Dauerauftrag|Basislastschrift|Kartenzahlung|Kreditkartenabr.|Rechnung) (?<value>[\\d.]+,\\d{2})")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
                             // since year is not within the date correction necessary in first receipt of year
@@ -803,7 +850,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
 
-        Block depositblock = new Block("(\\d+.\\d+.) (\\d+.\\d+.) ((Lohn, Gehalt, Rente)|(Zahlungseingang)|(Bareinzahlung am GA)) ([\\d.]+,\\d{2})");
+        Block depositblock = new Block("(\\d+.\\d+.) (\\d+.\\d+.) ((Lohn, Gehalt, Rente)|(Zahlungseingang)|(Bareinzahlung am GA)|(sonstige Buchung)|(Eingang Echtzeitüberw)) ([\\d.]+,\\d{2})");
         type.addBlock(depositblock);
         depositblock.set(new Transaction<AccountTransaction>()
 
@@ -814,7 +861,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("day", "month", "value")
-                        .match("(\\d+.\\d+.) (?<day>\\d+).(?<month>\\d+). ((Lohn, Gehalt, Rente)|(Zahlungseingang)|(Bareinzahlung am GA)) (?<value>[\\d.]+,\\d{2})")
+                        .match("(\\d+.\\d+.) (?<day>\\d+).(?<month>\\d+). ((Lohn, Gehalt, Rente)|(Zahlungseingang)|(Bareinzahlung am GA)|(sonstige Buchung)|(Eingang Echtzeitüberw)) (?<value>[\\d.]+,\\d{2})")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
                             if (context.get("nr").compareTo("001") == 0  && Integer.parseInt(v.get("month")) < 3)
