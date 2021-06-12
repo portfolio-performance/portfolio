@@ -23,22 +23,16 @@ import java.util.stream.Collectors;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.layout.RowLayoutFactory;
+import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Layout;
-import org.eclipse.swt.widgets.Menu;
 import org.swtchart.IAxis;
 import org.swtchart.ILegend;
 import org.swtchart.ILineSeries;
@@ -71,6 +65,7 @@ import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
@@ -78,6 +73,7 @@ import name.abuchen.portfolio.util.FormatHelper;
 import name.abuchen.portfolio.util.Interval;
 import name.abuchen.portfolio.util.TradeCalendar;
 import name.abuchen.portfolio.util.TradeCalendarManager;
+import name.abuchen.portfolio.util.TriFunction;
 
 /**
  * Chart of historical quotes for a given security
@@ -171,35 +167,6 @@ public class SecuritiesChart
         }
     }
 
-    private static class CustomLayout extends Layout
-    {
-        private final TimelineChart chart;
-        private final Composite buttons;
-
-        public CustomLayout(TimelineChart chart, Composite buttons)
-        {
-            this.chart = chart;
-            this.buttons = buttons;
-        }
-
-        @Override
-        protected Point computeSize(Composite composite, int wHint, int hHint, boolean flushCache)
-        {
-            return new Point(wHint, hHint);
-        }
-
-        @Override
-        protected void layout(Composite composite, boolean flushCache)
-        {
-            Rectangle area = composite.getClientArea();
-
-            Point size = buttons.computeSize(SWT.DEFAULT, area.height);
-
-            buttons.setBounds(area.x + area.width - size.x, area.y, size.x, area.height);
-            chart.setBounds(area.x, area.y, area.width - size.x, area.height);
-        }
-    }
-
     /* testing */ static class ChartRange
     {
         public final int start;
@@ -280,7 +247,6 @@ public class SecuritiesChart
     private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("d LLL"); //$NON-NLS-1$
 
     private Composite container;
-    private Menu contextMenu;
 
     private Client client;
     private CurrencyConverter converter;
@@ -311,6 +277,7 @@ public class SecuritiesChart
         readChartConfig(client);
 
         container = new Composite(parent, SWT.NONE);
+        container.setLayout(new FillLayout());
 
         chart = new TimelineChart(container);
         chart.getTitle().setVisible(false);
@@ -323,60 +290,6 @@ public class SecuritiesChart
         ILegend legend = chart.getLegend();
         legend.setPosition(SWT.BOTTOM);
         legend.setVisible(true);
-
-        Composite buttons = new Composite(container, SWT.NONE);
-        buttons.setBackground(Colors.WHITE);
-        RowLayoutFactory.fillDefaults().type(SWT.VERTICAL).spacing(2).margins(2, 2).fill(true).wrap(true)
-                        .applyTo(buttons);
-
-        addConfigButton(buttons);
-
-        Function<TemporalAmount, ChartInterval> nowMinus = temporalAmount -> {
-            LocalDate now = LocalDate.now();
-            return new ChartInterval(now.minus(temporalAmount), now);
-        };
-
-        addButton(buttons, Messages.SecurityTabChart1M, Messages.SecurityTabChart1MToolTip,
-                        s -> nowMinus.apply(Period.ofMonths(1)));
-        addButton(buttons, Messages.SecurityTabChart2M, Messages.SecurityTabChart2MToolTip,
-                        s -> nowMinus.apply(Period.ofMonths(2)));
-        addButton(buttons, Messages.SecurityTabChart6M, Messages.SecurityTabChart6MToolTip,
-                        s -> nowMinus.apply(Period.ofMonths(6)));
-        addButton(buttons, Messages.SecurityTabChart1Y, Messages.SecurityTabChart1YToolTip,
-                        s -> nowMinus.apply(Period.ofYears(1)));
-        addButton(buttons, Messages.SecurityTabChart2Y, Messages.SecurityTabChart2YToolTip,
-                        s -> nowMinus.apply(Period.ofYears(2)));
-        addButton(buttons, Messages.SecurityTabChart3Y, Messages.SecurityTabChart3YToolTip,
-                        s -> nowMinus.apply(Period.ofYears(3)));
-        addButton(buttons, Messages.SecurityTabChart5Y, Messages.SecurityTabChart5YToolTip,
-                        s -> nowMinus.apply(Period.ofYears(5)));
-        addButton(buttons, Messages.SecurityTabChart10Y, Messages.SecurityTabChart10YToolTip,
-                        s -> nowMinus.apply(Period.ofYears(10)));
-        addButton(buttons, Messages.SecurityTabChartYTD, Messages.SecurityTabChartYTDToolTip,
-                        s -> nowMinus.apply(Period.ofDays(LocalDate.now().getDayOfYear() - 1)));
-
-        addButton(buttons, Messages.SecurityTabChartHoldingPeriod, Messages.SecurityTabChartHoldingPeriodToolTip, s -> {
-            List<TransactionPair<?>> tx = s.getTransactions(client);
-            if (tx.isEmpty())
-                return null;
-
-            Collections.sort(tx, new TransactionPair.ByDate());
-            boolean hasHoldings = ClientSnapshot.create(client, converter, LocalDate.now()).getPositionsByVehicle()
-                            .containsKey(s);
-
-            return new ChartInterval(tx.get(0).getTransaction().getDateTime().toLocalDate(),
-                            hasHoldings ? LocalDate.now()
-                                            : tx.get(tx.size() - 1).getTransaction().getDateTime().toLocalDate());
-
-        });
-
-        addButton(buttons, Messages.SecurityTabChartAll, Messages.SecurityTabChartAllToolTip, s -> {
-            List<SecurityPrice> prices = s.getPricesIncludingLatest();
-            return prices.isEmpty() ? null
-                            : new ChartInterval(prices.get(0).getDate(), prices.get(prices.size() - 1).getDate());
-        });
-
-        container.setLayout(new CustomLayout(chart, buttons));
     }
 
     private void setupTooltip()
@@ -540,30 +453,57 @@ public class SecuritiesChart
         }
     }
 
-    private void addConfigButton(Composite buttons)
+    public void addButtons(ToolBarManager toolBar)
     {
-        Button b = new Button(buttons, SWT.FLAT);
-        b.setImage(Images.CONFIG.image());
-        b.addSelectionListener(new SelectionAdapter()
-        {
-            @Override
-            public void widgetSelected(SelectionEvent e)
-            {
-                if (contextMenu == null)
-                {
-                    MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
-                    menuMgr.setRemoveAllWhenShown(true);
-                    menuMgr.addMenuListener(SecuritiesChart.this::chartConfigAboutToShow);
+        TriFunction<String, String, TemporalAmount, Action> button = (label, toolTip, tomporalAmount) -> { // NOSONAR
+            return new SimpleAction(label, toolTip, a -> {
+                LocalDate now = LocalDate.now();
+                chartIntervalFunction = s -> new ChartInterval(now.minus(tomporalAmount), now);
+                updateChart();
+            });
+        };
 
-                    contextMenu = menuMgr.createContextMenu(buttons.getShell());
+        toolBar.add(button.apply(Messages.SecurityTabChart1M, Messages.SecurityTabChart1MToolTip, Period.ofMonths(1)));
+        toolBar.add(button.apply(Messages.SecurityTabChart2M, Messages.SecurityTabChart2MToolTip, Period.ofMonths(2)));
+        toolBar.add(button.apply(Messages.SecurityTabChart6M, Messages.SecurityTabChart6MToolTip, Period.ofMonths(6)));
+        toolBar.add(button.apply(Messages.SecurityTabChart1Y, Messages.SecurityTabChart1YToolTip, Period.ofYears(1)));
+        toolBar.add(button.apply(Messages.SecurityTabChart2Y, Messages.SecurityTabChart2YToolTip, Period.ofYears(2)));
+        toolBar.add(button.apply(Messages.SecurityTabChart3Y, Messages.SecurityTabChart3YToolTip, Period.ofYears(3)));
+        toolBar.add(button.apply(Messages.SecurityTabChart5Y, Messages.SecurityTabChart5YToolTip, Period.ofYears(5)));
+        toolBar.add(button.apply(Messages.SecurityTabChart10Y, Messages.SecurityTabChart10YToolTip,
+                        Period.ofYears(10)));
+        toolBar.add(button.apply(Messages.SecurityTabChartYTD, Messages.SecurityTabChartYTDToolTip,
+                        Period.ofDays(LocalDate.now().getDayOfYear() - 1)));
 
-                    buttons.addDisposeListener(event -> contextMenu.dispose());
+        toolBar.add(new SimpleAction(Messages.SecurityTabChartHoldingPeriod,
+                        Messages.SecurityTabChartHoldingPeriodToolTip, a -> {
+                            chartIntervalFunction = s -> {
+                                List<TransactionPair<?>> tx = s.getTransactions(client);
+                                if (tx.isEmpty())
+                                    return null;
 
-                }
+                                Collections.sort(tx, new TransactionPair.ByDate());
+                                boolean hasHoldings = ClientSnapshot.create(client, converter, LocalDate.now())
+                                                .getPositionsByVehicle().containsKey(s);
 
-                contextMenu.setVisible(true);
-            }
-        });
+                                return new ChartInterval(tx.get(0).getTransaction().getDateTime().toLocalDate(),
+                                                hasHoldings ? LocalDate.now()
+                                                                : tx.get(tx.size() - 1).getTransaction().getDateTime()
+                                                                                .toLocalDate());
+                            };
+                            updateChart();
+                        }));
+
+        toolBar.add(new SimpleAction(Messages.SecurityTabChartAll, Messages.SecurityTabChartAllToolTip, a -> {
+            chartIntervalFunction = s -> {
+                List<SecurityPrice> prices = s.getPricesIncludingLatest();
+                return prices.isEmpty() ? null
+                                : new ChartInterval(prices.get(0).getDate(), prices.get(prices.size() - 1).getDate());
+            };
+            updateChart();
+        }));
+
+        toolBar.add(new DropDown(Messages.MenuConfigureChart, Images.CONFIG, SWT.NONE, this::chartConfigAboutToShow));
     }
 
     private void chartConfigAboutToShow(IMenuManager manager)
@@ -651,6 +591,7 @@ public class SecuritiesChart
                         break;
                 }
             }
+
             if (!chartConfig.contains(ChartDetails.SCALING_LINEAR) && !chartConfig.contains(ChartDetails.SCALING_LOG))
                 chartConfig.add(ChartDetails.SCALING_LINEAR);
 
@@ -662,18 +603,7 @@ public class SecuritiesChart
         });
 
         action.setChecked(chartConfig.contains(detail));
-        return (action);
-    }
-
-    private void addButton(Composite buttons, String label, String toolTip, Function<Security, ChartInterval> interval)
-    {
-        Button b = new Button(buttons, SWT.FLAT);
-        b.setText(label);
-        b.setToolTipText(toolTip);
-        b.addSelectionListener(SelectionListener.widgetSelectedAdapter(event -> {
-            chartIntervalFunction = interval;
-            updateChart();
-        }));
+        return action;
     }
 
     public void setClient(Client client)
@@ -1510,5 +1440,4 @@ public class SecuritiesChart
                         .filter(r -> !r.getFifoCostPerSharesHeld().isZero()) //
                         .map(r -> r.getMovingAverageCostPerSharesHeld().getAmount() / Values.Quote.divider());
     }
-
 }

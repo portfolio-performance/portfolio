@@ -4,6 +4,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.eclipse.e4.ui.services.IStylingEngine;
+import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -56,6 +57,12 @@ public class SecurityPriceChartPane implements InformationPanePage
         details.getControl().setLayoutData(new SashLayoutData(SWTHelper.getPackedWidth(details.getControl())));
 
         return sash;
+    }
+
+    @Override
+    public void addButtons(ToolBarManager toolBar)
+    {
+        chart.addButtons(toolBar);
     }
 
     @Override
