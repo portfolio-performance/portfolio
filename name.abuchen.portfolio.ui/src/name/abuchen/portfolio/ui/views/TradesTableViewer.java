@@ -184,8 +184,8 @@ public class TradesTableViewer
         support.addColumn(column);
 
         column = new Column("gpl", Messages.ColumnGrossProfitLoss, SWT.RIGHT, 80); //$NON-NLS-1$
-        column.setLabelProvider(
-                        new MoneyColorLabelProvider(element -> ((Trade) element).getGrossProfitLoss(), view.getClient()));
+        column.setLabelProvider(new MoneyColorLabelProvider(element -> ((Trade) element).getGrossProfitLoss(),
+                        view.getClient()));
         column.setSorter(ColumnViewerSorter.create(e -> ((Trade) e).getGrossProfitLoss()));
         support.addColumn(column);
 
@@ -212,7 +212,9 @@ public class TradesTableViewer
                 return Values.DateTime.format(t.getLastTransaction().getTransaction().getDateTime());
             }
         });
-        column.setSorter(ColumnViewerSorter.create(e -> ((Trade) e).getLastTransaction().getTransaction().getDateTime()));
+        column.setSorter(ColumnViewerSorter
+                        .create(e -> ((Trade) e).getLastTransaction().getTransaction().getDateTime()));
+        column.setVisible(false);
         support.addColumn(column);
 
         column = new Column("irr", Messages.ColumnIRR, SWT.RIGHT, 80); //$NON-NLS-1$
