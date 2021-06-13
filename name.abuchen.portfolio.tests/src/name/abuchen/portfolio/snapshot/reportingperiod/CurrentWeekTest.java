@@ -45,15 +45,25 @@ public class CurrentWeekTest
     @Test
     public void testToInterval() throws IOException
     {
-        LocalDate today = LocalDate.now();
-        LocalDate monday = today.with(previousOrSame(MONDAY));
-        LocalDate sunday = today.with(nextOrSame(SUNDAY));
+        Locale defaultLocale = Locale.getDefault();
+        try
+        {
+            Locale.setDefault(Locale.GERMANY);
 
-        ReportingPeriod period = ReportingPeriod.from("W");
+            LocalDate today = LocalDate.now();
+            LocalDate monday = today.with(previousOrSame(MONDAY));
+            LocalDate sunday = today.with(nextOrSame(SUNDAY));
 
-        Interval result = period.toInterval(today);
+            ReportingPeriod period = ReportingPeriod.from("W");
 
-        assertEquals(result, Interval.of(monday.minusDays(1), sunday));
+            Interval result = period.toInterval(today);
+
+            assertEquals(result, Interval.of(monday.minusDays(1), sunday));
+        }
+        finally
+        {
+            Locale.setDefault(defaultLocale);
+        }
     }
 
     @Test
@@ -81,7 +91,6 @@ public class CurrentWeekTest
         {
             Locale.setDefault(defaultLocale);
         }
-
     }
 
     @Test
