@@ -462,6 +462,7 @@ public class Messages extends NLS
     public static String LabelAccumulatedInterest;
     public static String LabelAccumulatedInterestCharge;
     public static String LabelAccumulatedTaxes;
+    public static String LabelAfterTaxAndFees;
     public static String LabelAggregation;
     public static String LabelAggregationDaily;
     public static String LabelAllCurrencies;
@@ -472,6 +473,7 @@ public class Messages extends NLS
     public static String LabelAssetChart;
     public static String LabelAvailableAttributes;
     public static String LabelAverageHoldingPeriod;
+    public static String LabelBeforeTaxAndFees;
     public static String LabelBenchmarks;
     public static String LabelCapitalGains;
     public static String LabelCategoryOtherMovements;
