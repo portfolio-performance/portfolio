@@ -220,6 +220,18 @@ public class ClientPerformanceSnapshot
         return categories.get(categoryType).getValuation();
     }
 
+    public Money getValue(CategoryType categoryType, CategoryType... more)
+    {
+        MutableMoney answer = MutableMoney.of(converter.getTermCurrency());
+
+        answer.add(categories.get(categoryType).getValuation());
+
+        for (CategoryType t : more)
+            answer.add(categories.get(t).getValuation());
+
+        return answer.toMoney();
+    }
+
     public List<TransactionPair<?>> getEarnings()
     {
         return earnings;
@@ -264,6 +276,37 @@ public class ClientPerformanceSnapshot
         }
 
         return delta.toMoney();
+    }
+
+    /**
+     * Returns taxes / (capital gains + realized capital gains + earnings -
+     * fees)
+     */
+    public double getPortfolioTaxRate()
+    {
+        Money numerator = getValue(CategoryType.TAXES);
+        Money denominator = getValue(CategoryType.CAPITAL_GAINS, CategoryType.REALIZED_CAPITAL_GAINS,
+                        CategoryType.EARNINGS).subtract(getValue(CategoryType.FEES));
+
+        if (denominator.isZero())
+            return Double.NaN;
+
+        return numerator.getAmount() / (double) denominator.getAmount();
+    }
+
+    /**
+     * Returns fees / (capital gains + realized capital gains + earnings)
+     */
+    public double getPortfolioFeeRate()
+    {
+        Money numerator = getValue(CategoryType.FEES);
+        Money denominator = getValue(CategoryType.CAPITAL_GAINS, CategoryType.REALIZED_CAPITAL_GAINS,
+                        CategoryType.EARNINGS);
+
+        if (denominator.isZero())
+            return Double.NaN;
+
+        return numerator.getAmount() / (double) denominator.getAmount();
     }
 
     private void calculate()
