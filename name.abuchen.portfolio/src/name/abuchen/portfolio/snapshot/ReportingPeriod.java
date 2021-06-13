@@ -1,17 +1,17 @@
 package name.abuchen.portfolio.snapshot;
 
-import static java.time.DayOfWeek.MONDAY;
-import static java.time.DayOfWeek.SUNDAY;
 import static java.time.temporal.IsoFields.DAY_OF_QUARTER;
 import static java.time.temporal.TemporalAdjusters.lastDayOfMonth;
-import static java.time.temporal.TemporalAdjusters.nextOrSame;
 import static java.time.temporal.TemporalAdjusters.previousOrSame;
 
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.time.temporal.WeekFields;
+import java.util.Locale;
 import java.util.function.Predicate;
 
 import com.google.common.base.Objects;
@@ -459,10 +459,19 @@ public abstract class ReportingPeriod
         @Override
         public Interval toInterval(LocalDate relativeTo)
         {
-            LocalDate monday = relativeTo.with(previousOrSame(MONDAY));
-            LocalDate sunday = relativeTo.with(nextOrSame(SUNDAY));
+            // the first day of the week is local-specific: in Germany it is the
+            // Monday, in the US it is the Sunday
 
-            return Interval.of(monday, sunday);
+            final DayOfWeek firstDayOfWeek = WeekFields.of(Locale.getDefault()).getFirstDayOfWeek();
+
+            // reporting periods always run from the end of the day of the
+            // starting data. In order to include the full week, we need to
+            // start at the end of Sunday
+
+            LocalDate firstDay = relativeTo.with(previousOrSame(firstDayOfWeek)).minusDays(1);
+            LocalDate lastDay = firstDay.plusDays(7);
+
+            return Interval.of(firstDay, lastDay);
         }
 
         @Override
@@ -493,7 +502,7 @@ public abstract class ReportingPeriod
             return getClass() == obj.getClass();
         }
     }
-    
+
     public static class CurrentMonth extends ReportingPeriod
     {
         private static final char CODE = 'M';
@@ -537,38 +546,38 @@ public abstract class ReportingPeriod
             return getClass() == obj.getClass();
         }
     }
-    
+
     public static class CurrentQuarter extends ReportingPeriod
     {
         private static final char CODE = 'Q';
-        
+
         @Override
         public Interval toInterval(LocalDate relativeTo)
         {
             LocalDate firstDayOfQuarter = relativeTo.with(DAY_OF_QUARTER, 1L);
             LocalDate lastDayOfQuarter = firstDayOfQuarter.plusMonths(2).with(lastDayOfMonth());
-                    
-            return Interval.of(firstDayOfQuarter, lastDayOfQuarter);
+
+            return Interval.of(firstDayOfQuarter.minusDays(1), lastDayOfQuarter);
         }
-        
+
         @Override
         public void writeTo(StringBuilder buffer)
         {
             buffer.append(CODE);
         }
-        
+
         @Override
         public String toString()
         {
             return Messages.LabelReportingPeriodCurrentQuarter;
         }
-        
+
         @Override
         public int hashCode()
         {
             return Objects.hashCode(CODE);
         }
-        
+
         @Override
         public boolean equals(Object obj)
         {

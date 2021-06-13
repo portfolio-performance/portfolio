@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.snapshot.reportingperiod;
 
 import static java.time.DayOfWeek.MONDAY;
+import static java.time.DayOfWeek.SATURDAY;
 import static java.time.DayOfWeek.SUNDAY;
 import static java.time.temporal.TemporalAdjusters.nextOrSame;
 import static java.time.temporal.TemporalAdjusters.previousOrSame;
@@ -9,6 +10,7 @@ import static org.junit.Assert.assertNotEquals;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Locale;
 
 import org.junit.Test;
 
@@ -25,7 +27,7 @@ public class CurrentWeekTest
         String code = "W";
         ReportingPeriod period = ReportingPeriod.from(code);
 
-        assertEquals(period.getClass(), CurrentWeek.class);
+        assertEquals(period.getClass(), CurrentWeek.class); // NOSONAR
     }
 
     @Test
@@ -51,24 +53,63 @@ public class CurrentWeekTest
 
         Interval result = period.toInterval(today);
 
-        assertEquals(result, Interval.of(monday, sunday));
+        assertEquals(result, Interval.of(monday.minusDays(1), sunday));
     }
-    
+
     @Test
-    public void testToIntervalWithStaticDate() throws IOException
+    public void testToIntervalWithStaticDateGermany() throws IOException
     {
-        // random, static Wednesday
-        LocalDate date = LocalDate.of(2021, 6, 9);
-        LocalDate monday = date.with(previousOrSame(MONDAY));
-        LocalDate sunday = date.with(nextOrSame(SUNDAY));
+        Locale defaultLocale = Locale.getDefault();
+        try
+        {
+            Locale.setDefault(Locale.GERMANY);
 
-        ReportingPeriod period = ReportingPeriod.from("W");
+            // random, static Wednesday
+            LocalDate date = LocalDate.of(2021, 6, 9);
+            LocalDate monday = date.with(previousOrSame(MONDAY));
+            LocalDate sunday = date.with(nextOrSame(SUNDAY));
 
-        Interval result = period.toInterval(date);
-        
-        assertEquals(result, Interval.of(monday, sunday));
-        assertEquals(result.getStart(), LocalDate.of(2021, 6, 7));
-        assertEquals(result.getEnd(), LocalDate.of(2021, 6, 13));
+            ReportingPeriod period = ReportingPeriod.from("W");
+
+            Interval result = period.toInterval(date);
+
+            assertEquals(result, Interval.of(monday.minusDays(1), sunday));
+            assertEquals(result.getStart(), LocalDate.of(2021, 6, 6));
+            assertEquals(result.getEnd(), LocalDate.of(2021, 6, 13));
+        }
+        finally
+        {
+            Locale.setDefault(defaultLocale);
+        }
+
+    }
+
+    @Test
+    public void testToIntervalWithStaticDateUSA() throws IOException
+    {
+        Locale defaultLocale = Locale.getDefault();
+        try
+        {
+            Locale.setDefault(Locale.US);
+
+            // random, static Wednesday
+            LocalDate date = LocalDate.of(2021, 6, 9);
+            LocalDate sunday = date.with(previousOrSame(SUNDAY));
+            LocalDate saturday = date.with(nextOrSame(SATURDAY));
+
+            ReportingPeriod period = ReportingPeriod.from("W");
+
+            Interval result = period.toInterval(date);
+
+            assertEquals(result, Interval.of(sunday.minusDays(1), saturday));
+            assertEquals(result.getStart(), LocalDate.of(2021, 6, 5));
+            assertEquals(result.getEnd(), LocalDate.of(2021, 6, 12));
+        }
+        finally
+        {
+            Locale.setDefault(defaultLocale);
+        }
+
     }
 
     @Test
