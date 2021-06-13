@@ -1,0 +1,45 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Abcd BLZ: 12345
+Abcd Abcdefghijk Referenz: 12-123456789
+Nr. 01 Kundennummer: 12345
+1234 Abcdefghi Wertpapierdepot: 12345-1
+Austria
+Wien, 27.11.2013
+WERTPAPIERBESTÄTIGUNG
+FONDS - AUSSCHÜTTUNG
+Wertpapierdetails
+ISIN : DE0009769794
+Wertpapierbezeichnung : DWS TOP 50 WELT
+Informationen zur Kapitalmaßnahme
+Anspruchsberechtigter : 96.324
+Bestand
+Preis : EUR 0.31
+Ex-Tag : 22.11.2013
+Zahltag : 22.11.2013
+Lagerort : Vienna
+Verwahrart : WR
+Angaben zur Geld-Ausschüttung
+Gutschrift/Belastung : Gutschrift
+Valutatag : 22.11.2013
+Brutto-Betrag : EUR 29.86
+Steuer : Quellensteuer
+Steuern : EUR 0.88
+Steuer : KESt1
+Steuern : EUR 0.00
+Steuer : KESt2
+Steuern : EUR 3.28
+Steuer : KESt3
+Steuern : EUR 0.00
+Gesamtbetrag (in : EUR 25.7
+Kontowährung)
+Wir erkennen Ihr EUR Konto Nummer 1-12345 mit Valuta 22.11.2013.
+Die Buchung erfolgt “Eingang vorbehalten”.
+Vorbehaltlich Eingang bzw. nachträglicher Storni/Umbuchungen seitens Lagerstelle/Partner.
+Überprüfen Sie bitte die Richtigkeit dieser Bestätigung. Sollten Sie innerhalb von 6 Wochen nach Erhalt dieser Bestätigung
+keine Einwände gegen die Richtigkeit erheben, so gelten die angeführten Erklärungen und Leistungen als genehmigt.
+Brokerjet Bank AG | Mariahilfer Straße 121B | A-1060 Wien
+e-mail: support@brokerjet.at | Fax: +43-1-53689-13550 | www.brokerjet.at
+Sitz Wien | Handelsgericht Wien | FB-Nr. 193944m | DVR 1052322 | UID ATU49227901
+Online Broker Erste Group

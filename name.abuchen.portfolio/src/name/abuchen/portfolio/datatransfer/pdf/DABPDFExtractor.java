@@ -26,6 +26,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
 
         addBuySellTransaction();
         addDividendTransaction();
+        addTransferOutInTransaction();
     }
 
     @Override
@@ -186,7 +187,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
         pdfTransaction
                 // Paychex Inc. Registered Shares DL -,01 US7043261079
                 // STK 10,000 31.07.2020 27.08.2020 USD 0,620000
-                .section("isin", "name", "shares", "currency")
+                .section("isin", "name", "shares", "currency").optional()
                 .find("Gattungsbezeichnung ISIN")
                 .match("^(?<name>.*) (?<isin>[\\w]{12})$")
                 .match("^STK (?<shares>[.,\\d]+) \\d+.\\d+.\\d{4} \\d+.\\d+.\\d{4} (?<currency>[\\w]{3}) [.,\\d]+$")
@@ -195,6 +196,26 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                     t.setSecurity(getOrCreateSecurity(v));
                 })
 
+                // Wertpapierbezeichnung WKN ISIN
+                // HORMEL FOODS CORP. Registered Shares DL 0,01465 850875 US4404521001
+                .section("name", "wkn", "isin", "currency").optional()
+                .find("Wertpapierbezeichnung WKN ISIN")
+                .match("^(?<name>.*) (?<wkn>.*) (?<isin>[\\w]{12})$")
+                .match("^Dividende pro St.ck [.,\\d]+ (?<currency>[\\w]{3}) .*$")
+                .assign((t, v) -> {
+                    t.setSecurity(getOrCreateSecurity(v));
+                })
+
+                // 1.500 Stück
+                .section("shares").optional()
+                .match("(?<shares>[.,\\d]+) St.ck")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                // Valuta 15.02.2018 BIC CSDBDE71XXX
+                .section("date").optional()
+                .match("Valuta (?<date>\\d+.\\d+.\\d{4}+).*")
+                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
                 // 08.01.2015 8022574001 EUR 150,00
                 .section("date", "amount", "currency").optional()
                 .find("Nominal Ex-Tag Zahltag .*")
@@ -202,6 +223,14 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> {
                     t.setDateTime(asDate(v.get("date")));
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                    t.setAmount(asAmount(v.get("amount")));
+                })
+
+                // Netto in USD zugunsten IBAN DE90 209,38 USD
+                .section("amount", "currency").optional()
+                .match("^Netto .* zugunsten IBAN .* (?<amount>[.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    t.setCurrencyCode(v.get("currency"));
                     t.setAmount(asAmount(v.get("amount")));
                 })
 
@@ -309,9 +338,57 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                     }
                 })
 
+                // Brutto in USD 281,25 USD
+                // Devisenkurs 1,249900 USD / EUR
+                // Brutto in EUR 225,02 EUR
+                .section("exchangeRate", "fxAmount", "fxCurrency", "amount", "currency").optional()
+                .match("Brutto in [\\w]{3} (?<fxAmount>[.,\\d]+) (?<fxCurrency>[\\w]{3})")
+                .match("Devisenkurs (?<exchangeRate>[.,\\d]+) [\\w]{3} \\/ [\\w]{3}")
+                .match("Brutto in [\\w]{3} (?<amount>[.,\\d]+) (?<currency>[\\w]{3})")
+                .assign((t, v) -> {
+                    // Example: Devisenkurs 1,249900 USD / EUR
+                    // check which currency is transaction currency and
+                    // use exchange rate accordingly
+                    // if transaction currency is e.g. USD, we need to
+                    // inverse the rate
+                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                    if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
+                    {
+                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+                    }
+                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
+
+                    if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
+                    {
+                        BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
+                                        RoundingMode.HALF_DOWN);
+
+                        // check, if forex currency is transaction
+                        // currency or not and swap amount, if necessary
+                        Unit grossValue;
+                        if (!asCurrencyCode(v.get("fxCurrency")).equals(t.getCurrencyCode()))
+                        {
+                            Money fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")),
+                                            asAmount(v.get("fxAmount")));
+                            Money amount = Money.of(asCurrencyCode(v.get("currency")),
+                                            asAmount(v.get("amount")));
+                            grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
+                        }
+                        else
+                        {
+                            Money amount = Money.of(asCurrencyCode(v.get("fxCurrency")),
+                                            asAmount(v.get("fxAmount")));
+                            Money fxAmount = Money.of(asCurrencyCode(v.get("currency")),
+                                            asAmount(v.get("amount")));
+                            grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
+                        }
+                        t.addUnit(grossValue);
+                    }
+                })
+
                 // Devisenkurs: EUR/USD 1,1814
                 .section("exchangeRate", "fxCurrency").optional()
-                .match("^Devisenkurs: [\\w]{3}/(?<fxCurrency>[\\w]{3}) (?<exchangeRate>[.,\\d]+)$")
+                .match("^Devisenkurs: [\\w]{3}\\/(?<fxCurrency>[\\w]{3}) (?<exchangeRate>[.,\\d]+)$")
                 .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                     if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
@@ -327,6 +404,88 @@ public class DABPDFExtractor extends AbstractPDFExtractor
         addFeesSectionsTransaction(pdfTransaction, type);
 
         block.set(pdfTransaction);
+    }
+
+    @SuppressWarnings("nls")
+    private void addTransferOutInTransaction()
+    {
+        DocumentType type = new DocumentType("Einbuchung|Ihr Depotbestand");
+        this.addDocumentTyp(type);
+
+        Transaction<PortfolioTransaction> pdfTransaction = new Transaction<>();
+        pdfTransaction.subject(() -> {
+            PortfolioTransaction entry = new PortfolioTransaction();
+            entry.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
+            return entry;
+        });
+
+        Block firstRelevantLine = new Block("^(Einbuchung|Ihr Depotbestand:)$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction
+                // Gattungsbezeichnung ISIN
+                // Solutiance AG Inhaber-Aktien o.N. DE0006926504
+                .section("isin", "name", "name1", "shares", "currency").optional()
+                .find("Gattungsbezeichnung ISIN")
+                .match("^(?<name>.*) (?<isin>[\\w]{12})$")
+                .match("^(?<name1>.*)")
+                .match("STK (?<shares>[.,\\d]+) (?<currency>[\\w]{3}) [.,\\d]+$")
+                .assign((t, v) -> {
+                    if (!v.get("name1").startsWith("Nominal"))
+                        v.put("name", v.get("name") + " " + v.get("name1"));
+
+                    t.setShares(asShares(v.get("shares")));
+                    t.setSecurity(getOrCreateSecurity(v));
+                })
+
+                // Gattungsbezeichnung ISIN
+                // BNP P.Easy-MSCI Pac.x.Jap.x.CW Nam.-Ant.UCITS ETF CAP EUR LU1291106356
+                // o.N
+                .section("isin", "name", "name1", "shares", "currency").optional()
+                .find("Gattungsbezeichnung ISIN")
+                .match("^(?<name>.*) (?<currency>[\\w]{3}) (?<isin>[\\w]{12})$")
+                .match("^(?<name1>.*)")
+                .match("STK (?<shares>[.,\\d]+)$")
+                .assign((t, v) -> {
+                    if (!v.get("name1").startsWith("Nominal"))
+                        v.put("name", v.get("name") + " " + v.get("name1"));
+
+                    t.setShares(asShares(v.get("shares")));
+                    t.setSecurity(getOrCreateSecurity(v));
+                })
+
+                // 11.03.2021 3331111113 EUR 27,50
+                .section("date", "amount", "currency").optional()
+                .match("^(?<date>\\d+.\\d+.\\d{4}) [\\d]+ (?<currency>[\\w]{3}) (?<amount>[.,\\d]+)$")
+                .assign((t, v) -> {
+                    t.setDateTime(asDate(v.get("date")));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                    t.setAmount(asAmount(v.get("amount")));
+                })
+
+                // STK 0,0722 04.12.2018
+                .section("date").optional()
+                .match("^STK [.,\\d]+ (?<date>\\d+.\\d+.\\d{4})$")
+                .assign((t, v) -> {
+                    t.setDateTime(asDate(v.get("date")));
+                })
+
+                /***
+                 * Deposit without amount (share split)
+                 */
+                // Wir haben Ihrem Depot im Verhältnis 1 : 22 folgende Stücke zugebucht (hinzugefügt):
+                .section("note").optional()
+                .match("^Wir haben Ihrem Depot im (?<note>Verh.ltnis [\\d]+ : [\\d]+) .*$")
+                .assign((t, v) -> {
+                    t.setCurrencyCode(t.getSecurity().getCurrencyCode());
+                    t.setAmount(0L);
+                })
+
+                .wrap(TransactionItem::new);
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
+        addFeesSectionsTransaction(pdfTransaction, type);
     }
 
     @SuppressWarnings("nls")
@@ -414,6 +573,32 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                     {
                         processTaxEntries(t, v, type);
                     }
+                })
+
+                .section("tax", "currency").optional()
+                .match("^abzgl. Quellensteuer .* (\\w{3}) (?<tax>[.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    processTaxEntries(t, v, type);
+                })
+
+                // abzgl. Kapitalertragsteuer 25,00 % von 90,02 EUR 22,51 EUR
+                .section("tax", "currency").optional()
+                .match("^abzgl. Kapitalertrags(s)?teuer .* (?<tax>[.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    processTaxEntries(t, v, type);
+                })
+
+                // abzgl. Solidaritätszuschlag 5,50 % von 22,51 EUR 1,23 EUR
+                .section("tax", "currency").optional()
+                .match("^abzgl. Solidarit.tszuschlag .* (?<tax>[.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    processTaxEntries(t, v, type);
+                })
+
+                .section("tax", "currency").optional()
+                .match("^abzgl. Kirchensteuer .* (?<tax>[.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    processTaxEntries(t, v, type);
                 });
     }
 
@@ -439,6 +624,16 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 // Verwahrart Wertpapierrechnung Abwicklungskosten Ausland USD 0,10-
                 .section("fee", "currency").optional()
                 .match("^.* Abwicklungskosten.* (?<currency>[\\w]{3}) (?<fee>[.,\\d]+)-$")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+
+                // Verwahrart Girosammelverwahrung Gebühr EUR 0,50-
+                .section("fee", "currency").optional()
+                .match("^Verwahrart Girosammelverwahrung Geb.hr (?<currency>[\\w]{3}) (?<fee>[.,\\d]+)-$")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+
+                // Börse außerbörslich Bezugspreis EUR 27,00-
+                .section("fee", "currency").optional()
+                .match("^B.rse außerb.rslich Bezugspreis (?<currency>[\\w]{3}) (?<fee>[.,\\d]+)-$")
                 .assign((t, v) -> processFeeEntries(t, v, type));
     }
 

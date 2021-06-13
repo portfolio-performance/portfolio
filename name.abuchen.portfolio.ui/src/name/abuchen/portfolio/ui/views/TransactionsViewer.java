@@ -150,9 +150,11 @@ public final class TransactionsViewer implements ModificationListener
         TableColumnLayout layout = new TableColumnLayout();
         container.setLayout(layout);
 
-        tableViewer = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
+        tableViewer = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI | SWT.VIRTUAL);
         ColumnViewerToolTipSupport.enableFor(tableViewer, ToolTip.NO_RECREATE);
         ColumnEditingSupport.prepare(tableViewer);
+
+        tableViewer.setUseHashlookup(true);
 
         support = new ShowHideColumnHelper(identifier, owner.getPreferenceStore(), tableViewer, layout);
 

@@ -28,6 +28,7 @@ Import-Package: com.google.common.base,
  com.google.common.util.concurrent,
  com.google.gson,
  com.google.gson.reflect,
+ com.google.gson.stream,
  com.thoughtworks.xstream,
  com.thoughtworks.xstream.annotations,
  com.thoughtworks.xstream.converters,
@@ -60,6 +61,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.apache.httpcomponents.httpclient,
  org.apache.httpcomponents.httpcore,
  org.apache.pdfbox,
- com.jayway.jsonpath.json-path
+ com.jayway.jsonpath.json-path,
+ com.google.gson
 Automatic-Module-Name: name.abuchen.portfolio
 Eclipse-ExtensibleAPI: true

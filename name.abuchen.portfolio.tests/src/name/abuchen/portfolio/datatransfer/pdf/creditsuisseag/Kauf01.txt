@@ -1,0 +1,54 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+CREDIT SUISSE (Schweiz) AG
+CH-8070 Zürich Telefon +41 44 333 99 99
+credit-suisse.com
+BIC CRESCHZZ80A
+Depot-Nr. 0000- 000000-00
+Ihre Beraterin Herr Max Muster Herr A
+Telefon 044 222 22 22 Moritz Kunde
+Strasse 5b
+8001 Zürich
+Wertschriftenabrechnung 08.06.2020
+Ihr Kauf Seite 1/2
+Ort(e) siehe Ausführungsdetails
+Datum 08.06.2020
+900 Registered Shs Iron Mountain Inc USD 0.01
+Valor 26754105, IRM, ISIN US46284V1017
+zum Kurs von USD 30.30
+Bei: Brown Brothers Harriman, New York (DST: 5500)
+Werte ins Depot
+Kurswert USD 27,270.00
+Kommission Schweiz/Ausland USD 463.60
+Kosten und Abgaben Ausland USD 2.00
+Eidgenössische Umsatzabgabe USD 40.91
+Internet-Vergünstigung USD - 41.81
+Valuta 10.06.2020
+Konto 0000- 000000-00
+IBAN CH66 0000 0000 0000 0000 0
+Kontokorrent Bonviva USD 27,734.70
+Belastung USD 27,734.70
+Der Auftrag zur Ausführung dieser Transaktion wurde ohne vorgängige Beratung unsererseits erteilt.
+Die Erfüllung bzw. Gutschrift steht bei sämtlichen Transaktionen unter der Bedingung, dass die Gegenpartei auf der Marktseite
+ihre Leistungsverpflichtungen gegenüber der Bank erfüllt.
+Wir danken Ihnen für Ihren Auftrag.
+Ausführungsdetails
+Anzahl Handels-ID Lokale Ort zum Kurse von
+Ausführungszeit
+103 14800075391312 18:32:46 XNYS USD 30.30
+Fortsetzung siehe nächstes Blatt Auftrags-Nr. DN01-20200608-70-00000
+SLW-Ref: RPFCXV
+WI01
+Wertschriftenabrechnung Ihr Kauf
+Moritz Kunde, Zürich
+Depot-Nr. 0000- 000000-00
+08.06.2020
+Seite  2/2
+412 14800075391313 18:32:46 XNYS USD 30.30
+385 14800075391317 18:32:46 XNYS USD 30.30
+900 Durchschnittskurs USD 30.30
+FFrreeuunnddlliicchhee  GGrrüüssssee
+CCRREEDDIITT  SSUUIISSSSEE  ((SScchhwweeiizz))  AAGG
+Formular ohne Unterschrift Auftrags-Nr. DN01-20200608-70-00000
+WI01

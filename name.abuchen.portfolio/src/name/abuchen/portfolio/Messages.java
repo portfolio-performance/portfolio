@@ -139,6 +139,8 @@ public class Messages extends NLS
     public static String LabelRealizedCapitalGains;
     public static String LabelRemovals;
     public static String LabelReportingPeriodCurrentMonth;
+    public static String LabelReportingPeriodCurrentQuarter;
+    public static String LabelReportingPeriodCurrentWeek;
     public static String LabelReportingPeriodFromXtoY;
     public static String LabelReportingPeriodLastXDays;
     public static String LabelReportingPeriodLastXTradingDays;
@@ -175,6 +177,8 @@ public class Messages extends NLS
     public static String LabelYahooFinance;
     public static String LabelYahooFinanceAdjustedClose;
     public static String LabelEurostatHICP;
+    public static String LabelECBStatisticalDataWarehouse;
+    public static String LabelEONIA;
     public static String LabelExchangeRateSeriesBasedOnSecurity;
     public static String LabelOtherCategory;
     public static String LabelQuotation;
@@ -200,6 +204,7 @@ public class Messages extends NLS
     public static String MsgErrorDecrypting;
     public static String MsgErrorDownloadYahoo;
     public static String MsgErrorDownloadEurostatHICP;
+    public static String MsgErrorDownloadECBStatisticalDataWarehouse;
     public static String MsgErrorDuplicateISIN;
     public static String MsgErrorDuplicateName;
     public static String MsgErrorDuplicateTicker;

@@ -6,6 +6,7 @@ import java.util.List;
 import org.eclipse.jface.action.ContributionItem;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeListener;
@@ -91,7 +92,7 @@ public class DropDown extends ContributionItem
             if (image != null && toolTip == null)
                 widget.setToolTipText(TextUtil.tooltip(label));
 
-            if (image == null || style == SWT.DROP_DOWN)
+            if (image == null || style == SWT.DROP_DOWN || style == SWT.PUSH)
                 widget.setText(TextUtil.tooltip(label));
 
             widget.getParent().getParent().layout();
@@ -157,7 +158,7 @@ public class DropDown extends ContributionItem
             ti.setImage(image.image());
         }
 
-        if (image == null || style == SWT.DROP_DOWN)
+        if (image == null || style == SWT.DROP_DOWN || style == SWT.PUSH)
         {
             ti.setText(TextUtil.tooltip(label));
         }
@@ -190,6 +191,11 @@ public class DropDown extends ContributionItem
         ti.addDisposeListener(e -> disposeListeners.forEach(l -> l.widgetDisposed(e)));
 
         widget = ti;
+    }
+
+    public void fill(IMenuManager manager)
+    {
+        manager.add(new SimpleAction(getLabel(), getImage(), a -> defaultAction.run()));
     }
 
     @Override

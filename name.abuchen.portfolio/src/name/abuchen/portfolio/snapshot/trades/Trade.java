@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -101,8 +102,7 @@ public class Trade implements Adaptable
 
         // let's sort again because the list might not be sorted anymore due to
         // transfers
-        Collections.sort(transactions,
-                        (p1, p2) -> p1.getTransaction().getDateTime().compareTo(p2.getTransaction().getDateTime()));
+        Collections.sort(transactions, Comparator.comparing(p -> p.getTransaction().getDateTime()));
 
         // re-set start date from first entry after sorting
         this.setStart(transactions.get(0).getTransaction().getDateTime());
@@ -176,6 +176,13 @@ public class Trade implements Adaptable
         return transactions;
     }
 
+
+    public TransactionPair<PortfolioTransaction> getLastTransaction()
+    {
+        // transactions have been sorted by calculate(), which is called once after creation
+        return transactions.get(transactions.size() - 1);
+    }
+
     public Money getEntryValue()
     {
         return entryValue;
@@ -193,10 +200,8 @@ public class Trade implements Adaptable
 
     public Money getGrossProfitLoss()
     {
-        if (exitGrossValue == null) 
-        {
+        if (exitGrossValue == null)
             return null;
-        }
         return exitGrossValue.subtract(entryGrossValue);
     }
 
@@ -214,7 +219,7 @@ public class Trade implements Adaptable
     {
         return (exitValue.getAmount() / (double) entryValue.getAmount()) - 1;
     }
-    
+
     /**
      * @brief Checks if the trade is closed
      * @return True if the trade has been closed, false otherwise
@@ -223,7 +228,7 @@ public class Trade implements Adaptable
     {
         return this.getEnd().isPresent();
     }
-    
+
     /**
      * @brief Checks if the trade made a net loss
      * @return True if the trade resulted in a net loss
@@ -232,9 +237,9 @@ public class Trade implements Adaptable
     {
         return this.getProfitLoss().isNegative();
     }
-    
+
     /**
-     * @brief Check if the trade man a gross gross 
+     * @brief Check if the trade made a gross gross
      * @return True if the trade result in a gross loss
      */
     public boolean isGrossLoss()
@@ -245,7 +250,7 @@ public class Trade implements Adaptable
     @Override
     public <T> T adapt(Class<T> type)
     {
-        if (type == Named.class)
+        if (type == Security.class || type == Named.class)
             return type.cast(security);
         else
             return null;

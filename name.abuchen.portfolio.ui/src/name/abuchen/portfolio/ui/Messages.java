@@ -200,7 +200,6 @@ public class Messages extends NLS
     public static String ColumnLabel;
     public static String ColumnLastDividendPayment;
     public static String ColumnLastDividendPayment_MenuLabel;
-    public static String ColumnLastTrade;
     public static String ColumnLatest;
     public static String ColumnLatestDate;
     public static String ColumnLatestHistoricalDate;
@@ -463,6 +462,7 @@ public class Messages extends NLS
     public static String LabelAccumulatedInterest;
     public static String LabelAccumulatedInterestCharge;
     public static String LabelAccumulatedTaxes;
+    public static String LabelAfterTaxAndFees;
     public static String LabelAggregation;
     public static String LabelAggregationDaily;
     public static String LabelAllCurrencies;
@@ -473,6 +473,7 @@ public class Messages extends NLS
     public static String LabelAssetChart;
     public static String LabelAvailableAttributes;
     public static String LabelAverageHoldingPeriod;
+    public static String LabelBeforeTaxAndFees;
     public static String LabelBenchmarks;
     public static String LabelCapitalGains;
     public static String LabelCategoryOtherMovements;
@@ -535,6 +536,8 @@ public class Messages extends NLS
     public static String LabelCurrencyConverter;
     public static String LabelCurrentDate;
     public static String LabelCurrentMonth;
+    public static String LabelCurrentQuarter;
+    public static String LabelCurrentWeek;
     public static String LabelDashboard;
     public static String LabelDataSeries;
     public static String LabelDateXToY;
@@ -610,9 +613,11 @@ public class Messages extends NLS
     public static String LabelPerformanceChart;
     public static String LabelPerformanceIRR;
     public static String LabelPerformanceMetric;
+    public static String LabelPortfolioFeeRate;
     public static String LabelPortfolioPerformance;
     public static String LabelPortfolioPerformanceFile;
     public static String LabelPortfolios;
+    public static String LabelPortfolioTaxRate;
     public static String LabelPortfolioTimeMachine;
     public static String LabelPreTax;
     public static String LabelQuandlCode;
@@ -779,6 +784,7 @@ public class Messages extends NLS
     public static String MenuExportChartData;
     public static String MenuExportData;
     public static String MenuExportDiagram;
+    public static String MenuHideInformationPane;
     public static String MenuHideSidebar;
     public static String MenuLabelSetAsStartPage;
     public static String MenuNewDashboard;
@@ -802,6 +808,7 @@ public class Messages extends NLS
     public static String MenuSettingsNew;
     public static String MenuShow;
     public static String MenuShowHideColumns;
+    public static String MenuShowInformationPane;
     public static String MenuShowSidebar;
     public static String MenuSwitchCurrencies;
     public static String MenuTaxonomyAssignmentRemove;
@@ -982,10 +989,11 @@ public class Messages extends NLS
     public static String SecurityMenuDebugGetHistoricalQuotes;
     public static String SecurityMenuDeleteAllPrices;
     public static String SecurityMenuDeleteLatestQuote;
-    public static String SecurityMenuDeletePrice;
-    public static String SecurityMenuDeleteSecurity;
-    public static String SecurityMenuDeleteSingleSecurityConfirm;
+    public static String SecurityMenuDeleteMultipleSecurity;
     public static String SecurityMenuDeleteMultipleSecurityConfirm;
+    public static String SecurityMenuDeletePrice;
+    public static String SecurityMenuDeleteSingleSecurity;
+    public static String SecurityMenuDeleteSingleSecurityConfirm;
     public static String SecurityMenuDividends;
     public static String SecurityMenuEditSecurity;
     public static String SecurityMenuErrorMessageRoundingMustBeBetween0AndX;
@@ -1000,6 +1008,14 @@ public class Messages extends NLS
     public static String SecurityMenuRoundToXDecimalPlaces;
     public static String SecurityMenuSearch4Securities;
     public static String SecurityMenuSell;
+    public static String SecurityMenuSetMultipleSecurityActive;
+    public static String SecurityMenuSetMultipleSecurityActiveConfirm;
+    public static String SecurityMenuSetMultipleSecurityInactive;
+    public static String SecurityMenuSetMultipleSecurityInactiveConfirm;
+    public static String SecurityMenuSetSingleSecurityActive;
+    public static String SecurityMenuSetSingleSecurityActiveConfirm;
+    public static String SecurityMenuSetSingleSecurityInactive;
+    public static String SecurityMenuSetSingleSecurityInactiveConfirm;
     public static String SecurityMenuStockSplit;
     public static String SecurityMenuAddEvent;
     public static String SecurityMenuLabelNumberOfDecimalPlaces;
@@ -1060,6 +1076,8 @@ public class Messages extends NLS
     public static String TooltipMaxDrawdownDurationEndOfPeriod;
     public static String TooltipMaxDrawdownDurationFromXtoY;
     public static String TooltipMaxDurationLowToHigh;
+    public static String TooltipPortfolioFeeRate;
+    public static String TooltipPortfolioTaxRate;
     public static String TooltipQuoteAtDate;
     public static String TooltipRebalancingIndicator;
     public static String TooltipSemiVolatility;
@@ -1084,9 +1102,6 @@ public class Messages extends NLS
     public static String HoldingsWarningAssetsWithNegativeValuation;
     public static String HoldingsWarningAssetsWithNegativeValuationDetails;
     public static String YearlyPerformanceHeatmapToolTip;
-    public static String SecurityMenuSetSecurityInactive;
-    public static String SecurityMenuSetMultipleSecurityInactiveConfirm;
-    public static String SecurityMenuSetSingleSecurityInactiveConfirm;
     static
     {
         // initialize resource bundle

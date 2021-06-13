@@ -109,6 +109,8 @@ public class SashLayout extends Layout
      */
     private final boolean isBeginning;
 
+    private String tag;
+
     private Composite host;
 
     private Label divider;
@@ -175,8 +177,9 @@ public class SashLayout extends Layout
 
         SashLayoutData data = getLayoutData(children.get(isBeginning ? 0 : 1));
 
-        // if collapsed, drag only if proposed size is bigger than min width. That
-        // excludes many accidental drags when trying to restore via double click.
+        // if collapsed, drag only if proposed size is bigger than min width.
+        // That excludes many accidental drags when trying to restore via double
+        // click.
 
         if (data.size > 0 || (proposedSize > MIN_WIDHT && proposedSize < totalSize - MIN_WIDHT))
         {
@@ -220,6 +223,16 @@ public class SashLayout extends Layout
         host.update();
 
         divider.setVisible(false);
+    }
+
+    public String getTag()
+    {
+        return tag;
+    }
+
+    public void setTag(String tag)
+    {
+        this.tag = tag;
     }
 
     @Override

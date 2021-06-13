@@ -17,23 +17,31 @@ import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
+import name.abuchen.portfolio.ui.util.EmbeddedBrowser.ItemSelectedFunction;
 
 /* package */class DonutViewer extends AbstractChartPage
 {
+    private AbstractFinanceView view;
+
     private EmbeddedBrowser browser;
 
     @Inject
-    public DonutViewer(TaxonomyModel model, TaxonomyNodeRenderer renderer)
+    public DonutViewer(AbstractFinanceView view, TaxonomyModel model, TaxonomyNodeRenderer renderer)
     {
         super(model, renderer);
+        this.view = view;
     }
 
     @Override
     public Control createControl(Composite container)
     {
-        browser = new EmbeddedBrowser("/META-INF/html/pie.html"); //$NON-NLS-1$
-        return browser.createControl(container, b -> new LoadDataFunction(b, "loadData")); //$NON-NLS-1$
+        browser = make(EmbeddedBrowser.class);
+        browser.setHtmlpage("/META-INF/html/pie.html"); //$NON-NLS-1$
+        return browser.createControl(container, LoadDataFunction::new,
+                        b -> new ItemSelectedFunction(b, uuid -> getModel().getVirtualRootNode().getNodeById(uuid)
+                                        .ifPresent(n -> view.setInformationPaneInput(n))));
     }
 
     @Override
@@ -63,16 +71,17 @@ import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
         private static final String CAPTION_CLASSIFICATION = "%s  (%s)"; //$NON-NLS-1$
         private static final String CAPTION_CLASSIFIED = "<b>%s  %s  (%s)</b><br>%s"; //$NON-NLS-1$
         private static final String CAPTION_CLASSIFIED2 = "<b>%s  %s  (%s)</b><br>%s<br>%s"; //$NON-NLS-1$
-        private static final String ENTRY = "{\"label\":\"%s\"," //$NON-NLS-1$
+        private static final String ENTRY = "{\"uuid\":\"%s\"," //$NON-NLS-1$
+                        + "\"label\":\"%s\"," //$NON-NLS-1$
                         + "\"value\":%s," //$NON-NLS-1$
                         + "\"color\":\"%s\"," //$NON-NLS-1$
                         + "\"caption\":\"%s\"," //$NON-NLS-1$
                         + "\"valueLabel\":\"%s\"" //$NON-NLS-1$
                         + "}"; //$NON-NLS-1$
 
-        private LoadDataFunction(Browser browser, String name)
+        private LoadDataFunction(Browser browser)
         {
-            super(browser, name);
+            super(browser, "loadData"); //$NON-NLS-1$
         }
 
         @Override
@@ -164,7 +173,7 @@ import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
                 caption = String.format(CAPTION_CLASSIFIED, name, Values.Money.format(node.getActual()), percentage, //
                                 captionClassificationRoot);
             }
-            joiner.add(String.format(ENTRY, name, //
+            joiner.add(String.format(ENTRY, node.getId(), name, //
                             node.getActual().getAmount(), //
                             color, //
                             caption, //
@@ -174,7 +183,7 @@ import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
         /**
          * Format the {@link Classification} of the given {@link TaxonomyNode}
          * to a {@link String}.
-         * 
+         *
          * @param taxn
          *            {@link TaxonomyNode} (can be null)
          * @param total
@@ -200,7 +209,7 @@ import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
         /**
          * Gets the {@link Classification} node for the given node (or from its
          * parents if the node has none).
-         * 
+         *
          * @param node
          *            {@link TaxonomyNode}
          * @return {@link Classification} on success, else null
@@ -220,7 +229,7 @@ import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
 
         /**
          * Gets the root {@link Classification} node for the given node.
-         * 
+         *
          * @param node
          *            {@link TaxonomyNode}
          * @return {@link Classification} on success, else null

@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.views.earnings;
 
 import java.time.LocalDate;
 import java.util.EnumSet;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -27,6 +28,12 @@ import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.views.earnings.EarningsViewModel.Mode;
+import name.abuchen.portfolio.ui.views.panes.HistoricalPricesPane;
+import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
+import name.abuchen.portfolio.ui.views.panes.SecurityEventsPane;
+import name.abuchen.portfolio.ui.views.panes.SecurityPriceChartPane;
+import name.abuchen.portfolio.ui.views.panes.TradesPane;
+import name.abuchen.portfolio.ui.views.panes.TransactionsPane;
 import name.abuchen.portfolio.util.TextUtil;
 
 public class EarningsView extends AbstractFinanceView
@@ -55,7 +62,7 @@ public class EarningsView extends AbstractFinanceView
     public void setupModel()
     {
         CurrencyConverterImpl converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
-        model = new EarningsViewModel(preferences, converter, client);
+        model = new EarningsViewModel(this, preferences, converter, client);
 
         int year = preferences.getInt(KEY_YEAR);
         LocalDate now = LocalDate.now();
@@ -210,5 +217,16 @@ public class EarningsView extends AbstractFinanceView
         item.setControl(control);
         item.setData(tab);
         item.setImage(image.image());
+    }
+
+    @Override
+    protected void addPanePages(List<InformationPanePage> pages)
+    {
+        super.addPanePages(pages);
+        pages.add(make(SecurityPriceChartPane.class));
+        pages.add(make(HistoricalPricesPane.class));
+        pages.add(make(TransactionsPane.class));
+        pages.add(make(TradesPane.class));
+        pages.add(make(SecurityEventsPane.class));
     }
 }

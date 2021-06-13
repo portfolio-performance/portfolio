@@ -1,0 +1,28 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+DADAT-Bank KONTOAUSZUG
+BH Schelhammer & Schattera AG vom 16.12.2019
+Alter Saldo per 04.12.2019 200,00
+Summe der Gutschriften 0,00
+Online Summe der Lastschriften 199,97-
+BH Schelhammer, PF 1000, 5021 Salzburg
+Neuer Saldo zu Ihren Gunsten
+Max Musterman EUR 0,03
+Straße 10/11
+PLZ Ort
+Konto-Nr.: 00070000000 Bankleitzahl: 19190
+Empfängerhinweis: 
+Datum Buchungstext Wert Betrag
+16.12 Kauf aus Dauerauftrag            Depot    7800000000/20191216-45514943 18.12 99,68-
+ISIN LU0378449770 COMST.-NASDAQ-100 U.ETF I               1,22000 STK
+Kurs                     80,340000  KURSWERT               -98,01 EUR
+DADAT Handelsspesen      -1,67 EUR
+16.12 Kauf aus Dauerauftrag            Depot    7800000000/20191216-45589045 18.12 100,29-
+ISIN LU0392494562 COMS.-MSCI WORL.T.U.ETF I               1,68000 STK
+Kurs                     58,700000  KURSWERT               -98,62 EUR
+DADAT Handelsspesen      -1,67 EUR
+Neuer Saldo zu Ihren Gunsten 0,03
+AT49 1919 0000 0000 0000 BSSWATWW 01 0002 1/1
+IBAN BIC Filiale Auszug Blatt/Gesamt
+R0042 06877 Doknr.: EK00-045-0350003224

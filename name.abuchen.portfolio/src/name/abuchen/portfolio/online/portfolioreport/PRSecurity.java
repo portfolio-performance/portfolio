@@ -1,6 +1,13 @@
 package name.abuchen.portfolio.online.portfolioreport;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import name.abuchen.portfolio.model.SecurityEvent;
+import name.abuchen.portfolio.model.SecurityProperty;
 
 public class PRSecurity
 {
@@ -14,6 +21,14 @@ public class PRSecurity
     private String note;
     private String securityUuid;
     private Instant updatedAt;
+    private List<PRSecurityProperty> properties;
+    private List<PRSecurityEvent> events;
+
+    public String calendar;
+    public String feed;
+    public String feedUrl;
+    public String latestFeed;
+    public String latestFeedUrl;
 
     public String getUuid()
     {
@@ -118,6 +133,26 @@ public class PRSecurity
                             "([0-9a-f]{8})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]+)", "$1-$2-$3-$4-$5");
         else
             this.securityUuid = null;
+    }
+
+    public void setProperties(Stream<SecurityProperty> properties)
+    {
+        this.properties = new ArrayList<PRSecurityProperty>();
+
+        for (SecurityProperty p : properties.collect(Collectors.toList()))
+        {
+            this.properties.add(new PRSecurityProperty(p));
+        }
+    }
+
+    public void setEvents(List<SecurityEvent> events)
+    {
+        this.events = new ArrayList<>();
+
+        for (SecurityEvent event : events)
+        {
+            this.events.add(new PRSecurityEvent(event));
+        }
     }
 
 }

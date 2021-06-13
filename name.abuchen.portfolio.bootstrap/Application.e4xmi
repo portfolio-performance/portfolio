@@ -70,7 +70,12 @@
           <children xsi:type="menu:HandledMenuItem" xmi:id="_C6CQwJkBEemdcMPaSHoNPw" elementId="name.abuchen.portfolio.ui.menu.view.start-with-current" label="Start with current view" type="Check" command="_kXGdcJkBEemdcMPaSHoNPw"/>
           <children xsi:type="menu:HandledMenuItem" xmi:id="_we1ZYJkDEemdcMPaSHoNPw" elementId="name.abuchen.portfolio.ui.menu.view.open-with-last-view" type="Check" command="_ttUJcJkCEemdcMPaSHoNPw"/>
           <children xsi:type="menu:MenuSeparator" xmi:id="_vnfI8Jl3EemdcMPaSHoNPw" elementId="name.abuchen.portfolio.bootstrap.menuseparator.5"/>
-          <children xsi:type="menu:HandledMenuItem" xmi:id="_wEHakJl3EemdcMPaSHoNPw" elementId="name.abuchen.portfolio.ui.menu.view.show-hide-sidebar" mnemonics="M1+K" command="_kGDGEJl3EemdcMPaSHoNPw"/>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_wEHakJl3EemdcMPaSHoNPw" elementId="name.abuchen.portfolio.ui.menu.view.show-hide-sidebar" mnemonics="M1+K" command="_kGDGEJl3EemdcMPaSHoNPw">
+            <parameters xmi:id="_lVQksKpPEeuHB9RTOqgi4A" elementId="name.abuchen.portfolio.ui.parameter.1" name="name.abuchen.portfolio.ui.param.tag" value="sidebar"/>
+          </children>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_pM-dIKpPEeuHB9RTOqgi4A" elementId="name.abuchen.portfolio.ui.menu.view.show-hide-sidebar" mnemonics="M1+L" command="_kGDGEJl3EemdcMPaSHoNPw">
+            <parameters xmi:id="_pM-dIapPEeuHB9RTOqgi4A" elementId="name.abuchen.portfolio.ui.parameter.2" name="name.abuchen.portfolio.ui.param.tag" value="informationpane"/>
+          </children>
         </children>
         <children xsi:type="menu:MenuSeparator" xmi:id="_ablPgJkBEemdcMPaSHoNPw" elementId="name.abuchen.portfolio.bootstrap.menuseparator.4"/>
         <children xsi:type="menu:DynamicMenuContribution" xmi:id="_3P_sYH0xEemaIIhNHihfSA" elementId="name.abuchen.portfolio.bootstrap.dynamicmenucontribution.2" label="%menu.view.label" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.ViewNavigationMenuContribution"/>
@@ -183,7 +188,12 @@
     <bindings xmi:id="_jcQwwLEEEeefXq-wtldCQQ" elementId="" keySequence="M1+I C" command="_GgTyQBhXEeOR1rNFCzC82A"/>
     <bindings xmi:id="_HdGacBk_EeiQOJdQgYCbNA" elementId="" keySequence="M1+B" command="_3ylCUBk-EeiQOJdQgYCbNA"/>
     <bindings xmi:id="_3vDC0IUnEemwCoP93IFEYw" elementId="" keySequence="M1+G" command="_xMacQIUnEemwCoP93IFEYw"/>
-    <bindings xmi:id="_3fTasJowEemdcMPaSHoNPw" elementId="" keySequence="M1+K" command="_kGDGEJl3EemdcMPaSHoNPw"/>
+    <bindings xmi:id="_3fTasJowEemdcMPaSHoNPw" elementId="" keySequence="M1+K" command="_kGDGEJl3EemdcMPaSHoNPw">
+      <parameters xmi:id="_Jue18KpPEeuHB9RTOqgi4A" elementId="name.abuchen.portfolio.ui.parameter.2" name="name.abuchen.portfolio.ui.param.tag" value="sidebar"/>
+    </bindings>
+    <bindings xmi:id="_Py2zMKpPEeuHB9RTOqgi4A" elementId="" keySequence="M1+L" command="_kGDGEJl3EemdcMPaSHoNPw">
+      <parameters xmi:id="_Py2zMapPEeuHB9RTOqgi4A" elementId="name.abuchen.portfolio.ui.parameter.2" name="name.abuchen.portfolio.ui.param.tag" value="informationpane"/>
+    </bindings>
     <bindings xmi:id="_OEzOoKHiEeq-w_-gdNqxzA" elementId="" keySequence="M1+M2+S" command="_lcgCQBfWEeOders_POVQHQ"/>
     <bindings xmi:id="_oqXi0DFPEeuGXeKVI3KJtQ" elementId="name.abuchen.portfolio.bootstrap.keybinding.0" keySequence="M1+A" command="_gxx18DFPEeuGXeKVI3KJtQ"/>
   </bindingTables>
@@ -244,7 +254,9 @@
   <commands xmi:id="_xMacQIUnEemwCoP93IFEYw" elementId="name.abuchen.portfolio.ui.command.openCommandPalettePopup" commandName="openCommandPalettePopup"/>
   <commands xmi:id="_kXGdcJkBEemdcMPaSHoNPw" elementId="name.abuchen.portfolio.ui.command.setCurrentViewAsInitialView" commandName="setCurrentViewAsDefaultView"/>
   <commands xmi:id="_ttUJcJkCEemdcMPaSHoNPw" elementId="name.abuchen.portfolio.ui.command.openWithLastView" commandName="%command.openWithLastView.name"/>
-  <commands xmi:id="_kGDGEJl3EemdcMPaSHoNPw" elementId="name.abuchen.portfolio.ui.command.showHideSidebar" commandName="showHideSidebar"/>
+  <commands xmi:id="_kGDGEJl3EemdcMPaSHoNPw" elementId="name.abuchen.portfolio.ui.command.showHideSidebar" commandName="showHideSidebar">
+    <parameters xmi:id="_Ge7JsKpPEeuHB9RTOqgi4A" elementId="name.abuchen.portfolio.ui.param.tag" name="tag"/>
+  </commands>
   <commands xmi:id="_PZoy8BM9EeqsXLK6ns2Lug" elementId="name.abuchen.portfolio.ui.command.saveErrorLog" commandName="saveErrorLog"/>
   <commands xmi:id="_ZWCyUL3OEeqoTtTaIzseTQ" elementId="name.abuchen.portfolio.ui.command.uploadToDivvyDiary" commandName="uploadToDivvyDiary"/>
   <commands xmi:id="_gxx18DFPEeuGXeKVI3KJtQ" elementId="name.abuchen.portfolio.ui.command.selectAll" commandName="selectAll"/>
