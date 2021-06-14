@@ -116,6 +116,13 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
             }
             else
             {
+                // on Linux (and Linux only) the toolbar items are indented -
+                // typically 4 pixels on the left and 3 pixels on the right. We
+                // determine this by looking at the first item
+
+                if (index == 0 && itemBounds.x > 0)
+                    width += (2 * itemBounds.x) - 1;
+
                 width += itemBounds.width;
             }
         }
