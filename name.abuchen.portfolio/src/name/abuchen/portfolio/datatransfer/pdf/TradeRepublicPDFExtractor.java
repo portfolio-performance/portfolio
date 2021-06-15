@@ -312,6 +312,23 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 })
 
+                /***
+                 * There might be two lines with "GESAMT"
+                 * - one for gross
+                 * - one for the net value 
+                 * we pick the second
+                 */
+
+                // GESAMT 3,83 EUR
+                // GESAMT 2,83 EUR
+                .section("amount", "currency").optional()
+                .match("^GESAMT [.,\\d]+ [\\w]{3}$")
+                .match("^GESAMT (?<amount>[.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                })
+
                 // GESAMT 5,63 USD
                 // Zwischensumme 1,102 EUR/USD 5,11 EUR
                 // GESAMT 4,18 EUR
