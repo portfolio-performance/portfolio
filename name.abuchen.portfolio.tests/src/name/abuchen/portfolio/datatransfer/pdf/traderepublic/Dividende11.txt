@@ -1,0 +1,30 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KASTANIENALLEE 32  10435 BERLIN
+MAX MUSTERMANN SEITE 1 von 1
+MUSTERSTASSE Str. 88 DATUM 18.12.2020
+D 88888 MUSTERSTADT DEPOT 888888888
+DIVIDENDE
+ÜBERSICHT
+Dividende mit dem Ex-Tag 01.04.2020.
+POSITION ANZAHL ERTRÄGNIS BETRAG
+UPM Kymmene Corp. 50 Stk. 1,300 EUR 65,00 EUR
+Registered Shares o.N.
+ISIN: FI0009005987
+GESAMT 65,00 EUR
+ABRECHNUNG
+POSITION BETRAG
+Quellensteuer -19,50 EUR
+GESAMT 45,50 EUR
+BUCHUNG
+VERRECHNUNGSKONTO VALUTA BETRAG
+DE000000000000000000000 16.04.2020 45,50 EUR
+UPM Kymmene Corp. Registered Shares o.N. in Girosammelverwahrung.
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie 
+Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Düsseldorf Geschäftsführer
+Kastanienallee 32 service@traderepublic.com AG Düsseldorf HRB 85864 Ingo Hillen
+10435 Berlin USt-ID DE307510626 Karsten Müller
+ABRE / 2020-04-15 / 89663937 / 3c5f-deb9
