@@ -36,9 +36,10 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
         addBuyTransactionOld();
         addBuySellTransaction();
         addDividendeTransaction();
-        addDeposit();
+        addDepositAccountTransaction();
         addBuySellAccountTransaction();
-        addFeePayment();
+        addFeePaymentAccountTransaction();
+        addRemoveAccountTransaction();
     }
 
     @Override
@@ -236,9 +237,9 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
     }
 
     @SuppressWarnings("nls")
-    private void addDeposit()
+    private void addDepositAccountTransaction()
     {
-        DocumentType type = new DocumentType("Sutor fairriester 2.0 | Umsätze");
+        DocumentType type = new DocumentType("(Sutor fairriester 2.0|Ums.tze) .*");
         this.addDocumentTyp(type);
 
         Block block = new Block(".*([^staatlichen] Zulage|automatischer Lastschrifteinzug|Einzahlung).*");
@@ -282,10 +283,10 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private void addBuySellAccountTransaction()
     {
-        DocumentType type = new DocumentType("Sutor fairriester 2.0 | Umsätze");
+        DocumentType type = new DocumentType("(Sutor fairriester 2.0|Ums.tze) .*");
         this.addDocumentTyp(type);
 
-        Block block = new Block(".* (Kauf|Verkauf|Gebührentilgung) .*");
+        Block block = new Block(".* (Kauf|Verkauf|Geb.hrentilgung) .*");
         type.addBlock(block);
         block.set(new Transaction<BuySellEntry>()
 
@@ -295,35 +296,32 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
                             return entry;
                         })
 
-                        .section("name").match("^.* (Kauf|Verkauf|Gebührentilgung) (?<name>[^,]*) .*")
+                        .section("name").match("^.* (Kauf"
+                                        + "|Verkauf"
+                                        + "|Geb.hrentilgung)"
+                                        + " (?<name>[^,]*) .*")
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         .section("date").match(REGEX_DATE).assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
-                        .oneOf( //
-                                // check for old format, if amount is negative,
-                                // we buy
+                        /***
+                         * Sutor always provides the amount in EUR,
+                         * column "Betrag in EUR"
+                         */
+
+                        .oneOf( // check for old format, if amount is negative,
+                                        // we BUY
                                         section -> section.attributes("amount", "shares", "sign") //
                                                         .match(REGEX_AMOUNT_AND_SHARES).assign((t, v) -> {
                                                             t.setAmount(asAmount(v.get("amount")));
-                                                            // Sutor always
-                                                            // provides the
-                                                            // amount in EUR,
-                                                            // column
-                                                            // "Betrag in EUR"
                                                             t.setCurrencyCode(CurrencyUnit.EUR);
                                                             t.setShares(asShares(v.get("shares")));
                                                         }),
                                         // check for old format - if amount is
-                                        // positive (no sign), we sell
+                                        // positive (no sign), we SELL
                                         section -> section.attributes("amount", "shares") //
                                                         .match(REGEX_AMOUNT_AND_SHARES).assign((t, v) -> {
                                                             t.setAmount(asAmount(v.get("amount")));
-                                                            // Sutor always
-                                                            // provides the
-                                                            // amount in EUR,
-                                                            // column
-                                                            // "Betrag in EUR"
                                                             t.setCurrencyCode(CurrencyUnit.EUR);
                                                             t.setShares(asShares(v.get("shares")));
                                                             t.setType(PortfolioTransaction.Type.SELL);
@@ -332,11 +330,6 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
                                         section -> section.attributes("amount", "shares", "sign") //
                                                         .match(REGEX_AMOUNT_AND_SHARES_NEW_FORMAT).assign((t, v) -> {
                                                             t.setAmount(asAmount(v.get("amount")));
-                                                            // Sutor always
-                                                            // provides the
-                                                            // amount in EUR,
-                                                            // column
-                                                            // "Betrag in EUR"
                                                             t.setCurrencyCode(CurrencyUnit.EUR);
                                                             t.setShares(asShares(v.get("shares")));
                                                         }),
@@ -344,11 +337,6 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
                                         section -> section.attributes("amount", "shares") //
                                                         .match(REGEX_AMOUNT_AND_SHARES_NEW_FORMAT).assign((t, v) -> {
                                                             t.setAmount(asAmount(v.get("amount")));
-                                                            // Sutor always
-                                                            // provides the
-                                                            // amount in EUR,
-                                                            // column
-                                                            // "Betrag in EUR"
                                                             t.setCurrencyCode(CurrencyUnit.EUR);
                                                             t.setShares(asShares(v.get("shares")));
                                                             t.setType(PortfolioTransaction.Type.SELL);
@@ -358,13 +346,66 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
     }
 
     @SuppressWarnings("nls")
-    private void addFeePayment()
+    private void addRemoveAccountTransaction()
     {
-        DocumentType type = new DocumentType("Sutor fairriester 2.0 | Umsätze");
+        DocumentType type = new DocumentType("(Sutor fairriester 2.0|Ums.tze) .*");
+        this.addDocumentTyp(type);
+
+        Block block = new Block(".* (.bertrag) .*");
+        type.addBlock(block);
+        block.set(new Transaction<BuySellEntry>()
+
+                        .subject(() -> {
+                            BuySellEntry entry = new BuySellEntry();
+                            entry.getPortfolioTransaction().setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
+                            entry.getAccountTransaction().setType(AccountTransaction.Type.TRANSFER_IN);
+                            return entry;
+                        })
+
+                        .section("name").match("^.* (.bertrag) (?<name>[^,]*) .*")
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                        .section("date").match(REGEX_DATE).assign((t, v) -> t.setDate(asDate(v.get("date"))))
+
+                        /***
+                         * Sutor always provides the amount in EUR,
+                         * column "Betrag in EUR"
+                         */
+
+                        .oneOf(
+                                        // check for DELIVERY_INBOUND + TRANSFER_IN with new format
+                                        section -> section.attributes("amount", "shares", "sign") //
+                                                        .match(REGEX_AMOUNT_AND_SHARES_NEW_FORMAT).assign((t, v) -> {
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(CurrencyUnit.EUR);
+                                                            t.setShares(asShares(v.get("shares")));
+                                                        }),
+                                        // check for DELIVERY_OUTBOUND + TRANSFER_OUT with new format
+                                        section -> section.attributes("amount", "shares") //
+                                                        .match(REGEX_AMOUNT_AND_SHARES_NEW_FORMAT).assign((t, v) -> {
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(CurrencyUnit.EUR);
+                                                            t.setShares(asShares(v.get("shares")));
+                                                            t.getPortfolioTransaction().setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
+                                                            t.getAccountTransaction().setType(AccountTransaction.Type.TRANSFER_OUT);
+                                                        }))
+
+                                .wrap(BuySellEntryItem::new));
+    }
+
+    @SuppressWarnings("nls")
+    private void addFeePaymentAccountTransaction()
+    {
+        DocumentType type = new DocumentType("(Sutor fairriester 2.0|Ums.tze) .*");
         this.addDocumentTyp(type);
 
         Block block = new Block(
-                        ".* (Verwaltungsgebühr/Vertriebskosten|anteil.Verwaltgebühr/Vertriebskosten|Kontoführungs-u.Depotgebühren).*");
+                        ".* (Verwaltungsgebühr/Vertriebskosten"
+                        + "|anteil.Verwaltgeb.hr/Vertriebskosten"
+                        + "|Kontof.hrungs-u.Depotgeb.hren"
+                        + "|Geb.hr anteilige Depot- u. Verwaltgeb.hr"
+                        + "|Geb.hr anteilige Kontof.hrungsgebühr"
+                        + "|Umbuchung Geld).*");
         type.addBlock(block);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
@@ -377,25 +418,20 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
         block.set(pdfTransaction);
         pdfTransaction.section("date").match(REGEX_DATE).assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
+                        /***
+                         * Sutor always provides the amount in EUR,
+                         * column "Betrag in EUR"
+                         */
+
                         .oneOf( // check for old and new format
                                         section -> section.attributes("amount") //
                                                         .match(REGEX_AMOUNT).assign((t, v) -> {
                                                             t.setAmount(asAmount(v.get("amount")));
-                                                            // Sutor always
-                                                            // provides the
-                                                            // amount in EUR,
-                                                            // column
-                                                            // "Betrag in EUR"
                                                             t.setCurrencyCode(CurrencyUnit.EUR);
                                                         }),
                                         section -> section.attributes("amount") //
                                                         .match(REGEX_AMOUNT_NEW_FORMAT).assign((t, v) -> {
                                                             t.setAmount(asAmount(v.get("amount")));
-                                                            // Sutor always
-                                                            // provides the
-                                                            // amount in EUR,
-                                                            // column
-                                                            // "Betrag in EUR"
                                                             t.setCurrencyCode(CurrencyUnit.EUR);
                                                         }))
                         .wrap(TransactionItem::new);
