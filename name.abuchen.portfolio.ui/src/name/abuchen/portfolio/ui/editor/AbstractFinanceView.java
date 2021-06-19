@@ -104,6 +104,11 @@ public abstract class AbstractFinanceView
     {
     }
 
+    /** called after the views has been fully created */
+    protected void notifyViewCreationCompleted()
+    {
+    }
+
     public PortfolioPart getPart()
     {
         return part;
@@ -166,6 +171,8 @@ public abstract class AbstractFinanceView
                         ((SashLayoutData) pane.getLayoutData()).getSize()));
 
         top.addDisposeListener(e -> dispose());
+
+        notifyViewCreationCompleted();
     }
 
     protected abstract Control createBody(Composite parent);

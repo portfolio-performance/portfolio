@@ -17,6 +17,7 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
@@ -93,6 +94,16 @@ public class PortfolioListView extends AbstractFinanceView implements Modificati
         setInput();
 
         portfolios.setSelection(selection);
+    }
+
+    @Override
+    protected void notifyViewCreationCompleted()
+    {
+        setInput();
+        portfolios.refresh();
+
+        if (portfolios.getTable().getItemCount() > 0)
+            portfolios.setSelection(new StructuredSelection(portfolios.getElementAt(0)), true);
     }
 
     @Override
@@ -252,7 +263,6 @@ public class PortfolioListView extends AbstractFinanceView implements Modificati
         portfolios.getTable().setLinesVisible(true);
 
         portfolios.setContentProvider(ArrayContentProvider.getInstance());
-        setInput();
 
         portfolios.addSelectionChangedListener(event -> {
             Portfolio portfolio = (Portfolio) ((IStructuredSelection) event.getSelection()).getFirstElement();
