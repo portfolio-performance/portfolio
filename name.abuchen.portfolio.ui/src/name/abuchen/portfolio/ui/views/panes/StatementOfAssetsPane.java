@@ -21,6 +21,7 @@ import name.abuchen.portfolio.snapshot.filter.PortfolioClientFilter;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
+import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
@@ -50,7 +51,12 @@ public class StatementOfAssetsPane implements InformationPanePage
     public Control createViewControl(Composite parent)
     {
         viewer = view.make(StatementOfAssetsViewer.class);
-        return viewer.createControl(parent);
+
+        Control control = viewer.createControl(parent);
+
+        new ContextMenu(viewer.getTableViewer().getControl(), manager -> viewer.hookMenuListener(manager, view)).hook();
+
+        return control;
     }
 
     @Override
