@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.editor;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.ContributionItem;
 import org.eclipse.jface.action.IMenuListener;
@@ -131,23 +132,36 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
         {
             if (chevron.isVisible())
                 chevron.setVisible(false);
+
+            // all items are visible - give the tool bar the full space, the
+            // alignment is up to the tool bar itself
+            toolBar.setBounds(0, 0, availableBounds.width, availableBounds.height);
         }
         else
         {
-            int x = alignment == SWT.LEFT ? width : availableBounds.width - chevronSize.x;
+            if (Platform.WS_GTK.equals(Platform.getWS()))
+            {
+                // due to the padding issues on Linux, make the tool bar always
+                // as big as possible
+                chevron.setBounds(availableBounds.width - chevronSize.x, (availableBounds.height - chevronSize.y) / 2,
+                                chevronSize.x, chevronSize.y);
 
-            chevron.setBounds(x, (availableBounds.height - chevronSize.y) / 2, chevronSize.x, chevronSize.y);
+                toolBar.setBounds(0, 0, availableBounds.width - chevronSize.x, availableBounds.height);
+            }
+            else
+            {
+                int x = alignment == SWT.LEFT ? width : availableBounds.width - chevronSize.x;
+                chevron.setBounds(x, (availableBounds.height - chevronSize.y) / 2, chevronSize.x, chevronSize.y);
+
+                if (alignment == SWT.LEFT)
+                    toolBar.setBounds(0, 0, width, availableBounds.height);
+                else
+                    toolBar.setBounds(availableBounds.width - chevronSize.x - width, 0, width, availableBounds.height);
+            }
 
             if (!chevron.isVisible())
                 chevron.setVisible(true);
-
-            availableBounds.width -= chevronSize.x;
         }
-
-        if (alignment == SWT.LEFT)
-            toolBar.setBounds(0, 0, width, availableBounds.height);
-        else
-            toolBar.setBounds(availableBounds.width - width, 0, width, availableBounds.height);
     }
 
     private ToolBar getToolBar(Composite composite)
