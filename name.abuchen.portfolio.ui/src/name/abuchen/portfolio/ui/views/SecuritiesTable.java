@@ -43,8 +43,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 
-import com.google.common.collect.Streams;
-
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -932,7 +930,7 @@ public final class SecuritiesTable implements ModificationListener
 
         // if any retired security in selection, add "unretire/activate all"
         // option
-        if (Streams.stream((Iterable<?>) selection).anyMatch(s -> ((Security) s).isRetired()))
+        if (selection.toList().stream().anyMatch(s -> ((Security) s).isRetired()))
         {
             manager.add(new ConfirmActionWithSelection(Messages.SecurityMenuSetSingleSecurityActive,
                             Messages.SecurityMenuSetMultipleSecurityActive,
@@ -944,7 +942,7 @@ public final class SecuritiesTable implements ModificationListener
 
         // if any active (non-retired) security in selection, add "retire all"
         // option
-        if (Streams.stream((Iterable<?>) selection).anyMatch(s -> !((Security) s).isRetired()))
+        if (selection.toList().stream().anyMatch(s -> !((Security) s).isRetired()))
         {
             manager.add(new ConfirmActionWithSelection(Messages.SecurityMenuSetSingleSecurityInactive,
                             Messages.SecurityMenuSetMultipleSecurityInactive,
