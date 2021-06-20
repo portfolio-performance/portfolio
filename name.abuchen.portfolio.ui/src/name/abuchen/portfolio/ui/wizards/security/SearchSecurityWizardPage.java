@@ -102,10 +102,6 @@ public class SearchSecurityWizardPage extends WizardPage
         column.setText(Messages.ColumnSecurityExchange);
         column.setWidth(80);
 
-        column = new TableColumn(resultTable.getTable(), SWT.NONE);
-        column.setText(Messages.EditWizardAttributesTitle);
-        column.setWidth(250);
-
         resultTable.getTable().setHeaderVisible(true);
         resultTable.getTable().setLinesVisible(true);
 
@@ -227,8 +223,6 @@ public class SearchSecurityWizardPage extends WizardPage
                     return item.getType();
                 case 5:
                     return item.getExchange();
-                case 6:
-                    return item.getExtraAttributes();
                 default:
                     throw new IllegalArgumentException(String.valueOf(columnIndex));
             }
