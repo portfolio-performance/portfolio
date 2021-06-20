@@ -2,8 +2,13 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -27,18 +32,20 @@ public class DABPDFExtractor extends AbstractPDFExtractor
         addBuySellTransaction();
         addDividendTransaction();
         addTransferOutInTransaction();
+        addDepositRemovalAccountTransaction();
+        addFeePaymentAccountTransaction();
     }
 
     @Override
     public String getPDFAuthor()
     {
-        return "Computershare Communication Services GmbH"; //$NON-NLS-1$
+        return ""; //$NON-NLS-1$
     }
 
     @Override
     public String getLabel()
     {
-        return "DAB Bank"; //$NON-NLS-1$
+        return "DAB Bank / BNP Paribas S.A."; //$NON-NLS-1$
     }
 
     @SuppressWarnings("nls")
@@ -560,6 +567,105 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                         return new TransactionItem(t);
                     return null;
                 }));
+    }
+
+    @SuppressWarnings("nls")
+    private void addDepositRemovalAccountTransaction()
+    {
+        final DocumentType type = new DocumentType("Konto.bersicht", (context, lines) -> {
+            Pattern pCurrency = Pattern.compile("^Verrechnungskonto .* nach Buchungsdatum (?<currency>[\\w]{3})$");
+
+            for (String line : lines)
+            {
+                Matcher m = pCurrency.matcher(line);
+                if (m.matches())
+                {
+                    context.put("currency", m.group(1));
+                }
+            }
+        });
+        this.addDocumentTyp(type);
+
+        Block block = new Block("^(SEPA-Gutschrift|SEPA-Lastschrift) [^Lastschrift].*$");
+        type.addBlock(block);
+        block.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction transaction = new AccountTransaction();
+                            transaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return transaction;
+                        })
+
+                        // Is type --> "SEPA-Lastschrift" change from DEPOSIT to REMOVAL
+                        .section("type").optional()
+                        .match("^(?<type>SEPA-Gutschrift|SEPA-Lastschrift) [^Lastschrift].*$")
+                        .assign((t, v) -> {
+                            if (v.get("type").equals("SEPA-Lastschrift"))
+                            {
+                                t.setType(AccountTransaction.Type.REMOVAL);
+                            }
+                        })
+
+                        // SEPA-Lastschrift Max Mustermann 15.07.19 300,00
+                        // SEPA-Gutschrift Max Mustermann 05.07.19 15.000,00
+                        .section("date", "amount")
+                        .match("^(SEPA-Gutschrift|SEPA-Lastschrift) [^Lastschrift].* (?<date>[\\d]{2}.[\\d]{2}.[\\d]{2}) (?<amount>[.,\\d]+)$")
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+
+                            // Formate the date from 10.07.19 to 10.07.2019
+                            v.put("date", DateTimeFormatter.ofPattern("dd.MM.yyyy").format(LocalDate.parse(v.get("date"), DateTimeFormatter.ofPattern("dd.MM.yy", Locale.GERMANY))));
+                            t.setDateTime(asDate(v.get("date")));
+
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                        })
+
+                        .wrap(TransactionItem::new));
+    }
+
+    @SuppressWarnings("nls")
+    private void addFeePaymentAccountTransaction()
+    {
+        final DocumentType type = new DocumentType("Konto.bersicht", (context, lines) -> {
+            Pattern pCurrency = Pattern.compile("^Verrechnungskonto .* nach Buchungsdatum (?<currency>[\\w]{3})$");
+
+            for (String line : lines)
+            {
+                Matcher m = pCurrency.matcher(line);
+                if (m.matches())
+                {
+                    context.put("currency", m.group(1));
+                }
+            }
+        });
+        this.addDocumentTyp(type);
+
+        Block block = new Block("^(SEPA-Lastschrift Lastschrift Managementgeb.hr) .*$");
+        type.addBlock(block);
+        block.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction transaction = new AccountTransaction();
+                            transaction.setType(AccountTransaction.Type.FEES);
+                            return transaction;
+                        })
+
+                        // SEPA-Lastschrift Lastschrift Managementgebühr 29.06.20 53,02
+                        .section("date", "amount")
+                        .match("^SEPA-Lastschrift Lastschrift Managementgeb.hr (?<date>[\\d]{2}.[\\d]{2}.[\\d]{2}) (?<amount>[.,\\d]+)$")
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+
+                            // Formate the date from 29.06.20 to 29.06.2020
+                            v.put("date", DateTimeFormatter.ofPattern("dd.MM.yyyy").format(LocalDate.parse(v.get("date"), DateTimeFormatter.ofPattern("dd.MM.yy", Locale.GERMANY))));
+                            t.setDateTime(asDate(v.get("date")));
+
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                        })
+
+                        .wrap(TransactionItem::new));
     }
 
     @SuppressWarnings("nls")
