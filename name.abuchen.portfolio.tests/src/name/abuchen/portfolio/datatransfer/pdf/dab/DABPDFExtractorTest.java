@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
 
@@ -1441,5 +1442,129 @@ public class DABPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(entry.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+    }
+
+    @Test
+    public void testKontoumsaetze01()
+    {
+        DABPDFExtractor extractor = new DABPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoumsaetze01.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(6));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+
+        // check account transactions
+        AccountTransaction t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+                        .collect(Collectors.toList()).get(0).getSubject();
+
+        assertThat(t.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(15000.00))));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2019-07-05T00:00")));
+
+        // check 2nd account transactions
+        t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).collect(Collectors.toList())
+                        .get(1).getSubject();
+
+        assertThat(t.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(300))));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2019-07-15T00:00")));
+
+        // check 3rd account transactions
+        t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).collect(Collectors.toList())
+                        .get(2).getSubject();
+
+        assertThat(t.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5000.00))));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2019-07-17T00:00")));
+
+        // check 4th account transactions
+        t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).collect(Collectors.toList())
+                        .get(3).getSubject();
+
+        assertThat(t.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1900.00))));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2019-07-17T00:00")));
+
+        // check 5th account transactions
+        t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).collect(Collectors.toList())
+                        .get(4).getSubject();
+
+        assertThat(t.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(300.00))));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2019-08-13T00:00")));
+
+        // check 6th account transactions
+        t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).collect(Collectors.toList())
+                        .get(5).getSubject();
+
+        assertThat(t.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(300.00))));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2019-09-13T00:00")));
+    }
+
+    @Test
+    public void testKontoumsaetze02()
+    {
+        DABPDFExtractor extractor = new DABPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoumsaetze02.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(5));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+
+        // check account transactions
+        AccountTransaction t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+                        .collect(Collectors.toList()).get(0).getSubject();
+
+        assertThat(t.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(400.00))));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-01-13T00:00")));
+
+        // check 2nd account transactions
+        t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).collect(Collectors.toList())
+                        .get(1).getSubject();
+
+        assertThat(t.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(400))));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-02-18T00:00")));
+
+        // check 3rd account transactions
+        t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).collect(Collectors.toList())
+                        .get(2).getSubject();
+
+        assertThat(t.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(500.00))));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-03-15T00:00")));
+
+        // check 4rd account transactions
+        t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).collect(Collectors.toList())
+                        .get(3).getSubject();
+
+        assertThat(t.getType(), is(AccountTransaction.Type.FEES));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(53.02))));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2020-06-29T00:00")));
+
+        // check 5rd account transactions
+        t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).collect(Collectors.toList())
+                        .get(4).getSubject();
+
+        assertThat(t.getType(), is(AccountTransaction.Type.FEES));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(23.05))));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2020-06-29T00:00")));
     }
 }
