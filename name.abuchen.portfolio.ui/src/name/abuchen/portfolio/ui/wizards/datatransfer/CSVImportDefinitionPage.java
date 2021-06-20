@@ -146,8 +146,8 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
         this.configManager = configManager;
         this.onlySecurityPrices = onlySecurityPrices;
 
-        importer.setExtractor(
-                        onlySecurityPrices ? importer.getSecurityPriceExtractor() : importer.getExtractors().get(0));
+        if (onlySecurityPrices)
+            importer.setExtractor(importer.getSecurityPriceExtractor());
 
         this.context = new DataBindingContext();
     }

@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.views;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
@@ -11,24 +12,30 @@ import javax.inject.Named;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ControlContribution;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
+import org.eclipse.jface.window.Window;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Text;
 
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Exchange;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Watchlist;
@@ -37,6 +44,7 @@ import name.abuchen.portfolio.online.impl.EurostatHICPQuoteFeed;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.dialogs.ListSelectionDialog;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.selection.SelectionService;
@@ -50,6 +58,7 @@ import name.abuchen.portfolio.ui.views.panes.SecurityEventsPane;
 import name.abuchen.portfolio.ui.views.panes.SecurityPriceChartPane;
 import name.abuchen.portfolio.ui.views.panes.TradesPane;
 import name.abuchen.portfolio.ui.views.panes.TransactionsPane;
+import name.abuchen.portfolio.ui.wizards.datatransfer.CSVImportWizard;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
 import name.abuchen.portfolio.ui.wizards.security.SearchSecurityWizardDialog;
 import name.abuchen.portfolio.util.TradeCalendar;
@@ -68,10 +77,11 @@ public class SecurityListView extends AbstractFinanceView
         public void menuAboutToShow(IMenuManager manager)
         {
             manager.add(new SimpleAction(Messages.SecurityMenuNewSecurity, a -> {
-                Security newSecurity = new Security();
-                newSecurity.setFeed(QuoteFeed.MANUAL);
-                newSecurity.setCurrencyCode(getClient().getBaseCurrency());
-                openEditDialog(newSecurity);
+                SearchSecurityWizardDialog dialog = new SearchSecurityWizardDialog(
+                                Display.getDefault().getActiveShell(), SecurityListView.this,
+                                SecurityListView.this.watchlist, getClient());
+                if (dialog.open() == Window.OK)
+                    openEditDialog(dialog.getSecurity());
             }));
 
             manager.add(new SimpleAction(Messages.SecurityMenuNewExchangeRate, a -> {
@@ -82,46 +92,102 @@ public class SecurityListView extends AbstractFinanceView
                 openEditDialog(newSecurity);
             }));
 
-            MenuManager newHICP = new MenuManager(Messages.SecurityMenuNewHICP);
-            manager.add(newHICP);
+            manager.add(new SimpleAction(Messages.SecurityMenuNewHICP, a -> {
 
-            new EurostatHICPQuoteFeed().getExchanges(new Security(), new ArrayList<>()).stream()
-                            .forEach(region -> newHICP.add(new SimpleAction(region.getName(), a -> {
-                                Security newSecurity = new Security();
-                                newSecurity.setFeed(EurostatHICPQuoteFeed.ID);
-                                newSecurity.setLatestFeed(QuoteFeed.MANUAL);
-                                newSecurity.setCurrencyCode(null);
-                                newSecurity.setTickerSymbol(region.getId());
-                                newSecurity.setName(region.getName() + Messages.LabelSuffix_HICP);
-                                newSecurity.setCalendar(TradeCalendar.EMPTY_CODE);
-                                openEditDialog(newSecurity);
-                            })));
+                LabelProvider labelProvider = LabelProvider.createTextProvider(o -> ((Exchange) o).getName());
+                ListSelectionDialog dialog = new ListSelectionDialog(Display.getDefault().getActiveShell(),
+                                labelProvider);
+
+                dialog.setTitle(Messages.SecurityMenuNewHICP);
+                dialog.setMessage(Messages.SecurityMenuHICPMessage);
+                dialog.setElements(new EurostatHICPQuoteFeed().getExchanges(new Security(), new ArrayList<>()));
+
+                if (dialog.open() == Window.OK)
+                {
+                    Object[] result = dialog.getResult();
+
+                    for (Object object : result)
+                    {
+                        Exchange region = (Exchange) object;
+
+                        Security newSecurity = new Security();
+                        newSecurity.setFeed(EurostatHICPQuoteFeed.ID);
+                        newSecurity.setLatestFeed(QuoteFeed.MANUAL);
+                        newSecurity.setCurrencyCode(null);
+                        newSecurity.setTickerSymbol(region.getId());
+                        newSecurity.setName(region.getName() + Messages.LabelSuffix_HICP);
+                        newSecurity.setCalendar(TradeCalendar.EMPTY_CODE);
+
+                        addNewSecurity(newSecurity);
+                    }
+                }
+
+            }));
 
             manager.add(new Separator());
 
-            manager.add(new SimpleAction(Messages.SecurityMenuSearch4Securities, a -> {
-                SearchSecurityWizardDialog dialog = new SearchSecurityWizardDialog(
-                                Display.getDefault().getActiveShell(), getClient());
-                if (dialog.open() == Dialog.OK)
-                    openEditDialog(dialog.getSecurity());
+            manager.add(new Action(Messages.SecurityMenuImportCSV)
+            {
+                @Override
+                public void run()
+                {
+                    FileDialog fileDialog = new FileDialog(Display.getDefault().getActiveShell(), SWT.OPEN);
+                    fileDialog.setFilterNames(
+                                    new String[] { Messages.CSVImportLabelFileCSV, Messages.CSVImportLabelFileAll });
+                    fileDialog.setFilterExtensions(new String[] { "*.csv", "*.*" }); //$NON-NLS-1$ //$NON-NLS-2$
+                    String fileName = fileDialog.open();
+
+                    if (fileName == null)
+                        return;
+
+                    CSVImportWizard wizard = new CSVImportWizard(getClient(), getPreferenceStore(), new File(fileName));
+                    inject(wizard);
+
+                    // pre-select import of securities
+                    wizard.setExtractor("investment-vehicle"); //$NON-NLS-1$
+
+                    Dialog dialog = new WizardDialog(Display.getDefault().getActiveShell(), wizard);
+
+                    if (dialog.open() != Window.OK)
+                        return;
+
+                    markDirty();
+                    notifyModelUpdated();
+                }
+            });
+
+            manager.add(new Separator());
+
+            manager.add(new SimpleAction(Messages.SecurityMenuEmptyInstrument + "...", a -> { //$NON-NLS-1$
+                Security newSecurity = new Security();
+                newSecurity.setFeed(QuoteFeed.MANUAL);
+                newSecurity.setCurrencyCode(getClient().getBaseCurrency());
+                openEditDialog(newSecurity);
             }));
+
         }
 
         private void openEditDialog(Security newSecurity)
         {
             Dialog dialog = make(EditSecurityDialog.class, newSecurity);
 
-            if (dialog.open() == Dialog.OK)
-            {
-                markDirty();
-                getClient().addSecurity(newSecurity);
+            if (dialog.open() == Window.OK)
+                addNewSecurity(newSecurity);
+        }
 
-                if (watchlist != null)
-                    watchlist.getSecurities().add(newSecurity);
+        private void addNewSecurity(Security newSecurity)
+        {
+            getClient().addSecurity(newSecurity);
 
-                setSecurityTableInput();
-                securities.updateQuotes(newSecurity);
-            }
+            if (watchlist != null)
+                watchlist.getSecurities().add(newSecurity);
+
+            markDirty();
+
+            setSecurityTableInput();
+            securities.getTableViewer().setSelection(new StructuredSelection(newSecurity), true);
+
+            securities.updateQuotes(newSecurity);
         }
     }
 
@@ -223,7 +289,7 @@ public class SecurityListView extends AbstractFinanceView
 
         private Action createAction(String label, Predicate<Security> predicate)
         {
-            Action action = new Action(label, Action.AS_CHECK_BOX)
+            Action action = new Action(label, IAction.AS_CHECK_BOX)
             {
                 @Override
                 public void run()
@@ -291,18 +357,6 @@ public class SecurityListView extends AbstractFinanceView
             updateTitle(getDefaultTitle());
             securities.refresh(true);
         }
-    }
-
-    @Override
-    public void markDirty()
-    {
-        super.markDirty();
-
-        // see issue #448: if the note column is edited, the information area is
-        // not updated accordingly. #markDirty is called by the SecuritiesTable
-        // when any column is edited
-
-        // FIXME
     }
 
     @Inject

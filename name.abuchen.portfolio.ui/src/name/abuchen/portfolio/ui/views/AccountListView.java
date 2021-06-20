@@ -162,6 +162,16 @@ public class AccountListView extends AbstractFinanceView implements Modification
     }
 
     @Override
+    protected void notifyViewCreationCompleted()
+    {
+        resetInput();
+        accounts.refresh();
+
+        if (accounts.getTable().getItemCount() > 0)
+            accounts.setSelection(new StructuredSelection(accounts.getElementAt(0)), true);
+    }
+
+    @Override
     public void onModified(Object element, Object newValue, Object oldValue)
     {
         if (element instanceof AccountTransaction)
@@ -244,8 +254,6 @@ public class AccountListView extends AbstractFinanceView implements Modification
         accounts.getTable().setLinesVisible(true);
 
         accounts.setContentProvider(ArrayContentProvider.getInstance());
-        resetInput();
-        accounts.refresh();
 
         hookContextMenu(accounts.getTable(), this::fillAccountsContextMenu);
 
