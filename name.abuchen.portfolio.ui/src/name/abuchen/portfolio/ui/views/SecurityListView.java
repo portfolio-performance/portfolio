@@ -94,7 +94,15 @@ public class SecurityListView extends AbstractFinanceView
 
             manager.add(new SimpleAction(Messages.SecurityMenuNewHICP, a -> {
 
-                LabelProvider labelProvider = LabelProvider.createTextProvider(o -> ((Exchange) o).getName());
+                LabelProvider labelProvider = new LabelProvider()
+                {
+                    @Override
+                    public String getText(Object element)
+                    {
+                        return ((Exchange) element).getName();
+                    }
+
+                };
                 ListSelectionDialog dialog = new ListSelectionDialog(Display.getDefault().getActiveShell(),
                                 labelProvider);
 
