@@ -119,6 +119,45 @@ public class TaxonomyModelTest
         y1.addAssignment(b2);
     }
 
+    // MIXED_TAXONOMY
+    // @formatter:off
+    // - Root (weight: 100 %)
+    //   - Classification X (50 %)
+    //     - Security A (90 %)
+    //     - Security B (10 %)
+    //   - Classification Y (50 %)
+    //     - Security A (10 %)
+    //     - Security B (90 %)
+    // @formatter:on
+    private static final Taxonomy MIXED_TAXONOMY_B_NOT_USED_FOR_REBALANCING;
+    static
+    {
+        MIXED_TAXONOMY_B_NOT_USED_FOR_REBALANCING = new Taxonomy();
+        Classification root1 = new Classification();
+        MIXED_TAXONOMY_B_NOT_USED_FOR_REBALANCING.setRootNode(root1);
+        root1.setWeight(Classification.ONE_HUNDRED_PERCENT);
+
+        Classification x1 = new Classification();
+        root1.addChild(x1);
+        x1.setWeight(Classification.ONE_HUNDRED_PERCENT / 2);
+
+        Assignment a1 = new Assignment(A, Classification.ONE_HUNDRED_PERCENT * 9 / 10);
+        x1.addAssignment(a1);
+        Assignment b1 = new Assignment(B, Classification.ONE_HUNDRED_PERCENT * 1 / 10);
+        x1.addAssignment(b1);
+
+        Classification y1 = new Classification();
+        root1.addChild(y1);
+        y1.setWeight(Classification.ONE_HUNDRED_PERCENT / 2);
+
+        Assignment a2 = new Assignment(A, Classification.ONE_HUNDRED_PERCENT * 1 / 10);
+        y1.addAssignment(a2);
+        Assignment b2 = new Assignment(B, Classification.ONE_HUNDRED_PERCENT * 9 / 10);
+        y1.addAssignment(b2);
+        
+        MIXED_TAXONOMY_B_NOT_USED_FOR_REBALANCING.setUsedForRebalancing(B, false);
+    }
+
     // HALF_HALF_TAXONOMY
     // @formatter:off
     // - Root (weight: 100 %)
@@ -417,7 +456,55 @@ public class TaxonomyModelTest
         y.addAssignment(c2);
     }
 
-    // MIXED_AMBIGUOUS_TAXONOMY
+    // MIXED_AMBIGUOUS_TAXONOMY_WITH_AMBIGUOITY_RESOLVED_VIA_EXCLUDING_B
+    // @formatter:off
+    // - Root (weight: 100 %)
+    //   - Classification X (50 %)
+    //     - Security A (25 %)
+    //     - Security B (50 %)
+    //     - Security C (75 %)
+    //   - Classification Y (50 %)
+    //     - Security A (75 %)
+    //     - Security B (50 %)
+    //     - Security C (25 %)
+    // @formatter:on
+    // Rebalancing: Any solution with A = C works.
+    private static final Taxonomy MIXED_AMBIGUOUS_TAXONOMY_WITH_AMBIGUOITY_RESOLVED_VIA_EXCLUDING_B;
+    static
+    {
+        MIXED_AMBIGUOUS_TAXONOMY_WITH_AMBIGUOITY_RESOLVED_VIA_EXCLUDING_B = new Taxonomy();
+        Classification root1 = new Classification();
+        MIXED_AMBIGUOUS_TAXONOMY_WITH_AMBIGUOITY_RESOLVED_VIA_EXCLUDING_B.setRootNode(root1);
+        root1.setWeight(Classification.ONE_HUNDRED_PERCENT);
+        
+        Classification x = new Classification();
+        root1.addChild(x);
+        x.setWeight(Classification.ONE_HUNDRED_PERCENT / 2);
+
+        Assignment a = new Assignment(A, Classification.ONE_HUNDRED_PERCENT * 1 / 4);
+        x.addAssignment(a);
+        Assignment b = new Assignment(B, Classification.ONE_HUNDRED_PERCENT * 2 / 4);
+        x.addAssignment(b);
+        Assignment c = new Assignment(C, Classification.ONE_HUNDRED_PERCENT * 3 / 4);
+        x.addAssignment(c);
+        
+        Classification y = new Classification();
+        root1.addChild(y);
+        y.setWeight(Classification.ONE_HUNDRED_PERCENT / 2);
+
+        Assignment a2 = new Assignment(A, Classification.ONE_HUNDRED_PERCENT * 3 / 4);
+        y.addAssignment(a2);
+        Assignment b2 = new Assignment(B, Classification.ONE_HUNDRED_PERCENT * 2 / 4);
+        y.addAssignment(b2);
+        Assignment c2 = new Assignment(C, Classification.ONE_HUNDRED_PERCENT * 1 / 4);
+        y.addAssignment(c2);
+
+        MIXED_AMBIGUOUS_TAXONOMY_WITH_AMBIGUOITY_RESOLVED_VIA_EXCLUDING_B.setUsedForRebalancing(A, true);
+        MIXED_AMBIGUOUS_TAXONOMY_WITH_AMBIGUOITY_RESOLVED_VIA_EXCLUDING_B.setUsedForRebalancing(B, false);
+        MIXED_AMBIGUOUS_TAXONOMY_WITH_AMBIGUOITY_RESOLVED_VIA_EXCLUDING_B.setUsedForRebalancing(C, true);
+    }
+
+    // MIXED_CLASSIFICATION_AMBIGUOUS_TAXONOMY
     // @formatter:off
     // - Root (weight: 100 %)
     //   - Security A (100 %)
@@ -1677,6 +1764,86 @@ public class TaxonomyModelTest
         assertTrue(rebalancingResult.isExact(B));
         assertFalse(rebalancingResult.isAmbigous(B));
         assertEquals(Money.of(CURRENCY_UNIT, 5000), rebalancingResult.getMoney(B));
+    }
+
+    @Test
+    public void testAlreadyRebalancedMixedWithExcludedSecurity()
+    {
+        ExchangeRateProviderFactory exchangeRateProviderFactory = new ExchangeRateProviderFactory(
+                        AB_EQUAL_WEIGHTED_CLIENT);
+        TaxonomyModel model = new TaxonomyModel(exchangeRateProviderFactory, AB_EQUAL_WEIGHTED_CLIENT, MIXED_TAXONOMY_B_NOT_USED_FOR_REBALANCING);
+        Rebalancer.RebalancingSolution rebalancingResult = model.getRebalancingSolution();
+
+        assertEquals(asSet(A), rebalancingResult.getInvestmentVehicles());
+        assertTrue(rebalancingResult.isExact(A));
+        assertFalse(rebalancingResult.isAmbigous(A));
+        assertEquals(AMOUNT_0, rebalancingResult.getMoney(A));
+    }
+
+    @Test
+    public void testUnsolvableDueToExcludedSecurity()
+    {
+        ExchangeRateProviderFactory exchangeRateProviderFactory = new ExchangeRateProviderFactory(ONLY_A_CLIENT);
+        TaxonomyModel model = new TaxonomyModel(exchangeRateProviderFactory, ONLY_A_CLIENT, MIXED_TAXONOMY_B_NOT_USED_FOR_REBALANCING);
+        Rebalancer.RebalancingSolution rebalancingResult = model.getRebalancingSolution();
+
+        assertEquals(asSet(A), rebalancingResult.getInvestmentVehicles());
+        assertFalse(rebalancingResult.isExact(A));
+        assertFalse(rebalancingResult.isAmbigous(A));
+        assertEquals(Money.of(CURRENCY_UNIT, 0), rebalancingResult.getMoney(A));
+    }
+
+    @Test
+    public void testMixedAmbigousWithAmbiguoityResolvedByExcludingBEqualWeighted()
+    {
+        ExchangeRateProviderFactory exchangeRateProviderFactory = new ExchangeRateProviderFactory(
+                        ABC_EQUAL_WEIGHTED_CLIENT);
+        TaxonomyModel model = new TaxonomyModel(exchangeRateProviderFactory, ABC_EQUAL_WEIGHTED_CLIENT,
+                        MIXED_AMBIGUOUS_TAXONOMY_WITH_AMBIGUOITY_RESOLVED_VIA_EXCLUDING_B);
+        Rebalancer.RebalancingSolution rebalancingResult = model.getRebalancingSolution();
+
+        assertEquals(asSet(A, C), rebalancingResult.getInvestmentVehicles());
+        assertTrue(rebalancingResult.isExact(A));
+        assertFalse(rebalancingResult.isAmbigous(A));
+        assertEquals(AMOUNT_0, rebalancingResult.getMoney(A));
+        assertTrue(rebalancingResult.isExact(C));
+        assertFalse(rebalancingResult.isAmbigous(C));
+        assertEquals(AMOUNT_0, rebalancingResult.getMoney(C));
+    }
+
+    @Test
+    public void testMixedAmbigousWithAmbiguoityResolvedByExcludingBOnlyCClient()
+    {
+        ExchangeRateProviderFactory exchangeRateProviderFactory = new ExchangeRateProviderFactory(ONLY_C_CLIENT);
+        TaxonomyModel model = new TaxonomyModel(exchangeRateProviderFactory, ONLY_C_CLIENT,
+                        MIXED_AMBIGUOUS_TAXONOMY_WITH_AMBIGUOITY_RESOLVED_VIA_EXCLUDING_B);
+        Rebalancer.RebalancingSolution rebalancingResult = model.getRebalancingSolution();
+
+        assertEquals(asSet(A, C), rebalancingResult.getInvestmentVehicles());
+        assertTrue(rebalancingResult.isExact(A));
+        assertFalse(rebalancingResult.isAmbigous(A));
+        assertEquals(Money.of(CURRENCY_UNIT, 15000), rebalancingResult.getMoney(A));
+        assertTrue(rebalancingResult.isExact(C));
+        assertFalse(rebalancingResult.isAmbigous(C));
+        assertEquals(Money.of(CURRENCY_UNIT, -15000), rebalancingResult.getMoney(C));
+    }
+
+    @Test
+    public void testMixedAmbigousWithAmbiguoityResolvedByExcludingBCOverweightedClient()
+    {
+        ExchangeRateProviderFactory exchangeRateProviderFactory = new ExchangeRateProviderFactory(
+                        C_OVERWEIGHTED_CLIENT);
+        TaxonomyModel model = new TaxonomyModel(exchangeRateProviderFactory, C_OVERWEIGHTED_CLIENT,
+                        MIXED_AMBIGUOUS_TAXONOMY_WITH_AMBIGUOITY_RESOLVED_VIA_EXCLUDING_B);
+        Rebalancer.RebalancingSolution rebalancingResult = model.getRebalancingSolution();
+
+        assertEquals(asSet(A, C), rebalancingResult.getInvestmentVehicles());
+        assertTrue(rebalancingResult.isExact(A));
+        assertFalse(rebalancingResult.isAmbigous(A));
+        assertEquals(Money.of(CURRENCY_UNIT, 35000), rebalancingResult.getMoney(A));
+        assertTrue(rebalancingResult.isExact(C));
+        assertFalse(rebalancingResult.isAmbigous(C));
+        assertEquals(Money.of(CURRENCY_UNIT, -35000), rebalancingResult.getMoney(C));
     }
 
     @SafeVarargs

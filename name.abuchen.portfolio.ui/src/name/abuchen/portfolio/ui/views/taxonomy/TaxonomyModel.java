@@ -500,8 +500,12 @@ public final class TaxonomyModel
             // lowest level classification. We have to add a constraint.
             Map<InvestmentVehicle, Double> equation = new HashMap<>(assignmentChildren.size());
             for (AssignmentNode assignmentNode : assignmentChildren)
-                addToMap(equation, assignmentNode.getAssignment().getInvestmentVehicle(),
+            {
+                InvestmentVehicle investmentVehicle = assignmentNode.getAssignment().getInvestmentVehicle();
+                if(getTaxonomy().isUsedForRebalancing(investmentVehicle))
+                    addToMap(equation, investmentVehicle,
                                 assignmentNode.getWeight() / (double) Classification.ONE_HUNDRED_PERCENT);
+            }
 
             // The investment vehicles in parent nodes implicitly lower the
             // weight for this node. We have to take this into account.
