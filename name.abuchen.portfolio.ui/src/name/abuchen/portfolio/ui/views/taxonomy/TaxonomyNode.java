@@ -124,7 +124,7 @@ public abstract class TaxonomyNode implements Adaptable
         }
     }
 
-    /* protected */static class AssignmentNode extends TaxonomyNode
+    public static class AssignmentNode extends TaxonomyNode
     {
         private Assignment assignment;
         TaxonomyNode firstNodeWithThisSecurity;
