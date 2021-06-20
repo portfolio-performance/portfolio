@@ -122,6 +122,11 @@ public class CSVImportWizard extends Wizard
         this.initialConfig = config;
     }
 
+    public void setExtractor(String code)
+    {
+        importer.getExtractorByCode(code).ifPresent(e -> importer.setExtractor(e));
+    }
+
     @Override
     public Image getDefaultPageImage()
     {
@@ -211,4 +216,5 @@ public class CSVImportWizard extends Wizard
 
         return isDirty;
     }
+
 }

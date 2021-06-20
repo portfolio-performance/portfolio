@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.views;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
@@ -24,11 +25,13 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.Window;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Text;
 
 import name.abuchen.portfolio.model.Client;
@@ -55,6 +58,7 @@ import name.abuchen.portfolio.ui.views.panes.SecurityEventsPane;
 import name.abuchen.portfolio.ui.views.panes.SecurityPriceChartPane;
 import name.abuchen.portfolio.ui.views.panes.TradesPane;
 import name.abuchen.portfolio.ui.views.panes.TransactionsPane;
+import name.abuchen.portfolio.ui.wizards.datatransfer.CSVImportWizard;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
 import name.abuchen.portfolio.ui.wizards.security.SearchSecurityWizardDialog;
 import name.abuchen.portfolio.util.TradeCalendar;
@@ -119,6 +123,38 @@ public class SecurityListView extends AbstractFinanceView
                 }
 
             }));
+
+            manager.add(new Separator());
+
+            manager.add(new Action(Messages.SecurityMenuImportCSV)
+            {
+                @Override
+                public void run()
+                {
+                    FileDialog fileDialog = new FileDialog(Display.getDefault().getActiveShell(), SWT.OPEN);
+                    fileDialog.setFilterNames(
+                                    new String[] { Messages.CSVImportLabelFileCSV, Messages.CSVImportLabelFileAll });
+                    fileDialog.setFilterExtensions(new String[] { "*.csv", "*.*" }); //$NON-NLS-1$ //$NON-NLS-2$
+                    String fileName = fileDialog.open();
+
+                    if (fileName == null)
+                        return;
+
+                    CSVImportWizard wizard = new CSVImportWizard(getClient(), getPreferenceStore(), new File(fileName));
+                    inject(wizard);
+
+                    // pre-select import of securities
+                    wizard.setExtractor("investment-vehicle"); //$NON-NLS-1$
+
+                    Dialog dialog = new WizardDialog(Display.getDefault().getActiveShell(), wizard);
+
+                    if (dialog.open() != Window.OK)
+                        return;
+
+                    markDirty();
+                    notifyModelUpdated();
+                }
+            });
 
             manager.add(new Separator());
 
