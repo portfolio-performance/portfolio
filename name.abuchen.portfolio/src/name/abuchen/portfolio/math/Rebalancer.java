@@ -1,16 +1,14 @@
 package name.abuchen.portfolio.math;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
-import name.abuchen.portfolio.math.Rebalancer.RebalancingConstraint;
-import name.abuchen.portfolio.math.Rebalancer.RebalancingSolution;
 import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.money.MonetaryException;
 import name.abuchen.portfolio.money.Money;
@@ -96,6 +94,11 @@ public class Rebalancer
         public boolean isAmbigous(InvestmentVehicle investmentVehicle)
         {
             return ambigousResults.contains(investmentVehicle);
+        }
+        
+        public void markAllAsInexact(Collection<? extends InvestmentVehicle> investmentVehicles)
+        {
+            inexactResults.addAll(investmentVehicles);
         }
     }
     

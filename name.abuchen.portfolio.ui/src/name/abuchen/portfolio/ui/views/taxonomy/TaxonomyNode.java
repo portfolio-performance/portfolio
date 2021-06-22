@@ -145,6 +145,12 @@ public abstract class TaxonomyNode implements Adaptable
         }
 
         @Override
+        public InvestmentVehicle getBackingInvestmentVehicle()
+        {
+            return assignment.getInvestmentVehicle();
+        }
+
+        @Override
         public Classification getClassification()
         {
             return null;
@@ -335,6 +341,11 @@ public abstract class TaxonomyNode implements Adaptable
     }
 
     public Security getBackingSecurity()
+    {
+        return null;
+    }
+
+    public InvestmentVehicle getBackingInvestmentVehicle()
     {
         return null;
     }
