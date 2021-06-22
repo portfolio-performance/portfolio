@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.views.taxonomy;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -477,13 +478,17 @@ public final class TaxonomyModel
 
     private void rebalance()
     {
+        List<InvestmentVehicle> inexactResultsDueToEmptyClassifications = new ArrayList<>();
         FixedSumRebalancer rebalancer = new FixedSumRebalancer(Money.of(this.getCurrencyCode(), 0));
-        collectConstraints(classificationRootNode, rebalancer, Collections.emptyMap());
+        collectConstraints(classificationRootNode, rebalancer, Collections.emptyMap(),
+                        inexactResultsDueToEmptyClassifications, Money.ZERO);
         rebalancingSolution = rebalancer.solve();
+        rebalancingSolution.markAllAsInexact(inexactResultsDueToEmptyClassifications);
     }
-
-    private void collectConstraints(TaxonomyNode.ClassificationNode node, FixedSumRebalancer rebalancer,
-                    Map<InvestmentVehicle, Double> investmentVehiclesInParentNodes)
+    
+    private void collectConstraints(ClassificationNode node, FixedSumRebalancer rebalancer,
+                    Map<InvestmentVehicle, Double> investmentVehiclesInParentNodes,
+                    List<? super InvestmentVehicle> inexactResultsDueToEmptyClassifications, Money unbalancedSumToHandle)
     {
         double thisWeight = node.getWeight() / (double) Classification.ONE_HUNDRED_PERCENT;
         List<TaxonomyNode> allChildren = node.getChildren();
@@ -495,9 +500,54 @@ public final class TaxonomyModel
                         .filter(child -> child.isClassification())
                         .map(child -> (TaxonomyNode.ClassificationNode) child)
                         .collect(Collectors.toList());
-        if (classificationChildren.size() == 0)
+
+        Map<InvestmentVehicle, Double> newInvestmentVehiclesInParentNodes = new HashMap<>(investmentVehiclesInParentNodes);
+        for (Map.Entry<InvestmentVehicle, Double> entry : newInvestmentVehiclesInParentNodes.entrySet())
+            entry.setValue(entry.getValue() * thisWeight);
+
+        for (AssignmentNode assignmentNode : assignmentChildren)
+            addToMap(newInvestmentVehiclesInParentNodes, assignmentNode.getAssignment().getInvestmentVehicle(),
+                            (double) assignmentNode.getWeight() / (double) Classification.ONE_HUNDRED_PERCENT);
+        
+        Money unbalancedSum = unbalancedSumToHandle;
+        List<ClassificationNode> childsToRebalance = new ArrayList<>();
+        int rebalancableNodesWeight = 0;
+        for (ClassificationNode child : classificationChildren)
         {
-            // lowest level classification. We have to add a constraint.
+            if (canBeRebalanced(child))
+            {
+                childsToRebalance.add(child);
+                rebalancableNodesWeight += child.getWeight();
+            }
+            else
+            {
+                // This child could not be rebalanced, because it had no assignments that are included in the rebalancing.
+                // We try to balance it at least on this level.
+                unbalancedSum = unbalancedSum.add(child.getTarget()).subtract(child.getActual());
+            }
+        }
+        
+        for (ClassificationNode child : childsToRebalance)
+        {
+            // Rebalance the rebalancable classification children
+            collectConstraints(child, rebalancer,
+                            new HashMap<InvestmentVehicle, Double>(newInvestmentVehiclesInParentNodes),
+                            inexactResultsDueToEmptyClassifications, unbalancedSum.multiplyAndRound(
+                            (double) child.getWeight() / (double) rebalancableNodesWeight));
+        }
+        
+        if (unbalancedSum.getAmount() != 0)
+        {
+            // The sum of all unbalancable sub-categories does not add up to zero.
+            // => The result in the remaining categories is inexact in any case.
+            for (ClassificationNode child : childsToRebalance)
+                collectInvestmentVehicles(child, inexactResultsDueToEmptyClassifications);
+        }
+        
+        if (childsToRebalance.size() == 0)
+        {
+            // All sub-classifications (if any) have no securities included in the rebalancing.
+            // We have to add a constraint for this level
             Map<InvestmentVehicle, Double> equation = new HashMap<>(assignmentChildren.size());
             for (AssignmentNode assignmentNode : assignmentChildren)
             {
@@ -513,23 +563,39 @@ public final class TaxonomyModel
                 addToMap(equation, entry.getKey(), entry.getValue() * thisWeight);
 
             rebalancer.addConstraint(new Rebalancer.RebalancingConstraint(equation,
-                            node.getTarget().subtract(node.getActual())));
+                            node.getTarget().subtract(node.getActual()).add(unbalancedSumToHandle)));
         }
-        else
-        {
-            // Node has classification children. We can not add any constraint
-            // yet.
-            investmentVehiclesInParentNodes = new HashMap<>(investmentVehiclesInParentNodes);
-            for (Map.Entry<InvestmentVehicle, Double> entry : investmentVehiclesInParentNodes.entrySet())
-                entry.setValue(entry.getValue() * thisWeight);
+    }
 
-            for (AssignmentNode assignmentNode : assignmentChildren)
-                addToMap(investmentVehiclesInParentNodes, assignmentNode.getAssignment().getInvestmentVehicle(),
-                                (double) assignmentNode.getWeight() / (double) Classification.ONE_HUNDRED_PERCENT);
-            for (ClassificationNode child : classificationChildren)
-                collectConstraints(child, rebalancer,
-                                new HashMap<InvestmentVehicle, Double>(investmentVehiclesInParentNodes));
+    /**
+     * @return {@code true}, iff at least one investment vehicle (that is included in the rebalancing) is contained in this
+     * classification.
+     */
+    private boolean canBeRebalanced(TaxonomyNode node)
+    {
+        if(node.isAssignment())
+        {
+            InvestmentVehicle investmentVehicle = node.getAssignment().getInvestmentVehicle();
+            return getTaxonomy().isUsedForRebalancing(investmentVehicle);
         }
+        else // node.isClassification()
+        {
+            for(TaxonomyNode child : node.getChildren())
+            {
+                if(canBeRebalanced(child))
+                    return true;
+            }
+            return false;
+        }
+    }
+    
+    private void collectInvestmentVehicles(TaxonomyNode node, Collection<? super InvestmentVehicle> collection)
+    {
+        InvestmentVehicle investmentVehicle = node.getBackingInvestmentVehicle();
+        if (investmentVehicle != null)
+            collection.add(investmentVehicle);
+        for (TaxonomyNode child : node.getChildren())
+            collectInvestmentVehicles(child, collection);
     }
 
     // Helper method for building the rebalancer.

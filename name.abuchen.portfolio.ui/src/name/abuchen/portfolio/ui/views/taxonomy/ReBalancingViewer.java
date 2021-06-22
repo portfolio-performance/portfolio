@@ -32,7 +32,6 @@ import name.abuchen.portfolio.ui.util.viewers.FunctionalBooleanEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
-import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyNode.AssignmentNode;
 
 public class ReBalancingViewer extends AbstractNodeTreeViewer
 {
