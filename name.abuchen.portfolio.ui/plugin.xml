@@ -76,6 +76,9 @@
                name="green-foreground">
          </property-name>
          <property-name
+               name="gray-foreground">
+         </property-name>
+         <property-name
                name="hyperlink">
          </property-name>
       </handler>

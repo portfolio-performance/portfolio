@@ -16,6 +16,7 @@ import org.eclipse.swt.widgets.Display;
 import com.ibm.icu.text.MessageFormat;
 
 import name.abuchen.portfolio.model.Classification;
+import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Money;
@@ -34,11 +35,7 @@ import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
 
 public class ReBalancingViewer extends AbstractNodeTreeViewer
-{
-    private static final Color BG_COLOR_AMBIGOUS = new Color(255, 255, 100);
-    private static final Color BG_COLOR_INEXACT = new Color(255, 171, 49);
-    private static final Color FG_COLOR_DUPLICATED_SECURITY = new Color(128, 128, 128);
-    
+{   
     @Inject
     public ReBalancingViewer(AbstractFinanceView view, TaxonomyModel model, TaxonomyNodeRenderer renderer)
     {
@@ -64,7 +61,8 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
 
         addDesiredAllocationColumn(support);
 
-        Column column = new Column("used-for-rebalancing", Messages.ColumnUsedForRebalancing, SWT.LEFT, 40); //$NON-NLS-1$
+        Column column = new Column("used-for-rebalancing", Messages.ColumnUsedForRebalancing, SWT.RIGHT, 40); //$NON-NLS-1$
+        column.setDescription(Messages.ColumnUsedForRebalancing_Description);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -77,12 +75,12 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
             public Image getImage(Object element)
             {
                 TaxonomyNode node = (TaxonomyNode) element;
-                
-                Security security = node.getBackingSecurity();
-                if (security == null)
+
+                InvestmentVehicle investmentVehicle = node.getBackingInvestmentVehicle();
+                if (investmentVehicle == null)
                     return null;
                 
-                return getModel().getTaxonomy().isUsedForRebalancing(security) ? Images.CHECK.image() : null;
+                return getModel().getTaxonomy().isUsedForRebalancing(investmentVehicle) ? Images.CHECK.image() : null;
             }
         });
         new FunctionalBooleanEditingSupport(
@@ -90,10 +88,10 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                         element -> 
                         {
                             TaxonomyNode node = (TaxonomyNode) element;
-                            Security security = node.getBackingSecurity();
-                            if(security != null && !node.getParent().isUnassignedCategory())
+                            InvestmentVehicle investmentVehicle = node.getBackingInvestmentVehicle();
+                            if(investmentVehicle != null && !node.getParent().isUnassignedCategory())
                             {
-                                return getModel().getTaxonomy().isUsedForRebalancing(security);
+                                return getModel().getTaxonomy().isUsedForRebalancing(investmentVehicle);
                             }
                             return false;
                         },
@@ -102,10 +100,10 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                         (element, value) ->
                         {
                             TaxonomyNode node = (TaxonomyNode) element;
-                            Security security = node.getBackingSecurity();
-                            if(security != null && !node.getParent().isUnassignedCategory())
+                            InvestmentVehicle investmentVehicle = node.getBackingInvestmentVehicle();
+                            if(investmentVehicle != null && !node.getParent().isUnassignedCategory())
                             {
-                                getModel().getTaxonomy().setUsedForRebalancing(security, value);
+                                getModel().getTaxonomy().setUsedForRebalancing(investmentVehicle, value);
                             }
                         }
                         ).addListener(this::onModified).attachTo(column);
@@ -232,11 +230,11 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                 if (node.getParent() != null && node.getParent().isUnassignedCategory())
                     return null;
 
-                Security security = node.getBackingSecurity();
-                if (security == null || !getModel().getTaxonomy().isUsedForRebalancing(security))
+                InvestmentVehicle investmentVehicle = node.getBackingInvestmentVehicle();
+                if (investmentVehicle == null || !getModel().getTaxonomy().isUsedForRebalancing(investmentVehicle))
                     return null;
                 
-                Money rebalancingAmount = getModel().getRebalancingSolution().getMoney(security);
+                Money rebalancingAmount = getModel().getRebalancingSolution().getMoney(investmentVehicle);
                 return Values.Money.format(rebalancingAmount);
             }
             
@@ -244,15 +242,15 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
             public Color getBackground(Object element)
             {
                 TaxonomyNode node = (TaxonomyNode) element;
-                
-                Security security = node.getBackingSecurity();
-                if (security == null || !getModel().getTaxonomy().isUsedForRebalancing(security))
+
+                InvestmentVehicle investmentVehicle = node.getBackingInvestmentVehicle();
+                if (investmentVehicle == null || !getModel().getTaxonomy().isUsedForRebalancing(investmentVehicle))
                     return null;
 
-                if (getModel().getRebalancingSolution().isAmbigous(security))
-                    return BG_COLOR_AMBIGOUS;
-                if (!getModel().getRebalancingSolution().isExact(security))
-                    return BG_COLOR_INEXACT;
+                if (!getModel().getRebalancingSolution().isExact(investmentVehicle))
+                    return Colors.theme().redBackground();
+                if (getModel().getRebalancingSolution().isAmbigous(investmentVehicle))
+                    return Colors.theme().warningBackground();
                 return null;
             }
             
@@ -260,13 +258,13 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
             public Color getForeground(Object element)
             {
                 TaxonomyNode node = (TaxonomyNode) element;
-                
-                Security security = node.getBackingSecurity();
-                if (security == null)
+
+                InvestmentVehicle investmentVehicle = node.getBackingInvestmentVehicle();
+                if (investmentVehicle == null)
                     return null;
 
                 if(!node.isPrimary())
-                    return FG_COLOR_DUPLICATED_SECURITY;
+                    return Colors.theme().grayForeground();
                 return null;
             }
             
@@ -274,15 +272,15 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
             public String getToolTipText(Object element)
             {
                 TaxonomyNode node = (TaxonomyNode) element;
-                
-                Security security = node.getBackingSecurity();
-                if (security == null || !getModel().getTaxonomy().isUsedForRebalancing(security))
+
+                InvestmentVehicle investmentVehicle = node.getBackingInvestmentVehicle();
+                if (investmentVehicle == null || !getModel().getTaxonomy().isUsedForRebalancing(investmentVehicle))
                     return null;
 
-                if (getModel().getRebalancingSolution().isAmbigous(security))
-                    return Messages.RebalanceAmbiguousTooltip;
-                if (!getModel().getRebalancingSolution().isExact(security))
+                if (!getModel().getRebalancingSolution().isExact(investmentVehicle))
                     return Messages.RebalanceInexactTooltip;
+                if (getModel().getRebalancingSolution().isAmbigous(investmentVehicle))
+                    return Messages.RebalanceAmbiguousTooltip;
                 return null;
             }
         });
@@ -376,11 +374,11 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                 Security security = node.getBackingSecurity();
                 if (security == null || security.getCurrencyCode() == null || !getModel().getTaxonomy().isUsedForRebalancing(security))
                     return null;
-                
-                if (getModel().getRebalancingSolution().isAmbigous(security))
-                    return BG_COLOR_AMBIGOUS;
+
                 if (!getModel().getRebalancingSolution().isExact(security))
-                    return BG_COLOR_INEXACT;
+                    return Colors.theme().redBackground();
+                if (getModel().getRebalancingSolution().isAmbigous(security))
+                    return Colors.theme().warningBackground();
                 return null;
             }
             
@@ -394,7 +392,7 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                     return null;
 
                 if(! node.isPrimary())
-                    return FG_COLOR_DUPLICATED_SECURITY;
+                    return Colors.theme().grayForeground();
                 return null;
             }
             
@@ -407,10 +405,10 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                 if (security == null || security.getCurrencyCode() == null || !getModel().getTaxonomy().isUsedForRebalancing(security))
                     return null;
 
-                if (getModel().getRebalancingSolution().isAmbigous(security))
-                    return Messages.RebalanceAmbiguousTooltip;
                 if (!getModel().getRebalancingSolution().isExact(security))
                     return Messages.RebalanceInexactTooltip;
+                if (getModel().getRebalancingSolution().isAmbigous(security))
+                    return Messages.RebalanceAmbiguousTooltip;
                 return null;
             }
         });

@@ -127,7 +127,7 @@ public abstract class TaxonomyNode implements Adaptable
     public static class AssignmentNode extends TaxonomyNode
     {
         private Assignment assignment;
-        TaxonomyNode firstNodeWithThisSecurity;
+        TaxonomyNode firstNodeWithThisInvestmentVehicle;
 
         public AssignmentNode(TaxonomyNode parent, Assignment assignment)
         {
@@ -242,7 +242,7 @@ public abstract class TaxonomyNode implements Adaptable
             if(getWeight() == Classification.ONE_HUNDRED_PERCENT)
                 return true; // This is the only node
             
-            firstNodeWithThisSecurity = null; // Recalculate, taxonomy might have changed
+            firstNodeWithThisInvestmentVehicle = null; // Recalculate, taxonomy might have changed
             
             // Find first node with the same security:
             TaxonomyNode thisNode = this;
@@ -252,11 +252,11 @@ public abstract class TaxonomyNode implements Adaptable
                 @Override
                 public void visit(TaxonomyNode node)
                 {
-                    if(firstNodeWithThisSecurity == null && node.getBackingSecurity() == thisNode.getBackingSecurity())
-                        firstNodeWithThisSecurity = node;
+                    if(firstNodeWithThisInvestmentVehicle == null && node.getBackingInvestmentVehicle() == thisNode.getBackingInvestmentVehicle())
+                        firstNodeWithThisInvestmentVehicle = node;
                 }
             });
-            return firstNodeWithThisSecurity == this;
+            return firstNodeWithThisInvestmentVehicle == this;
         }
     }
 
