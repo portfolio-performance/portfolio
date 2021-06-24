@@ -33,6 +33,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
         addDividendTransaction();
         addTaxAdjustmentTransaction();
         addVorabpauschaleTransaction();
+        addEncashmentTransaction();
 
         // documents since Q4 2017 look different
         addNewDividendTransaction();
@@ -211,6 +212,61 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                                         }))
 
                         .wrap(BuySellEntryItem::new);
+
+        addFeesSectionsTransaction(pdfTransaction);
+        addTaxesSectionsTransaction(pdfTransaction, type);
+    }
+
+    @SuppressWarnings("nls")
+    private void addEncashmentTransaction()
+    {
+        DocumentType type = new DocumentType("Einl.sung");
+        this.addDocumentTyp(type);
+
+        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        pdfTransaction.subject(() -> {
+            BuySellEntry entry = new BuySellEntry();
+            entry.setType(PortfolioTransaction.Type.SELL);
+            return entry;
+        });
+
+        Block firstRelevantLine = new Block("^Einl.sung$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction
+                // Wertpapierbezeichnung WKN ISIN
+                // Lang & Schwarz AG LS846N DE000LS846N5
+                .section("wkn", "isin", "name", "name1")
+                .find("^Wertpapierbezeichnung WKN ISIN$")
+                .match("^(?<name>.*) (?<wkn>[^ ]*) (?<isin>[\\w]{12})$")
+                .match("^(?<name1>.*)$")
+                .assign((t, v) -> {
+                    if (!v.get("name1").startsWith("Einheit"))
+                        v.put("name", v.get("name") + " " + v.get("name1"));
+
+                    t.setSecurity(getOrCreateSecurity(v));
+                })
+
+                // Stück 1.000 20.05.2021
+                .section("shares")
+                .match("^St.ck (?<shares>[.,\\d]+) [\\d]+.[\\d]+.[\\d]{4}$")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                // Einlösung zu 0,001 EUR Schlusstag 20.05.2021
+                .section("date")
+                .match("^Einl.sung .* Schlusstag (?<date>[\\d]+.[\\d]+.[\\d]{4})$")
+                .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+
+                // Netto zugunsten IBAN DExxxxxxxxxxxxxxxxxxxx 1,00 EUR
+                .section("amount", "currency")
+                .match("^Netto zugunsten .* (?<amount>[.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                })
+
+                .wrap(BuySellEntryItem::new);
 
         addFeesSectionsTransaction(pdfTransaction);
         addTaxesSectionsTransaction(pdfTransaction, type);
