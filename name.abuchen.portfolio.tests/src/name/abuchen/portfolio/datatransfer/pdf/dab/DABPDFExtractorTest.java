@@ -726,6 +726,78 @@ public class DABPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierVerkauf9()
+    {
+        DABPDFExtractor extractor = new DABPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABVerkauf9.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = getSecurity(results);
+        assertThat(security.getIsin(), is("NL0015436031"));
+        assertThat(security.getName(), is("CureVac N.V. Namensaktien   o.N."));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check 1st buy sell transactions
+        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-31T08:50")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(300)));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(26252.00))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(26253.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.00))));
+
+        // check tax-refund for 1st transaction
+        item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-05-31T00:00")));
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(551.08))));
+
+        // check 2nd buy sell transactions
+        item = results.stream().filter(i -> i instanceof BuySellEntryItem).skip(1).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
+        entry = (BuySellEntry) item.get().getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-26T09:01")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(300)));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(27911.45))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(28293.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(335.29 + 18.44 + 26.82))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.00))));
+    }
+
+    @Test
     public void testMultipleWertpapierKaufVerkauf1()
     {
         DABPDFExtractor extractor = new DABPDFExtractor(new Client());
