@@ -263,12 +263,52 @@ public class creditsuisseAGExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-04-10T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(2000)));
+
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(6250.00))));
         assertThat(transaction.getGrossValue(), 
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(6250.00))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX), 
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), 
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
+    }
+
+    @Test
+    public void testDividende02()
+    {
+        CreditSuisseAGPDFExtractor extractor = new CreditSuisseAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.USD);
+
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("US46284V1017"));
+        assertThat(security.getName(), is("REGISTERED SHS IRON MOUNTAIN INC"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+
+        // check dividends transaction
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-06T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(900)));
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(389.65))));
+        assertThat(transaction.getGrossValue(), 
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(556.65))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), 
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(167.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE), 
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
     }
