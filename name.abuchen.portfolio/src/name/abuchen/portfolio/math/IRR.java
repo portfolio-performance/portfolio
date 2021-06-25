@@ -15,6 +15,6 @@ public final class IRR
     {
         Function npv = new NPVFunction(dates, values);
         Function derivative = new PseudoDerivativeFunction(npv);
-        return NewtonGoalSeek.seek(npv, derivative, 0.05d) - 1;
+        return NewtonGoalSeek.seek(npv, derivative, 0.0001d) - 1;
     }
 }
