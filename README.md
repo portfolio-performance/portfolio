@@ -1,6 +1,5 @@
 # About
 
-Test
 A simple tool to calculate the overall performance of an investment portfolio.
 
 See https://www.portfolio-performance.info for more details.
