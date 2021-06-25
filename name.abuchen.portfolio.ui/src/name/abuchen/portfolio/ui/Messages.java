@@ -541,6 +541,7 @@ public class Messages extends NLS
     public static String LabelDashboard;
     public static String LabelDataSeries;
     public static String LabelDateXToY;
+    public static String LabelDefaultFontSize;
     public static String LabelDefaultReferenceAccountName;
     public static String LabelDelta;
     public static String LabelDoImport;
@@ -569,6 +570,7 @@ public class Messages extends NLS
     public static String LabelExchangeRate;
     public static String LabelExchangeRates;
     public static String LabelExport;
+    public static String LabelFontSize;
     public static String LabelFormatJSON;
     public static String LabelFullClassification;
     public static String LabelIncludeSecuritiesInPieChart;
