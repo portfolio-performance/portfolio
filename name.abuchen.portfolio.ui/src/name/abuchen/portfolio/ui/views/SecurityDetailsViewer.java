@@ -37,7 +37,7 @@ public class SecurityDetailsViewer
 {
     private abstract static class SecurityFacet
     {
-        abstract Control createViewControl(Composite parent, Client client);
+        abstract Control createViewControl(Composite parent);
 
         abstract void setInput(Security security);
 
@@ -77,7 +77,7 @@ public class SecurityDetailsViewer
         private Label valueTickerSymbol;
 
         @Override
-        Control createViewControl(Composite parent, Client client)
+        Control createViewControl(Composite parent)
         {
             Composite composite = new Composite(parent, SWT.NONE);
 
@@ -131,7 +131,7 @@ public class SecurityDetailsViewer
         private Label valueNote;
 
         @Override
-        Control createViewControl(Composite parent, Client client)
+        Control createViewControl(Composite parent)
         {
             Composite composite = new Composite(parent, SWT.NONE);
 
@@ -178,7 +178,7 @@ public class SecurityDetailsViewer
         private Label valueVolume;
 
         @Override
-        public Control createViewControl(Composite parent, Client client)
+        public Control createViewControl(Composite parent)
         {
             Composite composite = new Composite(parent, SWT.NONE);
 
@@ -277,7 +277,7 @@ public class SecurityDetailsViewer
         }
 
         @Override
-        Control createViewControl(Composite parent, Client client)
+        Control createViewControl(Composite parent)
         {
             Composite composite = new Composite(parent, SWT.NONE);
             FormLayout layout = new FormLayout();
@@ -386,7 +386,7 @@ public class SecurityDetailsViewer
         {
             try
             {
-                Control control = child.createViewControl(container, client);
+                Control control = child.createViewControl(container);
                 GridDataFactory.fillDefaults().grab(true, false).applyTo(control);
             }
             catch (Exception e)
