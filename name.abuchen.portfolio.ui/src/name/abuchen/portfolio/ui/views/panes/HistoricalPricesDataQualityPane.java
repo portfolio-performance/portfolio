@@ -30,6 +30,7 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.views.SecurityQuoteQualityMetricsViewer;
 import name.abuchen.portfolio.util.Interval;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class HistoricalPricesDataQualityPane implements InformationPanePage
 {
@@ -59,10 +60,10 @@ public class HistoricalPricesDataQualityPane implements InformationPanePage
 
         Label lCompleteness = new Label(container, SWT.NONE);
         lCompleteness.setText(Messages.ColumnMetricCompleteness);
-        lCompleteness.setToolTipText(Messages.ColumnMetricCompleteness_Description);
+        lCompleteness.setToolTipText(TextUtil.wordwrap(Messages.ColumnMetricCompleteness_Description));
 
         completeness = new Label(container, SWT.NONE);
-        completeness.setToolTipText(Messages.ColumnMetricCompleteness_Description);
+        completeness.setToolTipText(TextUtil.wordwrap(Messages.ColumnMetricCompleteness_Description));
 
         checkInterval = new Label(container, SWT.NONE);
 
