@@ -593,6 +593,10 @@ public class Messages extends NLS
     public static String LabelLevelNumber;
     public static String LabelLinkedToPortfolioReport;
     public static String LabelLinkToPortfolioReportNet;
+    public static String LabelMissingQuotes;
+    public static String LabelMissingQuotes_Decsription;
+    public static String LabelUnexpectedQuotes;
+    public static String LabelUnexpectedQuotes_Description;
     public static String LabelNamePlusCopy;
     public static String LabelNet;
     public static String LabelNewClassification;
