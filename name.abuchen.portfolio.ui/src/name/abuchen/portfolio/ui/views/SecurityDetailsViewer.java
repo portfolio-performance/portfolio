@@ -11,12 +11,7 @@ import java.util.List;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
-import org.eclipse.jface.resource.FontDescriptor;
-import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -34,6 +29,7 @@ import name.abuchen.portfolio.model.Taxonomy.Visitor;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.util.TextUtil;
 
@@ -41,15 +37,6 @@ public class SecurityDetailsViewer
 {
     private abstract static class SecurityFacet
     {
-        private Font boldFont;
-        private Color color;
-
-        SecurityFacet(Font boldFont, Color color)
-        {
-            this.boldFont = boldFont;
-            this.color = color;
-        }
-
         abstract Control createViewControl(Composite parent, Client client);
 
         abstract void setInput(Security security);
@@ -57,9 +44,8 @@ public class SecurityDetailsViewer
         protected Label createHeading(Composite parent, String text)
         {
             Label heading = new Label(parent, SWT.NONE);
+            heading.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);
             heading.setText(text);
-            heading.setFont(boldFont);
-            heading.setForeground(color);
             return heading;
         }
 
@@ -89,11 +75,6 @@ public class SecurityDetailsViewer
         private Label valueName;
         private Label valueISIN;
         private Label valueTickerSymbol;
-
-        public MasterDataFacet(Font boldFont, Color color)
-        {
-            super(boldFont, color);
-        }
 
         @Override
         Control createViewControl(Composite parent, Client client)
@@ -149,11 +130,6 @@ public class SecurityDetailsViewer
     {
         private Label valueNote;
 
-        public NoteFacet(Font boldFont, Color color)
-        {
-            super(boldFont, color);
-        }
-
         @Override
         Control createViewControl(Composite parent, Client client)
         {
@@ -200,11 +176,6 @@ public class SecurityDetailsViewer
         private Label valueDaysHigh;
         private Label valueDaysLow;
         private Label valueVolume;
-
-        public LatestQuoteFacet(Font boldFont, Color color)
-        {
-            super(boldFont, color);
-        }
 
         @Override
         public Control createViewControl(Composite parent, Client client)
@@ -300,9 +271,8 @@ public class SecurityDetailsViewer
         private Label heading;
         private List<Label> labels = new ArrayList<>();
 
-        public TaxonomyFacet(Taxonomy taxonomy, Font boldFont, Color color)
+        public TaxonomyFacet(Taxonomy taxonomy)
         {
-            super(boldFont, color);
             this.taxonomy = taxonomy;
         }
 
@@ -398,24 +368,19 @@ public class SecurityDetailsViewer
         container.setBackground(Colors.WHITE);
         container.setBackgroundMode(SWT.INHERIT_FORCE);
 
-        // fonts
-
-        LocalResourceManager resources = new LocalResourceManager(JFaceResources.getResources(), container);
-        Font boldFont = resources.createFont(FontDescriptor.createFrom(container.getFont()).setStyle(SWT.BOLD));
-
         // facets
 
         GridLayoutFactory.fillDefaults().numColumns(1).applyTo(container);
 
         if (showMasterData)
-            children.add(new MasterDataFacet(boldFont, Colors.HEADINGS));
+            children.add(new MasterDataFacet());
 
-        children.add(new LatestQuoteFacet(boldFont, Colors.HEADINGS));
+        children.add(new LatestQuoteFacet());
 
         for (Taxonomy taxonomy : client.getTaxonomies())
-            children.add(new TaxonomyFacet(taxonomy, boldFont, Colors.HEADINGS));
+            children.add(new TaxonomyFacet(taxonomy));
 
-        children.add(new NoteFacet(boldFont, Colors.HEADINGS));
+        children.add(new NoteFacet());
 
         for (SecurityFacet child : children)
         {

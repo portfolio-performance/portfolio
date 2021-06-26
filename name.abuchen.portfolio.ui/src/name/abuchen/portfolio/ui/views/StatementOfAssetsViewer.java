@@ -17,6 +17,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.eclipse.e4.core.di.extensions.Preference;
+import org.eclipse.e4.ui.css.swt.theme.IThemeEngine;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -226,6 +227,9 @@ public class StatementOfAssetsViewer
 
     @Inject
     private SelectionService selectionService;
+
+    @Inject
+    private IThemeEngine themeEngine;
 
     private boolean useIndirectQuotation = false;
 
@@ -539,6 +543,11 @@ public class StatementOfAssetsViewer
         assets.addDragSupport(DND.DROP_MOVE, //
                         new Transfer[] { SecurityTransfer.getTransfer() }, //
                         new SecurityDragListener(assets));
+
+        // make sure to apply the styles (including font information to the
+        // table) before creating the bold font. Otherwise the font does not
+        // match the styles in CSS
+        themeEngine.applyStyles(assets.getTable(), true);
 
         LocalResourceManager resources = new LocalResourceManager(JFaceResources.getResources(), assets.getTable());
         boldFont = resources.createFont(FontDescriptor.createFrom(assets.getTable().getFont()).setStyle(SWT.BOLD));

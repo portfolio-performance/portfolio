@@ -8,10 +8,8 @@ import java.util.Optional;
 
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.ToolBarManager;
-import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
-import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
@@ -22,6 +20,7 @@ import org.eclipse.swt.widgets.ToolBar;
 import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
@@ -88,9 +87,7 @@ public class InformationPane
         // label
 
         label = new CLabel(area, SWT.NONE);
-        Font newFont = FontDescriptor.createFrom(parent.getFont()).setStyle(SWT.BOLD).createFont(parent.getDisplay());
-        label.addDisposeListener(e -> newFont.dispose());
-        label.setFont(newFont);
+        label.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);
 
         // toolbar: pane selection + chevron
 

@@ -117,7 +117,7 @@ public final class ThemePreferencePage extends PreferencePage
         });
         fontSizeCombo.setContentProvider(ArrayContentProvider.getInstance());
         fontSizeCombo.setInput(
-                        Stream.concat(Stream.of(-1), IntStream.range(8, 20).boxed()).collect(Collectors.toList()));
+                        Stream.concat(Stream.of(-1), IntStream.range(8, 21).boxed()).collect(Collectors.toList()));
         fontSizeCombo.getControl().setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
         fontSizeCombo.setSelection(new StructuredSelection(currentFontSize));
@@ -238,7 +238,12 @@ public final class ThemePreferencePage extends PreferencePage
     {
         try
         {
-            String css = fontSize == -1 ? "" : "{\n  font-size: " + fontSize + "px;\n}\n"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            String css = ""; //$NON-NLS-1$
+
+            if (fontSize > 0)
+            {
+                css = String.format("{ font-size: %dpx;}%n.heading1 { font-size: %dpx; }", fontSize, fontSize + 4); //$NON-NLS-1$
+            }
 
             Files.writeString(getPathToCustomCSS(), css, StandardOpenOption.TRUNCATE_EXISTING);
         }

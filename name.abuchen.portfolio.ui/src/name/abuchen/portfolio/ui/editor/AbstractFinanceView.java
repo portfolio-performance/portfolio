@@ -16,11 +16,9 @@ import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -182,13 +180,10 @@ public abstract class AbstractFinanceView
         Composite header = new Composite(parent, SWT.NONE);
         header.setBackground(Colors.WHITE);
 
-        Font boldFont = resourceManager.createFont(FontDescriptor
-                        .createFrom(JFaceResources.getFont(JFaceResources.HEADER_FONT)).setStyle(SWT.BOLD));
-
         titleText = getDefaultTitle();
         title = new Label(header, SWT.NONE);
+        title.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING1);
         title.setText(TextUtil.tooltip(titleText));
-        title.setFont(boldFont);
         title.setForeground(Colors.SIDEBAR_TEXT);
         title.setBackground(header.getBackground());
 
