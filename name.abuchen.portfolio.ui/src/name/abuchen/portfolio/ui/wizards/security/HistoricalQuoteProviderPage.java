@@ -16,13 +16,18 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 
 import name.abuchen.portfolio.model.Exchange;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityPriceInterpolator.LinearSecurityPriceInterpolator;
+import name.abuchen.portfolio.model.SecurityPriceInterpolator.TakeLastSecurityPriceInterpolator;
 import name.abuchen.portfolio.model.SecurityProperty;
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.QuoteFeed;
@@ -178,6 +183,56 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
         composite.setLayout(layout);
 
         tableSampleData = new QuotesTableViewer(composite);
+    }
+
+    @Override
+    protected int getSizeAdditionalContentBelow()
+    {
+        return 56;
+    }
+    
+    @Override
+    protected void createAdditionalContentBelow(Composite container)
+    {
+        Label interpolationMethode = new Label(container, SWT.NONE);
+        interpolationMethode.setText(Messages.LabelInterpolationMethode);
+
+        Button takeLast = new Button(container, SWT.RADIO);
+        takeLast.setText(Messages.LabelInterpolationMethodeTakeLast);
+        Button linear = new Button(container, SWT.RADIO);
+        linear.setText(Messages.LabelInterpolationMethodeLinear);
+        
+        if(getModel().getSecurityPriceInterpolator() instanceof TakeLastSecurityPriceInterpolator)
+        {
+            takeLast.setSelection(true);
+        }
+        else if(getModel().getSecurityPriceInterpolator() instanceof LinearSecurityPriceInterpolator)
+        {
+            linear.setSelection(true);
+        }
+        
+        SelectionAdapter selectionAadapter = new SelectionAdapter()
+        {
+            @Override
+            public void widgetSelected(SelectionEvent e)
+            {
+                Button source=  (Button) e.getSource();
+                 
+                if (source.getSelection())
+                {
+                    if (source == takeLast)
+                    {
+                        getModel().setSecurityPriceInterpolator(TakeLastSecurityPriceInterpolator.getInstance());
+                    }
+                    else if (source == linear)
+                    {
+                        getModel().setSecurityPriceInterpolator(LinearSecurityPriceInterpolator.getInstance());
+                    }
+                }
+            }
+        };
+        takeLast.addSelectionListener(selectionAadapter);
+        linear.addSelectionListener(selectionAadapter);
     }
 
     @Override

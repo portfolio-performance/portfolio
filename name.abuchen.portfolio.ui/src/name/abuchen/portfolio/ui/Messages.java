@@ -678,6 +678,9 @@ public class Messages extends NLS
     public static String LabelJSONPathToLow;
     public static String LabelJSONPathToHigh;
     public static String LabelJSONPathToVolume;
+    public static String LabelInterpolationMethode;
+    public static String LabelInterpolationMethodeTakeLast;
+    public static String LabelInterpolationMethodeLinear;
     public static String LabelKeyIndicators;
     public static String LabelMaxDrawdown;
     public static String LabelMaxDrawdownDuration;

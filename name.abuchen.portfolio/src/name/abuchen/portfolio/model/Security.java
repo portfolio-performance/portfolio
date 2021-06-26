@@ -66,6 +66,7 @@ public final class Security implements Attributable, InvestmentVehicle
     private String latestFeed;
     private String latestFeedURL;
     private LatestSecurityPrice latest;
+    private SecurityPriceInterpolator interpolator;
 
     private Attributes attributes;
 
@@ -461,8 +462,17 @@ public final class Security implements Attributable, InvestmentVehicle
             return prices.get(index);
         else if (index == -1) // requested is date before first historic quote
             return prices.get(0);
+        else if (index == - prices.size() - 1) // requested is date after last historic quote
+            return prices.get(prices.size() - 1);
         else
-            return prices.get(-index - 2);
+        {
+            // No price for this specific date, but prices before and after. Use linear interpolation.
+            // Ask the interpolator
+            if(interpolator == null)
+                interpolator = SecurityPriceInterpolator.getDefaultSecurityPriceInterpolator();
+            int indexBefore = -index - 2;
+            return interpolator.interpolate(prices, indexBefore, requestedDate);
+        }
     }
 
     /**
@@ -800,6 +810,8 @@ public final class Security implements Attributable, InvestmentVehicle
         answer.isRetired = isRetired;
 
         answer.updatedAt = updatedAt;
+        
+        answer.interpolator = interpolator;
 
         return answer;
     }
@@ -831,5 +843,17 @@ public final class Security implements Attributable, InvestmentVehicle
     private boolean notEmpty(String s)
     {
         return s != null && s.length() > 0;
+    }
+
+    public SecurityPriceInterpolator getSecurityPriceInterpolator()
+    {
+        if(this.interpolator == null)
+            this.interpolator = SecurityPriceInterpolator.getDefaultSecurityPriceInterpolator();
+        return this.interpolator;
+    }
+
+    public void setSecurityPriceInterpolator(SecurityPriceInterpolator interpolator)
+    {
+        this.interpolator = interpolator;
     }
 }

@@ -13,6 +13,7 @@ import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityPriceInterpolator;
 import name.abuchen.portfolio.model.SecurityProperty;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.model.Taxonomy.Visitor;
@@ -187,6 +188,7 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
     private String latestFeed;
     private String latestFeedURL;
     private boolean isRetired;
+    private SecurityPriceInterpolator interpolator;
 
     /**
      * Used to pipe the status of a manually validated quote provider into the
@@ -220,6 +222,7 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
         this.latestFeed = security.getLatestFeed();
         this.latestFeedURL = security.getLatestFeedURL();
         this.isRetired = security.isRetired();
+        this.interpolator = security.getSecurityPriceInterpolator();
 
         for (Taxonomy taxonomy : client.getTaxonomies())
             this.taxonomies.add(new TaxonomyDesignation(taxonomy, security));
@@ -378,6 +381,16 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
         firePropertyChange("retired", this.isRetired, this.isRetired = isRetired); //$NON-NLS-1$ //NOSONAR
     }
 
+    public SecurityPriceInterpolator getSecurityPriceInterpolator()
+    {
+        return interpolator;
+    }
+
+    public void setSecurityPriceInterpolator(SecurityPriceInterpolator interpolator)
+    {
+        this.interpolator = interpolator;
+    }
+
     public String getStatusHistoricalQuotesProvider()
     {
         return statusHistoricalQuotesProvider;
@@ -457,6 +470,7 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
         security.setLatestFeed(latestFeed);
         security.setLatestFeedURL(latestFeedURL);
         security.setRetired(isRetired);
+        security.setSecurityPriceInterpolator(interpolator);
 
         Attributes a = new Attributes();
         for (AttributeDesignation attribute : attributes)

@@ -359,6 +359,23 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         data.bottom = new FormAttachment(grpQuoteFeed, -10, SWT.BOTTOM);
         buttonArea.setLayoutData(data);
 
+        int sizeBelow = getSizeAdditionalContentBelow();
+        Composite belowArea = null;
+        if(sizeBelow > 0)
+        {
+            belowArea = new Composite(container, SWT.NONE);
+            belowArea.setLayout(new RowLayout(SWT.VERTICAL));
+            
+            data = new FormData();
+            data.top = new FormAttachment(100, -sizeBelow - 10);
+            data.left = new FormAttachment(0, 10);
+            data.right = new FormAttachment(100, -10);
+            data.bottom = new FormAttachment(100, -10);
+            belowArea.setLayoutData(data);
+            
+            createAdditionalContentBelow(belowArea);
+        }
+
         Composite sampleArea = new Composite(container, SWT.NONE);
         sampleArea.setLayout(new FillLayout());
         createSampleArea(sampleArea);
@@ -367,7 +384,10 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         data.top = new FormAttachment(grpQuoteFeed, 5);
         data.left = new FormAttachment(0, 10);
         data.right = new FormAttachment(100, -10);
-        data.bottom = new FormAttachment(100, -10);
+        if(sizeBelow > 0)
+            data.bottom = new FormAttachment(belowArea, -10);
+        else 
+            data.bottom = new FormAttachment(100, -10);
         sampleArea.setLayoutData(data);
 
         setupInitialData();
@@ -376,6 +396,15 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
     }
 
     protected void createAdditionalButtons(Composite container)
+    {
+    }
+
+    protected int getSizeAdditionalContentBelow()
+    {
+        return 0;
+    }
+
+    protected void createAdditionalContentBelow(Composite container)
     {
     }
 
