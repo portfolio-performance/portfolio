@@ -59,6 +59,8 @@ public class ReportingPeriodDialog extends Dialog
 
     private Button radioYTD;
 
+    private Button radioLastWeek;
+
     private List<Button> radioBtnList;
 
     public ReportingPeriodDialog(Shell parentShell, ReportingPeriod template)
@@ -141,6 +143,9 @@ public class ReportingPeriodDialog extends Dialog
         radioYTD = new Button(editArea, SWT.RADIO);
         radioYTD.setText(Messages.LabelYTD);
 
+        radioLastWeek = new Button(editArea, SWT.RADIO);
+        radioLastWeek.setText(Messages.LabelLastWeek);
+        
         //
         // form layout
         //
@@ -185,6 +190,8 @@ public class ReportingPeriodDialog extends Dialog
         FormDataFactory.startingWith(radioCurrentQuarter).top(new FormAttachment(radioCurrentMonth, 20));
 
         FormDataFactory.startingWith(radioYTD).top(new FormAttachment(radioCurrentQuarter, 20));
+        
+        FormDataFactory.startingWith(radioLastWeek).top(new FormAttachment(radioYTD, 20));
 
         //
         // wiring
@@ -193,7 +200,7 @@ public class ReportingPeriodDialog extends Dialog
         presetFromTemplate();
 
         radioBtnList = Arrays.asList(radioLast, radioLastDays, radioLastTradingDays, radioFromXtoY, radioSinceX,
-                        radioYearX, radioCurrentWeek, radioCurrentMonth, radioCurrentQuarter, radioYTD);
+                        radioYearX, radioCurrentWeek, radioCurrentMonth, radioCurrentQuarter, radioYTD, radioLastWeek);
         activateRadioOnChange(radioLast, years, months);
         activateRadioOnChange(radioLastDays, days);
         activateRadioOnChange(radioLastTradingDays, tradingDays);
@@ -245,6 +252,8 @@ public class ReportingPeriodDialog extends Dialog
             radioCurrentQuarter.setSelection(true);
         else if (template instanceof ReportingPeriod.YearToDate)
             radioYTD.setSelection(true);
+        else if (template instanceof ReportingPeriod.LastWeek)
+            radioLastWeek.setSelection(true);
         else
             throw new IllegalArgumentException();
 
@@ -316,6 +325,10 @@ public class ReportingPeriodDialog extends Dialog
         else if (radioYTD.getSelection())
         {
             result = new ReportingPeriod.YearToDate();
+        }
+        else if (radioLastWeek.getSelection())
+        {
+            result = new ReportingPeriod.LastWeek();
         }
         else
         {
