@@ -60,6 +60,9 @@ public class TradeCalendarManager
 {
     private static String defaultCalendarCode = "default"; //$NON-NLS-1$
 
+    public static final String TARGET2_CALENDAR_CODE = "TARGET2"; //$NON-NLS-1$
+    public static final String FIRST_OF_THE_MONTH_CODE = "first-of-the-month"; //$NON-NLS-1$
+
     private static final Map<String, TradeCalendar> CACHE = new HashMap<>();
 
     static
@@ -203,7 +206,7 @@ public class TradeCalendarManager
 
         // TARGET2 (banking day in euro zone)
         // see https://www.ecb.europa.eu/press/pr/date/2000/html/pr001214_4.en.html
-        tc = new TradeCalendar("TARGET2", Messages.LabelTradeCalendarTARGET2); //$NON-NLS-1$
+        tc = new TradeCalendar(TARGET2_CALENDAR_CODE, Messages.LabelTradeCalendarTARGET2);
         tc.add(fixed(NEW_YEAR, Month.JANUARY, 1));
         tc.add(easter(GOOD_FRIDAY, -2));
         tc.add(easter(EASTER_MONDAY, 1));
@@ -212,7 +215,7 @@ public class TradeCalendarManager
         tc.add(fixed(SECOND_CHRISTMAS_DAY, Month.DECEMBER, 26));
         CACHE.put(tc.getCode(), tc);
         
-        tc = new TradeCalendar("first-of-the-month",  Messages.LabelTradeCalendarFirstOfTheMonth) //$NON-NLS-1$
+        tc = new TradeCalendar(FIRST_OF_THE_MONTH_CODE,  Messages.LabelTradeCalendarFirstOfTheMonth)
         {
             @Override
             /* package */ void add(HolidayType type)

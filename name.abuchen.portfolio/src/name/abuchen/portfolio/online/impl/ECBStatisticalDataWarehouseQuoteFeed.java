@@ -32,6 +32,8 @@ import name.abuchen.portfolio.online.InterestRateToSecurityPricesConverter;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.QuoteFeedData;
 import name.abuchen.portfolio.util.Pair;
+import name.abuchen.portfolio.util.TradeCalendar;
+import name.abuchen.portfolio.util.TradeCalendarManager;
 import name.abuchen.portfolio.util.WebAccess;
 
 public class ECBStatisticalDataWarehouseQuoteFeed implements QuoteFeed
@@ -89,7 +91,7 @@ public class ECBStatisticalDataWarehouseQuoteFeed implements QuoteFeed
     
     private static InterestRateToSecurityPricesConverter.Maturity getMaturity(String provider_fm_id)
     {
-        if(provider_fm_id == null)
+        if (provider_fm_id == null)
         {
             // EONIA data is from EON, not FM, so it does not have a provider_fm_id
             return InterestRateToSecurityPricesConverter.Maturity.OVER_NIGHT;
@@ -124,6 +126,21 @@ public class ECBStatisticalDataWarehouseQuoteFeed implements QuoteFeed
                 return InterestRateToSecurityPricesConverter.Maturity.TEN_YEARS;
             default:
                 return null;
+        }
+    }
+    
+    private static TradeCalendar getTradeCalendar(String provider_fm_id)
+    {
+        if (provider_fm_id == null)
+        {
+            // EONIA data is from EON, not FM, so it does not have a provider_fm_id
+            // EONIA has daily data
+            return TradeCalendarManager.getInstance(TradeCalendarManager.TARGET2_CALENDAR_CODE);
+        }
+        else
+        {
+            // All other indices have only one quote at the beginning of each month
+            return TradeCalendarManager.getInstance(TradeCalendarManager.FIRST_OF_THE_MONTH_CODE);
         }
     }
 
@@ -203,7 +220,7 @@ public class ECBStatisticalDataWarehouseQuoteFeed implements QuoteFeed
 
         InterestRateToSecurityPricesConverter.Interval interval = null;
         InterestRateToSecurityPricesConverter.Maturity maturity = null;
-        String provider = null;
+        String providerIdFM = null;
         for(int i = 0; i < seriesKeyValues.getLength(); i++)
         {
             Element e  = (Element) seriesKeyValues.item(i);
@@ -214,15 +231,16 @@ public class ECBStatisticalDataWarehouseQuoteFeed implements QuoteFeed
             }
             if(e.getAttribute("id").equals("PROVIDER_FM_ID")) //$NON-NLS-1$ //$NON-NLS-2$
             {
-                provider = e.getAttribute("value"); //$NON-NLS-1$
+                providerIdFM = e.getAttribute("value"); //$NON-NLS-1$
             }
         }
-        maturity = getMaturity(provider);
+        maturity = getMaturity(providerIdFM);
         
         NodeList dataList = root.getElementsByTagName("generic:Obs"); //$NON-NLS-1$
 
         List<Pair<LocalDate, Double>> interestRates = new ArrayList<>();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(ECB_SDW_DATE_FORMAT);
+        LocalDate lastInterestRateDay = LocalDate.MIN;
         
         for (int i = 0; i < dataList.getLength(); i++)
         {
@@ -233,7 +251,7 @@ public class ECBStatisticalDataWarehouseQuoteFeed implements QuoteFeed
                 throw new SAXException("Expected one date, but found: " + dateNodeList.getLength()); //$NON-NLS-1$
             Element dateElement = (Element) dateNodeList.item(0);
             String dateString = dateElement.getAttribute("value"); //$NON-NLS-1$
-            if(dateString.matches(MONTH_REGEX))
+            if (dateString.matches(MONTH_REGEX))
             {
                 // If there is only one datapoint per month, we set the date to the first date of the month.
                 // When converting interest rates to cummulated indices, the InterestRateToSecurityPricesConverter
@@ -241,6 +259,15 @@ public class ECBStatisticalDataWarehouseQuoteFeed implements QuoteFeed
                 dateString = dateString + MONTH_POSTFIX;
             }
             LocalDate date = LocalDate.parse(dateString, formatter);
+            
+            if (providerIdFM != null) // Data comes from FM
+            {
+                // The data is a monthly average. We interpret it as end of the month datapoint.
+                date = date.plusMonths(1);
+            }
+            
+            if (date.isAfter(lastInterestRateDay))
+                lastInterestRateDay = date;
 
             NodeList interestRateNodeList = node.getElementsByTagName("generic:ObsValue"); //$NON-NLS-1$
             if (interestRateNodeList.getLength() != 1)
@@ -253,6 +280,16 @@ public class ECBStatisticalDataWarehouseQuoteFeed implements QuoteFeed
                 interestRates.add(new Pair<LocalDate, Double>(date, interestRate));
             }
         }
+        
+        if (providerIdFM == null) // Is EONIA Index? EONIA data is from EON, not FM, so it does not have a provider_fm_id
+        {
+            TradeCalendar tradeCalendar = TradeCalendarManager.getInstance(TradeCalendarManager.TARGET2_CALENDAR_CODE);
+            LocalDate lastQuoteDate = tradeCalendar.getNextNonHoliday(lastInterestRateDay.plusDays(1));
+            // EONIA is an over-night index, so it has modified duration 0 and we can calculate the quote for one
+            // more day given the current interest rate.
+            interestRates.add(new Pair<LocalDate, Double>(lastQuoteDate, Double.NaN));
+        }
+        
         Collection<LatestSecurityPrice> latestSecurityPrices = new InterestRateToSecurityPricesConverter(
                         InterestRateToSecurityPricesConverter.InterestRateType.ACT_360)
                         .convert(interestRates, interval, maturity);
