@@ -65,7 +65,7 @@ public class HistoricalPricesDataQualityPane implements InformationPanePage
         lCompleteness.setToolTipText(TextUtil.wordwrap(Messages.ColumnMetricCompleteness_Description));
 
         completeness = new Label(container, SWT.NONE);
-        completeness.setToolTipText(Messages.ColumnMetricCompleteness_Description);
+        completeness.setToolTipText(TextUtil.wordwrap(Messages.ColumnMetricCompleteness_Description));
 
         checkInterval = new Label(container, SWT.NONE);
 
@@ -86,7 +86,7 @@ public class HistoricalPricesDataQualityPane implements InformationPanePage
         unexpected = unexpectedPair.getRight();
 
         FormDataFactory.startingWith(completeness, lCompleteness).right(new FormAttachment(100))
-                        .thenBelow(checkInterval).left(new FormAttachment(0))
+                        .thenBelow(checkInterval).left(new FormAttachment(0)).right(new FormAttachment(100))
                         .thenBelow(missingLabel)
                         .thenBelow(missingTable).bottom(new FormAttachment(50))
                         .thenBelow(unexpectedLabel)

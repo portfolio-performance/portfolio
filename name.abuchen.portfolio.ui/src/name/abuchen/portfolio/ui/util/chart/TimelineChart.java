@@ -38,6 +38,12 @@ import name.abuchen.portfolio.ui.util.Colors;
 
 public class TimelineChart extends Chart // NOSONAR
 {
+
+    /**
+     * pixel threshold below which sparse label mode is used. The value is a bit arbitrary, but should be fine.
+     */
+    private static final int SPARSE_LABEL_MODE_PIXEL_THRESHOLD = 320;
+
     private static class MarkerLine
     {
         private LocalDate date;
@@ -257,30 +263,57 @@ public class TimelineChart extends Chart // NOSONAR
         DateTimeFormatter format;
 
         long days = ChronoUnit.DAYS.between(start, end);
-        if (days < 250)
+        
+        if (e.width > SPARSE_LABEL_MODE_PIXEL_THRESHOLD)
         {
-            period = Period.ofMonths(1);
-            format = DateTimeFormatter.ofPattern("MMMM yyyy"); //$NON-NLS-1$
-        }
-        else if (days < 800)
-        {
-            period = Period.ofMonths(3);
-            format = DateTimeFormatter.ofPattern("QQQ yyyy"); //$NON-NLS-1$
-            cursor = cursor.plusMonths((12 - cursor.getMonthValue() + 1) % 3);
-        }
-        else if (days < 1200)
-        {
-            period = Period.ofMonths(6);
-            format = DateTimeFormatter.ofPattern("QQQ yyyy"); //$NON-NLS-1$
-            cursor = cursor.plusMonths((12 - cursor.getMonthValue() + 1) % 6);
+            if (days < 250)
+            {
+                period = Period.ofMonths(1);
+                format = DateTimeFormatter.ofPattern("MMMM yyyy"); //$NON-NLS-1$
+            }
+            else if (days < 800)
+            {
+                period = Period.ofMonths(3);
+                format = DateTimeFormatter.ofPattern("QQQ yyyy"); //$NON-NLS-1$
+                cursor = cursor.plusMonths((12 - cursor.getMonthValue() + 1) % 3);
+            }
+            else if (days < 1200)
+            {
+                period = Period.ofMonths(6);
+                format = DateTimeFormatter.ofPattern("QQQ yyyy"); //$NON-NLS-1$
+                cursor = cursor.plusMonths((12 - cursor.getMonthValue() + 1) % 6);
+            }
+            else
+            {
+                period = Period.ofYears(days > 5000 ? 2 : 1);
+                format = DateTimeFormatter.ofPattern("yyyy"); //$NON-NLS-1$
+    
+                if (cursor.getMonthValue() > 1)
+                    cursor = cursor.plusYears(1).withDayOfYear(1);
+            }
         }
         else
         {
-            period = Period.ofYears(days > 5000 ? 2 : 1);
-            format = DateTimeFormatter.ofPattern("yyyy"); //$NON-NLS-1$
-
-            if (cursor.getMonthValue() > 1)
+            // Sparse labeling mode used in low width conditions.
+            // Its purpose is to ensure enough space between the labels to avoid overlays and ensure readability. 
+            // It is mainly relevant to charts embedded into dashboards with narrow columns.
+            if (days < 120)
+            {
+                period = Period.ofMonths(1);
+                format = DateTimeFormatter.ofPattern("MMMM yyyy"); //$NON-NLS-1$
+            }   
+            else if (days < 250)
+            {
+                period = Period.ofMonths(3);
+                format = DateTimeFormatter.ofPattern("QQQ yyyy"); //$NON-NLS-1$
+                cursor = cursor.plusMonths((12 - cursor.getMonthValue() + 1) % 3);
+            }
+            else
+            {
+                period = Period.ofYears(1);
+                format = DateTimeFormatter.ofPattern("yyyy"); //$NON-NLS-1$
                 cursor = cursor.plusYears(1).withDayOfYear(1);
+            }          
         }
 
         e.gc.setForeground(getTitle().getForeground());
