@@ -74,6 +74,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                     {
                         t.setType(PortfolioTransaction.Type.SELL);
                     }
+                    type.getCurrentContext().remove("negative");
                 })
 
                 // ComStage-MSCI USA TRN UCIT.ETF Inhaber-Anteile I o.N. LU0392495700
@@ -176,6 +177,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
         pdfTransaction.subject(() -> {
             AccountTransaction entry = new AccountTransaction();
             entry.setType(AccountTransaction.Type.DIVIDENDS);
+            type.getCurrentContext().remove("negative");
             return entry;
         });
 
@@ -411,6 +413,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
         pdfTransaction.subject(() -> {
             PortfolioTransaction entry = new PortfolioTransaction();
             entry.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
+            type.getCurrentContext().remove("negative");
             return entry;
         });
 
