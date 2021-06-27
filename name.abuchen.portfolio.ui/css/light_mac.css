@@ -2,3 +2,5 @@
 @import url("platform:/plugin/org.eclipse.ui.themes/css/e4_default_mac.css");
 
 @import url("platform:/plugin/name.abuchen.portfolio.ui/css/light/common.css");
+
+@import url("platform:/meta/name.abuchen.portfolio.ui/custom.css")

@@ -83,3 +83,20 @@ CustomColors {
 	green-foreground: #008000;
 
 }
+
+.header {
+	font-size: 14px;
+	font-weight: bold;
+	color: #393E42;
+}
+
+.heading1 {
+	font-size: 14px;
+	font-weight: bold;
+	color: #393E42;
+}
+
+.heading2 {
+	font-weight: bold;
+	color: #393E42;
+}
