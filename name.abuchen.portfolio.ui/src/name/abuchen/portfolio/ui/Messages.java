@@ -541,6 +541,7 @@ public class Messages extends NLS
     public static String LabelLastWeek;
     public static String LabelLastMonth;
     public static String LabelLastQuarter;
+    public static String LabelLastYear;
     public static String LabelDashboard;
     public static String LabelDataSeries;
     public static String LabelDateXToY;

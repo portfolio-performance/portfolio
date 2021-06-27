@@ -61,6 +61,8 @@ public abstract class ReportingPeriod
             return new LastMonth();
         else if (type == LastQuarter.CODE)
             return new LastQuarter();
+        else if (type == LastYear.CODE)
+            return new LastYear();
 
         // backward compatible
         if (code.charAt(code.length() - 1) == 'Y')
@@ -745,6 +747,51 @@ public abstract class ReportingPeriod
 
             LocalDate intervalStart = firstDayOfLastQuarter.minusDays(1);
             LocalDate intervalEnd = lastDayOfLastQuarter;
+            
+            return Interval.of(intervalStart, intervalEnd);
+        }
+
+        @Override
+        public void writeTo(StringBuilder buffer)
+        {
+            buffer.append(CODE);
+        }
+
+        @Override
+        public String toString()
+        {
+            return Messages.LabelReportingPeriodLastQuarter;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hashCode(CODE);
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            return getClass() == obj.getClass();
+        }
+    }
+
+    public static class LastYear extends ReportingPeriod
+    {
+        private static final char CODE = 'G';
+
+        @Override
+        public Interval toInterval(LocalDate relativeTo)
+        {
+            LocalDate firstDayOfLastYear = relativeTo.withDayOfMonth(1).withMonth(1).minusYears(1);
+            LocalDate lastDayOfLastYear = firstDayOfLastYear.withMonth(12).with(lastDayOfMonth());
+
+            LocalDate intervalStart = firstDayOfLastYear.minusDays(1);
+            LocalDate intervalEnd = lastDayOfLastYear;
             
             return Interval.of(intervalStart, intervalEnd);
         }

@@ -59,6 +59,7 @@ public class ReportingPeriodDialog extends Dialog
     private Button radioLastWeek;
     private Button radioLastMonth;
     private Button radioLastQuarter;
+    private Button radioLastYear;
 
     private List<Button> radioBtnList;
 
@@ -151,6 +152,9 @@ public class ReportingPeriodDialog extends Dialog
         radioLastQuarter = new Button(editArea, SWT.RADIO);
         radioLastQuarter.setText(Messages.LabelLastQuarter);
         
+        radioLastYear = new Button(editArea, SWT.RADIO);
+        radioLastYear.setText(Messages.LabelLastYear);
+        
         //
         // form layout
         //
@@ -201,6 +205,8 @@ public class ReportingPeriodDialog extends Dialog
         FormDataFactory.startingWith(radioLastMonth).top(new FormAttachment(radioLastWeek, 20));
 
         FormDataFactory.startingWith(radioLastQuarter).top(new FormAttachment(radioLastMonth, 20));
+        
+        FormDataFactory.startingWith(radioLastYear).top(new FormAttachment(radioLastQuarter, 20));
 
         //
         // wiring
@@ -210,7 +216,7 @@ public class ReportingPeriodDialog extends Dialog
 
         radioBtnList = Arrays.asList(radioLast, radioLastDays, radioLastTradingDays, radioFromXtoY, radioSinceX,
                         radioYearX, radioCurrentWeek, radioCurrentMonth, radioCurrentQuarter, radioYTD, radioLastWeek,
-                        radioLastMonth, radioLastQuarter);
+                        radioLastMonth, radioLastQuarter, radioLastYear);
         activateRadioOnChange(radioLast, years, months);
         activateRadioOnChange(radioLastDays, days);
         activateRadioOnChange(radioLastTradingDays, tradingDays);
@@ -268,6 +274,8 @@ public class ReportingPeriodDialog extends Dialog
             radioLastMonth.setSelection(true);
         else if (template instanceof ReportingPeriod.LastQuarter)
             radioLastQuarter.setSelection(true);
+        else if (template instanceof ReportingPeriod.LastYear)
+            radioLastYear.setSelection(true);
         else
             throw new IllegalArgumentException();
 
@@ -351,6 +359,10 @@ public class ReportingPeriodDialog extends Dialog
         else if (radioLastQuarter.getSelection())
         {
             result = new ReportingPeriod.LastQuarter();
+        }
+        else if (radioLastYear.getSelection())
+        {
+            result = new ReportingPeriod.LastYear();
         }
         else
         {
