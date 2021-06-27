@@ -59,6 +59,8 @@ public abstract class ReportingPeriod
             return new LastWeek();
         else if (type == LastMonth.CODE)
             return new LastMonth();
+        else if (type == LastQuarter.CODE)
+            return new LastQuarter();
 
         // backward compatible
         if (code.charAt(code.length() - 1) == 'Y')
@@ -710,6 +712,53 @@ public abstract class ReportingPeriod
         public String toString()
         {
             return Messages.LabelReportingPeriodLastMonth;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hashCode(CODE);
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            return getClass() == obj.getClass();
+        }
+    }
+
+    public static class LastQuarter extends ReportingPeriod
+    {
+        private static final char CODE = 'B';
+
+        @Override
+        public Interval toInterval(LocalDate relativeTo)
+        {
+            LocalDate firstDayOfCurrentQuarter = relativeTo.with(DAY_OF_QUARTER, 1L);
+            
+            LocalDate firstDayOfLastQuarter = firstDayOfCurrentQuarter.minusMonths(3);
+            LocalDate lastDayOfLastQuarter = firstDayOfLastQuarter.plusMonths(2).with(lastDayOfMonth());
+
+            LocalDate intervalStart = firstDayOfLastQuarter.minusDays(1);
+            LocalDate intervalEnd = lastDayOfLastQuarter;
+            
+            return Interval.of(intervalStart, intervalEnd);
+        }
+
+        @Override
+        public void writeTo(StringBuilder buffer)
+        {
+            buffer.append(CODE);
+        }
+
+        @Override
+        public String toString()
+        {
+            return Messages.LabelReportingPeriodLastQuarter;
         }
 
         @Override
