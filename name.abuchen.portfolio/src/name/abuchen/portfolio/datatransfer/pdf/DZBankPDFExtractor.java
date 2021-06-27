@@ -120,10 +120,10 @@ public class DZBankPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("(Dividendengutschrift|Aussch.ttung Investmentfonds)");
+        DocumentType type = new DocumentType("(Dividendengutschrift|Aussch.ttung Investmentfonds|Ertragsgutschrift)");
         this.addDocumentTyp(type);
 
-        Block block = new Block("(Dividendengutschrift|Ausschüttung Investmentfonds)");
+        Block block = new Block("^(Dividendengutschrift|Ausschüttung Investmentfonds|Ertragsgutschrift .*)$");
         type.addBlock(block);
         Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>()
             .subject(() -> {

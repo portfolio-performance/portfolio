@@ -31,6 +31,7 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
@@ -912,6 +913,12 @@ public class StatementOfAssetsViewer
         }
     }
 
+    public void selectSubject(Object subject)
+    {
+        model.getElements().stream().filter(e -> Objects.equals(e.getSubject(), subject)).findAny()
+                        .ifPresent(e -> assets.setSelection(new StructuredSelection(e)));
+    }
+
     public Function<Stream<Object>, Object> withSum()
     {
         return elements -> elements.map(e -> (Money) e)
@@ -968,6 +975,20 @@ public class StatementOfAssetsViewer
         {
             this.groupByTaxonomy = groupByTaxonomy;
             this.sortOrder = sortOrder;
+        }
+
+        /**
+         * Returns the primary object which identifies this element: the
+         * investment vehicle, the classification or the grouping.
+         */
+        public Object getSubject()
+        {
+            if (position != null)
+                return position.getInvestmentVehicle();
+            else if (category != null)
+                return category.getClassification();
+            else
+                return groupByTaxonomy;
         }
 
         public GroupByTaxonomy getGroupByTaxonomy()

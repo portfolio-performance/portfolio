@@ -606,14 +606,9 @@ public class SecuritiesChart
         return action;
     }
 
-    public void setClient(Client client)
+    public void updateChart(Client client, Security security)
     {
         this.client = client;
-        updateChart();
-    }
-
-    public void updateChart(Security security)
-    {
         this.security = security;
         updateChart();
     }

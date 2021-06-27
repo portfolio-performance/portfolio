@@ -48,4 +48,18 @@ public class IRRTest
         assertThat(result, IsCloseTo.closeTo(excel, 0.0001d));
     }
 
+    // issue #1904
+    @Test
+    public void testSmallConvergenceInterval()
+    {
+        double result = IRR.calculate(Arrays.asList(
+                        LocalDate.of(2019, Month.MAY, 24),
+                        LocalDate.of(2020, Month.JANUARY, 13),
+                        LocalDate.of(2020, Month.JUNE, 29)),
+                        Arrays.asList(-1560.94, -1160d, 42.80));
+
+        double excel = -0.999251643;
+
+        assertThat(result, IsCloseTo.closeTo(excel, 0.0001d));
+    }
 }

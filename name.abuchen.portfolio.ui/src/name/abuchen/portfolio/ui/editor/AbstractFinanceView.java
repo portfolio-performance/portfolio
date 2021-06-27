@@ -140,7 +140,7 @@ public abstract class AbstractFinanceView
         return Display.getDefault().getActiveShell();
     }
 
-    public final void createViewControl(Composite parent)
+    public final void createViewControl(Composite parent, boolean hideInformationPane)
     {
         top = new Composite(parent, SWT.NONE);
         // on windows, add a spacing line as tables
@@ -166,7 +166,9 @@ public abstract class AbstractFinanceView
         pane.setLayoutData(new SashLayoutData(-200));
 
         int size = getPreferenceStore().getInt(identifier);
-        pane.setLayoutData(new SashLayoutData(size != 0 ? size : -200));
+        if (size == 0)
+            size = hideInformationPane ? -200 : 200;
+        pane.setLayoutData(new SashLayoutData(size));
         sash.addDisposeListener(e -> getPreferenceStore().setValue(identifier,
                         ((SashLayoutData) pane.getLayoutData()).getSize()));
 

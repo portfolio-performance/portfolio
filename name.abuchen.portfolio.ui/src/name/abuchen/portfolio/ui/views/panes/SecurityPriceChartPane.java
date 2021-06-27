@@ -69,7 +69,7 @@ public class SecurityPriceChartPane implements InformationPanePage
     public void setInput(Object input)
     {
         security = Adaptor.adapt(Security.class, input);
-        chart.updateChart(security);
+        chart.updateChart(client, security);
         details.setInput(security);
     }
 

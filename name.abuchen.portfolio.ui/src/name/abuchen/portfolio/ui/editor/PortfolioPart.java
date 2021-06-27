@@ -503,7 +503,7 @@ public class PortfolioPart implements ClientInputListener
 
         try
         {
-            createView(item.getViewClass(), parameter);
+            createView(item.getViewClass(), parameter, item.hideInformationPane());
 
             this.selectedItem = item;
 
@@ -512,11 +512,11 @@ public class PortfolioPart implements ClientInputListener
         catch (Exception e)
         {
             PortfolioPlugin.log(e);
-            createView(ExceptionView.class, e);
+            createView(ExceptionView.class, e, true);
         }
     }
 
-    private void createView(Class<? extends AbstractFinanceView> clazz, Object parameter)
+    private void createView(Class<? extends AbstractFinanceView> clazz, Object parameter, boolean hideInformationPane)
     {
         IEclipseContext viewContext = this.context.createChild(clazz.getName());
         viewContext.set(Client.class, this.clientInput.getClient());
@@ -547,7 +547,7 @@ public class PortfolioPart implements ClientInputListener
         AbstractFinanceView underConstruction = ContextInjectionFactory.make(clazz, viewContext);
         viewContext.set(AbstractFinanceView.class, underConstruction);
 
-        underConstruction.createViewControl(book);
+        underConstruction.createViewControl(book, hideInformationPane);
 
         view = underConstruction;
         book.showPage(view.getControl());
