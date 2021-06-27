@@ -69,7 +69,8 @@ public class HistoricalPricesDataQualityPane implements InformationPanePage
         Composite table = createTable(container);
 
         FormDataFactory.startingWith(completeness, lCompleteness).right(new FormAttachment(100))
-                        .thenBelow(checkInterval).left(new FormAttachment(0)).thenBelow(table)
+                        .thenBelow(checkInterval).left(new FormAttachment(0)).right(new FormAttachment(100))
+                        .thenBelow(table)
                         .bottom(new FormAttachment(100));
 
         return container;
