@@ -44,14 +44,16 @@ public class InterestRateToSecurityPricesConverter
     }
 
     /**
-     * Calculate security prices based on interest rates. This method assumes that interest is paid
-     * every day at midnight with the latest interest rate from {@code interestRates}. It produces
-     * one security price per interest rate in {@code interestRates}. Price changes of fixed price
-     * securities are taken into account using the modified duration.
+     * Calculate security prices based on interest rates. This method assumes
+     * that interest is paid every day at midnight with the latest interest rate
+     * from {@code interestRates}. It produces one security price per interest
+     * rate in {@code interestRates}. Price changes of fixed price securities
+     * are taken into account using the modified duration. The last interest
+     * rate is ignored (only the day is used to compute the last price).
      * 
-     * The last interest rate is ignored (only the day is used to compute the last price).
-     * 
-     * @param interestRates Annualized interest rates as percent (i.e. for 1.5% p.a. the double {@code 1.5d}). 
+     * @param interestRates
+     *            Annualized interest rates as percent (i.e. for 1.5% p.a. the
+     *            double {@code 1.5d}).
      */
     public Collection<LatestSecurityPrice> convert(List<Pair<LocalDate, Double>> interestRates,
                     Interval interval, Maturity maturity)
@@ -67,6 +69,10 @@ public class InterestRateToSecurityPricesConverter
 
         for(int nextInterestRateIndex = 0; nextInterestRateIndex < interestRates.size() - 1; nextInterestRateIndex++)
         {
+            if(nextInterestRateIndex == interestRates.size() - 2)
+            {
+                int temp = 0;
+            }
             double overNightInterestRate = interestRates.get(nextInterestRateIndex).getRight();
             long overNightReturn = 0;
 
@@ -82,10 +88,13 @@ public class InterestRateToSecurityPricesConverter
                             interestRates.get(nextInterestRateIndex + 1).getLeft());
             
             lastValue += days * overNightReturn;
-            double modifiedDuration = getModifiedDuration(maturity, interestRates.get(nextInterestRateIndex).getRight() / 100d)
-                            * (interestRates.get(nextInterestRateIndex).getRight()
-                            - interestRates.get(nextInterestRateIndex + 1).getRight()) / 100d;
-            lastValue *= (1d + modifiedDuration);
+            if(maturity != Maturity.OVER_NIGHT)
+            {
+                double modifiedDuration = getModifiedDuration(maturity, interestRates.get(nextInterestRateIndex).getRight() / 100d)
+                                * (interestRates.get(nextInterestRateIndex).getRight()
+                                - interestRates.get(nextInterestRateIndex + 1).getRight()) / 100d;
+                lastValue *= (1d + modifiedDuration);
+            }
             results.add(toLatestSecurityPrice(interestRates.get(nextInterestRateIndex + 1).getLeft(), lastValue));
         }
         return results;
@@ -104,8 +113,7 @@ public class InterestRateToSecurityPricesConverter
         switch(maturity)
         {
             case OVER_NIGHT:
-                paymentsPerYear = Double.POSITIVE_INFINITY;
-                break;
+                return 0;
             case ONE_MONTH:
                 paymentsPerYear = 12d;
                 break;
