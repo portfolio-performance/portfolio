@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.snapshot;
 
 import static java.time.temporal.IsoFields.DAY_OF_QUARTER;
+import static java.time.temporal.TemporalAdjusters.firstDayOfMonth;
 import static java.time.temporal.TemporalAdjusters.lastDayOfMonth;
 import static java.time.temporal.TemporalAdjusters.previousOrSame;
 
@@ -56,6 +57,8 @@ public abstract class ReportingPeriod
             return new YearToDate();
         else if (type == LastWeek.CODE)
             return new LastWeek();
+        else if (type == LastMonth.CODE)
+            return new LastMonth();
 
         // backward compatible
         if (code.charAt(code.length() - 1) == 'Y')
@@ -662,6 +665,51 @@ public abstract class ReportingPeriod
         public String toString()
         {
             return Messages.LabelReportingPeriodLastWeek;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hashCode(CODE);
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            return getClass() == obj.getClass();
+        }
+    }
+    
+    public static class LastMonth extends ReportingPeriod
+    {
+        private static final char CODE = 'V';
+
+        @Override
+        public Interval toInterval(LocalDate relativeTo)
+        {
+            LocalDate startMonth = relativeTo.minusMonths(1).with(firstDayOfMonth());
+            LocalDate endMonth = relativeTo.minusMonths(1).with(lastDayOfMonth());
+            
+            LocalDate intervalStart = startMonth.minusDays(1);
+            LocalDate intervalEnd = endMonth;
+            
+            return Interval.of(intervalStart, intervalEnd);
+        }
+
+        @Override
+        public void writeTo(StringBuilder buffer)
+        {
+            buffer.append(CODE);
+        }
+
+        @Override
+        public String toString()
+        {
+            return Messages.LabelReportingPeriodLastMonth;
         }
 
         @Override
