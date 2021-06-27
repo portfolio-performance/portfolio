@@ -159,7 +159,23 @@ public class ReportingPeriodDialog extends Dialog
         // form layout
         //
 
-        FormDataFactory.startingWith(radioLast).top(new FormAttachment(0, 10)).thenRight(years).thenRight(lblYears)
+        FormDataFactory.startingWith(radioCurrentWeek).top(new FormAttachment(0, 10));
+        
+        FormDataFactory.startingWith(radioCurrentMonth).top(new FormAttachment(radioCurrentWeek, 20));
+        
+        FormDataFactory.startingWith(radioCurrentQuarter).top(new FormAttachment(radioCurrentMonth, 20));
+
+        FormDataFactory.startingWith(radioYTD).top(new FormAttachment(radioCurrentQuarter, 20));
+        
+        FormDataFactory.startingWith(radioLastWeek).top(new FormAttachment(radioYTD, 20));
+
+        FormDataFactory.startingWith(radioLastMonth).top(new FormAttachment(radioLastWeek, 20));
+
+        FormDataFactory.startingWith(radioLastQuarter).top(new FormAttachment(radioLastMonth, 20));
+        
+        FormDataFactory.startingWith(radioLastYear).top(new FormAttachment(radioLastQuarter, 20));
+        
+        FormDataFactory.startingWith(radioLast).top(new FormAttachment(radioLastYear, 20)).thenRight(years).thenRight(lblYears)
                         .thenRight(months).thenRight(lblMonths);
 
         FormDataFactory.startingWith(radioLastDays).top(new FormAttachment(radioLast, 20)).thenRight(days)
@@ -192,21 +208,6 @@ public class ReportingPeriodDialog extends Dialog
 
         FormDataFactory.startingWith(radioYearX).top(new FormAttachment(radioSinceX, 20)).thenRight(year);
 
-        FormDataFactory.startingWith(radioCurrentWeek).top(new FormAttachment(radioYearX, 20));
-        
-        FormDataFactory.startingWith(radioCurrentMonth).top(new FormAttachment(radioCurrentWeek, 20));
-        
-        FormDataFactory.startingWith(radioCurrentQuarter).top(new FormAttachment(radioCurrentMonth, 20));
-
-        FormDataFactory.startingWith(radioYTD).top(new FormAttachment(radioCurrentQuarter, 20));
-
-        FormDataFactory.startingWith(radioLastWeek).top(new FormAttachment(radioYTD, 20));
-
-        FormDataFactory.startingWith(radioLastMonth).top(new FormAttachment(radioLastWeek, 20));
-
-        FormDataFactory.startingWith(radioLastQuarter).top(new FormAttachment(radioLastMonth, 20));
-        
-        FormDataFactory.startingWith(radioLastYear).top(new FormAttachment(radioLastQuarter, 20));
 
         //
         // wiring
