@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Portfolio Performance Tests
 Bundle-SymbolicName: name.abuchen.portfolio.tests
-Bundle-Version: 0.53.2.x86
+Bundle-Version: 0.53.3.x86
 Fragment-Host: name.abuchen.portfolio
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Vendor: Andreas Buchen
