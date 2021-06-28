@@ -30,7 +30,7 @@ public class CurrentMonthTest
         String code = "M";
         StringBuilder strb = new StringBuilder();
 
-        ReportingPeriod period = ReportingPeriod.from(code);
+        ReportingPeriod period = new ReportingPeriod.CurrentMonth();
         period.writeTo(strb);
 
         assertEquals(strb.toString(), code);

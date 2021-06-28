@@ -27,10 +27,12 @@ public class LastXTest
     @Test
     public void testWriteTo() throws IOException
     {
-        String code = "L2Y6";
+        int years = 2;
+        int month = 6;
+        String code = "L" + years + "Y" + month; // L2Y6
         StringBuilder strb = new StringBuilder();
 
-        ReportingPeriod period = ReportingPeriod.from(code);
+        ReportingPeriod period = new ReportingPeriod.LastX(years, month);
         period.writeTo(strb);
 
         assertEquals(strb.toString(), code);

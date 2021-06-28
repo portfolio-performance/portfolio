@@ -30,7 +30,10 @@ public class FromXtoYTest
         String code = "F2020-04-04_2020-04-08";
         StringBuilder strb = new StringBuilder();
 
-        ReportingPeriod period = ReportingPeriod.from(code);
+        LocalDate startDate = LocalDate.of(2020, 4, 4);
+        LocalDate endDate = LocalDate.of(2020, 4, 8);
+        
+        ReportingPeriod period = new ReportingPeriod.FromXtoY(startDate, endDate);
         period.writeTo(strb);
 
         assertEquals(strb.toString(), code);

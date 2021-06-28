@@ -29,10 +29,10 @@ public class LastQuarterTest
     @Test
     public void testWriteTo() throws IOException
     {
-        String code = "Q";
+        String code = "B";
         StringBuilder strb = new StringBuilder();
 
-        ReportingPeriod period = ReportingPeriod.from(code);
+        ReportingPeriod period = new ReportingPeriod.LastQuarter();
         period.writeTo(strb);
 
         assertEquals(strb.toString(), code);

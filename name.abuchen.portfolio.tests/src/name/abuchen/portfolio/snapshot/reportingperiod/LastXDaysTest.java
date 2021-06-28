@@ -26,10 +26,11 @@ public class LastXDaysTest
     @Test
     public void testWriteTo() throws IOException
     {
-        String code = "D90";
+        int days = 90;
+        String code = "D" + days;
         StringBuilder strb = new StringBuilder();
 
-        ReportingPeriod period = ReportingPeriod.from(code);
+        ReportingPeriod period = new ReportingPeriod.LastXDays(90);
         period.writeTo(strb);
 
         assertEquals(strb.toString(), code);

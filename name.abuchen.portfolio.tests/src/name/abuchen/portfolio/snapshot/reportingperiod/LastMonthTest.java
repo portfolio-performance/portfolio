@@ -32,7 +32,7 @@ public class LastMonthTest
         String code = "V";
         StringBuilder strb = new StringBuilder();
 
-        ReportingPeriod period = ReportingPeriod.from(code);
+        ReportingPeriod period = new ReportingPeriod.LastMonth();
         period.writeTo(strb);
 
         assertEquals(strb.toString(), code);

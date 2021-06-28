@@ -36,7 +36,7 @@ public class LastWeekTest
         String code = "C";
         StringBuilder strb = new StringBuilder();
 
-        ReportingPeriod period = ReportingPeriod.from(code);
+        ReportingPeriod period = new ReportingPeriod.LastWeek();
         period.writeTo(strb);
 
         assertEquals(strb.toString(), code);

@@ -36,7 +36,7 @@ public class CurrentWeekTest
         String code = "W";
         StringBuilder strb = new StringBuilder();
 
-        ReportingPeriod period = ReportingPeriod.from(code);
+        ReportingPeriod period = new ReportingPeriod.CurrentWeek();
         period.writeTo(strb);
 
         assertEquals(strb.toString(), code);

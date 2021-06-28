@@ -30,7 +30,7 @@ public class YearToDateTest
         String code = "X";
         StringBuilder strb = new StringBuilder();
 
-        ReportingPeriod period = ReportingPeriod.from(code);
+        ReportingPeriod period = new ReportingPeriod.YearToDate();
         period.writeTo(strb);
 
         assertEquals(strb.toString(), code);

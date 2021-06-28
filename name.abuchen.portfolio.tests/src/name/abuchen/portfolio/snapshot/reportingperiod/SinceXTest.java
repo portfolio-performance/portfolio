@@ -29,8 +29,10 @@ public class SinceXTest
     {
         String code = "S2020-04-04";
         StringBuilder strb = new StringBuilder();
-
-        ReportingPeriod period = ReportingPeriod.from(code);
+        
+        LocalDate sinceDate = LocalDate.of(2020, 4, 4);
+        
+        ReportingPeriod period = new ReportingPeriod.SinceX(sinceDate);
         period.writeTo(strb);
 
         assertEquals(strb.toString(), code);

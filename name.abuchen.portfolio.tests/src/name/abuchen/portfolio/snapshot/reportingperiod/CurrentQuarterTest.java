@@ -31,7 +31,7 @@ public class CurrentQuarterTest
         String code = "Q";
         StringBuilder strb = new StringBuilder();
 
-        ReportingPeriod period = ReportingPeriod.from(code);
+        ReportingPeriod period = new ReportingPeriod.CurrentQuarter();
         period.writeTo(strb);
 
         assertEquals(strb.toString(), code);

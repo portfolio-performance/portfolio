@@ -49,10 +49,11 @@ public class LastXTradingDaysTest
     @Test
     public void testWriteTo() throws IOException
     {
-        String code = "T10";
+        int tradingDays = 10;
+        String code = "T" + tradingDays;
         StringBuilder strb = new StringBuilder();
 
-        ReportingPeriod period = ReportingPeriod.from(code);
+        ReportingPeriod period = new ReportingPeriod.LastXTradingDays(tradingDays);
         period.writeTo(strb);
 
         assertEquals(strb.toString(), code);

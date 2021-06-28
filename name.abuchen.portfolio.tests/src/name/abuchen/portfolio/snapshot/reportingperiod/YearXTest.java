@@ -27,10 +27,11 @@ public class YearXTest
     @Test
     public void testWriteTo() throws IOException
     {
-        String code = "Y2019";
+        int year = 2019;
+        String code = "Y" + year;
         StringBuilder strb = new StringBuilder();
 
-        ReportingPeriod period = ReportingPeriod.from(code);
+        ReportingPeriod period = new ReportingPeriod.YearX(year);
         period.writeTo(strb);
 
         assertEquals(strb.toString(), code);

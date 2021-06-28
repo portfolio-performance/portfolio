@@ -31,7 +31,7 @@ public class LastYearTest
         String code = "G";
         StringBuilder strb = new StringBuilder();
 
-        ReportingPeriod period = ReportingPeriod.from(code);
+        ReportingPeriod period = new ReportingPeriod.LastYear();
         period.writeTo(strb);
 
         assertEquals(strb.toString(), code);
