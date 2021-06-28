@@ -159,7 +159,31 @@ public class ReportingPeriodDialog extends Dialog
         // form layout
         //
 
-        FormDataFactory.startingWith(radioCurrentWeek).top(new FormAttachment(0, 10));
+        if (Platform.OS_MACOSX.equals(Platform.getOS()))
+        {
+            // under Mac OS X, the date input fields are not align with the text
+            // by default
+
+            FormDataFactory.startingWith(radioFromXtoY).top(new FormAttachment(0, 10))
+                            .thenRight(dateFrom.getControl()).top(new FormAttachment(radioFromXtoY, -1, SWT.TOP))
+                            .thenRight(lblTo).top(new FormAttachment(radioFromXtoY, 2, SWT.TOP))
+                            .thenRight(dateTo.getControl()).top(new FormAttachment(radioFromXtoY, -1, SWT.TOP));
+
+            FormDataFactory.startingWith(radioSinceX).top(new FormAttachment(radioFromXtoY, 20))
+                            .thenRight(dateSince.getControl()).top(new FormAttachment(radioSinceX, -1, SWT.TOP));
+        }
+        else
+        {
+            FormDataFactory.startingWith(radioFromXtoY).top(new FormAttachment(0, 10))
+                            .thenRight(dateFrom.getControl()).thenRight(lblTo).thenRight(dateTo.getControl());
+
+            FormDataFactory.startingWith(radioSinceX).top(new FormAttachment(radioFromXtoY, 20))
+                            .thenRight(dateSince.getControl());
+        }
+
+        FormDataFactory.startingWith(radioYearX).top(new FormAttachment(radioSinceX, 20)).thenRight(year);
+
+        FormDataFactory.startingWith(radioCurrentWeek).top(new FormAttachment(radioYearX, 20));
         
         FormDataFactory.startingWith(radioCurrentMonth).top(new FormAttachment(radioCurrentWeek, 20));
         
@@ -183,30 +207,6 @@ public class ReportingPeriodDialog extends Dialog
 
         FormDataFactory.startingWith(radioLastTradingDays).top(new FormAttachment(radioLastDays, 20))
                         .thenRight(tradingDays).thenRight(lblTradingDays);
-
-        if (Platform.OS_MACOSX.equals(Platform.getOS()))
-        {
-            // under Mac OS X, the date input fields are not align with the text
-            // by default
-
-            FormDataFactory.startingWith(radioFromXtoY).top(new FormAttachment(radioLastTradingDays, 20))
-                            .thenRight(dateFrom.getControl()).top(new FormAttachment(radioFromXtoY, -1, SWT.TOP))
-                            .thenRight(lblTo).top(new FormAttachment(radioFromXtoY, 2, SWT.TOP))
-                            .thenRight(dateTo.getControl()).top(new FormAttachment(radioFromXtoY, -1, SWT.TOP));
-
-            FormDataFactory.startingWith(radioSinceX).top(new FormAttachment(radioFromXtoY, 20))
-                            .thenRight(dateSince.getControl()).top(new FormAttachment(radioSinceX, -1, SWT.TOP));
-        }
-        else
-        {
-            FormDataFactory.startingWith(radioFromXtoY).top(new FormAttachment(radioLastTradingDays, 20))
-                            .thenRight(dateFrom.getControl()).thenRight(lblTo).thenRight(dateTo.getControl());
-
-            FormDataFactory.startingWith(radioSinceX).top(new FormAttachment(radioFromXtoY, 20))
-                            .thenRight(dateSince.getControl());
-        }
-
-        FormDataFactory.startingWith(radioYearX).top(new FormAttachment(radioSinceX, 20)).thenRight(year);
 
 
         //
