@@ -63,10 +63,10 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                     {
                         t.setType(PortfolioTransaction.Type.SELL);
                     }
-                    
+
                     /***
-                     * If we have multiple entries in the document, 
-                     * with taxes and tax refunds, 
+                     * If we have multiple entries in the document,
+                     * with taxes and tax refunds,
                      * then the "negative" flag must be removed.
                      */
                     type.getCurrentContext().remove("negative");
@@ -83,7 +83,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                 // Stück 7,1535 BGF - WORLD TECHNOLOGY FUND LU0171310443 (A0BMAN)
                 .section("shares", "name", "isin", "wkn").optional()
                 .match("^Nominale Wertpapierbezeichnung ISIN \\(WKN\\)$")
-                .match("^St.ck (?<shares>[.,\\d]+) (?<name>.*) (?<isin>\\w{12}) \\((?<wkn>.*)\\)$")
+                .match("^St.ck (?<shares>[.,\\d]+) (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
                 .assign((t, v) -> {
                     t.setShares(asShares(v.get("shares")));
                     t.setSecurity(getOrCreateSecurity(v));
