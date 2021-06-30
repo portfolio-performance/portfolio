@@ -3,6 +3,7 @@ package name.abuchen.portfolio.snapshot.reportingperiod;
 import static java.time.temporal.TemporalAdjusters.lastDayOfMonth;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -10,36 +11,32 @@ import java.time.LocalDate;
 import org.junit.Test;
 
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
+import name.abuchen.portfolio.snapshot.ReportingPeriod.LastXTradingDays;
 import name.abuchen.portfolio.snapshot.ReportingPeriod.LastYear;
+import name.abuchen.portfolio.snapshot.ReportingPeriodType;
 import name.abuchen.portfolio.util.Interval;
 
-@SuppressWarnings("nls")
 public class LastYearTest
 {
     @Test
-    public void testContructor() throws IOException
+    public void testSerializationDeserializationRoundtrip() throws IOException
     {
-        String code = "G";
-        ReportingPeriod period = ReportingPeriod.from(code);
+        ReportingPeriod period = new LastYear();
 
-        assertEquals(period.getClass(), LastYear.class);
-    }
-
-    @Test
-    public void testWriteTo() throws IOException
-    {
-        String code = "G";
         StringBuilder strb = new StringBuilder();
-
-        ReportingPeriod period = new ReportingPeriod.LastYear();
         period.writeTo(strb);
+        String serialized = strb.toString();
+        assertTrue(serialized.contains(ReportingPeriodType.PREVIOUS_YEAR.name())); //NOSONAR
 
-        assertEquals(strb.toString(), code);
+        ReportingPeriod deserialized = ReportingPeriod.from(serialized);
+        assertEquals(deserialized, period);
     }
 
     @Test
-    public void testToInterval() throws IOException
+    public void testToInterval()
     {
+        ReportingPeriod period = new LastYear();
+        
         LocalDate today = LocalDate.now();
         
         LocalDate firstDayOfLastYear = today.withDayOfMonth(1).withMonth(1).minusYears(1);
@@ -47,8 +44,6 @@ public class LastYearTest
 
         LocalDate intervalStart = firstDayOfLastYear.minusDays(1);
         LocalDate intervalEnd = lastDayOfLastYear;
-        
-        ReportingPeriod period = ReportingPeriod.from("G");
 
         Interval result = period.toInterval(today);
 
@@ -56,11 +51,11 @@ public class LastYearTest
     }
 
     @Test
-    public void testEquals() throws IOException
+    public void testEquals()
     {
-        ReportingPeriod equal1 = ReportingPeriod.from("G");
-        ReportingPeriod equal2 = ReportingPeriod.from("G");
-        ReportingPeriod notEqualDifferentClass = ReportingPeriod.from("T10");
+        ReportingPeriod equal1 = new LastYear();
+        ReportingPeriod equal2 = new LastYear();
+        ReportingPeriod notEqualDifferentClass = new LastXTradingDays(10);
 
         assertNotEquals(equal1, null);
         assertNotEquals(equal1, notEqualDifferentClass);

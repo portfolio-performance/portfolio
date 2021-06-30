@@ -2,6 +2,7 @@ package name.abuchen.portfolio.snapshot.reportingperiod;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -10,41 +11,43 @@ import org.junit.Test;
 
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.snapshot.ReportingPeriod.FromXtoY;
+import name.abuchen.portfolio.snapshot.ReportingPeriod.LastXTradingDays;
+import name.abuchen.portfolio.snapshot.ReportingPeriodType;
 import name.abuchen.portfolio.util.Interval;
 
-@SuppressWarnings("nls")
 public class FromXtoYTest
 {
     @Test
-    public void testContructor() throws IOException
+    public void testLegacyContructor() throws IOException
     {
         String code = "F2020-04-04_2020-04-08";
         ReportingPeriod period = ReportingPeriod.from(code);
 
-        assertEquals(period.getClass(), FromXtoY.class);
+        assertEquals(period, new FromXtoY(LocalDate.of(2020, 4, 4), LocalDate.of(2020, 4, 8))); //NOSONAR
     }
-
+    
     @Test
-    public void testWriteTo() throws IOException
+    public void testSerializationDeserializationRoundtrip() throws IOException
     {
-        String code = "F2020-04-04_2020-04-08";
-        StringBuilder strb = new StringBuilder();
-
         LocalDate startDate = LocalDate.of(2020, 4, 4);
         LocalDate endDate = LocalDate.of(2020, 4, 8);
-        
-        ReportingPeriod period = new ReportingPeriod.FromXtoY(startDate, endDate);
-        period.writeTo(strb);
+        ReportingPeriod period = new FromXtoY(startDate, endDate);
 
-        assertEquals(strb.toString(), code);
+        StringBuilder strb = new StringBuilder();
+        period.writeTo(strb);
+        String serialized = strb.toString();
+        assertTrue(serialized.contains(ReportingPeriodType.FROM_X_TO_Y.name()));
+
+        ReportingPeriod deserialized = ReportingPeriod.from(serialized);
+        assertEquals(deserialized, period);
     }
 
     @Test
-    public void testToInterval() throws IOException
+    public void testToInterval()
     {
         LocalDate intervalStart = LocalDate.of(2020, 4, 4);
         LocalDate intervalEnd = LocalDate.of(2020, 4, 8);
-        ReportingPeriod period = ReportingPeriod.from("F2020-04-04_2020-04-08");
+        ReportingPeriod period = new FromXtoY(intervalStart, intervalEnd);
 
         Interval result = period.toInterval(intervalEnd);
 
@@ -52,12 +55,15 @@ public class FromXtoYTest
     }
 
     @Test
-    public void testEquals() throws IOException
+    public void testEquals()
     {
-        ReportingPeriod equal1 = ReportingPeriod.from("F2020-04-04_2020-04-08");
-        ReportingPeriod equal2 = ReportingPeriod.from("F2020-04-04_2020-04-08");
-        ReportingPeriod notEqualSameClass = ReportingPeriod.from("F2020-04-04_2020-04-09");
-        ReportingPeriod notEqualDifferentClass = ReportingPeriod.from("T10");
+        LocalDate startDate = LocalDate.of(2020, 4, 4);
+        LocalDate endDate = LocalDate.of(2020, 4, 8);
+        
+        ReportingPeriod equal1 = new FromXtoY(startDate, endDate);
+        ReportingPeriod equal2 = new FromXtoY(startDate, endDate);
+        ReportingPeriod notEqualSameClass = new FromXtoY(startDate, endDate.plusDays(1));
+        ReportingPeriod notEqualDifferentClass = new LastXTradingDays(10);
 
         assertNotEquals(equal1, null);
         assertNotEquals(equal1, notEqualSameClass);

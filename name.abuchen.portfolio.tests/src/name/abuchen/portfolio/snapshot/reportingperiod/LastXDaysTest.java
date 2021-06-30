@@ -2,6 +2,7 @@ package name.abuchen.portfolio.snapshot.reportingperiod;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -10,38 +11,40 @@ import org.junit.Test;
 
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.snapshot.ReportingPeriod.LastXDays;
+import name.abuchen.portfolio.snapshot.ReportingPeriod.LastXTradingDays;
+import name.abuchen.portfolio.snapshot.ReportingPeriodType;
 import name.abuchen.portfolio.util.Interval;
 
-@SuppressWarnings("nls")
 public class LastXDaysTest
 {
     @Test
-    public void testContructor() throws IOException
+    public void testLegacyContructor() throws IOException
     {
-        ReportingPeriod period = ReportingPeriod.from("D90");
+        ReportingPeriod period = ReportingPeriod.from("D42");
 
-        assertEquals(period.getClass(), LastXDays.class);
+        assertEquals(period, new LastXDays(42)); //NOSONAR
     }
-
+    
     @Test
-    public void testWriteTo() throws IOException
+    public void testSerializationDeserializationRoundtrip() throws IOException
     {
-        int days = 90;
-        String code = "D" + days;
+        ReportingPeriod period = new LastXDays(90);
+
         StringBuilder strb = new StringBuilder();
-
-        ReportingPeriod period = new ReportingPeriod.LastXDays(90);
         period.writeTo(strb);
+        String serialized = strb.toString();
+        assertTrue(serialized.contains(ReportingPeriodType.PREVIOUS_X_DAYS.name())); //NOSONAR
 
-        assertEquals(strb.toString(), code);
+        ReportingPeriod deserialized = ReportingPeriod.from(serialized);
+        assertEquals(deserialized, period);
     }
 
     @Test
-    public void testToInterval() throws IOException
+    public void testToInterval()
     {
         LocalDate intervalStart = LocalDate.of(2020, 03, 05);
         LocalDate intervalEnd = LocalDate.of(2020, 04, 04);
-        ReportingPeriod period = ReportingPeriod.from("D30");
+        ReportingPeriod period = new LastXDays(30);
 
         Interval result = period.toInterval(intervalEnd);
 
@@ -49,12 +52,12 @@ public class LastXDaysTest
     }
 
     @Test
-    public void testEquals() throws IOException
+    public void testEquals()
     {
-        ReportingPeriod equal1 = ReportingPeriod.from("D90");
-        ReportingPeriod equal2 = ReportingPeriod.from("D90");
-        ReportingPeriod notEqualSameClass = ReportingPeriod.from("D91");
-        ReportingPeriod notEqualDifferentClass = ReportingPeriod.from("T10");
+        ReportingPeriod equal1 = new LastXDays(90);
+        ReportingPeriod equal2 = new LastXDays(90);
+        ReportingPeriod notEqualSameClass = new LastXDays(91);
+        ReportingPeriod notEqualDifferentClass = new LastXTradingDays(10);
 
         assertNotEquals(equal1, null);
         assertNotEquals(equal1, notEqualSameClass);

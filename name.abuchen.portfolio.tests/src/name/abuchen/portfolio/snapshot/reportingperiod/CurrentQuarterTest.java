@@ -3,6 +3,7 @@ package name.abuchen.portfolio.snapshot.reportingperiod;
 import static java.time.temporal.TemporalAdjusters.lastDayOfMonth;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -11,13 +12,14 @@ import org.junit.Test;
 
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.snapshot.ReportingPeriod.CurrentQuarter;
+import name.abuchen.portfolio.snapshot.ReportingPeriod.LastXTradingDays;
+import name.abuchen.portfolio.snapshot.ReportingPeriodType;
 import name.abuchen.portfolio.util.Interval;
 
-@SuppressWarnings("nls")
 public class CurrentQuarterTest
 {
     @Test
-    public void testContructor() throws IOException
+    public void testLegacyContructor() throws IOException
     {
         String code = "Q";
         ReportingPeriod period = ReportingPeriod.from(code);
@@ -26,23 +28,25 @@ public class CurrentQuarterTest
     }
 
     @Test
-    public void testWriteTo() throws IOException
+    public void testSerializationDeserializationRoundtrip() throws IOException
     {
-        String code = "Q";
+        ReportingPeriod period = new CurrentQuarter();
+
         StringBuilder strb = new StringBuilder();
-
-        ReportingPeriod period = new ReportingPeriod.CurrentQuarter();
         period.writeTo(strb);
+        String serialized = strb.toString();
+        assertTrue(serialized.contains(ReportingPeriodType.CURRENT_QUARTER.name()));
 
-        assertEquals(strb.toString(), code);
+        ReportingPeriod deserialized = ReportingPeriod.from(serialized);
+        assertEquals(deserialized, period);
     }
-
+    
     @Test
-    public void testToIntervalForQ1() throws IOException
+    public void testToIntervalForQ1()
     {
         LocalDate dateQ1 = LocalDate.of(2021, 2, 10);
 
-        ReportingPeriod period = ReportingPeriod.from("Q");
+        ReportingPeriod period = new CurrentQuarter();
 
         Interval result = period.toInterval(dateQ1);
 
@@ -52,11 +56,11 @@ public class CurrentQuarterTest
     }
 
     @Test
-    public void testToIntervalForQ2() throws IOException
+    public void testToIntervalForQ2()
     {
+        ReportingPeriod period = new CurrentQuarter();
+        
         LocalDate dateQ2 = LocalDate.of(2021, 5, 10);
-
-        ReportingPeriod period = ReportingPeriod.from("Q");
 
         Interval result = period.toInterval(dateQ2);
 
@@ -66,11 +70,11 @@ public class CurrentQuarterTest
     }
 
     @Test
-    public void testToIntervalForQ3() throws IOException
+    public void testToIntervalForQ3()
     {
+        ReportingPeriod period = new CurrentQuarter();
+        
         LocalDate dateQ3 = LocalDate.of(2021, 8, 10);
-
-        ReportingPeriod period = ReportingPeriod.from("Q");
 
         Interval result = period.toInterval(dateQ3);
 
@@ -80,11 +84,11 @@ public class CurrentQuarterTest
     }
 
     @Test
-    public void testToIntervalForQ4() throws IOException
+    public void testToIntervalForQ4()
     {
+        ReportingPeriod period = new CurrentQuarter();
+        
         LocalDate dateQ4 = LocalDate.of(2021, 10, 10);
-
-        ReportingPeriod period = ReportingPeriod.from("Q");
 
         Interval result = period.toInterval(dateQ4);
 
@@ -94,11 +98,11 @@ public class CurrentQuarterTest
     }
 
     @Test
-    public void testEquals() throws IOException
+    public void testEquals()
     {
-        ReportingPeriod equal1 = ReportingPeriod.from("Q");
-        ReportingPeriod equal2 = ReportingPeriod.from("Q");
-        ReportingPeriod notEqualDifferentClass = ReportingPeriod.from("T10");
+        ReportingPeriod equal1 = new CurrentQuarter();
+        ReportingPeriod equal2 = new CurrentQuarter();
+        ReportingPeriod notEqualDifferentClass = new LastXTradingDays(10);
 
         assertNotEquals(equal1, null);
         assertNotEquals(equal1, notEqualDifferentClass);

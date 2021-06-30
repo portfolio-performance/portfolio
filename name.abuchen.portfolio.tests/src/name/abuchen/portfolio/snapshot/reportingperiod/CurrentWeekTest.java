@@ -7,6 +7,7 @@ import static java.time.temporal.TemporalAdjusters.nextOrSame;
 import static java.time.temporal.TemporalAdjusters.previousOrSame;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -16,45 +17,48 @@ import org.junit.Test;
 
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.snapshot.ReportingPeriod.CurrentWeek;
+import name.abuchen.portfolio.snapshot.ReportingPeriod.LastXTradingDays;
+import name.abuchen.portfolio.snapshot.ReportingPeriodType;
 import name.abuchen.portfolio.util.Interval;
 
-@SuppressWarnings("nls")
 public class CurrentWeekTest
 {
     @Test
-    public void testContructor() throws IOException
+    public void testLegacyContructor() throws IOException
     {
         String code = "W";
         ReportingPeriod period = ReportingPeriod.from(code);
 
-        assertEquals(period.getClass(), CurrentWeek.class); // NOSONAR
+        assertEquals(period, new CurrentWeek()); // NOSONAR
     }
 
     @Test
-    public void testWriteTo() throws IOException
+    public void testSerializationDeserializationRoundtrip() throws IOException
     {
-        String code = "W";
+        ReportingPeriod period = new CurrentWeek();
+
         StringBuilder strb = new StringBuilder();
-
-        ReportingPeriod period = new ReportingPeriod.CurrentWeek();
         period.writeTo(strb);
+        String serialized = strb.toString();
+        assertTrue(serialized.contains(ReportingPeriodType.CURRENT_WEEK.name()));
 
-        assertEquals(strb.toString(), code);
+        ReportingPeriod deserialized = ReportingPeriod.from(serialized);
+        assertEquals(deserialized, period);
     }
 
     @Test
-    public void testToInterval() throws IOException
+    public void testToInterval()
     {
         Locale defaultLocale = Locale.getDefault();
         try
         {
             Locale.setDefault(Locale.GERMANY);
 
+            ReportingPeriod period = new CurrentWeek();
+            
             LocalDate today = LocalDate.now();
             LocalDate monday = today.with(previousOrSame(MONDAY));
             LocalDate sunday = today.with(nextOrSame(SUNDAY));
-
-            ReportingPeriod period = ReportingPeriod.from("W");
 
             Interval result = period.toInterval(today);
 
@@ -67,19 +71,19 @@ public class CurrentWeekTest
     }
 
     @Test
-    public void testToIntervalWithStaticDateGermany() throws IOException
+    public void testToIntervalWithStaticDateGermany()
     {
         Locale defaultLocale = Locale.getDefault();
         try
         {
             Locale.setDefault(Locale.GERMANY);
 
+            ReportingPeriod period = new CurrentWeek();
+            
             // random, static Wednesday
             LocalDate date = LocalDate.of(2021, 6, 9);
             LocalDate monday = date.with(previousOrSame(MONDAY));
             LocalDate sunday = date.with(nextOrSame(SUNDAY));
-
-            ReportingPeriod period = ReportingPeriod.from("W");
 
             Interval result = period.toInterval(date);
 
@@ -94,19 +98,19 @@ public class CurrentWeekTest
     }
 
     @Test
-    public void testToIntervalWithStaticDateUSA() throws IOException
+    public void testToIntervalWithStaticDateUSA()
     {
         Locale defaultLocale = Locale.getDefault();
         try
         {
             Locale.setDefault(Locale.US);
 
+            ReportingPeriod period = new CurrentWeek();
+            
             // random, static Wednesday
             LocalDate date = LocalDate.of(2021, 6, 9);
             LocalDate sunday = date.with(previousOrSame(SUNDAY));
             LocalDate saturday = date.with(nextOrSame(SATURDAY));
-
-            ReportingPeriod period = ReportingPeriod.from("W");
 
             Interval result = period.toInterval(date);
 
@@ -122,11 +126,11 @@ public class CurrentWeekTest
     }
 
     @Test
-    public void testEquals() throws IOException
+    public void testEquals()
     {
-        ReportingPeriod equal1 = ReportingPeriod.from("W");
-        ReportingPeriod equal2 = ReportingPeriod.from("W");
-        ReportingPeriod notEqualDifferentClass = ReportingPeriod.from("T10");
+        ReportingPeriod equal1 = new CurrentWeek();
+        ReportingPeriod equal2 = new CurrentWeek();
+        ReportingPeriod notEqualDifferentClass = new LastXTradingDays(10);
 
         assertNotEquals(equal1, null);
         assertNotEquals(equal1, notEqualDifferentClass);

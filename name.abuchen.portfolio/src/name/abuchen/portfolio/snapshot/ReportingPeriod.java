@@ -4,6 +4,20 @@ import static java.time.temporal.IsoFields.DAY_OF_QUARTER;
 import static java.time.temporal.TemporalAdjusters.firstDayOfMonth;
 import static java.time.temporal.TemporalAdjusters.lastDayOfMonth;
 import static java.time.temporal.TemporalAdjusters.previousOrSame;
+import static name.abuchen.portfolio.snapshot.ReportingPeriodType.CURRENT_MONTH;
+import static name.abuchen.portfolio.snapshot.ReportingPeriodType.CURRENT_QUARTER;
+import static name.abuchen.portfolio.snapshot.ReportingPeriodType.CURRENT_WEEK;
+import static name.abuchen.portfolio.snapshot.ReportingPeriodType.CURRENT_YEAR;
+import static name.abuchen.portfolio.snapshot.ReportingPeriodType.FROM_X_TO_Y;
+import static name.abuchen.portfolio.snapshot.ReportingPeriodType.PREVIOUS_MONTH;
+import static name.abuchen.portfolio.snapshot.ReportingPeriodType.PREVIOUS_QUARTER;
+import static name.abuchen.portfolio.snapshot.ReportingPeriodType.PREVIOUS_WEEK;
+import static name.abuchen.portfolio.snapshot.ReportingPeriodType.PREVIOUS_X_DAYS;
+import static name.abuchen.portfolio.snapshot.ReportingPeriodType.PREVIOUS_X_TRADING_DAYS;
+import static name.abuchen.portfolio.snapshot.ReportingPeriodType.PREVIOUS_X_YEARS_Y_MONTHS;
+import static name.abuchen.portfolio.snapshot.ReportingPeriodType.PREVIOUS_YEAR;
+import static name.abuchen.portfolio.snapshot.ReportingPeriodType.SINCE_X;
+import static name.abuchen.portfolio.snapshot.ReportingPeriodType.YEAR_X;
 
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -18,6 +32,7 @@ import java.util.function.Predicate;
 import com.google.common.base.Objects;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.json.JClient;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.util.Interval;
 import name.abuchen.portfolio.util.TradeCalendar;
@@ -27,48 +42,50 @@ public abstract class ReportingPeriod
 {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM);
 
-    private ReportingPeriod()
+    protected ReportingPeriodType type;
+    
+    protected ReportingPeriod(ReportingPeriodType type)
     {
+        this.type = type;
     }
 
     public static final ReportingPeriod from(String code) throws IOException
     {
-        char type = code.charAt(0);
-
-        if (type == LastX.CODE)
-            return new LastX(code);
-        else if (type == LastXDays.CODE)
-            return new LastXDays(code);
-        else if (type == LastXTradingDays.CODE)
-            return new LastXTradingDays(code);
-        else if (type == FromXtoY.CODE)
-            return new FromXtoY(code);
-        else if (type == SinceX.CODE)
-            return new SinceX(code);
-        else if (type == YearX.CODE)
-            return new YearX(code);
-        else if (type == CurrentWeek.CODE)
-            return new CurrentWeek();
-        else if (type == CurrentMonth.CODE)
-            return new CurrentMonth();
-        else if (type == CurrentQuarter.CODE)
-            return new CurrentQuarter();
-        else if (type == YearToDate.CODE)
-            return new YearToDate();
-        else if (type == LastWeek.CODE)
-            return new LastWeek();
-        else if (type == LastMonth.CODE)
-            return new LastMonth();
-        else if (type == LastQuarter.CODE)
-            return new LastQuarter();
-        else if (type == LastYear.CODE)
-            return new LastYear();
-
-        // backward compatible
-        if (code.charAt(code.length() - 1) == 'Y')
-            return new LastX(Integer.parseInt(code.substring(0, code.length() - 1)), 0);
-
-        throw new IOException(code);
+        ReportingPeriodType type = ReportingPeriodType.fromString(code);
+        switch (type) 
+        {
+            case CURRENT_MONTH:
+                return new CurrentMonth();
+            case CURRENT_QUARTER:
+                return new CurrentQuarter();
+            case CURRENT_WEEK:
+                return new CurrentWeek();
+            case CURRENT_YEAR:
+                return new YearToDate();
+            case FROM_X_TO_Y:
+                return FromXtoY.fromString(code);
+            case PREVIOUS_MONTH:
+                return new LastMonth();
+            case PREVIOUS_QUARTER:
+                return new LastQuarter();
+            case PREVIOUS_WEEK:
+                return new LastWeek();
+            case PREVIOUS_X_DAYS:
+                return LastXDays.fromString(code);
+            case PREVIOUS_X_TRADING_DAYS:
+                return LastXTradingDays.fromString(code);
+            case PREVIOUS_X_YEARS_Y_MONTHS:
+                return LastX.fromString(code);
+            case PREVIOUS_YEAR:
+                return new LastYear();
+            case SINCE_X:
+                return SinceX.fromString(code);
+            case YEAR_X:
+                return YearX.fromString(code);
+            case UNKNOWN:
+            default:
+                throw new IOException("unsupported reporting period type: " + type + " for code " + code); //$NON-NLS-1$ //$NON-NLS-2$
+        }
     }
 
     public final Predicate<Transaction> containsTransaction(LocalDate relativeTo)
@@ -78,32 +95,37 @@ public abstract class ReportingPeriod
                         && !t.getDateTime().toLocalDate().isAfter(interval.getEnd());
     }
 
-    public abstract Interval toInterval(LocalDate relativeTo);
+    public final void writeTo(StringBuilder buffer) 
+    {
+        buffer.append(JClient.GSON.toJson(this));
+    }
 
-    public abstract void writeTo(StringBuilder buffer);
-
-    public String getCode()
+    public final String getCode()
     {
         StringBuilder buf = new StringBuilder();
         writeTo(buf);
         return buf.toString();
     }
+    
+    public final ReportingPeriodType getType()
+    {
+        return type;
+    }
+
+    public abstract Interval toInterval(LocalDate relativeTo);
+    
 
     public static class LastX extends ReportingPeriod
     {
-        private static final char CODE = 'L';
+        static final char CODE = 'L';
 
         private final int years;
         private final int months;
 
-        /* package */ LastX(String code)
-        {
-            this(Integer.parseInt(code.substring(1, code.indexOf('Y'))), //
-                            Integer.parseInt(code.substring(code.indexOf('Y') + 1)));
-        }
-
         public LastX(int years, int months)
         {
+            super(PREVIOUS_X_YEARS_Y_MONTHS);
+            
             this.years = years;
             this.months = months;
         }
@@ -112,12 +134,6 @@ public abstract class ReportingPeriod
         public Interval toInterval(LocalDate relativeTo)
         {
             return Interval.of(relativeTo.minusYears(years).minusMonths(months), relativeTo);
-        }
-
-        @Override
-        public void writeTo(StringBuilder buffer)
-        {
-            buffer.append(CODE).append(years).append('Y').append(months);
         }
 
         @Override
@@ -156,21 +172,43 @@ public abstract class ReportingPeriod
             LastX other = (LastX) obj;
             return years == other.years && months == other.months;
         }
+
+        public static ReportingPeriod fromString(String code)
+        {
+            if (code.startsWith("{")) //$NON-NLS-1$
+            {
+                return JClient.GSON.fromJson(code, LastX.class);
+            }
+            
+            int years;
+            int months;
+            if (code.endsWith("Y")) //$NON-NLS-1$
+            {
+                // backward compatibility - try to parse oldest, first format
+                years = Integer.parseInt(code.substring(0, code.length() - 1));
+                months = 0;
+            }
+            else
+            {
+                // backward compatibility - try to parse previous, old format
+                years = Integer.parseInt(code.substring(1, code.lastIndexOf('Y')));
+                months = Integer.parseInt(code.substring(code.lastIndexOf('Y') + 1));
+            }
+            
+            return new LastX(years, months);
+        }
     }
 
     public static class LastXDays extends ReportingPeriod
     {
-        private static final char CODE = 'D';
+        static final char CODE = 'D';
 
         private final int days;
 
-        /* package */ LastXDays(String code)
-        {
-            this(Integer.parseInt(code.substring(1)));
-        }
-
         public LastXDays(int days)
         {
+            super(PREVIOUS_X_DAYS);
+            
             this.days = days;
         }
 
@@ -178,12 +216,6 @@ public abstract class ReportingPeriod
         public Interval toInterval(LocalDate relativeTo)
         {
             return Interval.of(relativeTo.minusDays(days), relativeTo);
-        }
-
-        @Override
-        public void writeTo(StringBuilder buffer)
-        {
-            buffer.append(CODE).append(days);
         }
 
         @Override
@@ -210,21 +242,32 @@ public abstract class ReportingPeriod
             LastXDays other = (LastXDays) obj;
             return days == other.days;
         }
+
+        public static ReportingPeriod fromString(String code)
+        {
+            if (code.startsWith("{")) //$NON-NLS-1$
+            {
+                return JClient.GSON.fromJson(code, LastXDays.class);
+            }
+            else
+            {
+                // backward compatibility - try to parse old format
+                int days = Integer.parseInt(code.substring(1));
+                return new LastXDays(days);
+            }
+        }
     }
 
     public static class LastXTradingDays extends ReportingPeriod
     {
-        private static final char CODE = 'T';
-
+        static final char CODE = 'T';
+        
         private final int tradingDays;
-
-        /* package */ LastXTradingDays(String code)
-        {
-            this(Integer.parseInt(code.substring(1)));
-        }
 
         public LastXTradingDays(int tradingDays)
         {
+            super(PREVIOUS_X_TRADING_DAYS);
+            
             this.tradingDays = tradingDays;
         }
 
@@ -256,12 +299,6 @@ public abstract class ReportingPeriod
         }
 
         @Override
-        public void writeTo(StringBuilder buffer)
-        {
-            buffer.append(CODE).append(tradingDays);
-        }
-
-        @Override
         public String toString()
         {
             return MessageFormat.format(Messages.LabelReportingPeriodLastXTradingDays, tradingDays);
@@ -285,23 +322,33 @@ public abstract class ReportingPeriod
             LastXTradingDays other = (LastXTradingDays) obj;
             return tradingDays == other.tradingDays;
         }
+
+        public static ReportingPeriod fromString(String code)
+        {
+            if (code.startsWith("{")) //$NON-NLS-1$
+            {
+                return JClient.GSON.fromJson(code, LastXTradingDays.class);
+            }
+            else
+            {
+                // backward compatibility - try to parse old format
+                int days = Integer.parseInt(code.substring(1));
+                return new LastXTradingDays(days);
+            }
+        }
     }
 
     public static class FromXtoY extends ReportingPeriod
     {
-        private static final char CODE = 'F';
-
+        static final char CODE = 'F';
+        
         private final LocalDate startDate;
         private final LocalDate endDate;
 
-        /* package */ FromXtoY(String code)
-        {
-            this(LocalDate.parse(code.substring(1, code.indexOf('_'))),
-                            LocalDate.parse(code.substring(code.indexOf('_') + 1)));
-        }
-
         public FromXtoY(LocalDate startDate, LocalDate endDate)
         {
+            super(FROM_X_TO_Y);
+            
             this.startDate = startDate;
             this.endDate = endDate;
         }
@@ -315,12 +362,6 @@ public abstract class ReportingPeriod
         public Interval toInterval(LocalDate relativeTo)
         {
             return Interval.of(startDate, endDate);
-        }
-
-        @Override
-        public void writeTo(StringBuilder buffer)
-        {
-            buffer.append(CODE).append(startDate.toString()).append('_').append(endDate.toString());
         }
 
         @Override
@@ -348,21 +389,34 @@ public abstract class ReportingPeriod
             FromXtoY other = (FromXtoY) obj;
             return startDate.equals(other.startDate) && endDate.equals(other.endDate);
         }
+
+        public static ReportingPeriod fromString(String code)
+        {
+            
+            if (code.startsWith("{")) //$NON-NLS-1$
+            {
+                return JClient.GSON.fromJson(code, FromXtoY.class);
+            }
+            else
+            {
+                // backward compatibility - try to parse old format
+                LocalDate x = LocalDate.parse(code.substring(1, code.lastIndexOf('_')));
+                LocalDate y = LocalDate.parse(code.substring(code.lastIndexOf('_') + 1));
+                return new FromXtoY(x, y);
+            }
+        }
     }
 
     public static class SinceX extends ReportingPeriod
     {
-        private static final char CODE = 'S';
+        static final char CODE = 'S';
 
         private final LocalDate startDate;
 
-        /* package */ SinceX(String code)
-        {
-            this(LocalDate.parse(code.substring(1)));
-        }
-
         public SinceX(LocalDate startDate)
         {
+            super(SINCE_X);
+            
             this.startDate = startDate;
         }
 
@@ -373,12 +427,6 @@ public abstract class ReportingPeriod
                 return Interval.of(startDate, relativeTo);
             else
                 return Interval.of(startDate, startDate); // FIXME
-        }
-
-        @Override
-        public void writeTo(StringBuilder buffer)
-        {
-            buffer.append(CODE).append(startDate.toString());
         }
 
         @Override
@@ -405,21 +453,32 @@ public abstract class ReportingPeriod
             SinceX other = (SinceX) obj;
             return startDate.equals(other.startDate);
         }
+
+        public static ReportingPeriod fromString(String code)
+        {
+            if (code.startsWith("{")) //$NON-NLS-1$
+            {
+                return JClient.GSON.fromJson(code, SinceX.class);
+            }
+            else
+            {
+                // backward compatibility - try to parse old format
+                LocalDate since = LocalDate.parse(code.substring(1));
+                return new SinceX(since);
+            }
+        }
     }
 
     public static class YearX extends ReportingPeriod
     {
-        private static final char CODE = 'Y';
+        static final char CODE = 'Y';
 
         private final int year;
 
-        /* package */ YearX(String code)
-        {
-            this(Integer.parseInt(code.substring(1)));
-        }
-
         public YearX(int year)
         {
+            super(YEAR_X);
+            
             this.year = year;
         }
 
@@ -427,12 +486,6 @@ public abstract class ReportingPeriod
         public Interval toInterval(LocalDate relativeTo)
         {
             return Interval.of(LocalDate.of(year - 1, 12, 31), LocalDate.of(year, 12, 31));
-        }
-
-        @Override
-        public void writeTo(StringBuilder buffer)
-        {
-            buffer.append(CODE).append(year);
         }
 
         @Override
@@ -459,11 +512,31 @@ public abstract class ReportingPeriod
             YearX other = (YearX) obj;
             return year == other.year;
         }
+
+        public static ReportingPeriod fromString(String code)
+        {
+            if (code.startsWith("{")) //$NON-NLS-1$
+            {
+                return JClient.GSON.fromJson(code, YearX.class);
+            }
+            else
+            {
+                // backward compatibility - try to parse old format
+                int years = Integer.parseInt(code.substring(1));
+                return new YearX(years);
+            }
+        }
     }
 
     public static class CurrentWeek extends ReportingPeriod
     {
-        private static final char CODE = 'W';
+
+        static final char CODE = 'W';
+
+        public CurrentWeek()
+        {
+            super(CURRENT_WEEK);
+        }
 
         @Override
         public Interval toInterval(LocalDate relativeTo)
@@ -484,12 +557,6 @@ public abstract class ReportingPeriod
         }
 
         @Override
-        public void writeTo(StringBuilder buffer)
-        {
-            buffer.append(CODE);
-        }
-
-        @Override
         public String toString()
         {
             return Messages.LabelReportingPeriodCurrentWeek;
@@ -498,7 +565,7 @@ public abstract class ReportingPeriod
         @Override
         public int hashCode()
         {
-            return Objects.hashCode(CODE);
+            return Objects.hashCode(type);
         }
 
         @Override
@@ -514,7 +581,12 @@ public abstract class ReportingPeriod
 
     public static class CurrentMonth extends ReportingPeriod
     {
-        private static final char CODE = 'M';
+        static final char CODE = 'M';
+
+        public CurrentMonth()
+        {
+            super(CURRENT_MONTH);
+        }
 
         @Override
         public Interval toInterval(LocalDate relativeTo)
@@ -528,12 +600,6 @@ public abstract class ReportingPeriod
         }
 
         @Override
-        public void writeTo(StringBuilder buffer)
-        {
-            buffer.append(CODE);
-        }
-
-        @Override
         public String toString()
         {
             return Messages.LabelReportingPeriodCurrentMonth;
@@ -542,7 +608,7 @@ public abstract class ReportingPeriod
         @Override
         public int hashCode()
         {
-            return Objects.hashCode(CODE);
+            return Objects.hashCode(type);
         }
 
         @Override
@@ -558,8 +624,13 @@ public abstract class ReportingPeriod
 
     public static class CurrentQuarter extends ReportingPeriod
     {
-        private static final char CODE = 'Q';
+        static final char CODE = 'Q';
 
+        public CurrentQuarter()
+        {
+            super(CURRENT_QUARTER);
+        }
+        
         @Override
         public Interval toInterval(LocalDate relativeTo)
         {
@@ -567,12 +638,6 @@ public abstract class ReportingPeriod
             LocalDate lastDayOfQuarter = firstDayOfQuarter.plusMonths(2).with(lastDayOfMonth());
 
             return Interval.of(firstDayOfQuarter.minusDays(1), lastDayOfQuarter);
-        }
-
-        @Override
-        public void writeTo(StringBuilder buffer)
-        {
-            buffer.append(CODE);
         }
 
         @Override
@@ -584,7 +649,7 @@ public abstract class ReportingPeriod
         @Override
         public int hashCode()
         {
-            return Objects.hashCode(CODE);
+            return Objects.hashCode(type);
         }
 
         @Override
@@ -600,8 +665,13 @@ public abstract class ReportingPeriod
 
     public static class YearToDate extends ReportingPeriod
     {
-        private static final char CODE = 'X';
+        static final char CODE = 'X';
 
+        public YearToDate()
+        {
+            super(CURRENT_YEAR);
+        }
+        
         @Override
         public Interval toInterval(LocalDate relativeTo)
         {
@@ -616,12 +686,6 @@ public abstract class ReportingPeriod
         }
 
         @Override
-        public void writeTo(StringBuilder buffer)
-        {
-            buffer.append(CODE);
-        }
-
-        @Override
         public String toString()
         {
             return Messages.LabelReportingPeriodYTD;
@@ -630,7 +694,7 @@ public abstract class ReportingPeriod
         @Override
         public int hashCode()
         {
-            return Objects.hashCode(CODE);
+            return Objects.hashCode(type);
         }
 
         @Override
@@ -646,8 +710,12 @@ public abstract class ReportingPeriod
 
     public static class LastWeek extends ReportingPeriod
     {
-        private static final char CODE = 'C';
-
+        
+        public LastWeek()
+        {
+            super(PREVIOUS_WEEK);
+        }
+        
         @Override
         public Interval toInterval(LocalDate relativeTo)
         {
@@ -660,12 +728,6 @@ public abstract class ReportingPeriod
         }
 
         @Override
-        public void writeTo(StringBuilder buffer)
-        {
-            buffer.append(CODE);
-        }
-
-        @Override
         public String toString()
         {
             return Messages.LabelReportingPeriodLastWeek;
@@ -674,7 +736,7 @@ public abstract class ReportingPeriod
         @Override
         public int hashCode()
         {
-            return Objects.hashCode(CODE);
+            return Objects.hashCode(type);
         }
 
         @Override
@@ -690,8 +752,12 @@ public abstract class ReportingPeriod
     
     public static class LastMonth extends ReportingPeriod
     {
-        private static final char CODE = 'V';
 
+        public LastMonth()
+        {
+            super(PREVIOUS_MONTH);
+        }
+        
         @Override
         public Interval toInterval(LocalDate relativeTo)
         {
@@ -705,12 +771,6 @@ public abstract class ReportingPeriod
         }
 
         @Override
-        public void writeTo(StringBuilder buffer)
-        {
-            buffer.append(CODE);
-        }
-
-        @Override
         public String toString()
         {
             return Messages.LabelReportingPeriodLastMonth;
@@ -719,7 +779,7 @@ public abstract class ReportingPeriod
         @Override
         public int hashCode()
         {
-            return Objects.hashCode(CODE);
+            return Objects.hashCode(type);
         }
 
         @Override
@@ -735,8 +795,12 @@ public abstract class ReportingPeriod
 
     public static class LastQuarter extends ReportingPeriod
     {
-        private static final char CODE = 'B';
 
+        public LastQuarter()
+        {
+            super(PREVIOUS_QUARTER);
+        }
+        
         @Override
         public Interval toInterval(LocalDate relativeTo)
         {
@@ -752,12 +816,6 @@ public abstract class ReportingPeriod
         }
 
         @Override
-        public void writeTo(StringBuilder buffer)
-        {
-            buffer.append(CODE);
-        }
-
-        @Override
         public String toString()
         {
             return Messages.LabelReportingPeriodLastQuarter;
@@ -766,7 +824,7 @@ public abstract class ReportingPeriod
         @Override
         public int hashCode()
         {
-            return Objects.hashCode(CODE);
+            return Objects.hashCode(type);
         }
 
         @Override
@@ -782,8 +840,13 @@ public abstract class ReportingPeriod
 
     public static class LastYear extends ReportingPeriod
     {
-        private static final char CODE = 'G';
+        static final char CODE = 'G';
 
+        public LastYear()
+        {
+            super(PREVIOUS_YEAR);
+        }
+        
         @Override
         public Interval toInterval(LocalDate relativeTo)
         {
@@ -797,12 +860,6 @@ public abstract class ReportingPeriod
         }
 
         @Override
-        public void writeTo(StringBuilder buffer)
-        {
-            buffer.append(CODE);
-        }
-
-        @Override
         public String toString()
         {
             return Messages.LabelReportingPeriodLastQuarter;
@@ -811,7 +868,7 @@ public abstract class ReportingPeriod
         @Override
         public int hashCode()
         {
-            return Objects.hashCode(CODE);
+            return Objects.hashCode(type);
         }
 
         @Override
