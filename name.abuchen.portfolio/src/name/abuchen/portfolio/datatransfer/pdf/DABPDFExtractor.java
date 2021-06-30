@@ -599,15 +599,24 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                             return transaction;
                         })
 
-                        // Is type --> "SEPA-Lastschrift" change from DEPOSIT to REMOVAL
-                        .section("type").optional()
-                        .match("^(?<type>SEPA-Gutschrift|SEPA-Lastschrift) [^Lastschrift].*$")
-                        .assign((t, v) -> {
-                            if (v.get("type").equals("SEPA-Lastschrift"))
-                            {
-                                t.setType(AccountTransaction.Type.REMOVAL);
-                            }
-                        })
+                        /***
+                         * A regular "SEPA-Lastschrift" is a deposit (delivery inbound) 
+                         * form a account to the reference account. (automatic savings plan)
+                         */
+
+                        // Is type --> "SEPA-XXXX" change from DEPOSIT to REMOVAL
+                        // 
+                        // At this time, we don't know the correct regEX for
+                        // a removal transaction.
+                        // 
+                        // .section("type").optional()
+                        // .match("^(?<type>SEPA-XXXX) .*$")
+                        // .assign((t, v) -> {
+                        //    if (v.get("type").equals("SEPA-XXXX"))
+                        //    {
+                        //       t.setType(AccountTransaction.Type.REMOVAL);
+                        //    }
+                        // })
 
                         // SEPA-Lastschrift Max Mustermann 15.07.19 300,00
                         // SEPA-Gutschrift Max Mustermann 05.07.19 15.000,00
@@ -644,7 +653,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
         });
         this.addDocumentTyp(type);
 
-        Block block = new Block("^(SEPA-Lastschrift Lastschrift Managementgeb.hr) .*$");
+        Block block = new Block("^SEPA-Lastschrift Lastschrift Managementgeb.hr .*$");
         type.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
 

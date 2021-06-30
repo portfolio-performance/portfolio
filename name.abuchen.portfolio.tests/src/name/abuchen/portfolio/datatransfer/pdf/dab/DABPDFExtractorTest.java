@@ -1636,7 +1636,7 @@ public class DABPDFExtractorTest
         t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).collect(Collectors.toList())
                         .get(1).getSubject();
 
-        assertThat(t.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(t.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(300))));
         assertThat(t.getDateTime(), is(LocalDateTime.parse("2019-07-15T00:00")));
 
@@ -1660,7 +1660,7 @@ public class DABPDFExtractorTest
         t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).collect(Collectors.toList())
                         .get(4).getSubject();
 
-        assertThat(t.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(t.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(300.00))));
         assertThat(t.getDateTime(), is(LocalDateTime.parse("2019-08-13T00:00")));
 
@@ -1668,7 +1668,7 @@ public class DABPDFExtractorTest
         t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).collect(Collectors.toList())
                         .get(5).getSubject();
 
-        assertThat(t.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(t.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(300.00))));
         assertThat(t.getDateTime(), is(LocalDateTime.parse("2019-09-13T00:00")));
     }
@@ -1694,7 +1694,7 @@ public class DABPDFExtractorTest
         AccountTransaction t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
                         .collect(Collectors.toList()).get(0).getSubject();
 
-        assertThat(t.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(t.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(400.00))));
         assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-01-13T00:00")));
 
@@ -1702,7 +1702,7 @@ public class DABPDFExtractorTest
         t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).collect(Collectors.toList())
                         .get(1).getSubject();
 
-        assertThat(t.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(t.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(400))));
         assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-02-18T00:00")));
 
@@ -1710,7 +1710,7 @@ public class DABPDFExtractorTest
         t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).collect(Collectors.toList())
                         .get(2).getSubject();
 
-        assertThat(t.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(t.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(500.00))));
         assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-03-15T00:00")));
 
