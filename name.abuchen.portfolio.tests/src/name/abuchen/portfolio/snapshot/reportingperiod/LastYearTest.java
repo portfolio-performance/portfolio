@@ -11,8 +11,8 @@ import java.time.LocalDate;
 import org.junit.Test;
 
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
-import name.abuchen.portfolio.snapshot.ReportingPeriod.LastXTradingDays;
-import name.abuchen.portfolio.snapshot.ReportingPeriod.LastYear;
+import name.abuchen.portfolio.snapshot.ReportingPeriod.PreviousXTradingDays;
+import name.abuchen.portfolio.snapshot.ReportingPeriod.PreviousYear;
 import name.abuchen.portfolio.snapshot.ReportingPeriodType;
 import name.abuchen.portfolio.util.Interval;
 
@@ -21,7 +21,7 @@ public class LastYearTest
     @Test
     public void testSerializationDeserializationRoundtrip() throws IOException
     {
-        ReportingPeriod period = new LastYear();
+        ReportingPeriod period = new PreviousYear();
 
         StringBuilder strb = new StringBuilder();
         period.writeTo(strb);
@@ -35,7 +35,7 @@ public class LastYearTest
     @Test
     public void testToInterval()
     {
-        ReportingPeriod period = new LastYear();
+        ReportingPeriod period = new PreviousYear();
         
         LocalDate today = LocalDate.now();
         
@@ -53,9 +53,9 @@ public class LastYearTest
     @Test
     public void testEquals()
     {
-        ReportingPeriod equal1 = new LastYear();
-        ReportingPeriod equal2 = new LastYear();
-        ReportingPeriod notEqualDifferentClass = new LastXTradingDays(10);
+        ReportingPeriod equal1 = new PreviousYear();
+        ReportingPeriod equal2 = new PreviousYear();
+        ReportingPeriod notEqualDifferentClass = new PreviousXTradingDays(10);
 
         assertNotEquals(equal1, null);
         assertNotEquals(equal1, notEqualDifferentClass);

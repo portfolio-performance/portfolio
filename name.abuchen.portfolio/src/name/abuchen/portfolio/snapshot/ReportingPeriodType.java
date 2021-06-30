@@ -8,10 +8,9 @@ import name.abuchen.portfolio.snapshot.ReportingPeriod.CurrentQuarter;
 import name.abuchen.portfolio.snapshot.ReportingPeriod.CurrentWeek;
 import name.abuchen.portfolio.snapshot.ReportingPeriod.CurrentYear;
 import name.abuchen.portfolio.snapshot.ReportingPeriod.FromXtoY;
-import name.abuchen.portfolio.snapshot.ReportingPeriod.LastX;
-import name.abuchen.portfolio.snapshot.ReportingPeriod.LastXDays;
-import name.abuchen.portfolio.snapshot.ReportingPeriod.LastXTradingDays;
-import name.abuchen.portfolio.snapshot.ReportingPeriod.LastYear;
+import name.abuchen.portfolio.snapshot.ReportingPeriod.PreviousXDays;
+import name.abuchen.portfolio.snapshot.ReportingPeriod.PreviousXTradingDays;
+import name.abuchen.portfolio.snapshot.ReportingPeriod.PreviousXYearsYMonths;
 import name.abuchen.portfolio.snapshot.ReportingPeriod.SinceX;
 import name.abuchen.portfolio.snapshot.ReportingPeriod.YearX;
 
@@ -61,11 +60,11 @@ public enum ReportingPeriodType
     {
         char type = code.charAt(0);
 
-        if (type == LastX.CODE)
+        if (type == PreviousXYearsYMonths.CODE)
             return PREVIOUS_X_YEARS_Y_MONTHS;
-        else if (type == LastXDays.CODE)
+        else if (type == PreviousXDays.CODE)
             return PREVIOUS_X_DAYS;
-        else if (type == LastXTradingDays.CODE)
+        else if (type == PreviousXTradingDays.CODE)
             return PREVIOUS_X_TRADING_DAYS;
         else if (type == FromXtoY.CODE)
             return FROM_X_TO_Y;
@@ -81,8 +80,6 @@ public enum ReportingPeriodType
             return CURRENT_QUARTER;
         else if (type == CurrentYear.CODE)
             return CURRENT_YEAR;
-        else if (type == LastYear.CODE)
-            return PREVIOUS_YEAR;
 
         // backward compatible
         if (code.charAt(code.length() - 1) == 'Y')

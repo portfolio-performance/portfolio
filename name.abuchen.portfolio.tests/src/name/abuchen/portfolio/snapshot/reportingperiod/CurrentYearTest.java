@@ -10,7 +10,7 @@ import java.time.LocalDate;
 import org.junit.Test;
 
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
-import name.abuchen.portfolio.snapshot.ReportingPeriod.LastXTradingDays;
+import name.abuchen.portfolio.snapshot.ReportingPeriod.PreviousXTradingDays;
 import name.abuchen.portfolio.snapshot.ReportingPeriod.CurrentYear;
 import name.abuchen.portfolio.snapshot.ReportingPeriodType;
 import name.abuchen.portfolio.util.Interval;
@@ -59,7 +59,7 @@ public class CurrentYearTest
     {
         ReportingPeriod equal1 = new CurrentYear();
         ReportingPeriod equal2 = new CurrentYear();
-        ReportingPeriod notEqualDifferentClass = new LastXTradingDays(10);
+        ReportingPeriod notEqualDifferentClass = new PreviousXTradingDays(10);
 
         assertNotEquals(equal1, null);
         assertNotEquals(equal1, notEqualDifferentClass);

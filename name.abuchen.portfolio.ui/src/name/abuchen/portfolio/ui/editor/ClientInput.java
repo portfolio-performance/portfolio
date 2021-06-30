@@ -448,7 +448,7 @@ public class ClientInput
         if (answer.isEmpty())
         {
             for (int ii = 1; ii <= 3; ii++)
-                answer.add(new ReportingPeriod.LastX(ii, 0));
+                answer.add(new ReportingPeriod.PreviousXYearsYMonths(ii, 0));
         }
 
         reportingPeriods = answer;

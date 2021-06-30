@@ -132,7 +132,7 @@ public class ReportingPeriodTypeTest
     {
         int years = 2;
         int months = 6;
-        String code = new ReportingPeriod.LastX(years, months).getCode();
+        String code = new ReportingPeriod.PreviousXYearsYMonths(years, months).getCode();
 
         ReportingPeriodType type = ReportingPeriodType.fromString(code);
 
@@ -152,7 +152,7 @@ public class ReportingPeriodTypeTest
     public void testPreviousXDaysFallback()
     {
         int days = 3;
-        String code = new ReportingPeriod.LastXDays(days).getCode();
+        String code = new ReportingPeriod.PreviousXDays(days).getCode();
         ReportingPeriodType type = ReportingPeriodType.fromString(code);
 
         assertEquals(PREVIOUS_X_DAYS, type);
@@ -162,7 +162,7 @@ public class ReportingPeriodTypeTest
     public void testPreviousXTradingDaysFallback()
     {
         int days = 3;
-        String code = new ReportingPeriod.LastXTradingDays(days).getCode();
+        String code = new ReportingPeriod.PreviousXTradingDays(days).getCode();
         ReportingPeriodType type = ReportingPeriodType.fromString(code);
 
         assertEquals(PREVIOUS_X_TRADING_DAYS, type);

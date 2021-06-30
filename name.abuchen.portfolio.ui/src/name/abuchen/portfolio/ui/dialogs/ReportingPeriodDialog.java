@@ -31,14 +31,14 @@ public class ReportingPeriodDialog extends Dialog
     private final ReportingPeriod template;
     private ReportingPeriod result;
 
-    private Button radioLast;
+    private Button radioPrevious;
     private Spinner years;
     private Spinner months;
 
-    private Button radioLastDays;
+    private Button radioPreviousDays;
     private Spinner days;
 
-    private Button radioLastTradingDays;
+    private Button radioPreviousTradingDays;
     private Spinner tradingDays;
 
     private Button radioFromXtoY;
@@ -56,17 +56,17 @@ public class ReportingPeriodDialog extends Dialog
     private Button radioCurrentQuarter;
     private Button radioYTD;
 
-    private Button radioLastWeek;
-    private Button radioLastMonth;
-    private Button radioLastQuarter;
-    private Button radioLastYear;
+    private Button radioPreviousWeek;
+    private Button radioPreviousMonth;
+    private Button radioPreviousQuarter;
+    private Button radioPreviousYear;
 
     private List<Button> radioBtnList;
 
     public ReportingPeriodDialog(Shell parentShell, ReportingPeriod template)
     {
         super(parentShell);
-        this.template = template != null ? template : new ReportingPeriod.LastX(1, 0);
+        this.template = template != null ? template : new ReportingPeriod.PreviousXYearsYMonths(1, 0);
     }
 
     @Override
@@ -85,8 +85,8 @@ public class ReportingPeriodDialog extends Dialog
         editArea.setLayoutData(new GridData(GridData.FILL_BOTH | GridData.GRAB_HORIZONTAL | GridData.GRAB_VERTICAL));
         editArea.setLayout(new FormLayout());
 
-        radioLast = new Button(editArea, SWT.RADIO);
-        radioLast.setText(Messages.LabelReportingDialogLast);
+        radioPrevious = new Button(editArea, SWT.RADIO);
+        radioPrevious.setText(Messages.LabelReportingDialogPrevious);
         years = new Spinner(editArea, SWT.BORDER);
         years.setMinimum(0);
 
@@ -98,16 +98,16 @@ public class ReportingPeriodDialog extends Dialog
         Label lblMonths = new Label(editArea, SWT.NONE);
         lblMonths.setText(Messages.LabelReportingDialogMonths);
 
-        radioLastDays = new Button(editArea, SWT.RADIO);
-        radioLastDays.setText(Messages.LabelReportingDialogLast);
+        radioPreviousDays = new Button(editArea, SWT.RADIO);
+        radioPreviousDays.setText(Messages.LabelReportingDialogPrevious);
         days = new Spinner(editArea, SWT.BORDER);
         days.setMinimum(1);
         days.setMaximum(10000);
         Label lblDays = new Label(editArea, SWT.NONE);
         lblDays.setText(Messages.LabelReportingDialogDays);
 
-        radioLastTradingDays = new Button(editArea, SWT.RADIO);
-        radioLastTradingDays.setText(Messages.LabelReportingDialogLast);
+        radioPreviousTradingDays = new Button(editArea, SWT.RADIO);
+        radioPreviousTradingDays.setText(Messages.LabelReportingDialogPrevious);
         tradingDays = new Spinner(editArea, SWT.BORDER);
         tradingDays.setMinimum(1);
         tradingDays.setMaximum(10000);
@@ -143,17 +143,17 @@ public class ReportingPeriodDialog extends Dialog
         radioYTD = new Button(editArea, SWT.RADIO);
         radioYTD.setText(Messages.LabelYTD);
 
-        radioLastWeek = new Button(editArea, SWT.RADIO);
-        radioLastWeek.setText(Messages.LabelLastWeek);
+        radioPreviousWeek = new Button(editArea, SWT.RADIO);
+        radioPreviousWeek.setText(Messages.LabelPreviousWeek);
         
-        radioLastMonth = new Button(editArea, SWT.RADIO);
-        radioLastMonth.setText(Messages.LabelLastMonth);
+        radioPreviousMonth = new Button(editArea, SWT.RADIO);
+        radioPreviousMonth.setText(Messages.LabelPreviousMonth);
         
-        radioLastQuarter = new Button(editArea, SWT.RADIO);
-        radioLastQuarter.setText(Messages.LabelLastQuarter);
+        radioPreviousQuarter = new Button(editArea, SWT.RADIO);
+        radioPreviousQuarter.setText(Messages.LabelPreviousQuarter);
         
-        radioLastYear = new Button(editArea, SWT.RADIO);
-        radioLastYear.setText(Messages.LabelLastYear);
+        radioPreviousYear = new Button(editArea, SWT.RADIO);
+        radioPreviousYear.setText(Messages.LabelPreviousYear);
         
         //
         // form layout
@@ -191,21 +191,21 @@ public class ReportingPeriodDialog extends Dialog
 
         FormDataFactory.startingWith(radioYTD).top(new FormAttachment(radioCurrentQuarter, 20));
         
-        FormDataFactory.startingWith(radioLastWeek).top(new FormAttachment(radioYTD, 20));
+        FormDataFactory.startingWith(radioPreviousWeek).top(new FormAttachment(radioYTD, 20));
 
-        FormDataFactory.startingWith(radioLastMonth).top(new FormAttachment(radioLastWeek, 20));
+        FormDataFactory.startingWith(radioPreviousMonth).top(new FormAttachment(radioPreviousWeek, 20));
 
-        FormDataFactory.startingWith(radioLastQuarter).top(new FormAttachment(radioLastMonth, 20));
+        FormDataFactory.startingWith(radioPreviousQuarter).top(new FormAttachment(radioPreviousMonth, 20));
         
-        FormDataFactory.startingWith(radioLastYear).top(new FormAttachment(radioLastQuarter, 20));
+        FormDataFactory.startingWith(radioPreviousYear).top(new FormAttachment(radioPreviousQuarter, 20));
         
-        FormDataFactory.startingWith(radioLast).top(new FormAttachment(radioLastYear, 20)).thenRight(years).thenRight(lblYears)
+        FormDataFactory.startingWith(radioPrevious).top(new FormAttachment(radioPreviousYear, 20)).thenRight(years).thenRight(lblYears)
                         .thenRight(months).thenRight(lblMonths);
 
-        FormDataFactory.startingWith(radioLastDays).top(new FormAttachment(radioLast, 20)).thenRight(days)
+        FormDataFactory.startingWith(radioPreviousDays).top(new FormAttachment(radioPrevious, 20)).thenRight(days)
                         .thenRight(lblDays);
 
-        FormDataFactory.startingWith(radioLastTradingDays).top(new FormAttachment(radioLastDays, 20))
+        FormDataFactory.startingWith(radioPreviousTradingDays).top(new FormAttachment(radioPreviousDays, 20))
                         .thenRight(tradingDays).thenRight(lblTradingDays);
 
 
@@ -215,12 +215,12 @@ public class ReportingPeriodDialog extends Dialog
 
         presetFromTemplate();
 
-        radioBtnList = Arrays.asList(radioLast, radioLastDays, radioLastTradingDays, radioFromXtoY, radioSinceX,
-                        radioYearX, radioCurrentWeek, radioCurrentMonth, radioCurrentQuarter, radioYTD, radioLastWeek,
-                        radioLastMonth, radioLastQuarter, radioLastYear);
-        activateRadioOnChange(radioLast, years, months);
-        activateRadioOnChange(radioLastDays, days);
-        activateRadioOnChange(radioLastTradingDays, tradingDays);
+        radioBtnList = Arrays.asList(radioPrevious, radioPreviousDays, radioPreviousTradingDays, radioFromXtoY, radioSinceX,
+                        radioYearX, radioCurrentWeek, radioCurrentMonth, radioCurrentQuarter, radioYTD, radioPreviousWeek,
+                        radioPreviousMonth, radioPreviousQuarter, radioPreviousYear);
+        activateRadioOnChange(radioPrevious, years, months);
+        activateRadioOnChange(radioPreviousDays, days);
+        activateRadioOnChange(radioPreviousTradingDays, tradingDays);
         activateRadioOnChange(radioFromXtoY, dateFrom.getControl(), dateTo.getControl());
         activateRadioOnChange(radioSinceX, dateSince.getControl());
         activateRadioOnChange(radioYearX, year);
@@ -249,12 +249,12 @@ public class ReportingPeriodDialog extends Dialog
 
     private void presetFromTemplate()
     {
-        if (template instanceof ReportingPeriod.LastX)
-            radioLast.setSelection(true);
-        else if (template instanceof ReportingPeriod.LastXDays)
-            radioLastDays.setSelection(true);
-        else if (template instanceof ReportingPeriod.LastXTradingDays)
-            radioLastTradingDays.setSelection(true);
+        if (template instanceof ReportingPeriod.PreviousXYearsYMonths)
+            radioPrevious.setSelection(true);
+        else if (template instanceof ReportingPeriod.PreviousXDays)
+            radioPreviousDays.setSelection(true);
+        else if (template instanceof ReportingPeriod.PreviousXTradingDays)
+            radioPreviousTradingDays.setSelection(true);
         else if (template instanceof ReportingPeriod.FromXtoY)
             radioFromXtoY.setSelection(true);
         else if (template instanceof ReportingPeriod.SinceX)
@@ -269,14 +269,14 @@ public class ReportingPeriodDialog extends Dialog
             radioCurrentQuarter.setSelection(true);
         else if (template instanceof ReportingPeriod.CurrentYear)
             radioYTD.setSelection(true);
-        else if (template instanceof ReportingPeriod.LastWeek)
-            radioLastWeek.setSelection(true);
-        else if (template instanceof ReportingPeriod.LastMonth)
-            radioLastMonth.setSelection(true);
-        else if (template instanceof ReportingPeriod.LastQuarter)
-            radioLastQuarter.setSelection(true);
-        else if (template instanceof ReportingPeriod.LastYear)
-            radioLastYear.setSelection(true);
+        else if (template instanceof ReportingPeriod.PreviousWeek)
+            radioPreviousWeek.setSelection(true);
+        else if (template instanceof ReportingPeriod.PreviousMonth)
+            radioPreviousMonth.setSelection(true);
+        else if (template instanceof ReportingPeriod.PreviousQuarter)
+            radioPreviousQuarter.setSelection(true);
+        else if (template instanceof ReportingPeriod.PreviousYear)
+            radioPreviousYear.setSelection(true);
         else
             throw new IllegalArgumentException();
 
@@ -301,17 +301,17 @@ public class ReportingPeriodDialog extends Dialog
     @Override
     protected void okPressed()
     {
-        if (radioLast.getSelection())
+        if (radioPrevious.getSelection())
         {
-            result = new ReportingPeriod.LastX(years.getSelection(), months.getSelection());
+            result = new ReportingPeriod.PreviousXYearsYMonths(years.getSelection(), months.getSelection());
         }
-        else if (radioLastDays.getSelection())
+        else if (radioPreviousDays.getSelection())
         {
-            result = new ReportingPeriod.LastXDays(days.getSelection());
+            result = new ReportingPeriod.PreviousXDays(days.getSelection());
         }
-        else if (radioLastTradingDays.getSelection())
+        else if (radioPreviousTradingDays.getSelection())
         {
-            result = new ReportingPeriod.LastXTradingDays(tradingDays.getSelection());
+            result = new ReportingPeriod.PreviousXTradingDays(tradingDays.getSelection());
         }
         else if (radioFromXtoY.getSelection())
         {
@@ -349,21 +349,21 @@ public class ReportingPeriodDialog extends Dialog
         {
             result = new ReportingPeriod.CurrentYear();
         }
-        else if (radioLastWeek.getSelection())
+        else if (radioPreviousWeek.getSelection())
         {
-            result = new ReportingPeriod.LastWeek();
+            result = new ReportingPeriod.PreviousWeek();
         }
-        else if (radioLastMonth.getSelection())
+        else if (radioPreviousMonth.getSelection())
         {
-            result = new ReportingPeriod.LastMonth();
+            result = new ReportingPeriod.PreviousMonth();
         }
-        else if (radioLastQuarter.getSelection())
+        else if (radioPreviousQuarter.getSelection())
         {
-            result = new ReportingPeriod.LastQuarter();
+            result = new ReportingPeriod.PreviousQuarter();
         }
-        else if (radioLastYear.getSelection())
+        else if (radioPreviousYear.getSelection())
         {
-            result = new ReportingPeriod.LastYear();
+            result = new ReportingPeriod.PreviousYear();
         }
         else
         {

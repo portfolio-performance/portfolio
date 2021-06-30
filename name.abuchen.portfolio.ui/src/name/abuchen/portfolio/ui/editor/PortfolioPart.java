@@ -466,7 +466,7 @@ public class PortfolioPart implements ClientInputListener
         if (selectedPeriod == null)
         {
             List<ReportingPeriod> periods = clientInput.getReportingPeriods();
-            selectedPeriod = periods.isEmpty() ? new ReportingPeriod.LastX(1, 0) : periods.get(0);
+            selectedPeriod = periods.isEmpty() ? new ReportingPeriod.PreviousXYearsYMonths(1, 0) : periods.get(0);
         }
 
         return selectedPeriod;

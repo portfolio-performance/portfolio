@@ -12,7 +12,7 @@ import org.junit.Test;
 
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.snapshot.ReportingPeriod.CurrentMonth;
-import name.abuchen.portfolio.snapshot.ReportingPeriod.LastXTradingDays;
+import name.abuchen.portfolio.snapshot.ReportingPeriod.PreviousXTradingDays;
 import name.abuchen.portfolio.util.Interval;
 
 public class CurrentMonthTest
@@ -59,7 +59,7 @@ public class CurrentMonthTest
     {
         ReportingPeriod equal1 = new CurrentMonth();
         ReportingPeriod equal2 = new CurrentMonth();
-        ReportingPeriod notEqualDifferentClass = new LastXTradingDays(10);
+        ReportingPeriod notEqualDifferentClass = new PreviousXTradingDays(10);
 
         assertNotEquals(equal1, null);
         assertNotEquals(equal1, notEqualDifferentClass);

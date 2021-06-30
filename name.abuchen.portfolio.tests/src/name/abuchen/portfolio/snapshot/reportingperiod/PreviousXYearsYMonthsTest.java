@@ -11,11 +11,11 @@ import java.time.LocalDate;
 import org.junit.Test;
 
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
-import name.abuchen.portfolio.snapshot.ReportingPeriod.LastX;
-import name.abuchen.portfolio.snapshot.ReportingPeriod.LastXTradingDays;
+import name.abuchen.portfolio.snapshot.ReportingPeriod.PreviousXYearsYMonths;
+import name.abuchen.portfolio.snapshot.ReportingPeriod.PreviousXTradingDays;
 import name.abuchen.portfolio.util.Interval;
 
-public class LastXTest
+public class PreviousXYearsYMonthsTest
 {
     @Test
     public void testLegacyContructor() throws IOException
@@ -23,13 +23,13 @@ public class LastXTest
         String code = "L2Y6";
         ReportingPeriod period = ReportingPeriod.from(code);
 
-        assertEquals(period, new LastX(2, 6)); // NOSONAR
+        assertEquals(period, new PreviousXYearsYMonths(2, 6)); // NOSONAR
     }
 
     @Test
     public void testSerializationDeserializationRoundtrip() throws IOException
     {
-        ReportingPeriod period = new ReportingPeriod.LastX(2, 6);
+        ReportingPeriod period = new ReportingPeriod.PreviousXYearsYMonths(2, 6);
 
         StringBuilder strb = new StringBuilder();
         period.writeTo(strb);
@@ -43,7 +43,7 @@ public class LastXTest
     @Test
     public void testToInterval()
     {
-        ReportingPeriod period = new LastX(1, 1);
+        ReportingPeriod period = new PreviousXYearsYMonths(1, 1);
         
         LocalDate intervalStart = LocalDate.of(2019, 03, 04);
         LocalDate intervalEnd = LocalDate.of(2020, 04, 04);
@@ -56,10 +56,10 @@ public class LastXTest
     @Test
     public void testEquals()
     {
-        ReportingPeriod equal1 = new LastX(2, 0);
-        ReportingPeriod equal2 = new LastX(2, 0);
-        ReportingPeriod notEqualSameClass = new LastX(2, 1);
-        ReportingPeriod notEqualDifferentClass = new LastXTradingDays(10);
+        ReportingPeriod equal1 = new PreviousXYearsYMonths(2, 0);
+        ReportingPeriod equal2 = new PreviousXYearsYMonths(2, 0);
+        ReportingPeriod notEqualSameClass = new PreviousXYearsYMonths(2, 1);
+        ReportingPeriod notEqualDifferentClass = new PreviousXTradingDays(10);
 
         assertNotEquals(equal1, null);
         assertNotEquals(equal1, notEqualSameClass);
@@ -75,7 +75,7 @@ public class LastXTest
         String code = "2Y";
         ReportingPeriod period = ReportingPeriod.from(code);
 
-        assertEquals(period, new LastX(2, 0));
+        assertEquals(period, new PreviousXYearsYMonths(2, 0));
     }
 
 }

@@ -538,10 +538,10 @@ public class Messages extends NLS
     public static String LabelCurrentMonth;
     public static String LabelCurrentQuarter;
     public static String LabelCurrentWeek;
-    public static String LabelLastWeek;
-    public static String LabelLastMonth;
-    public static String LabelLastQuarter;
-    public static String LabelLastYear;
+    public static String LabelPreviousWeek;
+    public static String LabelPreviousMonth;
+    public static String LabelPreviousQuarter;
+    public static String LabelPreviousYear;
     public static String LabelDashboard;
     public static String LabelDataSeries;
     public static String LabelDateXToY;
@@ -637,7 +637,7 @@ public class Messages extends NLS
     public static String LabelReportingAddPeriod;
     public static String LabelReportingDialogDays;
     public static String LabelReportingDialogFrom;
-    public static String LabelReportingDialogLast;
+    public static String LabelReportingDialogPrevious;
     public static String LabelReportingDialogMonths;
     public static String LabelReportingDialogSince;
     public static String LabelReportingDialogTradingDays;

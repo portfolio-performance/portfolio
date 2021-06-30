@@ -10,7 +10,7 @@ import java.time.LocalDate;
 import org.junit.Test;
 
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
-import name.abuchen.portfolio.snapshot.ReportingPeriod.LastXTradingDays;
+import name.abuchen.portfolio.snapshot.ReportingPeriod.PreviousXTradingDays;
 import name.abuchen.portfolio.snapshot.ReportingPeriod.SinceX;
 import name.abuchen.portfolio.snapshot.ReportingPeriodType;
 import name.abuchen.portfolio.util.Interval;
@@ -61,7 +61,7 @@ public class SinceXTest
         ReportingPeriod equal1 = new SinceX(startDate);
         ReportingPeriod equal2 = new SinceX(startDate);
         ReportingPeriod notEqualSameClass = new SinceX(startDate.plusDays(1));
-        ReportingPeriod notEqualDifferentClass = new LastXTradingDays(10);
+        ReportingPeriod notEqualDifferentClass = new PreviousXTradingDays(10);
 
         assertNotEquals(equal1, null);
         assertNotEquals(equal1, notEqualSameClass);

@@ -12,17 +12,17 @@ import java.time.LocalDate;
 import org.junit.Test;
 
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
-import name.abuchen.portfolio.snapshot.ReportingPeriod.LastQuarter;
-import name.abuchen.portfolio.snapshot.ReportingPeriod.LastXTradingDays;
+import name.abuchen.portfolio.snapshot.ReportingPeriod.PreviousQuarter;
+import name.abuchen.portfolio.snapshot.ReportingPeriod.PreviousXTradingDays;
 import name.abuchen.portfolio.snapshot.ReportingPeriodType;
 import name.abuchen.portfolio.util.Interval;
 
-public class LastQuarterTest
+public class PreviousQuarterTest
 {
     @Test
     public void testSerializationDeserializationRoundtrip() throws IOException
     {
-        ReportingPeriod period = new LastQuarter();
+        ReportingPeriod period = new PreviousQuarter();
 
         StringBuilder strb = new StringBuilder();
         period.writeTo(strb);
@@ -36,7 +36,7 @@ public class LastQuarterTest
     @Test
     public void testToInterval()
     {
-        ReportingPeriod period = new LastQuarter();
+        ReportingPeriod period = new PreviousQuarter();
         
         LocalDate today = LocalDate.now();
         
@@ -56,9 +56,9 @@ public class LastQuarterTest
     @Test
     public void testEquals()
     {
-        ReportingPeriod equal1 = new LastQuarter();
-        ReportingPeriod equal2 = new LastQuarter();
-        ReportingPeriod notEqualDifferentClass = new LastXTradingDays(10);
+        ReportingPeriod equal1 = new PreviousQuarter();
+        ReportingPeriod equal2 = new PreviousQuarter();
+        ReportingPeriod notEqualDifferentClass = new PreviousXTradingDays(10);
 
         assertNotEquals(equal1, null);
         assertNotEquals(equal1, notEqualDifferentClass);

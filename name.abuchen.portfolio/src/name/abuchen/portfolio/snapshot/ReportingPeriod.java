@@ -65,19 +65,19 @@ public abstract class ReportingPeriod
             case FROM_X_TO_Y:
                 return FromXtoY.fromString(code);
             case PREVIOUS_MONTH:
-                return new LastMonth();
+                return new PreviousMonth();
             case PREVIOUS_QUARTER:
-                return new LastQuarter();
+                return new PreviousQuarter();
             case PREVIOUS_WEEK:
-                return new LastWeek();
+                return new PreviousWeek();
             case PREVIOUS_X_DAYS:
-                return LastXDays.fromString(code);
+                return PreviousXDays.fromString(code);
             case PREVIOUS_X_TRADING_DAYS:
-                return LastXTradingDays.fromString(code);
+                return PreviousXTradingDays.fromString(code);
             case PREVIOUS_X_YEARS_Y_MONTHS:
-                return LastX.fromString(code);
+                return PreviousXYearsYMonths.fromString(code);
             case PREVIOUS_YEAR:
-                return new LastYear();
+                return new PreviousYear();
             case SINCE_X:
                 return SinceX.fromString(code);
             case YEAR_X:
@@ -115,14 +115,14 @@ public abstract class ReportingPeriod
     public abstract Interval toInterval(LocalDate relativeTo);
     
 
-    public static class LastX extends ReportingPeriod
+    public static class PreviousXYearsYMonths extends ReportingPeriod
     {
         static final char CODE = 'L';
 
         private final int years;
         private final int months;
 
-        public LastX(int years, int months)
+        public PreviousXYearsYMonths(int years, int months)
         {
             super(PREVIOUS_X_YEARS_Y_MONTHS);
             
@@ -169,7 +169,7 @@ public abstract class ReportingPeriod
                 return false;
             if (getClass() != obj.getClass())
                 return false;
-            LastX other = (LastX) obj;
+            PreviousXYearsYMonths other = (PreviousXYearsYMonths) obj;
             return years == other.years && months == other.months;
         }
 
@@ -177,7 +177,7 @@ public abstract class ReportingPeriod
         {
             if (code.startsWith("{")) //$NON-NLS-1$
             {
-                return JClient.GSON.fromJson(code, LastX.class);
+                return JClient.GSON.fromJson(code, PreviousXYearsYMonths.class);
             }
             
             int years;
@@ -195,17 +195,17 @@ public abstract class ReportingPeriod
                 months = Integer.parseInt(code.substring(code.lastIndexOf('Y') + 1));
             }
             
-            return new LastX(years, months);
+            return new PreviousXYearsYMonths(years, months);
         }
     }
 
-    public static class LastXDays extends ReportingPeriod
+    public static class PreviousXDays extends ReportingPeriod
     {
         static final char CODE = 'D';
 
         private final int days;
 
-        public LastXDays(int days)
+        public PreviousXDays(int days)
         {
             super(PREVIOUS_X_DAYS);
             
@@ -221,7 +221,7 @@ public abstract class ReportingPeriod
         @Override
         public String toString()
         {
-            return MessageFormat.format(Messages.LabelReportingPeriodLastXDays, days);
+            return MessageFormat.format(Messages.LabelReportingPeriodPreviousXDays, days);
         }
 
         @Override
@@ -239,7 +239,7 @@ public abstract class ReportingPeriod
                 return false;
             if (getClass() != obj.getClass())
                 return false;
-            LastXDays other = (LastXDays) obj;
+            PreviousXDays other = (PreviousXDays) obj;
             return days == other.days;
         }
 
@@ -247,24 +247,24 @@ public abstract class ReportingPeriod
         {
             if (code.startsWith("{")) //$NON-NLS-1$
             {
-                return JClient.GSON.fromJson(code, LastXDays.class);
+                return JClient.GSON.fromJson(code, PreviousXDays.class);
             }
             else
             {
                 // backward compatibility - try to parse old format
                 int days = Integer.parseInt(code.substring(1));
-                return new LastXDays(days);
+                return new PreviousXDays(days);
             }
         }
     }
 
-    public static class LastXTradingDays extends ReportingPeriod
+    public static class PreviousXTradingDays extends ReportingPeriod
     {
         static final char CODE = 'T';
         
         private final int tradingDays;
 
-        public LastXTradingDays(int tradingDays)
+        public PreviousXTradingDays(int tradingDays)
         {
             super(PREVIOUS_X_TRADING_DAYS);
             
@@ -301,7 +301,7 @@ public abstract class ReportingPeriod
         @Override
         public String toString()
         {
-            return MessageFormat.format(Messages.LabelReportingPeriodLastXTradingDays, tradingDays);
+            return MessageFormat.format(Messages.LabelReportingPeriodPreviousXTradingDays, tradingDays);
         }
 
         @Override
@@ -319,7 +319,7 @@ public abstract class ReportingPeriod
                 return false;
             if (getClass() != obj.getClass())
                 return false;
-            LastXTradingDays other = (LastXTradingDays) obj;
+            PreviousXTradingDays other = (PreviousXTradingDays) obj;
             return tradingDays == other.tradingDays;
         }
 
@@ -327,13 +327,13 @@ public abstract class ReportingPeriod
         {
             if (code.startsWith("{")) //$NON-NLS-1$
             {
-                return JClient.GSON.fromJson(code, LastXTradingDays.class);
+                return JClient.GSON.fromJson(code, PreviousXTradingDays.class);
             }
             else
             {
                 // backward compatibility - try to parse old format
                 int days = Integer.parseInt(code.substring(1));
-                return new LastXTradingDays(days);
+                return new PreviousXTradingDays(days);
             }
         }
     }
@@ -708,10 +708,10 @@ public abstract class ReportingPeriod
         }
     }
 
-    public static class LastWeek extends ReportingPeriod
+    public static class PreviousWeek extends ReportingPeriod
     {
         
-        public LastWeek()
+        public PreviousWeek()
         {
             super(PREVIOUS_WEEK);
         }
@@ -730,7 +730,7 @@ public abstract class ReportingPeriod
         @Override
         public String toString()
         {
-            return Messages.LabelReportingPeriodLastWeek;
+            return Messages.LabelReportingPeriodPreviousWeek;
         }
 
         @Override
@@ -750,10 +750,10 @@ public abstract class ReportingPeriod
         }
     }
     
-    public static class LastMonth extends ReportingPeriod
+    public static class PreviousMonth extends ReportingPeriod
     {
 
-        public LastMonth()
+        public PreviousMonth()
         {
             super(PREVIOUS_MONTH);
         }
@@ -773,7 +773,7 @@ public abstract class ReportingPeriod
         @Override
         public String toString()
         {
-            return Messages.LabelReportingPeriodLastMonth;
+            return Messages.LabelReportingPeriodPreviousMonth;
         }
 
         @Override
@@ -793,10 +793,10 @@ public abstract class ReportingPeriod
         }
     }
 
-    public static class LastQuarter extends ReportingPeriod
+    public static class PreviousQuarter extends ReportingPeriod
     {
 
-        public LastQuarter()
+        public PreviousQuarter()
         {
             super(PREVIOUS_QUARTER);
         }
@@ -818,7 +818,7 @@ public abstract class ReportingPeriod
         @Override
         public String toString()
         {
-            return Messages.LabelReportingPeriodLastQuarter;
+            return Messages.LabelReportingPeriodPreviousQuarter;
         }
 
         @Override
@@ -838,11 +838,10 @@ public abstract class ReportingPeriod
         }
     }
 
-    public static class LastYear extends ReportingPeriod
+    public static class PreviousYear extends ReportingPeriod
     {
-        static final char CODE = 'G';
 
-        public LastYear()
+        public PreviousYear()
         {
             super(PREVIOUS_YEAR);
         }
@@ -862,7 +861,7 @@ public abstract class ReportingPeriod
         @Override
         public String toString()
         {
-            return Messages.LabelReportingPeriodLastQuarter;
+            return Messages.LabelReportingPeriodPreviousQuarter;
         }
 
         @Override
