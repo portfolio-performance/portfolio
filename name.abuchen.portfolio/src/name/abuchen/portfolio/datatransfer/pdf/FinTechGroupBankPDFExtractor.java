@@ -920,14 +920,27 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 })
 
                 // Fälligkeitstag   : 02.12.2009                  Letzter Handelstag:  20.11.2009
-                .section("date")
+                .section("date").optional()
                 .match("^F.lligkeitstag([\\s]+)?: ([\\s]+)?(?<date>\\d+.\\d+.\\d{4}).*$")
+                .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+
+                // Fälligkeitstag                                                  25.06.2021
+                .section("date").optional()
+                .match("^F.lligkeitstag ([\\s]+)?(?<date>\\d+.\\d+.\\d{4})$")
                 .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                 // Verwahrart      : GS-Verwahrung        Geldgegenwert***:              0,20 EUR
                 //                                           Geldgegenwert*  :         111,22 EUR
                 .section("amount", "currency").optional()
-                .match("^(.*) Geldgegenwert\\*.*([\\s]+)?: ([\\s]+)?(?<amount>[.,\\d]+) (?<currency>[\\w]{3})(.*)$")
+                .match("^(.*) Geldgegenwert\\*.*([\\s]+)?: ([\\s]+)?(?<amount>[.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                    t.setAmount(asAmount(v.get("amount")));
+                })
+
+                // Geldgegenwert                                                       393,73 EUR
+                .section("amount", "currency").optional()
+                .match("^Geldgegenwert ([\\s]+)?(?<amount>[.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
@@ -956,6 +969,13 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 //                                           Einbeh. Steuer**:         -10,00 EUR
                 .section("taxRefund").optional()
                 .match("^.* Einbeh\\. Steuer\\*.*([\\s]+)?: ([\\s]+)?-(?<taxRefund>[.,\\d]+) [\\w]{3}$")
+                .assign((t, v) -> {
+                    t.setAmount(t.getPortfolioTransaction().getAmount() - asAmount(v.get("taxRefund")));
+                })
+
+                // Einbeh. Steuer**                                                    -88,53 EUR
+                .section("taxRefund").optional()
+                .match("^Einbeh\\. Steuer\\*.* ([\\s]+)?-(?<taxRefund>[.,\\d]+) [\\w]{3}$")
                 .assign((t, v) -> {
                     t.setAmount(t.getPortfolioTransaction().getAmount() - asAmount(v.get("taxRefund")));
                 })
@@ -1528,14 +1548,27 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
                 // Fälligkeitstag   : 02.12.2009                  Letzter Handelstag:  20.11.2009
                 // Datum          : 24.11.2015
-                .section("date")
+                .section("date").optional()
                 .match("^(F.lligkeitstag|Datum)([\\s]+)?: ([\\s]+)?(?<date>\\d+.\\d+.\\d{4}).*$")
+                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                // Fälligkeitstag                                                  25.06.2021
+                .section("date").optional()
+                .match("^F.lligkeitstag ([\\s]+)?(?<date>\\d+.\\d+.\\d{4})$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                 // Stk./Nominale  : 325,000000 Stk         Einbeh. Steuer*:           -382,12 EUR
                 //                                           Einbeh. Steuer**:         -10,00 EUR
                 .section("amount", "currency").optional()
                 .match("^.* Einbeh\\. Steuer\\*(.*)([\\s]+)?: ([\\s]+)?-(?<amount>[.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                    t.setAmount(asAmount(v.get("amount")));
+                })
+
+                // Einbeh. Steuer**                                                    -88,53 EUR
+                .section("amount", "currency").optional()
+                .match("^Einbeh\\. Steuer\\*.* ([\\s]+)?-(?<amount>[.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                     t.setAmount(asAmount(v.get("amount")));

@@ -1,0 +1,57 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+flatexDEGIRO Bank AG
+Postfach 100551
+41405 Neuss
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 (0)9221 - 7035898
+E-Mail: kunden@flatex.de
+flatexDEGIRO Bank AG -  Rotfeder-Ring 7 - 60327 Frankfurt am Main
+0302402000002035249970
+Herrn
+Vorname Nachname
+Straße HsNr
+12345 Ort
+    Frankfurt am Main,  26.06.2021
+Gutschrifts- / Belastungsanzeige
+Kundennummer: 1234567
+Kontonummer : 1234567890
+Depotnummer : 1234567890
+Inhaber     : Vorname Nachname
+WKN     ISIN          Wertpapierbezeichnung           Anzahl
+UE5KPQ  CH0585795898  UBS LDN CALL21 SQ3              400,00
+Sehr geehrter Herr Nachname,
+aufgrund - Ablauf der Optionsfrist - buchen wir folgenden Bestand aus Ihrem
+Depot aus.
+Stck./Nominale:         400,000000        Betrag/Stck.              0,76 EUR
+                                Devisenkurs               :       1,000000
+Geldgegenwert                                                       393,73 EUR
+Einbeh. Steuer**                                                    -88,53 EUR
+Steuerpfl. Ertrag                                                     0,00 EUR
+Kapitalertragsteuer                                                 -83,92 EUR
+Kirchensteuer                                                         0,00 EUR
+Solidaritätszuschlag                                                 -4,61 EUR
+Fälligkeitstag                                                  25.06.2021
+letzter Handel am                                               17.06.2021
+Transaktions-Nr.                                                2383311818
+*  Verrechnung über Ihr Konto: 1234567890
+Die Gutschrift erfolgt unter Vorbehalt des Eingangs. Einwendungen müssen
+unverzüglich nach Zugang erhoben werden. Die Unterlassung rechtzeitiger
+Einwendungen gilt als Genehmigung.
+**Einbehaltene Kapitalertragsteuer zuzüglich Solidaritätszuschlag und ggf.
+______________________________________________________________________________
+                                                                     Seite 1/2
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Muhamad Said Chahrour, Dr. Benon Janos, Jörn Engelmann, Steffen Jentsch
+2000002035249970 0113302400000101
+Kirchensteuer (negative Werte bedeuten Steuererstattung). Evtl. Details dazu
+finden Sie im Steuerreport unter der Transaktion-Nr.: 1234567890
+Diese Mitteilung ist maschinell erstellt und wird nicht unterschrieben.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+______________________________________________________________________________
+                                                                     Seite 2/2
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Muhamad Said Chahrour, Dr. Benon Janos, Jörn Engelmann, Steffen Jentsch
+2000002035249970
