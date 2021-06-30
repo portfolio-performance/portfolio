@@ -74,6 +74,12 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                     {
                         t.setType(PortfolioTransaction.Type.SELL);
                     }
+
+                    /***
+                     * If we have multiple entries in the document,
+                     * with taxes and tax refunds,
+                     * then the "negative" flag must be removed.
+                     */
                     type.getCurrentContext().remove("negative");
                 })
 
@@ -177,7 +183,14 @@ public class DABPDFExtractor extends AbstractPDFExtractor
         pdfTransaction.subject(() -> {
             AccountTransaction entry = new AccountTransaction();
             entry.setType(AccountTransaction.Type.DIVIDENDS);
+
+            /***
+             * If we have multiple entries in the document,
+             * with taxes and tax refunds,
+             * then the "negative" flag must be removed.
+             */
             type.getCurrentContext().remove("negative");
+
             return entry;
         });
 
@@ -413,7 +426,14 @@ public class DABPDFExtractor extends AbstractPDFExtractor
         pdfTransaction.subject(() -> {
             PortfolioTransaction entry = new PortfolioTransaction();
             entry.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
+
+            /***
+             * If we have multiple entries in the document,
+             * with taxes and tax refunds,
+             * then the "negative" flag must be removed.
+             */
             type.getCurrentContext().remove("negative");
+
             return entry;
         });
 
@@ -683,7 +703,10 @@ public class DABPDFExtractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
-        // if we have a tax return, we set a flag and don't book tax below
+        /***
+         * if we have a tax refunds,
+         * we set a flag and don't book tax below
+         */
         transaction
                 .section("n").optional()
                 .match("zu versteuern \\(negativ\\) (?<n>.*)")
