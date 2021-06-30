@@ -61,7 +61,7 @@ public abstract class ReportingPeriod
             case CURRENT_WEEK:
                 return new CurrentWeek();
             case CURRENT_YEAR:
-                return new YearToDate();
+                return new CurrentYear();
             case FROM_X_TO_Y:
                 return FromXtoY.fromString(code);
             case PREVIOUS_MONTH:
@@ -663,11 +663,11 @@ public abstract class ReportingPeriod
         }
     }
 
-    public static class YearToDate extends ReportingPeriod
+    public static class CurrentYear extends ReportingPeriod
     {
         static final char CODE = 'X';
 
-        public YearToDate()
+        public CurrentYear()
         {
             super(CURRENT_YEAR);
         }

@@ -48,7 +48,7 @@ public class VINISExporter
         LocalDate lastYear = LocalDate.now().minusYears(1);
         LocalDate firstYear = LocalDate.now().minusYears(100);
 
-        ReportingPeriod periodCurrentYear = new ReportingPeriod.YearToDate();
+        ReportingPeriod periodCurrentYear = new ReportingPeriod.CurrentYear();
         ReportingPeriod periodLastYear = new ReportingPeriod.YearX(lastYear.getYear());
         ReportingPeriod periodAllYears = new ReportingPeriod.FromXtoY(
                         firstYear.with(TemporalAdjusters.firstDayOfYear()), LocalDate.now());

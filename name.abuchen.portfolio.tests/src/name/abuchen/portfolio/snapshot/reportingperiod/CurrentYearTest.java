@@ -11,11 +11,11 @@ import org.junit.Test;
 
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.snapshot.ReportingPeriod.LastXTradingDays;
-import name.abuchen.portfolio.snapshot.ReportingPeriod.YearToDate;
+import name.abuchen.portfolio.snapshot.ReportingPeriod.CurrentYear;
 import name.abuchen.portfolio.snapshot.ReportingPeriodType;
 import name.abuchen.portfolio.util.Interval;
 
-public class YearToDateTest
+public class CurrentYearTest
 {
     @Test
     public void testLegacyContructor() throws IOException
@@ -23,13 +23,13 @@ public class YearToDateTest
         String code = "X";
         ReportingPeriod period = ReportingPeriod.from(code);
 
-        assertEquals(period, new YearToDate()); //NOSONAR
+        assertEquals(period, new CurrentYear()); //NOSONAR
     }
 
     @Test
     public void testSerializationDeserializationRoundtrip() throws IOException
     {
-        ReportingPeriod period = new YearToDate();
+        ReportingPeriod period = new CurrentYear();
 
         StringBuilder strb = new StringBuilder();
         period.writeTo(strb);
@@ -43,7 +43,7 @@ public class YearToDateTest
     @Test
     public void testToInterval()
     {
-        ReportingPeriod period = new YearToDate();
+        ReportingPeriod period = new CurrentYear();
         
         LocalDate today = LocalDate.now();
         LocalDate intervalStart = LocalDate.of(today.getYear(), 1, 1).minusDays(1);
@@ -57,8 +57,8 @@ public class YearToDateTest
     @Test
     public void testEquals()
     {
-        ReportingPeriod equal1 = new YearToDate();
-        ReportingPeriod equal2 = new YearToDate();
+        ReportingPeriod equal1 = new CurrentYear();
+        ReportingPeriod equal2 = new CurrentYear();
         ReportingPeriod notEqualDifferentClass = new LastXTradingDays(10);
 
         assertNotEquals(equal1, null);

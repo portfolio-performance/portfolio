@@ -267,7 +267,7 @@ public class ReportingPeriodDialog extends Dialog
             radioCurrentMonth.setSelection(true);
         else if (template instanceof ReportingPeriod.CurrentQuarter)
             radioCurrentQuarter.setSelection(true);
-        else if (template instanceof ReportingPeriod.YearToDate)
+        else if (template instanceof ReportingPeriod.CurrentYear)
             radioYTD.setSelection(true);
         else if (template instanceof ReportingPeriod.LastWeek)
             radioLastWeek.setSelection(true);
@@ -347,7 +347,7 @@ public class ReportingPeriodDialog extends Dialog
         }
         else if (radioYTD.getSelection())
         {
-            result = new ReportingPeriod.YearToDate();
+            result = new ReportingPeriod.CurrentYear();
         }
         else if (radioLastWeek.getSelection())
         {

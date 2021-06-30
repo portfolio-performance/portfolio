@@ -89,7 +89,7 @@ public class ReportingPeriodTypeTest
     @Test
     public void testCurrentYearFallback()
     {
-        String code = new ReportingPeriod.YearToDate().getCode();
+        String code = new ReportingPeriod.CurrentYear().getCode();
         ReportingPeriodType type = ReportingPeriodType.fromString(code);
 
         assertEquals(CURRENT_YEAR, type);

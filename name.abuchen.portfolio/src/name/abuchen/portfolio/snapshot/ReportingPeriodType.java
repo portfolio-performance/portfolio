@@ -6,7 +6,7 @@ import static java.util.Locale.ENGLISH;
 import name.abuchen.portfolio.snapshot.ReportingPeriod.CurrentMonth;
 import name.abuchen.portfolio.snapshot.ReportingPeriod.CurrentQuarter;
 import name.abuchen.portfolio.snapshot.ReportingPeriod.CurrentWeek;
-import name.abuchen.portfolio.snapshot.ReportingPeriod.YearToDate;
+import name.abuchen.portfolio.snapshot.ReportingPeriod.CurrentYear;
 import name.abuchen.portfolio.snapshot.ReportingPeriod.FromXtoY;
 import name.abuchen.portfolio.snapshot.ReportingPeriod.LastX;
 import name.abuchen.portfolio.snapshot.ReportingPeriod.LastXDays;
@@ -79,7 +79,7 @@ public enum ReportingPeriodType
             return CURRENT_MONTH;
         else if (type == CurrentQuarter.CODE)
             return CURRENT_QUARTER;
-        else if (type == YearToDate.CODE)
+        else if (type == CurrentYear.CODE)
             return CURRENT_YEAR;
         else if (type == LastYear.CODE)
             return PREVIOUS_YEAR;
