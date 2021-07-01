@@ -85,11 +85,30 @@ public class DABPDFExtractor extends AbstractPDFExtractor
 
                 // ComStage-MSCI USA TRN UCIT.ETF Inhaber-Anteile I o.N. LU0392495700
                 // STK 43,000 EUR 47,8310
-                .section("isin", "name", "shares", "currency")
-                .find("Gattungsbezeichnung ISIN")
+                .section("isin", "name", "shares", "currency").optional()
+                .find("^Gattungsbezeichnung ISIN$")
                 .match("^(?<name>.*) (?<isin>[\\w]{12})$")
                 .match("STK (?<shares>[.,\\d]+) (?<currency>[\\w]{3}) [.,\\d]+$")
                 .assign((t, v) -> {
+                    t.setShares(asShares(v.get("shares")));
+                    t.setSecurity(getOrCreateSecurity(v));
+                })
+
+                // Gattungsbezeichnung Fälligkeit näch. Zinstermin ISIN
+                // 4,75% Ranft Invest GmbH Inh.-Schv. 01.07.2030 01.07.2021 DE000A2LQLH9
+                // v.2018(2030)
+                // Nominal Kurs
+                // EUR 1.000,000 100,0000 %
+                .section("isin", "name", "name1", "shares", "currency").optional()
+                .find("^Gattungsbezeichnung F.lligkeit näch. Zinstermin ISIN$")
+                .match("^(?<name>.*) [\\d]+.[\\d]+.[\\d]{4} [\\d]+.[\\d]+.[\\d]{4} (?<isin>[\\w]{12})$")
+                .match("^(?<name1>.*)$")
+                .match("^Nominal Kurs$")
+                .match("(?<currency>[\\w]{3}) (?<shares>[.,\\d]+) [.,\\d]+ %$")
+                .assign((t, v) -> {
+                    if (!v.get("name1").startsWith("Nominal"))
+                        v.put("name", v.get("name") + " " + v.get("name1"));
+
                     t.setShares(asShares(v.get("shares")));
                     t.setSecurity(getOrCreateSecurity(v));
                 })
@@ -526,11 +545,30 @@ public class DABPDFExtractor extends AbstractPDFExtractor
 
                 // ComStage-MSCI USA TRN UCIT.ETF Inhaber-Anteile I o.N. LU0392495700
                 // STK 43,000 EUR 47,8310
-                .section("isin", "name", "shares")
+                .section("isin", "name", "shares").optional()
                 .find("Gattungsbezeichnung ISIN")
                 .match("^(?<name>.*) (?<isin>[\\w]{12})$")
                 .match("STK (?<shares>[.,\\d]+) [\\w]{3} [.,\\d]+$")
                 .assign((t, v) -> {
+                    t.setShares(asShares(v.get("shares")));
+                    t.setSecurity(getOrCreateSecurity(v));
+                })
+
+                // Gattungsbezeichnung Fälligkeit näch. Zinstermin ISIN
+                // 4,75% Ranft Invest GmbH Inh.-Schv. 01.07.2030 01.07.2021 DE000A2LQLH9
+                // v.2018(2030)
+                // Nominal Kurs
+                // EUR 1.000,000 100,0000 %
+                .section("isin", "name", "name1", "shares", "currency").optional()
+                .find("^Gattungsbezeichnung F.lligkeit näch. Zinstermin ISIN$")
+                .match("^(?<name>.*) [\\d]+.[\\d]+.[\\d]{4} [\\d]+.[\\d]+.[\\d]{4} (?<isin>[\\w]{12})$")
+                .match("^(?<name1>.*)$")
+                .match("^Nominal Kurs$")
+                .match("(?<currency>[\\w]{3}) (?<shares>[.,\\d]+) [.,\\d]+ %$")
+                .assign((t, v) -> {
+                    if (!v.get("name1").startsWith("Nominal"))
+                        v.put("name", v.get("name") + " " + v.get("name1"));
+
                     t.setShares(asShares(v.get("shares")));
                     t.setSecurity(getOrCreateSecurity(v));
                 })
@@ -849,6 +887,11 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 // Börse außerbörslich Bezugspreis EUR 27,00-
                 .section("fee", "currency").optional()
                 .match("^B.rse außerb.rslich Bezugspreis (?<currency>[\\w]{3}) (?<fee>[.,\\d]+)-$")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+
+                // Verwahrart Girosammelverwahrung Variabl. Transaktionsentgelt EUR 0,75-
+                .section("fee", "currency").optional()
+                .match("^.* Transaktionsentgelt (?<currency>[\\w]{3}) (?<fee>[.,\\d]+)-$")
                 .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
