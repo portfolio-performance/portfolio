@@ -109,7 +109,10 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                     if (!v.get("name1").startsWith("Nominal"))
                         v.put("name", v.get("name") + " " + v.get("name1"));
 
-                    t.setShares(asShares(v.get("shares")));
+                    /***
+                     * Workaround for bonds 
+                     */
+                    t.setShares((asShares(v.get("shares")) / 100));
                     t.setSecurity(getOrCreateSecurity(v));
                 })
 
@@ -569,7 +572,10 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                     if (!v.get("name1").startsWith("Nominal"))
                         v.put("name", v.get("name") + " " + v.get("name1"));
 
-                    t.setShares(asShares(v.get("shares")));
+                    /***
+                     * Workaround for bonds 
+                     */
+                    t.setShares((asShares(v.get("shares")) / 100));
                     t.setSecurity(getOrCreateSecurity(v));
                 })
 
