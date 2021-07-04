@@ -345,7 +345,16 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(context.get("currency"));
                         })
 
-                        .wrap(TransactionItem::new));
+                        .wrap(t -> {
+                            if (t.getAmount()>0)
+                            {
+                                return new TransactionItem(t);
+                            }
+                            else
+                            {
+                                return null;
+                            }
+                        }));
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
