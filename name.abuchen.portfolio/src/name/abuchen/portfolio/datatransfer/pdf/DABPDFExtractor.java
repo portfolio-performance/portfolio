@@ -2,8 +2,13 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -27,18 +32,20 @@ public class DABPDFExtractor extends AbstractPDFExtractor
         addBuySellTransaction();
         addDividendTransaction();
         addTransferOutInTransaction();
+        addDepositRemovalAccountTransaction();
+        addFeePaymentAccountTransaction();
     }
 
     @Override
     public String getPDFAuthor()
     {
-        return "Computershare Communication Services GmbH"; //$NON-NLS-1$
+        return ""; //$NON-NLS-1$
     }
 
     @Override
     public String getLabel()
     {
-        return "DAB Bank"; //$NON-NLS-1$
+        return "DAB Bank / BNP Paribas S.A."; //$NON-NLS-1$
     }
 
     @SuppressWarnings("nls")
@@ -67,6 +74,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                     {
                         t.setType(PortfolioTransaction.Type.SELL);
                     }
+                    type.getCurrentContext().remove("negative");
                 })
 
                 // ComStage-MSCI USA TRN UCIT.ETF Inhaber-Anteile I o.N. LU0392495700
@@ -97,6 +105,12 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                         t.setDate(asDate(v.get("date")));
                 })
 
+                /***
+                 * If changes are made in this area, 
+                 * the tax refund function must be adjusted.
+                 * addBuySellTaxReturnBlock(type);
+                 */
+                
                 // 24.11.2020  EUR 685,50
                 // 08.01.2015 8022574001 EUR 150,00
                 .section("amount", "currency").optional()
@@ -148,25 +162,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
-
-        Block taxBlock = new Block("zu versteuern \\(negativ\\).*");
-        type.addBlock(taxBlock);
-        taxBlock.set(new Transaction<AccountTransaction>().subject(() -> {
-            AccountTransaction t = new AccountTransaction();
-            t.setType(AccountTransaction.Type.TAX_REFUND);
-            return t;
-        })
-
-                .section("amount", "currency", "date")
-                .match("Wert Konto-Nr. Abrechnungs-Nr. Betrag zu Ihren Gunsten")
-                .match("^(?<date>\\d+.\\d+.\\d{4}+) ([\\d]+) ([\\d]+) (?<currency>[\\w]{3}) (?<amount>[.,\\d]+)$")
-                .assign((t, v) -> {
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                    t.setDateTime(asDate(v.get("date")));
-                })
-
-                .wrap(t -> new TransactionItem(t)));
+        addBuySellTaxReturnBlock(type);
     }
 
     @SuppressWarnings("nls")
@@ -181,13 +177,14 @@ public class DABPDFExtractor extends AbstractPDFExtractor
         pdfTransaction.subject(() -> {
             AccountTransaction entry = new AccountTransaction();
             entry.setType(AccountTransaction.Type.DIVIDENDS);
+            type.getCurrentContext().remove("negative");
             return entry;
         });
 
         pdfTransaction
                 // Paychex Inc. Registered Shares DL -,01 US7043261079
                 // STK 10,000 31.07.2020 27.08.2020 USD 0,620000
-                .section("isin", "name", "shares", "currency")
+                .section("isin", "name", "shares", "currency").optional()
                 .find("Gattungsbezeichnung ISIN")
                 .match("^(?<name>.*) (?<isin>[\\w]{12})$")
                 .match("^STK (?<shares>[.,\\d]+) \\d+.\\d+.\\d{4} \\d+.\\d+.\\d{4} (?<currency>[\\w]{3}) [.,\\d]+$")
@@ -196,6 +193,26 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                     t.setSecurity(getOrCreateSecurity(v));
                 })
 
+                // Wertpapierbezeichnung WKN ISIN
+                // HORMEL FOODS CORP. Registered Shares DL 0,01465 850875 US4404521001
+                .section("name", "wkn", "isin", "currency").optional()
+                .find("Wertpapierbezeichnung WKN ISIN")
+                .match("^(?<name>.*) (?<wkn>.*) (?<isin>[\\w]{12})$")
+                .match("^Dividende pro St.ck [.,\\d]+ (?<currency>[\\w]{3}) .*$")
+                .assign((t, v) -> {
+                    t.setSecurity(getOrCreateSecurity(v));
+                })
+
+                // 1.500 Stück
+                .section("shares").optional()
+                .match("(?<shares>[.,\\d]+) St.ck")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                // Valuta 15.02.2018 BIC CSDBDE71XXX
+                .section("date").optional()
+                .match("Valuta (?<date>\\d+.\\d+.\\d{4}+).*")
+                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
                 // 08.01.2015 8022574001 EUR 150,00
                 .section("date", "amount", "currency").optional()
                 .find("Nominal Ex-Tag Zahltag .*")
@@ -203,6 +220,14 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> {
                     t.setDateTime(asDate(v.get("date")));
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                    t.setAmount(asAmount(v.get("amount")));
+                })
+
+                // Netto in USD zugunsten IBAN DE90 209,38 USD
+                .section("amount", "currency").optional()
+                .match("^Netto .* zugunsten IBAN .* (?<amount>[.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    t.setCurrencyCode(v.get("currency"));
                     t.setAmount(asAmount(v.get("amount")));
                 })
 
@@ -310,9 +335,57 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                     }
                 })
 
+                // Brutto in USD 281,25 USD
+                // Devisenkurs 1,249900 USD / EUR
+                // Brutto in EUR 225,02 EUR
+                .section("exchangeRate", "fxAmount", "fxCurrency", "amount", "currency").optional()
+                .match("Brutto in [\\w]{3} (?<fxAmount>[.,\\d]+) (?<fxCurrency>[\\w]{3})")
+                .match("Devisenkurs (?<exchangeRate>[.,\\d]+) [\\w]{3} \\/ [\\w]{3}")
+                .match("Brutto in [\\w]{3} (?<amount>[.,\\d]+) (?<currency>[\\w]{3})")
+                .assign((t, v) -> {
+                    // Example: Devisenkurs 1,249900 USD / EUR
+                    // check which currency is transaction currency and
+                    // use exchange rate accordingly
+                    // if transaction currency is e.g. USD, we need to
+                    // inverse the rate
+                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                    if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
+                    {
+                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+                    }
+                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
+
+                    if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
+                    {
+                        BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
+                                        RoundingMode.HALF_DOWN);
+
+                        // check, if forex currency is transaction
+                        // currency or not and swap amount, if necessary
+                        Unit grossValue;
+                        if (!asCurrencyCode(v.get("fxCurrency")).equals(t.getCurrencyCode()))
+                        {
+                            Money fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")),
+                                            asAmount(v.get("fxAmount")));
+                            Money amount = Money.of(asCurrencyCode(v.get("currency")),
+                                            asAmount(v.get("amount")));
+                            grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
+                        }
+                        else
+                        {
+                            Money amount = Money.of(asCurrencyCode(v.get("fxCurrency")),
+                                            asAmount(v.get("fxAmount")));
+                            Money fxAmount = Money.of(asCurrencyCode(v.get("currency")),
+                                            asAmount(v.get("amount")));
+                            grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
+                        }
+                        t.addUnit(grossValue);
+                    }
+                })
+
                 // Devisenkurs: EUR/USD 1,1814
                 .section("exchangeRate", "fxCurrency").optional()
-                .match("^Devisenkurs: [\\w]{3}/(?<fxCurrency>[\\w]{3}) (?<exchangeRate>[.,\\d]+)$")
+                .match("^Devisenkurs: [\\w]{3}\\/(?<fxCurrency>[\\w]{3}) (?<exchangeRate>[.,\\d]+)$")
                 .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                     if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
@@ -340,6 +413,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
         pdfTransaction.subject(() -> {
             PortfolioTransaction entry = new PortfolioTransaction();
             entry.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
+            type.getCurrentContext().remove("negative");
             return entry;
         });
 
@@ -410,6 +484,191 @@ public class DABPDFExtractor extends AbstractPDFExtractor
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
+    }
+
+    @SuppressWarnings("nls")
+    private void addBuySellTaxReturnBlock(DocumentType type)
+    {
+        /***
+         * If changes are made in this area,
+         * the buy/sell transaction function must be adjusted.
+         * addBuySellTransaction();
+         */
+        Block block = new Block("^(Kauf|Verkauf) .*$", "Dieser Beleg wird .*$");
+        type.addBlock(block);
+        block.set(new Transaction<AccountTransaction>()
+
+                .subject(() -> {
+                    AccountTransaction t = new AccountTransaction();
+                    t.setType(AccountTransaction.Type.TAX_REFUND);
+                    return t;
+                })
+
+                // ComStage-MSCI USA TRN UCIT.ETF Inhaber-Anteile I o.N. LU0392495700
+                // STK 43,000 EUR 47,8310
+                .section("isin", "name", "shares")
+                .find("Gattungsbezeichnung ISIN")
+                .match("^(?<name>.*) (?<isin>[\\w]{12})$")
+                .match("STK (?<shares>[.,\\d]+) [\\w]{3} [.,\\d]+$")
+                .assign((t, v) -> {
+                    t.setShares(asShares(v.get("shares")));
+                    t.setSecurity(getOrCreateSecurity(v));
+                })
+
+                // 27.08.2015 0000000000 EUR/USD 1,162765 EUR 4.465,12
+                // zu versteuern (negativ) EUR 341,55
+                // Wert Konto-Nr. Abrechnungs-Nr. Betrag zu Ihren Gunsten
+                // 24.08.2015 0000000000 00000000 EUR 90,09
+                .section("fxCurrency", "exchangeRate", "date", "currency", "amount").optional()
+                .match("^\\d+.\\d+.\\d{4} [\\d]+ [\\w]{3}\\/(?<fxCurrency>[\\w]{3}) (?<exchangeRate>[.,\\d]+) [\\w]{3} [.,\\d]+$")
+                .match("zu versteuern \\(negativ\\).*")
+                .match("Wert Konto-Nr. Abrechnungs-Nr. Betrag zu Ihren Gunsten")
+                .match("^(?<date>\\d+.\\d+.\\d{4}+) ([\\d]+) ([\\d]+) (?<currency>[\\w]{3}) (?<amount>[.,\\d]+)$")
+                .assign((t, v) -> {
+                    t.setDateTime(asDate(v.get("date")));
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+
+                    // read the forex currency, exchange rate and gross
+                    // amount in forex currency
+                    String forex = asCurrencyCode(v.get("fxCurrency"));
+                    if (t.getSecurity().getCurrencyCode().equals(forex))
+                    {
+                        BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                        BigDecimal reverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
+                                        RoundingMode.HALF_DOWN);
+
+                        // gross given in forex currency
+                        long fxAmount = asAmount(v.get("amount"));
+                        long amount = reverseRate.multiply(BigDecimal.valueOf(fxAmount))
+                                        .setScale(0, RoundingMode.HALF_DOWN).longValue();
+
+                        Unit grossValue = new Unit(Unit.Type.GROSS_VALUE,
+                                        Money.of(t.getCurrencyCode(), amount),
+                                        Money.of(forex, fxAmount), reverseRate);
+
+                        t.addUnit(grossValue);
+                    }
+                })
+
+                // 27.08.2015 0000000000 EUR/USD 1,162765 EUR 4.465,12
+                // zu versteuern (negativ) EUR 59,20
+                // Wert Konto-Nr. Abrechnungs-Nr. Betrag zu Ihren Gunsten
+                // 07.07.2020 1234567 1234567 EUR 16,46
+                .section("date", "currency", "amount").optional()
+                .match("zu versteuern \\(negativ\\).*")
+                .match("Wert Konto-Nr. Abrechnungs-Nr. Betrag zu Ihren Gunsten")
+                .match("^(?<date>\\d+.\\d+.\\d{4}+) ([\\d]+) ([\\d]+) (?<currency>[\\w]{3}) (?<amount>[.,\\d]+)$")
+                .assign((t, v) -> {
+                    t.setDateTime(asDate(v.get("date")));
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                })
+
+                .wrap(t -> {
+                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                        return new TransactionItem(t);
+                    return null;
+                }));
+    }
+
+    @SuppressWarnings("nls")
+    private void addDepositRemovalAccountTransaction()
+    {
+        final DocumentType type = new DocumentType("Konto.bersicht", (context, lines) -> {
+            Pattern pCurrency = Pattern.compile("^Verrechnungskonto .* nach Buchungsdatum (?<currency>[\\w]{3})$");
+
+            for (String line : lines)
+            {
+                Matcher m = pCurrency.matcher(line);
+                if (m.matches())
+                {
+                    context.put("currency", m.group(1));
+                }
+            }
+        });
+        this.addDocumentTyp(type);
+
+        Block block = new Block("^(SEPA-Gutschrift|SEPA-Lastschrift) [^Lastschrift].*$");
+        type.addBlock(block);
+        block.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction transaction = new AccountTransaction();
+                            transaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return transaction;
+                        })
+
+                        // Is type --> "SEPA-Lastschrift" change from DEPOSIT to REMOVAL
+                        .section("type").optional()
+                        .match("^(?<type>SEPA-Gutschrift|SEPA-Lastschrift) [^Lastschrift].*$")
+                        .assign((t, v) -> {
+                            if (v.get("type").equals("SEPA-Lastschrift"))
+                            {
+                                t.setType(AccountTransaction.Type.REMOVAL);
+                            }
+                        })
+
+                        // SEPA-Lastschrift Max Mustermann 15.07.19 300,00
+                        // SEPA-Gutschrift Max Mustermann 05.07.19 15.000,00
+                        .section("date", "amount")
+                        .match("^(SEPA-Gutschrift|SEPA-Lastschrift) [^Lastschrift].* (?<date>[\\d]{2}.[\\d]{2}.[\\d]{2}) (?<amount>[.,\\d]+)$")
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+
+                            // Formate the date from 10.07.19 to 10.07.2019
+                            v.put("date", DateTimeFormatter.ofPattern("dd.MM.yyyy").format(LocalDate.parse(v.get("date"), DateTimeFormatter.ofPattern("dd.MM.yy", Locale.GERMANY))));
+                            t.setDateTime(asDate(v.get("date")));
+
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                        })
+
+                        .wrap(TransactionItem::new));
+    }
+
+    @SuppressWarnings("nls")
+    private void addFeePaymentAccountTransaction()
+    {
+        final DocumentType type = new DocumentType("Konto.bersicht", (context, lines) -> {
+            Pattern pCurrency = Pattern.compile("^Verrechnungskonto .* nach Buchungsdatum (?<currency>[\\w]{3})$");
+
+            for (String line : lines)
+            {
+                Matcher m = pCurrency.matcher(line);
+                if (m.matches())
+                {
+                    context.put("currency", m.group(1));
+                }
+            }
+        });
+        this.addDocumentTyp(type);
+
+        Block block = new Block("^(SEPA-Lastschrift Lastschrift Managementgeb.hr) .*$");
+        type.addBlock(block);
+        block.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction transaction = new AccountTransaction();
+                            transaction.setType(AccountTransaction.Type.FEES);
+                            return transaction;
+                        })
+
+                        // SEPA-Lastschrift Lastschrift Managementgebühr 29.06.20 53,02
+                        .section("date", "amount")
+                        .match("^SEPA-Lastschrift Lastschrift Managementgeb.hr (?<date>[\\d]{2}.[\\d]{2}.[\\d]{2}) (?<amount>[.,\\d]+)$")
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+
+                            // Formate the date from 29.06.20 to 29.06.2020
+                            v.put("date", DateTimeFormatter.ofPattern("dd.MM.yyyy").format(LocalDate.parse(v.get("date"), DateTimeFormatter.ofPattern("dd.MM.yy", Locale.GERMANY))));
+                            t.setDateTime(asDate(v.get("date")));
+
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                        })
+
+                        .wrap(TransactionItem::new));
     }
 
     @SuppressWarnings("nls")
@@ -497,6 +756,32 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                     {
                         processTaxEntries(t, v, type);
                     }
+                })
+
+                .section("tax", "currency").optional()
+                .match("^abzgl. Quellensteuer .* (\\w{3}) (?<tax>[.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    processTaxEntries(t, v, type);
+                })
+
+                // abzgl. Kapitalertragsteuer 25,00 % von 90,02 EUR 22,51 EUR
+                .section("tax", "currency").optional()
+                .match("^abzgl. Kapitalertrags(s)?teuer .* (?<tax>[.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    processTaxEntries(t, v, type);
+                })
+
+                // abzgl. Solidaritätszuschlag 5,50 % von 22,51 EUR 1,23 EUR
+                .section("tax", "currency").optional()
+                .match("^abzgl. Solidarit.tszuschlag .* (?<tax>[.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    processTaxEntries(t, v, type);
+                })
+
+                .section("tax", "currency").optional()
+                .match("^abzgl. Kirchensteuer .* (?<tax>[.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    processTaxEntries(t, v, type);
                 });
     }
 

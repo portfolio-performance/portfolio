@@ -41,6 +41,11 @@ public class SearchSecurityWizard extends Wizard
         return item.create(client.getSettings());
     }
 
+    public Client getClient()
+    {
+        return client;
+    }
+
     @Override
     public boolean performFinish()
     {

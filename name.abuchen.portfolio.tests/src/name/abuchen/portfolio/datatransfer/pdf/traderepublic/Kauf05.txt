@@ -1,0 +1,34 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KASTANIENALLEE 32  10435 BERLIN
+Vor Nach SEITE 1 von 1
+Straße 1 DATUM 21.11.2019
+D 12345 Ort ORDER xxxx-xxxx
+AUSFÜHRUNG xxxx-xxxx
+DEPOT 123567892
+WERTPAPIERABRECHNUNG
+ÜBERSICHT
+Limit-Order Kauf am 21.11.2019, um 15:57 Uhr an der Lang & Schwarz Exchange.
+Der Kontrahent der Transaktion ist Lang & Schwarz TradeCenter AG & Co. KG.
+POSITION ANZAHL KURS BETRAG
+Realty Income Corp. 20 Stk. 69,78 EUR 1.395,60 EUR
+Registered Shares DL 1
+ISIN: US7561091049
+GESAMT 1.395,60 EUR
+ABRECHNUNG
+POSITION BETRAG
+Fremdkostenzuschlag -1,000 EUR
+GESAMT -1.396,60 EUR
+BUCHUNG
+VERRECHNUNGSKONTO VALUTA BETRAG
+DEXXXXXXXXXXXXXXXXXXXX 25.11.2019 -1.396,60 EUR
+Realty Income Corp. Registered Shares DL 1 in Wertpapierrechnung.
+Lagerland: USA
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie 
+Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Düsseldorf Geschäftsführer
+Kastanienallee 32 service@traderepublic.com AG Düsseldorf HRB 85864 Ingo Hillen
+10435 Berlin USt-ID DE307510626 Karsten Müller
+ABRE / 2019-11-21 / 12356789 / xxxx-xxxx

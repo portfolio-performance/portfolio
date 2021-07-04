@@ -4,6 +4,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.eclipse.e4.ui.services.IStylingEngine;
+import org.eclipse.jface.action.ToolBarManager;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
@@ -14,7 +16,11 @@ import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.util.SWTHelper;
+import name.abuchen.portfolio.ui.util.swt.SashLayout;
+import name.abuchen.portfolio.ui.util.swt.SashLayoutData;
 import name.abuchen.portfolio.ui.views.SecuritiesChart;
+import name.abuchen.portfolio.ui.views.SecurityDetailsViewer;
 
 public class SecurityPriceChartPane implements InformationPanePage
 {
@@ -30,6 +36,7 @@ public class SecurityPriceChartPane implements InformationPanePage
 
     private Security security;
     private SecuritiesChart chart;
+    private SecurityDetailsViewer details;
 
     @Override
     public String getLabel()
@@ -40,18 +47,30 @@ public class SecurityPriceChartPane implements InformationPanePage
     @Override
     public Control createViewControl(Composite parent)
     {
-        chart = new SecuritiesChart(parent, client, new CurrencyConverterImpl(factory, client.getBaseCurrency()));
+        Composite sash = new Composite(parent, SWT.NONE);
+        sash.setLayout(new SashLayout(sash, SWT.HORIZONTAL | SWT.END));
 
+        chart = new SecuritiesChart(sash, client, new CurrencyConverterImpl(factory, client.getBaseCurrency()));
         stylingEngine.style(chart.getControl());
 
-        return chart.getControl();
+        details = new SecurityDetailsViewer(sash, SWT.NONE, client, true);
+        details.getControl().setLayoutData(new SashLayoutData(SWTHelper.getPackedWidth(details.getControl())));
+
+        return sash;
+    }
+
+    @Override
+    public void addButtons(ToolBarManager toolBar)
+    {
+        chart.addButtons(toolBar);
     }
 
     @Override
     public void setInput(Object input)
     {
         security = Adaptor.adapt(Security.class, input);
-        chart.updateChart(security);
+        chart.updateChart(client, security);
+        details.setInput(security);
     }
 
     @Override

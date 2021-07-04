@@ -4,6 +4,8 @@ import java.time.LocalDate;
 
 import javax.inject.Inject;
 
+import org.eclipse.jface.action.ToolBarManager;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
@@ -16,8 +18,13 @@ import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.snapshot.filter.ClientFilter;
 import name.abuchen.portfolio.snapshot.filter.EmptyFilter;
 import name.abuchen.portfolio.snapshot.filter.PortfolioClientFilter;
+import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
+import name.abuchen.portfolio.ui.util.ContextMenu;
+import name.abuchen.portfolio.ui.util.DropDown;
+import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.views.StatementOfAssetsViewer;
 
 public class StatementOfAssetsPane implements InformationPanePage
@@ -44,7 +51,22 @@ public class StatementOfAssetsPane implements InformationPanePage
     public Control createViewControl(Composite parent)
     {
         viewer = view.make(StatementOfAssetsViewer.class);
-        return viewer.createControl(parent);
+
+        Control control = viewer.createControl(parent);
+
+        new ContextMenu(viewer.getTableViewer().getControl(), manager -> viewer.hookMenuListener(manager, view)).hook();
+
+        return control;
+    }
+
+    @Override
+    public void addButtons(ToolBarManager toolBar)
+    {
+        toolBar.add(new SimpleAction(Messages.MenuExportData, Images.EXPORT,
+                        a -> new TableViewerCSVExporter(viewer.getTableViewer()).export(getLabel(), portfolio)));
+
+        toolBar.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE,
+                        manager -> viewer.getColumnHelper().menuAboutToShow(manager)));
     }
 
     @Override

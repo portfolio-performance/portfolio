@@ -1,0 +1,32 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Ab. BLZ: 12345
+Abcd Abcdefghijk Referenz Nr: 12-123456
+Nr. 01 Kunden Nr.: 12345
+1234 Abcdefghi Depot Nr.: 12345-01 
+Austria
+Wien,  17. Juni 2011
+ 
+ERTRÄGNISGUTSCHRIFT
+FONDS-AUSSCHüTTUNG
+ 
+Wertpapier : RAIFF.ETHIK-AKTIEN (R) Ausschüttung Brutto : EUR 19,07
+WP-Kenn-Nr. : AT0000677901
+Ausschüttungsbetrag : EUR 19,07
+WP-Bestand : 20,286
+KESt II : EUR 1,22
+Ausschüttung : EUR 0,940000 Netto : EUR 17,85
+Ex-Tag : 15. Juni 2011
+Zahltag : 15. Juni 2011 Auszahlungsbetrag : EUR 17,85
+Lagerort : Wien
+Verwahrart : SV
+Abrechnung:
+Wir erkennen Ihr EUR Konto Nummer 12345 mit Valuta 16. Juni 2011.
+Die Buchung wurde "Eingang vorbehalten" ausgeführt.
+Überprüfen Sie bitte die Richtigkeit dieser Bestätigung. Sollten Sie innerhalb von 6 Wochen nach Erhalt dieser Bestätigung keine
+Einwände gegen die Richtigkeit erheben, so gelten die angeführten Erklärungen und Leistungen als genehmigt.
+ecetra  Central European e-Finance AG | Mariahilferstraße 121B | A-1060 Wien 
+e-mail: support@ecetra.com | Fax: +43-1-53689-13550 | www.ecetra.com
+Sitz Wien  |  Handelsgericht Wien  |  FB-Nr. 193944m  |  DVR 1052322  |  UID ATU49227901
+Ein Unternehmen der ERSTE BANK GRUPPE

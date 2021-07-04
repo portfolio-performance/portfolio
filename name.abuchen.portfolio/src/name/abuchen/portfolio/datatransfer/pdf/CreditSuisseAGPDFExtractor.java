@@ -150,12 +150,26 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
             });
 
         pdfTransaction
+                // 900 REGISTERED SHS IRON MOUNTAIN INC
+                // Valor 26754105, IRM, ISIN US46284V1017
+                // Bruttoertrag USD 556.65
+                .section("shares", "name", "isin", "currency").optional()
+                .match("^(?<shares>[.,\\d]+) (?<name>.*)$")
+                .match("^.* ISIN (?<isin>[\\w]{12})$")
+                .match("^Bruttoertrag (?<currency>[\\w]{3}) [.,\\d]+$")
+                .assign((t, v) -> {
+                    v.put("shares", convertAmount(v.get("shares")));
+        
+                    t.setShares(asShares(v.get("shares")));
+                    t.setSecurity(getOrCreateSecurity(v));
+                })
+
                 // USD 200,000 6.25 % FIXED RATE NOTES NORDDEUTSCHE
                 // LANDESBANK GIROZENTRALE 2014-10.4.24 REG-S
                 // SUBORD.
                 // Valor 24160639, NDKH, ISIN XS1055787680
                 // Bruttoertrag USD 6,250.00
-                .section("shares", "name", "isin", "currency")
+                .section("shares", "name", "isin", "currency").optional()
                 .match("^[\\w]{3} (?<shares>[.,\\d]+) (?<name>.*)$")
                 .match("^.* ISIN (?<isin>[\\w]{12})$")
                 .match("^Bruttoertrag (?<currency>[\\w]{3}) [.,\\d]+$")
@@ -231,6 +245,9 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> {
                     v.put("shares", convertAmount(v.get("shares")));
 
+                    /***
+                     * Workaround for bonds 
+                     */
                     t.setShares((asShares(v.get("shares")) / 100));
                     t.setSecurity(getOrCreateSecurity(v));
                 })
@@ -264,6 +281,14 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                 // Eidgenössische Umsatzabgabe USD 40.91
                 .section("tax", "currency").optional()
                 .match("^Eidgen.ssische Umsatzabgabe (?<currency>[\\w]{3}) ([-\\s]+)?(?<tax>[.,\\d]+)$")
+                .assign((t, v) -> {
+                    v.put("tax", convertAmount(v.get("tax")));
+                    processTaxEntries(t, v, type);   
+                })
+
+                // Quellensteuer USD - 167.00
+                .section("tax", "currency").optional()
+                .match("^Quellensteuer (?<currency>[\\w]{3}) - (?<tax>[.,\\d]+)$")
                 .assign((t, v) -> {
                     v.put("tax", convertAmount(v.get("tax")));
                     processTaxEntries(t, v, type);   

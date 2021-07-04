@@ -7,3 +7,5 @@ Table,
 Tree {
 	swt-lines-visible: false;
 }
+
+@import url("platform:/meta/name.abuchen.portfolio.ui/custom.css")

@@ -387,14 +387,14 @@ public class Client
 
     public void setProperty(String key, String value)
     {
-        String oldValue = properties.put(key, value);
-        propertyChangeSupport.firePropertyChange("properties", oldValue, value); //$NON-NLS-1$
+        properties.put(key, value);
+        touch();
     }
 
     public String removeProperty(String key)
     {
         String oldValue = properties.remove(key);
-        propertyChangeSupport.firePropertyChange("properties", oldValue, null); //$NON-NLS-1$
+        touch();
         return oldValue;
     }
 

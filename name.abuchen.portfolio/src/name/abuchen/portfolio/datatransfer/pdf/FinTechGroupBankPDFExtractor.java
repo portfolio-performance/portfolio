@@ -528,9 +528,25 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                 //                                        Endbetrag       :       795,15 EUR
-                .section("amount", "currency")
-                .match(".* Endbetrag([\\s]+)?: ([\\s]+)?(?<amount>[.,\\d]+) (?<currency>[\\w]{3})")
+                .section("amount", "currency").optional()
+                .match("^.* Endbetrag([\\s]+)?: ([\\s]+)?(?<amount>[.,\\d]+) (?<currency>[\\w]{3})")
                 .assign((t, v) -> {
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                    t.setAmount(asAmount(v.get("amount")));
+                })
+
+                /***
+                 * If dividends amount is negative 
+                 * then we switch the transaction to taxes, 
+                 * because there is reinvesting and only the taxes 
+                 * must be paid from the dividend transaction
+                 */
+                //                                       Endbetrag          :        -8,26 EUR
+                .section("amount", "currency").optional()
+                .match(".* Endbetrag([\\s]+)?: ([\\s]+)?-(?<amount>[.,\\d]+) (?<currency>[\\w]{3})")
+                .assign((t, v) -> {
+                    t.setType(AccountTransaction.Type.TAXES);
+
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
                 })
@@ -1638,21 +1654,21 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
                 //                                      *Einbeh. Steuer  :       284,85 EUR
                 .section("tax", "currency").optional()
-                .match("^.* \\*Einbeh\\. Steuer([\\s]+)?: ([\\s]+)?([\\s]+)?(?<tax>[.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^.* \\*Einbeh\\. Steuer([\\s]+)?: ([\\s]+)?(?<tax>[.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     processTaxEntries(t, v, type);
                 })
 
                 // Quellenst.-satz :           15,00 %    Gez. Quellenst. :            1,15 USD
                 .section("tax", "currency").optional()
-                .match("^.* Gez\\. Quellenst\\.([\\s]+)?: ([\\s]+)?([\\s]+)?(?<tax>[.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^.* Gez\\. Quellenst\\.([\\s]+)?: ([\\s]+)?(?<tax>[.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     processTaxEntries(t, v, type);
                 })
 
                 // Quellenst.-satz :            15,00 %  Gez. Quellensteuer :           18,28 USD
                 .section("tax", "currency").optional()
-                .match("^.* Gez\\. Quellensteuer([\\s]+)?: ([\\s]+)?([\\s]+)?(?<tax>[.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^.* Gez\\. Quellensteuer([\\s]+)?: ([\\s]+)?(?<tax>[.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     processTaxEntries(t, v, type);
                 })

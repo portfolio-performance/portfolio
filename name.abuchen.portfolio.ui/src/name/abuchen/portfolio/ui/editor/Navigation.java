@@ -70,6 +70,7 @@ public final class Navigation
         private IMenuListener contextMenu;
 
         private Class<? extends AbstractFinanceView> viewClass;
+        private boolean hideInformationPane;
         private Object parameter;
 
         private List<Item> children = new ArrayList<>();
@@ -77,19 +78,31 @@ public final class Navigation
 
         private Item(String label)
         {
-            this(label, null, null);
+            this(label, null, null, false);
         }
 
         private Item(String label, Class<? extends AbstractFinanceView> viewClass)
         {
-            this(label, null, viewClass);
+            this(label, null, viewClass, false);
+        }
+
+        private Item(String label, Class<? extends AbstractFinanceView> viewClass, boolean hideInformationPane)
+        {
+            this(label, null, viewClass, hideInformationPane);
         }
 
         private Item(String label, Images image, Class<? extends AbstractFinanceView> viewClass)
         {
+            this(label, image, viewClass, false);
+        }
+
+        private Item(String label, Images image, Class<? extends AbstractFinanceView> viewClass,
+                        boolean hideInformationPane)
+        {
             this.label = label;
             this.image = image;
             this.viewClass = viewClass;
+            this.hideInformationPane = hideInformationPane;
 
             if (viewClass != null)
                 addTag(Tag.VIEW);
@@ -123,6 +136,16 @@ public final class Navigation
         /* package */ void setParameter(Object parameter)
         {
             this.parameter = parameter;
+        }
+
+        public boolean hideInformationPane()
+        {
+            return hideInformationPane;
+        }
+
+        /* package */ void setHideInformationPane(boolean hideInformationPane)
+        {
+            this.hideInformationPane = hideInformationPane;
         }
 
         public Class<? extends AbstractFinanceView> getViewClass()
@@ -420,17 +443,17 @@ public final class Navigation
         statementOfAssets.addTag(Tag.DEFAULT_VIEW);
         section.add(statementOfAssets);
 
-        statementOfAssets.add(new Item(Messages.ClientEditorLabelChart, StatementOfAssetsHistoryView.class));
-        statementOfAssets.add(new Item(Messages.ClientEditorLabelHoldings, HoldingsPieChartView.class));
+        statementOfAssets.add(new Item(Messages.ClientEditorLabelChart, StatementOfAssetsHistoryView.class, true));
+        statementOfAssets.add(new Item(Messages.ClientEditorLabelHoldings, HoldingsPieChartView.class, true));
 
-        Item performance = new Item(Messages.ClientEditorLabelPerformance, DashboardView.class);
+        Item performance = new Item(Messages.ClientEditorLabelPerformance, DashboardView.class, true);
         section.add(performance);
 
         performance.add(new Item(Messages.ClientEditorPerformanceCalculation, PerformanceView.class));
-        performance.add(new Item(Messages.ClientEditorLabelChart, PerformanceChartView.class));
-        performance.add(new Item(Messages.ClientEditorLabelReturnsVolatility, ReturnsVolatilityChartView.class));
+        performance.add(new Item(Messages.ClientEditorLabelChart, PerformanceChartView.class, true));
+        performance.add(new Item(Messages.ClientEditorLabelReturnsVolatility, ReturnsVolatilityChartView.class, true));
         performance.add(new Item(Messages.LabelSecurities, SecuritiesPerformanceView.class));
-        performance.add(new Item(Messages.LabelEarningsExpenses, EarningsView.class));
+        performance.add(new Item(Messages.LabelEarningsExpenses, EarningsView.class, true));
         performance.add(new Item(Messages.LabelTrades, TradeDetailsView.class));
     }
 
@@ -483,6 +506,7 @@ public final class Navigation
     private Item createTaxonomyItem(Item section, Client client, Taxonomy taxonomy)
     {
         Item item = new Item(taxonomy.getName(), TaxonomyView.class);
+        item.hideInformationPane = true;
         item.parameter = taxonomy;
 
         item.contextMenu = manager -> {
@@ -572,8 +596,8 @@ public final class Navigation
         Item section = new Item(Messages.ClientEditorLabelGeneralData);
         roots.add(section);
 
-        section.add(new Item(Messages.LabelCurrencies, CurrencyView.class));
-        section.add(new Item(Messages.LabelSettings, SettingsView.class));
+        section.add(new Item(Messages.LabelCurrencies, CurrencyView.class, true));
+        section.add(new Item(Messages.LabelSettings, SettingsView.class, true));
 
         if ("yes".equals(System.getProperty("name.abuchen.portfolio.debug"))) //$NON-NLS-1$ //$NON-NLS-2$
             section.add(new Item("Browser Test", BrowserTestView.class)); //$NON-NLS-1$

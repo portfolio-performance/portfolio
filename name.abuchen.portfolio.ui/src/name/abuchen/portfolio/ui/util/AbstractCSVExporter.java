@@ -22,6 +22,26 @@ public abstract class AbstractCSVExporter
 
     protected abstract void writeToFile(File file) throws IOException;
 
+    public void export(Object... labels)
+    {
+        StringBuilder fileName = new StringBuilder();
+
+        for (Object label : labels)
+        {
+            if (label == null)
+                continue;
+
+            if (fileName.length() > 0)
+                fileName.append(" "); //$NON-NLS-1$
+
+            fileName.append(label);
+        }
+
+        fileName.append(".csv"); //$NON-NLS-1$
+
+        this.export(fileName.toString());
+    }
+
     public void export(String fileName)
     {
         FileDialog dialog = new FileDialog(getShell(), SWT.SAVE);
