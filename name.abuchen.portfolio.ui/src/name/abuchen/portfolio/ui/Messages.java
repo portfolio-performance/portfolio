@@ -694,6 +694,7 @@ public class Messages extends NLS
     public static String LabelMetricDaysFormatter;
     public static String LabelMetricYears;
     public static String LabelMetricYearsFormatter;
+    public static String LabelPreviousTradingDay;
     public static String LabelStartTyping;
     public static String LabelStatementOfAssets;
     public static String LabelStatementOfAssetsHistory;

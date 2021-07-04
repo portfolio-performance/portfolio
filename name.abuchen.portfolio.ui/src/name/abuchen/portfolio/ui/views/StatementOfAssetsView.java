@@ -9,6 +9,7 @@ import java.util.function.Function;
 import javax.inject.Inject;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
@@ -22,6 +23,7 @@ import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.snapshot.ReportingPeriod.LastXTradingDays;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
@@ -144,30 +146,56 @@ public class StatementOfAssetsView extends AbstractFinanceView
             manager.add(new LabelOnly(Values.Date.format(snapshotDate.orElse(LocalDate.now()))));
             manager.add(new Separator());
 
-            SimpleAction action = new SimpleAction(Messages.LabelToday, a -> {
-                snapshotDate = Optional.empty();
-                notifyModelUpdated();
-                dropDown.setImage(Images.CALENDAR_OFF);
-            });
-            action.setEnabled(snapshotDate.isPresent());
-            manager.add(action);
-
-            manager.add(new SimpleAction(Messages.MenuPickOtherDate, a -> {
-                DateSelectionDialog dialog = new DateSelectionDialog(getActiveShell());
-                dialog.setSelection(snapshotDate.orElse(LocalDate.now()));
-                if (dialog.open() != DateSelectionDialog.OK)
-                    return;
-                if (snapshotDate.isPresent() && snapshotDate.get().equals(dialog.getSelection()))
-                    return;
-
-                snapshotDate = LocalDate.now().equals(dialog.getSelection()) ? Optional.empty()
-                                : Optional.of(dialog.getSelection());
-                notifyModelUpdated();
-                dropDown.setImage(!snapshotDate.isPresent() ? Images.CALENDAR_OFF : Images.CALENDAR_ON);
-            }));
+            addTodayAction(dropDown, manager);
+            addPreviousTradingDayAction(dropDown, manager);
+            addDateSelectionAction(dropDown, manager);
         });
 
         toolBar.add(dropDown);
+    }
+
+    private void addTodayAction(DropDown dropDown, IMenuManager manager)
+    {
+        SimpleAction action = new SimpleAction(Messages.LabelToday, a -> {
+            snapshotDate = Optional.empty();
+            notifyModelUpdated();
+            dropDown.setImage(Images.CALENDAR_OFF);
+        });
+        action.setEnabled(snapshotDate.isPresent());
+        manager.add(action);
+    }
+    
+    private void addPreviousTradingDayAction(DropDown dropDown, IMenuManager manager)
+    {
+        LocalDate actionDate = LastXTradingDays.tradingDaysUntil(LocalDate.now(), 1);
+        
+        SimpleAction action = new SimpleAction(Messages.LabelPreviousTradingDay, a -> {
+            snapshotDate = Optional.of(actionDate);
+            notifyModelUpdated();
+            dropDown.setImage(Images.CALENDAR_OFF);
+        });
+        
+        snapshotDate.ifPresentOrElse(
+            ssDate -> action.setEnabled(!ssDate.equals(actionDate)),
+            () -> action.setEnabled(true));
+        manager.add(action);
+    }
+    
+    private void addDateSelectionAction(DropDown dropDown, IMenuManager manager)
+    {
+        manager.add(new SimpleAction(Messages.MenuPickOtherDate, a -> {
+            DateSelectionDialog dialog = new DateSelectionDialog(getActiveShell());
+            dialog.setSelection(snapshotDate.orElse(LocalDate.now()));
+            if (dialog.open() != DateSelectionDialog.OK)
+                return;
+            if (snapshotDate.isPresent() && snapshotDate.get().equals(dialog.getSelection()))
+                return;
+            
+            snapshotDate = LocalDate.now().equals(dialog.getSelection()) ? Optional.empty()
+                            : Optional.of(dialog.getSelection());
+            notifyModelUpdated();
+            dropDown.setImage(snapshotDate.isPresent() ? Images.CALENDAR_ON : Images.CALENDAR_OFF);
+        }));
     }
 
     @Override
