@@ -167,7 +167,7 @@ public class StatementOfAssetsView extends AbstractFinanceView
     
     private void addPreviousTradingDayAction(DropDown dropDown, IMenuManager manager)
     {
-        LocalDate actionDate = LastXTradingDays.tradingDaysUntil(LocalDate.now(), 1);
+        LocalDate actionDate = LastXTradingDays.tradingDaysUntil(LocalDate.now(), 0);
         
         SimpleAction action = new SimpleAction(Messages.LabelPreviousTradingDay, a -> {
             snapshotDate = Optional.of(actionDate);
