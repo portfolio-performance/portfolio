@@ -23,7 +23,6 @@ import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.snapshot.ReportingPeriod.LastXTradingDays;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
@@ -42,6 +41,8 @@ import name.abuchen.portfolio.ui.views.panes.SecurityPriceChartPane;
 import name.abuchen.portfolio.ui.views.panes.TradesPane;
 import name.abuchen.portfolio.ui.views.panes.TransactionsPane;
 import name.abuchen.portfolio.util.Pair;
+import name.abuchen.portfolio.util.TradeCalendar;
+import name.abuchen.portfolio.util.TradeCalendarManager;
 
 public class StatementOfAssetsView extends AbstractFinanceView
 {
@@ -167,7 +168,7 @@ public class StatementOfAssetsView extends AbstractFinanceView
     
     private void addPreviousTradingDayAction(DropDown dropDown, IMenuManager manager)
     {
-        LocalDate actionDate = LastXTradingDays.tradingDaysUntil(LocalDate.now(), 0);
+        LocalDate actionDate = findPreviousTradingDay();
         
         SimpleAction action = new SimpleAction(Messages.LabelPreviousTradingDay, a -> {
             snapshotDate = Optional.of(actionDate);
@@ -236,5 +237,18 @@ public class StatementOfAssetsView extends AbstractFinanceView
     {
         if (currencyChangeListener != null)
             getClient().removePropertyChangeListener("baseCurrency", currencyChangeListener); //$NON-NLS-1$
+    }
+
+    private LocalDate findPreviousTradingDay()
+    {
+        LocalDate date = LocalDate.now().minusDays(1);
+        
+        TradeCalendar calendar = TradeCalendarManager.getDefaultInstance();
+        while (calendar.isHoliday(date))
+        {
+            date = date.minusDays(1);
+        }
+
+        return date;
     }
 }
