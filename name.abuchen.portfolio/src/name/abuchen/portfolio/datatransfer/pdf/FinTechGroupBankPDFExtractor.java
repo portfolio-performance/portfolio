@@ -687,6 +687,33 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
                 .wrap(TransactionItem::new));
 
+        // 19.11.     19.11.  R-Transaktion                                       -53,00-
+        block = new Block("\\d+\\.\\d+\\.[ ]+\\d+\\.\\d+\\.[ ]+R-Transaktion .* -[.,\\d]+-");
+        type.addBlock(block);
+        block.set(new Transaction<AccountTransaction>()
+
+                .subject(() -> {
+                    AccountTransaction t = new AccountTransaction();
+                    t.setType(AccountTransaction.Type.REMOVAL);
+                    return t;
+                })
+
+                .section("valuta", "amount", "note")
+                .match("\\d+.\\d+.[ ]+(?<valuta>\\d+.\\d+.)[ ]+(?<note>R-Transaktion) .* -(?<amount>[\\d.-]+,\\d+)-")
+                .assign((t, v) -> {
+                    Map<String, String> context = type.getCurrentContext();
+                    if (v.get("valuta") != null)
+                    {
+                        // create a long date from the year in the context
+                        t.setDateTime(asDate(v.get("valuta") + context.get("year")));
+                    }
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                    t.setNote(v.get("note"));
+                })
+
+                .wrap(TransactionItem::new));
+
         // Added "Lastschrift" as DEPOSIT option
         block = new Block("\\d+\\.\\d+\\.[ ]+\\d+\\.\\d+\\.[ ]+Lastschrift[ ]+[\\d.-]+,\\d+[+-]");
         type.addBlock(block);
