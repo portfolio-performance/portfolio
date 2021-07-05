@@ -3045,6 +3045,143 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
+    public void testFlatExKontoauszug02()
+    {
+        Client client = new Client();
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(client);
+
+        Security existingSecurity = new Security("Ohne Name AG", CurrencyUnit.EUR);
+        existingSecurity.setIsin("ISIN12345678");
+        client.addSecurity(existingSecurity);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExKontoauszug02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(13));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        AccountTransaction transaction = (AccountTransaction) item.orElseThrow(IllegalArgumentException::new)
+                        .getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-18T00:00")));
+        assertThat(transaction.getMonetaryAmount(), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000.00))));
+
+        item = results.stream().filter(i -> i instanceof TransactionItem).skip(1).findFirst();
+        assertThat(item.isPresent(), is(true));
+        transaction = (AccountTransaction) item.orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-19T00:00")));
+        assertThat(transaction.getMonetaryAmount(), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(400.00))));
+
+        item = results.stream().filter(i -> i instanceof TransactionItem).skip(2).findFirst();
+        assertThat(item.isPresent(), is(true));
+        transaction = (AccountTransaction) item.orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-25T00:00")));
+        assertThat(transaction.getMonetaryAmount(), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50.00))));
+
+        item = results.stream().filter(i -> i instanceof TransactionItem).skip(3).findFirst();
+        assertThat(item.isPresent(), is(true));
+        transaction = (AccountTransaction) item.orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-25T00:00")));
+        assertThat(transaction.getMonetaryAmount(), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(150.00))));
+
+        item = results.stream().filter(i -> i instanceof TransactionItem).skip(4).findFirst();
+        assertThat(item.isPresent(), is(true));
+        transaction = (AccountTransaction) item.orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-25T00:00")));
+        assertThat(transaction.getMonetaryAmount(), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(159.00))));
+
+        item = results.stream().filter(i -> i instanceof TransactionItem).skip(5).findFirst();
+        assertThat(item.isPresent(), is(true));
+        transaction = (AccountTransaction) item.orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-10T00:00")));
+        assertThat(transaction.getMonetaryAmount(), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(160.00))));
+
+        item = results.stream().filter(i -> i instanceof TransactionItem).skip(6).findFirst();
+        assertThat(item.isPresent(), is(true));
+        transaction = (AccountTransaction) item.orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-19T00:00")));
+        assertThat(transaction.getMonetaryAmount(), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(53.00))));
+
+        item = results.stream().filter(i -> i instanceof TransactionItem).skip(7).findFirst();
+        assertThat(item.isPresent(), is(true));
+        transaction = (AccountTransaction) item.orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-19T00:00")));
+        assertThat(transaction.getMonetaryAmount(), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(53.00))));
+
+        item = results.stream().filter(i -> i instanceof TransactionItem).skip(8).findFirst();
+        assertThat(item.isPresent(), is(true));
+        transaction = (AccountTransaction) item.orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-19T00:00")));
+        assertThat(transaction.getMonetaryAmount(), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(53.00))));
+
+        item = results.stream().filter(i -> i instanceof TransactionItem).skip(9).findFirst();
+        assertThat(item.isPresent(), is(true));
+        transaction = (AccountTransaction) item.orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-19T00:00")));
+        assertThat(transaction.getMonetaryAmount(), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50.00))));
+
+        item = results.stream().filter(i -> i instanceof TransactionItem).skip(10).findFirst();
+        assertThat(item.isPresent(), is(true));
+        transaction = (AccountTransaction) item.orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-19T00:00")));
+        assertThat(transaction.getMonetaryAmount(), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50.00))));
+
+        item = results.stream().filter(i -> i instanceof TransactionItem).skip(11).findFirst();
+        assertThat(item.isPresent(), is(true));
+        transaction = (AccountTransaction) item.orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-19T00:00")));
+        assertThat(transaction.getMonetaryAmount(), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50.00))));
+
+        item = results.stream().filter(i -> i instanceof TransactionItem).skip(12).findFirst();
+        assertThat(item.isPresent(), is(true));
+        transaction = (AccountTransaction) item.orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST_CHARGE));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-31T00:00")));
+        assertThat(transaction.getMonetaryAmount(), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.07))));
+    }
+
+    @Test
     public void testFlatExDeGiroSammelabrechnung01()
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
