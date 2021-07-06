@@ -291,7 +291,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 //            COMS.-MSCI WORL.T.U.ETF I                                    
                 //            Namens-Aktien o.N.                                           
                 .section("shares", "wkn", "name", "nameContinued", "currency").optional()
-                .match("^ST ([\\s]+)?(?<shares>[.,\\d]+) ([\\s]+)?WKN: ([\\s]+)?(?<wkn>.*) .*$")
+                .match("^ST ([\\s]+)?(?<shares>[.,\\d]+) ([\\s]+)?WKN: ([\\s]+)?(?<wkn>.*)(.*)?$")
                 .match("^(?<name>.*)$")
                 .match("^(?<nameContinued>.*)$")
                 .match("^(ZINS-\\/DIVIDENDENSATZ|ERTRAGSAUSSCHUETTUNG P. ST.) .* ([\\s]+)?(?<currency>[\\w]{3}) SCHLUSSTAG PER \\d+.\\d+.\\d{4}(.*)?$")
@@ -357,8 +357,8 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 // BRUTTO                                        USD                180,00 
                 // UMGER.ZUM DEV.-KURS                 1,104300  EUR                138,55 
                 .section("fxAmountGross", "fxCurrency", "exchangeRate").optional()
-                .match("^BRUTTO [\\s]+(?<fxCurrency>[\\w]{3}) [\\s]+(?<fxAmountGross>[.,\\d]+)(.*)?$")
-                .match("^UMGER.ZUM DEV.-KURS [\\s]+(?<exchangeRate>[.,\\d]+) ([\\s]+)?[\\w]{3} [\\s]+[.,\\d]+(.*)?$")
+                .match("^BRUTTO ([\\s]+)?(?<fxCurrency>[\\w]{3}) ([\\s]+)?(?<fxAmountGross>[.,\\d]+)(.*)?$")
+                .match("^UMGER.ZUM DEV.-KURS ([\\s]+)?(?<exchangeRate>[.,\\d]+) ([\\s]+)?[\\w]{3} ([\\s]+)?[.,\\d]+(.*)?$")
                 .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                     if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
