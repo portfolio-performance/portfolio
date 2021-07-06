@@ -199,7 +199,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("(Dividende|Ertr.gnisgutschrift)");
         this.addDocumentTyp(type);
 
-        Block block = new Block("^(Dividendengutschrift|Erträgnisgutschrift (?!aus)).*$");
+        Block block = new Block("^(Dividendengutschrift|Ertr.gnisgutschrift(?! aus))(.*)?$");
         type.addBlock(block);
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
         pdfTransaction.subject(() -> {
