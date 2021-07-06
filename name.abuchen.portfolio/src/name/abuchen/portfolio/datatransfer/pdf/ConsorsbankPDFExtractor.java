@@ -81,7 +81,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^([\s]+)?(KAUF|Kauf|BEZUG|Bezug|VERKAUF|Verkauf|VERK. TEIL-/BEZUGSR.) ([\\s]+)?AM .*$");
+        Block firstRelevantLine = new Block("^([\\s]+)?(KAUF|Kauf|BEZUG|Bezug|VERKAUF|Verkauf|VERK. TEIL-/BEZUGSR.) ([\\s]+)?AM .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
