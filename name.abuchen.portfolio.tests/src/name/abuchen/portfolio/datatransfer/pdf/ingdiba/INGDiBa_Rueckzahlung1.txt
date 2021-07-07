@@ -1,0 +1,28 @@
+PDF Autor: 'ING-DiBa'
+PDFBox Version: 1.8.16
+-----------------------------------------
+ING-DiBa AG   60628 Frankfurt am Main
+Depotinhaber: Dr. Max Mustermann
+Herrn Direkt-Depot Nr.: 4747114711
+Dr. Max Mustermann Datum: 26.05.2017
+Eine-Str. 47 Seite: 1 von 1
+99999 Stadt
+Rückzahlung
+ISIN (WKN) CH0347556943 (UZ1LSU)
+Wertpapierbezeichnung UBS AG (London Branch)
+Liquid. Z31.12.19 Fund
+Nominale 49,00 Stück
+Fälligkeit 25.05.2017
+Einlösung zum Kurs von 5,238044191 EUR
+Kurswert EUR 256,66
+Endbetrag EUR 256,66
+Valuta 25.05.2017
+Abrechnungs-IBAN DE02 4711 4711 4711 4711 98
+Tilgung bei gleichbleibendem Nennwert
+Wieder investieren? Aktionen zum gebührenfreien Handel finden Sie unter:
+www.ing-diba.de/handeln
+Bei Fragen besuchen Sie uns einfach unter www.ing-diba.de/wertpapierwissen - da gibt es viele schnelle
+Antworten. Oder senden Sie uns eine E-Mail an info@ing-diba.de .
+ING-DiBa AG   Theodor-Heuss-Allee 2   60486 Frankfurt am Main   Vorsitzender des Aufsichtsrates: Ben Tellings   Vorstand: Nick Jue (Vorsitzender), Bernd Geilen,
+Katharina Herrmann, Zeljko Kaurin, Remco Nieland, Dr. Joachim von Schorlemer   Sitz: Frankfurt am Main   AG Frankfurt am Main HRB 7727   Steuernummer: 047 220 2800 4
+USt-IdNr.: DE 114 103 475   Internet: www.ing-diba.de   E-Mail: info@ing-diba.de   BIC: INGDDEFFXXX   Mitglied im Einlagensicherungsfonds
