@@ -62,7 +62,7 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "ING-DiBa"; //$NON-NLS-1$
+        return "ING-DiBa AG"; //$NON-NLS-1$
     }
 
     @SuppressWarnings("nls")
@@ -151,10 +151,10 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private void addSellTransaction()
     {
-        DocumentType type = new DocumentType("Wertpapierabrechnung Verkauf", isJointAccount);
+        DocumentType type = new DocumentType("Wertpapierabrechnung (Verkauf|Verk. Teil-\\/Bezugsr.)", isJointAccount);
         this.addDocumentTyp(type);
 
-        Block block = new Block("Wertpapierabrechnung Verkauf.*");
+        Block block = new Block("Wertpapierabrechnung (Verkauf|Verk. Teil-\\/Bezugsr.)(.*)?");
         type.addBlock(block);
         Transaction<BuySellEntry> transaction = new Transaction<BuySellEntry>()
 
