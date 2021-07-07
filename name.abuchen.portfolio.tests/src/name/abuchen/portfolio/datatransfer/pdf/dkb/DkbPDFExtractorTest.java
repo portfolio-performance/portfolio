@@ -991,7 +991,7 @@ public class DkbPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DKBVerkauf5.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DkbVerkauf5.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
