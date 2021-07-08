@@ -31,6 +31,7 @@ import org.eclipse.swt.widgets.Text;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityPriceInterpolator.LinearSecurityPriceInterpolator;
 import name.abuchen.portfolio.model.Watchlist;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.impl.EurostatHICPQuoteFeed;
@@ -94,6 +95,7 @@ public class SecurityListView extends AbstractFinanceView
                                 newSecurity.setTickerSymbol(region.getId());
                                 newSecurity.setName(region.getName() + Messages.LabelSuffix_HICP);
                                 newSecurity.setCalendar(TradeCalendar.EMPTY_CODE);
+                                newSecurity.setSecurityPriceInterpolator(LinearSecurityPriceInterpolator.getInstance());
                                 openEditDialog(newSecurity);
                             })));
 
