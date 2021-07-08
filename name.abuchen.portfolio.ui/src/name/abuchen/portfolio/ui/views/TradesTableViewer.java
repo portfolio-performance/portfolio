@@ -182,10 +182,10 @@ public class TradesTableViewer
                         new MoneyColorLabelProvider(element -> ((Trade) element).getProfitLoss(), view.getClient()));
         column.setSorter(ColumnViewerSorter.create(e -> ((Trade) e).getProfitLoss()));
         support.addColumn(column);
-        
+
         column = new Column("gpl", Messages.ColumnGrossProfitLoss, SWT.RIGHT, 80); //$NON-NLS-1$
-        column.setLabelProvider(
-                        new MoneyColorLabelProvider(element -> ((Trade) element).getGrossProfitLoss(), view.getClient()));
+        column.setLabelProvider(new MoneyColorLabelProvider(element -> ((Trade) element).getGrossProfitLoss(),
+                        view.getClient()));
         column.setSorter(ColumnViewerSorter.create(e -> ((Trade) e).getGrossProfitLoss()));
         support.addColumn(column);
 
@@ -200,6 +200,21 @@ public class TradesTableViewer
             }
         });
         column.setSorter(ColumnViewerSorter.create(e -> ((Trade) e).getHoldingPeriod()));
+        support.addColumn(column);
+
+        column = new Column("latesttrade", Messages.ColumnLatestTrade, SWT.None, 80); //$NON-NLS-1$
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                Trade t = (Trade) e;
+                return Values.DateTime.format(t.getLastTransaction().getTransaction().getDateTime());
+            }
+        });
+        column.setSorter(ColumnViewerSorter
+                        .create(e -> ((Trade) e).getLastTransaction().getTransaction().getDateTime()));
+        column.setVisible(false);
         support.addColumn(column);
 
         column = new Column("irr", Messages.ColumnIRR, SWT.RIGHT, 80); //$NON-NLS-1$

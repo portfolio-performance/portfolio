@@ -1,0 +1,49 @@
+PDF Autor: '99999 063 GDBERTRG'
+PDFBox Version: 1.8.16
+-----------------------------------------
+ da
+ 
+  
+Raiffeisenbank AAAAAAAAA eGen   
+Rathausplatz 1, 9999 AAAAAAAAA  
+   b
+BLZ: 99999 UID: ATU16399999
+ 
+ 
+a
+a  
+Abrechnung Ereignis a  
+19110111 - 30.04.2021 a  
+Depot-Nr.: 11.111.111  
+Aaaaaaa Bbbbbb Bbbbbb Aaaaaa
+BBBBBAAAAA-BBBBBBCCC 11
+9999 Aaaaaaaaa 063/195
+Private Banking
+Wir haben für Sie am 30.04.2021 unten angeführtes Geschäft abgerechnet:
+Geschäftsart: Ertrag
+90 Stk   
+Titel: DE000BAY0017 Bayer AG
+Namens-Aktien o.N.
+Dividende: 2 EUR
+Verwahrart: WR
+Positionsdaten: Loco: Frankfurt
+Bruttobetrag: 180,00 EUR 
+Quellensteuer: -47,48 EUR 
+Auslands-KESt: -22,50 EUR 
+Zu Gunsten IBAN AT99 9999 9000 0011 1111 110,02 EUR 
+Valuta 30.04.2021
+KESt wird mit dem Finanzamt für Großbetriebe abgerechnet.
+Quellensteuer: 26,375%
+Es wurde Auslands-KESt in der Höhe von 12,5 % berücksichtigt.
+Extag: 28.04.2021
+Record-Tag: 29.04.2021
+Ausgangssituation:
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 90 Stk
+steuerlicher Anschaffungswert: 6.018,30 EUR
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 90 Stk
+Ertrag: 180,00 EUR
+30.04.2021 1 / 1
+Irrtum vorbehalten
+Dieser Beleg trägt keine Unterschrift.

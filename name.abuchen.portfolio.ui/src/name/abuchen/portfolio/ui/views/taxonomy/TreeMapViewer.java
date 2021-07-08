@@ -7,6 +7,7 @@ import javax.inject.Inject;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
@@ -25,6 +26,7 @@ import de.engehausen.treemap.IWeightedTreeModel;
 import de.engehausen.treemap.impl.SquarifiedLayout;
 import de.engehausen.treemap.swt.TreeMap;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.SWTHelper;
 import name.abuchen.portfolio.ui.util.swt.SashLayout;
@@ -33,13 +35,17 @@ import name.abuchen.portfolio.ui.views.SecurityDetailsViewer;
 
 /* package */class TreeMapViewer extends AbstractChartPage
 {
+    private final AbstractFinanceView view;
     private TreeMap<TaxonomyNode> treeMap;
     private TreeMapLegend legend;
 
+    private TaxonomyNode selectedNode;
+
     @Inject
-    public TreeMapViewer(TaxonomyModel model, TaxonomyNodeRenderer renderer)
+    public TreeMapViewer(AbstractFinanceView view, TaxonomyModel model, TaxonomyNodeRenderer renderer)
     {
         super(model, renderer);
+        this.view = view;
     }
 
     @Override
@@ -82,9 +88,11 @@ import name.abuchen.portfolio.ui.views.SecurityDetailsViewer;
 
         final SecurityDetailsViewer details = new SecurityDetailsViewer(sash, SWT.NONE, getModel().getClient(), true);
         treeMap.addSelectionChangeListener((model, rectangle, label) -> {
-            TaxonomyNode node = rectangle.getNode();
-            details.setInput(node.getBackingSecurity());
+            selectedNode = rectangle.getNode();
+            details.setInput(selectedNode.getBackingSecurity());
         });
+
+        treeMap.addMouseListener(MouseListener.mouseUpAdapter(e -> view.setInformationPaneInput(selectedNode)));
 
         // layout tree map + legend
         GridLayoutFactory.fillDefaults().numColumns(1).margins(10, 10).applyTo(container);

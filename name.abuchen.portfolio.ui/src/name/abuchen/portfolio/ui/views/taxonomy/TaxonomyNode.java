@@ -3,7 +3,9 @@ package name.abuchen.portfolio.ui.views.taxonomy;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Adaptable;
 import name.abuchen.portfolio.model.Annotated;
 import name.abuchen.portfolio.model.Attributable;
@@ -215,6 +217,8 @@ public abstract class TaxonomyNode implements Adaptable
         {
             if (type == Named.class || type == Annotated.class)
                 return type.cast(assignment.getInvestmentVehicle());
+            else if (type == Account.class && assignment.getInvestmentVehicle() instanceof Account)
+                return type.cast(assignment.getInvestmentVehicle());
             else
                 return super.adapt(type);
         }
@@ -281,6 +285,23 @@ public abstract class TaxonomyNode implements Adaptable
         }
 
         return null;
+    }
+
+    public Optional<TaxonomyNode> getNodeById(String uuid)
+    {
+        LinkedList<TaxonomyNode> stack = new LinkedList<>();
+        stack.add(this);
+
+        while (!stack.isEmpty())
+        {
+            TaxonomyNode n = stack.removeFirst();
+            if (uuid.equals(n.getId()))
+                return Optional.of(n);
+
+            stack.addAll(n.getChildren());
+        }
+
+        return Optional.empty();
     }
 
     public Security getBackingSecurity()

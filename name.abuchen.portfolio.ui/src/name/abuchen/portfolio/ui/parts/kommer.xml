@@ -1275,7 +1275,6 @@
     <taxonomy>
       <id>industry-gics-1st-level</id>
       <name>Branchen (GICS, Sektoren)</name>
-      <source>etf-data.com$sector-allocation</source>
       <dimensions class="java.util.Arrays$ArrayList">
         <a class="string-array">
           <string>Sektor</string>
@@ -1699,7 +1698,6 @@
     <taxonomy>
       <id>regions</id>
       <name>Regionen</name>
-      <source>etf-data.com$country-allocation</source>
       <dimensions class="java.util.Arrays$ArrayList">
         <a class="string-array">
           <string>Kontinent</string>
@@ -6764,7 +6762,6 @@
     <taxonomy>
       <id>regions-msci</id>
       <name>Regionen (MSCI)</name>
-      <source>etf-data.com$country-allocation</source>
       <dimensions class="java.util.Arrays$ArrayList">
         <a class="string-array">
           <string>Markt</string>
@@ -9288,7 +9285,6 @@
         <id>1b18ecaa-4ff2-4cea-adf1-d6fdbba0ec67</id>
         <name>Domicile</name>
         <columnLabel>Domicile</columnLabel>
-        <source>etf-data.com$domicile</source>
         <target>name.abuchen.portfolio.model.Security</target>
         <type>java.lang.String</type>
         <converterClass>name.abuchen.portfolio.model.AttributeType$StringConverter</converterClass>
@@ -9297,7 +9293,6 @@
         <id>fe77e0c2-ee87-46cd-a764-f635c94ac1da</id>
         <name>Vendor</name>
         <columnLabel>Vendor</columnLabel>
-        <source>etf-data.com$vendor</source>
         <target>name.abuchen.portfolio.model.Security</target>
         <type>java.lang.String</type>
         <converterClass>name.abuchen.portfolio.model.AttributeType$StringConverter</converterClass>
@@ -9306,7 +9301,6 @@
         <id>be9fde11-889c-4b4c-bd23-76fb206649f3</id>
         <name>Replication Method</name>
         <columnLabel>Replication Method</columnLabel>
-        <source>etf-data.com$replicationMethod</source>
         <target>name.abuchen.portfolio.model.Security</target>
         <type>java.lang.String</type>
         <converterClass>name.abuchen.portfolio.model.AttributeType$StringConverter</converterClass>
@@ -9315,7 +9309,6 @@
         <id>ba578065-ad52-41df-83c2-07848550504a</id>
         <name>Distribution Type</name>
         <columnLabel>Distribution Type</columnLabel>
-        <source>etf-data.com$distributionType</source>
         <target>name.abuchen.portfolio.model.Security</target>
         <type>java.lang.String</type>
         <converterClass>name.abuchen.portfolio.model.AttributeType$StringConverter</converterClass>
@@ -9324,7 +9317,6 @@
         <id>917882a8-2574-4900-b39b-50f5673dc09b</id>
         <name>Distribution Frequency</name>
         <columnLabel>Distribution Frequency</columnLabel>
-        <source>etf-data.com$distributionFrequency</source>
         <target>name.abuchen.portfolio.model.Security</target>
         <type>java.lang.String</type>
         <converterClass>name.abuchen.portfolio.model.AttributeType$StringConverter</converterClass>
@@ -9333,7 +9325,6 @@
         <id>c1c24e1e-0901-4cf1-a9af-9d13d50ef63e</id>
         <name>TER</name>
         <columnLabel>TER</columnLabel>
-        <source>etf-data.com$ter</source>
         <target>name.abuchen.portfolio.model.Security</target>
         <type>java.lang.Double</type>
         <converterClass>name.abuchen.portfolio.model.AttributeType$PercentConverter</converterClass>
@@ -9342,7 +9333,6 @@
         <id>fcb8490a-0121-4fa7-950c-a06cdd6ac4f9</id>
         <name>Index Name</name>
         <columnLabel>Index Name</columnLabel>
-        <source>etf-data.com$indexName</source>
         <target>name.abuchen.portfolio.model.Security</target>
         <type>java.lang.String</type>
         <converterClass>name.abuchen.portfolio.model.AttributeType$StringConverter</converterClass>

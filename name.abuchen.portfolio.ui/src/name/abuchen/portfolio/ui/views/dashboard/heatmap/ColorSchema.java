@@ -14,6 +14,9 @@ enum ColorSchema
     GREEN_YELLOW_RED(Messages.LabelGreenYellowRed), //
     GREEN_WHITE_RED(Messages.LabelGreenWhiteRed);
 
+    // use a darker green to improve readability for the green-white-red schema
+    private static final RGB GREEN = new RGB(104, 229, 23);
+
     private String label;
 
     private ColorSchema(String label)
@@ -54,7 +57,7 @@ enum ColorSchema
                     p = Math.min(max, Math.abs(p));
                     p = p / max;
 
-                    RGB color = performance > 0f ? Colors.GREEN.getRGB() : Colors.RED.getRGB();
+                    RGB color = performance > 0f ? GREEN : Colors.RED.getRGB();
                     return resourceManager.createColor(
                                     Colors.interpolate(Colors.theme().defaultBackground().getRGB(), color, (float) p));
                 };

@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
@@ -28,6 +29,12 @@ import name.abuchen.portfolio.ui.views.dataseries.DataSeriesCache;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesChartLegend;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesConfigurator;
 import name.abuchen.portfolio.ui.views.dataseries.StatementOfAssetsSeriesBuilder;
+import name.abuchen.portfolio.ui.views.panes.HistoricalPricesPane;
+import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
+import name.abuchen.portfolio.ui.views.panes.SecurityEventsPane;
+import name.abuchen.portfolio.ui.views.panes.SecurityPriceChartPane;
+import name.abuchen.portfolio.ui.views.panes.TradesPane;
+import name.abuchen.portfolio.ui.views.panes.TransactionsPane;
 import name.abuchen.portfolio.util.Interval;
 
 public class StatementOfAssetsHistoryView extends AbstractHistoricView
@@ -104,6 +111,7 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
         configurator.setToolBarManager(getViewToolBarManager());
 
         DataSeriesChartLegend legend = new DataSeriesChartLegend(composite, configurator);
+        legend.addSelectionChangedListener(e -> setInformationPaneInput(e.getStructuredSelection().getFirstElement()));
 
         updateTitle(Messages.LabelStatementOfAssetsHistory + " (" + configurator.getConfigurationName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
         chart.getTitle().setText(getTitle());
@@ -116,6 +124,17 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
         Lists.reverse(configurator.getSelectedDataSeries()).forEach(series -> seriesBuilder.build(series, interval));
 
         return composite;
+    }
+
+    @Override
+    protected void addPanePages(List<InformationPanePage> pages)
+    {
+        super.addPanePages(pages);
+        pages.add(make(SecurityPriceChartPane.class));
+        pages.add(make(HistoricalPricesPane.class));
+        pages.add(make(TransactionsPane.class));
+        pages.add(make(TradesPane.class));
+        pages.add(make(SecurityEventsPane.class));
     }
 
     @Override

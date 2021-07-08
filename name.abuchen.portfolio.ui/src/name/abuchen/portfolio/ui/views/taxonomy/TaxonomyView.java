@@ -27,7 +27,6 @@ import org.eclipse.swt.widgets.Control;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Taxonomy;
-import name.abuchen.portfolio.online.TaxonomySource;
 import name.abuchen.portfolio.snapshot.filter.ClientFilter;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
@@ -37,6 +36,12 @@ import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.views.panes.HistoricalPricesPane;
+import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
+import name.abuchen.portfolio.ui.views.panes.SecurityEventsPane;
+import name.abuchen.portfolio.ui.views.panes.SecurityPriceChartPane;
+import name.abuchen.portfolio.ui.views.panes.TradesPane;
+import name.abuchen.portfolio.ui.views.panes.TransactionsPane;
 
 public class TaxonomyView extends AbstractFinanceView implements PropertyChangeListener
 {
@@ -52,6 +57,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
             this.clientFilterMenu = new ClientFilterMenu(getClient(), getPreferenceStore());
 
             Consumer<ClientFilter> listener = filter -> {
+                setInformationPaneInput(null);
                 Client filteredClient = filter.filter(getClient());
                 model.updateClientSnapshot(filteredClient);
             };
@@ -248,25 +254,6 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
 
     private void addConfigButton(ToolBarManager toolBar)
     {
-        toolBar.add(new DropDown("Sync", Images.CLOUD, SWT.NONE, manager -> {
-
-            String source = taxonomy.getSource();
-
-            for (TaxonomySource ts : TaxonomySource.values())
-            {
-                Action action = new SimpleAction(ts.getLabel(), a -> {
-                    if (ts.getIdentifier().equals(source))
-                        taxonomy.setSource(null);
-                    else
-                        taxonomy.setSource(ts.getIdentifier());
-
-                    model.getClient().touch();
-                });
-                action.setChecked(ts.getIdentifier().equals(source));
-                manager.add(action);
-            }
-        }));
-
         toolBar.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE,
                         manager -> getCurrentPage().ifPresent(p -> p.configMenuAboutToShow(manager))));
     }
@@ -345,5 +332,16 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
 
             getPart().getPreferenceStore().setValue(identifierView, index);
         }
+    }
+
+    @Override
+    protected void addPanePages(List<InformationPanePage> pages)
+    {
+        super.addPanePages(pages);
+        pages.add(make(SecurityPriceChartPane.class));
+        pages.add(make(HistoricalPricesPane.class));
+        pages.add(make(TransactionsPane.class));
+        pages.add(make(TradesPane.class));
+        pages.add(make(SecurityEventsPane.class));
     }
 }

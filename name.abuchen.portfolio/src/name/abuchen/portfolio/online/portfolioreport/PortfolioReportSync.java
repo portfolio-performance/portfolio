@@ -140,6 +140,8 @@ public class PortfolioReportSync
                 remote.setNote(local.getNote());
                 remote.setSecurityUuid(local.getOnlineId());
                 remote.setUpdatedAt(local.getUpdatedAt());
+                remote.setProperties(local.getProperties());
+                remote.setEvents(local.getEvents());
 
                 remote.calendar = local.getCalendar();
                 remote.feed = local.getFeed();
@@ -161,6 +163,8 @@ public class PortfolioReportSync
                 remote.setNote(local.getNote());
                 remote.setSecurityUuid(local.getOnlineId());
                 remote.setUpdatedAt(local.getUpdatedAt());
+                remote.setProperties(local.getProperties());
+                remote.setEvents(local.getEvents());
 
                 remote.calendar = local.getCalendar();
                 remote.feed = local.getFeed();

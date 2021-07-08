@@ -120,6 +120,7 @@ public class EarningsPerMonthMatrixTab implements EarningsTab
 
         tableViewer.addSelectionChangedListener(event -> {
             IStructuredSelection selection = event.getStructuredSelection();
+            view.setInformationPaneInput(selection.getFirstElement());
             if (!selection.isEmpty())
             {
                 InvestmentVehicle vehicle = ((EarningsViewModel.Line) selection.getFirstElement()).getVehicle();

@@ -1,0 +1,147 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Deutsche Kreditbank, Taubenstr. 7-9, 10117 Berlin
+Max Mustermann
+Muster Str. 3 IHR DISPOKREDIT EUR 20.000,00
+01157 Musterstadt
+DKB-Cash
+Kontoauszug Nummer 004 / 2021 vom 05.03.2021 bis 01.04.2021
+Kontonummer 1111111111 / IBAN DE70 1203 0000 1111 1111 11
+Bu.Tag Wert Wir haben für Sie gebucht Belastung in EUR Gutschrift in EUR
+05.03. 05.03. Überweisung 418,50
+XXX XXX XXX
+KREF+HKCSA85275SVWZ+XXXX XXXX 2021DATUM
+02.12.2020, 04.06 UHR1.TAN 353244
+08.03. 08.03. Dauerauftrag 150,00
+Max Mustermann
+SVWZ+Sparen
+08.03. 08.03. Dauerauftrag 200,00
+Max Mustermann
+SVWZ+FlatEx Verrechnungskonto
+10.03. 10.03. Kartenzahlung 82,88
+KAUFLAND
+SVWZ+2021-03-09T13.44Debitk.0 2024-12ABWA+Kaufland
+Musterstadt-Nausslitz//Musterstadt/DE
+11.03. 11.03. Überweisung 300,00
+Max Mustermann
+KREF+HKCCS92649SVWZ+FlatEx
+VerrechnungskontoDATUM 11.03.2021, 16.48 UHR1.TAN
+084588
+15.03. 15.03. Kartenzahlung 20,00
+HAUSBRAEU IM BALLHAUS
+SVWZ+2021-03-12T12.19Debitk.0 2024-
+12ABWA+HAUSBRAEU IM
+BALLHAUSWATZ//Musterstadt/DE
+17.03. 17.03. Basislastschrift 29,70
+Telekom Deutschland GmbH
+EREF+Zahlbeleg
+343272788286MREF+DE000201100200000000000000011
+347412CRED+DE93ZZZ00000078611SVWZ+Festnetz
+Vertragskonto5614771851 RG 7651190376/08.03.2021
+17.03. 17.03. Kartenzahlung 42,00
+JET DANKT FUER IHREN KAUF
+EREF+15030830014224924120000367070140532MREF+7
+014053288372103150830CRED+DE16E0100000020245SV
+WZ+150308300142249241200003670 ELV70140532 15.03
+08.30 ME0
+22.03. 22.03. Kartenzahlung 32,77
+DANKE 5076 E-CENTER SCHELLE
+SVWZ+2021-03-20T10.05Debitk.0 2024-12ABWA+5076 E-
+CENTER SCHELLERDD//Musterstadt/DE
+DEUTSCHE KREDITBANK AG IBAN: DE45120300001111111111 Seite 1 von 3
+TAUBENSTRASSE 7-9 BIC: BYLADEM1001
+10117 BERLIN USt-ID: DE137178746
+Kontoauszug Nummer 004 / 2021 vom 05.03.2021 bis 01.04.2021
+Kontonummer 1111111111 / IBAN DE70 1203 0000 1111 1111 11
+Bu.Tag Wert Wir haben für Sie gebucht Belastung in EUR Gutschrift in EUR
+24.03. 24.03. Basislastschrift 28,90
+AMAZON PAYMENTS EUROPE S.C.A.
+EREF+60WE0DI2QU9G5K7SMREF+ayZvHI.)+Itr.yLvwaSbi
+L-YWU.mgHCRED+DE94ZZZ00000561653SVWZ+304-
+4834622-1243508 AMZN Mktp DE 60WE0DI2QU9G5K7S
+24.03. 24.03. Kreditkartenabr. 104,21
+Deutsche Kreditbank Berlin
+EREF+AD08-D-2021-03-23-
+21.23.25.077182MREF+KARTENABRECHNUNGCRED+DE
+45ZZZ01518301218SVWZ+KREDITKARTENABRECHNUN
+GVISA-ABR. 493000XXXXXX2095
+25.03. 25.03. Kartenzahlung 28,00
+ARAL AG
+SVWZ+2021-03-24T05.50Debitk.0 2024-12ABWA+ARAL
+Musterstadt Werftstra-e 13//Musterstadt/DE
+29.03. 29.03. Überweisung 19,54
+AKF-SHOP
+KREF+HKCCS24903SVWZ+200518784DATUM
+28.03.2021, 09.32 UHR1.TAN 000270
+29.03. 29.03. Basislastschrift 30,00
+DREWAG-Stadtwerke DD GmbH
+EREF+308006480348MREF+1000487348-0002-
+01CRED+DE22ZZZ00000024308SVWZ+VK 211000892431
+Abschlag 27.03. E 30,00 Danke fuer Ihr Vertrauen
+30.03. 30.03. Kartenzahlung 92,35
+UNICREDIT W/ TOTAL
+SVWZ+2021-03-29T15.46Debitk.0 2024-12ABWA+TOTAL
+Service Station//Musterstadt/DE
+30.03. 30.03. Kartenzahlung 33,92
+DANKE 21087 E CENTER SCHELLER DRESD
+SVWZ+2021-03-29T16.10Debitk.0 2024-12ABWA+5076 E-
+CENTER SCHELLERDD//Musterstadt/DE
+31.03. 31.03. Basislastschrift 39,66
+AMAZON PAYMENTS EUROPE S.C.A.
+EREF+4WW3YHURE12FAWZ1MREF+ayZvHI.)+Itr.yLvwaS
+biL-YWU.mgHCRED+DE94ZZZ00000111111SVWZ+302-
+5064050-7103553 AMZN Mktp DE 4WW11111112FAWZ1
+01.04. 01.04. Abrechnung 31.03.2021 0,24
+Abrechnung 31.03.2021siehe Anlage
+01.04. 01.04. Basislastschrift 50,00
+VOLKSWOHL BUND Lebensversicherung a.G.
+EREF+0111111/NVMA.G0928-
+493308MREF+LA000891111111ED+DE13ZZZ0000111111
+SVWZ+034421284 LA000892403/034421284 RENTE 50,00
+01.04. 01.04. Basislastschrift 23,56
+DKV KRANKENVERS. AG
+EREF+269210401R000501KV322171663MREF+MDEM141
+810964253CRED+DE95ZZZ011111110SVWZ+KV32217
+1663 01.04.2021- 30.04.2021 23,56
+DEUTSCHE KREDITBANK AG IBAN: DE45120300001111111111 Seite 2 von 3
+TAUBENSTRASSE 7-9 BIC: BYLADEM1001
+10117 BERLIN USt-ID: DE137178746
+Kontoauszug Nummer 004 / 2021 vom 05.03.2021 bis 01.04.2021
+Kontonummer 1111111111 / IBAN DE70 1203 0000 1111 1111 11
+Bu.Tag Wert Wir haben für Sie gebucht Belastung in EUR Gutschrift in EUR
+01.04. 01.04. Basislastschrift 52,50
+Rundfunk ARD, ZDF, DRadio
+EREF+111111
+202111111694MREF+60491111111601CRED+DE3000
+100000001272SVWZ+Rundfunk 04.2021 - 06.2021
+Beitragsnr. 604987785Aenderungen ganz bequem.
+www.rundfunkbeitrag.deABWA+MITTELDEUTSCHER
+RUNDFUNK Anstalt des
+ALTER KONTOSTAND 1.111,03 H EUR
+NEUER KONTOSTAND 111,10 H EUR
+Abrechnung 31.03.2021
+Information zur Abrechnung
+Kontostand am 31.03.2021                                        1.111,10 +
+                                                            --------------
+Abrechnungszeitraum vom 01.01.2021 bis 31.03.2021
+Zinsen für eingeräumte Kontoüberziehung                              0,24-
+ 6,6500 v.H. Kred-Zins  bis 06.01.2021
+                                                            --------------
+Abrechnung 31.03.2021                                                0,24-
+Sollzinssätze am 30.03.2021
+ 6,6500 v.H. für eingeräumte Kontoüberziehung
+(aktuell eingeräumte Kontoüberziehung       20.000,00)
+ 6,6500 v.H. für geduldete Kontoüberziehung
+über die eingeräumte Kontoüberziehung hinaus
+Es handelt sich hierbei um eine umsatzsteuerfreie Leistung.
+Kontostand/Rechnungsabschluss am 31.03.2021                     1.111,11 +
+Rechnungsnummer: 20210331-BY111-00100248568
+Gemäß dem Finanzkonten-Informationsaustauschgesetz (FKAustG) ermittelt die DKB AG die nach diesem Gesetz
+erforderlichen Daten zur steuerlichen Ansässigkeit und meldet diese, soweit aufgrund des Gesetzes
+erforderlich, jährlich an das Bundeszentralamt für Steuern (BZSt), das diese dann ggf. an zuständige
+ausländische Steuerbehörden weiterleitet. Gemeldet werden die erforderlichen Kundendaten, Steuer-
+Identifikationsnummer sowie Konto- und Depotnummern, Kontosalden sowie gutgeschriebene Kapitalerträge.
+DEUTSCHE KREDITBANK AG IBAN: DE45120300001111111111 Seite 3 von 3
+TAUBENSTRASSE 7-9 BIC: BYLADEM1001
+10117 BERLIN USt-ID: DE137178746

@@ -1,10 +1,17 @@
 package name.abuchen.portfolio.snapshot;
 
+import static java.time.temporal.IsoFields.DAY_OF_QUARTER;
+import static java.time.temporal.TemporalAdjusters.lastDayOfMonth;
+import static java.time.temporal.TemporalAdjusters.previousOrSame;
+
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.time.temporal.WeekFields;
+import java.util.Locale;
 import java.util.function.Predicate;
 
 import com.google.common.base.Objects;
@@ -39,8 +46,12 @@ public abstract class ReportingPeriod
             return new SinceX(code);
         else if (type == YearX.CODE)
             return new YearX(code);
+        else if (type == CurrentWeek.CODE)
+            return new CurrentWeek();
         else if (type == CurrentMonth.CODE)
             return new CurrentMonth();
+        else if (type == CurrentQuarter.CODE)
+            return new CurrentQuarter();
         else if (type == YearToDate.CODE)
             return new YearToDate();
 
@@ -441,6 +452,57 @@ public abstract class ReportingPeriod
         }
     }
 
+    public static class CurrentWeek extends ReportingPeriod
+    {
+        private static final char CODE = 'W';
+
+        @Override
+        public Interval toInterval(LocalDate relativeTo)
+        {
+            // the first day of the week is local-specific: in Germany it is the
+            // Monday, in the US it is the Sunday
+
+            final DayOfWeek firstDayOfWeek = WeekFields.of(Locale.getDefault()).getFirstDayOfWeek();
+
+            // reporting periods always run from the end of the day of the
+            // starting data. In order to include the full week, we need to
+            // start at the end of Sunday
+
+            LocalDate firstDay = relativeTo.with(previousOrSame(firstDayOfWeek)).minusDays(1);
+            LocalDate lastDay = firstDay.plusDays(7);
+
+            return Interval.of(firstDay, lastDay);
+        }
+
+        @Override
+        public void writeTo(StringBuilder buffer)
+        {
+            buffer.append(CODE);
+        }
+
+        @Override
+        public String toString()
+        {
+            return Messages.LabelReportingPeriodCurrentWeek;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hashCode(CODE);
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            return getClass() == obj.getClass();
+        }
+    }
+
     public static class CurrentMonth extends ReportingPeriod
     {
         private static final char CODE = 'M';
@@ -466,6 +528,48 @@ public abstract class ReportingPeriod
         public String toString()
         {
             return Messages.LabelReportingPeriodCurrentMonth;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hashCode(CODE);
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            return getClass() == obj.getClass();
+        }
+    }
+
+    public static class CurrentQuarter extends ReportingPeriod
+    {
+        private static final char CODE = 'Q';
+
+        @Override
+        public Interval toInterval(LocalDate relativeTo)
+        {
+            LocalDate firstDayOfQuarter = relativeTo.with(DAY_OF_QUARTER, 1L);
+            LocalDate lastDayOfQuarter = firstDayOfQuarter.plusMonths(2).with(lastDayOfMonth());
+
+            return Interval.of(firstDayOfQuarter.minusDays(1), lastDayOfQuarter);
+        }
+
+        @Override
+        public void writeTo(StringBuilder buffer)
+        {
+            buffer.append(CODE);
+        }
+
+        @Override
+        public String toString()
+        {
+            return Messages.LabelReportingPeriodCurrentQuarter;
         }
 
         @Override

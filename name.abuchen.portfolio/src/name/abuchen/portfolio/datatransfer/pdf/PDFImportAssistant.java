@@ -40,6 +40,7 @@ public class PDFImportAssistant
         extractors.add(new CommerzbankPDFExtractor(client));
         extractors.add(new ConsorsbankPDFExtractor(client));
         extractors.add(new ConsorsbankPre2009PDFExtractor(client));
+        extractors.add(new CreditSuisseAGPDFExtractor(client));
         extractors.add(new DABPDFExtractor(client));
         extractors.add(new DADATBankenhausPDFExtractor(client));
         extractors.add(new DegiroPDFExtractor(client));
@@ -60,6 +61,8 @@ public class PDFImportAssistant
         extractors.add(new PostbankPDFExtractor(client));
         extractors.add(new PostfinancePDFExtractor(client));
         extractors.add(new QuirionPDFExtractor(client));
+        extractors.add(new RaiffeisenBankgruppePDFExtractor(client));
+        extractors.add(new RenaultBankDirektPDFExtractor(client));
         extractors.add(new SBrokerPDFExtractor(client));
         extractors.add(new SwissquotePDFExtractor(client));
         extractors.add(new TargobankPDFExtractor(client));
@@ -72,8 +75,6 @@ public class PDFImportAssistant
         extractors.add(new JSONPDFExtractor(client, "deutsche-bank-purchase.json")); //$NON-NLS-1$
         extractors.add(new JSONPDFExtractor(client, "deutsche-bank-sale.json")); //$NON-NLS-1$
         extractors.add(new JSONPDFExtractor(client, "ffb.json")); //$NON-NLS-1$
-        extractors.add(new JSONPDFExtractor(client, "trade-republic-dividends.json")); //$NON-NLS-1$
-        extractors.add(new JSONPDFExtractor(client, "trade-republic-investmentplan.json")); //$NON-NLS-1$
         extractors.add(new JSONPDFExtractor(client, "ebase.json")); //$NON-NLS-1$
     }
 

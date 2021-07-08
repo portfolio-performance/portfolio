@@ -1,0 +1,24 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+DADAT-Bank KONTOAUSZUG
+BH Schelhammer & Schattera AG vom 31.07.2020
+Alter Saldo per 30.07.2020 219,89
+Summe der Gutschriften 8,16
+Online Summe der Lastschriften 0,00
+BH Schelhammer, PF 1000, 5021 Salzburg
+Neuer Saldo zu Ihren Gunsten
+Max Musterman EUR 228,05
+Straße 41/11
+PLZ Ort
+Konto-Nr.: 00078000000 Bankleitzahl: 19190
+Empfängerhinweis: 
+Datum Buchungstext Wert Betrag
+31.07 Ertrag                           Depot    7800000000/20200730-45756156 30.07 8,16
+ISIN AT0000969985 AT+S AUST. TECH.SYS.O.N.               45,00000 STK
+Kurs                      0,250000  ZINSERTRAG               11,25 EUR
+KEST                     -3,09 EUR
+Neuer Saldo zu Ihren Gunsten 228,05
+AT40 1919 0000 0000 0000 BSSWATWW 01 0007 1/1
+IBAN BIC Filiale Auszug Blatt/Gesamt
+R0042 12436 Doknr.: EK00-045-0213004450

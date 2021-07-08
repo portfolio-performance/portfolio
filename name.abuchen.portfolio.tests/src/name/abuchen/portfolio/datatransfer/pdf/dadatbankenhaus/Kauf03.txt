@@ -1,0 +1,25 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+DADAT-Bank KONTOAUSZUG
+BH Schelhammer & Schattera AG vom 22.02.2021
+Alter Saldo per 13.01.2021 822,96
+Summe der Gutschriften 0,00
+Online Summe der Lastschriften 817,60-
+BH Schelhammer, PF 1000, 5021 Salzburg
+Neuer Saldo zu Ihren Gunsten
+Max Musterman EUR 5,36
+Straße 10/11
+Plz Ort
+Konto-Nr.: 00078000000 Bankleitzahl: 19190
+Empfängerhinweis: 
+Datum Buchungstext Wert Betrag
+22.02 Kauf                             Depot    7800000000/20210222-45768242 24.02 817,60-
+ISIN IE00BKM4GZ66 IS C.MSCI EMIMI U.ETF DLA              25,00000 STK
+Kurs                     32,263000  KURSWERT               -806,58 EUR
+Handelsspesen            -3,66 EUR  DADAT Handelsspesen      -6,36 EUR
+Clearing Gebühr          -1,00 EUR
+Neuer Saldo zu Ihren Gunsten 5,36
+AT40 1919 0000 0000 0000 BSSWATWW 01 0002 1/1
+IBAN BIC Filiale Auszug Blatt/Gesamt
+R0042 09247 Doknr.: EK00-045-0053004363

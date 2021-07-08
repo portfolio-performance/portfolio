@@ -1,0 +1,31 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KASTANIENALLEE 32  10435 BERLIN
+Vor Nachname SEITE 1 von 1
+Starßestr. 1 DATUM 26.05.2021
+12345 PLZORT DEPOT 0122345678
+DIVIDENDE
+ÜBERSICHT
+Dividende mit dem Ex-Tag 24.05.2021.
+POSITION ANZAHL ERTRÄGNIS BETRAG
+Fresenius SE & Co. KGaA 4,3521 Stk. 0,88 EUR 3,83 EUR
+Inhaber-Aktien o.N.
+ISIN: DE0005785604
+GESAMT 3,83 EUR
+ABRECHNUNG
+POSITION BETRAG
+Kapitalertragsteuer -0,95 EUR
+Solidaritätszuschlag -0,05 EUR
+GESAMT 2,83 EUR
+BUCHUNG
+VERRECHNUNGSKONTO VALUTA BETRAG
+DE12345678901234567 27.05.2021 2,83 EUR
+Fresenius SE & Co. KGaA Inhaber-Aktien o.N. in Girosammelverwahrung in Deutschland.
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie 
+Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Düsseldorf Geschäftsführer
+Kastanienallee 32 service@traderepublic.com AG Düsseldorf HRB 85864 Andreas Willius
+10435 Berlin USt-ID DE307510626 Karsten Müller
+ABRE / 27.05.2021 / 55996703 / 0ad6-d1e5

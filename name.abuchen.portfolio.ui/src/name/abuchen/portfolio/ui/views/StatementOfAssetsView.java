@@ -37,6 +37,7 @@ import name.abuchen.portfolio.ui.views.panes.HistoricalPricesPane;
 import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
 import name.abuchen.portfolio.ui.views.panes.SecurityEventsPane;
 import name.abuchen.portfolio.ui.views.panes.SecurityPriceChartPane;
+import name.abuchen.portfolio.ui.views.panes.TradesPane;
 import name.abuchen.portfolio.ui.views.panes.TransactionsPane;
 import name.abuchen.portfolio.util.Pair;
 
@@ -66,12 +67,20 @@ public class StatementOfAssetsView extends AbstractFinanceView
     @Override
     public void notifyModelUpdated()
     {
+        StatementOfAssetsViewer.Element selection = (StatementOfAssetsViewer.Element) assetViewer.getTableViewer()
+                        .getStructuredSelection().getFirstElement();
+
         Client filteredClient = clientFilter.getSelectedFilter().filter(getClient());
         setToContext(UIConstants.Context.FILTERED_CLIENT, filteredClient);
 
         CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
         assetViewer.setInput(clientFilter.getSelectedFilter(), snapshotDate.orElse(LocalDate.now()), converter);
         updateTitle(getDefaultTitle());
+
+        if (selection != null)
+        {
+            assetViewer.selectSubject(selection.getSubject());
+        }
     }
 
     @Override
@@ -189,6 +198,7 @@ public class StatementOfAssetsView extends AbstractFinanceView
         pages.add(make(SecurityPriceChartPane.class));
         pages.add(make(HistoricalPricesPane.class));
         pages.add(make(TransactionsPane.class));
+        pages.add(make(TradesPane.class));
         pages.add(make(SecurityEventsPane.class));
         pages.add(make(HistoricalPricesDataQualityPane.class));
     }

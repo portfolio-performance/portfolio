@@ -20,10 +20,11 @@ public class ConfirmActionWithSelection extends Action
     private final IStructuredSelection selection;
     private final Runnable runnable;
 
-    public ConfirmActionWithSelection(String title, String singleSelectionMessage, String multiSelectionMessage,
+    public ConfirmActionWithSelection(String singleSelectionTitle, String multiSelectionTitle,
+                    String singleSelectionMessage, String multiSelectionMessage,
                     IStructuredSelection selection, Runnable runnable)
     {
-        super(title);
+        super(selection.size() > 1 ? MessageFormat.format(multiSelectionTitle, selection.size()) : singleSelectionTitle);
         this.singleSelectionMessage = singleSelectionMessage;
         this.multiSelectionMessage = multiSelectionMessage;
         this.selection = selection;

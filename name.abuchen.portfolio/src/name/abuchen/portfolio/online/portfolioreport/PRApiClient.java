@@ -3,6 +3,7 @@ package name.abuchen.portfolio.online.portfolioreport;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,8 +29,10 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializer;
+import com.google.gson.TypeAdapter;
 import com.google.gson.reflect.TypeToken;
-
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import name.abuchen.portfolio.online.impl.PortfolioReportNet;
 import name.abuchen.portfolio.util.WebAccess;
 
@@ -64,7 +67,23 @@ public class PRApiClient
                         .registerTypeAdapter(Instant.class,
                                         (JsonDeserializer<Instant>) (json, type, jsonDeserializationContext) -> Instant
                                                         .parse(json.getAsJsonPrimitive().getAsString()))
+                        .registerTypeAdapter(LocalDate.class, new LocalDateAdapter().nullSafe()) //
                         .create();
+    }
+
+    private static final class LocalDateAdapter extends TypeAdapter<LocalDate>
+    {
+        @Override
+        public void write(final JsonWriter jsonWriter, final LocalDate localDate) throws IOException
+        {
+            jsonWriter.value(localDate.toString());
+        }
+
+        @Override
+        public LocalDate read(final JsonReader jsonReader) throws IOException
+        {
+            return LocalDate.parse(jsonReader.nextString());
+        }
     }
 
     public List<PRPortfolio> listPortfolios() throws IOException
