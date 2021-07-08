@@ -148,23 +148,31 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                 // 16.12 Kauf aus Dauerauftrag            Depot    7800000000/20191216-45514943 18.12 99,68-
                 // ISIN LU0378449770 COMST.-NASDAQ-100 U.ETF I               1,22000 STK
                 // Kurs                     80,340000  KURSWERT               -98,01 EUR
-                .section("date", "year", "amount", "isin", "name", "shares", "currency")
-                .match("^(?<date>\\d+.\\d+) (Kauf|Kauf aus Dauerauftrag|Verkauf) [\\s]+Depot [\\s]+[\\d]+\\/(?<year>[\\d]{4})[\\d]+\\-[\\d]+ [\\d]+.[\\d]+ (?<amount>[.,\\d]+)([-])?$")
+                .section("date", "year", "isin", "name", "shares", "currency")
+                .match("^(?<date>\\d+.\\d+) (Kauf|Kauf aus Dauerauftrag|Verkauf) [\\s]+Depot [\\s]+[\\d]+\\/(?<year>[\\d]{4})[\\d]+\\-[\\d]+ [\\d]+.[\\d]+ [.,\\d]+([-])?$")
                 .match("^ISIN (?<isin>[\\w]{12}) (?<name>.*) [\\s]+(?<shares>[.,\\d]+) STK$")
                 .match("^.* KURSWERT [\\s]+([-])?[.,\\d]+ (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     t.setDate(asDate(v.get("date") + "." + v.get("year")));
                     t.setShares(asShares(v.get("shares")));
                     t.setSecurity(getOrCreateSecurity(v));
+                })
+
+                // 30.07 Kauf                             Depot    780680000/20200730-45125411 31.07 1.250,01-
+                .section("amount")
+                .match("^\\d+.\\d+ (Kauf|Kauf aus Dauerauftrag|Verkauf) [\\s]+Depot [\\s]+[\\d]+\\/[\\d]{4}[\\d]+\\-[\\d]+ [\\d]+.[\\d]+ (?<amount>[.,\\d]+)([-])?$")
+                .assign((t, v) -> {
                     t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
                 })
 
                 // Kurs                    282,740000  KURSWERT              1.979,18 USD
                 // DevKurs        1,187100/3.9.2020    DADAT Handelsspesen      -7,87 EUR
+                // Kurs                    206,940000  KURSWERT             -1.448,58 USD
+                // Handelsspesen            -5,06 USD  DevKurs        1,170500/30.7.2020
                 .section("fxcurrency", "fxamount", "exchangeRate").optional()
-                .match("^.* KURSWERT [\\s]+(?<fxamount>[.,\\d]+) (?<fxcurrency>[\\w]{3})[-]?$")
-                .match("^DevKurs [\\s]+(?<exchangeRate>[.,\\d]+)\\/.*")
+                .match("^.* KURSWERT [\\s]+([-])?(?<fxamount>[.,\\d]+) (?<fxcurrency>[\\w]{3})$")
+                .match("^(.*)?DevKurs [\\s]+(?<exchangeRate>[.,\\d]+)\\/.*")
                 .assign((t, v) -> {
                     // read the forex currency, exchange rate and gross
                     // amount in forex currency
@@ -189,8 +197,9 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                 })
 
                 // DevKurs        1,187100/3.9.2020    DADAT Handelsspesen      -7,87 EUR
+                // Handelsspesen            -5,06 USD  DevKurs        1,170500/30.7.2020
                 .section("exchangeRate").optional()
-                .match("^DevKurs [\\s]+(?<exchangeRate>[.,\\d]+)\\/.*")
+                .match("^(.*)?DevKurs [\\s]+(?<exchangeRate>[.,\\d]+)\\/.*")
                 .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                     type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
@@ -480,6 +489,11 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                 // Clearing Gebühr          -1,00 EUR
                 .section("fee", "currency").optional()
                 .match("^Clearing Geb.hr [\\s]+-(?<fee>[.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+
+                // DADAT Handelsspesen      -7,12 EUR  Clearing Gebühr          -1,00 EUR
+                .section("fee", "currency").optional()
+                .match("^.*  Clearing Geb.hr [\\s]+-(?<fee>[.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processFeeEntries(t, v, type));
     }
 

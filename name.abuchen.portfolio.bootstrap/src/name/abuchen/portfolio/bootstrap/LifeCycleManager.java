@@ -4,6 +4,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -12,6 +13,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.contexts.IEclipseContext;
@@ -55,9 +57,29 @@ public class LifeCycleManager
     @PostContextCreate
     public void doPostContextCreate(IEclipseContext context)
     {
+        checkForCustomCSSFile();
         checkForModelChanges();
         checkForRequestToClearPersistedState();
         setupEventLoopAdvisor(context);
+    }
+
+    private void checkForCustomCSSFile()
+    {
+        try
+        {
+            // the custom.css file *must* exist, otherwise no style sheets are
+            // loaded at all. Create the file if it does not exist
+
+            URL url = FileLocator.resolve(new URL("platform:/meta/name.abuchen.portfolio.ui/custom.css")); //$NON-NLS-1$
+            File customCSSFile = new File(url.getFile());
+
+            if (!customCSSFile.exists())
+                customCSSFile.createNewFile(); // NOSONAR
+        }
+        catch (IOException e)
+        {
+            logger.error(e);
+        }
     }
 
     private void checkForModelChanges()

@@ -1,0 +1,72 @@
+﻿PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=987656432
+Wertpapierabrechnung DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=DRUCK
+ADRESSZEILE1=Herr
+Verkauf  ADRESSZEILE2=Karl Ascheimer
+Kommissionsgeschäft ADRESSZEILE3=Teststr. 10
+ADRESSZEILE4=55555 Teststadt
+Depot-Nr. Abrechnungs-Nr. ADRESSZEILE5=
+987656432 43214321 / 26.05.2021 ADRESSZEILE6=
+Herr BELEGNUMMER=2435
+Karl Ascheimer SEITENNUMMER=1
+Teststr. 10 STEUERERSTATTUNG=N
+55555 Teststadt Depotinhaber
+Karl Ascheimer
+München, 26.05.2021
+Wir haben für Sie verkauft
+Gattungsbezeichnung ISIN
+CureVac N.V. Namensaktien   o.N. NL0015436031
+Nominal Kurs
+STK 300,000 EUR 94,3100
+Handelstag 26.05.2021 Kurswert EUR 28.293,00 
+Handelszeit 09:01* Provision EUR 1,00-
+Börse Sekunden-Handel Aktien L&S Kapitalertragsteuer EUR 335,29-
+Verwahrart Girosammelverwahrung Solidaritätszuschlag EUR 18,44-
+Kirchensteuer EUR 26,82-
+Wert Konto-Nr. Betrag zu Ihren Gunsten
+28.05.2021 987656432 EUR 27.911,45
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Veräußerungsgewinn Aktien EUR 1.368,00
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern EUR 1.368,00
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 15.128,67
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 832,07
+im laufenden Jahr einbehaltene Kirchensteuer EUR 1.210,29
+Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer nach gemeldetem Kirchensteuersatz verrechnet mit dem
+Finanzamt Frankfurt/M. V-Höchst, Steuernummer 777/333/12345.
+Wir werden in Ihrem Depot wie angegeben buchen.
+Es folgt Seite 2
+BNP Paribas S.A. Niederlassung Deutschland > Standort: München > Landsberger Straße 300 > 80687 München > Sitz: Nürnberg HRB Nürnberg 31129 > USt.-Ident-Nr.: DE 
+191528929 > Sitz der Hauptniederlassung der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449 > Président du 
+Conseil d‘Administration: Jean Lemierre, Directeur Général: Jean-Laurent Bonnafé
+3.19/ABREABHNHANDVFDI/POC1618/002435/260521/110553
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+Depot-Nr. Abrechnungs-Nr. Seite-Nr. EMAILVERSAND=N
+987656432 43214321 2 DEPOTNUMMER=987656432
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=DRUCK
+ADRESSZEILE1=Herr
+ADRESSZEILE2=Karl Ascheimer
+* Die angegebene Zeit entspricht den Angaben der Handelspartner gemäß der lokalen Zeit in Deutschland ADRESSZEILE3=Teststr. 10
+  (Mitteleuropäische Zeit bzw. Mitteleuropäische Sommerzeit). ADRESSZEILE4=55555 Teststadt
+ADRESSZEILE5=
+ADRESSZEILE6=
+BELEGNUMMER=2435
+SEITENNUMMER=2
+STEUERERSTATTUNG=N
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+BNP Paribas S.A. Niederlassung Deutschland > Standort: München > Landsberger Straße 300 > 80687 München > Sitz: Nürnberg HRB Nürnberg 31129 > USt.-Ident-Nr.: DE 
+191528929 > Sitz der Hauptniederlassung der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449 > Président du 
+Conseil d‘Administration: Jean Lemierre, Directeur Général: Jean-Laurent Bonnafé
+3.19/ABREABHNHANDVFDI/POC1618/002435/260521/110553

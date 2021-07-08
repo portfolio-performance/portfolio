@@ -1,0 +1,32 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KASTANIENALLEE 32  10435 BERLIN
+Vor Nachname SEITE 1 von 1
+Straße. 1 DATUM 17.06.2021
+12345 Berlin DEPOT 123456789
+KAPITALREDUKTION
+ÜBERSICHT
+NR. BUCHUNG WERTPAPIER BETRAG
+1 Kapitalmaßnahme Barrick Gold Corp. 8,4226 Stk.
+Registered Shares o.N.
+CA0679011084
+ABRECHNUNG
+NR. POSITION BETRAG
+1 Barausgleich 1,18 USD
+Zwischensumme 1,18 USD
+Zwischensumme 1,218702 EUR/USD 0,97 EUR
+Kapitalertragsteuer -0,25 EUR
+Solidaritätszuschlag -0,01 EUR
+GESAMT 0,71 EUR
+BUCHUNG
+VERRECHNUNGSKONTO VALUTA BETRAG
+DE12345689234567671 15.06.2021 0,71 EUR
+Barrick Gold Corp. Registered Shares o.N. in Girosammelverwahrung in Deutschland.
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie 
+Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Düsseldorf Geschäftsführer
+Kastanienallee 32 service@traderepublic.com AG Düsseldorf HRB 85864 Andreas Willius
+10435 Berlin USt-ID DE307510626 Karsten Müller
+ABRE / 18.06.2021 / 65607097 / ce5f-b175

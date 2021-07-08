@@ -3,6 +3,8 @@ package name.abuchen.portfolio.ui.views.panes;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.eclipse.jface.action.ToolBarManager;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
@@ -14,10 +16,14 @@ import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.snapshot.trades.TradeCollector;
 import name.abuchen.portfolio.snapshot.trades.TradeCollectorException;
+import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
+import name.abuchen.portfolio.ui.util.DropDown;
+import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.views.TradesTableViewer;
 
 public class TradesPane implements InformationPanePage
@@ -46,11 +52,17 @@ public class TradesPane implements InformationPanePage
     public Control createViewControl(Composite parent)
     {
         trades = new TradesTableViewer(view);
-        Control control = trades.createViewControl(parent, TradesTableViewer.ViewMode.SINGLE_SECURITY);
+        return trades.createViewControl(parent, TradesTableViewer.ViewMode.SINGLE_SECURITY);
+    }
 
-        // FIXME configuration menu
+    @Override
+    public void addButtons(ToolBarManager toolBar)
+    {
+        toolBar.add(new SimpleAction(Messages.MenuExportData, Images.EXPORT,
+                        a -> new TableViewerCSVExporter(trades.getTableViewer()).export(getLabel(), source)));
 
-        return control;
+        toolBar.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE,
+                        manager -> trades.getShowHideColumnHelper().menuAboutToShow(manager)));
     }
 
     @Override

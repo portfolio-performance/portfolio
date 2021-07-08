@@ -69,8 +69,8 @@ public class InvestmentHeatmapWidget extends AbstractHeatmapWidget<Long>
 
     enum GrossNetType
     {
-        NET(Messages.LabelNet, t -> t.getMonetaryAmount()), //
-        GROSS(Messages.LabelGross, t -> t.getGrossValue());
+        NET(Messages.LabelAfterTaxAndFees, t -> t.getMonetaryAmount()), //
+        GROSS(Messages.LabelBeforeTaxAndFees, t -> t.getGrossValue());
 
         private String label;
         private Function<PortfolioTransaction, Money> valueExtractor;

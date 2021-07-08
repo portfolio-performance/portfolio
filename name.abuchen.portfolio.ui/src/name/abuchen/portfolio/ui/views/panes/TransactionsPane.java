@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.eclipse.jface.action.ToolBarManager;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
@@ -16,8 +18,12 @@ import name.abuchen.portfolio.model.InvestmentPlan;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.TransactionPair;
+import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
+import name.abuchen.portfolio.ui.util.DropDown;
+import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.views.TransactionsViewer;
 
 public class TransactionsPane implements InformationPanePage
@@ -44,6 +50,16 @@ public class TransactionsPane implements InformationPanePage
         transactions = new TransactionsViewer(TransactionsPane.class.getName(), parent, view);
         view.inject(transactions);
         return transactions.getControl();
+    }
+
+    @Override
+    public void addButtons(ToolBarManager toolBar)
+    {
+        toolBar.add(new SimpleAction(Messages.MenuExportData, Images.EXPORT,
+                        a -> new TableViewerCSVExporter(transactions.getTableViewer()).export(getLabel(), source)));
+
+        toolBar.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE,
+                        manager -> transactions.getColumnSupport().menuAboutToShow(manager)));
     }
 
     @Override

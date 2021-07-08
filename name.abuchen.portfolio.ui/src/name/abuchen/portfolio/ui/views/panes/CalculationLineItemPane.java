@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 
+import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -27,13 +28,16 @@ import name.abuchen.portfolio.snapshot.security.CalculationLineItem;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LogoManager;
+import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 
-public class CaclulationLineItemPane implements InformationPanePage
+public class CalculationLineItemPane implements InformationPanePage
 {
     @Inject
     private Client client;
@@ -42,6 +46,7 @@ public class CaclulationLineItemPane implements InformationPanePage
     private IPreferenceStore preferences;
 
     private TableViewer transactions;
+    private ShowHideColumnHelper support;
 
     private SecurityPerformanceRecord record;
 
@@ -62,8 +67,8 @@ public class CaclulationLineItemPane implements InformationPanePage
         transactions = new TableViewer(container, SWT.FULL_SELECTION);
         ColumnViewerToolTipSupport.enableFor(transactions, ToolTip.NO_RECREATE);
 
-        ShowHideColumnHelper support = new ShowHideColumnHelper(CaclulationLineItemPane.class.getSimpleName(),
-                        preferences, transactions, layout);
+        support = new ShowHideColumnHelper(CalculationLineItemPane.class.getSimpleName(), preferences, transactions,
+                        layout);
 
         createTransactionColumns(support);
         support.createColumns();
@@ -72,6 +77,18 @@ public class CaclulationLineItemPane implements InformationPanePage
         transactions.getTable().setLinesVisible(true);
         transactions.setContentProvider(ArrayContentProvider.getInstance());
         return container;
+    }
+
+    @Override
+    public void addButtons(ToolBarManager toolBar)
+    {
+        toolBar.add(new SimpleAction(Messages.MenuExportData, Images.EXPORT,
+                        a -> new TableViewerCSVExporter(transactions).export(getLabel(),
+                                        record != null ? record.getSecurity() : null)));
+
+        toolBar.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE,
+                        manager -> support.menuAboutToShow(manager)));
+
     }
 
     private void createTransactionColumns(ShowHideColumnHelper support)

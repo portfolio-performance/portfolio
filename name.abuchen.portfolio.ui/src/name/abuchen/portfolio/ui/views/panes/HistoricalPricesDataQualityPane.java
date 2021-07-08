@@ -30,6 +30,7 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.views.SecurityQuoteQualityMetricsViewer;
 import name.abuchen.portfolio.util.Interval;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class HistoricalPricesDataQualityPane implements InformationPanePage
 {
@@ -59,17 +60,18 @@ public class HistoricalPricesDataQualityPane implements InformationPanePage
 
         Label lCompleteness = new Label(container, SWT.NONE);
         lCompleteness.setText(Messages.ColumnMetricCompleteness);
-        lCompleteness.setToolTipText(Messages.ColumnMetricCompleteness_Description);
+        lCompleteness.setToolTipText(TextUtil.wordwrap(Messages.ColumnMetricCompleteness_Description));
 
         completeness = new Label(container, SWT.NONE);
-        completeness.setToolTipText(Messages.ColumnMetricCompleteness_Description);
+        completeness.setToolTipText(TextUtil.wordwrap(Messages.ColumnMetricCompleteness_Description));
 
         checkInterval = new Label(container, SWT.NONE);
 
         Composite table = createTable(container);
 
         FormDataFactory.startingWith(completeness, lCompleteness).right(new FormAttachment(100))
-                        .thenBelow(checkInterval).left(new FormAttachment(0)).thenBelow(table)
+                        .thenBelow(checkInterval).left(new FormAttachment(0)).right(new FormAttachment(100))
+                        .thenBelow(table)
                         .bottom(new FormAttachment(100));
 
         return container;

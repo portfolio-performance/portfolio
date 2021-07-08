@@ -97,7 +97,7 @@ public class ListSelectionDialog extends Dialog
 
     public Object[] getResult()
     {
-        return selected;
+        return selected != null ? selected : new Object[0];
     }
 
     public String getProperty()

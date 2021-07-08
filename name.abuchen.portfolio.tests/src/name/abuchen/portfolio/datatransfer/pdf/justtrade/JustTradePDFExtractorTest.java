@@ -270,6 +270,218 @@ public class JustTradePDFExtractorTest
     }
 
     @Test
+    public void testUmsaetze4()
+    {
+        JustTradePDFExtractor extractor = new JustTradePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "sutor_umsaetze_pdf4.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(22));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check securities
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getName(), is("Xtr. (IE)-MSCI World ESG 1C"));
+        assertThat(security.getCurrencyCode(), is("EUR"));
+
+        // check first transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)
+                        .collect(Collectors.toList()).get(0).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(156.00))));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(6.0208)));
+
+        // check 2nd transaction
+        entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem).collect(Collectors.toList())
+                        .get(1).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(52.00))));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.947)));
+
+        // check 3rd transaction
+        entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem).collect(Collectors.toList())
+                        .get(2).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(52.00))));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(7.1448)));
+
+        // check 4th transaction
+        entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem).collect(Collectors.toList())
+                        .get(3).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.54))));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-12T00:00")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0994)));
+
+        // check 5th transaction
+        entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem).collect(Collectors.toList())
+                        .get(4).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(41.46))));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-12T00:00")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5.865)));
+
+        // check 6th transaction
+        entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem).collect(Collectors.toList())
+                        .get(5).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(47.00))));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-12T00:00")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.7870)));
+
+        // check 7th transaction
+        entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem).collect(Collectors.toList())
+                        .get(6).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(21.04))));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-10T00:00")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.7947)));
+
+        // check 8th transaction
+        entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem).collect(Collectors.toList())
+                        .get(7).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7.48))));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-10T00:00")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.0382)));
+
+        // check 9th transaction
+        entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem).collect(Collectors.toList())
+                        .get(8).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(28.52))));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-10T00:00")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.5025)));
+
+        // check 10th transaction
+        entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem).collect(Collectors.toList())
+                        .get(9).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(11.82))));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-13T00:00")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.4634)));
+
+        // check 11th transaction
+        entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem).collect(Collectors.toList())
+                        .get(10).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(21.39))));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-13T00:00")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.3840)));
+
+        // check 12th transaction
+        entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem).collect(Collectors.toList())
+                        .get(11).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(12.11))));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-13T00:00")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.7624)));
+
+        // check 13th transaction
+        entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem).collect(Collectors.toList())
+                        .get(12).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.TRANSFER_OUT));
+
+        assertThat(entry.getPortfolioTransaction().getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(241)));
+
+        // check 14th transaction
+        entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem).collect(Collectors.toList())
+                        .get(13).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.TRANSFER_OUT));
+
+        assertThat(entry.getPortfolioTransaction().getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(37)));
+
+        // check 15th transaction
+        entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem).collect(Collectors.toList())
+                        .get(14).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.TRANSFER_OUT));
+
+        assertThat(entry.getPortfolioTransaction().getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(295)));
+
+        // check account transactions (fees, deposits, etc.)
+        AccountTransaction t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+                        .collect(Collectors.toList()).get(0).getSubject();
+
+        assertThat(t.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(260.00))));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-04-01T00:00")));
+
+        // check 2nd account transactions (fees, deposits, etc.)
+        t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).collect(Collectors.toList())
+                        .get(1).getSubject();
+
+        assertThat(t.getType(), is(AccountTransaction.Type.FEES));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(6.55))));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-05-17T00:00")));
+
+        // check 3rd account transactions (fees, deposits, etc.)
+        t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).collect(Collectors.toList())
+                        .get(2).getSubject();
+
+        assertThat(t.getType(), is(AccountTransaction.Type.FEES));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(15.00))));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-05-17T00:00")));
+
+        // check 4th account transactions (fees, deposits, etc.)
+        t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).collect(Collectors.toList())
+                        .get(3).getSubject();
+
+        assertThat(t.getType(), is(AccountTransaction.Type.FEES));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(23.77))));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-06-15T00:00")));
+    }
+
+    @Test
     public void testKauf01()
     {
         JustTradePDFExtractor extractor = new JustTradePDFExtractor(new Client());

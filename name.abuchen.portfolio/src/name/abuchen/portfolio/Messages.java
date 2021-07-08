@@ -139,6 +139,8 @@ public class Messages extends NLS
     public static String LabelRealizedCapitalGains;
     public static String LabelRemovals;
     public static String LabelReportingPeriodCurrentMonth;
+    public static String LabelReportingPeriodCurrentQuarter;
+    public static String LabelReportingPeriodCurrentWeek;
     public static String LabelReportingPeriodFromXtoY;
     public static String LabelReportingPeriodLastXDays;
     public static String LabelReportingPeriodLastXTradingDays;

@@ -1,0 +1,42 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Deutsche Kreditbank, Taubenstr. 7-9, 10117 Berlin
+Max Mustermann
+Muster Str. 3 IHR DISPOKREDIT EUR 500,00
+01111 Musterstadt
+DKB-Cash
+Kontoauszug Nummer 001 / 2021 vom 30.03.2021 bis 01.04.2021
+Kontonummer 1111111111 / IBAN DE65 1203 0000 1111 1111 11
+Bu.Tag Wert Wir haben für Sie gebucht Belastung in EUR Gutschrift in EUR
+30.03. 30.03. Eingang Echtzeitüberw 100,00
+MAX MUSTERMANN
+SVWZ+Einzahlung Girokonto
+31.03. 31.03. Eingang Echtzeitüberw 1.400,00
+MAX MUSTERMANN
+SVWZ+Einzahlung Girokonto
+01.04. 01.04. Abrechnung 31.03.2021 0,00
+Abrechnung 31.03.2021siehe Anlage
+ALTER KONTOSTAND 0,00 H EUR
+NEUER KONTOSTAND 1.500,00 H EUR
+Abrechnung 31.03.2021
+Information zur Abrechnung
+Kontostand am 31.03.2021                                        1.500,00 +
+                                                            --------------
+Abrechnungszeitraum vom 18.03.2021 bis 31.03.2021
+Abrechnung 31.03.2021                                                0,00+
+Sollzinssätze am 30.03.2021
+ 6,6500 v.H. für eingeräumte Kontoüberziehung
+(aktuell eingeräumte Kontoüberziehung         500,00)
+ 6,6500 v.H. für geduldete Kontoüberziehung
+über die eingeräumte Kontoüberziehung hinaus
+Kontostand/Rechnungsabschluss am 31.03.2021                     1.500,00 +
+Rechnungsnummer: 20210331-BY111-00012345678
+Gemäß dem Finanzkonten-Informationsaustauschgesetz (FKAustG) ermittelt die DKB AG die nach diesem Gesetz
+erforderlichen Daten zur steuerlichen Ansässigkeit und meldet diese, soweit aufgrund des Gesetzes
+erforderlich, jährlich an das Bundeszentralamt für Steuern (BZSt), das diese dann ggf. an zuständige
+ausländische Steuerbehörden weiterleitet. Gemeldet werden die erforderlichen Kundendaten, Steuer-
+Identifikationsnummer sowie Konto- und Depotnummern, Kontosalden sowie gutgeschriebene Kapitalerträge.
+DEUTSCHE KREDITBANK AG IBAN: DE65120300001111111111 Seite 1 von 1
+TAUBENSTRASSE 7-9 BIC: BYLADEM1001
+10117 BERLIN USt-ID: DE137178746
