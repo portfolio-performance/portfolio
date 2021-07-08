@@ -163,6 +163,13 @@ public class PerformanceIndex
         return accumulated != null ? accumulated[accumulated.length - 1] : 0;
     }
 
+    public double getFinalAccumulatedAnnualizedPercentage()
+    {
+        double accumulatedPercentage = getFinalAccumulatedPercentage();
+        long days = getActualInterval().getDays();
+        return Math.pow(1 + accumulatedPercentage, 365d / ((double) days)) - 1;
+    }
+
     public double[] getDeltaPercentage()
     {
         return delta;
