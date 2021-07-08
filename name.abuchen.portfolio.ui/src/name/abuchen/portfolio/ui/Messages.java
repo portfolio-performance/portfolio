@@ -722,6 +722,7 @@ public class Messages extends NLS
     public static String LabelTransfer;
     public static String LabelTransferTo;
     public static String LabelTTWROR;
+    public static String LabelTTWROR_Annualized;
     public static String LabelTTWROROneDay;
     public static String LabelUnknownVersion;
     public static String LabelUnnamedFile;
