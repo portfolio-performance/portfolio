@@ -26,7 +26,6 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("1822direkt"); //$NON-NLS-1$
 
         addBuySellTransaction();
-        addBuySellSavePlanTransaction();
         addDividendeTransaction();
     }
 
@@ -44,7 +43,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("Wertpapier Abrechnung (Kauf|Verkauf).*");
+        DocumentType type = new DocumentType("Wertpapier Abrechnung (Kauf|Verkauf|Ausgabe Investmentfonds)");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -54,14 +53,14 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("Wertpapier Abrechnung (Kauf|Verkauf).*");
+        Block firstRelevantLine = new Block("^Wertpapier Abrechnung (Kauf|Verkauf|Ausgabe Investmentfonds)(.*)?$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
                 // Is type --> "Verkauf" change from BUY to SELL
                 .section("type").optional()
-                .match(".*Abrechnung (?<type>Verkauf?).*")
+                .match("^Wertpapier Abrechnung (?<type>Verkauf?)$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("Verkauf"))
                     {
@@ -71,19 +70,33 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
 
                 // Stück 13 COMSTA.-MSCI EM.MKTS.TRN U.ETF LU0635178014 (ETF127)
                 // INHABER-ANTEILE I O.N.
-                .section("isin", "wkn", "name", "shares", "name1")
-                .match("^(St.ck) (?<shares>[.,\\d]+) (?<name>.*) (?<isin>[\\w]{12}.*) (\\((?<wkn>.*)\\).*)")
-                .match("(?<name1>.*)")
+                // Ausführungskurs 40,968 EUR Auftragserteilung Online-Banking
+                .section("isin", "wkn", "name", "shares", "nameContinued")
+                .match("^St.ck (?<shares>[.,\\d]+) (?<name>.*) (?<isin>[\\w]{12}.*) \\((?<wkn>.*)\\)$")
+                .match("(?<nameContinued>.*)$")
                 .assign((t, v) -> {
-                    if (!v.get("name1").startsWith("B.rse"))
-                        v.put("name", v.get("name") + " " + v.get("name1"));
                     t.setSecurity(getOrCreateSecurity(v));
                     t.setShares(asShares(v.get("shares")));
                 })
 
+                // Schlusstag/-Zeit 01.12.2017 10:30:52 Auftraggeber Mustermann, Max
+                .section("date", "time").optional()
+                .match("^Schlusstag/-Zeit (?<date>\\d+.\\d+.\\d{4}) (?<time>\\d+:\\d+:\\d+) .*$")
+                .assign((t, v) -> {
+                    if (v.get("time") != null)
+                        t.setDate(asDate(v.get("date"), v.get("time")));
+                    else
+                        t.setDate(asDate(v.get("date")));
+                })
+
+                // Schlusstag 09.07.2021 Auftraggeber Mustermann, Max
+                .section("date").optional()
+                .match("^Schlusstag (?<date>\\d+.\\d+.\\d{4}).*$")
+                .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                
                 // Auftrag vom 05.12.2017 00:15:28 Uhr
-                .section("date", "time")
-                .match("^(Schlusstag/-Zeit) (?<date>\\d+.\\d+.\\d{4}) (?<time>\\d+:\\d+:\\d+).*")
+                .section("date", "time").optional()
+                .match("^Auftrag vom (?<date>\\d+.\\d+.\\d{4}) (?<time>\\d+:\\d+:\\d+) Uhr$")
                 .assign((t, v) -> {
                     if (v.get("time") != null)
                         t.setDate(asDate(v.get("date"), v.get("time")));
@@ -93,7 +106,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
 
                 // Ausmachender Betrag 50,00- EUR
                 .section("currency", "amount")
-                .match("^(Ausmachender Betrag) (?<amount>[.,\\d.]+)[?(-|\\+)] (?<currency>[\\w]{3})")
+                .match("^Ausmachender Betrag (?<amount>[.,\\d]+)[?(-|\\+)] (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(v.get("currency"));
@@ -101,68 +114,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
 
                 // Devisenkurs (EUR/USD) 1,1987 vom 02.03.2021
                 .section("exchangeRate").optional()
-                .match("^(Devisenkurs) \\([\\w]{3}\\/[\\w]{3}\\) (?<exchangeRate>[.,\\d]+) .*")
-                .assign((t, v) -> {
-                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
-                })
-
-                .wrap(BuySellEntryItem::new);
-
-        addTaxesSectionsTransaction(pdfTransaction, type);
-        addFeesSectionsTransaction(pdfTransaction, type);
-    }
-
-    private void addBuySellSavePlanTransaction()
-    {
-        DocumentType type = new DocumentType(".*Wertpapier Abrechnung Ausgabe Investmentfonds.*");
-        this.addDocumentTyp(type);
-
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
-        pdfTransaction.subject(() -> {
-            BuySellEntry entry = new BuySellEntry();
-            entry.setType(PortfolioTransaction.Type.BUY);
-            return entry;
-        });
-
-        Block firstRelevantLine = new Block(".*Wertpapier Abrechnung Ausgabe Investmentfonds.*");
-        type.addBlock(firstRelevantLine);
-        firstRelevantLine.set(pdfTransaction);
-
-        pdfTransaction
-                // Stück 13 COMSTA.-MSCI EM.MKTS.TRN U.ETF LU0635178014 (ETF127)
-                // INHABER-ANTEILE I O.N.
-                .section("isin", "wkn", "name", "shares", "name1")
-                .match("^(St.ck) (?<shares>[\\d.,]+) (?<name>.*) (?<isin>[\\w]{12}.*) (\\((?<wkn>.*)\\).*)")
-                .match("(?<name1>.*)")
-                .assign((t, v) -> {
-                    if (!v.get("name1").startsWith("B.rse"))
-                        v.put("name", v.get("name") + " " + v.get("name1"));
-                    t.setSecurity(getOrCreateSecurity(v));
-                    t.setShares(asShares(v.get("shares")));
-                })
-
-                // Auftrag vom 05.12.2017 00:15:28 Uhr
-                .section("date", "time")
-                .match("^(Auftrag vom) (?<date>\\d+.\\d+.\\d{4}) (?<time>\\d+:\\d+:\\d+) Uhr")
-                .assign((t, v) -> {
-                    if (v.get("time") != null)
-                        t.setDate(asDate(v.get("date"), v.get("time")));
-                    else
-                        t.setDate(asDate(v.get("date")));
-                })
-
-                // Ausmachender Betrag 50,00- EUR
-                .section("amount", "currency")
-                .match("^(Ausmachender Betrag) (?<amount>[.,\\d]+)- (?<currency>[\\w]{3})")
-                .assign((t, v) -> {
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(v.get("currency"));
-                })
-
-                // Devisenkurs (EUR/USD) 1,1987 vom 02.03.2021
-                .section("exchangeRate").optional()
-                .match("^(Devisenkurs) \\([\\w]{3}\\/[\\w]{3}\\) (?<exchangeRate>[.,\\d]+) .*")
+                .match("^Devisenkurs \\([\\w]{3}\\/[\\w]{3}\\) (?<exchangeRate>[.,\\d]+) .*$")
                 .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                     type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
@@ -179,7 +131,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("(Gutschrift von .*|Aussch.ttung Investmentfonds|Dividendengutschrift)");
         this.addDocumentTyp(type);
 
-        Block block = new Block("(Gutschrift von .*|Aussch.ttung Investmentfonds|Dividendengutschrift)");
+        Block block = new Block("^(Gutschrift von .*|Aussch.ttung Investmentfonds|Dividendengutschrift)$");
         type.addBlock(block);
         Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>()
             .subject(() -> {
@@ -192,18 +144,19 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                 // Stück 920 ISHSIV-FA.AN.HI.YI.CO.BD U.ETF IE00BYM31M36 (A2AFCX)
                 // REGISTERED SHARES USD O.N.
                 .section("isin", "wkn", "name", "shares", "name1")
-                .match("^(Stück) (?<shares>[\\d.,]+) (?<name>.*) (?<isin>[\\w]{12}.*) (\\((?<wkn>.*)\\).*)")
+                .match("^St.ck (?<shares>[\\d.,]+) (?<name>.*) (?<isin>[\\w]{12}.*) \\((?<wkn>.*)\\)$")
                 .match("(?<name1>.*)")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Zahlbarkeitstag"))
                         v.put("name", v.get("name") + " " + v.get("name1"));
+
                     t.setSecurity(getOrCreateSecurity(v));
                     t.setShares(asShares(v.get("shares")));
                 })
 
                 // Ausmachender Betrag 68,87+ EUR
                 .section("currency", "amount")
-                .match("^(Ausmachender Betrag) (?<amount>[.,\\d]+)\\+ (?<currency>[\\w]{3})")
+                .match("^Ausmachender Betrag (?<amount>[.,\\d]+)\\+ (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(v.get("currency"));
@@ -218,8 +171,8 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                 // Devisenkursdatum 02.01.2018
                 // Ausschüttung 113,16 USD 93,56+ EUR
                 .section("exchangeRate", "fxAmount", "fxCurrency", "amount", "currency").optional()
-                .match("^(Devisenkurs) .* (?<exchangeRate>[.,\\d]+)$")
-                .match("^(Ausschüttung) (?<fxAmount>[.,\\d]+) (?<fxCurrency>[\\w]{3}) (?<amount>[.,\\d]+)\\+ (?<currency>[\\w]{3})$")                        
+                .match("^Devisenkurs .* (?<exchangeRate>[.,\\d]+)$")
+                .match("^Aussch.ttung (?<fxAmount>[.,\\d]+) (?<fxCurrency>[\\w]{3}) (?<amount>[.,\\d]+)\\+ (?<currency>[\\w]{3})$")                        
                 .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                     if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
@@ -266,17 +219,17 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
         transaction
                 // Eingebuchte sonstige negative Kapitalerträge 0,02 EUR
                 .section("tax", "currency").optional()
-                .match("^(Eingebuchte.*Kapitalerträge) (?<tax>[.,\\d]+) (?<currency>[\\w]{3})")
+                .match("^Eingebuchte.*Kapitalertr.ge (?<tax>[.,\\d]+) (?<currency>[\\w]{3})")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
                 // Kapitalertragsteuer 25 % auf 93,63 EUR 23,41- EUR
                 .section("tax", "currency").optional()
-                .match("^(Kapitalertragsteuer) [.,\\d]+ % .* (?<tax>[.,\\d]+)- (?<currency>[\\w]{3})$")
+                .match("^Kapitalertragsteuer [.,\\d]+ % .* (?<tax>[.,\\d]+)- (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
                 // Solidaritätszuschlag 5,5 % auf 23,41 EUR 1,28- EUR
                 .section("tax", "currency").optional()
-                .match("^(Solidaritätszuschlag) [.,\\d]+ .* (?<tax>[.,\\d]+)- (?<currency>[\\w]{3})$")
+                .match("^Solidarit.tszuschlag [.,\\d]+ .* (?<tax>[.,\\d]+)- (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
                 // Einbehaltene Quellensteuer 15 % auf 5,22 USD 0,66- EUR
@@ -298,36 +251,36 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
         transaction
                 // Provision 4,95- EUR
                 .section("fee", "currency").optional()
-                .match("^(Provision) (?<fee>[.,\\d]+)- (?<currency>[\\w]{3})")
+                .match("^Provision (?<fee>[.,\\d]+)- (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Eigene Spesen 1,95- EUR
                 .section("fee", "currency").optional()
-                .match("^(Eigene Spesen) (?<fee>[.,\\d]+)- (?<currency>[\\w]{3})")
+                .match("^Eigene Spesen (?<fee>[.,\\d]+)- (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Transaktionsentgelt Börse 0,11- EUR
                 .section("fee", "currency").optional()
-                .match("(Transaktionsentgelt B.rse) (?<fee>[.,\\d]+)- (?<currency>[\\w]{3})")
+                .match("Transaktionsentgelt B.rse (?<fee>[.,\\d]+)- (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Übertragungs-/Liefergebühr 0,11- EUR
                 .section("fee", "currency").optional()
-                .match("(.bertragungs-\\/Liefergeb.hr) (?<fee>[.,\\d]+)- (?<currency>[\\w]{3})")
+                .match(".bertragungs-\\/Liefergeb.hr (?<fee>[.,\\d]+)- (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Handelsentgelt 1,00- EUR
                 .section("fee", "currency").optional()
-                .match("(Handelsentgelt) (?<fee>[.,\\d]+)- (?<currency>[\\w]{3})")
+                .match("Handelsentgelt (?<fee>[.,\\d]+)- (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Kurswert 52,50- EUR
                 // Kundenbonifikation 100 % vom Ausgabeaufschlag 2,50 EUR
                 // Ausgabeaufschlag pro Anteil 5,00 %
                 .section("feeFx", "feeFy", "amountFx", "currency").optional()
-                .match("^Kurswert (?<amountFx>[.,\\d]+)[-]? (?<currency>[\\w]{3})")
-                .match("^Kundenbonifikation (?<feeFy>[.,\\d]+) % vom Ausgabeaufschlag [.,\\d]+ [\\w]{3}")
-                .match("^Ausgabeaufschlag pro Anteil (?<feeFx>[.,\\d]+) %")
+                .match("^Kurswert (?<amountFx>[.,\\d]+)[-]? (?<currency>[\\w]{3})$")
+                .match("^Kundenbonifikation (?<feeFy>[.,\\d]+) % vom Ausgabeaufschlag [.,\\d]+ [\\w]{3}$")
+                .match("^Ausgabeaufschlag pro Anteil (?<feeFx>[.,\\d]+) %$")
                 .assign((t, v) -> {
                     // Fee in percent
                     double amountFx = Double.parseDouble(v.get("amountFx").replace(',', '.'));
