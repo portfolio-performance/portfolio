@@ -690,6 +690,22 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             getTransaction(t).addUnit(new Unit(Unit.Type.FEE,
                                             Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")))));
+                        })
+
+                        // Maklercourtage 0,0800 % vom Kurswert 1,67- EUR
+                        .section("fee", "currency").optional()
+                        .match("^Maklercourtage [.,\\d]+ % .* (?<fee>[.,\\d]+)[-] (?<currency>[\\w]{3})$")
+                        .assign((t, v) -> {
+                            getTransaction(t).addUnit(new Unit(Unit.Type.FEE,
+                                            Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")))));
+                        })
+
+                        // Abwicklungskosten Börse 0,06- EUR
+                        .section("fee", "currency").optional()
+                        .match("^Abwicklungskosten B.rse (?<fee>[.,\\d]+)[-] (?<currency>[\\w]{3})$")
+                        .assign((t, v) -> {
+                            getTransaction(t).addUnit(new Unit(Unit.Type.FEE,
+                                            Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")))));
                         });
     }
 
