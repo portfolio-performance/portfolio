@@ -9,6 +9,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
 import name.abuchen.portfolio.model.Dashboard.Widget;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.util.TextUtil;
 
@@ -32,7 +33,7 @@ public class HeadingWidget extends WidgetDelegate<Object>
         heading.setLayout(layout);
 
         title = new Label(heading, SWT.NONE);
-        title.setFont(resources.getBoldFont());
+        title.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING1);
         title.setForeground(Colors.HEADINGS);
         title.setBackground(heading.getBackground());
         title.setText(TextUtil.tooltip(getWidget().getLabel()));
@@ -45,7 +46,6 @@ public class HeadingWidget extends WidgetDelegate<Object>
     {
         return title;
     }
-
 
     @Override
     public Supplier<Object> getUpdateTask()

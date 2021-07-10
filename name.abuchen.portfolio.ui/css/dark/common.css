@@ -58,3 +58,12 @@ CustomColors {
 	font-weight: bold;
 	color: #D7D8D8;
 }
+
+.kpi {
+	font-size: 21px;
+	font-weight: normal;
+}
+
+.datapoint {
+	font-size: 10px;
+}

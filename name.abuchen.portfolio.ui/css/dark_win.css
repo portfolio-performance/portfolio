@@ -3,9 +3,13 @@
 
 @import url("platform:/plugin/name.abuchen.portfolio.ui/css/dark/common.css");
 
+@import url("platform:/meta/name.abuchen.portfolio.ui/custom.css");
+
 Table,
 Tree {
 	swt-lines-visible: false;
 }
 
-@import url("platform:/meta/name.abuchen.portfolio.ui/custom.css")
+.kpi {
+	font-family: 'Segoe UI';
+}
