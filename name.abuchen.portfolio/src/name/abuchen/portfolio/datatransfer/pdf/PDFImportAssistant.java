@@ -71,8 +71,6 @@ public class PDFImportAssistant
         extractors.add(new ViacPDFExtractor(client));
         extractors.add(new WeberbankPDFExtractor(client));
 
-        extractors.add(new JSONPDFExtractor(client, "deutsche-bank-purchase.json")); //$NON-NLS-1$
-        extractors.add(new JSONPDFExtractor(client, "deutsche-bank-sale.json")); //$NON-NLS-1$
         extractors.add(new JSONPDFExtractor(client, "ffb.json")); //$NON-NLS-1$
         extractors.add(new JSONPDFExtractor(client, "ebase.json")); //$NON-NLS-1$
     }
