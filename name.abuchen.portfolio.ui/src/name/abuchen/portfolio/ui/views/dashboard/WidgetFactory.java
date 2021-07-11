@@ -88,7 +88,7 @@ public enum WidgetFactory
                                     .with(Values.Amount) //
                                     .with((ds, period) -> {
                                         long[] d = data.calculate(ds, period).calculateInvestedCapital();
-                                        return d.length > 0 ? d[d.length - 1] : 0L;
+                                        return d.length > 0 ? d[d.length - 1] - d[0]: 0L;
                                     }) //
                                     .withBenchmarkDataSeries(false) //
                                     .build()),
