@@ -29,6 +29,7 @@ import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.QuoteFeedData;
 import name.abuchen.portfolio.online.impl.AlphavantageQuoteFeed;
 import name.abuchen.portfolio.online.impl.BinanceQuoteFeed;
+import name.abuchen.portfolio.online.impl.CoinGeckoQuoteFeed;
 import name.abuchen.portfolio.online.impl.FinnhubQuoteFeed;
 import name.abuchen.portfolio.online.impl.GenericJSONQuoteFeed;
 import name.abuchen.portfolio.online.impl.PortfolioReportQuoteFeed;
@@ -206,6 +207,8 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
             return FinnhubQuoteFeed.ID + getModel().getTickerSymbol();
         else if (BinanceQuoteFeed.ID.equals(getFeed()))
             return BinanceQuoteFeed.ID + getModel().getTickerSymbol();
+        else if (CoinGeckoQuoteFeed.ID.equals(getFeed()))
+            return CoinGeckoQuoteFeed.ID + getModel().getTickerSymbol();
         else if (QuandlQuoteFeed.ID.equals(getFeed()))
             return QuandlQuoteFeed.ID
                             + String.valueOf(getModel().getFeedProperty(QuandlQuoteFeed.QUANDL_CODE_PROPERTY_NAME))
@@ -219,8 +222,8 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
                                             .getFeedProperty(GenericJSONQuoteFeed.CLOSE_PROPERTY_NAME_HISTORIC))
                             + String.valueOf(getModel()
                                             .getFeedProperty(GenericJSONQuoteFeed.DATE_FORMAT_PROPERTY_NAME_HISTORIC))
-                            + String.valueOf(getModel()
-                                            .getFeedProperty(GenericJSONQuoteFeed.LOW_PROPERTY_NAME_HISTORIC))
+                            + String.valueOf(
+                                            getModel().getFeedProperty(GenericJSONQuoteFeed.LOW_PROPERTY_NAME_HISTORIC))
                             + String.valueOf(getModel()
                                             .getFeedProperty(GenericJSONQuoteFeed.HIGH_PROPERTY_NAME_HISTORIC))
                             + String.valueOf(getModel()
