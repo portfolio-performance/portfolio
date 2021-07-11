@@ -1,9 +1,9 @@
 package name.abuchen.portfolio.snapshot.reportingperiod;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -50,12 +50,10 @@ public class LastXTradingDaysTest
     public void testWriteTo() throws IOException
     {
         String code = "T10";
-        StringBuilder strb = new StringBuilder();
 
         ReportingPeriod period = ReportingPeriod.from(code);
-        period.writeTo(strb);
 
-        assertEquals(strb.toString(), code);
+        assertEquals(period.getCode(), code);
     }
 
     @Test
