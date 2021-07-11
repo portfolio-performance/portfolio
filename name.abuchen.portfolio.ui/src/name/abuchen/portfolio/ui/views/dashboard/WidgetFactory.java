@@ -52,6 +52,13 @@ public enum WidgetFactory
                                     .withBenchmarkDataSeries(false) //
                                     .build()),
 
+    CUMULATIVE_RETURN(Messages.LabelCumulativeReturn, Messages.ClientEditorLabelPerformance, //
+                    (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
+                                    .with(Values.Percent2) //
+                                    .with((ds, period) -> data.calculate(ds, period).getCumulativeReturn()) //
+                                    .withBenchmarkDataSeries(false) //
+                                    .build()),
+
     ABSOLUTE_CHANGE(Messages.LabelAbsoluteChange, Messages.LabelStatementOfAssets, //
                     (widget, data) -> IndicatorWidget.<Long>create(widget, data) //
                                     .with(Values.Amount) //

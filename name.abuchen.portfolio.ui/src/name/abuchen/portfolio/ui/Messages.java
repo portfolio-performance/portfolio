@@ -583,6 +583,7 @@ public class Messages extends NLS
     public static String LabelInvestedCapital;
     public static String LabelInvestmentPlans;
     public static String LabelIRR;
+    public static String LabelCumulativeReturn;
     public static String LabelLanguage;
     public static String LabelLanguageAutomatic;
     public static String LabelLayout;

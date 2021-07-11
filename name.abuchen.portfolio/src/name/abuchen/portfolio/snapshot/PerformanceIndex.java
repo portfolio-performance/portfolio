@@ -252,6 +252,16 @@ public class PerformanceIndex
         return getClientPerformanceSnapshot().map(ClientPerformanceSnapshot::getPerformanceIRR)
                         .orElseThrow(IllegalArgumentException::new);
     }
+    
+    public double getCumulativeReturn()
+    {
+        
+        long[] deltas = calculateDelta();
+        long delta = deltas.length > 0 ? deltas[deltas.length - 1] : 0L;
+        long[] investedCaptial = calculateInvestedCapital();
+        long investedCapital = investedCaptial.length > 0 ? investedCaptial[investedCaptial.length - 1] : 0L;
+        return ((double) delta) / ((double) investedCapital);
+    }
 
     public long[] getTaxes()
     {
