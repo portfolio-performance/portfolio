@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.json.simple.JSONArray;
@@ -32,7 +33,7 @@ public final class CoinGeckoQuoteFeed implements QuoteFeed
 {
     public static final String ID = "COINGECKO"; //$NON-NLS-1$
 
-    private HashMap<String, String> tickerIdMap;
+    private Map<String, String> tickerIdMap;
 
     @Override
     public String getId()
@@ -166,32 +167,40 @@ public final class CoinGeckoQuoteFeed implements QuoteFeed
     }
 
     /**
-     * Provide the internal CoinGecko ID for an "official" cryptocurrency ticker symbol
-     * @param tickerSymbol Cryptocurrency ticker symbol
+     * Provide the internal CoinGecko ID for an "official" cryptocurrency ticker
+     * symbol
+     * 
+     * @param tickerSymbol
+     *            Cryptocurrency ticker symbol
      * @return Internal CoinGecko ID for use in further API calls
-     * @throws IOException No mapping found for ticker
+     * @throws IOException
+     *             No mapping found for ticker
      */
     private String getCoinGeckoIdForTicker(String tickerSymbol) throws IOException
     {
-        HashMap<String, String> tickerIdMap = getTickerIdMap();
-        
-        if (tickerIdMap.containsKey(tickerSymbol))
-            return tickerIdMap.get(tickerSymbol);
+        String tickerId = getTickerIdMap().get(tickerSymbol);
+
+        if (tickerId != null)
+            return tickerId;
         else
             throw new IOException(MessageFormat.format(Messages.MsgMissingTickerSymbol, tickerSymbol));
     }
 
     /**
-     * The CoinGecko API only allows to fetch a complete set of ID mappings for all coins existing on the platform.
-     * In order to avoid unnecessary calls the mapping will be buffered locally in a HashMap.
-     * @return Buffered HashMap for: Crypto Ticker Symbol -> Internal CoinGecko ID
-     * @throws IOException Error during creation of HashMap
+     * The CoinGecko API only allows to fetch a complete set of ID mappings for
+     * all coins existing on the platform. In order to avoid unnecessary calls
+     * the mapping will be buffered locally in a HashMap.
+     * 
+     * @return Buffered HashMap for: Crypto Ticker Symbol -> Internal CoinGecko
+     *         ID
+     * @throws IOException
+     *             Error during creation of HashMap
      */
-    private synchronized HashMap<String, String> getTickerIdMap() throws IOException
+    private synchronized Map<String, String> getTickerIdMap() throws IOException
     {
         if (tickerIdMap == null)
         {
-            tickerIdMap = new HashMap<String, String>(10000);
+            Map<String, String> ticker2id = new HashMap<>(10000);
 
             WebAccess webaccess = new WebAccess("api.coingecko.com", "/api/v3/coins/list"); //$NON-NLS-1$ //$NON-NLS-2$
             String html = webaccess.get();
@@ -203,9 +212,11 @@ public final class CoinGeckoQuoteFeed implements QuoteFeed
                 for (Object coin : coinArray)
                 {
                     JSONObject coinObject = (JSONObject) coin;
-                    tickerIdMap.put(coinObject.get("symbol").toString(), coinObject.get("id").toString()); //$NON-NLS-1$ //$NON-NLS-2$
+                    ticker2id.put(coinObject.get("symbol").toString(), coinObject.get("id").toString()); //$NON-NLS-1$ //$NON-NLS-2$
                 }
             }
+
+            tickerIdMap = ticker2id;
         }
 
         return tickerIdMap;
