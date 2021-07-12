@@ -8,6 +8,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
 import name.abuchen.portfolio.model.Dashboard.Widget;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.swt.ColoredLabel;
 import name.abuchen.portfolio.util.TextUtil;
@@ -38,7 +39,7 @@ public abstract class AbstractIndicatorWidget<D> extends WidgetDelegate<D>
         GridDataFactory.fillDefaults().grab(true, false).applyTo(title);
 
         indicator = new ColoredLabel(container, SWT.NONE);
-        indicator.setFont(resources.getKpiFont());
+        indicator.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.KPI);
         indicator.setBackground(Colors.theme().defaultBackground());
         indicator.setText(""); //$NON-NLS-1$
         GridDataFactory.fillDefaults().grab(true, false).applyTo(indicator);

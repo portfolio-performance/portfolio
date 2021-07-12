@@ -62,7 +62,7 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "ING-DiBa"; //$NON-NLS-1$
+        return "ING-DiBa AG"; //$NON-NLS-1$
     }
 
     @SuppressWarnings("nls")
@@ -151,10 +151,10 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private void addSellTransaction()
     {
-        DocumentType type = new DocumentType("Wertpapierabrechnung Verkauf", isJointAccount);
+        DocumentType type = new DocumentType("(Wertpapierabrechnung (Verkauf|Verk. Teil-\\/Bezugsr.)|R.ckzahlung)", isJointAccount);
         this.addDocumentTyp(type);
 
-        Block block = new Block("Wertpapierabrechnung Verkauf.*");
+        Block block = new Block("(Wertpapierabrechnung (Verkauf|Verk. Teil-\\/Bezugsr.)|R.ckzahlung)(.*)?");
         type.addBlock(block);
         Transaction<BuySellEntry> transaction = new Transaction<BuySellEntry>()
 
@@ -174,20 +174,31 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                             t.setSecurity(getOrCreateSecurity(v));
                         })
 
-                        .section("shares")
+                        .section("shares").optional()
                         .match("^Nominale St.ck (?<shares>[\\d.]+(,\\d+)?)")
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
+                        .section("shares").optional()
+                        .match("^Nominale (?<shares>[\\d.]+(,\\d+)?) St.ck")
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
                         .section("date") //
-                        .match("(Ausf.hrungstag . -zeit|Ausf.hrungstag|Schlusstag . -zeit|Schlusstag) (?<date>\\d+.\\d+.\\d{4}).*") //
+                        .match("(Ausf.hrungstag . -zeit|Ausf.hrungstag|Schlusstag . -zeit|Schlusstag|F.lligkeit) (?<date>\\d+.\\d+.\\d{4}).*") //
                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                         .section("date", "time").optional() //
-                        .match("(Ausf.hrungstag . -zeit|Ausf.hrungstag|Schlusstag . -zeit|Schlusstag) (?<date>\\d+.\\d+.\\d{4}) .* (?<time>\\d+:\\d+:\\d+).*") //
+                        .match("(Ausf.hrungstag . -zeit|Ausf.hrungstag|Schlusstag . -zeit|Schlusstag|F.lligkeit) (?<date>\\d+.\\d+.\\d{4}) .* (?<time>\\d+:\\d+:\\d+).*") //
                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
 
-                        .section("amount", "currency") //
+                        .section("amount", "currency").optional()
                         .match("Endbetrag zu Ihren Gunsten (?<currency>\\w{3}) (?<amount>[\\d.]+,\\d+)") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        .section("amount", "currency").optional()
+                        .match("Endbetrag (?<currency>\\w{3}) (?<amount>[\\d.]+,\\d+)")
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));

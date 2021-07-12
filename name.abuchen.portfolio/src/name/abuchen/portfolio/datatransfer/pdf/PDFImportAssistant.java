@@ -39,7 +39,6 @@ public class PDFImportAssistant
         extractors.add(new ComdirectPDFExtractor(client));
         extractors.add(new CommerzbankPDFExtractor(client));
         extractors.add(new ConsorsbankPDFExtractor(client));
-        extractors.add(new ConsorsbankPre2009PDFExtractor(client));
         extractors.add(new CreditSuisseAGPDFExtractor(client));
         extractors.add(new DABPDFExtractor(client));
         extractors.add(new DADATBankenhausPDFExtractor(client));
@@ -72,8 +71,6 @@ public class PDFImportAssistant
         extractors.add(new ViacPDFExtractor(client));
         extractors.add(new WeberbankPDFExtractor(client));
 
-        extractors.add(new JSONPDFExtractor(client, "deutsche-bank-purchase.json")); //$NON-NLS-1$
-        extractors.add(new JSONPDFExtractor(client, "deutsche-bank-sale.json")); //$NON-NLS-1$
         extractors.add(new JSONPDFExtractor(client, "ffb.json")); //$NON-NLS-1$
         extractors.add(new JSONPDFExtractor(client, "ebase.json")); //$NON-NLS-1$
     }

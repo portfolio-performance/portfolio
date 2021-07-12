@@ -203,11 +203,11 @@ public class ChartWidget extends WidgetDelegate<Object>
         chart.getToolTip().reverseLabels(true);
 
         GC gc = new GC(container);
-        gc.setFont(resources.getKpiFont());
+        gc.setFont(container.getFont());
         Point stringExtend = gc.stringExtent("X"); //$NON-NLS-1$
         gc.dispose();
 
-        GridDataFactory.fillDefaults().hint(SWT.DEFAULT, stringExtend.y * 6).grab(true, false).applyTo(chart);
+        GridDataFactory.fillDefaults().hint(SWT.DEFAULT, (stringExtend.y + 10) * 6).grab(true, false).applyTo(chart);
 
         getDashboardData().getStylingEngine().style(chart);
 

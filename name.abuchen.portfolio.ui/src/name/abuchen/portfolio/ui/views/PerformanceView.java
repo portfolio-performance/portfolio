@@ -7,11 +7,13 @@ import java.util.function.Function;
 
 import javax.inject.Inject;
 
+import org.eclipse.e4.ui.css.swt.theme.IThemeEngine;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.layout.TreeColumnLayout;
+import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -80,6 +82,9 @@ public class PerformanceView extends AbstractHistoricView
 
     @Inject
     private ExchangeRateProviderFactory factory;
+
+    @Inject
+    private IThemeEngine themeEngine;
 
     private ClientFilterDropDown clientFilter;
 
@@ -215,7 +220,13 @@ public class PerformanceView extends AbstractHistoricView
 
         MoneyTrailToolTipSupport.enableFor(calculation, ToolTip.NO_RECREATE);
 
-        final Font boldFont = JFaceResources.getFontRegistry().getBold(container.getFont().getFontData()[0].getName());
+        // make sure to apply the styles (including font information to the
+        // table) before creating the bold font. Otherwise the font does not
+        // match the styles in CSS
+        themeEngine.applyStyles(calculation.getTree(), true);
+
+        final Font boldFont = JFaceResources.getResources()
+                        .createFont(FontDescriptor.createFrom(calculation.getTree().getFont()).setStyle(SWT.BOLD));
 
         ShowHideColumnHelper support = new ShowHideColumnHelper(getClass().getSimpleName() + "-calculation@v2", //$NON-NLS-1$
                         getPreferenceStore(), calculation, layout);

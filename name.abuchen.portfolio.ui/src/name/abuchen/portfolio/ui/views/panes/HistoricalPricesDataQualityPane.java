@@ -23,6 +23,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.QuoteQualityMetrics;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.viewers.Column;
@@ -30,6 +31,7 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.views.SecurityQuoteQualityMetricsViewer;
 import name.abuchen.portfolio.util.Interval;
+import name.abuchen.portfolio.util.Pair;
 import name.abuchen.portfolio.util.TextUtil;
 
 public class HistoricalPricesDataQualityPane implements InformationPanePage
@@ -40,6 +42,7 @@ public class HistoricalPricesDataQualityPane implements InformationPanePage
     private Label completeness;
     private Label checkInterval;
     private TableViewer missing;
+    private TableViewer unexpected;
 
     private Security security;
 
@@ -67,27 +70,48 @@ public class HistoricalPricesDataQualityPane implements InformationPanePage
 
         checkInterval = new Label(container, SWT.NONE);
 
-        Composite table = createTable(container);
+        Label missingLabel = new Label(container, SWT.NONE);
+        missingLabel.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);
+        missingLabel.setText(Messages.LabelMissingQuotes);
+        missingLabel.setToolTipText(TextUtil.wordwrap(Messages.LabelMissingQuotes_Decsription));
+
+        Pair<Composite, TableViewer> missingPair = createTable(container, "@missing"); //$NON-NLS-1$
+        Composite missingTable = missingPair.getLeft();
+        missing = missingPair.getRight();
+
+        Label unexpectedLabel = new Label(container, SWT.NONE);
+        unexpectedLabel.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);
+        unexpectedLabel.setText(Messages.LabelUnexpectedQuotes);
+        unexpectedLabel.setToolTipText(TextUtil.wordwrap(Messages.LabelUnexpectedQuotes_Description));
+
+        Pair<Composite, TableViewer> unexpectedPair = createTable(container, "@unexpected"); //$NON-NLS-1$
+        Composite unexpectedTable = unexpectedPair.getLeft();
+        unexpected = unexpectedPair.getRight();
 
         FormDataFactory.startingWith(completeness, lCompleteness).right(new FormAttachment(100))
                         .thenBelow(checkInterval).left(new FormAttachment(0)).right(new FormAttachment(100))
-                        .thenBelow(table)
-                        .bottom(new FormAttachment(100));
+                        .thenBelow(missingLabel) //
+                        .thenBelow(missingTable).bottom(new FormAttachment(100));
+
+        FormDataFactory.startingWith(missingTable) //
+                        .thenRight(unexpectedTable, 20).top(new FormAttachment(missingTable, 0, SWT.TOP))
+                        .bottom(new FormAttachment(100)) //
+                        .thenUp(unexpectedLabel);
 
         return container;
     }
 
-    protected Composite createTable(Composite parent)
+    protected Pair<Composite, TableViewer> createTable(Composite parent, String showHideColumnHelperSuffix)
     {
         Composite container = new Composite(parent, SWT.NONE);
         TableColumnLayout layout = new TableColumnLayout();
         container.setLayout(layout);
 
-        missing = new TableViewer(container, SWT.FULL_SELECTION);
+        TableViewer tableViewer = new TableViewer(container, SWT.FULL_SELECTION);
 
         ShowHideColumnHelper support = new ShowHideColumnHelper(
-                        SecurityQuoteQualityMetricsViewer.class.getSimpleName() + "@missing", //$NON-NLS-1$
-                        preferences, missing, layout);
+                        SecurityQuoteQualityMetricsViewer.class.getSimpleName() + showHideColumnHelperSuffix,
+                        preferences, tableViewer, layout);
 
         Column column = new Column(Messages.ColumnDate, SWT.None, 300);
         column.setLabelProvider(new ColumnLabelProvider()
@@ -109,12 +133,12 @@ public class HistoricalPricesDataQualityPane implements InformationPanePage
 
         support.createColumns();
 
-        missing.getTable().setHeaderVisible(true);
-        missing.getTable().setLinesVisible(true);
+        tableViewer.getTable().setHeaderVisible(true);
+        tableViewer.getTable().setLinesVisible(true);
 
-        missing.setContentProvider(ArrayContentProvider.getInstance());
+        tableViewer.setContentProvider(ArrayContentProvider.getInstance());
 
-        return container;
+        return new Pair<>(container, tableViewer);
     }
 
     @Override
@@ -130,6 +154,7 @@ public class HistoricalPricesDataQualityPane implements InformationPanePage
             completeness.setText(""); //$NON-NLS-1$
             checkInterval.setText(""); //$NON-NLS-1$
             missing.setInput(new ArrayList<>());
+            unexpected.setInput(new ArrayList<>());
         }
         else
         {
@@ -142,6 +167,7 @@ public class HistoricalPricesDataQualityPane implements InformationPanePage
                             .orElse("")); //$NON-NLS-1$
 
             missing.setInput(metrics.getMissingIntervals());
+            unexpected.setInput(metrics.getUnexpectedIntervals());
         }
     }
 

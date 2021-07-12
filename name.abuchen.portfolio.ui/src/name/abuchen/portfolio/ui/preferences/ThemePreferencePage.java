@@ -1,7 +1,7 @@
 package name.abuchen.portfolio.ui.preferences;
 
+import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -202,15 +202,8 @@ public final class ThemePreferencePage extends PreferencePage
 
     private Path getPathToCustomCSS() throws IOException
     {
-        try
-        {
-            URL url = FileLocator.resolve(new URL("platform:/meta/name.abuchen.portfolio.ui/custom.css")); //$NON-NLS-1$
-            return Path.of(url.toURI());
-        }
-        catch (URISyntaxException e)
-        {
-            throw new IOException(e);
-        }
+        URL url = FileLocator.resolve(new URL("platform:/meta/name.abuchen.portfolio.ui/custom.css")); //$NON-NLS-1$
+        return new File(url.getFile()).toPath();
     }
 
     private int readFontSizeFromCSS()
@@ -242,7 +235,11 @@ public final class ThemePreferencePage extends PreferencePage
 
             if (fontSize > 0)
             {
-                css = String.format("{ font-size: %dpx;}%n.heading1 { font-size: %dpx; }", fontSize, fontSize + 4); //$NON-NLS-1$
+                css = String.format("{ font-size: %dpx;}%n" //$NON-NLS-1$
+                                + ".heading1 { font-size: %dpx; }%n" //$NON-NLS-1$
+                                + ".kpi { font-size: %dpx; }%n" //$NON-NLS-1$
+                                + ".datapoint { font-size: %dpx; }", //$NON-NLS-1$
+                                fontSize, fontSize + 3, fontSize + 10, fontSize - 1);
             }
 
             Files.writeString(getPathToCustomCSS(), css, StandardOpenOption.TRUNCATE_EXISTING);
