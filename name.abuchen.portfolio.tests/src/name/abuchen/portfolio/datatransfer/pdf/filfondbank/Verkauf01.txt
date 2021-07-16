@@ -1,0 +1,126 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Depotführung: Ihr der FFB benannte Vermittler:
+xy GmbH
+Vorname Name
+Herrn
+Vorname Name
+Strasse
+90409 Nürnberg , Mittelfr
+Es schreibt Ihnen:
+FFB Kundenbetreuung
+Kronberg im Taunus, 16. Januar 2019
+Fondsabrechnung
+ FFB FondsdepotPlus Auszug  2 Blatt 1
+Depotinhaber Vorname Name
+Depotnummer 11111111 (Privatvermögen) minderjährig
+Transaktion Fondsname Betrag Preis Anteile
+Auftrags-Nr. WKN / ISIN Wechselkurs Preisdatum Bestand alt
+Fondsgesellschaft Währungsbetrag Zwischengewinn Bestand neu
+Verwahrart, Lagerland Rücknahmepreis
+Verkauf UBS(D) Equity Fd.-Global Opp. 921,60 EUR 198,9200 EUR -4,633
+2526343587 848821 / DE0008488214 10.10.2018 4,633
+UBS Global Asset Management 0,0000 EUR 0,000
+Girosammelverwahrung, Deutschland 198,9200 EUR
+Auszahlungsbetrag 897,60 EUR
+abgeführte Kapitalertragsteuer 21,15 EUR
+abgeführter Solidaritätszuschlag 1,16 EUR
+abgeführte Kirchensteuer 1,69 EUR
+Verkauf Fidelity Fd-Pacific Fund A USD 650,26 EUR 34,0200 USD -22,211
+2526343590 973285 / LU0049112450 1,162031 USD 10.10.2018 22,211
+FIL (Luxemburg) S.A. 755,62 USD 0,0000 EUR 0,000
+Wertpapierrechnung, Luxemburg 34,0200 USD
+Auszahlungsbetrag 637,32 EUR
+abgeführte Kapitalertragsteuer 11,40 EUR
+abgeführter Solidaritätszuschlag 0,63 EUR
+abgeführte Kirchensteuer 0,91 EUR
+Verkauf FvS SICAV-Multiple Opportun. R 888,53 EUR 235,5600 EUR -3,772
+2526343592 A0M430 / LU0323578657 11.10.2018 3,772
+Flossbach von Storch Invest S.A. 0,0000 EUR 0,000
+Girosammelverwahrung, Deutschland 235,5600 EUR
+Auszahlungsbetrag 880,19 EUR
+abgeführte Kapitalertragsteuer 7,35 EUR
+abgeführter Solidaritätszuschlag 0,40 EUR
+abgeführte Kirchensteuer 0,59 EUR
+FIL Fondsbank GmbH Postanschrift: Vorsitzender Geschäftsführung: Sitz: Kronberg im Taunus
+Kastanienhöhe 1 Postfach 11 06 63 des Aufsichtsrats: Gerhard Oehne (Sprecher) Amtsgericht
+61476 Kronberg im Taunus 60041 Frankfurt am Main Jon Skillman Peter Nonner Königstein HRB 8336
+info@ffb.de Telefon (069) 7 70 60 - 200 Dr. Andreas Prechtel Umsatzsteuer-ID Nr.
+www.ffb.de Telefax (069) 7 70 60 - 555 Gerald Rink DE213709602
+ABGST_V1.0
+Depotführung: Ihr der FFB benannte Vermittler:
+xy GmbH
+Vorname Name
+Herrn
+Vorname Name
+Strasse
+90409 Nürnberg , Mittelfr
+Es schreibt Ihnen:
+FFB Kundenbetreuung
+Kronberg im Taunus, 16. Januar 2019
+Fondsabrechnung
+ FFB FondsdepotPlus Auszug  2 Blatt 1
+Depotinhaber Vorname Name
+Depotnummer 11111111 (Privatvermögen) minderjährig
+Transaktion Fondsname Betrag Preis Anteile
+Auftrags-Nr. WKN / ISIN Wechselkurs Preisdatum Bestand alt
+Fondsgesellschaft Währungsbetrag Zwischengewinn Bestand neu
+Verwahrart, Lagerland Rücknahmepreis
+Verkauf Frankfurter Aktienfd.für Stift 816,89 EUR 128,3000 EUR -6,367
+2526343593 A0M8HD / DE000A0M8HD2 10.10.2018 6,367
+Axxion S.A. 0,0000 EUR 0,000
+Girosammelverwahrung, Deutschland 128,3000 EUR
+Auszahlungsbetrag 807,73 EUR
+abgeführte Kapitalertragsteuer 8,07 EUR
+abgeführter Solidaritätszuschlag 0,44 EUR
+abgeführte Kirchensteuer 0,65 EUR
+Verkauf M&G Global Dividend Fund A EUR 783,40 EUR 26,6289 EUR -29,419
+2526343595 A0Q349 / GB00B39R2S49 10.10.2018 29,419
+M&G Investment Funds 0,0000 EUR 0,000
+Wertpapierrechnung, Grossbritannien 26,6289 EUR
+Auszahlungsbetrag 749,75 EUR
+abgeführte Kapitalertragsteuer 29,65 EUR
+abgeführter Solidaritätszuschlag 1,63 EUR
+abgeführte Kirchensteuer 2,37 EUR
+FIL Fondsbank GmbH Postanschrift: Vorsitzender Geschäftsführung: Sitz: Kronberg im Taunus
+Kastanienhöhe 1 Postfach 11 06 63 des Aufsichtsrats: Gerhard Oehne (Sprecher) Amtsgericht
+61476 Kronberg im Taunus 60041 Frankfurt am Main Jon Skillman Peter Nonner Königstein HRB 8336
+info@ffb.de Telefon (069) 7 70 60 - 200 Dr. Andreas Prechtel Umsatzsteuer-ID Nr.
+www.ffb.de Telefax (069) 7 70 60 - 555 Gerald Rink DE213709602
+ABGST_V1.0
+Depotführung: Ihr der FFB benannte Vermittler:
+xy GmbH
+Vorname Name
+Herrn
+Vorname Name
+Strasse
+90409 Nürnberg , Mittelfr
+Es schreibt Ihnen:
+FFB Kundenbetreuung
+Kronberg im Taunus, 16. Januar 2019
+Fondsabrechnung
+ FFB FondsdepotPlus Auszug  2 Blatt 1
+Depotinhaber Vorname Name
+Depotnummer 11111111 (Privatvermögen) minderjährig
+Anlagen in Investmentfonds können erst nach Kenntnisnahme der gesetzlichen Verkaufsunterlagen (aktueller Verkaufsprospekt, wesentliche 
+Anlegerinformationen, Halb-/Jahresbericht) erfolgen. Diese Unterlagen haben Sie direkt von Ihrem Vermittler erhalten. Sofern Sie keine 
+elektronischen Orderwege nutzen, verwenden Sie bitte für Investmentfonds-Aufträge ausschließlich die Serviceformulare der FFB, die Sie 
+online oder über Ihren Vermittler erhalten.
+Steuerliche Informationen
+Erteilter Freistellungsauftrag 300,00 EUR gültig bis: unbefristet Verlustverrechnungstopf neu 0,00 EUR
+davon noch verfügbar 0,00 EUR Quellensteuertopf neu 0,00 EUR
+Hinweise:
+Auslandzahlungen, die 12.500 EUR übersteigen, sind gemäß der Außenwirtschaftsverordnung (AWV) durch Sie meldepflichtig. Weitergehende Informationen zur 
+Meldepflicht nach AWV erhalten Sie direkt von der Deutschen Bundesbank, unter www.bundesbank.de oder unter der Rufnummer 0800 1234 111.
+Einwendungen gegen diese Fondsabrechnung wegen Unrichtigkeit oder Unvollständigkeit richten Sie bitte schriftlich spätestens einen Monat nach Zugang an:
+FIL Fondsbank GmbH, Revision, Postfach 11 06 63, 60041 Frankfurt am Main, Telefax (069) 7 70 60 - 444.
+Aufgrund der Regelungen des Einkommensteuergesetzes (EStG) sowie des Investmentsteuergesetzes (InvStG) sind wir verpflichtet, im Rahmen der von Ihnen getätigten Transaktion
+Steuern an das Finanzamt abzuführen.
+FIL Fondsbank GmbH Postanschrift: Vorsitzender Geschäftsführung: Sitz: Kronberg im Taunus
+Kastanienhöhe 1 Postfach 11 06 63 des Aufsichtsrats: Gerhard Oehne (Sprecher) Amtsgericht
+61476 Kronberg im Taunus 60041 Frankfurt am Main Jon Skillman Peter Nonner Königstein HRB 8336
+info@ffb.de Telefon (069) 7 70 60 - 200 Dr. Andreas Prechtel Umsatzsteuer-ID Nr.
+www.ffb.de Telefax (069) 7 70 60 - 555 Gerald Rink DE213709602
+ABGST_V1.0
+>
