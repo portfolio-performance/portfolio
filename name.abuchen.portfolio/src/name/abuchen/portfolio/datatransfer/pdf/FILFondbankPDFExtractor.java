@@ -331,6 +331,13 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
             .subject(() -> {
                 AccountTransaction entry = new AccountTransaction();
                 entry.setType(AccountTransaction.Type.DIVIDENDS);
+
+                /***
+                 * If we have multiple entries in the document,
+                 * then the "sale" flag must be removed.
+                 */
+                type.getCurrentContext().remove("sale");
+
                 return entry;
             });
 
