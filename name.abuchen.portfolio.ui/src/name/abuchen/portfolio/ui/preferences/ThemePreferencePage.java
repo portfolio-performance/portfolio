@@ -17,8 +17,6 @@ import java.util.stream.Stream;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.e4.ui.css.swt.theme.ITheme;
 import org.eclipse.e4.ui.css.swt.theme.IThemeEngine;
-import org.eclipse.jface.fieldassist.ControlDecoration;
-import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -26,14 +24,14 @@ import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
+import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.util.swt.ControlDecoration;
 
 @SuppressWarnings("restriction")
 public final class ThemePreferencePage extends PreferencePage
@@ -76,27 +74,21 @@ public final class ThemePreferencePage extends PreferencePage
         });
         themeIdCombo.setContentProvider(ArrayContentProvider.getInstance());
         themeIdCombo.setInput(getCSSThemes());
-        themeIdCombo.getControl().setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         this.currentTheme = engine.getActiveTheme();
         if (this.currentTheme != null)
         {
             themeIdCombo.setSelection(new StructuredSelection(currentTheme));
         }
-        ControlDecoration themeComboDecorator = new ControlDecoration(themeIdCombo.getCombo(), SWT.TOP | SWT.LEFT);
+        ControlDecoration themeComboDecorator = new ControlDecoration(themeIdCombo.getCombo(), SWT.RIGHT);
+        themeComboDecorator.setDescriptionText(Messages.MsgThemeRestartRequired);
+        themeComboDecorator.setImage(Images.WARNING.image());
+        themeComboDecorator.hide();
         themeIdCombo.addSelectionChangedListener(event -> {
             ITheme selection = getSelectedTheme();
             if (!selection.equals(currentTheme))
-            {
-                themeComboDecorator.setDescriptionText(Messages.MsgThemeRestartRequired);
-                Image decorationImage = FieldDecorationRegistry.getDefault()
-                                .getFieldDecoration(FieldDecorationRegistry.DEC_WARNING).getImage();
-                themeComboDecorator.setImage(decorationImage);
                 themeComboDecorator.show();
-            }
             else
-            {
                 themeComboDecorator.hide();
-            }
         });
 
         // font size
@@ -118,26 +110,19 @@ public final class ThemePreferencePage extends PreferencePage
         fontSizeCombo.setContentProvider(ArrayContentProvider.getInstance());
         fontSizeCombo.setInput(
                         Stream.concat(Stream.of(-1), IntStream.range(8, 21).boxed()).collect(Collectors.toList()));
-        fontSizeCombo.getControl().setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-
         fontSizeCombo.setSelection(new StructuredSelection(currentFontSize));
 
-        ControlDecoration fontSizeDecorator = new ControlDecoration(fontSizeCombo.getCombo(), SWT.TOP | SWT.LEFT);
+        ControlDecoration fontSizeDecorator = new ControlDecoration(fontSizeCombo.getCombo(), SWT.RIGHT);
+        fontSizeDecorator.setDescriptionText(Messages.MsgThemeRestartRequired);
+        fontSizeDecorator.setImage(Images.WARNING.image());
+        fontSizeDecorator.hide();
         fontSizeCombo.addSelectionChangedListener(event -> {
 
             int selectedFontSize = (Integer) fontSizeCombo.getStructuredSelection().getFirstElement();
             if (selectedFontSize != currentFontSize)
-            {
-                fontSizeDecorator.setDescriptionText(Messages.MsgThemeRestartRequired);
-                Image decorationImage = FieldDecorationRegistry.getDefault()
-                                .getFieldDecoration(FieldDecorationRegistry.DEC_WARNING).getImage();
-                fontSizeDecorator.setImage(decorationImage);
                 fontSizeDecorator.show();
-            }
             else
-            {
                 fontSizeDecorator.hide();
-            }
         });
 
         return area;
