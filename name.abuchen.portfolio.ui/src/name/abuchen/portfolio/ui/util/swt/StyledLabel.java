@@ -220,6 +220,17 @@ public class StyledLabel extends Canvas // NOSONAR
     {
         super.setFont(font);
         this.textLayout.setFont(font);
+
+        // update existing styles with new font
+        TextStyle[] styles = this.textLayout.getStyles();
+        for (TextStyle style : styles)
+        {
+            if (style.font != null)
+                style.font = resourceManager.createFont(FontDescriptor.createFrom(textLayout.getFont())
+                                .setStyle(style.font.getFontData()[0].getStyle()));
+        }
+
+        redraw();
     }
 
     @Override

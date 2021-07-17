@@ -22,11 +22,9 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
-import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -63,8 +61,6 @@ public class WelcomePart
     private RecentFilesCache recentFiles;
 
     private Composite recentFilesComposite;
-    private Font boldFont;
-    private Font bigFont;
 
     @PostConstruct
     public void createComposite(Composite parent)
@@ -72,17 +68,6 @@ public class WelcomePart
         Composite container = new Composite(parent, SWT.NONE);
         container.setBackground(Colors.WHITE);
         GridLayoutFactory.fillDefaults().margins(20, 20).applyTo(container);
-
-        // create fonts
-
-        FontDescriptor fontDescriptor = FontDescriptor.createFrom(container.getFont());
-        boldFont = fontDescriptor.setStyle(SWT.BOLD).createFont(container.getDisplay());
-        bigFont = fontDescriptor.increaseHeight(20).createFont(container.getDisplay());
-
-        container.addDisposeListener(e -> {
-            boldFont.dispose();
-            bigFont.dispose();
-        });
 
         createHeader(container);
         createContent(container);
@@ -102,7 +87,7 @@ public class WelcomePart
         // name
         Label title = new Label(composite, SWT.NONE);
         title.setText(Messages.LabelPortfolioPerformance);
-        title.setFont(bigFont);
+        title.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING1);
 
         // version
         Label version = new Label(composite, SWT.NONE);
@@ -135,15 +120,15 @@ public class WelcomePart
 
         GridLayoutFactory.fillDefaults().margins(5, 5).applyTo(links);
 
-        addSectionLabel(boldFont, links, Messages.IntroLabelActions);
+        addSectionLabel(links, Messages.IntroLabelActions);
         addLink(links, "action:open", Messages.IntroOpenFile, Messages.IntroOpenFileText); //$NON-NLS-1$
         addLink(links, "action:new", Messages.IntroNewFile, Messages.IntroNewFileText); //$NON-NLS-1$
 
-        addSectionLabel(boldFont, links, Messages.IntroLabelSamples);
+        addSectionLabel(links, Messages.IntroLabelSamples);
         addLink(links, "action:sample", Messages.IntroOpenSample, Messages.IntroOpenSampleText); //$NON-NLS-1$
         addLink(links, "action:daxsample", Messages.IntroOpenDaxSample, Messages.IntroOpenDaxSampleText); //$NON-NLS-1$
 
-        addSectionLabel(boldFont, links, Messages.IntroLabelHelp);
+        addSectionLabel(links, Messages.IntroLabelHelp);
         addLink(links, "https://forum.portfolio-performance.info/t/sunny-neues-nennenswertes/23/last", //$NON-NLS-1$
                         Messages.SystemMenuNewAndNoteworthy, Messages.IntroNewAndNoteworthyText);
 
@@ -162,7 +147,7 @@ public class WelcomePart
 
         GridLayoutFactory.fillDefaults().margins(5, 5).applyTo(recentFilesComposite);
 
-        addSectionLabel(boldFont, recentFilesComposite, Messages.IntroLabelRecentlyUsedFiles);
+        addSectionLabel(recentFilesComposite, Messages.IntroLabelRecentlyUsedFiles);
 
         for (String file : recentFiles.getRecentFiles())
         {
@@ -177,7 +162,7 @@ public class WelcomePart
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.BEGINNING).applyTo(translation);
         GridLayoutFactory.fillDefaults().margins(5, 5).numColumns(1).applyTo(translation);
 
-        addSectionLabel(boldFont, translation, Messages.IntroLabelTranslation);
+        addSectionLabel(translation, Messages.IntroLabelTranslation);
 
         StyledLabel text = new StyledLabel(translation, SWT.WRAP);
         text.setText(Messages.IntroLabelTranslationInfo);
@@ -185,7 +170,7 @@ public class WelcomePart
 
         addLink(translation, "action:opensettings", Messages.IntroChangeLanguageInPreferences, null); //$NON-NLS-1$
 
-        addSectionLabel(boldFont, translation, Messages.PrefTitleDivvyDiary);
+        addSectionLabel(translation, Messages.PrefTitleDivvyDiary);
 
         text = new StyledLabel(translation, SWT.WRAP);
         text.setText(Messages.PrefDescriptionDivvyDiary);
@@ -194,11 +179,11 @@ public class WelcomePart
         addLink(translation, "action:opensettings", Messages.LabelSettings + "...", null); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
-    private void addSectionLabel(Font boldFont, Composite actions, String label)
+    private void addSectionLabel(Composite actions, String label)
     {
         Label l = new Label(actions, SWT.NONE);
         l.setText(label);
-        l.setFont(boldFont);
+        l.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);
         GridDataFactory.fillDefaults().indent(0, 20).applyTo(l);
     }
 
