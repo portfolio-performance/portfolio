@@ -66,7 +66,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         pdfTransaction
                 // Is type --> "Verkauf" change from BUY to SELL
                 .section("type").optional()
-                .match("^((Limit|Stop-Market|Market)-Order )?(?<type>Verkauf) .*$")
+                .match("^((Limit|Stop-Market|Market)-Order )?(?<type>(Kauf|Verkauf|Sparplanausf.hrung)) .*$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("Verkauf"))
                     {
