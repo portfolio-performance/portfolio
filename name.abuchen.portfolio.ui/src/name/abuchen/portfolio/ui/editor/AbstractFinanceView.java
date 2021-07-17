@@ -158,7 +158,7 @@ public abstract class AbstractFinanceView
 
         createBody(sash);
 
-        pane = new InformationPane();
+        pane = make(InformationPane.class);
         pane.createViewControl(sash);
         pane.setView(this);
         pane.setLayoutData(new SashLayoutData(-200));
