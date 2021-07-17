@@ -49,6 +49,7 @@ public class PDFImportAssistant
         extractors.add(new DreiBankenEDVPDFExtractor(client));
         extractors.add(new DZBankPDFExtractor(client));
         extractors.add(new ErsteBankPDFExtractor(client));
+        extractors.add(new FILFondbankPDFExtractor(client));
         extractors.add(new FinTechGroupBankPDFExtractor(client));
         extractors.add(new HelloBankPDFExtractor(client));
         extractors.add(new INGDiBaExtractor(client));
@@ -71,7 +72,6 @@ public class PDFImportAssistant
         extractors.add(new ViacPDFExtractor(client));
         extractors.add(new WeberbankPDFExtractor(client));
 
-        extractors.add(new JSONPDFExtractor(client, "ffb.json")); //$NON-NLS-1$
         extractors.add(new JSONPDFExtractor(client, "ebase.json")); //$NON-NLS-1$
     }
 
