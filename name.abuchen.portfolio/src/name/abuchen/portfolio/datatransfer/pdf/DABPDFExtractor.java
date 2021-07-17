@@ -68,7 +68,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
         pdfTransaction
                 // Is type --> "Verkauf" change from BUY to SELL
                 .section("type").optional()
-                .match("^(?<type>Verkauf) .*")
+                .match("^(?<type>(Kauf|Verkauf)) .*")
                 .assign((t, v) -> {
                     if (v.get("type").equals("Verkauf"))
                     {
