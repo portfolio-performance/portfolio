@@ -105,7 +105,8 @@ public class WeberbankPDFExtractor extends AbstractPDFExtractor
                 .wrap(BuySellEntryItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
-        addFeesSectionsTransaction(pdfTransaction, type);
+        // At this time there are no known fee or similar in the PDF debugs.
+        // addFeesSectionsTransaction(pdfTransaction, type);
     }
 
     private void addDividendeTransaction()
@@ -204,7 +205,8 @@ public class WeberbankPDFExtractor extends AbstractPDFExtractor
                 .wrap(TransactionItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
-        addFeesSectionsTransaction(pdfTransaction, type);
+        // At this time there are no known fee or similar in the PDF debugs.
+        // addFeesSectionsTransaction(pdfTransaction, type);
 
         block.set(pdfTransaction);
     }
@@ -236,18 +238,19 @@ public class WeberbankPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> addTax(type, t, v, "quellenstanr"));
     }
 
-    private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
-    {
-        //transaction
-            // At this time there are no known fees or similar in the PDF debugs.
-            // IF you found some, add this here like
-            
-            // Example
-            // some fees
-            // .section("fee", "currency").optional()
-            // .match("^ABC (?<fee>[.,\\d]+)[-]? (?<currency>[\\w]{3})$")
-            // .assign((t, v) -> processFeeEntries(t, v, type));
-    }
+    /***
+     * At this time there are no known fee or similar in the PDF debugs.
+     * If you have found some, activate the 
+     * the function , processFeeEntries();
+     * and add them here.
+     */
+//    private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
+//    {
+//        transaction
+//                .section("fee", "currency").optional()
+//                .match("^ABC (?<fee>[.,\\d]+)[-]? (?<currency>[\\w]{3})$")
+//                .assign((t, v) -> processFeeEntries(t, v, type));
+//    }
 
     private void addTax(DocumentType type, Object t, Map<String, String> v, String taxtype)
     {
@@ -288,19 +291,19 @@ public class WeberbankPDFExtractor extends AbstractPDFExtractor
         }
     }
 
-    private void processFeeEntries(Object t, Map<String, String> v, DocumentType type)
-    {
-        if (t instanceof name.abuchen.portfolio.model.Transaction)
-        {
-            Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
-            PDFExtractorUtils.checkAndSetFee(fee, 
-                            (name.abuchen.portfolio.model.Transaction) t, type);
-        }
-        else
-        {
-            Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
-            PDFExtractorUtils.checkAndSetFee(fee,
-                            ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
-        }
-    }
+//    private void processFeeEntries(Object t, Map<String, String> v, DocumentType type)
+//    {
+//        if (t instanceof name.abuchen.portfolio.model.Transaction)
+//        {
+//            Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
+//            PDFExtractorUtils.checkAndSetFee(fee, 
+//                            (name.abuchen.portfolio.model.Transaction) t, type);
+//        }
+//        else
+//        {
+//            Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
+//            PDFExtractorUtils.checkAndSetFee(fee,
+//                            ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
+//        }
+//    }
 }

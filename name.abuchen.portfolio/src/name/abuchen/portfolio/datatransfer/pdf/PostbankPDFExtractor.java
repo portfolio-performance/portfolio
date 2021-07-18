@@ -215,7 +215,21 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
+        /***
+         * At this time there are no known tax or similar in the PDF debugs.
+         * If you have found some, activate the 
+         * the function , processTaxEntries();
+         * and add them here.
+         */
         transaction
+                /***
+                 * Here is an implementation example
+                 * processTaxEntries();
+                 */
+                // .section("tax", "currency").optional()
+                // .match("^ABC (?<tax>[.,\\d]+)[-]? (?<currency>[\\w]{3})$")
+                // .assign((t, v) -> processTaxEntries(t, v, type));
+        
                 // Einbehaltene Quellensteuer 15 % auf 12,12 USD 1,53- EUR
                 .section("quellensteinbeh", "currency").optional()
                 .match("^Einbehaltende Quellensteuer [.,\\d]+ % .* (?<quellensteinbeh>[.,\\d]+)- (?<currency>[\\w]{3})$")
@@ -279,19 +293,19 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
         return true;
     }
 
-    private void processTaxEntries(Object t, Map<String, String> v, DocumentType type)
-    {
-        if (t instanceof name.abuchen.portfolio.model.Transaction)
-        {
-            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-            PDFExtractorUtils.checkAndSetTax(tax, (name.abuchen.portfolio.model.Transaction) t, type);
-        }
-        else
-        {
-            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-            PDFExtractorUtils.checkAndSetTax(tax, ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
-        }
-    }
+//    private void processTaxEntries(Object t, Map<String, String> v, DocumentType type)
+//    {
+//        if (t instanceof name.abuchen.portfolio.model.Transaction)
+//        {
+//            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+//            PDFExtractorUtils.checkAndSetTax(tax, (name.abuchen.portfolio.model.Transaction) t, type);
+//        }
+//        else
+//        {
+//            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+//            PDFExtractorUtils.checkAndSetTax(tax, ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
+//        }
+//    }
 
     private void processFeeEntries(Object t, Map<String, String> v, DocumentType type)
     {
