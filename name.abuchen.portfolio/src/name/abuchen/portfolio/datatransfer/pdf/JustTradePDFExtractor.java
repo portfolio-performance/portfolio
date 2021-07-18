@@ -33,7 +33,6 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("Sutor"); //$NON-NLS-1$
         addBankIdentifier("SUTOR BANK"); //$NON-NLS-1$
 
-        addBuyTransactionOld();
         addBuySellTransaction();
         addDividendeTransaction();
         addDepositAccountTransaction();
@@ -55,61 +54,9 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
     }
 
     @SuppressWarnings("nls")
-    private void addBuyTransactionOld()
-    {
-        DocumentType type = new DocumentType("Wertpapier Abrechnung Kauf");
-        this.addDocumentTyp(type);
-
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
-        pdfTransaction.subject(() -> {
-            BuySellEntry entry = new BuySellEntry();
-            entry.setType(PortfolioTransaction.Type.BUY);
-            return entry;
-        });
-
-        Block firstRelevantLine = new Block("Stück .*");
-        type.addBlock(firstRelevantLine);
-        firstRelevantLine.set(pdfTransaction);
-
-        pdfTransaction
-                // Stück 53 ISHSII-DEV.MKTS PROP.YLD U.ETF IE00B1FZS350 (A0LEW8)
-                // REGISTERED SHS USD (DIST) O.N.
-                .section("shares", "name", "isin", "wkn", "name1")
-                .match("^Stück (?<shares>[\\d.,]+) (?<name>.*) (?<isin>\\S*) \\((?<wkn>\\S*)\\)$")
-                .match("(?<name1>.*)")
-                .assign((t, v) -> {
-                    if (!v.get("name1").startsWith("Handels-\\/Ausf.hrungsplatz"))
-                        v.put("name", v.get("name") + " " + v.get("name1"));
-
-                    t.setSecurity(getOrCreateSecurity(v));
-                    t.setShares(asShares(v.get("shares")));
-                })
-
-                // Schlusstag/-Zeit 02.01.2020 10:49:34 Auftragserteilung/ -ort sonstige
-                .section("date", "time")
-                .match("^Schlusstag\\/\\-Zeit (?<date>\\d+.\\d+.\\d{4}) (?<time>\\d+:\\d+:\\d+).*")
-                .assign((t, v) -> {
-                    if (v.get("time") != null)
-                        t.setDate(asDate(v.get("date"), v.get("time")));
-                    else
-                        t.setDate(asDate(v.get("date")));
-                })
-
-                // Ausmachender Betrag 1.340,64- EUR
-                .section("amount", "currency")
-                .match("^Ausmachender Betrag (?<amount>[.,\\d]+)- (?<currency>[\\w]{3})")
-                .assign((t, v) -> {
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(v.get("currency"));
-                })
-
-                .wrap(BuySellEntryItem::new);
-    }
-
-    @SuppressWarnings("nls")
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("Transaktionsart: (Kauf|Verkauf)");
+        DocumentType type = new DocumentType("((Transaktionsart:|Wertpapier Abrechnung) (Kauf|Verkauf)|Fälligkeit/Verfall)");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -119,16 +66,17 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("Produktbezeichnung - .*", "Ausmachender Betrag:.*");
+        Block firstRelevantLine = new Block("^(F.lligkeit\\/Verfall|Wertpapier Abrechnung|WERTPAPIERABRECHNUNG)(.*)?$", "^Ausmachender Betrag.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
                 // if type is "Verkauf" change from BUY to SELL
-                .section("type")
-                .match("Transaktionsart: (?<type>[\\w]+)")
+                .section("type").optional()
+                .match("^(Transaktionsart: |Wertpapier Abrechnung )?(?<type>(Kauf|Verkauf|F.lligkeit\\/Verfall))$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("Verkauf"))
+                    if (v.get("type").equals("Verkauf")
+                            || v.get("type").equals("Fälligkeit/Verfall"))
                     {
                         t.setType(PortfolioTransaction.Type.SELL);
                     }
@@ -138,16 +86,48 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
                 // Internationale Wertpapierkennnummer (ISIN): IE00BK5BQT80
                 // Währung: EUR
                 .section("name", "isin", "currency").optional()
-                .match("Produktbezeichnung - (?<name>.*)").match(".*")
-                .match("Internationale Wertpapierkennnummer \\(ISIN\\): (?<isin>[\\w]{12})")
-                .match("Währung: (?<currency>[\\w]{3})")
+                .match("^Produktbezeichnung - (?<name>.*)$")
+                .match("^Internationale Wertpapierkennnummer \\(ISIN\\): (?<isin>[\\w]{12})$")
+                .match("^W.hrung: (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     t.setSecurity(getOrCreateSecurity(v));
                     type.getCurrentContext().put("currency", v.get("currency"));
                 })
 
+                // Stück 53 ISHSII-DEV.MKTS PROP.YLD U.ETF IE00B1FZS350 (A0LEW8)
+                // REGISTERED SHS USD (DIST) O.N.
+                // Ausführungskurs 25,295 EUR
+                .section("name", "isin", "wkn", "name1", "currency").optional()
+                .match("^St.ck [.,\\d]+ (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
+                .match("^(?<name1>.*)$")
+                .match("^Ausf.hrungskurs [.,\\d]+ (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    if (!v.get("name1").startsWith("Handels-/Ausf.hrungsplatz"))
+                        v.put("name", v.get("name") + " " + v.get("name1"));
+
+                    t.setSecurity(getOrCreateSecurity(v));
+                })
+
+                // Produktbezeichnung - Discount Zertifikat auf Münchener Rückversicherungs AG:
+                // Internationale Wertpapierkennnummer DE000VP63TQ3
+                // Rückzahlungskurs EUR 230,000000
+                .section("name", "isin", "currency").optional()
+                .match("^Produktbezeichnung - (?<name>.*):$")
+                .match("^Internationale Wertpapierkennnummer (?<isin>[\\w]{12})$")
+                .match("^R.ckzahlungskurs (?<currency>[\\w]{3}) [.,\\d]+$")
+                .assign((t, v) -> {
+                    t.setSecurity(getOrCreateSecurity(v));
+                })
+
+                // Stück/Nominale: 29,00
+                // Stück 53 ISHSII-DEV.MKTS PROP.YLD U.ETF IE00B1FZS350 (A0LEW8)
+                // Anzahl/Nominale 9,00
+                .section("shares")
+                .match("^(St.ck|Anzahl)(\\/Nominale(:)?)? (?<shares>[.,\\d]+)(.*)?$")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
                 // Orderausführung Datum/Zeit: 31 Jul 2020 21:00:15
-                .section("date", "time")
+                .section("date", "time").optional()
                 .match("Orderausführung Datum\\/Zeit: (?<date>\\d+ .* \\d{4}) (?<time>\\d+:\\d+:\\d+).*")
                 .assign((t, v) -> {
                     // Formate the date from 05. Oktober 2009 to 05.10.2009
@@ -160,17 +140,47 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
                         t.setDate(asDate(v.get("date")));
                 })
 
-                // Stück/Nominale: 29,00
-                .section("shares")
-                .match("Stück\\/Nominale: (?<shares>[0-9.]+(\\,[0-9]{2})).*")
-                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                // Schlusstag/-Zeit 02.01.2020 10:49:34 Auftragserteilung/ -ort sonstige
+                .section("date", "time").optional()
+                .match("^Schlusstag\\/\\-Zeit (?<date>\\d+.\\d+.\\d{4}) (?<time>\\d+:\\d+:\\d+) .*$")
+                .assign((t, v) -> {
+                    if (v.get("time") != null)
+                        t.setDate(asDate(v.get("date"), v.get("time")));
+                    else
+                        t.setDate(asDate(v.get("date")));
+                })
+
+                // Valutadatum 25. Juni 2021
+                .section("date").optional()
+                .match("^Valutadatum (?<date>\\d+\\. .* \\d{4})$")
+                .assign((t, v) -> {
+                    // Formate the date from 25. Juni 2021 to 25.06.2009
+                    v.put("date", DateTimeFormatter.ofPattern("dd.MM.yyyy").format(LocalDate.parse(v.get("date"), DateTimeFormatter.ofPattern("d. MMMM yyyy", Locale.GERMANY))));
+                    t.setDate(asDate(v.get("date")));
+                })
 
                 // Ausmachender Betrag: €2.083,94
-                .section("amount")
-                .match("Ausmachender Betrag: (\\W{1})(?<amount>([0-9.]+)\\,([0-9]{2}))")
+                .section("amount").optional()
+                .match("Ausmachender Betrag: (\\W{1})(?<amount>[.,\\d]+)$")
                 .assign((t, v) -> {
-                    t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("currency")));
+                    t.setAmount(asAmount(v.get("amount")));
+                })
+
+                // Ausmachender Betrag 1.340,64- EUR
+                .section("amount", "currency").optional()
+                .match("Ausmachender Betrag (?<amount>[.,\\d]+)([-])? (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                    t.setAmount(asAmount(v.get("amount")));
+                })
+
+                // Ausmachender Betrag EUR 2.070,00
+                .section("amount", "currency").optional()
+                .match("Ausmachender Betrag (?<currency>[\\w]{3}) (?<amount>[.,\\d]+)$")
+                .assign((t, v) -> {
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                    t.setAmount(asAmount(v.get("amount")));
                 })
 
                 .wrap(BuySellEntryItem::new);
