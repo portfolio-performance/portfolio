@@ -22,6 +22,7 @@ public class SelfWealthPDFExtractor extends AbstractPDFExtractor
         super(client);
 
         addBankIdentifier("SelfWealth"); //$NON-NLS-1$
+        addBankIdentifier("SelfWealth Limited ABN: 52 154 324 428 AFSL 421789 W: www.selfwealth.com.au E: support@selfwealth.com.au"); //$NON-NLS-1$
 
         addBuySellTransaction();
     }
@@ -35,7 +36,7 @@ public class SelfWealthPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "SelfWealth"; //$NON-NLS-1$
+        return "SelfWealth Limited ABN: 52 154 324 428 AFSL 421789 W: www.selfwealth.com.au E: support@selfwealth.com.au"; //$NON-NLS-1$
     }
 
     private void addBuySellTransaction()
@@ -66,7 +67,7 @@ public class SelfWealthPDFExtractor extends AbstractPDFExtractor
                 })
 
                 // JOHN DOE A/C Reference No: T20210701123456­-1
-                .section("note")
+                .section("note").optional()
                 .match(" Reference No: (?<note>.*)$")
                 .assign((t, v) -> {
                     t.setNote(asNote(v.get("note")));
@@ -95,36 +96,12 @@ public class SelfWealthPDFExtractor extends AbstractPDFExtractor
                 })
 
 
-                // Brokerage* $9.50 AUD
-                .section("brokerage_fee")
-                .match("^Brokerage Fee//* //$(?<brokerage_fee>.*) [\\w]{3}$")
-                // Adviser Fee* $0.00 AUD
-                .section("adviser_fee")
-                .match("^Adviser Fee//* //$(?<adviser_fee>.*)$")
-                
-                fees = brokerage_fee + adviser_fee
-                .assign((t, v) -> {
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                })
-
-
                 // Net Value $322.00 AUD
                 .section("amount")
                 .match("^GST included in this invoice is //$(?<amount>.*) [\\w]{3}$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                })
-
-
-                // GST included in this invoice is $0.86
-                .section("gst")
-                .match("^GST included in this invoice is //$(?<gst>.*)$")
-                .assign((t, v) -> {
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                })
 
 
                 .wrap(BuySellEntryItem::new);
@@ -136,49 +113,26 @@ public class SelfWealthPDFExtractor extends AbstractPDFExtractor
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction
-                // Kapitalertragsteuer (KESt)  - 9,88 USD - 8,71 EUR
-                .section("tax", "currency").optional()
-                .match("^Kapitalertragsteuer \\(KESt\\) ([\\s]+)?- [.,\\d]+ [\\w]{3} - (?<tax>[.,\\d]+) (?<currency>[\\w]{3})$")
+                // Goods and Services Tax gst==tax
+                // GST included in this invoice is $0.86
+                .section("tax")
+                .match("^GST included in this invoice is //$(?<tax>.*)$")
                 .assign((t, v) -> processTaxEntries(t, v, type))
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction
-                // Provision EUR 7,90
-                // Provision EUR -7,90
-                .section("currency", "fee").optional()
-                .match("^Provision (?<currency>[\\w]{3}) ([-])?(?<fee>[.,\\d]+)$")
+
+                // Brokerage* $9.50 AUD
+                .section("brokerage_fee", "currency").optional()
+                .match("^Brokerage Fee//* //$(?<brokerage_fee>.*) (?<currency>[\\w]{3})$")
+                // Adviser Fee* $0.00 AUD
+                .section("adviser_fee", "currency").optional()
+                .match("^Adviser Fee//* //$(?<adviser_fee>.*) (?<currency>[\\w]{3})$")
+                
+                fees = brokerage_fee + adviser_fee
+
                 .assign((t, v) -> processFeeEntries(t, v, type))
-    }
-
-    private void processTaxEntries(Object t, Map<String, String> v, DocumentType type)
-    {
-        if (t instanceof name.abuchen.portfolio.model.Transaction)
-        {
-            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-            PDFExtractorUtils.checkAndSetTax(tax, (name.abuchen.portfolio.model.Transaction) t, type);
-        }
-        else
-        {
-            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-            PDFExtractorUtils.checkAndSetTax(tax, ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
-        }
-    }
-
-    private void processFeeEntries(Object t, Map<String, String> v, DocumentType type)
-    {
-        if (t instanceof name.abuchen.portfolio.model.Transaction)
-        {
-            Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
-            PDFExtractorUtils.checkAndSetFee(fee, 
-                            (name.abuchen.portfolio.model.Transaction) t, type);
-        }
-        else
-        {
-            Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
-            PDFExtractorUtils.checkAndSetFee(fee,
-                            ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
-        }
     }
 }
