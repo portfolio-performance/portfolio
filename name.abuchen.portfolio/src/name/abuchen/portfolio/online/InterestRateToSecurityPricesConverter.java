@@ -22,16 +22,15 @@ public class InterestRateToSecurityPricesConverter
          */
         ACT_360;
     }
-    
+
     public enum Maturity
     {
-        OVER_NIGHT, ONE_MONTH, TWO_MONTHS, THREE_MONTHS, SIX_MONTHS,
-        ONE_YEAR, TWO_YEARS, THREE_YEARS, FIVE_YEARS, SEVEN_YEARS, TEN_YEARS;
+        OVER_NIGHT, ONE_MONTH, TWO_MONTHS, THREE_MONTHS, SIX_MONTHS, ONE_YEAR, TWO_YEARS, THREE_YEARS, FIVE_YEARS, SEVEN_YEARS, TEN_YEARS;
     }
-    
+
     public enum Interval
     {
-        DAILY,MONTHLY
+        DAILY, MONTHLY
     }
 
     private static final long START_VALUE = 100L * Values.Quote.factor();
@@ -55,8 +54,8 @@ public class InterestRateToSecurityPricesConverter
      *            Annualized interest rates as percent (i.e. for 1.5% p.a. the
      *            double {@code 1.5d}).
      */
-    public Collection<LatestSecurityPrice> convert(List<Pair<LocalDate, Double>> interestRates,
-                    Interval interval, Maturity maturity)
+    public Collection<LatestSecurityPrice> convert(List<Pair<LocalDate, Double>> interestRates, Interval interval,
+                    Maturity maturity)
     {
         if (interestRates.isEmpty())
             return Collections.emptyList();
@@ -67,12 +66,8 @@ public class InterestRateToSecurityPricesConverter
         List<LatestSecurityPrice> results = new ArrayList<>();
         results.add(toLatestSecurityPrice(interestRates.get(0).getKey(), lastValue));
 
-        for(int nextInterestRateIndex = 0; nextInterestRateIndex < interestRates.size() - 1; nextInterestRateIndex++)
+        for (int nextInterestRateIndex = 0; nextInterestRateIndex < interestRates.size() - 1; nextInterestRateIndex++)
         {
-            if(nextInterestRateIndex == interestRates.size() - 2)
-            {
-                int temp = 0;
-            }
             double overNightInterestRate = interestRates.get(nextInterestRateIndex).getRight();
             long overNightReturn = 0;
 
@@ -86,13 +81,15 @@ public class InterestRateToSecurityPricesConverter
             }
             long days = ChronoUnit.DAYS.between(interestRates.get(nextInterestRateIndex).getLeft(),
                             interestRates.get(nextInterestRateIndex + 1).getLeft());
-            
+
             lastValue += days * overNightReturn;
-            if(maturity != Maturity.OVER_NIGHT)
+            if (maturity != Maturity.OVER_NIGHT)
             {
-                double modifiedDuration = getModifiedDuration(maturity, interestRates.get(nextInterestRateIndex).getRight() / 100d)
+                double modifiedDuration = getModifiedDuration(maturity,
+                                interestRates.get(nextInterestRateIndex).getRight() / 100d)
                                 * (interestRates.get(nextInterestRateIndex).getRight()
-                                - interestRates.get(nextInterestRateIndex + 1).getRight()) / 100d;
+                                                - interestRates.get(nextInterestRateIndex + 1).getRight())
+                                / 100d;
                 lastValue *= (1d + modifiedDuration);
             }
             results.add(toLatestSecurityPrice(interestRates.get(nextInterestRateIndex + 1).getLeft(), lastValue));
@@ -105,12 +102,12 @@ public class InterestRateToSecurityPricesConverter
         return new LatestSecurityPrice(date, value, LatestSecurityPrice.NOT_AVAILABLE,
                         LatestSecurityPrice.NOT_AVAILABLE, LatestSecurityPrice.NOT_AVAILABLE);
     }
-    
+
     private static double getModifiedDuration(Maturity maturity, double interestRate)
     {
         double macaulayDuration = getMacaulayDuration(maturity, interestRate);
         double paymentsPerYear = 0;
-        switch(maturity)
+        switch (maturity)
         {
             case OVER_NIGHT:
                 return 0;
@@ -139,11 +136,14 @@ public class InterestRateToSecurityPricesConverter
         }
         return macaulayDuration / (1 + interestRate / paymentsPerYear);
     }
-    
+
     /**
-     * Calculates the Macaulay duration in years where we assume the following coupon payments:
-     *  - for maturity one year or less: All interest rates are payed at maturity
-     *  - for maturity of two or more years: Interest rates are paid annually (last payment at maturity)
+     * Calculates the Macaulay duration in years where we assume the following
+     * coupon payments:
+     * <p>
+     * - for maturity one year or less: All interest rates are payed at maturity
+     * - for maturity of two or more years: Interest rates are paid annually
+     * (last payment at maturity)
      */
     private static double getMacaulayDuration(Maturity maturity, double interestRate)
     {
@@ -182,7 +182,7 @@ public class InterestRateToSecurityPricesConverter
         }
         double presentValueWeightedDuration = 0d;
         double totalPresentValue = 0d;
-        
+
         // Interest payments
         for (int i = 1; i <= years; i++) // 1-indexed loop!
         {
@@ -190,12 +190,12 @@ public class InterestRateToSecurityPricesConverter
             totalPresentValue += thisCashflowPresentValue;
             presentValueWeightedDuration += thisCashflowPresentValue * i;
         }
-        
-        //Payback in the end
+
+        // Payback in the end
         double paybackPresentValue = 1 / Math.pow(1 + interestRate, years);
         totalPresentValue += paybackPresentValue;
         presentValueWeightedDuration += paybackPresentValue * years;
-        
+
         return presentValueWeightedDuration / totalPresentValue;
     }
 }

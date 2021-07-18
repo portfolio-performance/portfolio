@@ -51,32 +51,33 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
-                // Stück 4,929 SAUREN GLOBAL BALANCED LU0106280836 (930920)
-                // INHABER-ANTEILE A O.N
-                .section("isin", "wkn", "name", "shares", "nameContinued")
-                .match("^(Stück) (?<shares>[\\d.,]+) (?<name>.*) (?<isin>[\\w]{12}.*) (\\((?<wkn>.*)\\).*)")
-                .match("(?<nameContinued>.*)")
-                .assign((t, v) -> {
-                    t.setSecurity(getOrCreateSecurity(v));
-                    t.setShares(asShares(v.get("shares")));
-                })
+                        // Stück 4,929 SAUREN GLOBAL BALANCED LU0106280836
+                        // (930920)
+                        // INHABER-ANTEILE A O.N
+                        .section("isin", "wkn", "name", "shares", "nameContinued")
+                        .match("^(Stück) (?<shares>[\\d.,]+) (?<name>.*) (?<isin>[\\w]{12}.*) (\\((?<wkn>.*)\\).*)")
+                        .match("(?<nameContinued>.*)") //
+                        .assign((t, v) -> {
+                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setShares(asShares(v.get("shares")));
+                        })
 
-                // Schlusstag 14.01.2021
-                .section("date")
-                .match("^(Schlusstag) (?<date>\\d+.\\d+.\\d{4}+).*")
-                .assign((t, v) -> {
-                        t.setDate(asDate(v.get("date")));
-                })
+                        // Schlusstag 14.01.2021
+                        .section("date") //
+                        .match("^(Schlusstag) (?<date>\\d+.\\d+.\\d{4}+).*") //
+                        .assign((t, v) -> {
+                            t.setDate(asDate(v.get("date")));
+                        })
 
-                // Ausmachender Betrag 100,01- EUR
-                .section("currency", "amount")
-                .match("^(Ausmachender Betrag) (?<amount>[\\d.]+,\\d+)[?(-|\\+)] (?<currency>\\w{3}+)")
-                .assign((t, v) -> {
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(v.get("currency"));
-                })
+                        // Ausmachender Betrag 100,01- EUR
+                        .section("currency", "amount")
+                        .match("^(Ausmachender Betrag) (?<amount>[\\d.]+,\\d+)[?(-|\\+)] (?<currency>\\w{3}+)")
+                        .assign((t, v) -> {
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
+                        })
 
-                .wrap(BuySellEntryItem::new);
+                        .wrap(BuySellEntryItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
@@ -84,10 +85,10 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
-        //transaction
+        // transaction
         // At this time there are no known tax or similar in the PDF debugs.
         // IF you found some, add this here like
-        
+
         // Example
         // some taxes
         // .section("tax", "currency").optional()
@@ -98,25 +99,11 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction
-                // Ihr Ausgabeaufschlag betraegt:
-                // 0,00 EUR (0,000 Prozent)
-                .section("fee", "currency")
-                .match("^(?<fee>[.,\\d]+) (?<currency>[\\w]{3}) \\([.,\\d]+ \\w+\\)$")
-                .assign((t, v) -> processFeeEntries(t, v, type));
-    }
-
-    private void processTaxEntries(Object t, Map<String, String> v, DocumentType type)
-    {
-        if (t instanceof name.abuchen.portfolio.model.Transaction)
-        {
-            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-            PDFExtractorUtils.checkAndSetTax(tax, (name.abuchen.portfolio.model.Transaction) t, type);
-        }
-        else
-        {
-            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-            PDFExtractorUtils.checkAndSetTax(tax, ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
-        }
+                        // Ihr Ausgabeaufschlag betraegt:
+                        // 0,00 EUR (0,000 Prozent)
+                        .section("fee", "currency")
+                        .match("^(?<fee>[.,\\d]+) (?<currency>[\\w]{3}) \\([.,\\d]+ \\w+\\)$")
+                        .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
     private void processFeeEntries(Object t, Map<String, String> v, DocumentType type)
@@ -124,8 +111,7 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
         if (t instanceof name.abuchen.portfolio.model.Transaction)
         {
             Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
-            PDFExtractorUtils.checkAndSetFee(fee, 
-                            (name.abuchen.portfolio.model.Transaction) t, type);
+            PDFExtractorUtils.checkAndSetFee(fee, (name.abuchen.portfolio.model.Transaction) t, type);
         }
         else
         {

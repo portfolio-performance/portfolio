@@ -75,7 +75,7 @@ public class ECBStatisticalDataWarehouseQuoteFeed implements QuoteFeed
             this.exchange = new Exchange(id, name, Exchange.DISPLAY_NAME_FORMAT_EXCHANGE_NAME_ONLY);
         }
     }
-    
+
     private static InterestRateToSecurityPricesConverter.Interval getInterval(String freq)
     {
         switch (freq)
@@ -88,12 +88,13 @@ public class ECBStatisticalDataWarehouseQuoteFeed implements QuoteFeed
                 return null;
         }
     }
-    
+
     private static InterestRateToSecurityPricesConverter.Maturity getMaturity(String provider_fm_id)
     {
         if (provider_fm_id == null)
         {
-            // EONIA data is from EON, not FM, so it does not have a provider_fm_id
+            // EONIA data is from EON, not FM, so it does not have a
+            // provider_fm_id
             return InterestRateToSecurityPricesConverter.Maturity.OVER_NIGHT;
         }
         switch (provider_fm_id)
@@ -126,21 +127,6 @@ public class ECBStatisticalDataWarehouseQuoteFeed implements QuoteFeed
                 return InterestRateToSecurityPricesConverter.Maturity.TEN_YEARS;
             default:
                 return null;
-        }
-    }
-    
-    private static TradeCalendar getTradeCalendar(String provider_fm_id)
-    {
-        if (provider_fm_id == null)
-        {
-            // EONIA data is from EON, not FM, so it does not have a provider_fm_id
-            // EONIA has daily data
-            return TradeCalendarManager.getInstance(TradeCalendarManager.TARGET2_CALENDAR_CODE);
-        }
-        else
-        {
-            // All other indices have only one quote at the beginning of each month
-            return TradeCalendarManager.getInstance(TradeCalendarManager.FIRST_OF_THE_MONTH_CODE);
         }
     }
 
@@ -211,9 +197,9 @@ public class ECBStatisticalDataWarehouseQuoteFeed implements QuoteFeed
         Document document = builder.parse(new InputSource(new StringReader(responseBody)));
 
         Element root = document.getDocumentElement();
-        
+
         NodeList seriesKeys = root.getElementsByTagName("generic:SeriesKey"); //$NON-NLS-1$
-        if(seriesKeys.getLength() != 1)
+        if (seriesKeys.getLength() != 1)
             throw new SAXException("Expected one generic:SeriesKey\", but found: " + seriesKeys.getLength()); //$NON-NLS-1$
         Element seriesKey = (Element) seriesKeys.item(0);
         NodeList seriesKeyValues = seriesKey.getElementsByTagName("generic:Value"); //$NON-NLS-1$
@@ -221,27 +207,27 @@ public class ECBStatisticalDataWarehouseQuoteFeed implements QuoteFeed
         InterestRateToSecurityPricesConverter.Interval interval = null;
         InterestRateToSecurityPricesConverter.Maturity maturity = null;
         String providerIdFM = null;
-        for(int i = 0; i < seriesKeyValues.getLength(); i++)
+        for (int i = 0; i < seriesKeyValues.getLength(); i++)
         {
-            Element e  = (Element) seriesKeyValues.item(i);
-            if(e.getAttribute("id").equals("FREQ")) //$NON-NLS-1$ //$NON-NLS-2$
+            Element e = (Element) seriesKeyValues.item(i);
+            if (e.getAttribute("id").equals("FREQ")) //$NON-NLS-1$ //$NON-NLS-2$
             {
                 String freq = e.getAttribute("value"); //$NON-NLS-1$
                 interval = getInterval(freq);
             }
-            if(e.getAttribute("id").equals("PROVIDER_FM_ID")) //$NON-NLS-1$ //$NON-NLS-2$
+            if (e.getAttribute("id").equals("PROVIDER_FM_ID")) //$NON-NLS-1$ //$NON-NLS-2$
             {
                 providerIdFM = e.getAttribute("value"); //$NON-NLS-1$
             }
         }
         maturity = getMaturity(providerIdFM);
-        
+
         NodeList dataList = root.getElementsByTagName("generic:Obs"); //$NON-NLS-1$
 
         List<Pair<LocalDate, Double>> interestRates = new ArrayList<>();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(ECB_SDW_DATE_FORMAT);
         LocalDate lastInterestRateDay = LocalDate.MIN;
-        
+
         for (int i = 0; i < dataList.getLength(); i++)
         {
             Element node = (Element) dataList.item(i);
@@ -253,19 +239,22 @@ public class ECBStatisticalDataWarehouseQuoteFeed implements QuoteFeed
             String dateString = dateElement.getAttribute("value"); //$NON-NLS-1$
             if (dateString.matches(MONTH_REGEX))
             {
-                // If there is only one datapoint per month, we set the date to the first date of the month.
-                // When converting interest rates to cummulated indices, the InterestRateToSecurityPricesConverter
+                // If there is only one datapoint per month, we set the date to
+                // the first date of the month.
+                // When converting interest rates to cummulated indices, the
+                // InterestRateToSecurityPricesConverter
                 // will then use this interest for every day of the month
                 dateString = dateString + MONTH_POSTFIX;
             }
             LocalDate date = LocalDate.parse(dateString, formatter);
-            
+
             if (providerIdFM != null) // Data comes from FM
             {
-                // The data is a monthly average. We interpret it as end of the month datapoint.
+                // The data is a monthly average. We interpret it as end of the
+                // month datapoint.
                 date = date.plusMonths(1);
             }
-            
+
             if (date.isAfter(lastInterestRateDay))
                 lastInterestRateDay = date;
 
@@ -275,24 +264,29 @@ public class ECBStatisticalDataWarehouseQuoteFeed implements QuoteFeed
             Element interestRateElement = (Element) interestRateNodeList.item(0);
             String interestRateString = interestRateElement.getAttribute("value"); //$NON-NLS-1$
             double interestRate = Double.parseDouble(interestRateString);
-            if(!Double.isNaN(interestRate)) // This check is necessary because for USA 10year yield NaN is returned in the period 1914-08 - 1914-11 
+
+            // This check is necessary because for USA 10year yield NaN is
+            // returned in the period 1914-08 - 1914-11
+            if (!Double.isNaN(interestRate))
             {
                 interestRates.add(new Pair<LocalDate, Double>(date, interestRate));
             }
         }
-        
-        if (providerIdFM == null) // Is EONIA Index? EONIA data is from EON, not FM, so it does not have a provider_fm_id
+
+        if (providerIdFM == null) // Is EONIA Index? EONIA data is from EON, not
+                                  // FM, so it does not have a provider_fm_id
         {
             TradeCalendar tradeCalendar = TradeCalendarManager.getInstance(TradeCalendarManager.TARGET2_CALENDAR_CODE);
             LocalDate lastQuoteDate = tradeCalendar.getNextNonHoliday(lastInterestRateDay.plusDays(1));
-            // EONIA is an over-night index, so it has modified duration 0 and we can calculate the quote for one
+            // EONIA is an over-night index, so it has modified duration 0 and
+            // we can calculate the quote for one
             // more day given the current interest rate.
             interestRates.add(new Pair<LocalDate, Double>(lastQuoteDate, Double.NaN));
         }
-        
+
         Collection<LatestSecurityPrice> latestSecurityPrices = new InterestRateToSecurityPricesConverter(
-                        InterestRateToSecurityPricesConverter.InterestRateType.ACT_360)
-                        .convert(interestRates, interval, maturity);
+                        InterestRateToSecurityPricesConverter.InterestRateType.ACT_360).convert(interestRates, interval,
+                                        maturity);
         data.addAllPrices(latestSecurityPrices);
     }
 
