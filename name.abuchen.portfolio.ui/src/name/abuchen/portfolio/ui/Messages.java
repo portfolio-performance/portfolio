@@ -290,8 +290,9 @@ public class Messages extends NLS
     public static String ColumnTotal;
     public static String ColumnTransactionType;
     public static String ColumnTTWROR_Option;
-    public static String ColumnTWROR;
-    public static String ColumnTWROR_Description;
+    public static String ColumnTTWRORpa;
+    public static String ColumnTTWRORpa_Option;
+    public static String ColumnTTWROR;
     public static String ColumnUnrealizedCapitalGains;
     public static String ColumnUpdatedQuote;
     public static String ColumnUpdatedShares;

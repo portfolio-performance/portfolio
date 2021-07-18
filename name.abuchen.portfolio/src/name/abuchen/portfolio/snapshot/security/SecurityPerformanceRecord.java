@@ -105,6 +105,12 @@ public final class SecurityPerformanceRecord implements Adaptable, TrailProvider
     private double twror;
 
     /**
+     * Annualized True time-weighted rate of return
+     * {@link #calculatePerformance(ReportingPeriod)}
+     */
+    private double twrorpa;
+
+    /**
      * Max Drawdown and Max Drawdown Duration
      * {@link #calculatePerformance(ReportingPeriod)}
      */
@@ -255,6 +261,11 @@ public final class SecurityPerformanceRecord implements Adaptable, TrailProvider
     public double getTrueTimeWeightedRateOfReturn()
     {
         return twror;
+    }
+
+    public double getTrueTimeWeightedRateOfReturnAnnualized()
+    {
+        return twrorpa;
     }
 
     public double getMaxDrawdown()
@@ -531,6 +542,7 @@ public final class SecurityPerformanceRecord implements Adaptable, TrailProvider
         PerformanceIndex index = PerformanceIndex.forInvestment(client, converter, security, interval,
                         new ArrayList<Exception>());
         this.twror = index.getFinalAccumulatedPercentage();
+        this.twrorpa = index.getFinalAccumulatedAnnualizedPercentage();
         this.drawdown = index.getDrawdown();
         this.volatility = index.getVolatility();
     }
