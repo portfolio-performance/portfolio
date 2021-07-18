@@ -1,6 +1,8 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -22,6 +24,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
 
         addBuySellTransaction();
         addDividendeTransaction();
+        addAccountStatementTransactions();
     }
 
     @Override
@@ -163,6 +166,192 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
         addFeesSectionsTransaction(pdfTransaction, type);
 
         block.set(pdfTransaction);
+    }
+
+    private void addAccountStatementTransactions()
+    {
+        DocumentType type1 = new DocumentType("Kontokorrent", (context, lines) -> {
+            Pattern pCurrency = Pattern.compile("^([\\w]{3})(-Konto Kontonummer)(.*)$");
+            Pattern pYear = Pattern.compile("^[\\d]+ .* Kontoauszug Nr. ([\\s]+)?(?<nr>[\\d]+)\\/(?<year>[\\d]{4})");
+
+            for (String line : lines)
+            {
+                Matcher m = pCurrency.matcher(line);
+                if (m.matches())
+                {
+                    context.put("currency", m.group(1));
+                }
+            }
+            
+            for (String line : lines)
+            {
+                Matcher m = pYear.matcher(line);
+                if (m.matches())
+                {
+                    context.put("nr", m.group(2));
+                    // Read year
+                    context.put("year", m.group(3));
+                }
+            }
+        });
+        this.addDocumentTyp(type1);
+        
+        DocumentType type = new DocumentType("Kontokorrent");
+        this.addDocumentTyp(type);
+
+        Block depositremoval = new Block("^\\d{2}\\.\\d{2}\\. \\d{2}\\.\\d{2}\\. .* [S|H]$");
+        type.addBlock(depositremoval);
+        Transaction<AccountTransaction> pdfTransactionDepositRemoval = new Transaction<AccountTransaction>()
+            .subject(() -> {
+                AccountTransaction entry = new AccountTransaction();
+                entry.setType(AccountTransaction.Type.REMOVAL);
+                return entry;
+            });
+
+        pdfTransactionDepositRemoval
+                // Is type --> "H" change from DEPOSIT to REMOVAL
+                .section("type").optional()
+                .match("^\\d{2}\\.\\d{2}\\. \\d{2}\\.\\d{2}\\. .* [.,\\d]+ (?<type>[S|H])$")
+                .assign((t, v) -> {
+                    if (v.get("type").equals("H"))
+                    {
+                        t.setType(AccountTransaction.Type.DEPOSIT);
+                    }
+                })
+
+                .section("day", "month", "amount", "note").optional()
+                .match("^\\d{2}\\.\\d{2}\\. (?<day>\\d{2})\\.(?<month>\\d{2})\\. (?<note>Einnahmen|BASISLASTSCHRIFT|DAUERAUFTRAG|EURO-UEBERWEISUNG|GUTSCHRIFT) .* (?<amount>[.,\\d]+) [S|H]$")
+                .match("^(?![\\s]+ [Dividende]).*$")
+                .match("^(?![\\s]+ [Dividende]).*$")
+                .assign((t, v) -> {
+                    Map<String, String> context = type1.getCurrentContext();
+
+                    if (context.get("nr").compareTo("01") == 0  && Integer.parseInt(v.get("month")) < 3)
+                    {
+                        Integer year = Integer.parseInt(context.get("year")) + 1;
+                        t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + year.toString()));
+                    }
+                    else
+                    {
+                        t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + context.get("year")));
+                    }
+
+                    t.setCurrencyCode(context.get("currency"));
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setNote(v.get("note"));
+                })
+
+                .wrap(t -> {
+                    if (t.getAmount() > 0)
+                        return new TransactionItem(t);
+                    else
+                        return null;
+                });
+
+        depositremoval.set(pdfTransactionDepositRemoval);
+
+        Block interest = new Block("^\\d{2}\\.\\d{2}\\. \\d{2}\\.\\d{2}\\. .* [S|H]$");
+        type.addBlock(interest);
+        Transaction<AccountTransaction> pdfTransactionInterest = new Transaction<AccountTransaction>()
+            .subject(() -> {
+                AccountTransaction entry = new AccountTransaction();
+                entry.setType(AccountTransaction.Type.INTEREST);
+                return entry;
+            });
+
+        pdfTransactionInterest
+                // Is type --> "S" change from INTEREST to INTEREST_CHARGE
+                .section("type").optional()
+                .match("^\\d{2}\\.\\d{2}\\. \\d{2}\\.\\d{2}\\. .* [.,\\d]+ (?<type>[S|H])$")
+                .assign((t, v) -> {
+                    if (v.get("type").equals("S"))
+                    {
+                        t.setType(AccountTransaction.Type.INTEREST_CHARGE);
+                    }
+                })
+
+                .section("day", "month", "amount1", "amount2", "note").optional()
+                .match("^\\d{2}\\.\\d{2}\\. (?<day>\\d{2}).(?<month>\\d{2}). (Abschluss) .* [.,\\d]+ [S|H]$")
+                .match("^[\\s]+ [.,\\d]+% einger. Konto.berziehung .* (?<amount1>[.,\\d]+)[S|H]$")
+                .match("^[\\s]+ [.,\\d]+% einger. Konto.berziehung .* (?<amount2>[.,\\d]+)[S|H]$")
+                .match("^[\\s]+ (?<note>Entgelte vom \\d{2}\\.\\d{2}\\.\\d{4} .* \\d{2}\\.\\d{2}\\.\\d{4})$")
+                .assign((t, v) -> {
+                    Map<String, String> context = type1.getCurrentContext();
+
+                    if (context.get("nr").compareTo("01") == 0  && Integer.parseInt(v.get("month")) < 3)
+                    {
+                        Integer year = Integer.parseInt(context.get("year")) + 1;
+                        t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + year.toString()));
+                    }
+                    else
+                    {
+                        t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + context.get("year")));
+                    }
+                    t.setCurrencyCode(context.get("currency"));
+                    t.setAmount(asAmount(v.get("amount1")) + asAmount(v.get("amount2")));
+                    t.setNote(v.get("note"));
+                })
+
+                .wrap(t -> {
+                    if (t.getAmount() > 0)
+                        return new TransactionItem(t);
+                    else
+                        return null;
+                });
+
+        interest.set(pdfTransactionInterest);
+
+        Block fees = new Block("^\\d{2}\\.\\d{2}\\. \\d{2}\\.\\d{2}\\. .* [S|H]$");
+        type.addBlock(fees);
+        Transaction<AccountTransaction> pdfTransactionFees = new Transaction<AccountTransaction>()
+            .subject(() -> {
+                AccountTransaction entry = new AccountTransaction();
+                entry.setType(AccountTransaction.Type.FEES);
+                return entry;
+            });
+
+        pdfTransactionFees
+                // Is type --> "H" change from FEES to FEES_REFUND
+                .section("type").optional()
+                .match("^\\d{2}\\.\\d{2}\\. \\d{2}\\.\\d{2}\\. .* [.,\\d]+ (?<type>[S|H])$")
+                .assign((t, v) -> {
+                    if (v.get("type").equals("H"))
+                    {
+                        t.setType(AccountTransaction.Type.FEES_REFUND);
+                    }
+                })
+
+                .section("day", "month", "amount1", "amount2", "amount3", "note").optional()
+                .match("^\\d{2}\\.\\d{2}\\. (?<day>\\d{2}).(?<month>\\d{2}). (Abschluss) .* [.,\\d]+ [S|H]$")
+                .match("^[\\s]+ Buchungen Online .* (?<amount1>[.,\\d]+)[S|H]$")
+                .match("^[\\s]+ Buchungen automatisch .* (?<amount2>[.,\\d]+)[S|H]$")
+                .match("^[\\s]+ Kontof.hrungsentgelt .* (?<amount3>[.,\\d]+)[S|H]$")
+                .match("^[\\s]+ (?<note>Abschluss vom \\d{2}\\.\\d{2}\\.\\d{4} .* \\d{2}\\.\\d{2}\\.\\d{4})$")
+                .assign((t, v) -> {
+                    Map<String, String> context = type1.getCurrentContext();
+
+                    if (context.get("nr").compareTo("01") == 0  && Integer.parseInt(v.get("month")) < 3)
+                    {
+                        Integer year = Integer.parseInt(context.get("year")) + 1;
+                        t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + year.toString()));
+                    }
+                    else
+                    {
+                        t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + context.get("year")));
+                    }
+                    t.setCurrencyCode(context.get("currency"));
+                    t.setAmount(asAmount(v.get("amount1")) + asAmount(v.get("amount2")) + asAmount(v.get("amount3")));
+                    t.setNote(v.get("note"));
+                })
+
+                .wrap(t -> {
+                    if (t.getAmount() > 0)
+                        return new TransactionItem(t);
+                    else
+                        return null;
+                });
+
+        fees.set(pdfTransactionFees);
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)

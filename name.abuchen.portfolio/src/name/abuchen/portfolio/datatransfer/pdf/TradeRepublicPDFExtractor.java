@@ -66,12 +66,18 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         pdfTransaction
                 // Is type --> "Verkauf" change from BUY to SELL
                 .section("type").optional()
-                .match("^((Limit|Stop-Market|Market)-Order )?(?<type>Verkauf) .*$")
+                .match("^((Limit|Stop-Market|Market)-Order )?(?<type>(Kauf|Verkauf|Sparplanausf.hrung)) .*$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("Verkauf"))
                     {
                         t.setType(PortfolioTransaction.Type.SELL);
                     }
+
+                    /***
+                     * If we have multiple entries in the document,
+                     * then the "negative" flag must be removed.
+                     */
+                    type.getCurrentContext().remove("negative");
                 })
 
                 // Clinuvel Pharmaceuticals Ltd. 80 Stk. 22,82 EUR 1.825,60 EUR
@@ -217,6 +223,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         pdfTransaction.subject(() -> {
             BuySellEntry entry = new BuySellEntry();
             entry.setType(PortfolioTransaction.Type.SELL);
+
+            /***
+             * If we have multiple entries in the document,
+             * then the "negative" flag must be removed.
+             */
+            type.getCurrentContext().remove("negative");
+
             return entry;
         });
 
@@ -278,12 +291,19 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         Block block = new Block("^(AUSSCH.TTUNG|DIVIDENDE)$");
         type.addBlock(block);
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>()
-            .subject(() -> {
-                AccountTransaction entry = new AccountTransaction();
-                entry.setType(AccountTransaction.Type.DIVIDENDS);
-                return entry;
-            });
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        pdfTransaction.subject(() -> {
+            AccountTransaction entry = new AccountTransaction();
+            entry.setType(AccountTransaction.Type.DIVIDENDS);
+
+            /***
+             * If we have multiple entries in the document,
+             * then the "negative" flag must be removed.
+             */
+            type.getCurrentContext().remove("negative");
+
+            return entry;
+        });
 
         pdfTransaction
                 // iShsV-EM Dividend UCITS ETF 10 Stk. 0,563 USD 5,63 USD
@@ -369,12 +389,19 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         Block block = new Block("^KAPITALREDUKTION$");
         type.addBlock(block);
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>()
-            .subject(() -> {
-                AccountTransaction entry = new AccountTransaction();
-                entry.setType(AccountTransaction.Type.DIVIDENDS);
-                return entry;
-            });
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        pdfTransaction.subject(() -> {
+            AccountTransaction entry = new AccountTransaction();
+            entry.setType(AccountTransaction.Type.DIVIDENDS);
+
+            /***
+             * If we have multiple entries in the document,
+             * then the "negative" flag must be removed.
+             */
+            type.getCurrentContext().remove("negative");
+
+            return entry;
+        });
 
         pdfTransaction
                 // 1 Kapitalmaßnahme Barrick Gold Corp. 8,4226 Stk.
@@ -504,6 +531,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         pdfTransaction.subject(() -> {
             AccountTransaction entry = new AccountTransaction();
             entry.setType(AccountTransaction.Type.TAX_REFUND);
+
+            /***
+             * If we have multiple entries in the document,
+             * then the "negative" flag must be removed.
+             */
+            type.getCurrentContext().remove("negative");
+
             return entry;
         });
 
@@ -568,6 +602,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         pdfTransaction.subject(() -> {
             AccountTransaction entry = new AccountTransaction();
             entry.setType(AccountTransaction.Type.TAXES);
+
+            /***
+             * If we have multiple entries in the document,
+             * then the "negative" flag must be removed.
+             */
+            type.getCurrentContext().remove("negative");
+
             return entry;
         });
 
@@ -618,6 +659,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 .subject(() -> {
                     AccountTransaction t = new AccountTransaction();
                     t.setType(AccountTransaction.Type.TAX_REFUND);
+
+                    /***
+                     * If we have multiple entries in the document,
+                     * then the "negative" flag must be removed.
+                     */
+                    type.getCurrentContext().remove("negative");
+
                     return t;
                 })
 
@@ -699,6 +747,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 .subject(() -> {
                     AccountTransaction t = new AccountTransaction();
                     t.setType(AccountTransaction.Type.TAX_REFUND);
+
+                    /***
+                     * If we have multiple entries in the document,
+                     * then the "negative" flag must be removed.
+                     */
+                    type.getCurrentContext().remove("negative");
+
                     return t;
                 })
 
@@ -766,12 +821,21 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         Block block = new Block("^(.*-Order )?Verkauf.*$");
         type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>().subject(() -> {
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        pdfTransaction.subject(() -> {
             AccountTransaction t = new AccountTransaction();
             t.setType(AccountTransaction.Type.FEES);
-            return t;
-        })
 
+            /***
+             * If we have multiple entries in the document,
+             * then the "negative" flag must be removed.
+             */
+            type.getCurrentContext().remove("negative");
+
+            return t;
+        });
+
+        pdfTransaction
                 // Clinuvel Pharmaceuticals Ltd. 80 Stk. 22,82 EUR 1.825,60 EUR
                 // Registered Shares o.N.
                 // AU000000CUV3
@@ -829,7 +893,9 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                     if (t.getCurrencyCode() != null && t.getAmount() != 0)
                         return new TransactionItem(t);
                     return null;
-                }));
+                });
+
+        block.set(pdfTransaction);
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)

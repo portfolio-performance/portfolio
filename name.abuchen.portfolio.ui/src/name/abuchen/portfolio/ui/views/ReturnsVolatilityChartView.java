@@ -133,7 +133,7 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
 
             manager.add(new LabelOnly(Messages.LabelPerformanceMetric));
 
-            Action ttwror = new SimpleAction(Messages.ColumnTWROR, a -> {
+            Action ttwror = new SimpleAction(Messages.ColumnTTWROR, a -> {
                 this.useIRR = false;
 
                 IAxis yAxis = chart.getAxisSet().getYAxis(0);

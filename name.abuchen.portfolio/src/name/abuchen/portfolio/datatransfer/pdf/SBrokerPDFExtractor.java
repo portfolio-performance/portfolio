@@ -55,79 +55,86 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
-                    // Is type --> "Verkauf" change from BUY to SELL
-                    .section("type").optional()
-                    .match("^(?<type>Verkauf)(.*)?$")
-                    .assign((t, v) -> {
-                        if (v.get("type").equals("Verkauf"))
-                        {
-                            t.setType(PortfolioTransaction.Type.SELL);
-                        }
-                    })
+                // Is type --> "Verkauf" change from BUY to SELL
+                .section("type").optional()
+                .match("^(?<type>Kauf|Verkauf|Wertpapier Abrechnung Ausgabe Investmentfonds)(.*)?$")
+                .assign((t, v) -> {
+                    if (v.get("type").equals("Verkauf"))
+                    {
+                        t.setType(PortfolioTransaction.Type.SELL);
+                    }
 
-                    // Gattungsbezeichnung ISIN
-                    // iS.EO G.B.C.1.5-10.5y.U.ETF DE Inhaber-Anteile DE000A0H0785
-                    .section("isin", "name").optional()
-                    .match("^Gattungsbezeichnung ISIN$")
-                    .match("^(?<name>.*) (?<isin>[\\w]{12})$")
-                    .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                    /***
+                     * If we have multiple entries in the document,
+                     * with taxes and tax refunds,
+                     * then the "negative" flag must be removed.
+                     */
+                    type.getCurrentContext().remove("negative");
+                })
 
-                    // Nominale Wertpapierbezeichnung ISIN (WKN)
-                    // Stück 7,1535 BGF - WORLD TECHNOLOGY FUND LU0171310443 (A0BMAN)
-                    .section("shares", "name", "isin", "wkn").optional()
-                    .match("^Nominale Wertpapierbezeichnung ISIN \\(WKN\\)$")
-                    .match("^St.ck (?<shares>[.,\\d]+) (?<name>.*) (?<isin>\\w{12}) \\((?<wkn>.*)\\)$")
-                    .assign((t, v) -> {
-                        t.setShares(asShares(v.get("shares")));
-                        t.setSecurity(getOrCreateSecurity(v));
-                    })
+                // Gattungsbezeichnung ISIN
+                // iS.EO G.B.C.1.5-10.5y.U.ETF DE Inhaber-Anteile DE000A0H0785
+                .section("isin", "name").optional()
+                .match("^Gattungsbezeichnung ISIN$")
+                .match("^(?<name>.*) (?<isin>[\\w]{12})$")
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-                    // STK 16,000 EUR 120,4000
-                    .section("shares").optional()
-                    .match("^STK (?<shares>[.,\\d]+) .*$")
-                    .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                // Nominale Wertpapierbezeichnung ISIN (WKN)
+                // Stück 7,1535 BGF - WORLD TECHNOLOGY FUND LU0171310443 (A0BMAN)
+                .section("shares", "name", "isin", "wkn").optional()
+                .match("^Nominale Wertpapierbezeichnung ISIN \\(WKN\\)$")
+                .match("^St.ck (?<shares>[.,\\d]+) (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
+                .assign((t, v) -> {
+                    t.setShares(asShares(v.get("shares")));
+                    t.setSecurity(getOrCreateSecurity(v));
+                })
 
-                    // Auftrag vom 27.02.2021 01:31:42 Uhr
-                    .section("date", "time").optional()
-                    .match("^Auftrag vom (?<date>\\d+.\\d+.\\d{4}) (?<time>\\d+:\\d+:\\d+).*$")
-                    .assign((t, v) -> {
-                        if (v.get("time") != null)
-                            t.setDate(asDate(v.get("date"), v.get("time")));
-                        else
-                            t.setDate(asDate(v.get("date")));
-                    })
+                // STK 16,000 EUR 120,4000
+                .section("shares").optional()
+                .match("^STK (?<shares>[.,\\d]+) .*$")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                    // Handelstag 05.05.2021 EUR 498,20-
-                    // Handelszeit 09:04
-                    .section("date", "time").optional()
-                    .match("^Handelstag (?<date>\\d+.\\d+.\\d{4}) .*$")
-                    .match("^Handelszeit (?<time>\\d+:\\d+)(.*)?$")
-                    .assign((t, v) -> {
-                        if (v.get("time") != null)
-                            t.setDate(asDate(v.get("date"), v.get("time")));
-                        else
-                            t.setDate(asDate(v.get("date")));
-                    })
+                // Auftrag vom 27.02.2021 01:31:42 Uhr
+                .section("date", "time").optional()
+                .match("^Auftrag vom (?<date>\\d+.\\d+.\\d{4}) (?<time>\\d+:\\d+:\\d+).*$")
+                .assign((t, v) -> {
+                    if (v.get("time") != null)
+                        t.setDate(asDate(v.get("date"), v.get("time")));
+                    else
+                        t.setDate(asDate(v.get("date")));
+                })
 
-                    // Ausmachender Betrag 500,00- EUR
-                    .section("currency", "amount").optional()
-                    .match("^Ausmachender Betrag (?<amount>[.,\\d]+)[-]? (?<currency>[\\w]{3})$")
-                    .assign((t, v) -> {
-                        t.setAmount(asAmount(v.get("amount")));
-                        t.setCurrencyCode(v.get("currency"));
-                    })
+                // Handelstag 05.05.2021 EUR 498,20-
+                // Handelszeit 09:04
+                .section("date", "time").optional()
+                .match("^Handelstag (?<date>\\d+.\\d+.\\d{4}) .*$")
+                .match("^Handelszeit (?<time>\\d+:\\d+)(.*)?$")
+                .assign((t, v) -> {
+                    if (v.get("time") != null)
+                        t.setDate(asDate(v.get("date"), v.get("time")));
+                    else
+                        t.setDate(asDate(v.get("date")));
+                })
 
-                    // Wert Konto-Nr. Betrag zu Ihren Lasten
-                    // 01.10.2014 10/0000/000 EUR 1.930,17
-                    .section("amount", "currency").optional()
-                    .match("^Wert Konto-Nr. Betrag zu Ihren (Gunsten|Lasten).*$")
-                    .match("^\\d+.\\d+.\\d{4} [\\/\\d]+ (?<currency>[\\w]{3}) (?<amount>[.,\\d]+)$")
-                    .assign((t, v) -> {
-                        t.setAmount(asAmount(v.get("amount")));
-                        t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                    })
+                // Ausmachender Betrag 500,00- EUR
+                .section("currency", "amount").optional()
+                .match("^Ausmachender Betrag (?<amount>[.,\\d]+)[-]? (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(v.get("currency"));
+                })
 
-                    .wrap(BuySellEntryItem::new);
+                // Wert Konto-Nr. Betrag zu Ihren Lasten
+                // 01.10.2014 10/0000/000 EUR 1.930,17
+                .section("amount", "currency").optional()
+                .match("^Wert Konto-Nr. Betrag zu Ihren (Gunsten|Lasten).*$")
+                .match("^\\d+.\\d+.\\d{4} [\\/\\d]+ (?<currency>[\\w]{3}) (?<amount>[.,\\d]+)$")
+                .assign((t, v) -> {
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                })
+
+                .wrap(BuySellEntryItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
@@ -141,55 +148,64 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
 
         Block block = new Block("^(Dividendengutschrift|Aussch.ttung f.r).*$");
         type.addBlock(block);
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>()
-                        .subject(() -> {
-                            AccountTransaction entry = new AccountTransaction();
-                            entry.setType(AccountTransaction.Type.DIVIDENDS);
-                            return entry;
-                        });
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        
+        pdfTransaction.subject(() -> {
+            AccountTransaction entry = new AccountTransaction();
+            entry.setType(AccountTransaction.Type.DIVIDENDS);
+
+            /***
+             * If we have multiple entries in the document, 
+             * with taxes and tax refunds, 
+             * then the "negative" flag must be removed.
+             */
+            type.getCurrentContext().remove("negative");
+
+            return entry;
+        });
 
         pdfTransaction
-                    // Gattungsbezeichnung ISIN
-                    // iS.EO G.B.C.1.5-10.5y.U.ETF DE Inhaber-Anteile DE000A0H0785
-                    .section("isin", "name")
-                    .find("^Gattungsbezeichnung ISIN$")
-                    .match("^(?<name>.*) (?<isin>[\\w]{12})$")
-                    .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                // Gattungsbezeichnung ISIN
+                // iS.EO G.B.C.1.5-10.5y.U.ETF DE Inhaber-Anteile DE000A0H0785
+                .section("isin", "name")
+                .find("^Gattungsbezeichnung ISIN$")
+                .match("^(?<name>.*) (?<isin>[\\w]{12})$")
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-                    // STK 16,000 17.11.2014 17.11.2014 EUR 0,793806
-                    .section("shares", "date")
-                    .match("^STK (?<shares>\\d+,\\d+) (?<date>\\d+.\\d+.\\d{4}) .*$")
-                    .assign((t, v) -> {
-                        t.setShares(asShares(v.get("shares")));
-                        if (v.get("time") != null)
-                            t.setDateTime(asDate(v.get("date"), v.get("time")));
-                        else
-                            t.setDateTime(asDate(v.get("date")));
-                    })
+                // STK 16,000 17.11.2014 17.11.2014 EUR 0,793806
+                .section("shares", "date")
+                .match("^STK (?<shares>\\d+,\\d+) (?<date>\\d+.\\d+.\\d{4}) .*$")
+                .assign((t, v) -> {
+                    t.setShares(asShares(v.get("shares")));
+                    if (v.get("time") != null)
+                        t.setDateTime(asDate(v.get("date"), v.get("time")));
+                    else
+                        t.setDateTime(asDate(v.get("date")));
+                })
 
-                    .section("amount", "currency").optional()
-                    .match("^Zinsanteil \\(Aussch.ttung\\) (?<currency>[\\w]{3}) (?<amount>[.,\\d]+)$")
-                    .assign((t, v) -> {
-                        t.setAmount(asAmount(v.get("amount")));
-                        t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                    })
+                .section("amount", "currency").optional()
+                .match("^Zinsanteil \\(Aussch.ttung\\) (?<currency>[\\w]{3}) (?<amount>[.,\\d]+)$")
+                .assign((t, v) -> {
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                })
 
-                    .section("amount", "currency").optional()
-                    .match("^ausl.ndische Dividende (?<currency>[\\w]{3}) (?<amount>[.,\\d]+)")
-                    .assign((t, v) -> {
-                        t.setAmount(asAmount(v.get("amount")));
-                        t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                    })
+                .section("amount", "currency").optional()
+                .match("^ausl.ndische Dividende (?<currency>[\\w]{3}) (?<amount>[.,\\d]+)")
+                .assign((t, v) -> {
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                })
 
-                    // // 15.12.2014 12/3456/789 EUR/USD 1,24495 EUR 52,36
-                    .section("exchangeRate").optional()
-                    .match("^.* [\\w]{3}\\/[\\w]{3} (?<exchangeRate>[.,\\d]+) [\\w]{3} [.,\\d]+$")
-                    .assign((t, v) -> {
-                        BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                        type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
-                    })
+                // // 15.12.2014 12/3456/789 EUR/USD 1,24495 EUR 52,36
+                .section("exchangeRate").optional()
+                .match("^.* [\\w]{3}\\/[\\w]{3} (?<exchangeRate>[.,\\d]+) [\\w]{3} [.,\\d]+$")
+                .assign((t, v) -> {
+                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
+                })
 
-                    .wrap(t -> new TransactionItem(t));
+                .wrap(t -> new TransactionItem(t));
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
@@ -238,7 +254,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
         /***
-         * if we have a tax return, 
+         * if we have a tax refunds,
          * we set a flag and don't book tax below
          */
         transaction

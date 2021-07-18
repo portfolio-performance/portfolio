@@ -1,0 +1,146 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Depotführung: Ihr der FFB benannte Vermittler:
+Moneyfarm
+Sciuridae Vermögensverwaltungs GmbH
+Mainzer Landstraße 250-254
+60326 Frankfurt am Main
+Telefon: 069 3807 6632
+Herrn E-Mail: hallo@moneyfarm.com
+X
+X
+X
+Es schreibt Ihnen:
+FFB Kundenbetreuung
+Kronberg im Taunus, 04. Juli 2019
+Fondsabrechnung
+Auszug  18 Blatt 1
+Depotinhaber X X
+Depotnummer 0000000000 (Privatvermögen)
+Portfolio Anlagestrategie55
+Transaktion Fondsname Betrag Preis Anteile
+Auftrags-Nr. WKN / ISIN Wechselkurs Preisdatum Bestand alt
+Fondsgesellschaft Währungsbetrag Zwischengewinn Bestand neu
+Verwahrart, Lagerland Rücknahmepreis
+Entgeltbelastung iShares Pfandbriefe (DE) 0,43 EUR 107,2100 EUR -0,004
+2538422391 263526 / DE0002635265 01.07.2019 2,351
+iShares 0,0000 EUR 2,347
+Girosammelverwahrung, Deutschland 107,2100 EUR
+lfd. Vermögensverwaltungsentgelt gem. separatem Auftrag 0,43 EUR
+Entgeltbelastung iShares EURO STOXX Small U ETF 0,09 EUR 34,9087 EUR -0,003
+2538422391 A0DK61 / IE00B02KXM00 01.07.2019 1,515
+iShares 0,0000 EUR 1,512
+Wertpapierrechnung, Grossbritannien 34,9087 EUR
+lfd. Vermögensverwaltungsentgelt gem. separatem Auftrag 0,09 EUR
+Entgeltbelastung ISHS-EUR.PROP.YLD.UC.ETF 0,10 EUR 40,6080 EUR -0,002
+2538422391 A0HGV5 / IE00B0M63284 01.07.2019 1,480
+iShares 0,0000 EUR 1,478
+Wertpapierrechnung, Irland 40,6080 EUR
+lfd. Vermögensverwaltungsentgelt gem. separatem Auftrag 0,10 EUR
+Entgeltbelastung iShs S&P SmallCap 600 UCITS ET 0,08 EUR 63,7568 USD -0,001
+2538422391 A0Q1YY / IE00B2QWCY14 1,136676 USD 01.07.2019 0,797
+iShares 0,09 USD 0,0000 EUR 0,796
+Wertpapierrechnung, Grossbritannien 63,7568 USD
+lfd. Vermögensverwaltungsentgelt gem. separatem Auftrag 0,08 EUR
+Entgeltbelastung Global Short Fixed I.F.EUR Dis 0,43 EUR 9,9100 EUR -0,043
+2538422391 A1JJAD / IE00B3QL0Y14 01.07.2019 25,380
+Dimensional Fund Advisors Ltd. 0,0000 EUR 25,337
+Wertpapierrechnung, Irland 9,9100 EUR
+lfd. Vermögensverwaltungsentgelt gem. separatem Auftrag 0,43 EUR
+FIL Fondsbank GmbH Postanschrift: Vorsitzender Geschäftsführung: Sitz: Kronberg im Taunus
+Kastanienhöhe 1 Postfach 11 06 63 des Aufsichtsrats: Gerhard Oehne (Sprecher) Amtsgericht
+61476 Kronberg im Taunus 60041 Frankfurt am Main Ferdinand-Alexander Leisten Peter Nonner Königstein HRB 8336
+info@ffb.de Telefon (069) 7 70 60 - 200 Gerald Rink Umsatzsteuer-ID Nr.
+www.ffb.de Telefax (069) 7 70 60 - 555 DE213709602
+ABGST_V1.0
+Depotführung: Ihr der FFB benannte Vermittler:
+Moneyfarm
+Sciuridae Vermögensverwaltungs GmbH
+Mainzer Landstraße 250-254
+60326 Frankfurt am Main
+Telefon: 069 3807 6632
+Herrn E-Mail: hallo@moneyfarm.com
+X
+X
+X
+Es schreibt Ihnen:
+FFB Kundenbetreuung
+Kronberg im Taunus, 04. Juli 2019
+Fondsabrechnung
+Auszug  18 Blatt 2
+Depotinhaber X X
+Depotnummer 1010556280 (Privatvermögen)
+Portfolio Anlagestrategie55
+Transaktion Fondsname Betrag Preis Anteile
+Auftrags-Nr. WKN / ISIN Wechselkurs Preisdatum Bestand alt
+Fondsgesellschaft Währungsbetrag Zwischengewinn Bestand neu
+Verwahrart, Lagerland Rücknahmepreis
+Entgeltbelastung Emerging Mark.Value F.EUR Dis 0,26 EUR 10,2400 EUR -0,025
+2538422391 A1JH9Z / IE00B42THM37 01.07.2019 15,217
+Dimensional Fund Advisors Ltd. 0,0000 EUR 15,192
+Wertpapierrechnung, Irland 10,2400 EUR
+lfd. Vermögensverwaltungsentgelt gem. separatem Auftrag 0,26 EUR
+Entgeltbelastung HSBC S&P 500 ETF 0,15 EUR 29,9129 USD -0,006
+2538422391 A1C19C / IE00B5KQNG97 1,136388 USD 01.07.2019 3,421
+HSBC Trinkaus Investment Managers S.A. 0,17 USD 0,0000 EUR 3,415
+Wertpapierrechnung, Grossbritannien 29,9129 USD
+lfd. Vermögensverwaltungsentgelt gem. separatem Auftrag 0,15 EUR
+Entgeltbelastung Vanguard FTSE Devel.Euro.UETF 0,17 EUR 30,4229 EUR -0,006
+2538422391 A1T8FS / IE00B945VV12 01.07.2019 3,345
+Vanguard 0,0000 EUR 3,339
+Girosammelverwahrung, Deutschland 30,4229 EUR
+lfd. Vermögensverwaltungsentgelt gem. separatem Auftrag 0,17 EUR
+Entgeltbelastung Vanguard FTSE Japan UCITS ETF 0,05 EUR 29,3936 USD -0,002
+2538422391 A1T8FU / IE00B95PGT31 1,136388 USD 02.07.2019 1,266
+Vanguard 0,06 USD 0,0000 EUR 1,264
+Girosammelverwahrung, Deutschland 29,3936 USD
+lfd. Vermögensverwaltungsentgelt gem. separatem Auftrag 0,05 EUR
+Entgeltbelastung ISHS Gbl.Corp.Bd.EU Hgd.U.ETF 0,11 EUR 104,2968 EUR -0,001
+2538422391 A1W02Q / IE00B9M6SJ31 02.07.2019 0,609
+iShares 0,0000 EUR 0,608
+Wertpapierrechnung, Irland 104,2968 EUR
+lfd. Vermögensverwaltungsentgelt gem. separatem Auftrag 0,11 EUR
+FIL Fondsbank GmbH Postanschrift: Vorsitzender Geschäftsführung: Sitz: Kronberg im Taunus
+Kastanienhöhe 1 Postfach 11 06 63 des Aufsichtsrats: Gerhard Oehne (Sprecher) Amtsgericht
+61476 Kronberg im Taunus 60041 Frankfurt am Main Ferdinand-Alexander Leisten Peter Nonner Königstein HRB 8336
+info@ffb.de Telefon (069) 7 70 60 - 200 Gerald Rink Umsatzsteuer-ID Nr.
+www.ffb.de Telefax (069) 7 70 60 - 555 DE213709602
+ABGST_V1.0
+Depotführung: Ihr der FFB benannte Vermittler:
+Moneyfarm
+Sciuridae Vermögensverwaltungs GmbH
+Mainzer Landstraße 250-254
+60326 Frankfurt am Main
+Telefon: 069 3807 6632
+Herrn E-Mail: hallo@moneyfarm.com
+X
+X
+X
+
+Es schreibt Ihnen:
+FFB Kundenbetreuung
+Kronberg im Taunus, 04. Juli 2019
+Fondsabrechnung
+Auszug  18 Blatt 3
+Depotinhaber X X
+Depotnummer 1010556280 (Privatvermögen)
+Portfolio Anlagestrategie55
+Anlagen in Investmentfonds können erst nach Kenntnisnahme der gesetzlichen Verkaufsunterlagen (aktueller Verkaufsprospekt, wesentliche 
+Anlegerinformationen, Halb-/Jahresbericht) erfolgen. Diese Unterlagen haben Sie direkt von Ihrem Vermittler erhalten. Sofern Sie keine 
+elektronischen Orderwege nutzen, verwenden Sie bitte für Investmentfonds-Aufträge ausschließlich die Serviceformulare der FFB, die Sie 
+online oder über Ihren Vermittler erhalten.
+Steuerliche Informationen
+Erteilter Freistellungsauftrag 113,00 EUR gültig bis: unbefristet Verlustverrechnungstopf neu 0,00 EUR
+davon noch verfügbar 66,49 EUR Quellensteuertopf neu 0,00 EUR
+Hinweise:
+Auslandzahlungen, die 12.500 EUR übersteigen, sind gemäß der Außenwirtschaftsverordnung (AWV) durch Sie meldepflichtig. Weitergehende Informationen zur 
+Meldepflicht nach AWV erhalten Sie direkt von der Deutschen Bundesbank, unter www.bundesbank.de oder unter der Rufnummer 0800 1234 111.
+Einwendungen gegen diese Fondsabrechnung wegen Unrichtigkeit oder Unvollständigkeit richten Sie bitte schriftlich spätestens einen Monat nach Zugang an:
+FIL Fondsbank GmbH, Revision, Postfach 11 06 63, 60041 Frankfurt am Main, Telefax (069) 7 70 60 - 444.
+FIL Fondsbank GmbH Postanschrift: Vorsitzender Geschäftsführung: Sitz: Kronberg im Taunus
+Kastanienhöhe 1 Postfach 11 06 63 des Aufsichtsrats: Gerhard Oehne (Sprecher) Amtsgericht
+61476 Kronberg im Taunus 60041 Frankfurt am Main Ferdinand-Alexander Leisten Peter Nonner Königstein HRB 8336
+info@ffb.de Telefon (069) 7 70 60 - 200 Gerald Rink Umsatzsteuer-ID Nr.
+www.ffb.de Telefax (069) 7 70 60 - 555 DE213709602
+ABGST_V1.0

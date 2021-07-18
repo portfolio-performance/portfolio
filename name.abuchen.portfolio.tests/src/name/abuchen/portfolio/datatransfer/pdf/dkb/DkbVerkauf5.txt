@@ -1,0 +1,38 @@
+﻿PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+10919 Berlin Seite 1 von 2
+Depotnummer 123456789
+Kundennummer 123456789
+Max Mustermann
+Auftragsnummer 1234567879/84.00
+Herrn Datum 06.07.2021
+Max Mustermann Rechnungsnummer W123456-1234567879/21
+Musterstraße 12 Umsatzsteuer-ID DE137178746
+88888 Musterstadt
+Wertpapier Abrechnung Verkauf
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 75 EXCHANGE INCOME CORP. CA3012831077 (A1C30Q)
+REGISTERED SHARES O.N.
+Handels-/Ausführungsplatz München (Best Execution)
+Börsensegment MUNB
+Limit-Order
+Limit 27,80 EUR
+Schlusstag/-Zeit 06.07.2021 14:49:39 Auftraggeber Max Mustermann
+Ausführungskurs 27,80 EUR Auftragserteilung/ -ort Online-Banking
+Wertpapierrechnung Lagerland Kanada
+Kurswert 2.085,00 EUR
+Provision 10,00- EUR
+Abwicklungskosten Börse 0,06- EUR
+Transaktionsentgelt Börse 1,55- EUR
+Maklercourtage 0,0800 % vom Kurswert 1,67- EUR
+Ermittlung steuerrelevante Erträge
+Veräußerungsgewinn 78,53 EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 78,53 EUR
+Steuerberechnung
+Kapitalertragsteuer 25,00% auf 78,53 EUR 19,63- EUR
+Solidaritätszuschlag 5,50% auf 19,63 EUR 1,07- EUR
+Ausmachender Betrag 2.051,02 EUR
+Den Gegenwert buchen wir mit Valuta 08.07.2021 zu Gunsten des Kontos 123456789
+(IBAN DE12 1203 0000 123456789), BLZ 12030000 (BIC BYLADEM1001).
+Die Wertpapiere entnehmen wir Ihrem Depotkonto.

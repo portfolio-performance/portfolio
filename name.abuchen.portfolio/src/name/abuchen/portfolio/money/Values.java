@@ -381,6 +381,15 @@ public abstract class Values<E>
         }
     };
 
+    public static final Values<Double> AnnualizedPercent2 = new Values<Double>("0.00% 'p.a.'", 0) //$NON-NLS-1$
+    {
+        @Override
+        public String format(Double percent)
+        {
+            return String.format("%,.2f%% p.a.", percent * 100); //$NON-NLS-1$
+        }
+    };
+
     public static final Values<Double> Percent5 = new Values<Double>("0.00000%", 0) //$NON-NLS-1$
     {
         @Override

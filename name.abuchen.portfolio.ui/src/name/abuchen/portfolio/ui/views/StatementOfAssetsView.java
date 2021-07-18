@@ -9,6 +9,7 @@ import java.util.function.Function;
 import javax.inject.Inject;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
@@ -40,6 +41,8 @@ import name.abuchen.portfolio.ui.views.panes.SecurityPriceChartPane;
 import name.abuchen.portfolio.ui.views.panes.TradesPane;
 import name.abuchen.portfolio.ui.views.panes.TransactionsPane;
 import name.abuchen.portfolio.util.Pair;
+import name.abuchen.portfolio.util.TradeCalendar;
+import name.abuchen.portfolio.util.TradeCalendarManager;
 
 public class StatementOfAssetsView extends AbstractFinanceView
 {
@@ -144,30 +147,54 @@ public class StatementOfAssetsView extends AbstractFinanceView
             manager.add(new LabelOnly(Values.Date.format(snapshotDate.orElse(LocalDate.now()))));
             manager.add(new Separator());
 
-            SimpleAction action = new SimpleAction(Messages.LabelToday, a -> {
-                snapshotDate = Optional.empty();
-                notifyModelUpdated();
-                dropDown.setImage(Images.CALENDAR_OFF);
-            });
-            action.setEnabled(snapshotDate.isPresent());
-            manager.add(action);
-
-            manager.add(new SimpleAction(Messages.MenuPickOtherDate, a -> {
-                DateSelectionDialog dialog = new DateSelectionDialog(getActiveShell());
-                dialog.setSelection(snapshotDate.orElse(LocalDate.now()));
-                if (dialog.open() != DateSelectionDialog.OK)
-                    return;
-                if (snapshotDate.isPresent() && snapshotDate.get().equals(dialog.getSelection()))
-                    return;
-
-                snapshotDate = LocalDate.now().equals(dialog.getSelection()) ? Optional.empty()
-                                : Optional.of(dialog.getSelection());
-                notifyModelUpdated();
-                dropDown.setImage(!snapshotDate.isPresent() ? Images.CALENDAR_OFF : Images.CALENDAR_ON);
-            }));
+            addTodayAction(dropDown, manager);
+            addPreviousTradingDayAction(dropDown, manager);
+            addDateSelectionAction(dropDown, manager);
         });
 
         toolBar.add(dropDown);
+    }
+
+    private void addTodayAction(DropDown dropDown, IMenuManager manager)
+    {
+        SimpleAction action = new SimpleAction(Messages.LabelToday, a -> {
+            snapshotDate = Optional.empty();
+            notifyModelUpdated();
+            dropDown.setImage(Images.CALENDAR_OFF);
+        });
+        action.setEnabled(snapshotDate.isPresent());
+        manager.add(action);
+    }
+
+    private void addPreviousTradingDayAction(DropDown dropDown, IMenuManager manager)
+    {
+        LocalDate actionDate = findPreviousTradingDay();
+
+        SimpleAction action = new SimpleAction(Messages.LabelPreviousTradingDay, a -> {
+            snapshotDate = Optional.of(actionDate);
+            notifyModelUpdated();
+            dropDown.setImage(Images.CALENDAR_ON);
+        });
+
+        snapshotDate.ifPresent(date -> action.setEnabled(!date.equals(actionDate)));
+        manager.add(action);
+    }
+
+    private void addDateSelectionAction(DropDown dropDown, IMenuManager manager)
+    {
+        manager.add(new SimpleAction(Messages.MenuPickOtherDate, a -> {
+            DateSelectionDialog dialog = new DateSelectionDialog(getActiveShell());
+            dialog.setSelection(snapshotDate.orElse(LocalDate.now()));
+            if (dialog.open() != DateSelectionDialog.OK)
+                return;
+            if (snapshotDate.isPresent() && snapshotDate.get().equals(dialog.getSelection()))
+                return;
+
+            snapshotDate = LocalDate.now().equals(dialog.getSelection()) ? Optional.empty()
+                            : Optional.of(dialog.getSelection());
+            notifyModelUpdated();
+            dropDown.setImage(snapshotDate.isPresent() ? Images.CALENDAR_ON : Images.CALENDAR_OFF);
+        }));
     }
 
     @Override
@@ -208,5 +235,18 @@ public class StatementOfAssetsView extends AbstractFinanceView
     {
         if (currencyChangeListener != null)
             getClient().removePropertyChangeListener("baseCurrency", currencyChangeListener); //$NON-NLS-1$
+    }
+
+    private LocalDate findPreviousTradingDay()
+    {
+        LocalDate date = LocalDate.now().minusDays(1);
+
+        TradeCalendar calendar = TradeCalendarManager.getDefaultInstance();
+        while (calendar.isHoliday(date))
+        {
+            date = date.minusDays(1);
+        }
+
+        return date;
     }
 }
