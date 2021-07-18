@@ -36,14 +36,6 @@ public enum WidgetFactory
                                     }) //
                                     .withBenchmarkDataSeries(false) //
                                     .build()),
-    
-    TTWROR_Annualized(Messages.LabelTTWROR_Annualized, Messages.ClientEditorLabelPerformance, //
-                    (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
-                                    .with(Values.Percent2) //
-                                    .with((ds, period) -> {
-                                        PerformanceIndex index = data.calculate(ds, period);
-                                        return index.getFinalAccumulatedAnnualizedPercentage();
-                                    }).build()),
 
     TTWROR(Messages.LabelTTWROR, Messages.ClientEditorLabelPerformance, // cumulative
                     (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
@@ -51,6 +43,14 @@ public enum WidgetFactory
                                     .with((ds, period) -> {
                                         PerformanceIndex index = data.calculate(ds, period);
                                         return index.getFinalAccumulatedPercentage();
+                                    }).build()),
+
+    TTWROR_ANNUALIZED(Messages.LabelTTWROR_Annualized, Messages.ClientEditorLabelPerformance, //
+                    (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
+                                    .with(Values.Percent2) //
+                                    .with((ds, period) -> {
+                                        PerformanceIndex index = data.calculate(ds, period);
+                                        return index.getFinalAccumulatedAnnualizedPercentage();
                                     }).build()),
 
     IRR(Messages.LabelIRR, Messages.ClientEditorLabelPerformance, //
