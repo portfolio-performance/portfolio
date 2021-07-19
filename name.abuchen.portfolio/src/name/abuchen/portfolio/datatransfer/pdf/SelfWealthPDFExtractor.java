@@ -22,8 +22,6 @@ public class SelfWealthPDFExtractor extends AbstractPDFExtractor
         super(client);
 
         addBankIdentifier("SelfWealth"); //$NON-NLS-1$
-        addBankIdentifier("SelfWealth Limited ABN: 52 154 324 428 AFSL 421789 W: www.selfwealth.com.au E: support@selfwealth.com.au"); //$NON-NLS-1$
-
         addBuySellTransaction();
     }
 
@@ -36,7 +34,7 @@ public class SelfWealthPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "SelfWealth Limited ABN: 52 154 324 428 AFSL 421789 W: www.selfwealth.com.au E: support@selfwealth.com.au"; //$NON-NLS-1$
+        return "SelfWealth"; //$NON-NLS-1$
     }
 
     private void addBuySellTransaction()
@@ -73,21 +71,18 @@ public class SelfWealthPDFExtractor extends AbstractPDFExtractor
                     t.setNote(asNote(v.get("note")));
                 })
 
-
-                // 1 LONG ROAD Trade Date: 1 Jul 2021
+                //  1 LONG ROAD Trade Date: 1 Jul 2021
                 .section("date")
-                .match(" Settlement Date: (?<date>\\d+ \\D{3} \\d{4})$")
+                .match("Trade Date: (?<date>\\d+ \\D{3} \\d{4})")
                 .assign((t, v) -> {
-                    if (v.get("time") != null)
-                        t.setDate(asDate(v.get("date"), v.get("time")));
-                    else
-                        t.setDate(asDate(v.get("date")));
+                    // Format date from 1 Jul 2021 to 01.07.2021
+                    v.put("date", DateTimeFormatter.ofPattern("dd.MM.yyyy").format(LocalDate.parse(v.get("date"), DateTimeFormatter.ofPattern("d mmm yyyy", Locale.ENGLISH))));
+                    t.setDate(asDate(v.get("date")));
                 })
-
 
                 // 25 UMAX BETA S&P500 YIELDMAX 12.40 $312.50 AUD
                 .section("shares", "symbol", "name", "quote", "amount", "currency")
-                .match("^(?<shares>[.,\\d]+) (?<symbol>[\\D]+)") "name", "quote" \\$(?<amount>[.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^(?<shares>[.,\\d]+) (?<symbol>[a-zA-Z0-9]+) (?<name>[\\D\\d ]+) (?<quote>[.,\\d]+) \\$(?<amount>[.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     t.setShares(asShares(v.get("shares")));
                     t.setSecurity(getOrCreateSecurity(v));
@@ -95,14 +90,13 @@ public class SelfWealthPDFExtractor extends AbstractPDFExtractor
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 })
 
-
                 // Net Value $322.00 AUD
                 .section("amount")
-                .match("^GST included in this invoice is //$(?<amount>.*) [\\w]{3}$")
+                .match("^Net Value  \\$(?<amount>[.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-
+                })
 
                 .wrap(BuySellEntryItem::new);
 
@@ -113,7 +107,9 @@ public class SelfWealthPDFExtractor extends AbstractPDFExtractor
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction
-                // Goods and Services Tax gst==tax
+                // GST is Goods and Services Tax, I don't know if this is PP Tax
+                // It is included in total cost. Business gets it as a credit.
+                // Currency is not given on that line.
                 // GST included in this invoice is $0.86
                 .section("tax")
                 .match("^GST included in this invoice is //$(?<tax>.*)$")
@@ -123,16 +119,16 @@ public class SelfWealthPDFExtractor extends AbstractPDFExtractor
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction
-
                 // Brokerage* $9.50 AUD
                 .section("brokerage_fee", "currency").optional()
                 .match("^Brokerage Fee//* //$(?<brokerage_fee>.*) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+
                 // Adviser Fee* $0.00 AUD
                 .section("adviser_fee", "currency").optional()
                 .match("^Adviser Fee//* //$(?<adviser_fee>.*) (?<currency>[\\w]{3})$")
-                
-                fees = brokerage_fee + adviser_fee
-
-                .assign((t, v) -> processFeeEntries(t, v, type))
+                 .assign((t, v) -> processFeeEntries(t, v, type));
+               
+                // fees = brokerage_fee + adviser_fee
     }
 }
