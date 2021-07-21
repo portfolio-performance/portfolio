@@ -29,12 +29,10 @@ public class CurrentQuarterTest
     public void testWriteTo() throws IOException
     {
         String code = "Q";
-        StringBuilder strb = new StringBuilder();
 
         ReportingPeriod period = ReportingPeriod.from(code);
-        period.writeTo(strb);
 
-        assertEquals(strb.toString(), code);
+        assertEquals(period.getCode(), code);
     }
 
     @Test

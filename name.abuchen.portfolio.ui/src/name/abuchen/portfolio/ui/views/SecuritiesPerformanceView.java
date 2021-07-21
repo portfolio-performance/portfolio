@@ -633,12 +633,22 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
 
     private void addPerformanceColumns()
     {
-        Column column = new Column("twror", Messages.ColumnTWROR, SWT.RIGHT, 80); //$NON-NLS-1$
+        Column column = new Column("twror", Messages.ColumnTTWROR, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setGroupLabel(Messages.GroupLabelPerformance);
-        column.setMenuLabel(Messages.ColumnTWROR_Description);
+        column.setMenuLabel(Messages.LabelTTWROR);
         column.setLabelProvider(new NumberColorLabelProvider<>(Values.Percent2,
                         r -> ((SecurityPerformanceRecord) r).getTrueTimeWeightedRateOfReturn()));
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "trueTimeWeightedRateOfReturn")); //$NON-NLS-1$
+        recordColumns.addColumn(column);
+
+        column = new Column("ttwror_pa", Messages.ColumnTTWRORpa, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setGroupLabel(Messages.GroupLabelPerformance);
+        column.setMenuLabel(Messages.LabelTTWROR_Annualized);
+        column.setLabelProvider(new NumberColorLabelProvider<>(Values.Percent2,
+                        r -> ((SecurityPerformanceRecord) r).getTrueTimeWeightedRateOfReturnAnnualized()));
+        column.setVisible(false);
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class,
+                        "trueTimeWeightedRateOfReturnAnnualized")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
         // internal rate of return

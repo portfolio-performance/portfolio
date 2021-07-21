@@ -28,12 +28,10 @@ public class FromXtoYTest
     public void testWriteTo() throws IOException
     {
         String code = "F2020-04-04_2020-04-08";
-        StringBuilder strb = new StringBuilder();
 
         ReportingPeriod period = ReportingPeriod.from(code);
-        period.writeTo(strb);
 
-        assertEquals(strb.toString(), code);
+        assertEquals(period.getCode(), code);
     }
 
     @Test

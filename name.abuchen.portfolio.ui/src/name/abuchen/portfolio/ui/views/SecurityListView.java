@@ -61,7 +61,7 @@ import name.abuchen.portfolio.ui.views.panes.TransactionsPane;
 import name.abuchen.portfolio.ui.wizards.datatransfer.CSVImportWizard;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
 import name.abuchen.portfolio.ui.wizards.security.SearchSecurityWizardDialog;
-import name.abuchen.portfolio.util.TradeCalendar;
+import name.abuchen.portfolio.util.TradeCalendarManager;
 
 public class SecurityListView extends AbstractFinanceView
 {
@@ -116,7 +116,7 @@ public class SecurityListView extends AbstractFinanceView
                         newSecurity.setCurrencyCode(null);
                         newSecurity.setTickerSymbol(region.getId());
                         newSecurity.setName(region.getName() + Messages.LabelSuffix_HICP);
-                        newSecurity.setCalendar(TradeCalendar.EMPTY_CODE);
+                        newSecurity.setCalendar(TradeCalendarManager.FIRST_OF_THE_MONTH_CODE);
 
                         addNewSecurity(newSecurity);
                     }

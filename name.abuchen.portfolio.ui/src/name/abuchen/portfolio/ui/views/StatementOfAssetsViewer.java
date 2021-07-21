@@ -560,11 +560,22 @@ public class StatementOfAssetsViewer
     {
         ReportingPeriodLabelProvider labelProvider;
 
-        Column column = new Column("ttwror", Messages.ColumnTWROR, SWT.RIGHT, 80); //$NON-NLS-1$
+        Column column = new Column("ttwror", Messages.ColumnTTWROR, SWT.RIGHT, 80); //$NON-NLS-1$
         labelProvider = new ReportingPeriodLabelProvider(SecurityPerformanceRecord::getTrueTimeWeightedRateOfReturn);
         column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnTTWROR_Option, options));
         column.setGroupLabel(Messages.GroupLabelPerformance);
-        column.setDescription(Messages.ColumnTWROR_Description);
+        column.setDescription(Messages.LabelTTWROR);
+        column.setLabelProvider(labelProvider);
+        column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
+        column.setVisible(false);
+        support.addColumn(column);
+
+        column = new Column("ttwror_pa", Messages.ColumnTTWRORpa, SWT.RIGHT, 80); //$NON-NLS-1$
+        labelProvider = new ReportingPeriodLabelProvider(
+                        SecurityPerformanceRecord::getTrueTimeWeightedRateOfReturnAnnualized);
+        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnTTWRORpa_Option, options));
+        column.setGroupLabel(Messages.GroupLabelPerformance);
+        column.setDescription(Messages.LabelTTWROR_Annualized);
         column.setLabelProvider(labelProvider);
         column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
         column.setVisible(false);

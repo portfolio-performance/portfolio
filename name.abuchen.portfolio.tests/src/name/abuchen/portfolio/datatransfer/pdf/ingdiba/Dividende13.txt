@@ -8,10 +8,10 @@ Ertragsgutschrift
 ISIN (WKN) DE0002635281 (263528)
 Wertpapierbezeichnung iSh.EO ST.Sel.Div.30 U.ETF DE
 Inhaber-Anteile
-Nominale 1.112,0958 St¸ck
-Ertragsaussch¸ttung per St¸ck 0,10506 EUR
-Anteil Zinsen per St¸ck 0,011 EUR
-Anteil ausl. Div. per St¸ck 0,0639528 EUR
+Nominale 1.112,0958 Stück
+Ertragsaussch¸ttung per Stück 0,10506 EUR
+Anteil Zinsen per Stück 0,011 EUR
+Anteil ausl. Div. per Stück 0,0639528 EUR
 Ex-Tag 17.10.2016
 Zahltag 17.10.2016
 Brutto EUR 116,84

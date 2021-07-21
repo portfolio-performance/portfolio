@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.inject.Inject;
+
+import org.eclipse.e4.ui.css.swt.theme.IThemeEngine;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.swt.SWT;
@@ -69,6 +72,9 @@ public class InformationPane
         }
     }
 
+    @Inject
+    private IThemeEngine themeEngine;
+
     private Composite area;
     private CLabel label;
     private ToolBarManager toolBarPaneSelection;
@@ -98,6 +104,7 @@ public class InformationPane
 
         ToolBar tb = toolBarPaneSelection.createControl(wrapper);
         tb.setBackground(parent.getBackground());
+        themeEngine.applyStyles(tb, true);
 
         // create layout *after* the toolbar to keep the tab order right
         wrapper.setLayout(new ToolBarPlusChevronLayout(wrapper, SWT.LEFT));
@@ -108,6 +115,7 @@ public class InformationPane
 
         tb = toolBarPaneControls.createControl(area);
         tb.setBackground(parent.getBackground());
+        themeEngine.applyStyles(tb, true);
 
         // panes
 

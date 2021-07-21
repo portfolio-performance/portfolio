@@ -7,9 +7,7 @@ import java.util.function.Supplier;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
-import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -23,6 +21,7 @@ import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.util.TextUtil;
 
 public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerformanceSnapshot>
@@ -54,7 +53,6 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
     }
 
     private Composite container;
-    private DashboardResources resources;
 
     private Label title;
     private Label[] signs;
@@ -73,8 +71,6 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
     @Override
     public Composite createControl(Composite parent, DashboardResources resources)
     {
-        this.resources = resources;
-
         container = new Composite(parent, SWT.NONE);
         GridLayoutFactory.fillDefaults().numColumns(3).margins(5, 5).spacing(3, 3).applyTo(container);
         container.setBackground(parent.getBackground());
@@ -116,9 +112,6 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
 
     private void createTable(int size)
     {
-        Font boldFont = resources.getResourceManager()
-                        .createFont(FontDescriptor.createFrom(container.getFont()).setStyle(SWT.BOLD));
-
         labels = new Label[size];
         signs = new Label[size];
         values = new Label[size];
@@ -135,9 +128,9 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
 
             if (ii == 0 || ii == size - 1) // first and last line
             {
-                signs[ii].setFont(boldFont);
-                labels[ii].setFont(boldFont);
-                values[ii].setFont(boldFont);
+                signs[ii].setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);
+                labels[ii].setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);
+                values[ii].setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);
             }
 
             if (ii == 0 || ii == size - 2) // after first and before last line

@@ -44,7 +44,10 @@ import static name.abuchen.portfolio.util.HolidayType.weekday;
 
 import java.text.MessageFormat;
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.Month;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -56,6 +59,9 @@ import name.abuchen.portfolio.model.Security;
 public class TradeCalendarManager
 {
     private static String defaultCalendarCode = "default"; //$NON-NLS-1$
+
+    public static final String TARGET2_CALENDAR_CODE = "TARGET2"; //$NON-NLS-1$
+    public static final String FIRST_OF_THE_MONTH_CODE = "first-of-the-month"; //$NON-NLS-1$
 
     private static final Map<String, TradeCalendar> CACHE = new HashMap<>();
 
@@ -196,6 +202,40 @@ public class TradeCalendarManager
         tc.add(weekday(THANKSGIVING, 2, DayOfWeek.MONDAY, Month.OCTOBER));
         tc.add(fixed(CHRISTMAS, Month.DECEMBER, 25).moveIf(DayOfWeek.SATURDAY, 2).moveIf(DayOfWeek.SUNDAY, 1));
         tc.add(fixed(BOXING_DAY, Month.DECEMBER, 26).moveIf(DayOfWeek.MONDAY, 1).moveIf(DayOfWeek.SATURDAY, 2).moveIf(DayOfWeek.SUNDAY, 2));
+        CACHE.put(tc.getCode(), tc);
+
+        // TARGET2 (banking day in euro zone)
+        // see https://www.ecb.europa.eu/press/pr/date/2000/html/pr001214_4.en.html
+        tc = new TradeCalendar(TARGET2_CALENDAR_CODE, Messages.LabelTradeCalendarTARGET2);
+        tc.add(fixed(NEW_YEAR, Month.JANUARY, 1));
+        tc.add(easter(GOOD_FRIDAY, -2));
+        tc.add(easter(EASTER_MONDAY, 1));
+        tc.add(fixed(LABOUR_DAY, Month.MAY, 1));
+        tc.add(fixed(FIRST_CHRISTMAS_DAY, Month.DECEMBER, 25));
+        tc.add(fixed(SECOND_CHRISTMAS_DAY, Month.DECEMBER, 26));
+        CACHE.put(tc.getCode(), tc);
+        
+        tc = new TradeCalendar(FIRST_OF_THE_MONTH_CODE,  Messages.LabelTradeCalendarFirstOfTheMonth)
+        {
+            @Override
+            /* package */ void add(HolidayType type)
+            {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public boolean isHoliday(LocalDate date)
+            {
+                return date.getDayOfMonth() != 1;
+            }
+
+            @Override
+            public Collection<Holiday> getHolidays(int year)
+            {
+                // Only used for GUI
+                return Collections.emptySet();
+            }
+        };
         CACHE.put(tc.getCode(), tc);
 
         tc = new TradeCalendar(TradeCalendar.EMPTY_CODE, Messages.LabelTradeCalendarEmpty);

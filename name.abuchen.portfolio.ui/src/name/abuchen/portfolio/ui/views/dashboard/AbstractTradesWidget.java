@@ -26,6 +26,7 @@ import name.abuchen.portfolio.snapshot.trades.Trade;
 import name.abuchen.portfolio.snapshot.trades.TradeCollector;
 import name.abuchen.portfolio.snapshot.trades.TradeCollectorException;
 import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.util.CacheKey;
 import name.abuchen.portfolio.ui.util.swt.StyledLabel;
@@ -62,7 +63,7 @@ import name.abuchen.portfolio.util.TextUtil;
         GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(title);
 
         indicator = new StyledLabel(container, SWT.NONE);
-        indicator.setFont(resources.getKpiFont());
+        indicator.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.KPI);
         indicator.setText(""); //$NON-NLS-1$
         GridDataFactory.fillDefaults().grab(true, false).applyTo(indicator);
 

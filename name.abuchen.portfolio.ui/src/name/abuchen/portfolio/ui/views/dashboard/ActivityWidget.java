@@ -199,11 +199,11 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
         });
 
         GC gc = new GC(container);
-        gc.setFont(resources.getKpiFont());
+        gc.setFont(container.getFont());
         Point stringExtend = gc.stringExtent("X"); //$NON-NLS-1$
         gc.dispose();
 
-        GridDataFactory.fillDefaults().hint(SWT.DEFAULT, stringExtend.y * 7).grab(true, false).applyTo(chart);
+        GridDataFactory.fillDefaults().hint(SWT.DEFAULT, (stringExtend.y + 10) * 7).grab(true, false).applyTo(chart);
 
         // configure axis
 

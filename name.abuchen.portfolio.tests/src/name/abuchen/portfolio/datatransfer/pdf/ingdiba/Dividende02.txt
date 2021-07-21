@@ -8,10 +8,10 @@ Ertragsgutschrift
 ISIN (WKN) DE000A0H0744 (A0H074)
 Wertpapierbezeichnung iSh.DJ Asia Pa.S.D.30 U.ETF DE
 Inhaber-Anteile
-Nominale 694,00 St¸ck
+Nominale 694,00 Stück
 Ertragsaussch¸ttung per St¸ck 0,437467 EUR
-Anteil Zinsen per St¸ck 0,037467 EUR
-Anteil ausl. Div. per St¸ck 0,4202512 EUR
+Anteil Zinsen per Stück 0,037467 EUR
+Anteil ausl. Div. per Stück 0,4202512 EUR
 Ex-Tag 15.12.2016
 Zahltag 15.12.2016
 Brutto EUR 303,60

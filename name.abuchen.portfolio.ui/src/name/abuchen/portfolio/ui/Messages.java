@@ -290,8 +290,9 @@ public class Messages extends NLS
     public static String ColumnTotal;
     public static String ColumnTransactionType;
     public static String ColumnTTWROR_Option;
-    public static String ColumnTWROR;
-    public static String ColumnTWROR_Description;
+    public static String ColumnTTWRORpa;
+    public static String ColumnTTWRORpa_Option;
+    public static String ColumnTTWROR;
     public static String ColumnUnrealizedCapitalGains;
     public static String ColumnUpdatedQuote;
     public static String ColumnUpdatedShares;
@@ -593,6 +594,10 @@ public class Messages extends NLS
     public static String LabelLevelNumber;
     public static String LabelLinkedToPortfolioReport;
     public static String LabelLinkToPortfolioReportNet;
+    public static String LabelMissingQuotes;
+    public static String LabelMissingQuotes_Decsription;
+    public static String LabelUnexpectedQuotes;
+    public static String LabelUnexpectedQuotes_Description;
     public static String LabelNamePlusCopy;
     public static String LabelNet;
     public static String LabelNewClassification;
@@ -633,13 +638,19 @@ public class Messages extends NLS
     public static String LabelReportingAddPeriod;
     public static String LabelReportingDialogDays;
     public static String LabelReportingDialogFrom;
+    public static String LabelReportingDialogGroupCurrent;
+    public static String LabelReportingDialogGroupPrevious;
     public static String LabelReportingDialogLast;
+    public static String LabelReportingDialogMonth;
     public static String LabelReportingDialogMonths;
+    public static String LabelReportingDialogQuarter;
     public static String LabelReportingDialogSince;
     public static String LabelReportingDialogTradingDays;
     public static String LabelReportingDialogUntil;
+    public static String LabelReportingDialogWeek;
     public static String LabelReportingDialogYear;
     public static String LabelReportingDialogYears;
+    public static String LabelReportingDialogYearYTD;
     public static String LabelReportingPeriod;
     public static String LabelReportingPeriodEditTooltip;
     public static String LabelReportInterval;
@@ -694,6 +705,7 @@ public class Messages extends NLS
     public static String LabelMetricDaysFormatter;
     public static String LabelMetricYears;
     public static String LabelMetricYearsFormatter;
+    public static String LabelPreviousTradingDay;
     public static String LabelStartTyping;
     public static String LabelStatementOfAssets;
     public static String LabelStatementOfAssetsHistory;
@@ -722,6 +734,7 @@ public class Messages extends NLS
     public static String LabelTransfer;
     public static String LabelTransferTo;
     public static String LabelTTWROR;
+    public static String LabelTTWROR_Annualized;
     public static String LabelTTWROROneDay;
     public static String LabelUnknownVersion;
     public static String LabelUnnamedFile;

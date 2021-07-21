@@ -463,10 +463,7 @@ public class ClientInput
 
         StringBuilder buf = new StringBuilder();
         for (ReportingPeriod p : reportingPeriods)
-        {
-            p.writeTo(buf);
-            buf.append(';');
-        }
+            buf.append(p.getCode()).append(';');
 
         getPreferenceStore().setValue(REPORTING_PERIODS_KEY, buf.toString());
     }
