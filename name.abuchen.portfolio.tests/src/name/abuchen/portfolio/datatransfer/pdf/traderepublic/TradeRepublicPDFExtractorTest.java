@@ -1391,9 +1391,9 @@ public class TradeRepublicPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), 
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5)))); 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), 
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(643.9))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(648.9))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(), 
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(648.9)))); //TODO Why PP calculates 638.9?
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(643.9))));
     }
 
     @Test
