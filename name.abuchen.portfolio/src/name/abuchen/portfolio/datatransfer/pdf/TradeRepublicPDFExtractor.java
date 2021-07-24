@@ -33,6 +33,8 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         addTaxStatementTransaction();
         addAdvanceTaxTransaction();
         addCaptialReductionTransaction();
+        addBuyingOption();
+        addUseBuyingOption();
     }
 
     @Override
@@ -462,6 +464,155 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         addFeesSectionsTransaction(pdfTransaction, type);
 
         block.set(pdfTransaction);
+    }
+
+    private void addBuyingOption()
+    {
+        DocumentType type = new DocumentType("KAPITALERHÖHUNG GEGEN BAR");
+        this.addDocumentTyp(type);
+        Block block = new Block("^VERHÄLTNIS3 VERHÄLTNIS4 PREIS5 FRIST6$");
+        type.addBlock(block);
+        Transaction<PortfolioTransaction> pdfTransaction = new Transaction<>();
+        pdfTransaction.subject(() -> {
+            PortfolioTransaction entry = new PortfolioTransaction();
+            entry.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
+            return entry;
+        });
+        block.set(pdfTransaction);
+
+        pdfTransaction.section("name", "nameContinued", "date", "currency", "isin", "shares") //
+        .match("^VERHÄLTNIS3 VERHÄLTNIS4 PREIS5 FRIST6$")
+        .match("^(?<name>.*)$")
+        .match("^(?<nameContinued>.*)$")
+        .match("^ISIN: (\\S*) (?<date>\\d+\\.\\d+\\.\\d{4}) \\– (\\d+\\.\\d+\\.\\d{4}) \\– ([\\.,\\d]+) Stk\\. [\\.,\\d]+ : [\\.,\\d]+ [\\.,\\d]+ : [\\.,\\d]+ ([\\.,\\d]+) (?<currency>[\\w]{3})$")
+        .match("^Bezugsrecht: (?<isin>\\S*) (\\d+.\\d+.\\d{4}) (\\d+.\\d+.\\d{4})$")
+        .match("^Anzahl eingebuchter $")
+        .match("^Bezugsrechte: (?<shares>[.,\\d]+) Stk\\.$") //
+        .assign((t, v) -> {
+            t.setSecurity(getOrCreateSecurity(v));
+            t.setShares(asShares(v.get("shares")));
+            t.setDateTime(asDate(v.get("date")));
+            t.setCurrencyCode(asCurrencyCode(t.getSecurity().getCurrencyCode()));
+        })
+        .wrap(TransactionItem::new);
+    }
+    
+    private void addUseBuyingOption()
+    {
+        DocumentType type = new DocumentType("UMTAUSCH/BEZUG", (context, lines) -> {
+            Pattern pDate = Pattern.compile("^(.*) DATUM (?<date>\\d+\\.\\d+\\.\\d{4})$");
+            // read the current context here
+            for (String line : lines)
+            {
+                Matcher m = pDate.matcher(line);
+                if (m.matches())
+                {
+                    context.put("date", m.group("date"));
+                }
+            }
+            Pattern pCurrency = Pattern.compile("^[\\w]+ (\\d+.\\d+.\\d{4}) \\-[.,\\d+]+ (?<currency>[\\w]{3})$");
+            // read the current context here
+            for (String line : lines)
+            {
+                Matcher m = pCurrency.matcher(line);
+                if (m.matches())
+                {
+                    context.put("currency", m.group("currency"));
+                }
+            }
+            if (context.get("currency") == null)
+            {
+                context.put("currency", "EUR");
+                context.put("skip", "yes");
+            }
+        });
+        this.addDocumentTyp(type);
+        
+        Block outboundblock = new Block("ÜBERSICHT");
+        type.addBlock(outboundblock);
+        outboundblock.set(new Transaction<PortfolioTransaction>()
+            .subject(() -> {
+                PortfolioTransaction entry = new PortfolioTransaction();
+                entry.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
+                return entry;
+            })
+            
+            // 1 Umtausch/Bezug Nordex SE 47 Stk.
+            .section("name", "nameContinued", "isin")
+            .match("^[\\d]+ Umtausch/Bezug (?<name>.*) (?<shares>[\\.,\\d]+) Stk\\.$")
+            .match("^(?<nameContinued>.*)$")
+            .match("^(?<isin>[\\w]{12})$")
+            .assign((t, v) -> {
+                Map<String, String> context = type.getCurrentContext();
+                v.put("currency", context.get("currency"));
+                t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                t.setSecurity(getOrCreateSecurity(v));
+                type.getCurrentContext().put("isin", v.get("isin"));
+            })
+            
+            .section("shares")
+            .match("^[\\d]+ Umtausch/Bezug (.*) (?<shares>[.,\\d]+) Stk\\.$")
+            .match("^(.*)$")
+            .match("^([\\w]{12})$")
+            .assign((t, v) -> {
+              Map<String, String> context = type.getCurrentContext();
+              t.setShares(asShares(v.get("shares")));
+              type.getCurrentContext().put("shares", v.get("shares"));
+              t.setDateTime(asDate(context.get("date")));  
+            })
+                
+            // 1 Kurswert -643,90 EUR
+            
+            
+            // VERRECHNUNGSKONTO VALUTA BETRAG
+            // DE00000000000000000000 15.07.2021 -648,90 EUR
+    
+            .wrap(t -> {
+                Map<String, String> context = type.getCurrentContext();
+                if (context.get("skip") != null)
+                {
+                    return new TransactionItem(t);
+                }
+                else
+                {
+                    return null;
+                }
+        }));
+        
+        Block buyblock = new Block("ABRECHNUNG");
+        type.addBlock(buyblock);
+        buyblock.set(new Transaction<BuySellEntry>()
+                        .subject(() -> {
+                            BuySellEntry entry = new BuySellEntry();
+                            entry.setType(PortfolioTransaction.Type.BUY);
+                            return entry;
+                        })
+                        
+            .section("amount", "currency", "fee", "currencyfee", "date")
+            .match("^[\\d]+ Kurswert \\-(?<amount>[.,\\d]+) (?<currency>[\\w]{3})$")
+            .match("^Gebühr Kundenweisung \\-(?<fee>[.,\\d]+) (?<currencyfee>[\\w]{3})$")
+            .match("^[\\w]+ (?<date>\\d+.\\d+.\\d{4}) \\-[.,\\d+]+ ([\\w]{3})$")
+            .assign((t, v) -> {
+                    Map<String, String> context = type.getCurrentContext();
+                    v.put("isin", context.get("isin"));
+                    t.setSecurity(getOrCreateSecurity(v));
+                    t.setShares(asShares(context.get("shares")));
+                    t.setDate(asDate(v.get("date")));
+                    t.setAmount(asAmount(v.get("amount"))+asAmount(v.get("fee")));   
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));         
+                    Money fee = Money.of(asCurrencyCode(v.get("currencyfee")), asAmount(v.get("fee")));
+                    t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, fee));
+            })
+            .wrap(t -> {
+                if (t.getPortfolioTransaction().getAmount() > 0)
+                {
+                    return new BuySellEntryItem(t);
+                }
+                else
+                {
+                    return null;
+                }
+        }));
     }
 
     private void addAccountStatementTransaction()
