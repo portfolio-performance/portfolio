@@ -13,6 +13,7 @@ import name.abuchen.portfolio.model.ClientSettings;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
 import name.abuchen.portfolio.util.WebAccess;
+import name.abuchen.portfolio.util.WebAccess.WebAccessException;
 
 /* package */ class YahooSymbolSearch
 {
@@ -96,32 +97,39 @@ import name.abuchen.portfolio.util.WebAccess;
     {
         List<Result> answer = new ArrayList<>();
 
-        @SuppressWarnings("nls")
-        String html = new WebAccess("s.yimg.com", "/aq/autoc") //
-                        .addParameter("query", query) //
-                        .addParameter("region", "DE") //
-                        .addParameter("lang", "de-DE") //
-                        .addParameter("callback", "YAHOO.util.ScriptNodeDataSource.callbacks") //
-                        .get();
-
-        // strip away java script call back method
-        int start = html.indexOf('(');
-        int end = html.lastIndexOf(')');
-        html = html.substring(start + 1, end);
-
-        JSONObject responseData = (JSONObject) JSONValue.parse(html);
-        if (responseData != null)
+        try
         {
-            JSONObject resultSet = (JSONObject) responseData.get("ResultSet"); //$NON-NLS-1$
-            if (resultSet != null)
+            @SuppressWarnings("nls")
+            String html = new WebAccess("s.yimg.com", "/aq/autoc") //
+                            .addParameter("query", query) //
+                            .addParameter("region", "DE") //
+                            .addParameter("lang", "de-DE") //
+                            .addParameter("callback", "YAHOO.util.ScriptNodeDataSource.callbacks") //
+                            .get();
+
+
+            // strip away java script call back method
+            int start = html.indexOf('(');
+            int end = html.lastIndexOf(')');
+            html = html.substring(start + 1, end);
+
+            JSONObject responseData = (JSONObject) JSONValue.parse(html);
+            if (responseData != null)
             {
-                JSONArray result = (JSONArray) resultSet.get("Result"); //$NON-NLS-1$
-                if (result != null)
+                JSONObject resultSet = (JSONObject) responseData.get("ResultSet"); //$NON-NLS-1$
+                if (resultSet != null)
                 {
-                    for (int ii = 0; ii < result.size(); ii++)
-                        answer.add(Result.from((JSONObject) result.get(ii)));
+                    JSONArray result = (JSONArray) resultSet.get("Result"); //$NON-NLS-1$
+                    if (result != null)
+                    {
+                        for (int ii = 0; ii < result.size(); ii++)
+                            answer.add(Result.from((JSONObject) result.get(ii)));
+                    }
                 }
             }
+        }
+        catch(WebAccessException ex)
+        {
         }
 
         return answer.stream();
