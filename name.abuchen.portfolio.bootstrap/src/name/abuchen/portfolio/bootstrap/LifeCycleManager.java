@@ -74,7 +74,10 @@ public class LifeCycleManager
             File customCSSFile = new File(url.getFile());
 
             if (!customCSSFile.exists())
+            {
+                customCSSFile.getParentFile().mkdirs();
                 customCSSFile.createNewFile(); // NOSONAR
+            }
         }
         catch (IOException e)
         {
