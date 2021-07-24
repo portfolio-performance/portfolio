@@ -598,7 +598,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                     t.setSecurity(getOrCreateSecurity(v));
                     t.setShares(asShares(context.get("shares")));
                     t.setDate(asDate(v.get("date")));
-                    t.setAmount(asAmount(v.get("amount")));   
+                    t.setAmount(asAmount(v.get("amount"))+asAmount(v.get("fee")));   
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));         
                     Money fee = Money.of(asCurrencyCode(v.get("currencyfee")), asAmount(v.get("fee")));
                     t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, fee));
