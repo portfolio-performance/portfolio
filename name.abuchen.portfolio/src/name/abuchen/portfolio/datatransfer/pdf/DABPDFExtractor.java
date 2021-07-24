@@ -100,8 +100,8 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 // Nominal Kurs
                 // EUR 1.000,000 100,0000 %
                 .section("isin", "name", "name1", "shares", "currency").optional()
-                .find("^Gattungsbezeichnung F.lligkeit näch. Zinstermin ISIN$")
-                .match("^(?<name>.*) [\\d]+.[\\d]+.[\\d]{4} [\\d]+.[\\d]+.[\\d]{4} (?<isin>[\\w]{12})$")
+                .find("^Gattungsbezeichnung F.lligkeit n.ch. Zinstermin ISIN$")
+                .match("^(?<name>.*) [\\d]+.[\\d]+.[\\d]{2,4} [\\d]+.[\\d]+.[\\d]{4} (?<isin>[\\w]{12})$")
                 .match("^(?<name1>.*)$")
                 .match("^Nominal Kurs$")
                 .match("(?<currency>[\\w]{3}) (?<shares>[.,\\d]+) [.,\\d]+ %$")
@@ -113,6 +113,25 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                      * Workaround for bonds 
                      */
                     t.setShares((asShares(v.get("shares")) / 100));
+                    t.setSecurity(getOrCreateSecurity(v));
+                })
+
+                // Gattungsbezeichnung Fälligkeit näch. Zinstermin ISIN
+                // HSBC Trinkaus & Burkhardt AG DIZ 27.08.21 27.08.2021 DE000TT649A1
+                // Siemens 140
+                // Nominal Kurs
+                // STK 15,000 EUR 133,5700
+                .section("isin", "name", "name1", "shares", "currency").optional()
+                .find("^Gattungsbezeichnung F.lligkeit n.ch. Zinstermin ISIN$")
+                .match("^(?<name>.*) ([\\d]+\\.[\\d]+\\.[\\d]{2,4}) ([\\d]+\\.[\\d]+\\.[\\d]{4}) (?<isin>[\\w]{12})$")
+                .match("^(?<name1>.*)$")
+                .match("^Nominal Kurs$")
+                .match("STK (?<shares>[.,\\d]+) (?<currency>[\\w]{3}) [.,\\d]+$")
+                .assign((t, v) -> {
+                    if (!v.get("name1").startsWith("Nominal"))
+                        v.put("name", v.get("name") + " " + v.get("name1"));
+
+                    t.setShares(asShares(v.get("shares")));
                     t.setSecurity(getOrCreateSecurity(v));
                 })
 
@@ -563,7 +582,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 // Nominal Kurs
                 // EUR 1.000,000 100,0000 %
                 .section("isin", "name", "name1", "shares", "currency").optional()
-                .find("^Gattungsbezeichnung F.lligkeit näch. Zinstermin ISIN$")
+                .find("^Gattungsbezeichnung F.lligkeit n.ch. Zinstermin ISIN$")
                 .match("^(?<name>.*) [\\d]+.[\\d]+.[\\d]{4} [\\d]+.[\\d]+.[\\d]{4} (?<isin>[\\w]{12})$")
                 .match("^(?<name1>.*)$")
                 .match("^Nominal Kurs$")
@@ -576,6 +595,25 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                      * Workaround for bonds 
                      */
                     t.setShares((asShares(v.get("shares")) / 100));
+                    t.setSecurity(getOrCreateSecurity(v));
+                })
+
+                // Gattungsbezeichnung Fälligkeit näch. Zinstermin ISIN
+                // HSBC Trinkaus & Burkhardt AG DIZ 27.08.21 27.08.2021 DE000TT649A1
+                // Siemens 140
+                // Nominal Kurs
+                // STK 15,000 EUR 133,5700
+                .section("isin", "name", "name1", "shares", "currency").optional()
+                .find("^Gattungsbezeichnung F.lligkeit n.ch. Zinstermin ISIN$")
+                .match("^(?<name>.*) ([\\d]+\\.[\\d]+\\.[\\d]{2,4}) ([\\d]+\\.[\\d]+\\.[\\d]{4}) (?<isin>[\\w]{12})$")
+                .match("^(?<name1>.*)$")
+                .match("^Nominal Kurs$")
+                .match("STK (?<shares>[.,\\d]+) (?<currency>[\\w]{3}) [.,\\d]+$")
+                .assign((t, v) -> {
+                    if (!v.get("name1").startsWith("Nominal"))
+                        v.put("name", v.get("name") + " " + v.get("name1"));
+
+                    t.setShares(asShares(v.get("shares")));
                     t.setSecurity(getOrCreateSecurity(v));
                 })
 

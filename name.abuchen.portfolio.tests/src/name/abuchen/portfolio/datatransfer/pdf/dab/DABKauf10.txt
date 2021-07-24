@@ -1,0 +1,42 @@
+PDF Autor: 'DAB-BNP-Paribas'
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=9999999999
+Wertpapierabrechnung DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=DRUCK
+ADRESSZEILE1=Herr
+Kauf  ADRESSZEILE2=x x
+Kommissionsgeschäft ADRESSZEILE3=x-x-Str. 9
+ADRESSZEILE4=99999 x
+Depot-Nr. Abrechnungs-Nr. ADRESSZEILE5=
+9999999999 99999999 / 23.07.2021 ADRESSZEILE6=
+Herr BELEGNUMMER=5183
+x x SEITENNUMMER=1
+x-x-Str. 9 STEUERERSTATTUNG=N
+99999 x Depotinhaber
+x x
+München, 23.07.2021
+Wir haben für Sie gekauft
+Gattungsbezeichnung Fälligkeit näch. Zinstermin ISIN
+HSBC Trinkaus & Burkhardt AG DIZ 27.08.21 27.08.2021 DE000TT649A1
+Siemens 140
+Nominal Kurs
+STK 15,000 EUR 133,5700
+Handelstag 23.07.2021 Kurswert EUR 2.003,55-
+Handelszeit 12:58*
+Börse HSBC Trinkaus & Burkhardt
+Verwahrart Girosammelverwahrung
+Wert Konto-Nr. Betrag zu Ihren Lasten
+27.07.2021 9999999999 EUR 2.003,55
+Wir werden in Ihrem Depot wie angegeben buchen.
+* Die angegebene Zeit entspricht den Angaben der Handelspartner gemäß der lokalen Zeit in Deutschland
+  (Mitteleuropäische Zeit bzw. Mitteleuropäische Sommerzeit).
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+BNP Paribas S.A. Niederlassung Deutschland > Standort: München > Landsberger Straße 300 > 80687 München > Sitz: Nürnberg HRB Nürnberg 31129 > USt.-Ident-Nr.: DE 
+191528929 > Sitz der Hauptniederlassung der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449 > Président du 
+Conseil d‘Administration: Jean Lemierre, Directeur Général: Jean-Laurent Bonnafé
+3.19/ABREABHNHANDKFDI/POC1618/005183/230721/153844
