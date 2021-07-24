@@ -88,7 +88,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 .section("isin", "name", "shares", "currency").optional()
                 .find("^Gattungsbezeichnung ISIN$")
                 .match("^(?<name>.*) (?<isin>[\\w]{12})$")
-                .match("STK (?<shares>[.,\\d]+) (?<currency>[\\w]{3}) [.,\\d]+$")
+                .match("^STK (?<shares>[.,\\d]+) (?<currency>[\\w]{3}) [.,\\d]+$")
                 .assign((t, v) -> {
                     t.setShares(asShares(v.get("shares")));
                     t.setSecurity(getOrCreateSecurity(v));
@@ -104,7 +104,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 .match("^(?<name>.*) [\\d]+.[\\d]+.[\\d]{2,4} [\\d]+.[\\d]+.[\\d]{4} (?<isin>[\\w]{12})$")
                 .match("^(?<name1>.*)$")
                 .match("^Nominal Kurs$")
-                .match("(?<currency>[\\w]{3}) (?<shares>[.,\\d]+) [.,\\d]+ %$")
+                .match("^(?<currency>[\\w]{3}) (?<shares>[.,\\d]+) [.,\\d]+ %$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Nominal"))
                         v.put("name", v.get("name") + " " + v.get("name1"));
@@ -126,7 +126,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 .match("^(?<name>.*) ([\\d]+\\.[\\d]+\\.[\\d]{2,4}) ([\\d]+\\.[\\d]+\\.[\\d]{4}) (?<isin>[\\w]{12})$")
                 .match("^(?<name1>.*)$")
                 .match("^Nominal Kurs$")
-                .match("STK (?<shares>[.,\\d]+) (?<currency>[\\w]{3}) [.,\\d]+$")
+                .match("^STK (?<shares>[.,\\d]+) (?<currency>[\\w]{3}) [.,\\d]+$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Nominal"))
                         v.put("name", v.get("name") + " " + v.get("name1"));
@@ -570,7 +570,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 .section("isin", "name", "shares").optional()
                 .find("Gattungsbezeichnung ISIN")
                 .match("^(?<name>.*) (?<isin>[\\w]{12})$")
-                .match("STK (?<shares>[.,\\d]+) [\\w]{3} [.,\\d]+$")
+                .match("^STK (?<shares>[.,\\d]+) [\\w]{3} [.,\\d]+$")
                 .assign((t, v) -> {
                     t.setShares(asShares(v.get("shares")));
                     t.setSecurity(getOrCreateSecurity(v));
@@ -586,7 +586,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 .match("^(?<name>.*) [\\d]+.[\\d]+.[\\d]{4} [\\d]+.[\\d]+.[\\d]{4} (?<isin>[\\w]{12})$")
                 .match("^(?<name1>.*)$")
                 .match("^Nominal Kurs$")
-                .match("(?<currency>[\\w]{3}) (?<shares>[.,\\d]+) [.,\\d]+ %$")
+                .match("^(?<currency>[\\w]{3}) (?<shares>[.,\\d]+) [.,\\d]+ %$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Nominal"))
                         v.put("name", v.get("name") + " " + v.get("name1"));
@@ -608,7 +608,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 .match("^(?<name>.*) ([\\d]+\\.[\\d]+\\.[\\d]{2,4}) ([\\d]+\\.[\\d]+\\.[\\d]{4}) (?<isin>[\\w]{12})$")
                 .match("^(?<name1>.*)$")
                 .match("^Nominal Kurs$")
-                .match("STK (?<shares>[.,\\d]+) (?<currency>[\\w]{3}) [.,\\d]+$")
+                .match("^STK (?<shares>[.,\\d]+) (?<currency>[\\w]{3}) [.,\\d]+$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Nominal"))
                         v.put("name", v.get("name") + " " + v.get("name1"));
