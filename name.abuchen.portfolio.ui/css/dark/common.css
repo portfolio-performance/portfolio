@@ -48,6 +48,10 @@ CustomColors {
 	hyperlink: #6FC5EE;
 }
 
+SecuritiesChart {
+	quote-color: #4DDAFF;
+}
+
 .heading1 {
 	font-size: 14px;
 	font-weight: bold;

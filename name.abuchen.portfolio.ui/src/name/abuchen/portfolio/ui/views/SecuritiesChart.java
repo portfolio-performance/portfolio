@@ -209,7 +209,7 @@ public class SecuritiesChart
         }
     }
 
-    private static final Color colorQuote = Colors.getColor(52, 70, 235);
+    private Color colorQuote;
 
     private static final Color colorEventPurchase = Colors.getColor(26, 173, 33);
     private static final Color colorEventSale = Colors.getColor(232, 51, 69);
@@ -290,6 +290,11 @@ public class SecuritiesChart
         ILegend legend = chart.getLegend();
         legend.setPosition(SWT.BOTTOM);
         legend.setVisible(true);
+    }
+
+    public void setQuoteColor(Color color)
+    {
+        this.colorQuote = color;
     }
 
     private void setupTooltip()

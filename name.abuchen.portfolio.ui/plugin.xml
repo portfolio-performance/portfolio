@@ -93,6 +93,13 @@
                name="swt-lines-visible">
          </property-name>
       </handler>
+      <handler
+            adapter="name.abuchen.portfolio.ui.theme.SecuritiesChartElementAdapter"
+            handler="name.abuchen.portfolio.ui.theme.SecuritiesChartCSSHandler">
+         <property-name
+               name="quote-color">
+         </property-name>
+      </handler>
    </extension>
    <extension
          point="org.eclipse.e4.ui.css.core.elementProvider">
@@ -121,6 +128,9 @@
          </widget>
          <widget
                class="org.eclipse.swt.widgets.Tree">
+         </widget>
+         <widget
+               class="name.abuchen.portfolio.ui.views.SecuritiesChart">
          </widget>
       </provider>
    </extension>
