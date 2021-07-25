@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.eclipse.core.databinding.beans.typed.BeanProperties;
@@ -49,12 +50,15 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.impl.AlphavantageQuoteFeed;
 import name.abuchen.portfolio.online.impl.BinanceQuoteFeed;
+import name.abuchen.portfolio.online.impl.BitfinexQuoteFeed;
 import name.abuchen.portfolio.online.impl.CSQuoteFeed;
+import name.abuchen.portfolio.online.impl.CoinGeckoQuoteFeed;
 import name.abuchen.portfolio.online.impl.ECBStatisticalDataWarehouseQuoteFeed;
 import name.abuchen.portfolio.online.impl.EurostatHICPQuoteFeed;
 import name.abuchen.portfolio.online.impl.FinnhubQuoteFeed;
 import name.abuchen.portfolio.online.impl.GenericJSONQuoteFeed;
 import name.abuchen.portfolio.online.impl.HTMLTableQuoteFeed;
+import name.abuchen.portfolio.online.impl.KrakenQuoteFeed;
 import name.abuchen.portfolio.online.impl.PortfolioReportQuoteFeed;
 import name.abuchen.portfolio.online.impl.QuandlQuoteFeed;
 import name.abuchen.portfolio.ui.Images;
@@ -462,8 +466,10 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         boolean feedURL = feed != null && feed.getId() != null && (feed.getId().equals(HTMLTableQuoteFeed.ID)
                         || feed.getId().equals(CSQuoteFeed.ID) || feed.getId().equals(GenericJSONQuoteFeed.ID));
 
-        boolean needsTicker = feed != null && feed.getId() != null && (feed.getId().equals(AlphavantageQuoteFeed.ID)
-                        || feed.getId().equals(FinnhubQuoteFeed.ID) || feed.getId().equals(BinanceQuoteFeed.ID));
+        boolean needsTicker = feed != null && feed.getId() != null
+                        && Set.of(AlphavantageQuoteFeed.ID, FinnhubQuoteFeed.ID, BinanceQuoteFeed.ID,
+                                        BitfinexQuoteFeed.ID, CoinGeckoQuoteFeed.ID, KrakenQuoteFeed.ID)
+                                        .contains(feed.getId());
 
         boolean needsQuandlCode = feed != null && feed.getId() != null && feed.getId().equals(QuandlQuoteFeed.ID);
 
