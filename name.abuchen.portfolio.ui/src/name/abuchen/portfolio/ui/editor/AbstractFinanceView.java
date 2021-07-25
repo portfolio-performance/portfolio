@@ -172,6 +172,12 @@ public abstract class AbstractFinanceView
 
         top.addDisposeListener(e -> dispose());
 
+        // delay updating the tool bar as late as possible because otherwise we
+        // see the tool bars flicker on Windows
+
+        viewToolBar.update(false);
+        actionToolBar.update(false);
+
         notifyViewCreationCompleted();
     }
 
@@ -193,17 +199,19 @@ public abstract class AbstractFinanceView
         wrapper.setBackground(header.getBackground());
 
         viewToolBar = new ToolBarManager(SWT.FLAT | SWT.RIGHT);
-        addViewButtons(viewToolBar);
         ToolBar tb1 = viewToolBar.createControl(wrapper);
         tb1.setBackground(header.getBackground());
+        // add buttons only after (!) creation of tool bar to avoid flickering
+        addViewButtons(viewToolBar);
 
         // create layout *after* the toolbar to keep the tab order right
         wrapper.setLayout(new ToolBarPlusChevronLayout(wrapper, SWT.RIGHT));
 
         actionToolBar = new ToolBarManager(SWT.FLAT | SWT.RIGHT);
-        addButtons(actionToolBar);
         ToolBar tb2 = actionToolBar.createControl(header);
         tb2.setBackground(header.getBackground());
+        // add buttons only after (!) creation of tool bar to avoid flickering
+        addButtons(actionToolBar);
 
         // layout
         GridLayoutFactory.fillDefaults().numColumns(3).margins(5, 5).applyTo(header);
