@@ -9,7 +9,7 @@ import java.util.function.ToLongFunction;
 
 import javax.inject.Inject;
 
-import org.eclipse.e4.ui.css.swt.theme.IThemeEngine;
+import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -52,7 +52,7 @@ import name.abuchen.portfolio.util.TextUtil;
 public class EarningsPerMonthMatrixTab implements EarningsTab
 {
     @Inject
-    private IThemeEngine themeEngine;
+    private IStylingEngine stylingEngine;
 
     @Inject
     private AbstractFinanceView view;
@@ -115,7 +115,7 @@ public class EarningsPerMonthMatrixTab implements EarningsTab
         // make sure to apply the styles (including font information to the
         // table) before creating the bold font. Otherwise the font does not
         // match the styles in CSS
-        themeEngine.applyStyles(tableViewer.getTable(), true);
+        stylingEngine.style(tableViewer.getTable());
 
         LocalResourceManager resources = new LocalResourceManager(JFaceResources.getResources(), parent);
         boldFont = resources.createFont(FontDescriptor.createFrom(tableViewer.getTable().getFont()).setStyle(SWT.BOLD));

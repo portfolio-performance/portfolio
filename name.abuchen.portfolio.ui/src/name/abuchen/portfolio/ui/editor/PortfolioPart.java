@@ -25,6 +25,7 @@ import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -87,6 +88,9 @@ public class PortfolioPart implements ClientInputListener
 
     @Inject
     ClientInputFactory clientInputFactory;
+
+    @Inject
+    private IStylingEngine stylingEngine;
 
     @PostConstruct
     public void createComposite(Composite parent)
@@ -548,6 +552,10 @@ public class PortfolioPart implements ClientInputListener
         viewContext.set(AbstractFinanceView.class, underConstruction);
 
         underConstruction.createViewControl(book, hideInformationPane);
+
+        // explicitly style control after creation because on Windows the styles
+        // are not always applied immediately
+        stylingEngine.style(underConstruction.getControl());
 
         view = underConstruction;
         book.showPage(view.getControl());

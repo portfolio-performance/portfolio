@@ -7,7 +7,7 @@ import java.util.function.Function;
 
 import javax.inject.Inject;
 
-import org.eclipse.e4.ui.css.swt.theme.IThemeEngine;
+import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.ToolBarManager;
@@ -84,7 +84,7 @@ public class PerformanceView extends AbstractHistoricView
     private ExchangeRateProviderFactory factory;
 
     @Inject
-    private IThemeEngine themeEngine;
+    private IStylingEngine stylingEngine;
 
     private ClientFilterDropDown clientFilter;
 
@@ -223,7 +223,7 @@ public class PerformanceView extends AbstractHistoricView
         // make sure to apply the styles (including font information to the
         // table) before creating the bold font. Otherwise the font does not
         // match the styles in CSS
-        themeEngine.applyStyles(calculation.getTree(), true);
+        stylingEngine.style(calculation.getTree());
 
         final Font boldFont = JFaceResources.getResources()
                         .createFont(FontDescriptor.createFrom(calculation.getTree().getFont()).setStyle(SWT.BOLD));

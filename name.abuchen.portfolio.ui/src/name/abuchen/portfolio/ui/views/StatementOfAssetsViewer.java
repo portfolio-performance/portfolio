@@ -17,7 +17,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.eclipse.e4.core.di.extensions.Preference;
-import org.eclipse.e4.ui.css.swt.theme.IThemeEngine;
+import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -230,7 +230,7 @@ public class StatementOfAssetsViewer
     private SelectionService selectionService;
 
     @Inject
-    private IThemeEngine themeEngine;
+    private IStylingEngine stylingEngine;
 
     private boolean useIndirectQuotation = false;
 
@@ -548,7 +548,7 @@ public class StatementOfAssetsViewer
         // make sure to apply the styles (including font information to the
         // table) before creating the bold font. Otherwise the font does not
         // match the styles in CSS
-        themeEngine.applyStyles(assets.getTable(), true);
+        stylingEngine.style(assets.getTable());
 
         LocalResourceManager resources = new LocalResourceManager(JFaceResources.getResources(), assets.getTable());
         boldFont = resources.createFont(FontDescriptor.createFrom(assets.getTable().getFont()).setStyle(SWT.BOLD));
