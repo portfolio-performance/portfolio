@@ -95,7 +95,7 @@ public class YahooSearchProvider implements SecuritySearchProvider
                     for (int ii = 0; ii < items.size(); ii++)
                     {
                         JSONObject item = (JSONObject) items.get(ii);
-                        answer.add(YahooSymbolSearch.Result.from(item));
+                        YahooSymbolSearch.Result.from(item).ifPresent(answer::add);
                     }
                 }
             }
