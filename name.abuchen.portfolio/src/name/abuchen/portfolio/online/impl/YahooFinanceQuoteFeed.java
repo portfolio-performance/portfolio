@@ -16,13 +16,11 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -312,65 +310,23 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         Set<String> candidates = new HashSet<>();
         answer.forEach(e -> candidates.add(e.getId()));
 
-        // add existing ticker symbol as well
+        // At the moment, we do not have a reasonable way to search for
+        // exchanges of a given symbol. For the time being, we add all
+        // exchanges...
+
         String symbol = subject.getTickerSymbol();
         if (symbol != null && !symbol.isEmpty())
-            candidates.add(symbol);
-
-        for (String candidate : candidates)
         {
-            searchExchanges(candidate, answer, errors);
+            // strip away exchange suffix
+            int p = symbol.indexOf('.');
+            String plainSymbol = p >= 0 ? symbol.substring(0, p) : symbol;
+
+            answer.add(createExchange(plainSymbol));
+
+            ExchangeLabels.getAllExchangeKeys("yahoo.").forEach(e -> answer.add(createExchange(plainSymbol + "." + e))); //$NON-NLS-1$ //$NON-NLS-2$
         }
-
-        if (symbol != null && !symbol.isEmpty())
-        {
-            // Issue #251
-            // sometimes Yahoo does not return the default exchange which
-            // prevents selecting this security (example: searching for GOOG
-            // does return only unimportant exchanges)
-            Optional<Exchange> defaultExchange = answer.stream() //
-                            .filter(e -> e.getId().equals(subject.getTickerSymbol())).findAny();
-            if (!defaultExchange.isPresent())
-                answer.add(new Exchange(subject.getTickerSymbol(), subject.getTickerSymbol()));
-
-            if (answer.isEmpty())
-            {
-                // Issue #29
-                // at least add the given ticker symbol if the search returns
-                // nothing (sometimes accidentally)
-                answer.add(createExchange(subject.getTickerSymbol()));
-            }
-        }
-
-        Collections.sort(answer, (r, l) -> r.getId().compareTo(l.getId()));
 
         return answer;
-    }
-
-    private void searchExchanges(String candidate, List<Exchange> answer, List<Exception> errors)
-    {
-        // strip away exchange suffix to search for all available exchanges
-        int p = candidate.indexOf('.');
-        String prefix = p >= 0 ? candidate.substring(0, p + 1) : candidate + "."; //$NON-NLS-1$
-
-        // ensure we do not add duplicates
-        Set<String> duplicates = new HashSet<>();
-        answer.forEach(e -> duplicates.add(e.getId()));
-
-        try
-        {
-            searchSymbols(prefix) //
-                            .filter(r -> !duplicates.contains(r.getSymbol())) //
-                            .map(r -> createExchange(r.getSymbol())).forEach(e -> {
-                                duplicates.add(e.getId());
-                                answer.add(e);
-                            });
-        }
-        catch (IOException e)
-        {
-            errors.add(e);
-        }
-
     }
 
     private Exchange createExchange(String symbol)
@@ -398,11 +354,5 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     protected InputStream openStream(String wknUrl) throws IOException
     {
         return new URL(wknUrl).openStream();
-    }
-
-    /* enable testing */
-    protected Stream<YahooSymbolSearch.Result> searchSymbols(String query) throws IOException
-    {
-        return new YahooSymbolSearch().search(query);
     }
 }
