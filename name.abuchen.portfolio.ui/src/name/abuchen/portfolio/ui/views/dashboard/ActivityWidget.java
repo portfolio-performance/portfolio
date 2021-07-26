@@ -16,6 +16,7 @@ import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -161,6 +162,7 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
         addConfig(new ReportingPeriodConfig(this));
         addConfig(new ClientFilterConfig(this));
         addConfig(new ChartTypeConfig(this));
+        addConfig(new ChartHeightConfig(this));
 
         this.converter = data.getCurrencyConverter();
     }
@@ -198,12 +200,8 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
             return yearMonths.get(index).toString();
         });
 
-        GC gc = new GC(container);
-        gc.setFont(container.getFont());
-        Point stringExtend = gc.stringExtent("X"); //$NON-NLS-1$
-        gc.dispose();
-
-        GridDataFactory.fillDefaults().hint(SWT.DEFAULT, (stringExtend.y + 10) * 7).grab(true, false).applyTo(chart);
+        int yHint = get(ChartHeightConfig.class).getPixel();
+        GridDataFactory.fillDefaults().hint(SWT.DEFAULT, yHint).grab(true, false).applyTo(chart);
 
         // configure axis
 
@@ -244,6 +242,18 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
         try
         {
             chart.suspendUpdate(true);
+
+            GridData data = (GridData) chart.getLayoutData();
+
+            int oldHeight = data.heightHint;
+            int newHeight = get(ChartHeightConfig.class).getPixel();
+
+            if (oldHeight != newHeight)
+            {
+                data.heightHint = newHeight;
+                title.getParent().layout(true);
+                title.getParent().getParent().layout(true);
+            }
 
             chart.getTitle().setText(title.getText());
 

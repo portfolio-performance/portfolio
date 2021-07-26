@@ -476,6 +476,7 @@ public class Messages extends NLS
     public static String LabelAverageHoldingPeriod;
     public static String LabelBeforeTaxAndFees;
     public static String LabelBenchmarks;
+    public static String LabelBiggerSize;
     public static String LabelCapitalGains;
     public static String LabelCategoryOtherMovements;
     public static String LabelChartDetailChartScaling;
@@ -607,6 +608,7 @@ public class Messages extends NLS
     public static String LabelNewTransactionForSecurity;
     public static String LabelNo;
     public static String LabelNoName;
+    public static String LabelNormalSize;
     public static String LabelNotAvailable;
     public static String LabelNumberDataSeries;
     public static String LabelOneOfX;
@@ -674,6 +676,7 @@ public class Messages extends NLS
     public static String LabelSettings;
     public static String LabelShowOnlyOneYear;
     public static String LabelShowRawResponse;
+    public static String LabelSmallerSize;
     public static String LabelDividendPerShare;
     public static String LabelDividends;
     public static String LabelGreenWhiteRed;
