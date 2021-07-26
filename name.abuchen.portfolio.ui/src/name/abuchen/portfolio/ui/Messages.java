@@ -528,6 +528,7 @@ public class Messages extends NLS
     public static String LabelClientFilterNoCustomFilterExisting;
     public static String LabelClose;
     public static String FilterOnlyClosedTrades;
+    public static String LabelCollapseAll;
     public static String LabelColorSchema;
     public static String LabelColumns;
     public static String LabelCommon;
@@ -561,6 +562,7 @@ public class Messages extends NLS
     public static String LabelEarningsConsolidateRetired;
     public static String LabelEarningsUseTradeProfitLoss;
     public static String LabelEarningsTradeProfitLoss;
+    public static String LabelExpandAll;
     public static String LabelExpenses;
     public static String LabelError;
     public static String LabelEurostatRegion;
