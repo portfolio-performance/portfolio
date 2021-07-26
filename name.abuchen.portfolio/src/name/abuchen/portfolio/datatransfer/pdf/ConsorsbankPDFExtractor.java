@@ -103,7 +103,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 // Preis pro Anteil 25,640000 EUR  
                 .section("name", "wkn", "isin", "currency").optional()
                 .match("^(?<name>.*) (?<wkn>.*) (?<isin>[\\w]{12})$")
-                .match("(Kurs|Preis pro Anteil) [.,\\d]+ (?<currency>[\\w]{3})(.*)?$")
+                .match("^(Kurs|Preis pro Anteil) [.,\\d]+ (?<currency>[\\w]{3})(.*)?$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // ST 15,75243 WKN: 625952
@@ -151,13 +151,10 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // ST 132,80212
-                .section("shares").optional()
-                .match("^ST (?<shares>[.,\\d]+)$")
-                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
-
                 // ST 15,75243 WKN: 625952
+                // ST 1.000,00000 Letzte Fälligkeit 01.09.2021
                 .section("shares").optional()
-                .match("^ST (?<shares>[.,\\d]+) WKN:.*$")
+                .match("^ST (?<shares>[.,\\d]+)(.*)?$")
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 //       ST                        50,00000               WKN: 851144

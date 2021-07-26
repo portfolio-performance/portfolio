@@ -3,16 +3,19 @@ package name.abuchen.portfolio.online.impl;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
+import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.ClientSettings;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
 import name.abuchen.portfolio.util.WebAccess;
+import name.abuchen.portfolio.util.WebAccess.WebAccessException;
 
 /* package */ class YahooSymbolSearch
 {
@@ -23,13 +26,26 @@ import name.abuchen.portfolio.util.WebAccess;
         private String type;
         private String exchange;
 
-        public static Result from(JSONObject json)
+        public static Optional<Result> from(JSONObject json)
         {
-            String symbol = json.get("symbol").toString(); //$NON-NLS-1$
-            String name = json.get("name").toString(); //$NON-NLS-1$
-            String type = json.get("typeDisp").toString(); //$NON-NLS-1$
-            String exchange = json.get("exchDisp").toString(); //$NON-NLS-1$
-            return new Result(symbol, name, type, exchange);
+            Object symbol = json.get("symbol"); //$NON-NLS-1$
+            if (symbol == null)
+                return Optional.empty();
+
+            Object name = json.get("name"); //$NON-NLS-1$
+            if (name == null)
+                name = json.get("longname"); //$NON-NLS-1$
+            if (name == null)
+                name = json.get("shortname"); //$NON-NLS-1$
+
+            Object type = json.get("typeDisp"); //$NON-NLS-1$
+
+            Object exchange = json.get("exchDisp"); //$NON-NLS-1$
+            if (exchange == null)
+                exchange = json.get("exchange"); //$NON-NLS-1$
+
+            return Optional.of(new Result(String.valueOf(symbol), String.valueOf(name), String.valueOf(type),
+                            String.valueOf(exchange)));
         }
 
         private Result(String symbol, String name, String type, String exchange)
@@ -96,32 +112,40 @@ import name.abuchen.portfolio.util.WebAccess;
     {
         List<Result> answer = new ArrayList<>();
 
-        @SuppressWarnings("nls")
-        String html = new WebAccess("s.yimg.com", "/aq/autoc") //
-                        .addParameter("query", query) //
-                        .addParameter("region", "DE") //
-                        .addParameter("lang", "de-DE") //
-                        .addParameter("callback", "YAHOO.util.ScriptNodeDataSource.callbacks") //
-                        .get();
-
-        // strip away java script call back method
-        int start = html.indexOf('(');
-        int end = html.lastIndexOf(')');
-        html = html.substring(start + 1, end);
-
-        JSONObject responseData = (JSONObject) JSONValue.parse(html);
-        if (responseData != null)
+        try
         {
-            JSONObject resultSet = (JSONObject) responseData.get("ResultSet"); //$NON-NLS-1$
-            if (resultSet != null)
+            @SuppressWarnings("nls")
+            String html = new WebAccess("query2.finance.yahoo.com", "/v1/finance/search") //
+                            .addParameter("q", query) //
+                            .addParameter("region", "DE") //
+                            .addParameter("lang", "de-DE") //
+                            .addParameter("quotesCount", "6") //
+                            .addParameter("newsCount", "0") //
+                            .addParameter("enableFuzzyQuery", "false") //
+                            .addParameter("quotesQueryId", "tss_match_phrase_query") //
+                            .addParameter("multiQuoteQueryId", "multi_quote_single_token_query") //
+                            .addParameter("newsQueryId", "news_cie_vespa") //
+                            .addParameter("enableCb", "false") //
+                            .addParameter("enableNavLinks", "false") //
+                            .addParameter("enableEnhancedTrivialQuery", "false") //
+                            .get();
+
+            System.out.println(html);
+
+            JSONObject responseData = (JSONObject) JSONValue.parse(html);
+            if (responseData != null)
             {
-                JSONArray result = (JSONArray) resultSet.get("Result"); //$NON-NLS-1$
+                JSONArray result = (JSONArray) responseData.get("quotes"); //$NON-NLS-1$
                 if (result != null)
                 {
                     for (int ii = 0; ii < result.size(); ii++)
-                        answer.add(Result.from((JSONObject) result.get(ii)));
+                        Result.from((JSONObject) result.get(ii)).ifPresent(answer::add);
                 }
             }
+        }
+        catch (WebAccessException ex)
+        {
+            PortfolioLog.error(ex);
         }
 
         return answer.stream();

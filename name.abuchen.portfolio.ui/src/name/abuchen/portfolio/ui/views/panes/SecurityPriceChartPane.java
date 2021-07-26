@@ -52,6 +52,7 @@ public class SecurityPriceChartPane implements InformationPanePage
 
         chart = new SecuritiesChart(sash, client, new CurrencyConverterImpl(factory, client.getBaseCurrency()));
         stylingEngine.style(chart.getControl());
+        stylingEngine.style(chart);
 
         details = new SecurityDetailsViewer(sash, SWT.NONE, client, true);
         details.getControl().setLayoutData(new SashLayoutData(SWTHelper.getPackedWidth(details.getControl())));

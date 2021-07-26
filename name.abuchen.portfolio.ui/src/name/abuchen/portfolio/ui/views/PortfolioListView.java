@@ -326,7 +326,7 @@ public class PortfolioListView extends AbstractFinanceView implements Modificati
     protected void addPanePages(List<InformationPanePage> pages)
     {
         super.addPanePages(pages);
-        pages.add(make(TransactionsPane.class));
         pages.add(make(StatementOfAssetsPane.class));
+        pages.add(make(TransactionsPane.class));
     }
 }
