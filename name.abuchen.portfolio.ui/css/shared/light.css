@@ -88,7 +88,6 @@ SecuritiesChart {
 }
 
 .heading1 {
-	font-size: 14px;
 	font-weight: bold;
 	color: #393E42;
 }
@@ -99,10 +98,5 @@ SecuritiesChart {
 }
 
 .kpi {
-	font-size: 21px;
 	font-weight: normal;
-}
-
-.datapoint {
-	font-size: 10px;
 }

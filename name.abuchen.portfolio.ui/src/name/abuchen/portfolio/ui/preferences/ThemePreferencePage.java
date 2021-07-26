@@ -15,6 +15,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.ui.css.swt.theme.ITheme;
 import org.eclipse.e4.ui.css.swt.theme.IThemeEngine;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -220,11 +221,15 @@ public final class ThemePreferencePage extends PreferencePage
 
             if (fontSize > 0)
             {
-                css = String.format("{ font-size: %dpx;}%n" //$NON-NLS-1$
+                int[] delta = new int[] { 2, 6, -1 }; // windows + linux
+                if (Platform.OS_MACOSX.equals(Platform.getOS()))
+                    delta = new int[] { 3, 10, -1 }; // mac
+
+                css = String.format("* { font-size: %dpx;}%n" //$NON-NLS-1$
                                 + ".heading1 { font-size: %dpx; }%n" //$NON-NLS-1$
                                 + ".kpi { font-size: %dpx; }%n" //$NON-NLS-1$
                                 + ".datapoint { font-size: %dpx; }", //$NON-NLS-1$
-                                fontSize, fontSize + 3, fontSize + 10, fontSize - 1);
+                                fontSize, fontSize + delta[0], fontSize + delta[1], fontSize + delta[2]);
             }
 
             Files.writeString(getPathToCustomCSS(), css, StandardOpenOption.TRUNCATE_EXISTING);

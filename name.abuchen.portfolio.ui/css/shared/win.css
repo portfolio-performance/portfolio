@@ -1,6 +1,10 @@
+* {
+	font-family: 'Segoe UI';
+}
+
 .heading1 {
 	font-family: 'Segoe UI';
-	font-size: 15px;
+	font-size: 12px;
 }
 
 .heading2 {
@@ -9,7 +13,7 @@
 
 .kpi {
 	font-family: 'Segoe UI';
-	font-size: 21px;
+	font-size: 16px;
 }
 
 .datapoint {
