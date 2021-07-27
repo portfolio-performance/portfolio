@@ -14,7 +14,11 @@ public class ChartHeightConfig implements WidgetConfig
     {
         SMALLER(70, Messages.LabelSmallerSize), //
         NORMAL(140, Messages.LabelNormalSize), //
-        BIGGER(210, Messages.LabelBiggerSize);
+        BIGGER(210, Messages.LabelBiggerSize), //
+        TWOX(280, "2X"), //$NON-NLS-1$
+        THREEX(420, "3X"), //$NON-NLS-1$
+        FOURX(560, "4X"), //$NON-NLS-1$
+        FIVEX(700, "5X"); //$NON-NLS-1$
 
         private int pixel;
         private String label;
