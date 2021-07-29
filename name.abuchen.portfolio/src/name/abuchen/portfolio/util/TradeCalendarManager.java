@@ -29,6 +29,7 @@ import static name.abuchen.portfolio.util.HolidayName.NEW_YEARS_EVE;
 import static name.abuchen.portfolio.util.HolidayName.NEW_YEAR_HOLIDAY;
 import static name.abuchen.portfolio.util.HolidayName.REFORMATION_DAY;
 import static name.abuchen.portfolio.util.HolidayName.REMEMBERANCE_OF_PRESIDENT_FORD;
+import static name.abuchen.portfolio.util.HolidayName.REPENTANCE_AND_PRAYER;
 import static name.abuchen.portfolio.util.HolidayName.SECOND_CHRISTMAS_DAY;
 import static name.abuchen.portfolio.util.HolidayName.SPRING_MAY_BANK_HOLIDAY;
 import static name.abuchen.portfolio.util.HolidayName.SUMMER_BANK_HOLIDAY;
@@ -93,6 +94,7 @@ public class TradeCalendarManager
         tc.add(fixed(UNIFICATION_GERMANY, Month.OCTOBER, 3).validFrom(1990).validTo(1999));
         tc.add(fixed(UNIFICATION_GERMANY, Month.OCTOBER, 3).validFrom(2014));
         tc.add(fixed(REFORMATION_DAY, Month.OCTOBER, 31).onlyIn(2017));
+        tc.add(fixed(REPENTANCE_AND_PRAYER, Month.NOVEMBER, 16).moveTo(DayOfWeek.WEDNESDAY).validTo(1994));
         tc.add(fixed(CHRISTMAS_EVE, Month.DECEMBER, 24));
         tc.add(fixed(FIRST_CHRISTMAS_DAY, Month.DECEMBER, 25));
         tc.add(fixed(SECOND_CHRISTMAS_DAY, Month.DECEMBER, 26));
