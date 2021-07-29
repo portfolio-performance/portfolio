@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.panes;
 
 import java.util.ArrayList;
+import java.time.LocalDate;
 
 import javax.inject.Inject;
 
@@ -30,6 +31,7 @@ import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.views.SecurityQuoteQualityMetricsViewer;
+import name.abuchen.portfolio.util.Holiday;
 import name.abuchen.portfolio.util.Interval;
 import name.abuchen.portfolio.util.Pair;
 import name.abuchen.portfolio.util.TextUtil;
@@ -132,10 +134,11 @@ public class HistoricalPricesDataQualityPane implements InformationPanePage
                 Interval interval = (Interval) element;
 
                 if (interval.getStart().equals(interval.getEnd()))
-                    return Values.Date.format(interval.getStart());
+                    return formatDateWithHoliday(interval.getStart(), calendar);
                 else
-                    return MessageFormat.format(Messages.LabelDateXToY, Values.Date.format(interval.getStart()),
-                                    Values.Date.format(interval.getEnd()));
+                    return MessageFormat.format(Messages.LabelDateXToY,
+                                    formatDateWithHoliday(interval.getStart(), calendar),
+                                    formatDateWithHoliday(interval.getEnd(), calendar));
             }
         });
         column.setSorter(ColumnViewerSorter.create(e -> ((Interval) e).getStart()), SWT.UP);
@@ -190,5 +193,16 @@ public class HistoricalPricesDataQualityPane implements InformationPanePage
     {
         if (security != null)
             setInput(security);
+    }
+
+    private static String formatDateWithHoliday(LocalDate date, TradeCalendar calendar)
+    {
+        String result = Values.Date.format(date);
+        if (calendar == null)
+            return result;
+        Holiday holiday = calendar.getHoliday(date);
+        if (holiday != null)
+            result += " (" + holiday.getLabel() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
+        return result;
     }
 }
