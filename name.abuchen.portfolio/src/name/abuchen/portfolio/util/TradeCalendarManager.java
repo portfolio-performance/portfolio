@@ -84,7 +84,7 @@ public class TradeCalendarManager
         tc.add(easter(WHIT_MONDAY, 50));
         tc.add(fixed(LABOUR_DAY, Month.MAY, 1));
         tc.add(fixed(UNIFICATION_GERMANY, Month.OCTOBER, 3).validFrom(1990));
-        tc.add(fixed(REFORMATION_DAY, Month.OCTOBER, 31).validFrom(2017).validTo(2017));
+        tc.add(fixed(REFORMATION_DAY, Month.OCTOBER, 31).onlyIn(2017));
         tc.add(fixed(CHRISTMAS_EVE, Month.DECEMBER, 24));
         tc.add(fixed(FIRST_CHRISTMAS_DAY, Month.DECEMBER, 25));
         tc.add(fixed(SECOND_CHRISTMAS_DAY, Month.DECEMBER, 26));
@@ -93,16 +93,16 @@ public class TradeCalendarManager
 
         tc = new TradeCalendar("nyse", Messages.LabelTradeCalendarNYSE); //$NON-NLS-1$
         tc.add(fixed(NEW_YEAR, Month.JANUARY, 1).moveIf(DayOfWeek.SATURDAY, -1).moveIf(DayOfWeek.SUNDAY, 1));
-        tc.add(fixed(REMEMBERANCE_OF_PRESIDENT_FORD, Month.JANUARY, 2).validFrom(2007).validTo(2007));
+        tc.add(fixed(REMEMBERANCE_OF_PRESIDENT_FORD, Month.JANUARY, 2).onlyIn(2007));
         tc.add(weekday(MARTIN_LUTHER_KING, 3, DayOfWeek.MONDAY, Month.JANUARY));
         tc.add(weekday(WASHINGTONS_BIRTHDAY, 3, DayOfWeek.MONDAY, Month.FEBRUARY));
         tc.add(easter(GOOD_FRIDAY, -2));
         tc.add(last(MEMORIAL, DayOfWeek.MONDAY, Month.MAY));
-        tc.add(fixed(FUNERAL_OF_PRESIDENT_REAGAN, Month.JUNE, 11).validFrom(2004).validTo(2004));
+        tc.add(fixed(FUNERAL_OF_PRESIDENT_REAGAN, Month.JUNE, 11).onlyIn(2004));
         tc.add(fixed(INDEPENDENCE, Month.JULY, 4).moveIf(DayOfWeek.SATURDAY, -1).moveIf(DayOfWeek.SUNDAY, 1));
         tc.add(weekday(LABOUR_DAY, 1, DayOfWeek.MONDAY, Month.SEPTEMBER));
-        tc.add(fixed(HURRICANE_SANDY, Month.OCTOBER, 29).validFrom(2012).validTo(2012));
-        tc.add(fixed(HURRICANE_SANDY, Month.OCTOBER, 30).validFrom(2012).validTo(2012));
+        tc.add(fixed(HURRICANE_SANDY, Month.OCTOBER, 29).onlyIn(2012));
+        tc.add(fixed(HURRICANE_SANDY, Month.OCTOBER, 30).onlyIn(2012));
         tc.add(weekday(THANKSGIVING, 4, DayOfWeek.THURSDAY, Month.NOVEMBER));
         tc.add(fixed(CHRISTMAS, Month.DECEMBER, 25).moveIf(DayOfWeek.SATURDAY, -1).moveIf(DayOfWeek.SUNDAY, 1));
         CACHE.put(tc.getCode(), tc);
