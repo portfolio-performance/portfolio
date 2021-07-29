@@ -72,7 +72,7 @@ public class TradeCalendar implements Comparable<TradeCalendar>
 
         return cache.get(date.getYear()).containsKey(date);
     }
-    
+
     public Holiday getHoliday(LocalDate date)
     {
         return cache.get(date.getYear()).get(date);

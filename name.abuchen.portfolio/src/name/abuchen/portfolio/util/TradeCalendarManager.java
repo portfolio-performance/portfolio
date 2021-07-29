@@ -157,7 +157,7 @@ public class TradeCalendarManager
         tc.add(fixed(SECOND_CHRISTMAS_DAY, Month.DECEMBER, 26));
         tc.add(fixed(NEW_YEARS_EVE, Month.DECEMBER, 31));
         CACHE.put(tc.getCode(), tc);
-        
+
         // see Vienna Stock Exchange trading days on their official website:
         // https://www.wienerborse.at/handel/handelsinformationen/handelskalender/
         tc = new TradeCalendar("vse", Messages.LabelTradeCalendarVSE); //$NON-NLS-1$
@@ -169,7 +169,7 @@ public class TradeCalendarManager
         tc.add(fixed(CHRISTMAS_EVE, Month.DECEMBER, 24));
         tc.add(fixed(NEW_YEARS_EVE, Month.DECEMBER, 31));
         CACHE.put(tc.getCode(), tc);
-        
+
         // see Moscow Exchange trading days on their official website:
         // https://www.moex.com/s371
         // https://de.wikipedia.org/wiki/Feiertage_in_Russland
@@ -188,7 +188,7 @@ public class TradeCalendarManager
         tc.add(fixed(NATION_DAY, Month.JUNE, 12).moveIf(DayOfWeek.SATURDAY, 2).moveIf(DayOfWeek.SUNDAY, 1));
         tc.add(fixed(UNITY_DAY, Month.NOVEMBER, 4).moveIf(DayOfWeek.SATURDAY, 2).moveIf(DayOfWeek.SUNDAY, 1));
         CACHE.put(tc.getCode(), tc);
-        
+
         // see Toronto Stock Exchange trading days on their official website:
         // https://www.tsx.com/trading/calendars-and-trading-hours/calendar
         tc = new TradeCalendar("tsx", Messages.LabelTradeCalendarTSX); //$NON-NLS-1$
@@ -214,7 +214,7 @@ public class TradeCalendarManager
         tc.add(fixed(FIRST_CHRISTMAS_DAY, Month.DECEMBER, 25));
         tc.add(fixed(SECOND_CHRISTMAS_DAY, Month.DECEMBER, 26));
         CACHE.put(tc.getCode(), tc);
-        
+
         tc = new TradeCalendar(FIRST_OF_THE_MONTH_CODE,  Messages.LabelTradeCalendarFirstOfTheMonth)
         {
             @Override

@@ -101,7 +101,7 @@ public class HistoricalPricesDataQualityPane implements InformationPanePage
         FormDataFactory.startingWith(completeness, lCompleteness).right(new FormAttachment(100))
                         .thenBelow(lTradeCalendar).left(new FormAttachment(0)) //
                         .thenRight(tradeCalendar).right(new FormAttachment(100)) //
-                        .thenBelow(checkInterval).left(new FormAttachment(0)).right(new FormAttachment(100))
+                        .thenBelow(checkInterval).left(new FormAttachment(0)).right(new FormAttachment(100)) //
                         .thenBelow(missingLabel) //
                         .thenBelow(missingTable).bottom(new FormAttachment(100));
 
