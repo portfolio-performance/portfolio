@@ -52,16 +52,23 @@ SecuritiesChart {
 	quote-color: #4DDAFF;
 }
 
+* {
+	font-family: "#systemfont";
+}
+
 .heading1 {
+	font-family: "#org.eclipse.jface.headerfont";
 	font-weight: bold;
 	color: #D7D8D8;
 }
 
 .heading2 {
+	font-family: "#systemfont";
 	font-weight: bold;
 	color: #D7D8D8;
 }
 
 .kpi {
+	font-family: "#systemfont";
 	font-weight: normal;
 }
