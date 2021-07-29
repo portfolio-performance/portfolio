@@ -122,15 +122,17 @@ public class TradeCalendarManager
         tc.add(fixed(HURRICANE_SANDY, Month.OCTOBER, 30).onlyIn(2012));
         CACHE.put(tc.getCode(), tc);
 
+        // see https://www.gov.uk/bank-holidays
         tc = new TradeCalendar("lse", Messages.LabelTradeCalendarLSE); //$NON-NLS-1$
-        tc.add(fixed(NEW_YEAR, Month.JANUARY, 1));
+        tc.add(fixed(NEW_YEAR, Month.JANUARY, 1).moveIf(DayOfWeek.SATURDAY, 2).moveIf(DayOfWeek.SUNDAY, 1));
         tc.add(easter(GOOD_FRIDAY, -2));
         tc.add(easter(EASTER_MONDAY, 1));
         tc.add(weekday(EARLY_MAY_BANK_HOLIDAY, 1, DayOfWeek.MONDAY, Month.MAY));
         tc.add(last(SPRING_MAY_BANK_HOLIDAY, DayOfWeek.MONDAY, Month.MAY));
         tc.add(last(SUMMER_BANK_HOLIDAY, DayOfWeek.MONDAY, Month.AUGUST));
-        tc.add(fixed(FIRST_CHRISTMAS_DAY, Month.DECEMBER, 25));
-        tc.add(fixed(BOXING_DAY, Month.DECEMBER, 26));
+        tc.add(fixed(FIRST_CHRISTMAS_DAY, Month.DECEMBER, 25).moveIf(DayOfWeek.SATURDAY, 2).moveIf(DayOfWeek.SUNDAY, 2));
+            // strange but true: if 25th+26th is Sun+Mon, Christmas Day is moved *beyond* Boxing Day, to Tue
+        tc.add(fixed(BOXING_DAY, Month.DECEMBER, 26).moveIf(DayOfWeek.SUNDAY, 2).moveIf(DayOfWeek.SATURDAY, 2));
         CACHE.put(tc.getCode(), tc);
 
         tc = new TradeCalendar("euronext", Messages.LabelTradeCalendarEuronext); //$NON-NLS-1$
