@@ -27,6 +27,7 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 
 import name.abuchen.portfolio.ui.Images;
@@ -97,6 +98,8 @@ public final class ThemePreferencePage extends PreferencePage
         label = new Label(area, SWT.NONE);
         label.setText(Messages.LabelFontSize);
 
+        int systemFontSize = Display.getDefault().getSystemFont().getFontData()[0].getHeight();
+
         fontSizeCombo = new ComboViewer(area, SWT.READ_ONLY);
         fontSizeCombo.setLabelProvider(new LabelProvider()
         {
@@ -104,7 +107,12 @@ public final class ThemePreferencePage extends PreferencePage
             public String getText(Object element)
             {
                 int size = (Integer) element;
-                return size == -1 ? Messages.LabelDefaultFontSize : String.valueOf(size) + "px"; //$NON-NLS-1$
+                String label = size == -1 ? Messages.LabelDefaultFontSize : String.valueOf(size) + "px"; //$NON-NLS-1$
+
+                if (size == systemFontSize)
+                    label += " (" + Messages.LabelDefaultFontSize + ")"; //$NON-NLS-1$ //$NON-NLS-2$
+
+                return label;
             }
 
         });
@@ -221,9 +229,11 @@ public final class ThemePreferencePage extends PreferencePage
 
             if (fontSize > 0)
             {
-                int[] delta = new int[] { 2, 6, -1 }; // windows + linux
+                int[] delta = new int[] { 3, 10, -1 }; // windows
                 if (Platform.OS_MACOSX.equals(Platform.getOS()))
                     delta = new int[] { 3, 10, -1 }; // mac
+                else if (Platform.OS_LINUX.equals(Platform.getOS()))
+                    delta = new int[] { 1, 10, -1 }; // linux
 
                 css = String.format("* { font-size: %dpx;}%n" //$NON-NLS-1$
                                 + ".heading1 { font-size: %dpx; }%n" //$NON-NLS-1$
