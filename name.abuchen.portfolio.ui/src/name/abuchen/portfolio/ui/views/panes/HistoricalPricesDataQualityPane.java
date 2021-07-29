@@ -105,8 +105,9 @@ public class HistoricalPricesDataQualityPane implements InformationPanePage
                         .thenBelow(missingLabel) //
                         .thenBelow(missingTable).bottom(new FormAttachment(100));
 
-        FormDataFactory.startingWith(missingTable) //
-                        .thenRight(unexpectedTable, 20).top(new FormAttachment(missingTable, 0, SWT.TOP))
+        FormDataFactory.startingWith(missingTable).right(new FormAttachment(50, -10)) //
+                        .thenRight(unexpectedTable, 10).right(new FormAttachment(100)) //
+                        .top(new FormAttachment(missingTable, 0, SWT.TOP)) //
                         .bottom(new FormAttachment(100)) //
                         .thenUp(unexpectedLabel);
 
