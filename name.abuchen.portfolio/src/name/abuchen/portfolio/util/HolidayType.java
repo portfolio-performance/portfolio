@@ -238,6 +238,13 @@ import java.util.List;
         return this;
     }
 
+    public HolidayType onlyIn(int year)
+    {
+        this.validFrom = year;
+        this.validTo = year;
+        return this;
+    }
+
     public HolidayType moveIf(DayOfWeek dayOfWeek, int daysToAdd)
     {
         moveIf.add(new MoveIf(dayOfWeek, daysToAdd));
