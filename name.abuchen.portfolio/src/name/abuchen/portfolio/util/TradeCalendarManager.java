@@ -89,6 +89,7 @@ public class TradeCalendarManager
         tc.add(easter(WHIT_MONDAY, 50).validFrom(2015));
         tc.add(easter(CORPUS_CHRISTI, 60).validTo(1999));
         tc.add(fixed(LABOUR_DAY, Month.MAY, 1));
+        tc.add(fixed(UNIFICATION_GERMANY, Month.JUNE, 17).validFrom(1954).validTo(1990));
         tc.add(fixed(UNIFICATION_GERMANY, Month.OCTOBER, 3).validFrom(1990).validTo(1999));
         tc.add(fixed(UNIFICATION_GERMANY, Month.OCTOBER, 3).validFrom(2014));
         tc.add(fixed(REFORMATION_DAY, Month.OCTOBER, 31).onlyIn(2017));
