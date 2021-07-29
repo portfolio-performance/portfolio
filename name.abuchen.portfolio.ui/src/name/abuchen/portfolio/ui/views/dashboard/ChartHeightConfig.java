@@ -44,12 +44,16 @@ public class ChartHeightConfig implements WidgetConfig
         {
             try
             {
-                int h = Integer.parseInt(code);
+                int pixel = Integer.parseInt(code);
 
-                if (h == Height.SMALLER.pixel)
-                    this.height = Height.SMALLER;
-                else if (h == Height.BIGGER.pixel)
-                    this.height = Height.BIGGER;
+                for (Height h : Height.values())
+                {
+                    if (pixel == h.pixel)
+                    {
+                        this.height = h;
+                        break;
+                    }
+                }
             }
             catch (NumberFormatException e)
             {
