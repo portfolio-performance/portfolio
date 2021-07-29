@@ -195,6 +195,7 @@ import java.util.List;
     private int validTo = -1;
 
     private final List<MoveIf> moveIf = new ArrayList<>();
+    private DayOfWeek moveTo = null;
 
     public HolidayType(HolidayName name)
     {
@@ -251,6 +252,12 @@ import java.util.List;
         return this;
     }
 
+    public HolidayType moveTo(DayOfWeek dayOfWeek)
+    {
+        moveTo = dayOfWeek;
+        return this;
+    }
+
     public Holiday getHoliday(int year)
     {
         if (validFrom != -1 && year < validFrom)
@@ -261,12 +268,16 @@ import java.util.List;
 
         Holiday answer = doGetHoliday(year);
 
-        if (moveIf.isEmpty())
+        if (moveIf.isEmpty() && moveTo == null)
             return answer;
 
         LocalDate date = answer.getDate();
+
         for (MoveIf mv : moveIf)
             date = mv.apply(date);
+
+        while (moveTo != null && date.getDayOfWeek() != moveTo)
+            date = date.plusDays(1);
 
         return new Holiday(answer.getName(), date);
     }
