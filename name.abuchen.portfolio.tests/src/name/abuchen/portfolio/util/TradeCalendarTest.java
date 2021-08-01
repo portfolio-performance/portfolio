@@ -46,6 +46,14 @@ public class TradeCalendarTest
         assertThat(calendar.isHoliday(LocalDate.parse("2015-12-24")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2015-12-25")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2015-12-26")), is(true));
+
+        assertThat(calendar.isHoliday(LocalDate.parse("1980-06-17")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("1990-06-17")), is(true)); // German Unity Day and Sunday
+        assertThat(calendar.isHoliday(LocalDate.parse("1991-06-17")), is(false));
+
+        assertThat(calendar.isHoliday(LocalDate.parse("1989-10-03")), is(false));
+        assertThat(calendar.isHoliday(LocalDate.parse("1990-10-03")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("1991-10-03")), is(true));
     }
 
     @Test
