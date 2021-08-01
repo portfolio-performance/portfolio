@@ -57,6 +57,20 @@ public class TradeCalendarTest
     }
 
     @Test
+    public void testDayOfRepentanceAndPrayer()
+    {
+        TradeCalendar calendar = TradeCalendarManager.getInstance("de");
+
+        assertThat(calendar.isHoliday(LocalDate.parse("1989-11-22")), is(true)); // latest possible day
+        assertThat(calendar.isHoliday(LocalDate.parse("1990-11-21")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("1991-11-20")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("1992-11-18")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("1993-11-17")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("1994-11-16")), is(true)); // earliest possible day
+        assertThat(calendar.isHoliday(LocalDate.parse("1995-11-22")), is(false));
+    }
+
+    @Test
     public void testGermanHolidaysWithTrading()
     {
         TradeCalendar calendar = TradeCalendarManager.getInstance("de");
