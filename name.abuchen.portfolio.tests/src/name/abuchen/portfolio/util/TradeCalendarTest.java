@@ -54,6 +54,8 @@ public class TradeCalendarTest
         assertThat(calendar.isHoliday(LocalDate.parse("1989-10-03")), is(false));
         assertThat(calendar.isHoliday(LocalDate.parse("1990-10-03")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("1991-10-03")), is(true));
+
+        assertThat(calendar.isHoliday(LocalDate.parse("2008-05-01")), is(true)); // Ascension and Labour Day coincide
     }
 
     @Test
