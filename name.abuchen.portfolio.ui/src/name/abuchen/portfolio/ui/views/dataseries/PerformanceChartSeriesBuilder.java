@@ -19,6 +19,9 @@ public class PerformanceChartSeriesBuilder extends AbstractChartSeriesBuilder
 
     public void build(DataSeries series, Interval reportingPeriod, Aggregation.Period aggregationPeriod)
     {
+        if (!series.isVisible())
+            return;
+
         PerformanceIndex index = getCache().lookup(series, reportingPeriod);
 
         if (series.getType() == DataSeries.Type.CLIENT)

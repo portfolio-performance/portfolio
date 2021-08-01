@@ -86,6 +86,12 @@ public final class DataSeries implements Adaptable
     private boolean showArea;
     private LineStyle lineStyle = LineStyle.SOLID;
 
+    /**
+     * indicates whether the data series is visible or (temporarily) removed
+     * from the chart
+     */
+    private boolean isVisible = true;
+
     /* package */ DataSeries(Type type, Object instance, String label, RGB color)
     {
         this(type, null, instance, label, color);
@@ -223,6 +229,16 @@ public final class DataSeries implements Adaptable
     public String getUUID()
     {
         return this.type.buildUUID(instance);
+    }
+
+    public boolean isVisible()
+    {
+        return isVisible;
+    }
+
+    public void setVisible(boolean isVisible)
+    {
+        this.isVisible = isVisible;
     }
 
     @Override
