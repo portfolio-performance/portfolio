@@ -78,6 +78,17 @@ public class TradeCalendarTest
         assertThat(calendar.isHoliday(LocalDate.parse("2010-12-24")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2010-12-25")), is(true)); // Saturday
         assertThat(calendar.isHoliday(LocalDate.parse("2010-12-26")), is(true));
+
+        assertThat(calendar.isHoliday(LocalDate.parse("2021-12-31")), is(false));
+        assertThat(calendar.isHoliday(LocalDate.parse("2022-01-01")), is(true)); // Saturday and New Year, not moved
+        assertThat(calendar.isHoliday(LocalDate.parse("2022-01-02")), is(true)); // Sunday
+        assertThat(calendar.isHoliday(LocalDate.parse("2022-01-03")), is(false));
+
+        assertThat(calendar.isHoliday(LocalDate.parse("2022-12-30")), is(false));
+        assertThat(calendar.isHoliday(LocalDate.parse("2022-12-31")), is(true)); // Saturday
+        assertThat(calendar.isHoliday(LocalDate.parse("2023-01-01")), is(true)); // Sunday (and New Year)
+        assertThat(calendar.isHoliday(LocalDate.parse("2023-01-02")), is(true)); // Monday (New Year observed)
+        assertThat(calendar.isHoliday(LocalDate.parse("2023-01-03")), is(false));
     }
 
     @Test
