@@ -1198,7 +1198,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 })
 
                 // Gewinn/Verlust 0,00 EUR              **Einbeh. Steuer EUR                -1,00
-                .section("currency").optional()
+                .section("amount", "currency").optional()
                 .match("^.* \\*\\*Einbeh\\. Steuer ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?-(?<amount>[.,\\d]+)$")
                 .assign((t, v) -> {
                     if (t.getCurrencyCode().contentEquals(v.get("currency")))
