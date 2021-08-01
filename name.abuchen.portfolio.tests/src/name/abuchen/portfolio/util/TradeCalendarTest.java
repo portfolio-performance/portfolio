@@ -49,6 +49,41 @@ public class TradeCalendarTest
     }
 
     @Test
+    public void testGermanHolidaysWithTrading()
+    {
+        TradeCalendar calendar = TradeCalendarManager.getInstance("de");
+
+        // Ascension
+        assertThat(calendar.isHoliday(LocalDate.parse("1999-05-13")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2000-06-01")), is(false)); // trading despite public holiday
+        assertThat(calendar.isHoliday(LocalDate.parse("2013-05-09")), is(false)); // trading despite public holiday
+        assertThat(calendar.isHoliday(LocalDate.parse("2014-05-29")), is(false)); // trading despite public holiday
+        assertThat(calendar.isHoliday(LocalDate.parse("2015-05-14")), is(false)); // trading despite public holiday
+        assertThat(calendar.isHoliday(LocalDate.parse("2021-05-13")), is(false)); // trading despite public holiday
+
+        // Whit Monday
+        assertThat(calendar.isHoliday(LocalDate.parse("1999-05-24")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2000-06-12")), is(false)); // trading despite public holiday
+        assertThat(calendar.isHoliday(LocalDate.parse("2013-05-20")), is(false)); // trading despite public holiday
+        assertThat(calendar.isHoliday(LocalDate.parse("2014-06-09")), is(false)); // trading despite public holiday
+        assertThat(calendar.isHoliday(LocalDate.parse("2015-05-25")), is(true));
+
+        // Corpus Christi
+        assertThat(calendar.isHoliday(LocalDate.parse("1999-06-03")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2000-06-22")), is(false)); // trading despite public holiday
+        assertThat(calendar.isHoliday(LocalDate.parse("2013-05-30")), is(false)); // trading despite public holiday
+        assertThat(calendar.isHoliday(LocalDate.parse("2014-06-19")), is(false)); // trading despite public holiday
+        assertThat(calendar.isHoliday(LocalDate.parse("2015-06-04")), is(false)); // trading despite public holiday
+        assertThat(calendar.isHoliday(LocalDate.parse("2021-06-03")), is(false)); // trading despite public holiday
+
+        // German Unity Day
+        assertThat(calendar.isHoliday(LocalDate.parse("1999-10-03")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2000-10-03")), is(false)); // trading despite public holiday
+        assertThat(calendar.isHoliday(LocalDate.parse("2013-10-03")), is(false)); // trading despite public holiday
+        assertThat(calendar.isHoliday(LocalDate.parse("2014-10-03")), is(true));
+    }
+
+    @Test
     public void testHolidaysWithCondition()
     {
         TradeCalendar calendar = TradeCalendarManager.getInstance("nyse");
