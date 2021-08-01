@@ -1858,6 +1858,43 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
+    public void testFinTechWertpapierAusgang06()
+    {
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FinTechWertpapierAusgang06.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security items
+        List<Item> securities = results.stream().filter(i -> i instanceof SecurityItem).collect(Collectors.toList());
+        assertThat(securities.get(0).getSecurity().getIsin(), is("LU0392494562"));
+        assertThat(securities.get(1).getSecurity().getIsin(), is("LU0444605645"));
+
+        // check buy sell transaction items
+        List<Item> entries = results.stream().filter(i -> i instanceof BuySellEntryItem).collect(Collectors.toList());
+        BuySellEntry entry = (BuySellEntry) entries.get(0).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-09-18T00:00")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(310)));
+
+        entry = (BuySellEntry) entries.get(1).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-09-18T00:00")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(118)));
+    }
+
+    @Test
     public void testFinTechWertpapierEingang01()
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());

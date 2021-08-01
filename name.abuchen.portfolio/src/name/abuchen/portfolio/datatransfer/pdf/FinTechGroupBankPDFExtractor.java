@@ -759,12 +759,26 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
     private void addTransferOutTransaction()
     {
-        DocumentType type = new DocumentType("Depotausgang|Bestandsausbuchung|Gutschrifts- \\/ Belastungsanzeige");
+        DocumentType type = new DocumentType("Depotausgang|Bestandsausbuchung|Gutschrifts- \\/ Belastungsanzeige",
+                        (context, lines) -> {
+                            // Not all documents have a per-security transaction date, so use the letter-head as default.
+                            //              Frankfurt, 18.09.2020
+                            Pattern pDate = Pattern.compile("^\\s*Frankfurt( am Main)?,\\s+(den )?(?<date>\\d+.\\d+.\\d{4})$");
+                            for (String line : lines)
+                            {
+                                Matcher m = pDate.matcher(line);
+                                if (m.matches())
+                                    context.put("date", m.group("date"));
+                            }
+                        });
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
         pdfTransaction.subject(() -> {
             BuySellEntry entry = new BuySellEntry();
+            String date = type.getCurrentContext().get("date");
+            if (date == null) throw new IllegalArgumentException("document date is null, parsing must have failed");
+            entry.setDate(asDate(date));
             entry.setType(PortfolioTransaction.Type.SELL);
             return entry;
         });
@@ -790,11 +804,12 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                     t.setShares(asShares(v.get("shares")));
                 })
 
+                // St./Nominale      :      310,000000 St.  Bemessungs-
                 // Stk./Nominale  : 325,000000 Stk         Einbeh. Steuer*:            382,12 EUR
                 .section("shares", "notation").optional()
-                .match("^Stk\\.\\/Nominale([\\*\\s]+)?: ([\\s]+)?(?<shares>[.,\\d]+) ([\\s]+)?(?<notation>St\\.|[\\w]{3})(.*)$")
+                .match("^Stk?\\.\\/Nominale([\\*\\s]+)?: ([\\s]+)?(?<shares>[.,\\d]+) ([\\s]+)?(?<notation>St\\.|[\\w]{3})(.*)$")
                 .assign((t, v) -> {
-                    if (v.get("notation") != null && !v.get("notation").equalsIgnoreCase("Stk"))
+                    if (v.get("notation") != null && !v.get("notation").toLowerCase().startsWith("st"))
                     {
                         // Prozent-Notierung, Workaround..
                         t.setShares((asShares(v.get("shares")) / 100));
