@@ -87,6 +87,11 @@ public class TradeCalendarTest
 
         TradeCalendar calendar = TradeCalendarManager.getInstance("nyse");
 
+        assertThat(calendar.isHoliday(LocalDate.parse("2001-09-10")), is(false)); // regular Monday
+        assertThat(calendar.isHoliday(LocalDate.parse("2001-09-11")), is(true)); // closed after terrorist attacks (9/11)
+        assertThat(calendar.isHoliday(LocalDate.parse("2001-09-14")), is(true)); // ... still closed
+        assertThat(calendar.isHoliday(LocalDate.parse("2001-09-17")), is(false)); // reopened the following Monday
+
         assertThat(calendar.isHoliday(LocalDate.parse("2020-01-01")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2020-01-20")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2020-02-17")), is(true));
