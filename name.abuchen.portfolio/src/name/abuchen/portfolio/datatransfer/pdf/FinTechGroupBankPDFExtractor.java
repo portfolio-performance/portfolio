@@ -172,206 +172,113 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 // Gewinn/Verlust 0,00 EUR              **Einbeh. Steuer EUR                -1,00
                 .section("taxRefund", "currency").optional()
                 .match("^.* \\*\\*Einbeh\\. Steuer ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?-(?<taxRefund>[.,\\d]+)$")
-                .assign((t, v) -> {
-                    if (t.getPortfolioTransaction().getCurrencyCode().equals(v.get("currency")))
-                    {
-                        t.setAmount(t.getPortfolioTransaction().getAmount() - asAmount(v.get("taxRefund")));
-                    }
-                })
+                .assign(this::extractTaxRefundSameCurrency)
 
                 // Devisenkurs   : 1,192200(x)             Provision     :
                 // Gewinn/Verlust 0,00 EUR              **Einbeh. Steuer EUR                -1,00
                 .section("taxRefund", "currency", "exchangeRate").optional()
                 .match("^Devisenkurs ([:\\s]+)?(?<exchangeRate>[.,\\d]+).*$")
                 .match("^.* \\*\\*Einbeh\\. Steuer ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?-(?<taxRefund>[.,\\d]+)$")
-                .assign((t, v) -> {
-                    if (!t.getPortfolioTransaction().getCurrencyCode().equals(v.get("currency")))
-                    {
-                        Money taxRefundFX = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("taxRefund")));
-
-                        BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
-
-                        taxRefundFX = Money.of(t.getPortfolioTransaction().getCurrencyCode(), 
-                                        BigDecimal.valueOf(taxRefundFX.getAmount()).multiply(exchangeRate)
-                                            .setScale(0, RoundingMode.HALF_UP).longValue());
-                        
-                        v.put("taxRefund", BigDecimal.valueOf(taxRefundFX.getAmount(), 2).toString().replace('.', ','));
-
-                        t.setAmount(t.getPortfolioTransaction().getAmount() - asAmount(v.get("taxRefund")));
-                    }
-                })
+                .assign(this::extractTaxRefundDifferentCurrency)
 
                 // Gewinn/Verlust            0,00 EUR    **Einbeh. Steuer                -1,00 EUR
                 .section("taxRefund", "currency").optional()
                 .match("^.* \\*\\*Einbeh\\. Steuer ([\\s]+)?-(?<taxRefund>[.,\\d]+) (?<currency>[\\w]{3})$")
-                .assign((t, v) -> {
-                    if (t.getPortfolioTransaction().getCurrencyCode().equals(v.get("currency")))
-                    {
-                        t.setAmount(t.getPortfolioTransaction().getAmount() - asAmount(v.get("taxRefund")));
-                    }
-                })
+                .assign(this::extractTaxRefundDifferentCurrency)
 
                 // Devisenkurs   : 1,192200(x)             Provision     :
                 // Gewinn/Verlust            0,00 EUR    **Einbeh. Steuer                -1,00 EUR
                 .section("taxRefund", "currency", "exchangeRate").optional()
                 .match("^Devisenkurs ([:\\s]+)?(?<exchangeRate>[.,\\d]+).*$")
                 .match("^.* \\*\\*Einbeh\\. Steuer ([\\s]+)?-(?<taxRefund>[.,\\d]+) (?<currency>[\\w]{3})$")
-                .assign((t, v) -> {
-                    if (!t.getPortfolioTransaction().getCurrencyCode().equals(v.get("currency")))
-                    {
-                        Money taxRefundFX = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("taxRefund")));
-
-                        BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
-
-                        taxRefundFX = Money.of(t.getPortfolioTransaction().getCurrencyCode(), 
-                                        BigDecimal.valueOf(taxRefundFX.getAmount()).multiply(exchangeRate)
-                                            .setScale(0, RoundingMode.HALF_UP).longValue());
-
-                        v.put("taxRefund", BigDecimal.valueOf(taxRefundFX.getAmount(), 2).toString().replace('.', ','));
-
-                        t.setAmount(t.getPortfolioTransaction().getAmount() - asAmount(v.get("taxRefund")));
-                    }
-                })
+                .assign(this::extractTaxRefundDifferentCurrency)
 
                 // Gewinn/Verlust:            0,00 EUR   **Einbeh. Steuer:              -1,00 EUR
                 .section("taxRefund", "currency").optional()
                 .match("^.* \\*\\*Einbeh\\. Steuer([\\s]+)?: ([\\s]+)?-(?<taxRefund>[.,\\d]+) (?<currency>[\\w]{3})$")
-                .assign((t, v) -> {
-                    if (t.getPortfolioTransaction().getCurrencyCode().equals(v.get("currency")))
-                    {
-                        t.setAmount(t.getPortfolioTransaction().getAmount() - asAmount(v.get("taxRefund")));
-                    }
-                })
-
+                .assign(this::extractTaxRefundSameCurrency)
+                
                 // Devisenkurs   : 1,192200(x)             Provision     :
                 // Gewinn/Verlust:            0,00 EUR   **Einbeh. Steuer:              -1,00 EUR
                 .section("taxRefund", "currency", "exchangeRate").optional()
                 .match("^Devisenkurs ([:\\s]+)?(?<exchangeRate>[.,\\d]+).*$")
                 .match("^.* \\*\\*Einbeh\\. Steuer([\\s]+)?: ([\\s]+)?-(?<taxRefund>[.,\\d]+) (?<currency>[\\w]{3})$")
-                .assign((t, v) -> {
-                    if (!t.getPortfolioTransaction().getCurrencyCode().equals(v.get("currency")))
-                    {
-                        Money taxRefundFX = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("taxRefund")));
-
-                        BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
-
-                        taxRefundFX = Money.of(t.getPortfolioTransaction().getCurrencyCode(), 
-                                        BigDecimal.valueOf(taxRefundFX.getAmount()).multiply(exchangeRate)
-                                            .setScale(0, RoundingMode.HALF_UP).longValue());
-
-                        v.put("taxRefund", BigDecimal.valueOf(taxRefundFX.getAmount(), 2).toString().replace('.', ','));
-
-                        t.setAmount(t.getPortfolioTransaction().getAmount() - asAmount(v.get("taxRefund")));
-                    }
-                })
+                .assign(this::extractTaxRefundDifferentCurrency)
 
                 // Gewinn/Verlust 0,00 EUR              **Einbeh. KESt   EUR                -1,00
                 .section("taxRefund", "currency").optional()
                 .match("^.* \\*\\*Einbeh\\. KESt ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?-(?<taxRefund>[.,\\d]+)$")
-                .assign((t, v) -> {
-                    if (t.getPortfolioTransaction().getCurrencyCode().equals(v.get("currency")))
-                    {
-                        t.setAmount(t.getPortfolioTransaction().getAmount() - asAmount(v.get("taxRefund")));
-                    }
-                })
+                .assign(this::extractTaxRefundSameCurrency)
 
                 // Devisenkurs   : 1,192200(x)             Provision     :
                 // Gewinn/Verlust 0,00 EUR              **Einbeh. KESt   EUR                -1,00
                 .section("taxRefund", "currency", "exchangeRate").optional()
                 .match("^Devisenkurs ([:\\s]+)?(?<exchangeRate>[.,\\d]+).*$")
                 .match("^.* \\*\\*Einbeh\\. KESt ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?-(?<taxRefund>[.,\\d]+)$")
-                .assign((t, v) -> {
-                    if (!t.getPortfolioTransaction().getCurrencyCode().equals(v.get("currency")))
-                    {
-                        Money taxRefundFX = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("taxRefund")));
-
-                        BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
-
-                        taxRefundFX = Money.of(t.getPortfolioTransaction().getCurrencyCode(), 
-                                        BigDecimal.valueOf(taxRefundFX.getAmount()).multiply(exchangeRate)
-                                            .setScale(0, RoundingMode.HALF_UP).longValue());
-
-                        v.put("taxRefund", BigDecimal.valueOf(taxRefundFX.getAmount(), 2).toString().replace('.', ','));
-
-                        t.setAmount(t.getPortfolioTransaction().getAmount() - asAmount(v.get("taxRefund")));
-                    }
-                })
+                .assign(this::extractTaxRefundDifferentCurrency)
 
                 // Gewinn/Verlust:        1.112,18 EUR   **Einbeh. KESt  :            -305,85 EUR
                 .section("taxRefund", "currency").optional()
                 .match("^.* \\*\\*Einbeh\\. KESt([\\s]+)?: ([\\s]+)?-(?<taxRefund>[.,\\d]+) (?<currency>[\\w]{3})$")
-                .assign((t, v) -> {
-                    if (t.getPortfolioTransaction().getCurrencyCode().equals(v.get("currency")))
-                    {
-                        t.setAmount(t.getPortfolioTransaction().getAmount() - asAmount(v.get("taxRefund")));
-                    }
-                })
+                .assign(this::extractTaxRefundSameCurrency)
 
                 // Devisenkurs   : 1,192200(x)             Provision     :
                 // Gewinn/Verlust:        1.112,18 EUR   **Einbeh. KESt  :            -305,85 EUR
                 .section("taxRefund", "currency", "exchangeRate").optional()
                 .match("^Devisenkurs ([:\\s]+)?(?<exchangeRate>[.,\\d]+).*$")
                 .match("^.* \\*\\*Einbeh\\. KESt([\\s]+)?: ([\\s]+)?-(?<taxRefund>[.,\\d]+) (?<currency>[\\w]{3})$")
-                .assign((t, v) -> {
-                    if (!t.getPortfolioTransaction().getCurrencyCode().equals(v.get("currency")))
-                    {
-                        Money taxRefundFX = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("taxRefund")));
-
-                        BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
-
-                        taxRefundFX = Money.of(t.getPortfolioTransaction().getCurrencyCode(), 
-                                        BigDecimal.valueOf(taxRefundFX.getAmount()).multiply(exchangeRate)
-                                            .setScale(0, RoundingMode.HALF_UP).longValue());
-
-                        v.put("taxRefund", BigDecimal.valueOf(taxRefundFX.getAmount(), 2).toString().replace('.', ','));
-
-                        t.setAmount(t.getPortfolioTransaction().getAmount() - asAmount(v.get("taxRefund")));
-                    }
-                })
+                .assign(this::extractTaxRefundDifferentCurrency)
 
                 //                                     ***Einbeh. SichSt EUR                -1,00
                 .section("taxRefund", "currency").optional()
                 .match("^.* \\*\\*\\*Einbeh\\. SichSt ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?-(?<taxRefund>[.,\\d]+)$")
-                .assign((t, v) -> {
-                    if (t.getPortfolioTransaction().getCurrencyCode().equals(v.get("currency")))
-                    {
-                        t.setAmount(t.getPortfolioTransaction().getAmount() - asAmount(v.get("taxRefund")));
-                    }
-                })
+                .assign(this::extractTaxRefundSameCurrency)
 
                 // Devisenkurs   : 1,192200(x)             Provision     :
                 //                                     ***Einbeh. SichSt EUR                -1,00
                 .section("taxRefund", "currency", "exchangeRate").optional()
                 .match("^Devisenkurs ([:\\s]+)?(?<exchangeRate>[.,\\d]+).*$")
                 .match("^.* \\*\\*\\*Einbeh\\. SichSt ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?-(?<taxRefund>[.,\\d]+)$")
-                .assign((t, v) -> {
-                    if (!t.getPortfolioTransaction().getCurrencyCode().equals(v.get("currency")))
-                    {
-                        Money taxRefundFX = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("taxRefund")));
-
-                        BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
-
-                        taxRefundFX = Money.of(t.getPortfolioTransaction().getCurrencyCode(), 
-                                        BigDecimal.valueOf(taxRefundFX.getAmount()).multiply(exchangeRate)
-                                            .setScale(0, RoundingMode.HALF_UP).longValue());
-
-                        v.put("taxRefund", BigDecimal.valueOf(taxRefundFX.getAmount(), 2).toString().replace('.', ','));
-
-                        t.setAmount(t.getPortfolioTransaction().getAmount() - asAmount(v.get("taxRefund")));
-                    }
-                })
+                .assign(this::extractTaxRefundDifferentCurrency)
 
                 .wrap(BuySellEntryItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
         addTaxReturnBlock(type);
+    }
+
+    private void extractTaxRefundDifferentCurrency(BuySellEntry t, Map<String, String> v)
+    {
+        if (!t.getPortfolioTransaction().getCurrencyCode().equals(v.get("currency")))
+        {
+            Money taxRefundFX = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("taxRefund")));
+
+            BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+            exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+
+            taxRefundFX = Money.of(t.getPortfolioTransaction().getCurrencyCode(),
+                            BigDecimal.valueOf(taxRefundFX.getAmount()).multiply(exchangeRate)
+                                            .setScale(0, RoundingMode.HALF_UP).longValue());
+
+            v.put("taxRefund", BigDecimal.valueOf(taxRefundFX.getAmount(), 2).toString().replace('.', ','));
+            addTaxRefund(t, v);
+        }
+    }
+
+    private void extractTaxRefundSameCurrency(BuySellEntry t, Map<String, String> v)
+    {
+        if (t.getPortfolioTransaction().getCurrencyCode().equals(v.get("currency")))
+        {
+            addTaxRefund(t, v);
+        }
+    }
+
+    private void addTaxRefund(BuySellEntry t, Map<String, String> v) {
+        // For SELL transaction we need to subtract refunded taxes.
+        // For BUY transactions we need to add refunded taxes.
+        int negative = t.getPortfolioTransaction().getType() == PortfolioTransaction.Type.SELL ? -1 : 1;
+        t.setAmount(t.getPortfolioTransaction().getAmount() + negative * asAmount(v.get("taxRefund")));
     }
 
     private void addSummaryStatementBuySellTransaction()
@@ -461,35 +368,14 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 // Lagerland    : Deutschland           **Einbeh. Steuer :            -100,00 EUR
                 .section("taxRefund", "currency").optional()
                 .match("^.* \\*\\*Einbeh\\. Steuer([\\s]+)?: ([\\s]+)?-(?<taxRefund>[.,\\d]+) (?<currency>[\\w]{3})$")
-                .assign((t, v) -> {
-                    if (t.getPortfolioTransaction().getCurrencyCode().equals(v.get("currency")))
-                    {
-                        t.setAmount(t.getPortfolioTransaction().getAmount() - asAmount(v.get("taxRefund")));
-                    }
-                })
+                .assign(this::extractTaxRefundSameCurrency)
 
                 // Devisenkurs   : 1,192200(x)             Provision     :
                 // Lagerland    : Deutschland           **Einbeh. Steuer :            -100,00 EUR
                 .section("taxRefund", "currency", "exchangeRate").optional()
                 .match("^Devisenkurs ([\\s]+)?: (?<exchangeRate>[.,\\d]+).*$")
                 .match("^.* \\*\\*Einbeh\\. Steuer([\\s]+)?: ([\\s]+)?-(?<taxRefund>[.,\\d]+) (?<currency>[\\w]{3})$")
-                .assign((t, v) -> {
-                    if (!t.getPortfolioTransaction().getCurrencyCode().equals(v.get("currency")))
-                    {
-                        Money taxRefundFX = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("taxRefund")));
-
-                        BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
-
-                        taxRefundFX = Money.of(t.getPortfolioTransaction().getCurrencyCode(), 
-                                        BigDecimal.valueOf(taxRefundFX.getAmount()).multiply(exchangeRate)
-                                            .setScale(0, RoundingMode.HALF_UP).longValue());
-
-                        v.put("taxRefund", BigDecimal.valueOf(taxRefundFX.getAmount(), 2).toString().replace('.', ','));
-
-                        t.setAmount(t.getPortfolioTransaction().getAmount() - asAmount(v.get("taxRefund")));
-                    }
-                })
+                .assign(this::extractTaxRefundDifferentCurrency)
 
                 .wrap(BuySellEntryItem::new);
 
