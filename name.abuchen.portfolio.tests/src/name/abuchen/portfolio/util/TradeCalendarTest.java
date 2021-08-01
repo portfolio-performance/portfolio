@@ -184,8 +184,7 @@ public class TradeCalendarTest
     @Test
     public void testLSE()
     {
-        // See
-        // https://www.lseg.com/areas-expertise/our-markets/london-stock-exchange/equities-markets/trading-services/business-days
+        // See https://www.londonstockexchange.com/trade/trading-access/business-days
 
         TradeCalendar calendar = TradeCalendarManager.getInstance("lse");
 
@@ -197,6 +196,19 @@ public class TradeCalendarTest
         assertThat(calendar.isHoliday(LocalDate.parse("2019-08-26")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2019-12-25")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2019-12-26")), is(true));
+
+        assertThat(calendar.isHoliday(LocalDate.parse("2021-12-24")), is(false));
+        assertThat(calendar.isHoliday(LocalDate.parse("2021-12-25")), is(true)); // Saturday and Christmas Day
+        assertThat(calendar.isHoliday(LocalDate.parse("2021-12-26")), is(true)); // Sunday and Boxing Day
+        assertThat(calendar.isHoliday(LocalDate.parse("2021-12-27")), is(true)); // Monday, substitute for holiday
+        assertThat(calendar.isHoliday(LocalDate.parse("2021-12-28")), is(true)); // Tuesday, substitute for holiday
+        assertThat(calendar.isHoliday(LocalDate.parse("2021-12-29")), is(false));
+        assertThat(calendar.isHoliday(LocalDate.parse("2021-12-30")), is(false));
+        assertThat(calendar.isHoliday(LocalDate.parse("2021-12-31")), is(false));
+        assertThat(calendar.isHoliday(LocalDate.parse("2022-01-01")), is(true)); // Saturday and New Year
+        assertThat(calendar.isHoliday(LocalDate.parse("2022-01-02")), is(true)); // Sunday
+        assertThat(calendar.isHoliday(LocalDate.parse("2022-01-03")), is(true)); // Monday, substitute for holiday
+        assertThat(calendar.isHoliday(LocalDate.parse("2022-01-04")), is(false));
     }
 
     @Test
