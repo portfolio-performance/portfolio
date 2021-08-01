@@ -127,7 +127,7 @@ public class ClientFactory
         }
     }
 
-    private interface ClientPersister
+    interface ClientPersister
     {
         Client load(InputStream input) throws IOException;
 
@@ -384,6 +384,11 @@ public class ClientFactory
         return file.getName().endsWith(".zip"); //$NON-NLS-1$
     }
 
+    public static boolean isBinary(File file)
+    {
+        return file.getName().endsWith(".pp"); //$NON-NLS-1$
+    }
+
     public static boolean isKeyLengthSupported(int keyLength)
     {
         try
@@ -460,6 +465,8 @@ public class ClientFactory
             return new Decryptor(method, password);
         else if (file != null && isCompressed(file))
             return new PlainWriterZIP();
+        else if (file != null && isBinary(file))
+            return new ProtobufWriter();
         else
             return new PlainWriter();
     }

@@ -103,6 +103,11 @@ public final class Security implements Attributable, InvestmentVehicle
         this.feed = feed;
     }
 
+    /* package */ Security(String uuid)
+    {
+        this.uuid = uuid;
+    }
+
     @Override
     public String getUUID()
     {

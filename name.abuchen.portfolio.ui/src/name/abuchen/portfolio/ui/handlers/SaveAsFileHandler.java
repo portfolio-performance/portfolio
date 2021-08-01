@@ -19,14 +19,17 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.util.DesktopAPI;
+import name.abuchen.portfolio.ui.util.swt.ActiveShell;
 
 public class SaveAsFileHandler
 {
@@ -56,16 +59,25 @@ public class SaveAsFileHandler
         }
 
         // trigger part to save file
-        ((PortfolioPart) part.getObject()).doSaveAs(shell, extension, encryptionMethod);
+        try
+        {
+            ((PortfolioPart) part.getObject()).doSaveAs(shell, extension, encryptionMethod);
+        }
+        catch (RuntimeException e)
+        {
+            PortfolioPlugin.log(e);
+
+            Display.getDefault().asyncExec(
+                            () -> MessageDialog.openError(ActiveShell.get(), Messages.LabelError, e.getMessage()));
+        }
     }
 
     private static class JurisdictionFilesDownloadDialog extends MessageDialog
     {
         public JurisdictionFilesDownloadDialog(Shell parentShell)
         {
-            super(parentShell, Messages.JurisdictionFilesDownloadTitle, null,
-                            Messages.JurisdictionFilesDownloadMessage, CONFIRM,
-                            new String[] { IDialogConstants.OK_LABEL }, 0);
+            super(parentShell, Messages.JurisdictionFilesDownloadTitle, null, Messages.JurisdictionFilesDownloadMessage,
+                            CONFIRM, new String[] { IDialogConstants.OK_LABEL }, 0);
         }
 
         @Override

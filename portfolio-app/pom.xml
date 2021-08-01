@@ -16,7 +16,7 @@
 		<gpgsigner.skip>true</gpgsigner.skip>
 		<applesigner.skip>true</applesigner.skip>
 		<sonar.skippedModules>name.abuchen.portfolio.feature</sonar.skippedModules>
-		<sonar.exclusions>**/Messages.java</sonar.exclusions>
+		<sonar.exclusions>**/Messages.java,**/name/abuchen/portfolio/model/protos/**</sonar.exclusions>
 		<sonar.organization>buchen-github</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
@@ -311,6 +311,7 @@
 								<consoleOutput>true</consoleOutput>
 								<failsOnError>true</failsOnError>
 								<linkXRef>false</linkXRef>
+								<excludes>**/name/abuchen/portfolio/model/protos/*</excludes>
 							</configuration>
 							<goals>
 								<goal>check</goal>
@@ -338,6 +339,11 @@
 					<artifactId>jacoco-maven-plugin</artifactId>
 					<version>0.8.5</version>
 				</plugin>
+	            <plugin>
+	                <groupId>com.github.os72</groupId>
+	                <artifactId>protoc-jar-maven-plugin</artifactId>
+	                <version>3.11.4</version>
+	            </plugin>
 			</plugins>
 		</pluginManagement>
 	</build>

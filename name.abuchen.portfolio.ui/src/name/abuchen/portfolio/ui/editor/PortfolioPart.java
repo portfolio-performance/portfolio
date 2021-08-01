@@ -484,7 +484,8 @@ public class PortfolioPart implements ClientInputListener
 
     /* package */ void markDirty()
     {
-        clientInput.markDirty();
+        if (clientInput != null)
+            clientInput.markDirty();
     }
 
     public void activateView(Class<? extends AbstractFinanceView> view, Object parameter)
