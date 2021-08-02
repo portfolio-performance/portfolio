@@ -211,6 +211,12 @@ public class TradeCalendarTest
         assertThat(calendar.isHoliday(LocalDate.parse("2022-01-02")), is(true)); // Sunday
         assertThat(calendar.isHoliday(LocalDate.parse("2022-01-03")), is(true)); // Monday, substitute for holiday
         assertThat(calendar.isHoliday(LocalDate.parse("2022-01-04")), is(false));
+
+        // Early May Bank Holiday moved to VE Day in 1995 and 2020
+        assertThat(calendar.isHoliday(LocalDate.parse("1995-05-01")), is(false));
+        assertThat(calendar.isHoliday(LocalDate.parse("1995-05-08")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2020-05-04")), is(false));
+        assertThat(calendar.isHoliday(LocalDate.parse("2020-05-08")), is(true));
     }
 
     @Test
