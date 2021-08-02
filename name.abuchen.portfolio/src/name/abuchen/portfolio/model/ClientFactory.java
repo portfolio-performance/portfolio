@@ -1009,8 +1009,8 @@ public class ClientFactory
                     l.setHigh(l.getHigh() * decimalPlacesAdded);
                 if (l.getLow() != -1)
                     l.setLow(l.getLow() * decimalPlacesAdded);
-                if (l.getPreviousClose() != -1)
-                    l.setPreviousClose(l.getPreviousClose() * decimalPlacesAdded);
+                if (l.previousClose != -1)
+                    l.previousClose = l.previousClose * decimalPlacesAdded;
             }
         }
 
