@@ -7,7 +7,9 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /* package */ abstract class HolidayType
 {
@@ -193,6 +195,7 @@ import java.util.List;
 
     private int validFrom = -1;
     private int validTo = -1;
+    private final Set<Integer> exceptIn = new HashSet<>();
 
     private final List<MoveIf> moveIf = new ArrayList<>();
     private DayOfWeek moveTo = null;
@@ -246,6 +249,12 @@ import java.util.List;
         return this;
     }
 
+    public HolidayType exceptIn(int year)
+    {
+        this.exceptIn.add(year);
+        return this;
+    }
+
     public HolidayType moveIf(DayOfWeek dayOfWeek, int daysToAdd)
     {
         moveIf.add(new MoveIf(dayOfWeek, daysToAdd));
@@ -264,6 +273,9 @@ import java.util.List;
             return null;
 
         if (validTo != -1 && year > validTo)
+            return null;
+
+        if (exceptIn.contains(year))
             return null;
 
         Holiday answer = doGetHoliday(year);
