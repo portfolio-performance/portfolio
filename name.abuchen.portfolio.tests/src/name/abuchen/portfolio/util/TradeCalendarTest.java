@@ -218,6 +218,20 @@ public class TradeCalendarTest
         assertThat(calendar.isHoliday(LocalDate.parse("2020-05-04")), is(false));
         assertThat(calendar.isHoliday(LocalDate.parse("2020-05-08")), is(true));
 
+        // Spring Bank Holiday moved for royal jubilees in 1977, 2002, 2012, 2022
+        assertThat(calendar.isHoliday(LocalDate.parse("1977-05-30")), is(false));
+        assertThat(calendar.isHoliday(LocalDate.parse("1977-06-06")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("1977-06-07")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2002-05-27")), is(false));
+        assertThat(calendar.isHoliday(LocalDate.parse("2002-06-03")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2002-06-04")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2012-05-28")), is(false));
+        assertThat(calendar.isHoliday(LocalDate.parse("2012-06-04")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2012-06-05")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2022-05-30")), is(false));
+        assertThat(calendar.isHoliday(LocalDate.parse("2022-06-02")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2022-06-03")), is(true));
+
         // special holidays
         assertThat(calendar.isHoliday(LocalDate.parse("1973-11-14")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("1981-07-29")), is(true));
