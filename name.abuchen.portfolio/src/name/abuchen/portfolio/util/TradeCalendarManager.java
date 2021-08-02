@@ -30,6 +30,7 @@ import static name.abuchen.portfolio.util.HolidayName.NEW_YEAR_HOLIDAY;
 import static name.abuchen.portfolio.util.HolidayName.REFORMATION_DAY;
 import static name.abuchen.portfolio.util.HolidayName.REMEMBERANCE_OF_PRESIDENT_FORD;
 import static name.abuchen.portfolio.util.HolidayName.REPENTANCE_AND_PRAYER;
+import static name.abuchen.portfolio.util.HolidayName.ROYAL_JUBILEE;
 import static name.abuchen.portfolio.util.HolidayName.ROYAL_WEDDING;
 import static name.abuchen.portfolio.util.HolidayName.SECOND_CHRISTMAS_DAY;
 import static name.abuchen.portfolio.util.HolidayName.SPRING_MAY_BANK_HOLIDAY;
@@ -129,17 +130,25 @@ public class TradeCalendarManager
         tc.add(easter(GOOD_FRIDAY, -2));
         tc.add(easter(EASTER_MONDAY, 1));
         tc.add(weekday(EARLY_MAY_BANK_HOLIDAY, 1, DayOfWeek.MONDAY, Month.MAY).exceptIn(1995).exceptIn(2020));
-        tc.add(last(SPRING_MAY_BANK_HOLIDAY, DayOfWeek.MONDAY, Month.MAY));
+        tc.add(last(SPRING_MAY_BANK_HOLIDAY, DayOfWeek.MONDAY, Month.MAY).exceptIn(1977).exceptIn(2002).exceptIn(2012).exceptIn(2022));
         tc.add(last(SUMMER_BANK_HOLIDAY, DayOfWeek.MONDAY, Month.AUGUST));
         tc.add(fixed(FIRST_CHRISTMAS_DAY, Month.DECEMBER, 25).moveIf(DayOfWeek.SATURDAY, 2).moveIf(DayOfWeek.SUNDAY, 2));
             // strange but true: if 25th+26th is Sun+Mon, Christmas Day is moved *beyond* Boxing Day, to Tue
         tc.add(fixed(BOXING_DAY, Month.DECEMBER, 26).moveIf(DayOfWeek.SUNDAY, 2).moveIf(DayOfWeek.SATURDAY, 2));
         // one-time holidays; see https://en.wikipedia.org/wiki/Bank_holiday
         tc.add(fixed(ROYAL_WEDDING, Month.NOVEMBER, 14).onlyIn(1973)); // wedding of Princess Anne
+        tc.add(fixed(SPRING_MAY_BANK_HOLIDAY, Month.JUNE, 6).onlyIn(1977)); // moved for four-day weekend
+        tc.add(fixed(ROYAL_JUBILEE, Month.JUNE, 7).onlyIn(1977)); // Silver Jubilee of Elizabeth II
         tc.add(fixed(ROYAL_WEDDING, Month.JULY, 29).onlyIn(1981)); // wedding of Charles, Prince of Wales
         tc.add(fixed(EARLY_MAY_BANK_HOLIDAY, Month.MAY, 8).onlyIn(1995)); // moved for VE Day 50th anniversary
+        tc.add(fixed(ROYAL_JUBILEE, Month.JUNE, 3).onlyIn(2002)); // Golden Jubilee of Elizabeth II
+        tc.add(fixed(SPRING_MAY_BANK_HOLIDAY, Month.JUNE, 4).onlyIn(2002)); // moved for four-day weekend
         tc.add(fixed(ROYAL_WEDDING, Month.APRIL, 29).onlyIn(2011)); // wedding of Prince William
+        tc.add(fixed(SPRING_MAY_BANK_HOLIDAY, Month.JUNE, 4).onlyIn(2012)); // moved for four-day weekend
+        tc.add(fixed(ROYAL_JUBILEE, Month.JUNE, 5).onlyIn(2012)); // Diamond Jubilee of Elizabeth II
         tc.add(fixed(EARLY_MAY_BANK_HOLIDAY, Month.MAY, 8).onlyIn(2020)); // moved for VE Day 75th anniversary
+        tc.add(fixed(SPRING_MAY_BANK_HOLIDAY, Month.JUNE, 2).onlyIn(2022)); // moved for four-day weekend
+        tc.add(fixed(ROYAL_JUBILEE, Month.JUNE, 3).onlyIn(2022)); // Platinum Jubilee of Elizabeth II
         CACHE.put(tc.getCode(), tc);
 
         tc = new TradeCalendar("euronext", Messages.LabelTradeCalendarEuronext); //$NON-NLS-1$
