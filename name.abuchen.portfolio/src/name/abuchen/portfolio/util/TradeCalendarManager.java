@@ -23,6 +23,7 @@ import static name.abuchen.portfolio.util.HolidayName.INDEPENDENCE;
 import static name.abuchen.portfolio.util.HolidayName.LABOUR_DAY;
 import static name.abuchen.portfolio.util.HolidayName.MARTIN_LUTHER_KING;
 import static name.abuchen.portfolio.util.HolidayName.MEMORIAL;
+import static name.abuchen.portfolio.util.HolidayName.MILLENNIUM;
 import static name.abuchen.portfolio.util.HolidayName.NATION_DAY;
 import static name.abuchen.portfolio.util.HolidayName.NEW_YEAR;
 import static name.abuchen.portfolio.util.HolidayName.NEW_YEARS_EVE;
@@ -141,6 +142,7 @@ public class TradeCalendarManager
         tc.add(fixed(ROYAL_JUBILEE, Month.JUNE, 7).onlyIn(1977)); // Silver Jubilee of Elizabeth II
         tc.add(fixed(ROYAL_WEDDING, Month.JULY, 29).onlyIn(1981)); // wedding of Charles, Prince of Wales
         tc.add(fixed(EARLY_MAY_BANK_HOLIDAY, Month.MAY, 8).onlyIn(1995)); // moved for VE Day 50th anniversary
+        tc.add(fixed(MILLENNIUM, Month.DECEMBER, 31).onlyIn(1999));
         tc.add(fixed(ROYAL_JUBILEE, Month.JUNE, 3).onlyIn(2002)); // Golden Jubilee of Elizabeth II
         tc.add(fixed(SPRING_MAY_BANK_HOLIDAY, Month.JUNE, 4).onlyIn(2002)); // moved for four-day weekend
         tc.add(fixed(ROYAL_WEDDING, Month.APRIL, 29).onlyIn(2011)); // wedding of Prince William

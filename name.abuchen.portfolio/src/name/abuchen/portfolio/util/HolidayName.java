@@ -29,6 +29,7 @@ import java.util.ResourceBundle;
     LABOUR_DAY,
     MARTIN_LUTHER_KING,
     MEMORIAL,
+    MILLENNIUM,
     NEW_YEAR,
     NEW_YEAR_HOLIDAY,
     NATION_DAY,
