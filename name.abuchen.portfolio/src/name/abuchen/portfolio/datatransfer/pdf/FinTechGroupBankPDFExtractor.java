@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -76,6 +77,14 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                     {
                         t.setType(PortfolioTransaction.Type.SELL);
                     }
+                })
+
+                // Storno Wertpapierabrechnung Kauf Fonds/Zertifikate
+                // Stornierung Wertpapierabrechnung Kauf Fonds
+                .section().optional()
+                .match("^(Storno|Stornierung) Wertpapierabrechnung.*$")
+                .assign((t, v) -> {
+                    throw new IllegalArgumentException(Messages.MsgErrorOrderCancellationUnsupported);
                 })
 
                 // Nr.121625906/1     Kauf        IS C.MSCI EMIMI U.ETF DLA (IE00BKM4GZ66/A111X9)
@@ -274,7 +283,8 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         }
     }
 
-    private void addTaxRefund(BuySellEntry t, Map<String, String> v) {
+    private void addTaxRefund(BuySellEntry t, Map<String, String> v)
+    {
         // For SELL transaction we need to subtract refunded taxes.
         // For BUY transactions we need to add refunded taxes.
         int negative = t.getPortfolioTransaction().getType() == PortfolioTransaction.Type.SELL ? -1 : 1;
