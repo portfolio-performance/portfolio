@@ -105,7 +105,8 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
 
             if (price.getDate() == null || price.getValue() <= 0)
             {
-                PortfolioLog.error(html);
+                PortfolioLog.error(MessageFormat.format(Messages.MsgErrorDownloadYahoo, 1, security.getTickerSymbol(),
+                                html));
                 return Optional.empty();
             }
             else
