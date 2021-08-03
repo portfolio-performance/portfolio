@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.pdf.fintechgroupbank;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 
 import java.time.LocalDateTime;
@@ -13,6 +14,7 @@ import java.util.stream.Collectors;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
@@ -1173,6 +1175,20 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-12-04T00:00")));
         assertThat(transaction.getMonetaryAmount(), 
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.01))));
+    }
+
+    @Test
+    public void testFinTechKaufStorno01()
+    {
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FinTechKaufStorno01.txt"), errors);
+
+        assertThat(errors.size(), is(1));
+        assertThat(errors.get(0).getMessage(), containsString(Messages.MsgErrorOrderCancellationUnsupported));
+        assertThat(results, empty());
     }
 
     @Test
