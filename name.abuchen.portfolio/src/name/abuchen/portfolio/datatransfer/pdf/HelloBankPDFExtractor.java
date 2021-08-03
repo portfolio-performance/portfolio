@@ -43,7 +43,7 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("Geschäftsart: (Kauf|Verkauf)");
+        DocumentType type = new DocumentType("Geschäftsart: (Kauf|Verkauf|Kauf aus Dauerauftrag)");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -53,7 +53,7 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^Geschäftsart: (Kauf|Verkauf)");
+        Block firstRelevantLine = new Block("^Geschäftsart: (Kauf|Verkauf|Kauf aus Dauerauftrag)");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -81,16 +81,16 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
                     t.setSecurity(getOrCreateSecurity(v));
                 })
 
+                // Handelszeit: 11.5.2021
+                .section("date")
+                .match("^Handelszeit: (?<date>\\d+.\\d+.[\\d]{4}).*")
+                .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                
                 // Handelszeit: 30.6.2017 um 09:00:10 Uhr
-                .section("date", "time")
+                .section("date", "time").optional()
                 .match("^Handelszeit: (?<date>\\d+.\\d+.[\\d]{4}) .* (?<time>\\d+:\\d+:\\d+) .*$")
-                .assign((t, v) -> {
-                    if (v.get("time") != null)
-                        t.setDate(asDate(v.get("date"), v.get("time")));
-                    else
-                        t.setDate(asDate(v.get("date")));
-                })
-
+                .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
+                
                 // Zugang: 74 Stk Teilausführung
                 .section("shares")
                 .match("^(Zugang|Abgang): (?<shares>[.,\\d]+) Stk.*$")
