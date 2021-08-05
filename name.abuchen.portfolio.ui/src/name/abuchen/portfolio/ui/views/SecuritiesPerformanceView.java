@@ -78,7 +78,7 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 import name.abuchen.portfolio.ui.views.columns.SymbolColumn;
 import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
 import name.abuchen.portfolio.ui.views.columns.WknColumn;
-import name.abuchen.portfolio.ui.views.panes.CaclulationLineItemPane;
+import name.abuchen.portfolio.ui.views.panes.CalculationLineItemPane;
 import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
 import name.abuchen.portfolio.ui.views.panes.SecurityPriceChartPane;
 import name.abuchen.portfolio.ui.views.panes.TradesPane;
@@ -633,12 +633,22 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
 
     private void addPerformanceColumns()
     {
-        Column column = new Column("twror", Messages.ColumnTWROR, SWT.RIGHT, 80); //$NON-NLS-1$
+        Column column = new Column("twror", Messages.ColumnTTWROR, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setGroupLabel(Messages.GroupLabelPerformance);
-        column.setMenuLabel(Messages.ColumnTWROR_Description);
+        column.setMenuLabel(Messages.LabelTTWROR);
         column.setLabelProvider(new NumberColorLabelProvider<>(Values.Percent2,
                         r -> ((SecurityPerformanceRecord) r).getTrueTimeWeightedRateOfReturn()));
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "trueTimeWeightedRateOfReturn")); //$NON-NLS-1$
+        recordColumns.addColumn(column);
+
+        column = new Column("ttwror_pa", Messages.ColumnTTWRORpa, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setGroupLabel(Messages.GroupLabelPerformance);
+        column.setMenuLabel(Messages.LabelTTWROR_Annualized);
+        column.setLabelProvider(new NumberColorLabelProvider<>(Values.Percent2,
+                        r -> ((SecurityPerformanceRecord) r).getTrueTimeWeightedRateOfReturnAnnualized()));
+        column.setVisible(false);
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class,
+                        "trueTimeWeightedRateOfReturnAnnualized")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
         // internal rate of return
@@ -963,7 +973,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
     {
         super.addPanePages(pages);
         pages.add(make(SecurityPriceChartPane.class));
-        pages.add(make(CaclulationLineItemPane.class));
+        pages.add(make(CalculationLineItemPane.class));
         pages.add(make(TradesPane.class));
     }
 

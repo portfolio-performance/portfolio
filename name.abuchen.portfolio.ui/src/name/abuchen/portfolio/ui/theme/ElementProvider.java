@@ -15,6 +15,7 @@ import org.w3c.dom.Element;
 
 import name.abuchen.portfolio.ui.editor.Sidebar;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.views.SecuritiesChart;
 
 @SuppressWarnings("restriction")
 public class ElementProvider implements IElementProvider
@@ -38,6 +39,8 @@ public class ElementProvider implements IElementProvider
             return new TableElementAdapter((Table) element, engine);
         if (element instanceof Tree)
             return new TreeElementAdapter((Tree) element, engine);
+        if (element instanceof SecuritiesChart)
+            return new SecuritiesChartElementAdapter((SecuritiesChart) element, engine);
 
         return null;
     }

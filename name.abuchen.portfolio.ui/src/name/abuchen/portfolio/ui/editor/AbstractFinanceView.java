@@ -16,11 +16,9 @@ import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -104,6 +102,11 @@ public abstract class AbstractFinanceView
     {
     }
 
+    /** called after the views has been fully created */
+    protected void notifyViewCreationCompleted()
+    {
+    }
+
     public PortfolioPart getPart()
     {
         return part;
@@ -135,7 +138,7 @@ public abstract class AbstractFinanceView
         return Display.getDefault().getActiveShell();
     }
 
-    public final void createViewControl(Composite parent)
+    public final void createViewControl(Composite parent, boolean hideInformationPane)
     {
         top = new Composite(parent, SWT.NONE);
         // on windows, add a spacing line as tables
@@ -155,17 +158,27 @@ public abstract class AbstractFinanceView
 
         createBody(sash);
 
-        pane = new InformationPane();
+        pane = make(InformationPane.class);
         pane.createViewControl(sash);
         pane.setView(this);
         pane.setLayoutData(new SashLayoutData(-200));
 
         int size = getPreferenceStore().getInt(identifier);
-        pane.setLayoutData(new SashLayoutData(size != 0 ? size : -200));
+        if (size == 0)
+            size = hideInformationPane ? -200 : 200;
+        pane.setLayoutData(new SashLayoutData(size));
         sash.addDisposeListener(e -> getPreferenceStore().setValue(identifier,
                         ((SashLayoutData) pane.getLayoutData()).getSize()));
 
         top.addDisposeListener(e -> dispose());
+
+        // delay updating the tool bar as late as possible because otherwise we
+        // see the tool bars flicker on Windows
+
+        viewToolBar.update(false);
+        actionToolBar.update(false);
+
+        notifyViewCreationCompleted();
     }
 
     protected abstract Control createBody(Composite parent);
@@ -175,13 +188,10 @@ public abstract class AbstractFinanceView
         Composite header = new Composite(parent, SWT.NONE);
         header.setBackground(Colors.WHITE);
 
-        Font boldFont = resourceManager.createFont(FontDescriptor
-                        .createFrom(JFaceResources.getFont(JFaceResources.HEADER_FONT)).setStyle(SWT.BOLD));
-
         titleText = getDefaultTitle();
         title = new Label(header, SWT.NONE);
+        title.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING1);
         title.setText(TextUtil.tooltip(titleText));
-        title.setFont(boldFont);
         title.setForeground(Colors.SIDEBAR_TEXT);
         title.setBackground(header.getBackground());
 
@@ -189,17 +199,19 @@ public abstract class AbstractFinanceView
         wrapper.setBackground(header.getBackground());
 
         viewToolBar = new ToolBarManager(SWT.FLAT | SWT.RIGHT);
-        addViewButtons(viewToolBar);
         ToolBar tb1 = viewToolBar.createControl(wrapper);
         tb1.setBackground(header.getBackground());
+        // add buttons only after (!) creation of tool bar to avoid flickering
+        addViewButtons(viewToolBar);
 
         // create layout *after* the toolbar to keep the tab order right
         wrapper.setLayout(new ToolBarPlusChevronLayout(wrapper, SWT.RIGHT));
 
         actionToolBar = new ToolBarManager(SWT.FLAT | SWT.RIGHT);
-        addButtons(actionToolBar);
         ToolBar tb2 = actionToolBar.createControl(header);
         tb2.setBackground(header.getBackground());
+        // add buttons only after (!) creation of tool bar to avoid flickering
+        addButtons(actionToolBar);
 
         // layout
         GridLayoutFactory.fillDefaults().numColumns(3).margins(5, 5).applyTo(header);

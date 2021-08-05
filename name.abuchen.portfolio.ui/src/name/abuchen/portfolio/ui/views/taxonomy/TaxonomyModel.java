@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import java.util.stream.Collectors;
 
@@ -104,6 +105,7 @@ public final class TaxonomyModel
     private String expansionStateRebalancing;
 
     private List<Predicate<TaxonomyNode>> nodeFilters = new ArrayList<>();
+    private Pattern filterPattern;
 
     private List<AttachedModel> attachedModels = new ArrayList<>();
     private List<TaxonomyModelUpdatedListener> listeners = new ArrayList<>();
@@ -304,6 +306,16 @@ public final class TaxonomyModel
     public List<Predicate<TaxonomyNode>> getNodeFilters()
     {
         return nodeFilters;
+    }
+
+    public Pattern getFilterPattern()
+    {
+        return filterPattern;
+    }
+
+    public void setFilterPattern(Pattern filterPattern)
+    {
+        this.filterPattern = filterPattern;
     }
 
     public Stream<AttachedModel> getAttachedModels()

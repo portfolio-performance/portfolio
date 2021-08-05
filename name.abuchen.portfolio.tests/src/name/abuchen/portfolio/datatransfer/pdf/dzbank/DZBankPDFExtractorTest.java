@@ -680,4 +680,40 @@ public class DZBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.FEE), 
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
     }
+
+    @Test
+    public void testDividenden4()
+    {
+        DZBankPDFExtractor extractor = new DZBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "DZBankDividenden4.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
+        assertThat(security.getIsin(), is("DE000A0Z2ZZ5"));
+        assertThat(security.getWkn(), is("A0Z2ZZ"));
+        assertThat(security.getName(), is("FREENET AG NAMENS-AKTIEN O.N."));
+
+        // check dividends transaction
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-06-21T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(250)));
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(412.50))));
+        assertThat(transaction.getGrossValue(), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(412.50))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+    }
 }

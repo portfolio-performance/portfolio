@@ -29,7 +29,8 @@ public abstract class AbstractPDFExtractor implements Extractor
 {
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy", Locale.GERMANY); //$NON-NLS-1$
     private static final DateTimeFormatter DATE_FORMAT_DASHES = DateTimeFormatter.ofPattern("yyyy-M-d", Locale.GERMANY); //$NON-NLS-1$
-    private static final DateTimeFormatter DATE_FORMAT_DASHES_REVERSE = DateTimeFormatter.ofPattern("d-M-yyyy", Locale.GERMANY); //$NON-NLS-1$
+    private static final DateTimeFormatter DATE_FORMAT_DASHES_REVERSE = DateTimeFormatter.ofPattern("d-M-yyyy", //$NON-NLS-1$
+                    Locale.GERMANY);
     private static final DateTimeFormatter DATE_TIME_SECONDS_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy HH:mm", //$NON-NLS-1$
                     Locale.GERMANY);
     private static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy HH:mm:ss", //$NON-NLS-1$
@@ -113,7 +114,7 @@ public abstract class AbstractPDFExtractor implements Extractor
                 else
                     item.getSubject().setNote(item.getSubject().getNote().concat(" | ").concat(filename)); //$NON-NLS-1$
             }
-            
+
             return items;
         }
         catch (IllegalArgumentException e)
@@ -218,7 +219,7 @@ public abstract class AbstractPDFExtractor implements Extractor
         return unit == null ? client.getBaseCurrency() : unit.getCurrencyCode();
     }
 
-    /* protected */long asAmount(String value)
+    protected long asAmount(String value)
     {
         try
         {
@@ -230,7 +231,7 @@ public abstract class AbstractPDFExtractor implements Extractor
         }
     }
 
-    /* protected */BigDecimal asExchangeRate(String value)
+    protected BigDecimal asExchangeRate(String value)
     {
         try
         {
@@ -242,7 +243,7 @@ public abstract class AbstractPDFExtractor implements Extractor
         }
     }
 
-    /* protected */LocalDateTime asDate(String value)
+    protected LocalDateTime asDate(String value)
     {
         LocalDateTime date = null;
 
@@ -264,7 +265,7 @@ public abstract class AbstractPDFExtractor implements Extractor
         return date;
     }
 
-    /* protected */LocalTime asTime(String value)
+    protected LocalTime asTime(String value)
     {
         LocalTime time = null;
 
@@ -280,7 +281,7 @@ public abstract class AbstractPDFExtractor implements Extractor
         return time.withSecond(0);
     }
 
-    /* protected */LocalDateTime asDate(String date, String time)
+    protected LocalDateTime asDate(String date, String time)
     {
         try
         {

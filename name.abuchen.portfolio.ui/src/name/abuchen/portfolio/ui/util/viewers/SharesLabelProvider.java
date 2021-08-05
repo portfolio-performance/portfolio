@@ -25,12 +25,12 @@ public abstract class SharesLabelProvider extends OwnerDrawLabelProvider
     private ColumnViewer viewer;
     private TextLayout cachedTextLayout;
 
-    public Color getForeground(Object element)
+    public Color getForeground(Object element) // NOSONAR
     {
         return null;
     }
 
-    public Color getBackground(Object element)
+    public Color getBackground(Object element) // NOSONAR
     {
         return null;
     }
@@ -75,6 +75,7 @@ public abstract class SharesLabelProvider extends OwnerDrawLabelProvider
 
         TextLayout textLayout = getSharedTextLayout(event.display);
         textLayout.setText(builder.toString());
+        textLayout.setFont(event.gc.getFont());
 
         return textLayout.getBounds();
     }

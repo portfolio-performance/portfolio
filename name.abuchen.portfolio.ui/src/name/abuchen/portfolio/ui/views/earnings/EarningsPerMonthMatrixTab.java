@@ -9,6 +9,7 @@ import java.util.function.ToLongFunction;
 
 import javax.inject.Inject;
 
+import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -50,6 +51,9 @@ import name.abuchen.portfolio.util.TextUtil;
 
 public class EarningsPerMonthMatrixTab implements EarningsTab
 {
+    @Inject
+    private IStylingEngine stylingEngine;
+
     @Inject
     private AbstractFinanceView view;
 
@@ -100,9 +104,6 @@ public class EarningsPerMonthMatrixTab implements EarningsTab
     @Override
     public Control createControl(Composite parent)
     {
-        LocalResourceManager resources = new LocalResourceManager(JFaceResources.getResources(), parent);
-        boldFont = resources.createFont(FontDescriptor.createFrom(parent.getFont()).setStyle(SWT.BOLD));
-
         Composite container = new Composite(parent, SWT.NONE);
 
         tableLayout = new TableColumnLayout();
@@ -110,6 +111,14 @@ public class EarningsPerMonthMatrixTab implements EarningsTab
 
         tableViewer = new TableViewer(container, SWT.FULL_SELECTION);
         ColumnViewerToolTipSupport.enableFor(tableViewer, ToolTip.NO_RECREATE);
+
+        // make sure to apply the styles (including font information to the
+        // table) before creating the bold font. Otherwise the font does not
+        // match the styles in CSS
+        stylingEngine.style(tableViewer.getTable());
+
+        LocalResourceManager resources = new LocalResourceManager(JFaceResources.getResources(), parent);
+        boldFont = resources.createFont(FontDescriptor.createFrom(tableViewer.getTable().getFont()).setStyle(SWT.BOLD));
 
         createColumns(tableViewer, tableLayout);
 

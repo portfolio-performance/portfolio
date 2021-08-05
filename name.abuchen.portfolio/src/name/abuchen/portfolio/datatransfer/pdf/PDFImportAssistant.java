@@ -39,7 +39,6 @@ public class PDFImportAssistant
         extractors.add(new ComdirectPDFExtractor(client));
         extractors.add(new CommerzbankPDFExtractor(client));
         extractors.add(new ConsorsbankPDFExtractor(client));
-        extractors.add(new ConsorsbankPre2009PDFExtractor(client));
         extractors.add(new CreditSuisseAGPDFExtractor(client));
         extractors.add(new DABPDFExtractor(client));
         extractors.add(new DADATBankenhausPDFExtractor(client));
@@ -50,6 +49,7 @@ public class PDFImportAssistant
         extractors.add(new DreiBankenEDVPDFExtractor(client));
         extractors.add(new DZBankPDFExtractor(client));
         extractors.add(new ErsteBankPDFExtractor(client));
+        extractors.add(new FILFondbankPDFExtractor(client));
         extractors.add(new FinTechGroupBankPDFExtractor(client));
         extractors.add(new HelloBankPDFExtractor(client));
         extractors.add(new INGDiBaExtractor(client));
@@ -64,6 +64,7 @@ public class PDFImportAssistant
         extractors.add(new RaiffeisenBankgruppePDFExtractor(client));
         extractors.add(new RenaultBankDirektPDFExtractor(client));
         extractors.add(new SBrokerPDFExtractor(client));
+        extractors.add(new SelfWealthPDFExtractor(client));
         extractors.add(new SwissquotePDFExtractor(client));
         extractors.add(new TargobankPDFExtractor(client));
         extractors.add(new TradeRepublicPDFExtractor(client));
@@ -72,11 +73,6 @@ public class PDFImportAssistant
         extractors.add(new ViacPDFExtractor(client));
         extractors.add(new WeberbankPDFExtractor(client));
 
-        extractors.add(new JSONPDFExtractor(client, "deutsche-bank-purchase.json")); //$NON-NLS-1$
-        extractors.add(new JSONPDFExtractor(client, "deutsche-bank-sale.json")); //$NON-NLS-1$
-        extractors.add(new JSONPDFExtractor(client, "ffb.json")); //$NON-NLS-1$
-        extractors.add(new JSONPDFExtractor(client, "trade-republic-dividends.json")); //$NON-NLS-1$
-        extractors.add(new JSONPDFExtractor(client, "trade-republic-investmentplan.json")); //$NON-NLS-1$
         extractors.add(new JSONPDFExtractor(client, "ebase.json")); //$NON-NLS-1$
     }
 

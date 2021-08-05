@@ -230,17 +230,20 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
         DocumentType type2 = new DocumentType("Ertragsthesaurierung");
         DocumentType type3 = new DocumentType("Dividendenabrechnung");
         DocumentType type4 = new DocumentType("Ausschüttung aus");
+        DocumentType type5 = new DocumentType("Wahldividende");
 
         this.addDocumentTyp(type1);
         this.addDocumentTyp(type2);
         this.addDocumentTyp(type3);
         this.addDocumentTyp(type4);
+        this.addDocumentTyp(type5);
 
         Block block = new Block("^Ex-Tag.*");
         type1.addBlock(block);
         type2.addBlock(block);
         type3.addBlock(block);
         type4.addBlock(block);
+        type5.addBlock(block);
         block.set(new Transaction<AccountTransaction>().subject(() -> {
             AccountTransaction t = new AccountTransaction();
             t.setType(AccountTransaction.Type.DIVIDENDS);

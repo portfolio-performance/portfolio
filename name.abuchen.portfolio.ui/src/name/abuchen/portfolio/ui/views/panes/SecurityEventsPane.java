@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -26,8 +27,11 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityEvent;
 import name.abuchen.portfolio.model.SecurityEvent.DividendEvent;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.ContextMenu;
+import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.swt.ActiveShell;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
@@ -57,6 +61,13 @@ public class SecurityEventsPane implements InformationPanePage
     public Control createViewControl(Composite parent)
     {
         return createEventsTable(parent);
+    }
+
+    @Override
+    public void addButtons(ToolBarManager toolBar)
+    {
+        toolBar.add(new SimpleAction(Messages.MenuExportData, Images.EXPORT,
+                        a -> new TableViewerCSVExporter(events).export(getLabel(), security)));
     }
 
     @Override

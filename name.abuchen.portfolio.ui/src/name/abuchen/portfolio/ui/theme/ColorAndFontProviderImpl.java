@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.eclipse.e4.ui.css.swt.theme.IThemeEngine;
 import org.eclipse.e4.ui.internal.css.swt.definition.IColorAndFontProvider;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.RGB;
@@ -57,8 +58,11 @@ public class ColorAndFontProviderImpl implements IColorAndFontProvider, EventHan
 
         fonts.clear();
 
-        fonts.put("org.eclipse.ui.workbench.TAB_TEXT_FONT", Display.getDefault().getSystemFont().getFontData()); //$NON-NLS-1$
-        fonts.put("org.eclipse.ui.workbench.TREE_TABLE_FONT", Display.getDefault().getSystemFont().getFontData()); //$NON-NLS-1$
+        FontData[] systemFontData = Display.getDefault().getSystemFont().getFontData();
+        fonts.put("org.eclipse.ui.workbench.TAB_TEXT_FONT", systemFontData); //$NON-NLS-1$
+        fonts.put("org.eclipse.ui.workbench.TREE_TABLE_FONT", systemFontData); //$NON-NLS-1$
+        fonts.put(JFaceResources.HEADER_FONT, JFaceResources.getFont(JFaceResources.HEADER_FONT).getFontData());
+        fonts.put("systemfont", systemFontData); //$NON-NLS-1$
 
         for (String symbolicName : extension.getFonts())
         {

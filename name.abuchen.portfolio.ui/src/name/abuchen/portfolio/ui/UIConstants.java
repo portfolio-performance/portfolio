@@ -170,6 +170,10 @@ public interface UIConstants
     interface CSS // NOSONAR
     {
         String CLASS_NAME = "org.eclipse.e4.ui.css.CssClassName"; //$NON-NLS-1$
+        String HEADING1 = "heading1"; //$NON-NLS-1$
+        String HEADING2 = "heading2"; //$NON-NLS-1$
+        String KPI = "kpi"; //$NON-NLS-1$
+        String DATAPOINT = "datapoint"; //$NON-NLS-1$
     }
 
     interface Tag // NOSONAR

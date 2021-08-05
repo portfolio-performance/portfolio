@@ -18,6 +18,9 @@ public class StatementOfAssetsSeriesBuilder extends AbstractChartSeriesBuilder
 
     public void build(DataSeries series, Interval reportingPeriod)
     {
+        if (!series.isVisible())
+            return;
+
         PerformanceIndex index = getCache().lookup(series, reportingPeriod);
 
         if (series.getType() == DataSeries.Type.CLIENT)

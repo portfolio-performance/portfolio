@@ -22,6 +22,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Values;
 
+@SuppressWarnings("nls")
 public class RenaultBankDirektPDFExtractorTest
 {
     @Test
@@ -37,12 +38,13 @@ public class RenaultBankDirektPDFExtractorTest
                         .filter(i -> i.getSubject() instanceof AccountTransaction)
                         .filter(i -> ((AccountTransaction) i.getSubject()).getType() == AccountTransaction.Type.DEPOSIT)
                         .count(), is(3L));
-        
+
         assertThat(results.stream().filter(i -> i instanceof TransactionItem)
                         .filter(i -> i.getSubject() instanceof AccountTransaction)
-                        .filter(i -> ((AccountTransaction) i.getSubject()).getType() == AccountTransaction.Type.INTEREST)
+                        .filter(i -> ((AccountTransaction) i.getSubject())
+                                        .getType() == AccountTransaction.Type.INTEREST)
                         .count(), is(1L));
-        
+
         assertThat(results.stream().filter(i -> i instanceof TransactionItem)
                         .filter(i -> i.getSubject() instanceof AccountTransaction)
                         .filter(i -> ((AccountTransaction) i.getSubject()).getType() == AccountTransaction.Type.REMOVAL)
@@ -56,14 +58,14 @@ public class RenaultBankDirektPDFExtractorTest
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-18T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(4480)));
-        
+
         item = iter.next();
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-18T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(351.50)));
-        
+
         item = iter.next();
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
@@ -77,14 +79,14 @@ public class RenaultBankDirektPDFExtractorTest
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-21T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(210)));
-        
+
         item = iter.next();
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-29T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(300)));
-        
+
         item = iter.next();
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
@@ -113,11 +115,10 @@ public class RenaultBankDirektPDFExtractorTest
                         .filter(i -> ((AccountTransaction) i.getSubject())
                                         .getType() == AccountTransaction.Type.INTEREST)
                         .count(), is(1L));
-        
+
         assertThat(results.stream().filter(i -> i instanceof TransactionItem)
                         .filter(i -> i.getSubject() instanceof AccountTransaction)
-                        .filter(i -> ((AccountTransaction) i.getSubject())
-                                        .getType() == AccountTransaction.Type.REMOVAL)
+                        .filter(i -> ((AccountTransaction) i.getSubject()).getType() == AccountTransaction.Type.REMOVAL)
                         .count(), is(0L));
 
         Iterator<Extractor.Item> iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
@@ -138,7 +139,7 @@ public class RenaultBankDirektPDFExtractorTest
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(3.41)));
 
     }
-    
+
     @Test
     public void testKontoauszug3()
     {
@@ -158,11 +159,10 @@ public class RenaultBankDirektPDFExtractorTest
                         .filter(i -> ((AccountTransaction) i.getSubject())
                                         .getType() == AccountTransaction.Type.INTEREST)
                         .count(), is(1L));
-        
+
         assertThat(results.stream().filter(i -> i instanceof TransactionItem)
                         .filter(i -> i.getSubject() instanceof AccountTransaction)
-                        .filter(i -> ((AccountTransaction) i.getSubject())
-                                        .getType() == AccountTransaction.Type.REMOVAL)
+                        .filter(i -> ((AccountTransaction) i.getSubject()).getType() == AccountTransaction.Type.REMOVAL)
                         .count(), is(0L));
 
         Iterator<Extractor.Item> iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
@@ -174,7 +174,7 @@ public class RenaultBankDirektPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-30T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.21)));
     }
-    
+
     @Test
     public void testKontoauszug4()
     {
@@ -194,11 +194,10 @@ public class RenaultBankDirektPDFExtractorTest
                         .filter(i -> ((AccountTransaction) i.getSubject())
                                         .getType() == AccountTransaction.Type.INTEREST)
                         .count(), is(1L));
-        
+
         assertThat(results.stream().filter(i -> i instanceof TransactionItem)
                         .filter(i -> i.getSubject() instanceof AccountTransaction)
-                        .filter(i -> ((AccountTransaction) i.getSubject())
-                                        .getType() == AccountTransaction.Type.REMOVAL)
+                        .filter(i -> ((AccountTransaction) i.getSubject()).getType() == AccountTransaction.Type.REMOVAL)
                         .count(), is(0L));
 
         Iterator<Extractor.Item> iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
@@ -209,14 +208,14 @@ public class RenaultBankDirektPDFExtractorTest
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-17T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(150)));
-        
+
         item = iter.next();
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-22T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(7547.85)));
-        
+
         item = iter.next();
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
@@ -244,11 +243,10 @@ public class RenaultBankDirektPDFExtractorTest
                         .filter(i -> ((AccountTransaction) i.getSubject())
                                         .getType() == AccountTransaction.Type.INTEREST)
                         .count(), is(1L));
-        
+
         assertThat(results.stream().filter(i -> i instanceof TransactionItem)
                         .filter(i -> i.getSubject() instanceof AccountTransaction)
-                        .filter(i -> ((AccountTransaction) i.getSubject())
-                                        .getType() == AccountTransaction.Type.REMOVAL)
+                        .filter(i -> ((AccountTransaction) i.getSubject()).getType() == AccountTransaction.Type.REMOVAL)
                         .count(), is(1L));
 
         Iterator<Extractor.Item> iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
@@ -259,14 +257,14 @@ public class RenaultBankDirektPDFExtractorTest
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-04-19T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(10)));
-        
+
         item = iter.next();
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-04-19T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(10)));
-        
+
         item = iter.next();
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
@@ -274,7 +272,7 @@ public class RenaultBankDirektPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-04-30T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.73)));
     }
-    
+
     private List<InputFile> loadFile(String filename)
     {
         return PDFInputFile.loadTestCase(getClass(), filename);

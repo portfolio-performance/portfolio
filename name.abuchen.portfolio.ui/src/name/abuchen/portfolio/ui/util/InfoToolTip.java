@@ -20,23 +20,30 @@ public final class InfoToolTip extends ToolTip
     private Control control;
     private Supplier<String> message;
 
-    private InfoToolTip(Control control, Supplier<String> message)
+    private InfoToolTip(Control control, int style, Supplier<String> message)
     {
-        super(control, ToolTip.NO_RECREATE, false);
+        super(control, style, false);
         this.control = control;
         this.message = message;
     }
 
-    public static void attach(Control control, String message)
+    public static InfoToolTip attach(Control control, String message)
     {
-        attach(control, () -> message);
+        return attach(control, () -> message);
     }
 
-    public static void attach(Control control, Supplier<String> message)
+    public static InfoToolTip attach(Control control, Supplier<String> message)
     {
-        InfoToolTip tooltip = new InfoToolTip(control, message);
+        return attach(control, ToolTip.NO_RECREATE, message);
+    }
+
+    public static InfoToolTip attach(Control control, int style, Supplier<String> message)
+    {
+        InfoToolTip tooltip = new InfoToolTip(control, style, message);
         tooltip.setPopupDelay(0);
         tooltip.activate();
+
+        return tooltip;
     }
 
     @Override

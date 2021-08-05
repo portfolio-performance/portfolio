@@ -18,6 +18,7 @@ import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
@@ -83,6 +84,13 @@ public class InvestmentPlanListView extends AbstractFinanceView implements Modif
     {
         plans.setInput(getClient().getPlans());
         plans.setSelection(plans.getSelection());
+    }
+
+    @Override
+    protected void notifyViewCreationCompleted()
+    {
+        if (plans.getTable().getItemCount() > 0)
+            plans.setSelection(new StructuredSelection(plans.getElementAt(0)), true);
     }
 
     @Override

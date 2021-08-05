@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
 
@@ -70,9 +71,13 @@ public class DABPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 150_00L)));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-01-06T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.91920)));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(150.00))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(150.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
@@ -106,9 +111,13 @@ public class DABPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 60_00)));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-05-04T09:15")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.42270)));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(60.00))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(55.05))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
@@ -138,9 +147,14 @@ public class DABPDFExtractorTest
         BuySellEntry entry = (BuySellEntry) item.get().getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 325_00)));
+
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-01-04T09:15")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(10.9468)));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(325.00))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(325.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
@@ -171,11 +185,14 @@ public class DABPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-        
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4798.86))));
+
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-07-29T16:30")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4798.86))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4786.89))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
@@ -205,10 +222,15 @@ public class DABPDFExtractorTest
         BuySellEntry entry = (BuySellEntry) item.get().getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(6.46))));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-03-01T13:31")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0499)));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(6.46))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(6.46))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
@@ -238,10 +260,15 @@ public class DABPDFExtractorTest
         BuySellEntry entry = (BuySellEntry) item.get().getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1381.58))));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-18T14:15")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(10)));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1381.58))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1381.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
@@ -271,10 +298,15 @@ public class DABPDFExtractorTest
         BuySellEntry entry = (BuySellEntry) item.get().getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("CHF", Values.Amount.factorize(6123.98))));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-23T12:13")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(125)));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of("CHF", Values.Amount.factorize(6123.98))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of("CHF", Values.Amount.factorize(6123.98))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of("CHF", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
@@ -304,14 +336,106 @@ public class DABPDFExtractorTest
         BuySellEntry entry = (BuySellEntry) item.get().getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1146.44))));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-01-05T16:52")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(20)));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1146.44))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1117.03))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(29.41))));
+    }
+
+    @Test
+    public void testWertpapierKauf9()
+    {
+        DABPDFExtractor extractor = new DABPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABKauf9.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = getSecurity(results);
+        assertThat(security.getIsin(), is("DE000A2LQLH9"));
+        assertThat(security.getName(), is("4,75% Ranft Invest GmbH Inh.-Schv. v.2018(2030)"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check buy sell transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-18T08:56")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(10)));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1029.55))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1022.56))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.00 + 2.24 + 0.75))));
+
+        // check tax-refund transaction
+        item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-06-18T00:00")));
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.95))));
+    }
+
+    @Test
+    public void testWertpapierKauf10()
+    {
+        DABPDFExtractor extractor = new DABPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABKauf10.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = getSecurity(results);
+        assertThat(security.getIsin(), is("DE000TT649A1"));
+        assertThat(security.getName(), is("HSBC Trinkaus & Burkhardt AG DIZ Siemens 140"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check buy sell transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-07-23T12:58")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(15)));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2003.55))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2003.55))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -341,9 +465,13 @@ public class DABPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 1994_12)));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-12-23T10:25")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(43)));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1994.12))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2056.73))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(45.88 + 2.52 + 4.12))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
@@ -377,10 +505,13 @@ public class DABPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4465.12))));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-08-24T16:38")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4465.12))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4476.40))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
@@ -425,10 +556,13 @@ public class DABPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4447.21))));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-08-24T16:38")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4447.21))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4478.45))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
@@ -473,10 +607,13 @@ public class DABPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5414.00))));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-07T10:36")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1900)));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5414.00))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5415.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
@@ -492,6 +629,260 @@ public class DABPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-07-07T00:00")));
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(16.46))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf5()
+    {
+        DABPDFExtractor extractor = new DABPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABVerkauf5.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = getSecurity(results);
+        assertThat(security.getIsin(), is("SE0014855029"));
+        assertThat(security.getName(), is("Implantica AG Reg.Sw.Dep.Rcpts (SDRs)/1 o.N."));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check buy sell transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-09T13:04")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(220)));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2577.52))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2577.52))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf6()
+    {
+        DABPDFExtractor extractor = new DABPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABVerkauf6.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = getSecurity(results);
+        assertThat(security.getIsin(), is("US09075V1026"));
+        assertThat(security.getName(), is("BioNTech SE Nam.-Akt.(sp.ADRs)1/o.N."));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check buy sell transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-16T10:12")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(17509.00))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(17510.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.00))));
+
+        // check tax-refund transaction
+        item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-06-16T00:00")));
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(178.59))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf7()
+    {
+        DABPDFExtractor extractor = new DABPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABVerkauf7.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = getSecurity(results);
+        assertThat(security.getIsin(), is("NL0015436031"));
+        assertThat(security.getName(), is("CureVac N.V. Namensaktien   o.N."));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check buy sell transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-31T08:50")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(300)));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(26252.00))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(26253.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.00))));
+
+        // check tax-refund transaction
+        item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-05-31T00:00")));
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(551.08))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf8()
+    {
+        DABPDFExtractor extractor = new DABPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABVerkauf8.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = getSecurity(results);
+        assertThat(security.getIsin(), is("NL0015436031"));
+        assertThat(security.getName(), is("CureVac N.V. Namensaktien   o.N."));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check buy sell transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-26T09:01")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(300)));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(27911.45))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(28293.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(335.29 + 18.44 + 26.82))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.00))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf9()
+    {
+        DABPDFExtractor extractor = new DABPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABVerkauf9.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = getSecurity(results);
+        assertThat(security.getIsin(), is("NL0015436031"));
+        assertThat(security.getName(), is("CureVac N.V. Namensaktien   o.N."));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check 1st buy sell transactions
+        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-31T08:50")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(300)));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(26252.00))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(26253.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.00))));
+
+        // check tax-refund for 1st transaction
+        item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-05-31T00:00")));
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(551.08))));
+
+        // check 2nd buy sell transactions
+        item = results.stream().filter(i -> i instanceof BuySellEntryItem).skip(1).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
+        entry = (BuySellEntry) item.get().getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-26T09:01")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(300)));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(27911.45))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(28293.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(335.29 + 18.44 + 26.82))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.00))));
     }
 
     @Test
@@ -554,7 +945,10 @@ public class DABPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-30T09:59")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3)));
+
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(679.50))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(679.50))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
@@ -572,7 +966,10 @@ public class DABPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-27T16:08")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(6)));
+
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(619.92))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(619.92))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
@@ -589,7 +986,10 @@ public class DABPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-24T19:25")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1)));
+
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(585.70))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(585.70))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
@@ -606,7 +1006,10 @@ public class DABPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-24T14:21")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(14)));
+
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(573.02))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(573.02))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
@@ -623,7 +1026,10 @@ public class DABPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-20T20:41")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3)));
+
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(685.50))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(685.50))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
@@ -640,8 +1046,11 @@ public class DABPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-20T15:32")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5)));
+
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(565.10))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(564.10))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
@@ -1128,6 +1537,88 @@ public class DABPDFExtractorTest
     }
 
     @Test
+    public void testDividend10()
+    {
+        DABPDFExtractor extractor = new DABPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABDividend10.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.USD);
+
+        // check security
+        Security security = getSecurity(results);
+        assertThat(security.getIsin(), is("IE00BJ5JP329"));
+        assertThat(security.getName(), is("iShs V-MSCI W.C.St.Sec.U.ETF Reg. Shs USD Dis. oN"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+
+        // check dividend transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-06-30T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(315)));
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(20.49))));
+        assertThat(transaction.getGrossValue(), 
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(25.11))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), 
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize((3.68 * 1.1914) + (0.20 * 1.1914)))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), 
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
+    }
+
+    @Test
+    public void testDividend10WithAccountAndSecurityInUSD()
+    {
+        Security security = new Security("iShs V-MSCI W.C.St.Sec.U.ETF Reg. Shs USD Dis. oN", CurrencyUnit.USD);
+        security.setIsin("IE00BJ5JP329");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        DABPDFExtractor extractor = new DABPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABDividend10.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+
+        // check dividends transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        AccountTransaction transaction = (AccountTransaction) item.orElseThrow(IllegalArgumentException::new)
+                        .getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-06-30T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(315)));
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(20.49))));
+        assertThat(transaction.getGrossValue(), 
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(25.11))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), 
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize((3.68 * 1.1914) + (0.20 * 1.1914)))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), 
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
+
+        CheckCurrenciesAction c = new CheckCurrenciesAction();
+        Account account = new Account();
+        account.setCurrencyCode(CurrencyUnit.USD);
+        Status s = c.process(transaction, account);
+        assertThat(s, is(Status.OK_STATUS));
+    }
+
+    @Test
     public void testProceeds1()
     {
         DABPDFExtractor extractor = new DABPDFExtractor(new Client());
@@ -1283,5 +1774,129 @@ public class DABPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(entry.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+    }
+
+    @Test
+    public void testKontoumsaetze01()
+    {
+        DABPDFExtractor extractor = new DABPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoumsaetze01.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(6));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+
+        // check account transactions
+        AccountTransaction t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+                        .collect(Collectors.toList()).get(0).getSubject();
+
+        assertThat(t.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(15000.00))));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2019-07-05T00:00")));
+
+        // check 2nd account transactions
+        t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).collect(Collectors.toList())
+                        .get(1).getSubject();
+
+        assertThat(t.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(300))));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2019-07-15T00:00")));
+
+        // check 3rd account transactions
+        t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).collect(Collectors.toList())
+                        .get(2).getSubject();
+
+        assertThat(t.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5000.00))));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2019-07-17T00:00")));
+
+        // check 4th account transactions
+        t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).collect(Collectors.toList())
+                        .get(3).getSubject();
+
+        assertThat(t.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1900.00))));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2019-07-17T00:00")));
+
+        // check 5th account transactions
+        t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).collect(Collectors.toList())
+                        .get(4).getSubject();
+
+        assertThat(t.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(300.00))));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2019-08-13T00:00")));
+
+        // check 6th account transactions
+        t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).collect(Collectors.toList())
+                        .get(5).getSubject();
+
+        assertThat(t.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(300.00))));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2019-09-13T00:00")));
+    }
+
+    @Test
+    public void testKontoumsaetze02()
+    {
+        DABPDFExtractor extractor = new DABPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoumsaetze02.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(5));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+
+        // check account transactions
+        AccountTransaction t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+                        .collect(Collectors.toList()).get(0).getSubject();
+
+        assertThat(t.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(400.00))));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-01-13T00:00")));
+
+        // check 2nd account transactions
+        t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).collect(Collectors.toList())
+                        .get(1).getSubject();
+
+        assertThat(t.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(400))));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-02-18T00:00")));
+
+        // check 3rd account transactions
+        t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).collect(Collectors.toList())
+                        .get(2).getSubject();
+
+        assertThat(t.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(500.00))));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-03-15T00:00")));
+
+        // check 4rd account transactions
+        t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).collect(Collectors.toList())
+                        .get(3).getSubject();
+
+        assertThat(t.getType(), is(AccountTransaction.Type.FEES));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(53.02))));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2020-06-29T00:00")));
+
+        // check 5rd account transactions
+        t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).collect(Collectors.toList())
+                        .get(4).getSubject();
+
+        assertThat(t.getType(), is(AccountTransaction.Type.FEES));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(23.05))));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2020-06-29T00:00")));
     }
 }

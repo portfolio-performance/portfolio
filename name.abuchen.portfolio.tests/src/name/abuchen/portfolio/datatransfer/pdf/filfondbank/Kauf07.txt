@@ -1,0 +1,43 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Depotführung: Ihr der FFB benannte Vermittler:
+Für Rückfragen wenden Sie sich bitte an:
+kontakt@own360.app
+Herrn
+Max Mustermann
+Mustergasse 1
+1010 WIEN
+ÖSTERREICH
+Es schreibt Ihnen:
+FFB Kundenbetreuung
+Wien, 03. November 2020
+Fondsabrechnung
+Auszug  12              Blatt 1
+Depotinhaber Max Mustermann
+Depotnummer 1234123456 (Privatvermögen)
+Transaktion Fondsname Betrag Preis Anteile
+Auftrags-Nr. WKN / ISIN Wechselkurs Preisdatum Bestand alt
+Fondsgesellschaft Währungsbetrag EU-QuSt pro Anteil Bestand neu
+Verwahrart, Lagerland Rücknahmepreis
+Kauf Own 360 Standortfds Österr. A 30,00 EUR 94,8000 EUR +0,316
+2581216 A2DHT6 / AT0000A1QA38 03.11.2020 11,154
+Spängler IQAM Invest GmbH 0,0000 EUR 11,470
+Girosammelverwahrung, Österreich 94,8000 EUR
+Abrechnungsbetrag 30,00 EUR
+Ausgabeaufschlag / Provision (0,00 %) 0,00 EUR
+Handelsuhrzeit 16:51:24
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden
+Durchschnittsverfahren  § 27a Abs. 4 Zi 3 EStG: 0,316 Anteile
+Steuerlicher Anschaffungswert: 29,96 EUR
+Anlagen in Investmentfonds können erst nach Kenntnisnahme der gesetzlichen Verkaufsunterlagen (aktueller ausführlicher Verkaufsprospekt, 
+Kundeninformationsdokumente, Halb-/Jahresbericht) erfolgen. Diese Unterlagen haben Sie direkt von Ihrem Vermittler erhalten. Verwenden 
+Sie bitte für Investmentfonds-Aufträge ausschließlich die Serviceformulare der FFB, die Sie ebenfalls online oder über Ihren Vermittler erhalten.
+Hinweise:
+Einwendungen gegen diese Fondsabrechnung wegen Unrichtigkeit oder Unvollständigkeit richten Sie bitte schriftlich spätestens einen Monat nach Zugang an:
+FIL Fondsbank GmbH, Zweigniederlassung Wien, Revision, Postfach 2222, 1131 Wien, Telefax +43 (0) 1 2530177-444.
+FIL Fondsbank GmbH Telefon +43 (0) 1 2530177-400 Niederlassungsleitung: FIL Fondsbank GmbH Geschäftsführung:
+Zweigniederlassung Wien Telefax +43 (0) 1 2530177-444 Ronald Holzmann Kastanienhöhe 1 Peter Nonner
+Postfach 2222 info@ffb.at Peter Nonner D-61476 Kronberg im Taunus Gerald Rink
+Mariahilfer Straße 36 www.ffb.at Handelsgericht: Wien Amtsgericht:
+A-1070 Wien FN 398537i Königstein im Taunus HRB 8336
+ABGST_V1.0'''

@@ -25,6 +25,7 @@ import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -87,6 +88,9 @@ public class PortfolioPart implements ClientInputListener
 
     @Inject
     ClientInputFactory clientInputFactory;
+
+    @Inject
+    private IStylingEngine stylingEngine;
 
     @PostConstruct
     public void createComposite(Composite parent)
@@ -503,7 +507,7 @@ public class PortfolioPart implements ClientInputListener
 
         try
         {
-            createView(item.getViewClass(), parameter);
+            createView(item.getViewClass(), parameter, item.hideInformationPane());
 
             this.selectedItem = item;
 
@@ -512,11 +516,11 @@ public class PortfolioPart implements ClientInputListener
         catch (Exception e)
         {
             PortfolioPlugin.log(e);
-            createView(ExceptionView.class, e);
+            createView(ExceptionView.class, e, true);
         }
     }
 
-    private void createView(Class<? extends AbstractFinanceView> clazz, Object parameter)
+    private void createView(Class<? extends AbstractFinanceView> clazz, Object parameter, boolean hideInformationPane)
     {
         IEclipseContext viewContext = this.context.createChild(clazz.getName());
         viewContext.set(Client.class, this.clientInput.getClient());
@@ -547,7 +551,11 @@ public class PortfolioPart implements ClientInputListener
         AbstractFinanceView underConstruction = ContextInjectionFactory.make(clazz, viewContext);
         viewContext.set(AbstractFinanceView.class, underConstruction);
 
-        underConstruction.createViewControl(book);
+        underConstruction.createViewControl(book, hideInformationPane);
+
+        // explicitly style control after creation because on Windows the styles
+        // are not always applied immediately
+        stylingEngine.style(underConstruction.getControl());
 
         view = underConstruction;
         book.showPage(view.getControl());

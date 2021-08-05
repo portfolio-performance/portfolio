@@ -54,8 +54,8 @@ import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 import name.abuchen.portfolio.ui.views.panes.AccountBalancePane;
+import name.abuchen.portfolio.ui.views.panes.AccountTransactionsPane;
 import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
-import name.abuchen.portfolio.ui.views.panes.TransactionsPane;
 
 public class AccountListView extends AbstractFinanceView implements ModificationListener
 {
@@ -162,6 +162,16 @@ public class AccountListView extends AbstractFinanceView implements Modification
     }
 
     @Override
+    protected void notifyViewCreationCompleted()
+    {
+        resetInput();
+        accounts.refresh();
+
+        if (accounts.getTable().getItemCount() > 0)
+            accounts.setSelection(new StructuredSelection(accounts.getElementAt(0)), true);
+    }
+
+    @Override
     public void onModified(Object element, Object newValue, Object oldValue)
     {
         if (element instanceof AccountTransaction)
@@ -244,8 +254,6 @@ public class AccountListView extends AbstractFinanceView implements Modification
         accounts.getTable().setLinesVisible(true);
 
         accounts.setContentProvider(ArrayContentProvider.getInstance());
-        resetInput();
-        accounts.refresh();
 
         hookContextMenu(accounts.getTable(), this::fillAccountsContextMenu);
 
@@ -306,7 +314,7 @@ public class AccountListView extends AbstractFinanceView implements Modification
     protected void addPanePages(List<InformationPanePage> pages)
     {
         super.addPanePages(pages);
-        pages.add(make(TransactionsPane.class));
+        pages.add(make(AccountTransactionsPane.class));
         pages.add(make(AccountBalancePane.class));
     }
 
