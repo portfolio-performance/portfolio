@@ -24,7 +24,7 @@ public class Client
 {
     /* package */static final int MAJOR_VERSION = 1;
 
-    public static final int CURRENT_VERSION = 51;
+    public static final int CURRENT_VERSION = 52;
     public static final int VERSION_WITH_CURRENCY_SUPPORT = 29;
 
     private transient PropertyChangeSupport propertyChangeSupport; // NOSONAR
@@ -48,7 +48,7 @@ public class Client
 
     // keep typo -> xstream deserialization
     @Deprecated
-    private List<ConsumerPriceIndex> consumerPriceIndeces;
+    /* package */ List<ConsumerPriceIndex> consumerPriceIndeces;
 
     private List<Account> accounts = new ArrayList<>();
     private List<Portfolio> portfolios = new ArrayList<>();
@@ -79,9 +79,6 @@ public class Client
 
         if (watchlists == null)
             watchlists = new ArrayList<>();
-
-        if (consumerPriceIndeces == null)
-            consumerPriceIndeces = new ArrayList<>();
 
         if (properties == null)
             properties = new HashMap<>();
@@ -237,12 +234,6 @@ public class Client
     public List<Watchlist> getWatchlists()
     {
         return watchlists;
-    }
-
-    @Deprecated
-    /* package */ List<ConsumerPriceIndex> getConsumerPriceIndices() // NOSONAR
-    {
-        return Collections.unmodifiableList(consumerPriceIndeces); // NOSONAR
     }
 
     public void addAccount(Account account)
