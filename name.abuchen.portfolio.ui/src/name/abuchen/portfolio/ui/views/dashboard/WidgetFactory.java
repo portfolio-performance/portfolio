@@ -91,6 +91,17 @@ public enum WidgetFactory
                                     .withBenchmarkDataSeries(false) //
                                     .build()),
 
+    SAVINGS(Messages.LabelPNTransfers, Messages.LabelStatementOfAssets, //
+                    (widget, data) -> IndicatorWidget.<Long>create(widget, data) //
+                                    .with(Values.Amount) //
+                                    .with((ds, period) -> {
+                                        long[] d = data.calculate(ds, period).getTransferals();
+                                        return d.length > 1 ? LongStream.of(d).skip(1).sum() : 0L;
+                                            // skip d[0] because it refers to the day before start
+                                    }) //
+                                    .withBenchmarkDataSeries(false) //
+                                    .build()),
+
     INVESTED_CAPITAL(Messages.LabelInvestedCapital, Messages.LabelStatementOfAssets, //
                     (widget, data) -> IndicatorWidget.<Long>create(widget, data) //
                                     .with(Values.Amount) //
