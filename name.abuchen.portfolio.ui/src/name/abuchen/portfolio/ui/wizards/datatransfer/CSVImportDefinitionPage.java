@@ -543,12 +543,16 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
             tableViewer.refresh();
             tableViewer.getTable().pack();
 
-            // see #1723 and #1536: under Linux, the first column is extended to
-            // the full size of the table
 
-            if (!Platform.getWS().equals(Platform.WS_GTK))
-                for (TableColumn column : tableViewer.getTable().getColumns())
-                    column.pack();
+            TableColumn[] columns = tableViewer.getTable().getColumns();
+            for (TableColumn column : columns)
+                column.pack();
+
+            // see #1723 and #1536: under Linux, the first column is extended to
+            // the full size of the table. Re-packing it after all other columns
+            // have been packed resolves this.
+            if (Platform.getWS().equals(Platform.WS_GTK) && columns.length > 0)
+                tableViewer.getTable().getColumns()[0].pack();
 
             doUpdateErrorMessages();
         }
