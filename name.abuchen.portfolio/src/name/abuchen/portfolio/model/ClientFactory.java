@@ -603,6 +603,7 @@ public class ClientFactory
                 assignTxUUIDsAndUpdateAtInstants(client);
             case 51:
                 permanentelyRemoveCPIData(client);
+                fixDimensionsList(client);
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
@@ -611,11 +612,6 @@ public class ClientFactory
             default:
                 break;
         }
-    }
-
-    private static void permanentelyRemoveCPIData(Client client)
-    {
-        client.consumerPriceIndeces = null;
     }
 
     private static void fixAssetClassTypes(Client client)
@@ -1159,6 +1155,19 @@ public class ClientFactory
         {
             s.setUpdatedAt(Instant.now());
         }
+    }
+
+    private static void permanentelyRemoveCPIData(Client client)
+    {
+        client.consumerPriceIndeces = null;
+    }
+
+    private static void fixDimensionsList(Client client)
+    {
+        client.getTaxonomies().forEach(t -> {
+            if (t.getDimensions() != null)
+                t.setDimensions(new ArrayList<>(t.getDimensions()));
+        });
     }
 
     @SuppressWarnings("nls")
