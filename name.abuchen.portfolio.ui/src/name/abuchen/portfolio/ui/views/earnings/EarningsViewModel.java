@@ -345,25 +345,12 @@ public class EarningsViewModel
                         continue;
 
                     long value = 0;
-                    switch (mode)
-                    {
-                        case TAXES:
-                            value -= transaction.getUnitSum(Unit.Type.TAX).with(converter.at(transaction.getDateTime()))
-                                            .getAmount();
-                            break;
-                        case FEES:
-                            value -= transaction.getUnitSum(Unit.Type.FEE).with(converter.at(transaction.getDateTime()))
-                                            .getAmount();
-                            break;
-                        case ALL:
-                            value -= transaction.getUnitSum(Unit.Type.TAX).with(converter.at(transaction.getDateTime()))
-                                            .getAmount();
-                            value -= transaction.getUnitSum(Unit.Type.FEE).with(converter.at(transaction.getDateTime()))
-                                            .getAmount();
-                            break;
-
-                        default:
-                    }
+                    if (mode == Mode.TAXES || mode == Mode.ALL)
+                        value -= transaction.getUnitSum(Unit.Type.TAX).with(converter.at(transaction.getDateTime()))
+                                        .getAmount();
+                    if (mode == Mode.FEES || mode == Mode.ALL)
+                        value -= transaction.getUnitSum(Unit.Type.FEE).with(converter.at(transaction.getDateTime()))
+                                        .getAmount();
 
                     if (value != 0)
                     {
