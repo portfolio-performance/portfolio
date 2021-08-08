@@ -325,7 +325,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                 Matcher m = pCurrency.matcher(line);
                 if (m.matches())
                 {
-                    context.put("currency", m.group("currency"));
+                    context.put("localCurrency", m.group("currency"));
                 }
             }
         });
@@ -344,7 +344,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                 // 31.07 Ertrag                           Depot    7800000000/20200730-45756156 30.07 8,16
                 // ISIN AT0000969985 AT+S AUST. TECH.SYS.O.N.               45,00000 STK
                 // Kurs                      0,250000  ZINSERTRAG               11,25 EUR
-                .section("date", "year", "amount", "isin", "name", "shares", "currency")
+                .section("date", "year", "amount", "isin", "name", "shares", "currency").optional()
                 .match("^(?<date>\\d+.\\d+) Ertrag [\\s]+Depot [\\s]+[\\d]+\\/(?<year>[\\d]{4})[\\d]+\\-[\\d]+ [\\d]+.[\\d]+ (?<amount>[.,\\d]+)([-])?$")
                 .match("^ISIN (?<isin>[\\w]{12}) (?<name>.*) [\\s]+(?<shares>[.,\\d]+) STK$")
                 .match("^.* ZINSERTRAG [\\s]+([-])?[.,\\d]+ (?<currency>[\\w]{3})$")
@@ -352,8 +352,38 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                     t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
                     t.setShares(asShares(v.get("shares")));
                     t.setSecurity(getOrCreateSecurity(v));
-                    t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("currency")));
+                    t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("localCurrency")));
                     t.setAmount(asAmount(v.get("amount")));
+                })
+
+                // 03.08 Ertrag                           Depot    0123456700/20210802-1234567 02.08 63,05
+                // ISIN US00206R1023 AT + T INC.          DL 1             200,00000 STK
+                // Kurs                      0,520000  ZINSERTRAG              104,00 USD
+                // QUELLENSTEUER           -15,60 USD  Auslands-KESt           -13,00 USD
+                // DevKurs        1,195900/30.7.2021
+                .section("date", "year", "amount", "isin", "name", "shares", "forexCurrency", "exchangeRate").optional()
+                .match("^(?<date>\\d+.\\d+) Ertrag [\\s]+Depot [\\s]+[\\d]+\\/(?<year>[\\d]{4})[\\d]+\\-[\\d]+ [\\d]+.[\\d]+ (?<amount>[.,\\d]+)([-])?$")
+                .match("^ISIN (?<isin>[\\w]{12}) (?<name>.*) [\\s]+(?<shares>[.,\\d]+) STK$")
+                .match("^.* ZINSERTRAG [\\s]+([-])?[.,\\d]+ (?<forexCurrency>[\\w]{3})$")
+                .match("^DevKurs [\\s]+(?<exchangeRate>[.,\\d]+)\\/.*$")
+                .assign((t, v) -> {
+                    t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
+                    t.setShares(asShares(v.get("shares")));                    
+                    t.setSecurity(getOrCreateSecurity(v));
+                    t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("localCurrency")));
+                    t.setAmount(asAmount(v.get("amount")));
+
+                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate")).setScale(10,
+                                    RoundingMode.HALF_DOWN);
+                    BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+
+                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
+
+                    Money forex = Money.of(asCurrencyCode(v.get("forexCurrency")),
+                                    Math.round(t.getAmount() / inverseRate.doubleValue()));
+                    Unit unit = new Unit(Unit.Type.GROSS_VALUE, t.getMonetaryAmount(), forex, inverseRate);
+                    if (unit.getForex().getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
+                        t.addUnit(unit);
                 })
 
                 .wrap(TransactionItem::new);
@@ -448,9 +478,23 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                     processTaxEntries(t, v, type);
                 })
 
+                // QUELLENSTEUER           -15,60 USD  Auslands-KESt           -13,00 USD
+                .section("tax", "currency").optional()
+                .match("^QUELLENSTEUER [\\s]+-(?<tax>[.,\\d]+) (?<currency>[\\w]{3}) .*$")
+                .assign((t, v) -> {
+                    processTaxEntries(t, v, type);
+                })
+
                 // Auslands-KESt: -1,54 USD
                 .section("tax", "currency").optional()
                 .match("^Auslands-KESt: -(?<tax>[.,\\d]+) (?<currency>[\\w]{3}).*$")
+                .assign((t, v) -> {
+                    processTaxEntries(t, v, type);
+                })
+
+                // QUELLENSTEUER            -3,77 USD  Auslands-KESt            -3,13 USD
+                .section("tax", "currency").optional()
+                .match("^.* Auslands-KESt [\\s]+-(?<tax>[.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     processTaxEntries(t, v, type);
                 })
