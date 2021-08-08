@@ -295,7 +295,9 @@ public class GLSBankengemeinschaftPDFExtractor extends AbstractPDFExtractor
         if (Boolean.valueOf(documentType.getCurrentContext().get(FLAG_WITHHOLDING_TAX_FOUND)))
         {
             if ("quellenstanr".equalsIgnoreCase(taxtype) || ("quellenstrueck".equalsIgnoreCase(taxtype)))
-            { return false; }
+            { 
+                return false; 
+            }
         }
         return true;
     }
