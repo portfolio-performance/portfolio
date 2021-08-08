@@ -54,7 +54,8 @@ public class PaymentsViewModel
         ALL("\u2211", AccountTransaction.Type.DIVIDENDS, AccountTransaction.Type.INTEREST, //$NON-NLS-1$
                         AccountTransaction.Type.INTEREST_CHARGE, AccountTransaction.Type.TAXES,
                         AccountTransaction.Type.TAX_REFUND, AccountTransaction.Type.FEES,
-                        AccountTransaction.Type.FEES_REFUND);
+                        AccountTransaction.Type.FEES_REFUND), //
+        SAVING(Messages.LabelSaving, AccountTransaction.Type.DEPOSIT, AccountTransaction.Type.REMOVAL);
 
         private String label;
         private Set<AccountTransaction.Type> types;
@@ -334,7 +335,7 @@ public class PaymentsViewModel
             }
         }
 
-        EnumSet<Mode> processPorfolioTx = EnumSet.of(Mode.TAXES, Mode.FEES, Mode.ALL);
+        EnumSet<Mode> processPorfolioTx = EnumSet.of(Mode.SAVING, Mode.TAXES, Mode.FEES, Mode.ALL);
         if (processPorfolioTx.contains(mode))
         {
             for (Portfolio portfolio : filteredClient.getPortfolios())
@@ -351,6 +352,16 @@ public class PaymentsViewModel
                     if (mode == Mode.FEES || mode == Mode.ALL)
                         value -= transaction.getUnitSum(Unit.Type.FEE).with(converter.at(transaction.getDateTime()))
                                         .getAmount();
+                    if (mode == Mode.SAVING)
+                    {
+                        PortfolioTransaction.Type type = transaction.getType();
+                        if (type == PortfolioTransaction.Type.DELIVERY_INBOUND
+                                || type == PortfolioTransaction.Type.DELIVERY_OUTBOUND)
+                            value = transaction.getMonetaryAmount()
+                                        .with(converter.at(transaction.getDateTime())).getAmount();
+                        if (type.isLiquidation())
+                            value *= -1;
+                    }
 
                     if (value != 0)
                     {
