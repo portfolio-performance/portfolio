@@ -88,9 +88,9 @@ public class CommSecPDFExtractor extends AbstractPDFExtractor
                 // COMPANY: QANTAS AIRWAYS LIMITED
                 // QAN
                 // CONSIDERATION (AUD): $999.00 CONTRACT COMMENTS:
-                .section("name", "wkn", "currency").optional()
+                .section("name", "tickerSymbol", "currency").optional()
                 .match("^COMPANY: (?<name>.*)$")
-                .match("^(?<wkn>[\\w]{3})$")
+                .match("^(?<tickerSymbol>[\\w]{3,4})$")
                 .match("^CONSIDERATION \\((?<currency>[\\w]{3})\\): \\D[.,\\d]+ .*$")
                 .assign((t, v) -> {                    
                     t.setSecurity(getOrCreateSecurity(v));
@@ -99,9 +99,9 @@ public class CommSecPDFExtractor extends AbstractPDFExtractor
                 // COMPANY WISETECH GLOBAL LIMITED
                 // SECURITY ORDINARY FULLY PAID WTC
                 // CONSIDERATION (AUD): $28,060.00 PID XXXX HIN XXXXXXX
-                .section("name", "wkn", "currency").optional()
+                .section("name", "tickerSymbol", "currency").optional()
                 .match("^COMPANY (?<name>.*)$")
-                .match("^SECURITY ORDINARY FULLY PAID (?<wkn>[\\w]{3})$")
+                .match("^SECURITY ORDINARY FULLY PAID (?<tickerSymbol>[\\w]{3,4})$")
                 .match("^CONSIDERATION \\((?<currency>[\\w]{3})\\): \\D[.,\\d]+ .*$")
                 .assign((t, v) -> {                    
                     t.setSecurity(getOrCreateSecurity(v));
