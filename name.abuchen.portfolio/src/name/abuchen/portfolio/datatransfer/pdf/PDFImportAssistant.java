@@ -38,6 +38,7 @@ public class PDFImportAssistant
         extractors.add(new BondoraGoAndGrowPDFExtractor(client));
         extractors.add(new ComdirectPDFExtractor(client));
         extractors.add(new CommerzbankPDFExtractor(client));
+        extractors.add(new CommSecPDFExtractor(client));
         extractors.add(new ConsorsbankPDFExtractor(client));
         extractors.add(new CreditSuisseAGPDFExtractor(client));
         extractors.add(new DABPDFExtractor(client));
