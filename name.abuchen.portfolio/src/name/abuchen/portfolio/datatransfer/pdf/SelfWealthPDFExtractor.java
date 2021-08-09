@@ -21,10 +21,8 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class SelfWealthPDFExtractor extends AbstractPDFExtractor
 {
-    private static final DecimalFormat australianNumberFormat = (DecimalFormat) NumberFormat
-                    .getInstance(new Locale("en", "AU"));
-    private static final DateTimeFormatter australianDateFormat = DateTimeFormatter.ofPattern("d MMM yyyy",
-                    Locale.ENGLISH);
+    private static final DecimalFormat australianNumberFormat = (DecimalFormat) NumberFormat.getInstance(new Locale("en", "AU"));
+    private static final DateTimeFormatter australianDateFormat = DateTimeFormatter.ofPattern("d MMM yyyy", Locale.ENGLISH);
 
     public SelfWealthPDFExtractor(Client client)
     {
@@ -64,43 +62,43 @@ public class SelfWealthPDFExtractor extends AbstractPDFExtractor
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
-                        // Is type --> "Sell" change from BUY to SELL
-                        .section("type").optional() //
-                        .match("^(?<type>Sell) Confirmation$") //
-                        .assign((t, v) -> {
-                            if (v.get("type").equals("Sell"))
-                            {
-                                t.setType(PortfolioTransaction.Type.SELL);
-                            }
-                        })
+                // Is type --> "Sell" change from BUY to SELL
+                .section("type").optional() //
+                .match("^(?<type>Sell) Confirmation$")
+                .assign((t, v) -> {
+                    if (v.get("type").equals("Sell"))
+                    {
+                        t.setType(PortfolioTransaction.Type.SELL);
+                    }
+                })
 
-                        // JOHN DOE A/C Reference No: T20210701123456­-1
-                        .section("note").optional() //
-                        .match(" Reference No: (?<note>.*)$") //
-                        .assign((t, v) -> t.setNote(v.get("note")))
+                // JOHN DOE A/C Reference No: T20210701123456­-1
+                .section("note").optional()
+                .match(" Reference No: (?<note>.*)$")
+                .assign((t, v) -> t.setNote(v.get("note")))
 
-                        // 1 LONG ROAD Trade Date: 1 Jul 2021
-                        .section("date") //
-                        .match(".* Trade Date: (?<date>\\d+ \\D{3} \\d{4})") //
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                // 1 LONG ROAD Trade Date: 1 Jul 2021
+                .section("date")
+                .match(".* Trade Date: (?<date>\\d+ \\D{3} [\\d]{4})")
+                .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
-                        // 25 UMAX BETA S&P500 YIELDMAX 12.40 $312.50 AUD
-                        .section("shares", "symbol", "name", "quote", "amount", "currency")
-                        .match("^(?<shares>[.,\\d]+) (?<symbol>[a-zA-Z0-9]+) (?<name>[\\D\\d ]+) (?<quote>[.,\\d]+) \\$(?<amount>[.,\\d]+) (?<currency>[\\w]{3})$")
-                        .assign((t, v) -> {
-                            t.setShares(asShares(v.get("shares")));
-                            t.setSecurity(getOrCreateSecurity(v));
-                        })
+                // 25 UMAX BETA S&P500 YIELDMAX 12.40 $312.50 AUD
+                .section("shares", "tickerSymbol", "name", "amount", "currency")
+                .match("^(?<shares>[.,\\d]+) (?<tickerSymbol>[\\w]{3,4}) (?<name>.*) [.,\\d]+ \\D(?<amount>[.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    t.setShares(asShares(v.get("shares")));
+                    t.setSecurity(getOrCreateSecurity(v));
+                })
 
-                        // Net Value $322.00 AUD
-                        .section("amount", "currency") //
-                        .match("^Net Value \\$(?<amount>[.,\\d]+) (?<currency>[\\w]{3})$") //
-                        .assign((t, v) -> {
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                        })
+                // Net Value $322.00 AUD
+                .section("amount", "currency")
+                .match("^Net Value \\D(?<amount>[.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                })
 
-                        .wrap(BuySellEntryItem::new);
+                .wrap(BuySellEntryItem::new);
 
         addFeesSectionsTransaction(pdfTransaction, type);
     }
@@ -108,17 +106,15 @@ public class SelfWealthPDFExtractor extends AbstractPDFExtractor
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction
-                        // Brokerage* $9.50 AUD
-                        .section("fee", "currency").optional()
-                        .match("^Brokerage\\* \\$(?<fee>.*) (?<currency>[\\w]{3})$")
-                        .assign((t, v) -> processFeeEntries(t, v, type))
+                // Brokerage* $9.50 AUD
+                .section("fee", "currency").optional()
+                .match("^Brokerage\\* \\D(?<fee>.*) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> processFeeEntries(t, v, type))
 
-                        // Adviser Fee* $0.00 AUD
-                        .section("fee", "currency").optional()
-                        .match("^Adviser Fee\\* \\$(?<fee>.*) (?<currency>[\\w]{3})$")
-                        .assign((t, v) -> processFeeEntries(t, v, type));
-
-        // fees = brokerage_fee + adviser_fee
+                // Adviser Fee* $0.00 AUD
+                .section("fee", "currency").optional()
+                .match("^Adviser Fee\\* \\D(?<fee>.*) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
     private void processFeeEntries(Object t, Map<String, String> v, DocumentType type)
@@ -126,7 +122,8 @@ public class SelfWealthPDFExtractor extends AbstractPDFExtractor
         if (t instanceof name.abuchen.portfolio.model.Transaction)
         {
             Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
-            PDFExtractorUtils.checkAndSetFee(fee, (name.abuchen.portfolio.model.Transaction) t, type);
+            PDFExtractorUtils.checkAndSetFee(fee, 
+                            (name.abuchen.portfolio.model.Transaction) t, type);
         }
         else
         {
