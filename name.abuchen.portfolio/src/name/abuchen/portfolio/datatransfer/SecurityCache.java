@@ -109,10 +109,24 @@ public class SecurityCache
 
         if (doNotMatchIfGiven(isin, security.getIsin()))
             return null;
+
         if (doNotMatchIfGiven(tickerSymbol, security.getTickerSymbol()))
-            return null;
+        {
+            // In some countries there is no ISIN or WKN, only the ticker symbol. 
+            // However, as soon as the historical prices are pulled from the stock exchange, 
+            // the ticker symbol is expanded.
+            // PDF importers that use this are for example the SelfWeath and the CommSec
+            // Example UMAX --> UMAX.AX
+            if (doNotMatchIfGiven(tickerSymbol, security.getTickerSymbol().substring(0, security.getTickerSymbol().indexOf('.'))))
+            {
+                return null;
+            }
+        return null;
+        }
+
         if (doNotMatchIfGiven(wkn, security.getWkn()))
             return null;
+
         return security;
     }
 
