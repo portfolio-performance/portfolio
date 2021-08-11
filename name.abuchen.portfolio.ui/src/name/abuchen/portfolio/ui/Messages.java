@@ -613,6 +613,7 @@ public class Messages extends NLS
     public static String LabelPaymentsByQuarterAndVehicle;
     public static String LabelPaymentsByYearAndVehicle;
     public static String LabelPaymentsPerMonth;
+    public static String LabelPaymentsPerMonthAccumulated;
     public static String LabelPaymentsPerQuarter;
     public static String LabelPaymentsPerYear;
     public static String LabelPaymentsSelectStartYear;

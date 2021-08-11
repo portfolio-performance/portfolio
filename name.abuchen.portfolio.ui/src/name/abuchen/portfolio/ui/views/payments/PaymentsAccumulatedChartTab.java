@@ -16,7 +16,7 @@ public class PaymentsAccumulatedChartTab extends AbstractChartTab
     @Override
     public String getLabel()
     {
-        return Messages.LabelAccumulatedEarnings;
+        return Messages.LabelPaymentsPerMonthAccumulated;
     }
 
     @Override
