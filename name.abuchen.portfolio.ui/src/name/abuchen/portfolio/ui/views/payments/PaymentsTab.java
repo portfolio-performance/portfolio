@@ -1,10 +1,10 @@
-package name.abuchen.portfolio.ui.views.earnings;
+package name.abuchen.portfolio.ui.views.payments;
 
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-public interface EarningsTab
+public interface PaymentsTab
 {
     String getLabel();
 

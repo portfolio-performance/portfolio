@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.views.earnings;
+package name.abuchen.portfolio.ui.views.payments;
 
 import java.text.MessageFormat;
 import java.time.LocalDate;
@@ -46,10 +46,10 @@ import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.views.AccountContextMenu;
 import name.abuchen.portfolio.ui.views.SecurityContextMenu;
-import name.abuchen.portfolio.ui.views.earnings.EarningsViewModel.Line;
+import name.abuchen.portfolio.ui.views.payments.PaymentsViewModel.Line;
 import name.abuchen.portfolio.util.TextUtil;
 
-public class EarningsPerMonthMatrixTab implements EarningsTab
+public class PaymentsPerMonthMatrixTab implements PaymentsTab
 {
     @Inject
     private IStylingEngine stylingEngine;
@@ -61,7 +61,7 @@ public class EarningsPerMonthMatrixTab implements EarningsTab
     private SelectionService selectionService;
 
     @Inject
-    protected EarningsViewModel model;
+    protected PaymentsViewModel model;
 
     private boolean showOnlyOneYear = false;
 
@@ -74,7 +74,7 @@ public class EarningsPerMonthMatrixTab implements EarningsTab
     @Override
     public String getLabel()
     {
-        return Messages.LabelEarningsByMonthAndVehicle;
+        return Messages.LabelPaymentsByMonthAndVehicle;
     }
 
     @Override
@@ -132,7 +132,7 @@ public class EarningsPerMonthMatrixTab implements EarningsTab
             view.setInformationPaneInput(selection.getFirstElement());
             if (!selection.isEmpty())
             {
-                InvestmentVehicle vehicle = ((EarningsViewModel.Line) selection.getFirstElement()).getVehicle();
+                InvestmentVehicle vehicle = ((PaymentsViewModel.Line) selection.getFirstElement()).getVehicle();
                 if (vehicle instanceof Security)
                     selectionService.setSelection(new SecuritySelection(model.getClient(), (Security) vehicle));
             }
@@ -200,25 +200,25 @@ public class EarningsPerMonthMatrixTab implements EarningsTab
             @Override
             public Image getImage(Object element)
             {
-                InvestmentVehicle vehicle = ((EarningsViewModel.Line) element).getVehicle();
+                InvestmentVehicle vehicle = ((PaymentsViewModel.Line) element).getVehicle();
                 return LogoManager.instance().getDefaultColumnImage(vehicle, model.getClient().getSettings());
             }
 
             @Override
             public String getText(Object element)
             {
-                InvestmentVehicle vehicle = ((EarningsViewModel.Line) element).getVehicle();
+                InvestmentVehicle vehicle = ((PaymentsViewModel.Line) element).getVehicle();
                 return vehicle != null ? vehicle.getName()
-                                : (((EarningsViewModel.Line) element).getConsolidatedRetired()
-                                                ? Messages.LabelEarningsConsolidateRetired
+                                : (((PaymentsViewModel.Line) element).getConsolidatedRetired()
+                                                ? Messages.LabelPaymentsConsolidateRetired
                                                 : Messages.ColumnSum);
             }
 
             @Override
             public Font getFont(Object element)
             {
-                InvestmentVehicle vehicle = ((EarningsViewModel.Line) element).getVehicle();
-                return vehicle != null || ((EarningsViewModel.Line) element).getConsolidatedRetired() ? null : boldFont;
+                InvestmentVehicle vehicle = ((PaymentsViewModel.Line) element).getVehicle();
+                return vehicle != null || ((PaymentsViewModel.Line) element).getConsolidatedRetired() ? null : boldFont;
             }
         });
 
@@ -228,13 +228,13 @@ public class EarningsPerMonthMatrixTab implements EarningsTab
         layout.setColumnData(column.getColumn(), new ColumnPixelData(200));
     }
 
-    protected ColumnViewerSorter createSorter(Comparator<EarningsViewModel.Line> comparator)
+    protected ColumnViewerSorter createSorter(Comparator<PaymentsViewModel.Line> comparator)
     {
         return ColumnViewerSorter.create((o1, o2) -> {
             int direction = ColumnViewerSorter.SortingContext.getSortDirection();
 
-            EarningsViewModel.Line line1 = (EarningsViewModel.Line) o1;
-            EarningsViewModel.Line line2 = (EarningsViewModel.Line) o2;
+            PaymentsViewModel.Line line1 = (PaymentsViewModel.Line) o1;
+            PaymentsViewModel.Line line2 = (PaymentsViewModel.Line) o2;
 
             if (line1.getVehicle() == null)
                 return direction == SWT.DOWN ? 1 : -1;
@@ -254,7 +254,7 @@ public class EarningsPerMonthMatrixTab implements EarningsTab
             @Override
             public String getText(Object element)
             {
-                Line line = (EarningsViewModel.Line) element;
+                Line line = (PaymentsViewModel.Line) element;
                 return line.getVehicle() != null ? Values.Amount.formatNonZero(line.getValue(index))
                                 : Values.Amount.format(line.getValue(index));
             }
@@ -262,15 +262,15 @@ public class EarningsPerMonthMatrixTab implements EarningsTab
             @Override
             public String getToolTipText(Object element)
             {
-                InvestmentVehicle vehicle = ((EarningsViewModel.Line) element).getVehicle();
+                InvestmentVehicle vehicle = ((PaymentsViewModel.Line) element).getVehicle();
                 return TextUtil.tooltip(vehicle != null ? vehicle.getName() : null);
             }
 
             @Override
             public Font getFont(Object element)
             {
-                InvestmentVehicle vehicle = ((EarningsViewModel.Line) element).getVehicle();
-                return vehicle != null || ((EarningsViewModel.Line) element).getConsolidatedRetired() ? null : boldFont;
+                InvestmentVehicle vehicle = ((PaymentsViewModel.Line) element).getVehicle();
+                return vehicle != null || ((PaymentsViewModel.Line) element).getConsolidatedRetired() ? null : boldFont;
             }
         });
 
@@ -281,7 +281,7 @@ public class EarningsPerMonthMatrixTab implements EarningsTab
 
     protected void createSumColumn(TableViewer records, TableColumnLayout layout)
     {
-        ToLongFunction<EarningsViewModel.Line> valueFunction = line -> {
+        ToLongFunction<PaymentsViewModel.Line> valueFunction = line -> {
             if (showOnlyOneYear)
             {
                 int noOfMonths = Math.min(12, line.getNoOfMonths());
@@ -306,14 +306,14 @@ public class EarningsPerMonthMatrixTab implements EarningsTab
             @Override
             public String getText(Object element)
             {
-                EarningsViewModel.Line line = (EarningsViewModel.Line) element;
+                PaymentsViewModel.Line line = (PaymentsViewModel.Line) element;
                 return Values.Amount.formatNonZero(valueFunction.applyAsLong(line));
             }
 
             @Override
             public Font getFont(Object element)
             {
-                return ((EarningsViewModel.Line) element).getConsolidatedRetired() ? null : boldFont;
+                return ((PaymentsViewModel.Line) element).getConsolidatedRetired() ? null : boldFont;
             }
         });
 

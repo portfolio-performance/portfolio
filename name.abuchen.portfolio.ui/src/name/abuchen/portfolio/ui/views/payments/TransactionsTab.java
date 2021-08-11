@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.views.earnings;
+package name.abuchen.portfolio.ui.views.payments;
 
 import java.text.MessageFormat;
 import java.util.function.Function;
@@ -43,7 +43,7 @@ import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.util.TextUtil;
 
-public class TransactionsTab implements EarningsTab
+public class TransactionsTab implements PaymentsTab
 {
     @Inject
     private Client client;
@@ -52,7 +52,7 @@ public class TransactionsTab implements EarningsTab
     private AbstractFinanceView view;
 
     @Inject
-    private EarningsViewModel model;
+    private PaymentsViewModel model;
 
     @Inject
     private SelectionService selectionService;

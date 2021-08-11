@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.views.earnings;
+package name.abuchen.portfolio.ui.views.payments;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -17,17 +17,17 @@ import org.eclipse.swt.graphics.Font;
 import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.views.earnings.EarningsViewModel.Line;
+import name.abuchen.portfolio.ui.views.payments.PaymentsViewModel.Line;
 import name.abuchen.portfolio.util.TextUtil;
 
-public class EarningsPerQuarterMatrixTab extends EarningsPerMonthMatrixTab
+public class PaymentsPerQuarterMatrixTab extends PaymentsPerMonthMatrixTab
 {
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy"); //$NON-NLS-1$
 
     @Override
     public String getLabel()
     {
-        return Messages.LabelEarningsByQuarterAndVehicle;
+        return Messages.LabelPaymentsByQuarterAndVehicle;
     }
 
     @Override
@@ -104,7 +104,7 @@ public class EarningsPerQuarterMatrixTab extends EarningsPerMonthMatrixTab
     private void createQuarterColumn(TableViewer records, TableColumnLayout layout, int quarterBeginIndex,
                     int quarterEndIndex, String columnCaption)
     {
-        ToLongFunction<EarningsViewModel.Line> valueFunction = line -> {
+        ToLongFunction<PaymentsViewModel.Line> valueFunction = line -> {
             long value = 0;
             for (int i = quarterBeginIndex; i < quarterEndIndex; i++)
                 value += line.getValue(i);
@@ -118,7 +118,7 @@ public class EarningsPerQuarterMatrixTab extends EarningsPerMonthMatrixTab
             @Override
             public String getText(Object element)
             {
-                Line line = (EarningsViewModel.Line) element;
+                Line line = (PaymentsViewModel.Line) element;
                 long value = valueFunction.applyAsLong(line);
                 return line.getVehicle() != null ? Values.Amount.formatNonZero(value) : Values.Amount.format(value);
             }
@@ -126,15 +126,15 @@ public class EarningsPerQuarterMatrixTab extends EarningsPerMonthMatrixTab
             @Override
             public String getToolTipText(Object element)
             {
-                InvestmentVehicle vehicle = ((EarningsViewModel.Line) element).getVehicle();
+                InvestmentVehicle vehicle = ((PaymentsViewModel.Line) element).getVehicle();
                 return TextUtil.tooltip(vehicle != null ? vehicle.getName() : null);
             }
 
             @Override
             public Font getFont(Object element)
             {
-                InvestmentVehicle vehicle = ((EarningsViewModel.Line) element).getVehicle();
-                return vehicle != null || ((EarningsViewModel.Line) element).getConsolidatedRetired() ? null : boldFont;
+                InvestmentVehicle vehicle = ((PaymentsViewModel.Line) element).getVehicle();
+                return vehicle != null || ((PaymentsViewModel.Line) element).getConsolidatedRetired() ? null : boldFont;
             }
         });
 

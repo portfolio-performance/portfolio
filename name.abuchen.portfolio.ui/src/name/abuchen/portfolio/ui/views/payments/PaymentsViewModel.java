@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.views.earnings;
+package name.abuchen.portfolio.ui.views.payments;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -36,7 +36,7 @@ import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.util.Interval;
 
-public class EarningsViewModel
+public class PaymentsViewModel
 {
     public enum Mode
     {
@@ -50,7 +50,7 @@ public class EarningsViewModel
         FEES(Messages.ColumnFees, AccountTransaction.Type.DIVIDENDS, AccountTransaction.Type.INTEREST,
                         AccountTransaction.Type.INTEREST_CHARGE, AccountTransaction.Type.FEES,
                         AccountTransaction.Type.FEES_REFUND), //
-        TRADES(Messages.LabelEarningsTradeProfitLoss, null), //
+        TRADES(Messages.LabelPaymentsTradeProfitLoss, null), //
         ALL("\u2211", AccountTransaction.Type.DIVIDENDS, AccountTransaction.Type.INTEREST, //$NON-NLS-1$
                         AccountTransaction.Type.INTEREST_CHARGE, AccountTransaction.Type.TAXES,
                         AccountTransaction.Type.TAX_REFUND, AccountTransaction.Type.FEES,
@@ -147,7 +147,7 @@ public class EarningsViewModel
     private boolean useGrossValue = true;
     private boolean useConsolidateRetired = true;
 
-    public EarningsViewModel(AbstractFinanceView view, IPreferenceStore preferences, CurrencyConverter converter,
+    public PaymentsViewModel(AbstractFinanceView view, IPreferenceStore preferences, CurrencyConverter converter,
                     Client client)
     {
         this.view = view;
@@ -157,13 +157,13 @@ public class EarningsViewModel
         this.clientFilter = new ClientFilterMenu(client, preferences, filter -> recalculate());
 
         String selection = preferences
-                        .getString(EarningsViewModel.class.getSimpleName() + ClientFilterMenu.PREF_KEY_POSTFIX);
+                        .getString(PaymentsViewModel.class.getSimpleName() + ClientFilterMenu.PREF_KEY_POSTFIX);
         if (selection != null)
             this.clientFilter.getAllItems().filter(item -> item.getUUIDs().equals(selection)).findAny()
                             .ifPresent(this.clientFilter::select);
 
         this.clientFilter.addListener(filter -> preferences.putValue(
-                        EarningsViewModel.class.getSimpleName() + ClientFilterMenu.PREF_KEY_POSTFIX,
+                        PaymentsViewModel.class.getSimpleName() + ClientFilterMenu.PREF_KEY_POSTFIX,
                         this.clientFilter.getSelectedItem().getUUIDs()));
     }
 

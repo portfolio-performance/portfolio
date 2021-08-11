@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.views.earnings;
+package name.abuchen.portfolio.ui.views.payments;
 
 import java.text.DateFormatSymbols;
 import java.util.Arrays;
@@ -24,7 +24,7 @@ import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart.ThousandsNumberFormat;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
 
-public abstract class AbstractChartTab implements EarningsTab
+public abstract class AbstractChartTab implements PaymentsTab
 {
     private static final int[][] COLORS = new int[][] { //
                     new int[] { 140, 86, 75 }, //
@@ -44,7 +44,7 @@ public abstract class AbstractChartTab implements EarningsTab
                     new int[] { 148, 103, 189 } }; //
 
     @Inject
-    protected EarningsViewModel model;
+    protected PaymentsViewModel model;
 
     private LocalResourceManager resources;
     private Chart chart;
