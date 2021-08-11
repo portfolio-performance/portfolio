@@ -560,7 +560,6 @@ public class Messages extends NLS
     public static String LabelEarningsExpenses;
     public static String LabelEarningsUseConsolidateRetired;
     public static String LabelEarningsConsolidateRetired;
-    public static String LabelEarningsUseTradeProfitLoss;
     public static String LabelEarningsTradeProfitLoss;
     public static String LabelExpandAll;
     public static String LabelExpenses;
