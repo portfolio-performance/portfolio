@@ -56,7 +56,7 @@ public class SecurityCacheTest
     public void testThatSecurityIsMatchedByTickerSymbol()
     {
         SecurityCache cache = new SecurityCache(client);
-        Security lookup = cache.lookup(null, "SAP.DE", null, null, () -> new Security());
+        Security lookup = cache.lookup(null, "SAP", null, null, () -> new Security());
         assertThat(client.getSecurities().get(0), is(lookup));
     }
 }

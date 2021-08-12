@@ -82,7 +82,7 @@ public class CSVPortfolioTransactionExtractorTest
 
         List<Exception> errors = new ArrayList<>();
         List<Item> results = extractor.extract(0,
-                        Arrays.<String[]>asList(new String[] { "2013-01-01", "", "DE0007164600", "SAP.DE", "", "SAP SE",
+                        Arrays.<String[]>asList(new String[] { "2013-01-01", "", "DE0007164600", "SAP", "", "SAP SE",
                                         "100", "EUR", "11", "10", "", "", "", "1,2", "TRANSFER_IN", "Notiz" }),
                         buildField2Column(extractor), errors);
 
@@ -122,7 +122,7 @@ public class CSVPortfolioTransactionExtractorTest
 
         List<Exception> errors = new ArrayList<>();
         List<Item> results = extractor.extract(0,
-                        Arrays.<String[]>asList(new String[] { "2013-01-02", "10:00", "DE0007164600", "SAP.DE", "",
+                        Arrays.<String[]>asList(new String[] { "2013-01-02", "10:00", "DE0007164600", "SAP", "",
                                         "SAP SE", "100", "EUR", "11", "", "", "", "", "1,9", "BUY", "Notiz" }),
                         buildField2Column(extractor), errors);
 
@@ -161,7 +161,7 @@ public class CSVPortfolioTransactionExtractorTest
 
         List<Exception> errors = new ArrayList<>();
         List<Item> results = extractor.extract(0,
-                        Arrays.<String[]>asList(new String[] { "2013-01-02", "", "DE0007164600", "SAP.DE", "", "SAP SE",
+                        Arrays.<String[]>asList(new String[] { "2013-01-02", "", "DE0007164600", "SAP", "", "SAP SE",
                                         "-100", "EUR", "", "12", "110", "USD", "0,9091", "1,9", "SELL", "Notiz" }),
                         buildField2Column(extractor), errors);
 
@@ -198,7 +198,7 @@ public class CSVPortfolioTransactionExtractorTest
 
         List<Exception> errors = new ArrayList<>();
         List<Item> results = extractor.extract(0,
-                        Arrays.<String[]>asList(new String[] { "2013-01-02", "12:00", "", "SAP.DE", "", "SAP SE",
+                        Arrays.<String[]>asList(new String[] { "2013-01-02", "12:00", "", "SAP", "", "SAP SE",
                                         "-100", "EUR", "11", "", "", "", "", "1,9", "", "Notiz" }),
                         buildField2Column(extractor), errors);
 

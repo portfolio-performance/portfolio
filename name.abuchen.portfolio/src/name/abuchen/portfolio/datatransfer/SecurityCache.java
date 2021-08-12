@@ -35,10 +35,8 @@ public class SecurityCache
         this.localMaps.add(client.getSecurities().stream().filter(s -> s.getIsin() != null && !s.getIsin().isEmpty())
                         .collect(Collectors.toMap(Security::getIsin, s -> s, (l, r) -> DUPLICATE_SECURITY_MARKER)));
 
-        this.localMaps.add(client.getSecurities().stream()
-                        .filter(s -> s.getTickerSymbol() != null && !s.getTickerSymbol().isEmpty()) //
-                        .collect(Collectors.toMap(Security::getTickerSymbol, s -> s,
-                                        (l, r) -> DUPLICATE_SECURITY_MARKER)));
+        this.localMaps.add(client.getSecurities().stream().filter(s -> s.getTickerSymbol() != null && !s.getTickerSymbol().isEmpty())
+                        .collect(Collectors.toMap(Security::getTickerSymbolWithoutStockMarket, s -> s, (l, r) -> DUPLICATE_SECURITY_MARKER)));
 
         this.localMaps.add(client.getSecurities().stream().filter(s -> s.getWkn() != null && !s.getWkn().isEmpty())
                         .collect(Collectors.toMap(Security::getWkn, s -> s, (l, r) -> DUPLICATE_SECURITY_MARKER)));
