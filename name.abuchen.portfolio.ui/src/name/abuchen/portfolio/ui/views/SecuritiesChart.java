@@ -118,7 +118,7 @@ public class SecuritiesChart
         }
     }
 
-    private enum IntervalOption
+    public enum IntervalOption
     {
         M1(Messages.SecurityTabChart1M, Messages.SecurityTabChart1MToolTip), //
         M2(Messages.SecurityTabChart2M, Messages.SecurityTabChart2MToolTip), //
@@ -371,6 +371,16 @@ public class SecuritiesChart
         ILegend legend = chart.getLegend();
         legend.setPosition(SWT.BOTTOM);
         legend.setVisible(true);
+    }
+
+    public IntervalOption getIntervalOption()
+    {
+        return intervalOption;
+    }
+
+    public void setIntervalOption(IntervalOption intervalOption)
+    {
+        this.intervalOption = intervalOption;
     }
 
     public void setQuoteColor(Color color)
