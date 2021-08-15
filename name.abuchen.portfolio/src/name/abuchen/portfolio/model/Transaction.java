@@ -57,6 +57,9 @@ public abstract class Transaction implements Annotated, Adaptable
             this.amount = Objects.requireNonNull(amount);
             this.forex = null;
             this.exchangeRate = null;
+
+            if (type == Type.GROSS_VALUE)
+                throw new IllegalArgumentException("Gross value without forex: " + Values.Money.format(amount)); //$NON-NLS-1$
         }
 
         public Unit(Type type, Money amount, Money forex, BigDecimal exchangeRate)
