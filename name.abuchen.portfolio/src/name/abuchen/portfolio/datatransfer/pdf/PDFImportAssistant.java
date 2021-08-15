@@ -38,6 +38,7 @@ public class PDFImportAssistant
         extractors.add(new BondoraGoAndGrowPDFExtractor(client));
         extractors.add(new ComdirectPDFExtractor(client));
         extractors.add(new CommerzbankPDFExtractor(client));
+        extractors.add(new CommSecPDFExtractor(client));
         extractors.add(new ConsorsbankPDFExtractor(client));
         extractors.add(new CreditSuisseAGPDFExtractor(client));
         extractors.add(new DABPDFExtractor(client));
@@ -51,6 +52,7 @@ public class PDFImportAssistant
         extractors.add(new ErsteBankPDFExtractor(client));
         extractors.add(new FILFondbankPDFExtractor(client));
         extractors.add(new FinTechGroupBankPDFExtractor(client));
+        extractors.add(new GLSBankengemeinschaftPDFExtractor(client));
         extractors.add(new HelloBankPDFExtractor(client));
         extractors.add(new INGDiBaExtractor(client));
         extractors.add(new JustTradePDFExtractor(client));

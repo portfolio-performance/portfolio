@@ -8,7 +8,6 @@ import java.time.Period;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAmount;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -17,10 +16,10 @@ import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.ToolBarManager;
@@ -73,7 +72,6 @@ import name.abuchen.portfolio.util.FormatHelper;
 import name.abuchen.portfolio.util.Interval;
 import name.abuchen.portfolio.util.TradeCalendar;
 import name.abuchen.portfolio.util.TradeCalendarManager;
-import name.abuchen.portfolio.util.TriFunction;
 
 /**
  * Chart of historical quotes for a given security
@@ -117,6 +115,89 @@ public class SecuritiesChart
         public boolean contains(LocalDateTime other)
         {
             return contains(other.toLocalDate());
+        }
+    }
+
+    public enum IntervalOption
+    {
+        M1(Messages.SecurityTabChart1M, Messages.SecurityTabChart1MToolTip), //
+        M2(Messages.SecurityTabChart2M, Messages.SecurityTabChart2MToolTip), //
+        M6(Messages.SecurityTabChart6M, Messages.SecurityTabChart6MToolTip), //
+        Y1(Messages.SecurityTabChart1Y, Messages.SecurityTabChart1YToolTip), //
+        Y2(Messages.SecurityTabChart2Y, Messages.SecurityTabChart2YToolTip), //
+        Y3(Messages.SecurityTabChart3Y, Messages.SecurityTabChart3YToolTip), //
+        Y5(Messages.SecurityTabChart5Y, Messages.SecurityTabChart5YToolTip), //
+        Y10(Messages.SecurityTabChart10Y, Messages.SecurityTabChart10YToolTip), //
+        YTD(Messages.SecurityTabChartYTD, Messages.SecurityTabChartYTDToolTip), //
+        H(Messages.SecurityTabChartHoldingPeriod, Messages.SecurityTabChartHoldingPeriodToolTip), //
+        ALL(Messages.SecurityTabChartAll, Messages.SecurityTabChartAllToolTip);
+
+        private final String label;
+        private final String tooltip;
+
+        private IntervalOption(String label, String tooltip)
+        {
+            this.label = label;
+            this.tooltip = tooltip;
+        }
+
+        public String getLabel()
+        {
+            return label;
+        }
+
+        public String getTooltip()
+        {
+            return tooltip;
+        }
+
+        public ChartInterval getInverval(Client client, CurrencyConverter converter, Security security)
+        {
+            LocalDate now = LocalDate.now();
+
+            switch (this)
+            {
+                case M1:
+                    return new ChartInterval(now.minus(Period.ofMonths(1)), now);
+                case M2:
+                    return new ChartInterval(now.minus(Period.ofMonths(2)), now);
+                case M6:
+                    return new ChartInterval(now.minus(Period.ofMonths(6)), now);
+                case Y1:
+                    return new ChartInterval(now.minus(Period.ofYears(1)), now);
+                case Y2:
+                    return new ChartInterval(now.minus(Period.ofYears(2)), now);
+                case Y3:
+                    return new ChartInterval(now.minus(Period.ofYears(3)), now);
+                case Y5:
+                    return new ChartInterval(now.minus(Period.ofYears(4)), now);
+                case Y10:
+                    return new ChartInterval(now.minus(Period.ofYears(10)), now);
+                case YTD:
+                    return new ChartInterval(now.minus(Period.ofDays(now.getDayOfYear() - 1)), now);
+                case H:
+                    List<TransactionPair<?>> tx = security.getTransactions(client);
+                    if (tx.isEmpty())
+                        return new ChartInterval(now, now);
+
+                    Collections.sort(tx, new TransactionPair.ByDate());
+                    boolean hasHoldings = ClientSnapshot.create(client, converter, LocalDate.now())
+                                    .getPositionsByVehicle().containsKey(security);
+
+                    return new ChartInterval(tx.get(0).getTransaction().getDateTime().toLocalDate(), hasHoldings
+                                    ? LocalDate.now()
+                                    : tx.get(tx.size() - 1).getTransaction().getDateTime().toLocalDate());
+                case ALL:
+                    List<SecurityPrice> prices = security.getPricesIncludingLatest();
+
+                    if (prices.isEmpty())
+                        return new ChartInterval(now, now);
+                    else
+                        return new ChartInterval(prices.get(0).getDate(), prices.get(prices.size() - 1).getDate());
+
+                default:
+                    throw new IllegalArgumentException();
+            }
         }
     }
 
@@ -258,7 +339,7 @@ public class SecuritiesChart
      * Calculates dynamically for each security the interval of security prices
      * to be shown.
      */
-    private Function<Security, ChartInterval> chartIntervalFunction;
+    private IntervalOption intervalOption = IntervalOption.Y2;
 
     private EnumSet<ChartDetails> chartConfig = EnumSet.of(ChartDetails.INVESTMENT, ChartDetails.EVENTS,
                     ChartDetails.SCALING_LINEAR);
@@ -290,6 +371,16 @@ public class SecuritiesChart
         ILegend legend = chart.getLegend();
         legend.setPosition(SWT.BOTTOM);
         legend.setVisible(true);
+    }
+
+    public IntervalOption getIntervalOption()
+    {
+        return intervalOption;
+    }
+
+    public void setIntervalOption(IntervalOption intervalOption)
+    {
+        this.intervalOption = intervalOption;
     }
 
     public void setQuoteColor(Color color)
@@ -460,53 +551,21 @@ public class SecuritiesChart
 
     public void addButtons(ToolBarManager toolBar)
     {
-        TriFunction<String, String, TemporalAmount, Action> button = (label, toolTip, tomporalAmount) -> { // NOSONAR
-            return new SimpleAction(label, toolTip, a -> {
-                LocalDate now = LocalDate.now();
-                chartIntervalFunction = s -> new ChartInterval(now.minus(tomporalAmount), now);
+        List<Action> viewActions = new ArrayList<>();
+
+        for (IntervalOption option : IntervalOption.values())
+        {
+            SimpleAction action = new SimpleAction(option.getLabel(), IAction.AS_CHECK_BOX, option.getTooltip(), a -> {
+                this.intervalOption = option;
                 updateChart();
+                for (Action viewAction : viewActions)
+                    viewAction.setChecked(a.equals(viewAction));
             });
-        };
-
-        toolBar.add(button.apply(Messages.SecurityTabChart1M, Messages.SecurityTabChart1MToolTip, Period.ofMonths(1)));
-        toolBar.add(button.apply(Messages.SecurityTabChart2M, Messages.SecurityTabChart2MToolTip, Period.ofMonths(2)));
-        toolBar.add(button.apply(Messages.SecurityTabChart6M, Messages.SecurityTabChart6MToolTip, Period.ofMonths(6)));
-        toolBar.add(button.apply(Messages.SecurityTabChart1Y, Messages.SecurityTabChart1YToolTip, Period.ofYears(1)));
-        toolBar.add(button.apply(Messages.SecurityTabChart2Y, Messages.SecurityTabChart2YToolTip, Period.ofYears(2)));
-        toolBar.add(button.apply(Messages.SecurityTabChart3Y, Messages.SecurityTabChart3YToolTip, Period.ofYears(3)));
-        toolBar.add(button.apply(Messages.SecurityTabChart5Y, Messages.SecurityTabChart5YToolTip, Period.ofYears(5)));
-        toolBar.add(button.apply(Messages.SecurityTabChart10Y, Messages.SecurityTabChart10YToolTip,
-                        Period.ofYears(10)));
-        toolBar.add(button.apply(Messages.SecurityTabChartYTD, Messages.SecurityTabChartYTDToolTip,
-                        Period.ofDays(LocalDate.now().getDayOfYear() - 1)));
-
-        toolBar.add(new SimpleAction(Messages.SecurityTabChartHoldingPeriod,
-                        Messages.SecurityTabChartHoldingPeriodToolTip, a -> {
-                            chartIntervalFunction = s -> {
-                                List<TransactionPair<?>> tx = s.getTransactions(client);
-                                if (tx.isEmpty())
-                                    return null;
-
-                                Collections.sort(tx, new TransactionPair.ByDate());
-                                boolean hasHoldings = ClientSnapshot.create(client, converter, LocalDate.now())
-                                                .getPositionsByVehicle().containsKey(s);
-
-                                return new ChartInterval(tx.get(0).getTransaction().getDateTime().toLocalDate(),
-                                                hasHoldings ? LocalDate.now()
-                                                                : tx.get(tx.size() - 1).getTransaction().getDateTime()
-                                                                                .toLocalDate());
-                            };
-                            updateChart();
-                        }));
-
-        toolBar.add(new SimpleAction(Messages.SecurityTabChartAll, Messages.SecurityTabChartAllToolTip, a -> {
-            chartIntervalFunction = s -> {
-                List<SecurityPrice> prices = s.getPricesIncludingLatest();
-                return prices.isEmpty() ? null
-                                : new ChartInterval(prices.get(0).getDate(), prices.get(prices.size() - 1).getDate());
-            };
-            updateChart();
-        }));
+            if (intervalOption == option)
+                action.setChecked(true);
+            viewActions.add(action);
+            toolBar.add(action);
+        }
 
         toolBar.add(new DropDown(Messages.MenuConfigureChart, Images.CONFIG, SWT.NONE, this::chartConfigAboutToShow));
     }
@@ -651,11 +710,7 @@ public class SecuritiesChart
 
             // determine the interval to be shown in the chart
 
-            ChartInterval chartInterval = null;
-            if (chartIntervalFunction != null)
-                chartInterval = chartIntervalFunction.apply(security);
-            if (chartInterval == null)
-                chartInterval = new ChartInterval(LocalDate.now().minusYears(2), LocalDate.now());
+            ChartInterval chartInterval = intervalOption.getInverval(client, converter, security);
 
             // determine index range for given interval in prices list
 

@@ -250,6 +250,7 @@ public class Messages extends NLS
     public static String MsgErrorQuandlMissingAPIKey;
     public static String MsgErrorQuandlMissingCode;
     public static String MsgErrorsConvertingValue;
+    public static String MsgErrorOrderCancellationUnsupported;
     public static String MsgErrorTradeCollector_MissingHoldingsForSell;
     public static String MsgErrorTradeCollector_MissingHoldingsForTransfer;
     public static String MsgErrorTradeCollector_NoHoldingsForSell;

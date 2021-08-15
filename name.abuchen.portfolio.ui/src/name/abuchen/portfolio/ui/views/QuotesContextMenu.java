@@ -85,6 +85,8 @@ public class QuotesContextMenu
                         return;
 
                     QuoteFeed feed = Factory.getQuoteFeedProvider(security.getFeed());
+                    if (feed == null)
+                        return;
 
                     QuoteFeedData data = feed.getHistoricalQuotes(security, true);
 

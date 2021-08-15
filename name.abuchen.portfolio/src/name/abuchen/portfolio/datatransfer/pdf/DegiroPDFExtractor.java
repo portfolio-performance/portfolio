@@ -641,13 +641,13 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                 .attributes("date", "name", "isin", "shares", "currency", "amount")
                                 .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) "
                                                 + "(?<name>.*) "
-                                                + "(?<isin>\\w{12}) "
-                                                + "\\w{3} "
+                                                + "(?<isin>[\\w]{12}) "
+                                                + "[\\w]{3} "
                                                 + "(?<shares>[-]?[.\\d]+[,\\d]*) "
-                                                + "[-.,\\d\\s]* \\w{3} "
-                                                + "[-.,\\d\\s]* \\w{3} "
-                                                + "[-.,\\d\\s]* \\w{3} "
-                                                + "-?(?<amount>[.,\\d\\s]*) (?<currency>\\w{3})$") 
+                                                + "[-.,\\d\\s]* [\\w]{3} "
+                                                + "[-.,\\d\\s]* [\\w]{3} "
+                                                + "[-.,\\d\\s]* [\\w]{3} "
+                                                + "-?(?<amount>[.\\d\\s]+,[\\d]*) (?<currency>[\\w]{3})$") 
                                 .assign((t, v) -> {
                                     v.put("amount", stripBlanks(v.get("amount")));
 

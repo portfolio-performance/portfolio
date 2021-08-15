@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.panes;
 
 import java.util.ArrayList;
+import java.time.LocalDate;
 
 import javax.inject.Inject;
 
@@ -29,9 +30,12 @@ import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.views.SecurityQuoteQualityMetricsViewer;
+import name.abuchen.portfolio.util.Holiday;
 import name.abuchen.portfolio.util.Interval;
 import name.abuchen.portfolio.util.Pair;
 import name.abuchen.portfolio.util.TextUtil;
+import name.abuchen.portfolio.util.TradeCalendar;
+import name.abuchen.portfolio.util.TradeCalendarManager;
 
 public class HistoricalPricesDataQualityPane implements InformationPanePage
 {
@@ -39,11 +43,13 @@ public class HistoricalPricesDataQualityPane implements InformationPanePage
     private IPreferenceStore preferences;
 
     private Label completeness;
+    private Label tradeCalendar;
     private Label checkInterval;
     private TableViewer missing;
     private TableViewer unexpected;
 
     private Security security;
+    private TradeCalendar calendar;
 
     @Override
     public String getLabel()
@@ -67,6 +73,10 @@ public class HistoricalPricesDataQualityPane implements InformationPanePage
         completeness = new Label(container, SWT.NONE);
         completeness.setToolTipText(TextUtil.wordwrap(Messages.ColumnMetricCompleteness_Description));
 
+        Label lTradeCalendar = new Label(container, SWT.NONE);
+        lTradeCalendar.setText(Messages.LabelSecurityCalendar);
+        tradeCalendar = new Label(container, SWT.NONE);
+
         checkInterval = new Label(container, SWT.NONE);
 
         Label missingLabel = new Label(container, SWT.NONE);
@@ -86,12 +96,15 @@ public class HistoricalPricesDataQualityPane implements InformationPanePage
         unexpected = unexpectedPair.getRight();
 
         FormDataFactory.startingWith(completeness, lCompleteness).right(new FormAttachment(100))
-                        .thenBelow(checkInterval).left(new FormAttachment(0)).right(new FormAttachment(100))
+                        .thenBelow(lTradeCalendar).left(new FormAttachment(0)) //
+                        .thenRight(tradeCalendar).right(new FormAttachment(100)) //
+                        .thenBelow(checkInterval).left(new FormAttachment(0)).right(new FormAttachment(100)) //
                         .thenBelow(missingLabel) //
                         .thenBelow(missingTable).bottom(new FormAttachment(100));
 
-        FormDataFactory.startingWith(missingTable) //
-                        .thenRight(unexpectedTable, 20).top(new FormAttachment(missingTable, 0, SWT.TOP))
+        FormDataFactory.startingWith(missingTable).right(new FormAttachment(50, -10)) //
+                        .thenRight(unexpectedTable, 10).right(new FormAttachment(100)) //
+                        .top(new FormAttachment(missingTable, 0, SWT.TOP)) //
                         .bottom(new FormAttachment(100)) //
                         .thenUp(unexpectedLabel);
 
@@ -119,10 +132,11 @@ public class HistoricalPricesDataQualityPane implements InformationPanePage
                 Interval interval = (Interval) element;
 
                 if (interval.getStart().equals(interval.getEnd()))
-                    return Values.Date.format(interval.getStart());
+                    return formatDateWithHoliday(interval.getStart(), calendar);
                 else
-                    return MessageFormat.format(Messages.LabelDateXToY, Values.Date.format(interval.getStart()),
-                                    Values.Date.format(interval.getEnd()));
+                    return MessageFormat.format(Messages.LabelDateXToY,
+                                    formatDateWithHoliday(interval.getStart(), calendar),
+                                    formatDateWithHoliday(interval.getEnd(), calendar));
             }
         });
         column.setSorter(ColumnViewerSorter.create(e -> ((Interval) e).getStart()), SWT.UP);
@@ -148,7 +162,9 @@ public class HistoricalPricesDataQualityPane implements InformationPanePage
 
         if (security == null)
         {
+            calendar = null;
             completeness.setText(""); //$NON-NLS-1$
+            tradeCalendar.setText(""); //$NON-NLS-1$
             checkInterval.setText(""); //$NON-NLS-1$
             missing.setInput(new ArrayList<>());
             unexpected.setInput(new ArrayList<>());
@@ -156,8 +172,10 @@ public class HistoricalPricesDataQualityPane implements InformationPanePage
         else
         {
             QuoteQualityMetrics metrics = new QuoteQualityMetrics(security);
+            calendar = TradeCalendarManager.getInstance(security);
 
             completeness.setText(Values.Percent2.format(metrics.getCompleteness()));
+            tradeCalendar.setText(calendar != null ? calendar.getDescription() : ""); //$NON-NLS-1$
             checkInterval.setText(metrics.getCheckInterval()
                             .map(i -> MessageFormat.format(Messages.LabelMetricCheckInterval,
                                             Values.Date.format(i.getStart()), Values.Date.format(i.getEnd())))
@@ -173,5 +191,16 @@ public class HistoricalPricesDataQualityPane implements InformationPanePage
     {
         if (security != null)
             setInput(security);
+    }
+
+    private static String formatDateWithHoliday(LocalDate date, TradeCalendar calendar)
+    {
+        String result = Values.Date.format(date);
+        if (calendar == null)
+            return result;
+        Holiday holiday = calendar.getHoliday(date);
+        if (holiday != null)
+            result += " (" + holiday.getLabel() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
+        return result;
     }
 }

@@ -221,6 +221,22 @@ public final class Security implements Attributable, InvestmentVehicle
         this.updatedAt = Instant.now();
     }
 
+    /**
+     * Returns the ticker symbol (if available) without the stock market
+     * extension.
+     * </p>
+     * In some countries there is no ISIN or WKN, only the ticker symbol. If
+     * historical prices are retrieved from the stock exchange, the ticker
+     * symbol is expanded. (UMAX --> UMAX.AX)
+     */
+    public String getTickerSymbolWithoutStockMarket()
+    {
+        if (tickerSymbol != null && !tickerSymbol.isEmpty() && tickerSymbol.contains(".")) //$NON-NLS-1$
+            return tickerSymbol.substring(0, tickerSymbol.indexOf('.'));
+        else
+            return tickerSymbol;
+    }
+
     public String getWkn()
     {
         return wkn;
@@ -261,7 +277,7 @@ public final class Security implements Attributable, InvestmentVehicle
         if (isin != null && isin.length() > 0)
             return isin;
         else if (tickerSymbol != null && tickerSymbol.length() > 0)
-            return tickerSymbol;
+            return getTickerSymbolWithoutStockMarket();
         else if (wkn != null && wkn.length() > 0)
             return wkn;
         else

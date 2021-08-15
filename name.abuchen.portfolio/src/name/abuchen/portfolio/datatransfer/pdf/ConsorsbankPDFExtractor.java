@@ -664,6 +664,17 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 })
 
                 // Kapitalertragsteuer (Account)
+                // abzgl. Kapitalertragssteuer 25,00% 97,47 EUR 24,37 EUR
+                .section("tax", "currency").optional()
+                .match("^abzgl. Kapitalertragssteuer [.,\\d]+% [.,\\d]+ [\\w]{3} (?<tax>[.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    if (!Boolean.parseBoolean(type.getCurrentContext().get(IS_JOINT_ACCOUNT)))
+                    {
+                        processTaxEntries(t, v, type);
+                    }
+                })
+
+                // Kapitalertragsteuer (Account)
                 // abzgl. Kapitalertragsteuer 2,06 EUR
                 .section("tax", "currency").optional()
                 .match("^abzgl. Kapitalertragsteuer (?<tax>[.,\\d]+) (?<currency>[\\w]{3})$")
@@ -729,6 +740,17 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 })
 
                 // Solitaritätszuschlag (Account)
+                // abzgl. Solidaritätszuschlag 5,50% 24,37 EUR 1,34 EUR
+                .section("tax", "currency").optional()
+                .match("^abzgl. Solidarit.tszuschlag [.,\\d]+% [.,\\d]+ [\\w]{3} (?<tax>[.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    if (!Boolean.parseBoolean(type.getCurrentContext().get(IS_JOINT_ACCOUNT)))
+                    {
+                        processTaxEntries(t, v, type);
+                    }
+                })
+
+                // Solitaritätszuschlag (Account)
                 // abzgl. Solidaritätszuschlag 0,10 EUR
                 .section("tax", "currency").optional()
                 .match("^abzgl. Solidarit.tszuschlag (?<tax>[.,\\d]+) (?<currency>[\\w]{3})$")
@@ -786,6 +808,17 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 // abzgl. Kirchensteuer 9,00 % von 8,93 EUR 0,80 EUR
                 .section("tax", "currency").optional()
                 .match("^abzgl. Kirchensteuer [.,\\d]+ % von [.,\\d]+ [\\w]{3} (?<tax>[.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    if (!Boolean.parseBoolean(type.getCurrentContext().get(IS_JOINT_ACCOUNT)))
+                    {
+                        processTaxEntries(t, v, type);
+                    }
+                })
+
+                // Kirchensteuer (Account)
+                // abzgl. Kirchensteuer 5,50% 24,37 EUR 1,34 EUR
+                .section("tax", "currency").optional()
+                .match("^abzgl. Kirchensteuer [.,\\d]+% [.,\\d]+ [\\w]{3} (?<tax>[.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     if (!Boolean.parseBoolean(type.getCurrentContext().get(IS_JOINT_ACCOUNT)))
                     {

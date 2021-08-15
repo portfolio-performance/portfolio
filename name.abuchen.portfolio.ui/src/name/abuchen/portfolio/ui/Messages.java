@@ -601,6 +601,7 @@ public class Messages extends NLS
     public static String LabelMissingQuotes_Decsription;
     public static String LabelUnexpectedQuotes;
     public static String LabelUnexpectedQuotes_Description;
+    public static String LabelUnhide;
     public static String LabelNamePlusCopy;
     public static String LabelNet;
     public static String LabelNewClassification;
@@ -692,6 +693,7 @@ public class Messages extends NLS
     public static String LabelHeatmapInvestmentsDirect;
     public static String LabelHeatmapInvestmentsNoSellings;
     public static String LabelHeatmapOrnament;
+    public static String LabelHide;
     public static String LabelHistoricalReturnsAndVolatiltity;
     public static String LabelJSONPathHint;
     public static String LabelJSONPathToClose;
@@ -710,6 +712,7 @@ public class Messages extends NLS
     public static String LabelMetricDaysFormatter;
     public static String LabelMetricYears;
     public static String LabelMetricYearsFormatter;
+    public static String LabelPNTransfers;
     public static String LabelPreviousTradingDay;
     public static String LabelStartTyping;
     public static String LabelStatementOfAssets;

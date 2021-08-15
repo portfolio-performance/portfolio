@@ -32,7 +32,11 @@ public final class ImageManager
         {
             if (attr.getConverter() instanceof ImageConverter)
             {
-                String imgString = target.getAttributes().get(attr).toString();
+                Object imgObject = target.getAttributes().get(attr);
+                if (imgObject == null)
+                    return null;
+
+                String imgString = String.valueOf(imgObject);
                 String imgKey = imgString + width + height;
                 synchronized (imageCache)
                 {

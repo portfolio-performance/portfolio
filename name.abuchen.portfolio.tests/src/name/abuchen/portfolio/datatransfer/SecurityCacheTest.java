@@ -23,6 +23,7 @@ public class SecurityCacheTest
         Security security = new Security();
         security.setName("Security Name");
         security.setIsin("DE0007164600");
+        security.setTickerSymbol("SAP.DE");
         security.setWkn("716460");
         client.addSecurity(security);
     }
@@ -48,6 +49,14 @@ public class SecurityCacheTest
     {
         SecurityCache cache = new SecurityCache(client);
         Security lookup = cache.lookup(null, null, null, "Security Name", () -> new Security());
+        assertThat(client.getSecurities().get(0), is(lookup));
+    }
+
+    @Test
+    public void testThatSecurityIsMatchedByTickerSymbol()
+    {
+        SecurityCache cache = new SecurityCache(client);
+        Security lookup = cache.lookup(null, "SAP", null, null, () -> new Security());
         assertThat(client.getSecurities().get(0), is(lookup));
     }
 }

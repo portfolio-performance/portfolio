@@ -21,7 +21,6 @@ import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy.Visitor;
 import name.abuchen.portfolio.model.Transaction.Unit;
-import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
 /**
@@ -536,8 +535,7 @@ public class ClientClassificationFilter implements ClientFilter
         if (weight.equals(Classification.ONE_HUNDRED_PERCENT_BD))
             return unit;
         else
-            return new Unit(unit.getType(),
-                            Money.of(unit.getAmount().getCurrencyCode(), value(unit.getAmount().getAmount(), weight)));
+            return unit.split(weight.divide(Classification.ONE_HUNDRED_PERCENT_BD, Values.MC).doubleValue());
     }
 
     private static long value(long value, BigDecimal weight)

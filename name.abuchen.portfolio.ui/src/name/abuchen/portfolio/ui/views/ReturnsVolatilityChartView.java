@@ -277,6 +277,10 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
         Interval interval = getReportingPeriod().toInterval(LocalDate.now());
 
         Lists.reverse(configurator.getSelectedDataSeries()).forEach(series -> {
+
+            if (!series.isVisible())
+                return;
+
             PerformanceIndex index = cache.lookup(series, interval);
 
             double risk = this.riskMetric.getRisk(index);
