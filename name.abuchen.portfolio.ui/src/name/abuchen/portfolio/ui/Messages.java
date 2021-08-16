@@ -997,7 +997,7 @@ public class Messages extends NLS
     public static String PrefTitleQuandl;
     public static String SecurityFilter;
     public static String SecurityFilterSharesHeldEqualZero;
-    public static String SecurityFilterSharesHeldGreaterZero;
+    public static String SecurityFilterSharesHeldNotZero;
     public static String SecurityListFilter;
     public static String SecurityListFilterHideInactive;
     public static String SecurityListFilterOnlyExchangeRates;

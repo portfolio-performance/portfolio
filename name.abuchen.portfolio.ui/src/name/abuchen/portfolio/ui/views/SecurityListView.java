@@ -196,7 +196,7 @@ public class SecurityListView extends AbstractFinanceView
         private final Predicate<Security> securityIsNotInactive = record -> !record.isRetired();
         private final Predicate<Security> onlySecurities = record -> !record.isExchangeRate();
         private final Predicate<Security> onlyExchangeRates = record -> record.isExchangeRate();
-        private final Predicate<Security> sharesGreaterZero = record -> getSharesHeld(getClient(), record) > 0;
+        private final Predicate<Security> sharesNotZero = record -> getSharesHeld(getClient(), record) != 0;
         private final Predicate<Security> sharesEqualZero = record -> getSharesHeld(getClient(), record) == 0;
 
         public FilterDropDown(IPreferenceStore preferenceStore)
@@ -218,7 +218,7 @@ public class SecurityListView extends AbstractFinanceView
             if ((savedFilters & (1 << 3)) != 0)
                 filter.add(onlyExchangeRates);
             if ((savedFilters & (1 << 4)) != 0)
-                filter.add(sharesGreaterZero);
+                filter.add(sharesNotZero);
             if ((savedFilters & (1 << 5)) != 0)
                 filter.add(sharesEqualZero);
 
@@ -234,7 +234,7 @@ public class SecurityListView extends AbstractFinanceView
                     savedFilter += (1 << 2);
                 if (filter.contains(onlyExchangeRates))
                     savedFilter += (1 << 3);
-                if (filter.contains(sharesGreaterZero))
+                if (filter.contains(sharesNotZero))
                     savedFilter += (1 << 4);
                 if (filter.contains(sharesEqualZero))
                     savedFilter += (1 << 5);
@@ -283,7 +283,7 @@ public class SecurityListView extends AbstractFinanceView
             manager.add(createAction(Messages.SecurityListFilterHideInactive, securityIsNotInactive));
             manager.add(createAction(Messages.SecurityListFilterOnlySecurities, onlySecurities));
             manager.add(createAction(Messages.SecurityListFilterOnlyExchangeRates, onlyExchangeRates));
-            manager.add(createAction(Messages.SecurityFilterSharesHeldGreaterZero, sharesGreaterZero));
+            manager.add(createAction(Messages.SecurityFilterSharesHeldNotZero, sharesNotZero));
             manager.add(createAction(Messages.SecurityFilterSharesHeldEqualZero, sharesEqualZero));
         }
 
@@ -309,8 +309,8 @@ public class SecurityListView extends AbstractFinanceView
                         else if (predicate == onlyExchangeRates)
                             filter.remove(onlySecurities);
                         else if (predicate == sharesEqualZero)
-                            filter.remove(sharesGreaterZero);
-                        else if (predicate == sharesGreaterZero)
+                            filter.remove(sharesNotZero);
+                        else if (predicate == sharesNotZero)
                             filter.remove(sharesEqualZero);
                     }
 
