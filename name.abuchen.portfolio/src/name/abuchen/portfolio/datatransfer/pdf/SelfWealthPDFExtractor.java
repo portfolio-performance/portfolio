@@ -29,6 +29,7 @@ public class SelfWealthPDFExtractor extends AbstractPDFExtractor
         super(client);
 
         addBankIdentifier("SelfWealth"); //$NON-NLS-1$
+
         addBuySellTransaction();
     }
 
@@ -46,10 +47,10 @@ public class SelfWealthPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("(Buy|Sell) Confirmation");
+        DocumentType type = new DocumentType("(Buy|Sell)[\\W]Confirmation");
         this.addDocumentTyp(type);
 
-        Block firstRelevantLine = new Block("^(Buy|Sell) Confirmation$");
+        Block firstRelevantLine = new Block("^(Buy|Sell)[\\W]Confirmation$");
         type.addBlock(firstRelevantLine);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -62,9 +63,17 @@ public class SelfWealthPDFExtractor extends AbstractPDFExtractor
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
+                /***
+                 * Attention
+                 * 
+                 * There are spaces in some PDF documents that 
+                 * are not directly visible. 
+                 * (c2 a0 characters instead of 20) --> Fix with [\\W] patter
+                 */
+
                 // Is type --> "Sell" change from BUY to SELL
                 .section("type").optional() //
-                .match("^(?<type>Sell) Confirmation$")
+                .match("^(?<type>Sell)[\\W]Confirmation$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("Sell"))
                     {
@@ -72,19 +81,17 @@ public class SelfWealthPDFExtractor extends AbstractPDFExtractor
                     }
                 })
 
-                // JOHN DOE A/C Reference No: T20210701123456­-1
-                .section("note").optional()
-                .match(" Reference No: (?<note>.*)$")
-                .assign((t, v) -> t.setNote(v.get("note")))
-
                 // 1 LONG ROAD Trade Date: 1 Jul 2021
                 .section("date")
-                .match(".* Trade Date: (?<date>\\d+ \\D{3} [\\d]{4})")
-                .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                .match(".* Trade[\\W]Date:[\\W](?<date>\\d+[\\W][\\D]{3}[\\W][\\d]{4})$")
+                .assign((t, v) -> {
+                    v.put("date", v.get("date").replaceAll("[\\W]", " "));
+                    t.setDate(asDate(v.get("date")));
+                })
 
                 // 25 UMAX BETA S&P500 YIELDMAX 12.40 $312.50 AUD
                 .section("shares", "tickerSymbol", "name", "amount", "currency")
-                .match("^(?<shares>[.,\\d]+) (?<tickerSymbol>[\\w]{3,4}) (?<name>.*) [.,\\d]+ \\D(?<amount>[.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^(?<shares>[.,\\d]+) (?<tickerSymbol>[\\w]{3,4}) (?<name>.*) [.,\\d]+ [\\D](?<amount>[.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     t.setShares(asShares(v.get("shares")));
                     t.setSecurity(getOrCreateSecurity(v));
@@ -92,11 +99,16 @@ public class SelfWealthPDFExtractor extends AbstractPDFExtractor
 
                 // Net Value $322.00 AUD
                 .section("amount", "currency")
-                .match("^Net Value \\D(?<amount>[.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^Net[\\W]Value[\\W][\\D](?<amount>[.,\\d]+)[\\W](?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 })
+
+                // JOHN DOE A/C Reference No: T20210701123456­-1
+                .section("note").optional()
+                .match("^.*[\\W]Reference[\\W]No:[\\W](?<note>.*)$")
+                .assign((t, v) -> t.setNote(v.get("note")))
 
                 .wrap(BuySellEntryItem::new);
 
@@ -108,12 +120,12 @@ public class SelfWealthPDFExtractor extends AbstractPDFExtractor
         transaction
                 // Brokerage* $9.50 AUD
                 .section("fee", "currency").optional()
-                .match("^Brokerage\\* \\D(?<fee>.*) (?<currency>[\\w]{3})$")
+                .match("^Brokerage\\*[\\W][\\D](?<fee>.*)[\\W](?<currency>[\\w]{3})$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Adviser Fee* $0.00 AUD
                 .section("fee", "currency").optional()
-                .match("^Adviser Fee\\* \\D(?<fee>.*) (?<currency>[\\w]{3})$")
+                .match("^Adviser[\\W]Fee\\*[\\W][\\D](?<fee>.*)[\\W](?<currency>[\\w]{3})$")
                 .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
