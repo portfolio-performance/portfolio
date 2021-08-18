@@ -83,7 +83,7 @@ public class SelfWealthPDFExtractor extends AbstractPDFExtractor
 
                 // 1 LONG ROAD Trade Date: 1 Jul 2021
                 .section("date")
-                .match(".* Trade[\\W]Date:[\\W](?<date>\\d+[\\W][\\D]{3}[\\W][\\d]{4})$")
+                .match(".*[\\W]Trade[\\W]Date:[\\W](?<date>\\d+[\\W][\\D]{3}[\\W][\\d]{4})$")
                 .assign((t, v) -> {
                     v.put("date", v.get("date").replaceAll("[\\W]", " "));
                     t.setDate(asDate(v.get("date")));
@@ -91,7 +91,7 @@ public class SelfWealthPDFExtractor extends AbstractPDFExtractor
 
                 // 25 UMAX BETA S&P500 YIELDMAX 12.40 $312.50 AUD
                 .section("shares", "tickerSymbol", "name", "amount", "currency")
-                .match("^(?<shares>[.,\\d]+) (?<tickerSymbol>[\\w]{3,4}) (?<name>.*) [.,\\d]+ [\\D](?<amount>[.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^(?<shares>[.,\\d]+)[\\W](?<tickerSymbol>[\\w]{3,4})[\\W](?<name>.*) [.,\\d]+[\\W][\\D](?<amount>[.,\\d]+)[\\W](?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     t.setShares(asShares(v.get("shares")));
                     t.setSecurity(getOrCreateSecurity(v));
