@@ -164,9 +164,12 @@ public final class ThemePreferencePage extends PreferencePage
         if (theme != null)
             engine.setTheme(theme, true);
 
-        Integer selectedFontSize = (Integer) fontSizeCombo.getStructuredSelection().getFirstElement();
-        if (selectedFontSize != null && selectedFontSize != currentFontSize)
-            writeFrontSizeToCSS(selectedFontSize);
+        if (fontSizeCombo != null)
+        {
+            Integer selectedFontSize = (Integer) fontSizeCombo.getStructuredSelection().getFirstElement();
+            if (selectedFontSize != null && selectedFontSize != currentFontSize)
+                writeFrontSizeToCSS(selectedFontSize);
+        }
 
         return super.performOk();
     }
