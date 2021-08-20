@@ -170,7 +170,7 @@ public class SecuritiesChart
                 case Y3:
                     return new ChartInterval(now.minus(Period.ofYears(3)), now);
                 case Y5:
-                    return new ChartInterval(now.minus(Period.ofYears(4)), now);
+                    return new ChartInterval(now.minus(Period.ofYears(5)), now);
                 case Y10:
                     return new ChartInterval(now.minus(Period.ofYears(10)), now);
                 case YTD:
