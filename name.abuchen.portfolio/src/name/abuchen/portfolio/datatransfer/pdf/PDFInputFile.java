@@ -26,10 +26,11 @@ public class PDFInputFile extends Extractor.InputFile
         super(file);
     }
 
-    public PDFInputFile(File file, String extractedText)
+    /* protected */ PDFInputFile(File file, String extractedText)
     {
         this(file);
         this.text = extractedText;
+        this.text = withoutHorizontalWhitespace(extractedText);
     }
 
     public static List<Extractor.InputFile> loadTestCase(Class<?> testCase, String... filenames)
@@ -89,10 +90,18 @@ public class PDFInputFile extends Extractor.InputFile
             PDFTextStripper textStripper = new PDFTextStripper();
             textStripper.setSortByPosition(true);
             text = textStripper.getText(document);
+
+            text = withoutHorizontalWhitespace(text);
         }
         catch (CryptographyException e)
         {
             throw new IOException(e);
         }
+    }
+
+    private String withoutHorizontalWhitespace(String s)
+    {
+        // replace horizontal whitespace characters by normal whitespace
+        return s.replaceAll("\\h", " "); //$NON-NLS-1$ //$NON-NLS-2$
     }
 }
