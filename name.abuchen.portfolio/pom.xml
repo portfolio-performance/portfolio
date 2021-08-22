@@ -97,7 +97,7 @@
 	                                <includeMavenTypes>direct</includeMavenTypes>
 	                                <outputDirectory>protos</outputDirectory>
 	                                <inputDirectories>
-	                                        <include>protos</include>
+	                                        <include>src</include>
 	                                </inputDirectories>
 	                        </configuration>
 	                    </execution>

@@ -311,7 +311,7 @@
 								<consoleOutput>true</consoleOutput>
 								<failsOnError>true</failsOnError>
 								<linkXRef>false</linkXRef>
-								<excludes>**/name/abuchen/portfolio/model/protos/*</excludes>
+								<excludes>**/name/abuchen/portfolio/model/proto/v1/*</excludes>
 							</configuration>
 							<goals>
 								<goal>check</goal>

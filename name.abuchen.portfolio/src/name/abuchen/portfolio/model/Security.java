@@ -582,6 +582,13 @@ public final class Security implements Attributable, InvestmentVehicle
         this.events.remove(event);
     }
 
+    public boolean removeAllEvents()
+    {
+        boolean removed = this.events != null && !this.events.isEmpty();
+        this.events = null;
+        return removed;
+    }
+
     public boolean removeEventIf(Predicate<SecurityEvent> filter)
     {
         if (events != null)

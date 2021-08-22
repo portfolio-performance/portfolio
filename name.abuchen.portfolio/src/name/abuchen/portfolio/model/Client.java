@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -22,9 +23,7 @@ import name.abuchen.portfolio.money.CurrencyUnit;
 
 public class Client
 {
-    /* package */static final int MAJOR_VERSION = 1;
-
-    public static final int CURRENT_VERSION = 51;
+    public static final int CURRENT_VERSION = 52;
     public static final int VERSION_WITH_CURRENCY_SUPPORT = 29;
 
     private transient PropertyChangeSupport propertyChangeSupport; // NOSONAR
@@ -48,7 +47,7 @@ public class Client
 
     // keep typo -> xstream deserialization
     @Deprecated
-    private List<ConsumerPriceIndex> consumerPriceIndeces;
+    /* package */ List<ConsumerPriceIndex> consumerPriceIndeces;
 
     private List<Account> accounts = new ArrayList<>();
     private List<Portfolio> portfolios = new ArrayList<>();
@@ -66,6 +65,7 @@ public class Client
     private Category rootCategory;
 
     private transient SecretKey secret; // NOSONAR
+    private transient Set<SaveFlag> saveFlags = EnumSet.noneOf(SaveFlag.class); // NOSONAR
 
     public Client()
     {
@@ -79,9 +79,6 @@ public class Client
 
         if (watchlists == null)
             watchlists = new ArrayList<>();
-
-        if (consumerPriceIndeces == null)
-            consumerPriceIndeces = new ArrayList<>();
 
         if (properties == null)
             properties = new HashMap<>();
@@ -237,12 +234,6 @@ public class Client
     public List<Watchlist> getWatchlists()
     {
         return watchlists;
-    }
-
-    @Deprecated
-    /* package */ List<ConsumerPriceIndex> getConsumerPriceIndices() // NOSONAR
-    {
-        return Collections.unmodifiableList(consumerPriceIndeces); // NOSONAR
     }
 
     public void addAccount(Account account)
@@ -421,6 +412,11 @@ public class Client
         }
     }
 
+    /* package */Map<String, String> getProperties()
+    {
+        return properties;
+    }
+
     /* package */void clearProperties()
     {
         properties.clear();
@@ -451,16 +447,21 @@ public class Client
         return transactions;
     }
 
-    /* package */
-    SecretKey getSecret()
+    /* package */ SecretKey getSecret()
     {
         return secret;
     }
 
-    /* package */
-    void setSecret(SecretKey secret)
+    /* package */ void setSecret(SecretKey secret)
     {
         this.secret = secret;
+    }
+
+    /* package */ Set<SaveFlag> getSaveFlags()
+    {
+        if (this.saveFlags == null)
+            this.saveFlags = EnumSet.noneOf(SaveFlag.class);
+        return this.saveFlags;
     }
 
     /**
