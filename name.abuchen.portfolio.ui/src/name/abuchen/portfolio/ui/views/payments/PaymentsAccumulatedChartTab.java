@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.views.earnings;
+package name.abuchen.portfolio.ui.views.payments;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -11,12 +11,12 @@ import org.swtchart.ISeries.SeriesType;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 
-public class EarningsAccumulatedChartTab extends AbstractChartTab
+public class PaymentsAccumulatedChartTab extends AbstractChartTab
 {
     @Override
     public String getLabel()
     {
-        return Messages.LabelAccumulatedEarnings;
+        return Messages.LabelPaymentsPerMonthAccumulated;
     }
 
     @Override

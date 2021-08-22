@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.views.earnings;
+package name.abuchen.portfolio.ui.views.payments;
 
 import java.time.LocalDate;
 
@@ -18,9 +18,9 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
 
 /* package */ class StartYearSelectionDropDown extends DropDown implements IMenuListener
 {
-    private EarningsViewModel model;
+    private PaymentsViewModel model;
 
-    public StartYearSelectionDropDown(EarningsViewModel model)
+    public StartYearSelectionDropDown(PaymentsViewModel model)
     {
         super(createLabelTextForYear(model.getStartYear()));
         this.model = model;
@@ -68,7 +68,7 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
             };
 
             InputDialog dialog = new InputDialog(Display.getDefault().getActiveShell(), Messages.LabelYear,
-                            Messages.LabelEarningsSelectStartYear, String.valueOf(model.getStartYear()), validator);
+                            Messages.LabelPaymentsSelectStartYear, String.valueOf(model.getStartYear()), validator);
 
             if (dialog.open() == InputDialog.OK)
             {

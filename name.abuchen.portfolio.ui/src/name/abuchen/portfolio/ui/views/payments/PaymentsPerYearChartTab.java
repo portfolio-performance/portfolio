@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.views.earnings;
+package name.abuchen.portfolio.ui.views.payments;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -19,16 +19,16 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
 import name.abuchen.portfolio.ui.util.swt.ColoredLabel;
-import name.abuchen.portfolio.ui.views.earnings.EarningsViewModel.Line;
+import name.abuchen.portfolio.ui.views.payments.PaymentsViewModel.Line;
 import name.abuchen.portfolio.util.TextUtil;
 
-public class EarningsPerYearChartTab extends AbstractChartTab
+public class PaymentsPerYearChartTab extends AbstractChartTab
 {
     private class DividendPerYearToolTip extends TimelineChartToolTip
     {
-        private EarningsViewModel model;
+        private PaymentsViewModel model;
 
-        public DividendPerYearToolTip(Chart chart, EarningsViewModel model)
+        public DividendPerYearToolTip(Chart chart, PaymentsViewModel model)
         {
             super(chart);
 
@@ -90,7 +90,7 @@ public class EarningsPerYearChartTab extends AbstractChartTab
             if (model.usesConsolidateRetired())
             {
                 Label lSumRetired = new Label(container, SWT.NONE);
-                lSumRetired.setText(Messages.LabelEarningsConsolidateRetired);
+                lSumRetired.setText(Messages.LabelPaymentsConsolidateRetired);
 
                 long value = 0;
                 for (int m = year * 12; m < (year + 1) * 12 && m < totalNoOfMonths; m += 1)
@@ -118,7 +118,7 @@ public class EarningsPerYearChartTab extends AbstractChartTab
     @Override
     public String getLabel()
     {
-        return Messages.LabelEarningsPerYear;
+        return Messages.LabelPaymentsPerYear;
     }
 
     @Override

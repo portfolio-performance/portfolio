@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.views.earnings;
+package name.abuchen.portfolio.ui.views.payments;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,16 +16,16 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
 import name.abuchen.portfolio.ui.util.swt.ColoredLabel;
-import name.abuchen.portfolio.ui.views.earnings.EarningsViewModel.Line;
+import name.abuchen.portfolio.ui.views.payments.PaymentsViewModel.Line;
 import name.abuchen.portfolio.util.TextUtil;
 
-public class EarningsPerMonthChartTab extends AbstractChartTab
+public class PaymentsPerMonthChartTab extends AbstractChartTab
 {
     private class DividendPerMonthChartToolTip extends TimelineChartToolTip
     {
-        private EarningsViewModel model;
+        private PaymentsViewModel model;
 
-        public DividendPerMonthChartToolTip(Chart chart, EarningsViewModel model)
+        public DividendPerMonthChartToolTip(Chart chart, PaymentsViewModel model)
         {
             super(chart);
 
@@ -81,7 +81,7 @@ public class EarningsPerMonthChartTab extends AbstractChartTab
             if (model.usesConsolidateRetired())
             {
                 Label lSumRetired = new Label(container, SWT.NONE);
-                lSumRetired.setText(Messages.LabelEarningsConsolidateRetired);
+                lSumRetired.setText(Messages.LabelPaymentsConsolidateRetired);
 
                 for (int m = month; m < totalNoOfMonths; m += 12)
                 {
@@ -108,7 +108,7 @@ public class EarningsPerMonthChartTab extends AbstractChartTab
     @Override
     public String getLabel()
     {
-        return Messages.LabelEarningsPerMonth;
+        return Messages.LabelPaymentsPerMonth;
     }
 
     @Override

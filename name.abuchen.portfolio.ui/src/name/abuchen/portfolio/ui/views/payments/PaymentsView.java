@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.views.earnings;
+package name.abuchen.portfolio.ui.views.payments;
 
 import java.time.LocalDate;
 import java.util.EnumSet;
@@ -27,7 +27,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
-import name.abuchen.portfolio.ui.views.earnings.EarningsViewModel.Mode;
+import name.abuchen.portfolio.ui.views.payments.PaymentsViewModel.Mode;
 import name.abuchen.portfolio.ui.views.panes.HistoricalPricesPane;
 import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
 import name.abuchen.portfolio.ui.views.panes.SecurityEventsPane;
@@ -36,13 +36,13 @@ import name.abuchen.portfolio.ui.views.panes.TradesPane;
 import name.abuchen.portfolio.ui.views.panes.TransactionsPane;
 import name.abuchen.portfolio.util.TextUtil;
 
-public class EarningsView extends AbstractFinanceView
+public class PaymentsView extends AbstractFinanceView
 {
-    private static final String KEY_TAB = EarningsView.class.getSimpleName() + "-tab"; //$NON-NLS-1$
-    private static final String KEY_YEAR = EarningsView.class.getSimpleName() + "-year"; //$NON-NLS-1$
-    private static final String KEY_MODE = EarningsView.class.getSimpleName() + "-mode"; //$NON-NLS-1$
-    private static final String KEY_USE_GROSS_VALUE = EarningsView.class.getSimpleName() + "-use-gross-value"; //$NON-NLS-1$
-    private static final String KEY_USE_CONSOLIDATE_RETIRED = EarningsView.class.getSimpleName()
+    private static final String KEY_TAB = PaymentsView.class.getSimpleName() + "-tab"; //$NON-NLS-1$
+    private static final String KEY_YEAR = PaymentsView.class.getSimpleName() + "-year"; //$NON-NLS-1$
+    private static final String KEY_MODE = PaymentsView.class.getSimpleName() + "-mode"; //$NON-NLS-1$
+    private static final String KEY_USE_GROSS_VALUE = PaymentsView.class.getSimpleName() + "-use-gross-value"; //$NON-NLS-1$
+    private static final String KEY_USE_CONSOLIDATE_RETIRED = PaymentsView.class.getSimpleName()
                     + "-use-consolidate-retired"; //$NON-NLS-1$
 
     @Inject
@@ -54,7 +54,7 @@ public class EarningsView extends AbstractFinanceView
     @Inject
     private ExchangeRateProviderFactory factory;
 
-    private EarningsViewModel model;
+    private PaymentsViewModel model;
 
     private CTabFolder folder;
 
@@ -62,21 +62,21 @@ public class EarningsView extends AbstractFinanceView
     public void setupModel()
     {
         CurrencyConverterImpl converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
-        model = new EarningsViewModel(this, preferences, converter, client);
+        model = new PaymentsViewModel(this, preferences, converter, client);
 
         int year = preferences.getInt(KEY_YEAR);
         LocalDate now = LocalDate.now();
         if (year < 1900 || year > now.getYear())
             year = now.getYear() - 2;
 
-        EarningsViewModel.Mode mode = EarningsViewModel.Mode.ALL;
+        PaymentsViewModel.Mode mode = PaymentsViewModel.Mode.ALL;
         String prefMode = preferences.getString(KEY_MODE);
 
         if (prefMode != null && !prefMode.isEmpty())
         {
             try
             {
-                mode = EarningsViewModel.Mode.valueOf(prefMode);
+                mode = PaymentsViewModel.Mode.valueOf(prefMode);
             }
             catch (Exception ignore)
             {
@@ -112,7 +112,7 @@ public class EarningsView extends AbstractFinanceView
     @Override
     protected void addViewButtons(ToolBarManager toolBarManager)
     {
-        for (EarningsViewModel.Mode mode : EarningsViewModel.Mode.values())
+        for (PaymentsViewModel.Mode mode : PaymentsViewModel.Mode.values())
         {
             ActionContributionItem item = new ActionContributionItem( //
                             new SimpleAction(TextUtil.tooltip(mode.getLabel()), a -> {
@@ -154,7 +154,7 @@ public class EarningsView extends AbstractFinanceView
             final int itemCount = folder.getItemCount();
             for (int ii = 0; ii < itemCount; ii++)
             {
-                EarningsTab tab = (EarningsTab) folder.getItem(ii).getData();
+                PaymentsTab tab = (PaymentsTab) folder.getItem(ii).getData();
                 if (tab != null)
                     tab.addExportActions(manager);
             }
@@ -171,12 +171,12 @@ public class EarningsView extends AbstractFinanceView
                 manager.add(action);
             }
 
-            Action action = new SimpleAction(Messages.LabelEarningsUseConsolidateRetired,
+            Action action = new SimpleAction(Messages.LabelPaymentsUseConsolidateRetired,
                             a -> model.setUseConsolidateRetired(!model.usesConsolidateRetired()));
             action.setChecked(model.usesConsolidateRetired());
             manager.add(action);
 
-            EarningsTab tab = (EarningsTab) folder.getSelection().getData();
+            PaymentsTab tab = (PaymentsTab) folder.getSelection().getData();
             if (tab != null)
             {
                 manager.add(new Separator());
@@ -190,13 +190,13 @@ public class EarningsView extends AbstractFinanceView
     {
         folder = new CTabFolder(parent, SWT.BORDER);
 
-        createTab(folder, Images.VIEW_TABLE, EarningsPerMonthMatrixTab.class);
-        createTab(folder, Images.VIEW_TABLE, EarningsPerQuarterMatrixTab.class);
-        createTab(folder, Images.VIEW_TABLE, EarningsPerYearMatrixTab.class);
-        createTab(folder, Images.VIEW_BARCHART, EarningsPerMonthChartTab.class);
-        createTab(folder, Images.VIEW_BARCHART, EarningsPerQuarterChartTab.class);
-        createTab(folder, Images.VIEW_BARCHART, EarningsPerYearChartTab.class);
-        createTab(folder, Images.VIEW_LINECHART, EarningsAccumulatedChartTab.class);
+        createTab(folder, Images.VIEW_TABLE, PaymentsPerMonthMatrixTab.class);
+        createTab(folder, Images.VIEW_TABLE, PaymentsPerQuarterMatrixTab.class);
+        createTab(folder, Images.VIEW_TABLE, PaymentsPerYearMatrixTab.class);
+        createTab(folder, Images.VIEW_BARCHART, PaymentsPerMonthChartTab.class);
+        createTab(folder, Images.VIEW_BARCHART, PaymentsPerQuarterChartTab.class);
+        createTab(folder, Images.VIEW_BARCHART, PaymentsPerYearChartTab.class);
+        createTab(folder, Images.VIEW_LINECHART, PaymentsAccumulatedChartTab.class);
         createTab(folder, Images.VIEW_TABLE, TransactionsTab.class);
 
         int tab = preferences.getInt(KEY_TAB);
@@ -208,9 +208,9 @@ public class EarningsView extends AbstractFinanceView
         return folder;
     }
 
-    private void createTab(CTabFolder folder, Images image, Class<? extends EarningsTab> tabClass)
+    private void createTab(CTabFolder folder, Images image, Class<? extends PaymentsTab> tabClass)
     {
-        EarningsTab tab = this.make(tabClass, model);
+        PaymentsTab tab = this.make(tabClass, model);
         Control control = tab.createControl(folder);
         CTabItem item = new CTabItem(folder, SWT.NONE);
         item.setText(tab.getLabel());
