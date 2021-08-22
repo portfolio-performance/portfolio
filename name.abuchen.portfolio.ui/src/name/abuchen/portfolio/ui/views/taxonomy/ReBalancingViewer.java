@@ -35,7 +35,7 @@ import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
 
 public class ReBalancingViewer extends AbstractNodeTreeViewer
-{   
+{
     @Inject
     public ReBalancingViewer(AbstractFinanceView view, TaxonomyModel model, TaxonomyNodeRenderer renderer)
     {
@@ -79,34 +79,29 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                 InvestmentVehicle investmentVehicle = node.getBackingInvestmentVehicle();
                 if (investmentVehicle == null)
                     return null;
-                
+
                 return getModel().getTaxonomy().isUsedForRebalancing(investmentVehicle) ? Images.CHECK.image() : null;
             }
         });
         new FunctionalBooleanEditingSupport(
                         // read function
-                        element -> 
-                        {
+                        element -> {
                             TaxonomyNode node = (TaxonomyNode) element;
                             InvestmentVehicle investmentVehicle = node.getBackingInvestmentVehicle();
-                            if(investmentVehicle != null && !node.getParent().isUnassignedCategory())
-                            {
+                            if (investmentVehicle != null && !node.getParent().isUnassignedCategory())
                                 return getModel().getTaxonomy().isUsedForRebalancing(investmentVehicle);
-                            }
                             return false;
                         },
-                        
+
                         // write function
-                        (element, value) ->
-                        {
+                        (element, value) -> {
                             TaxonomyNode node = (TaxonomyNode) element;
                             InvestmentVehicle investmentVehicle = node.getBackingInvestmentVehicle();
-                            if(investmentVehicle != null && !node.getParent().isUnassignedCategory())
+                            if (investmentVehicle != null && !node.getParent().isUnassignedCategory())
                             {
                                 getModel().getTaxonomy().setUsedForRebalancing(investmentVehicle, value);
                             }
-                        }
-                        ).addListener(this::onModified).attachTo(column);
+                        }).addListener(this::onModified).attachTo(column);
         support.addColumn(column);
 
         column = new Column("targetvalue", Messages.ColumnTargetValue, SWT.RIGHT, 100); //$NON-NLS-1$
@@ -233,11 +228,11 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                 InvestmentVehicle investmentVehicle = node.getBackingInvestmentVehicle();
                 if (investmentVehicle == null || !getModel().getTaxonomy().isUsedForRebalancing(investmentVehicle))
                     return null;
-                
+
                 Money rebalancingAmount = getModel().getRebalancingSolution().getMoney(investmentVehicle);
                 return Values.Money.format(rebalancingAmount);
             }
-            
+
             @Override
             public Color getBackground(Object element)
             {
@@ -253,7 +248,7 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                     return Colors.theme().warningBackground();
                 return null;
             }
-            
+
             @Override
             public Color getForeground(Object element)
             {
@@ -263,11 +258,11 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                 if (investmentVehicle == null)
                     return null;
 
-                if(!node.isPrimary())
+                if (!node.isPrimary())
                     return Colors.theme().grayForeground();
                 return null;
             }
-            
+
             @Override
             public String getToolTipText(Object element)
             {
@@ -340,14 +335,15 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                     return null;
 
                 Security security = node.getBackingSecurity();
-                if (security == null || security.getCurrencyCode() == null || !getModel().getTaxonomy().isUsedForRebalancing(security))
+                if (security == null || security.getCurrencyCode() == null
+                                || !getModel().getTaxonomy().isUsedForRebalancing(security))
                     return null;
 
                 String priceCurrency = security.getCurrencyCode();
                 long price = security.getSecurityPrice(LocalDate.now()).getValue();
                 if (price == 0L)
                     return Values.Share.format(0L);
-                
+
                 Money rebalancingAmount = getModel().getRebalancingSolution().getMoney(security);
                 String deltaCurrency = rebalancingAmount.getCurrencyCode();
                 long delta = rebalancingAmount.getAmount();
@@ -361,18 +357,18 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                                     .convert(LocalDate.now(), Money.of(deltaCurrency, delta)).getAmount();
                 }
 
-                long shares = Math
-                                .round(delta * Values.Share.divider() * Values.Quote.dividerToMoney() / price);
+                long shares = Math.round(delta * Values.Share.divider() * Values.Quote.dividerToMoney() / price);
                 return Values.Share.format(shares);
             }
-            
+
             @Override
             public Color getBackground(Object element)
             {
                 TaxonomyNode node = (TaxonomyNode) element;
-                
+
                 Security security = node.getBackingSecurity();
-                if (security == null || security.getCurrencyCode() == null || !getModel().getTaxonomy().isUsedForRebalancing(security))
+                if (security == null || security.getCurrencyCode() == null
+                                || !getModel().getTaxonomy().isUsedForRebalancing(security))
                     return null;
 
                 if (!getModel().getRebalancingSolution().isExact(security))
@@ -381,28 +377,30 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                     return Colors.theme().warningBackground();
                 return null;
             }
-            
+
             @Override
             public Color getForeground(Object element)
             {
                 TaxonomyNode node = (TaxonomyNode) element;
-                
+
                 Security security = node.getBackingSecurity();
-                if (security == null || security.getCurrencyCode() == null || !getModel().getTaxonomy().isUsedForRebalancing(security))
+                if (security == null || security.getCurrencyCode() == null
+                                || !getModel().getTaxonomy().isUsedForRebalancing(security))
                     return null;
 
-                if(! node.isPrimary())
+                if (!node.isPrimary())
                     return Colors.theme().grayForeground();
                 return null;
             }
-            
+
             @Override
             public String getToolTipText(Object element)
             {
                 TaxonomyNode node = (TaxonomyNode) element;
-                
+
                 Security security = node.getBackingSecurity();
-                if (security == null || security.getCurrencyCode() == null || !getModel().getTaxonomy().isUsedForRebalancing(security))
+                if (security == null || security.getCurrencyCode() == null
+                                || !getModel().getTaxonomy().isUsedForRebalancing(security))
                     return null;
 
                 if (!getModel().getRebalancingSolution().isExact(security))

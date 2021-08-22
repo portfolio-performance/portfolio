@@ -124,10 +124,9 @@ public abstract class TaxonomyNode implements Adaptable
         }
     }
 
-    public static class AssignmentNode extends TaxonomyNode
+    /* package */static class AssignmentNode extends TaxonomyNode
     {
         private Assignment assignment;
-        TaxonomyNode firstNodeWithThisInvestmentVehicle;
 
         public AssignmentNode(TaxonomyNode parent, Assignment assignment)
         {
@@ -239,24 +238,18 @@ public abstract class TaxonomyNode implements Adaptable
         @Override
         public boolean isPrimary()
         {
-            if(getWeight() == Classification.ONE_HUNDRED_PERCENT)
+            if (getWeight() == Classification.ONE_HUNDRED_PERCENT)
                 return true; // This is the only node
-            
-            firstNodeWithThisInvestmentVehicle = null; // Recalculate, taxonomy might have changed
-            
+
+            TaxonomyNode[] firstNodeWithThisInvestmentVehicle = new TaxonomyNode[] { null };
+
             // Find first node with the same security:
-            TaxonomyNode thisNode = this;
-            this.getRoot().accept(new NodeVisitor()
-            {
-                
-                @Override
-                public void visit(TaxonomyNode node)
-                {
-                    if(firstNodeWithThisInvestmentVehicle == null && node.getBackingInvestmentVehicle() == thisNode.getBackingInvestmentVehicle())
-                        firstNodeWithThisInvestmentVehicle = node;
-                }
+            this.getRoot().accept(node -> {
+                if (firstNodeWithThisInvestmentVehicle[0] == null && node
+                                .getBackingInvestmentVehicle() == AssignmentNode.this.getBackingInvestmentVehicle())
+                    firstNodeWithThisInvestmentVehicle[0] = node;
             });
-            return firstNodeWithThisInvestmentVehicle == this;
+            return firstNodeWithThisInvestmentVehicle[0] == this;
         }
     }
 
@@ -402,7 +395,7 @@ public abstract class TaxonomyNode implements Adaptable
     public abstract int getRank();
 
     public abstract void setRank(int rank);
-    
+
     /**
      * A security can be the backed security of multiple assignment nodes. For
      * each security, exactly one their assignment nodes of them is primary.

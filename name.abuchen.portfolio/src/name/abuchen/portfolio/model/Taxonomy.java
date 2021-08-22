@@ -66,7 +66,7 @@ public class Taxonomy
 
     public void setName(String name)
     {
-        propertyChangeSupport.firePropertyChange("name", this.name, this.name = name); //$NON-NLS-1$
+        propertyChangeSupport.firePropertyChange("name", this.name, this.name = name); // NOSONAR //$NON-NLS-1$
     }
 
     public void setSource(String source)
@@ -212,17 +212,17 @@ public class Taxonomy
     }
 
     private static final String USED_FOR_REBALANCING_PREFIX = "rebalancing-included:"; //$NON-NLS-1$
-    private static final boolean USED_FOR_REBALANCING_DEFAULT_VALUE = true; 
-    
+    private static final boolean USED_FOR_REBALANCING_DEFAULT_VALUE = true;
+
     private static String getUsedForRebalancingKey(InvestmentVehicle investmentVehicle)
     {
         return USED_FOR_REBALANCING_PREFIX + investmentVehicle.getUUID();
     }
-    
+
     public boolean isUsedForRebalancing(InvestmentVehicle investmentVehicle)
     {
         Object value = root.getData(getUsedForRebalancingKey(investmentVehicle));
-        if(value == null || !(value instanceof Boolean))
+        if (!(value instanceof Boolean))
             return USED_FOR_REBALANCING_DEFAULT_VALUE;
         else
             return (boolean) value;

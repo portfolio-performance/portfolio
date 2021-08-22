@@ -9,11 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import name.abuchen.portfolio.model.InvestmentVehicle;
-import name.abuchen.portfolio.money.MonetaryException;
-import name.abuchen.portfolio.money.Money;
-import name.abuchen.portfolio.util.Pair;
-
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.DecompositionSolver;
@@ -21,6 +16,11 @@ import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.linear.RealVector;
 import org.apache.commons.math3.linear.SingularValueDecomposition;
 import org.apache.commons.math3.util.Precision;
+
+import name.abuchen.portfolio.model.InvestmentVehicle;
+import name.abuchen.portfolio.money.MonetaryException;
+import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.util.Pair;
 
 public class Rebalancer
 {
@@ -51,7 +51,7 @@ public class Rebalancer
                 if(linearEquationMap.put(linearEquation[i].getLeft(), linearEquation[i].getRight()) != null)
                 {
                     // We overwrote a value in the map. => There were at least two entries for the securities in the linear equation.
-                    throw new RuntimeException("At least two entries for the security " //$NON-NLS-1$
+                    throw new IllegalArgumentException("At least two entries for the security " //$NON-NLS-1$
                                     + linearEquation[i].getKey().toString() + " in a linear equation."); //$NON-NLS-1$
                 }
             }
@@ -135,23 +135,22 @@ public class Rebalancer
         }
         else
         {
-            if(currency == null)
+            if (currency == null)
             {
                 currency = money.getCurrencyCode();
             }
-            else
-                if (!(currency == money.getCurrencyCode())) 
-                    throw new MonetaryException("Tried to add a constraint with currency " + //$NON-NLS-1$
-                                    money.getCurrencyCode() + "to the Rebalancer, but all " //$NON-NLS-1$
-                                    + "other constraints use the currency " + currency + "."); //$NON-NLS-1$ //$NON-NLS-2$
+            else if (!currency.equals(money.getCurrencyCode()))
+                throw new MonetaryException("Tried to add a constraint with currency " + //$NON-NLS-1$
+                                money.getCurrencyCode() + "to the Rebalancer, but all " //$NON-NLS-1$
+                                + "other constraints use the currency " + currency + "."); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
     
     public RebalancingSolution solve()
     {
-        if(currency == null)
+        if (currency == null)
             currency = fallbackCurrency;
-        if(constraintsToSolve.size() == 0)
+        if (constraintsToSolve.isEmpty())
         {
             // Apache commons math library does not like "empty" matrices.
             return RebalancingSolution.EMPTY_REBALANCING_SOLUTION;
@@ -184,7 +183,7 @@ public class Rebalancer
         
         DecompositionSolver solver = decomp.getSolver();
         RealVector solution = solver.solve(target);
-        Map<InvestmentVehicle, Money> solutionMap = new HashMap<InvestmentVehicle, Money>();
+        Map<InvestmentVehicle, Money> solutionMap = new HashMap<>();
         for(int i = 0; i < numberOfInvestmentVehicles; i++)
         {
             Money money = Money.of(currency, Math.round(solution.getEntry(i))); // ... so we don't have to multiply by the factor here.
@@ -228,7 +227,7 @@ public class Rebalancer
             // Then the kernel of M is spanned by the last n - r vectors of V.
             // The i-th component of the solution vector is ambiguous iff there is a kernel vector where the i-th component is non-zero.
             RealMatrix matrixV = decomp.getV();
-            List<RealVector> kernelBasis = new ArrayList<RealVector>(numberOfInvestmentVehicles - rank);
+            List<RealVector> kernelBasis = new ArrayList<>(numberOfInvestmentVehicles - rank);
             for(int columnVectorIndexV = rank; columnVectorIndexV < numberOfInvestmentVehicles; columnVectorIndexV++)
                 kernelBasis.add(matrixV.getColumnVector(columnVectorIndexV));
                 
@@ -282,7 +281,7 @@ public class Rebalancer
             Rebalancer reducedRebalancer = new Rebalancer();
             InvestmentVehicle removedInvestmentVehicle;
 
-            if (normalSolution.inexactResults.size() == 0)
+            if (normalSolution.inexactResults.isEmpty())
                 return normalSolution; // exact solution found => Return it
             else
                 removedInvestmentVehicle = normalSolution.inexactResults.iterator().next(); // Pick any inexact solution
