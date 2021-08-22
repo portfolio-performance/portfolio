@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -26,6 +27,7 @@ public class PostfinancePDFExtractor extends SwissBasedPDFExtractor
         addDividendsTransaction();
         addCapitalGainTransaction();
         addFeeTransaction();
+        addInterestTransaction();
     }
     
     @SuppressWarnings("nls")
@@ -33,7 +35,7 @@ public class PostfinancePDFExtractor extends SwissBasedPDFExtractor
      * Postfinance offers three accounts with different currencies (CHF, EUR, USD)
      * There are two possibilities to buy shares of foreign currencies:
      * - Transfer money from CHF account to EUR/USD account and buy it in foreign currency
-     * - Buy EUR/USD shares from CHF account directly (acutal exchange rate will be taken) 
+     * - Buy EUR/USD shares from CHF account directly (actual exchange rate will be taken) 
      */
     private void addBuyTransaction()
     {
@@ -317,6 +319,51 @@ public class PostfinancePDFExtractor extends SwissBasedPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
                         .wrap(TransactionItem::new));
+    }
+    
+    @SuppressWarnings("nls")
+    private void addInterestTransaction()
+    {
+        DocumentType type = new DocumentType("Zinsabschluss");
+        this.addDocumentTyp(type);
+
+        Block block = new Block("^Zinsabschluss (.*)$");
+        type.addBlock(block);
+        block.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction transaction = new AccountTransaction();
+                            transaction.setType(AccountTransaction.Type.INTEREST);
+                            return transaction;
+                        })
+
+                        .section("date", "amountGross", "amountNet", "currency")
+                        .find("^Zinsabschluss (.*)")
+                        .match("^(Kontonummer|IBAN){1} (.*) (?<currency>[A-Z]{3}+)\\s{0,1}")
+                        .match("^(?i:BRUTTOZINS) (?<amountGross>[\\d+',.]*)(\\s.*){0,1}")
+                        .match("^(?i:NETTOZINS) (?<amountNet>[\\d+',.]*)(\\s.*){0,1}")
+                        .match("^(?<date>\\d+.\\d+.\\d{4}+) Kontostand (.*)")
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amountNet")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            processTaxEntry(t, v, type);
+                        })
+                        .wrap(TransactionItem::new));
+    }
+    
+    @SuppressWarnings("nls")
+    private void processTaxEntry(name.abuchen.portfolio.model.Transaction transaction, Map<String, String> v, DocumentType type)
+    {
+        long amountGross = asAmount(v.get("amountGross"));
+        long amountNet = asAmount(v.get("amountNet"));
+        long tax = amountGross - amountNet;
+        
+        if(tax > 0)
+        {
+            Money monetaryTax = Money.of(asCurrencyCode(v.get("currency")), tax);
+            PDFExtractorUtils.checkAndSetTax(monetaryTax, transaction, type);
+        }
     }
 
     @Override

@@ -307,4 +307,114 @@ public class PostfinancePDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-01-03T00:00")));
     }
+    
+    @Test
+    public void testZinsabschluss01()
+    {
+        Client client = new Client();
+
+        PostfinancePDFExtractor extractor = new PostfinancePDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        //test format used before 2018
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "PostfinanceZinsabschluss01.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+       
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(4.59))));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-31T00:00")));
+    }
+    
+    @Test
+    public void testZinsabschluss02()
+    {
+        Client client = new Client();
+
+        PostfinancePDFExtractor extractor = new PostfinancePDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        //test format used before 2018
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "PostfinanceZinsabschluss02.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+       
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
+        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(116.66))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(75.83))));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-31T00:00")));
+        
+        Optional<Unit> unit = transaction.getUnit(Unit.Type.TAX);
+        assertThat("Expect tax unit", unit.isPresent());
+        assertThat(unit.get().getAmount(), is(Money.of("CHF", Values.Amount.factorize(40.83))));
+    }
+    
+    @Test
+    public void testZinsabschlussBefore2018_01()
+    {
+        Client client = new Client();
+
+        PostfinancePDFExtractor extractor = new PostfinancePDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        //test format used before 2018
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "PostfinanceZinsabschlussBefore2018_01.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+       
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(1.00))));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-12-31T00:00")));
+    }
+    
+    @Test
+    public void testZinsabschlussBefore2018_02()
+    {
+        Client client = new Client();
+
+        PostfinancePDFExtractor extractor = new PostfinancePDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        //test format used before 2018
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "PostfinanceZinsabschlussBefore2018_02.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+       
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
+        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(400.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(260.00))));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-12-31T00:00")));
+
+        Optional<Unit> unit = transaction.getUnit(Unit.Type.TAX);
+        assertThat("Expect tax unit", unit.isPresent());
+        assertThat(unit.get().getAmount(), is(Money.of("CHF", Values.Amount.factorize(140.00))));
+    }
 }
