@@ -48,7 +48,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
         addAccountStatementTransaction();
         addAccountStatementTransaction2017();
         addRegistrationFeeTransaction();
-        addTaxVorabpauschaleTransaction();
+        addAdvanceTaxTransaction();
     }
 
     private void addBuyTransaction()
@@ -1747,7 +1747,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         .wrap(TransactionItem::new));
     }
 
-    private void addTaxVorabpauschaleTransaction()
+    private void addAdvanceTaxTransaction()
     {
         DocumentType type = new DocumentType("Steuerpflichtige Vorabpauschale");
         this.addDocumentTyp(type);
@@ -1755,7 +1755,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
         Block block = new Block("Steuerpflichtige Vorabpauschale(.*)");
         type.addBlock(block);
 
-        Transaction<AccountTransaction> taxVorabpauschaleTransaction = new Transaction<AccountTransaction>()
+        Transaction<AccountTransaction> advanceTaxTransaction = new Transaction<AccountTransaction>()
 
                         .subject(() -> {
                             AccountTransaction entry = new AccountTransaction();
@@ -1792,7 +1792,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                         : new NonImportableItem("Steuerpflichtige Vorabpauschale mit 0 "
                                                         + t.getCurrencyCode()));
 
-        block.set(taxVorabpauschaleTransaction);
+        block.set(advanceTaxTransaction);
     }
     @Override
     public String getLabel()
