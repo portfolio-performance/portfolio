@@ -1300,24 +1300,20 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         a2 = (AccountTransaction) similarTransactions.get(0).getSubject();
                         ownIndex = 1;
                     }
-
-                    if (a2.getUnit(Type.TAX).isPresent() || !a2.getUnit(Type.TAX).isPresent())
+                    // if tax of a1 < tax of a2
+                    if (!a1.getUnit(Type.TAX).isPresent() || a2.getUnit(Type.TAX).get().getAmount().isGreaterOrEqualThan(a1.getUnit(Type.TAX).get().getAmount()))
                     {
-                        // if tax of a1 < tax of a2
-                        if (!a1.getUnit(Type.TAX).isPresent() || a2.getUnit(Type.TAX).get().getAmount().isGreaterOrEqualThan(a1.getUnit(Type.TAX).get().getAmount()))
+                        // store potential gross unit
+                        Optional<Unit> unitGross = a1.getUnit(Unit.Type.GROSS_VALUE);
+                        if (unitGross.isPresent())
                         {
-                            // store potential gross unit
-                            Optional<Unit> unitGross = a1.getUnit(Unit.Type.GROSS_VALUE);
-                            if (unitGross.isPresent())
-                            {
-                                a2.addUnit(unitGross.get());
-                            }
+                            a2.addUnit(unitGross.get());
                         }
+                    }
 
-                        // remove self and own divTransaction
-                        iterator.remove();
-                        dividends.get(i.getDate()).get(i.getSecurity()).remove(ownIndex);
-                    } // else wait for a2's round
+                    // remove self and own divTransaction
+                    iterator.remove();
+                    dividends.get(i.getDate()).get(i.getSecurity()).remove(ownIndex);
                 }
             }
         }
