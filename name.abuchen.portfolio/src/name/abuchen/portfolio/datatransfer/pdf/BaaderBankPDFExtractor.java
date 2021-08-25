@@ -31,7 +31,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
         addSellTransaction();
         addDividendTransaction();
         addTaxAdjustmentTransaction();
-        addPreTaxTransaction();
+        addAdvanceTaxTransaction();
         addFeesAssetManagerTransaction();
         addPeriodenauszugTransactions();
 
@@ -332,7 +332,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
     }
 
     @SuppressWarnings("nls")
-    private void addPreTaxTransaction()
+    private void addAdvanceTaxTransaction()
     {
     
         DocumentType type = new DocumentType("Vorabpauschale");

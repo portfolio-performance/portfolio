@@ -49,7 +49,7 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
 
         addBuySellTransaction();
         addDividendeTransaction();
-        addAdvanceFeeTransaction();
+        addAdvanceTaxTransaction();
     }
 
     @Override
@@ -267,7 +267,7 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
         block.set(pdfTransaction);
     }
 
-    private void addAdvanceFeeTransaction()
+    private void addAdvanceTaxTransaction()
     {
         DocumentType type = new DocumentType("Vorabpauschale");
         this.addDocumentTyp(type);
