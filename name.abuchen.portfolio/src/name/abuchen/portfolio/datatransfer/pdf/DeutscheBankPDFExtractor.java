@@ -284,12 +284,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                 // Provision (0,25 %) EUR -8,78
                 .section("currency", "fee").optional()
                 .match("^Provision \\([.,\\d]+ %\\) (?<currency>[\\w]{3}) ([-])?(?<fee>[.,\\d]+)$")
-                .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("noProvision")))
-                    {
-                        processFeeEntries(t, v, type);
-                    }
-                })
+                .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // XETRA-Kosten EUR 0,60
                 // XETRA-Kosten EUR -0,60
