@@ -31,7 +31,7 @@ Geschäftstag      : 01.01.2000        Ausführungsplatz  : XETRA
                                                           (Kommissionsgeschäft)                                                     
                                                                                                                                     
 Wertpapier-Bezeichnung                                               WPKNR/ISIN                                                     
-Name der Security                                           BASF11                                                     
+BASF                                           BASF11                                                     
 Inhaber-Anteile                                                    DE000BASF111                                                     
                                                                                                                                     
                                                                                                                                     

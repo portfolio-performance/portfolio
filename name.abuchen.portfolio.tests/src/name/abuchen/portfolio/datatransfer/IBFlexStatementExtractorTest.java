@@ -208,7 +208,7 @@ public class IBFlexStatementExtractorTest
     @Test
     public void testThatExceptionIsAddedForNonFlexStatementDocuments() throws IOException
     {
-        InputStream otherFile = getClass().getResourceAsStream("pdf/comdirect/comdirectGutschrift1.txt");
+        InputStream otherFile = getClass().getResourceAsStream("pdf/comdirect/Dividende05.txt");
         Extractor.InputFile tempFile = createTempFile(otherFile);
         Client client = new Client();
         IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(client);

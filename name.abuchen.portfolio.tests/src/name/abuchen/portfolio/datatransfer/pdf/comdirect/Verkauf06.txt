@@ -1,0 +1,68 @@
+PDF Autor: 'HAVI Solutions GmbH & Co. KG, phg'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Ihren Auftrag haben wir gemäß unseren Sonderbe-
+dingungen für Wertpapiergeschäfte wie nachstehend
+ausgeführt.
+Die Wertpapiere haben wir der Abrechnung entspre-
+25449 Quickborn chend gebucht.Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und
+Telefon    01803-33 63 66            Vollständigkeit zu überprüfen und etwaige Einwendungen: unverzüglich zu erheben.
+                                       
+                                       
+                                       
+                             
+    11869 010
+                                       
+            
+                             
+Max Muster                 Depotnummer: 1234567 00
+                                                          
+Musterstr. 1                                            
+                             
+99999 Musterstadt              
+                             
+                             
+                             
+                                                  
+                                                  
+ABRECHNUNG VOM 11.06.2008                                                   
+Wertpapierverkauf                                                                                                                   
+Geschäftsnummer   : 12 123456                                                                                                       
+                    1234567890-123  Rechnungsnummer   : 1234567891234567                                                          
+Geschäftstag      : 11.06.2008        Ausführungsplatz  : STUTTGART                                                                 
+Handelszeit       : 18:54 Uhr (MEZ/MESZ)                                                                                            
+                                                                                                                                    
+Wertpapier-Bezeichnung                                              WPKNR/ISIN                                                      
+HSBC Trinkaus & Burkhardt AG                                             TB1AF6                                                     
+Call 14.01.11 Juniper 30                                           DE000TB1AF62                                                     
+                                                                                                                                    
+                                                                                                                                    
+Nennwert                  Zum Kurs von                                                                                              
+St.  2.000                EUR  0,46                                                                                                 
+                                                                                                                                    
+                          Kurswert                    : EUR              920,00                                                     
+--------------------------------------------------------------------------------                                                    
+Eigene Entgelte                                                                                                                     
+                          Provision                   : EUR                9,90-                                                    
+                          Börsenplatzabhäng. Entgelt  : EUR                2,50-                                                    
+                          Summe Entgelte              : EUR               12,40-                                                    
+--------------------------------------------------------------------------------                                                    
+Fremde Kosten                                                                                                                       
+                          Variable Börsenspesen       : EUR                0,75-                                                    
+                          Summe Kosten                : EUR                0,75-                                                    
+--------------------------------------------------------------------------------                                                    
+                                                                                                                                    
+                                                                                                                                    
+Verrechnung über Konto         Valuta                   Zu Ihren Gunsten                                                            
+    123456 00  EUR            13.06.2008               EUR              906,85                                                     
+                                                                                                                                    
+Verwahrungs-Art: GIROSAMMELDEPOT                                                                                                    
+                                                                                                                                    
+                                                                                                                                    
+                                                                                                                                    
+comdirect bank AG                                                                                                                   
+                                                                                                                                    
+                                                                                                                                    
+Diese Abrechnung wird von der Bank nicht unterschrieben                                                                             
+Die Leistung ist gemäß §4 Nr.8 UStG umsatzsteuerfrei. USt-Id-Nr.: DE 812 279 461                                                    
+DoComd/01/2001
