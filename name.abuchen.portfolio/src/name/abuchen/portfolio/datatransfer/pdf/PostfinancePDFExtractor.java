@@ -2,6 +2,8 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.math.BigDecimal;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -28,6 +30,7 @@ public class PostfinancePDFExtractor extends SwissBasedPDFExtractor
         addCapitalGainTransaction();
         addFeeTransaction();
         addInterestTransaction();
+        addKontoauszugGiro();
     }
     
     @SuppressWarnings("nls")
@@ -339,9 +342,9 @@ public class PostfinancePDFExtractor extends SwissBasedPDFExtractor
 
                         .section("date", "amountGross", "amountNet", "currency")
                         .find("^Zinsabschluss (.*)")
-                        .match("^(Kontonummer|IBAN){1} (.*) (?<currency>[A-Z]{3}+)\\s{0,1}")
-                        .match("^(?i:BRUTTOZINS) (?<amountGross>[\\d+',.]*)(\\s.*){0,1}")
-                        .match("^(?i:NETTOZINS) (?<amountNet>[\\d+',.]*)(\\s.*){0,1}")
+                        .match("^(Kontonummer|IBAN){1} (.*) (?<currency>[A-Z]{3}+)\\s?")
+                        .match("^(?i:BRUTTOZINS) (?<amountGross>[\\d+',.]*)(\\s.*)?")
+                        .match("^(?i:NETTOZINS) (?<amountNet>[\\d+',.]*)(\\s.*)?")
                         .match("^(?<date>\\d+.\\d+.\\d{4}+) Kontostand (.*)")
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
@@ -349,7 +352,170 @@ public class PostfinancePDFExtractor extends SwissBasedPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             processTaxEntry(t, v, type);
                         })
+                        .wrap(t -> {
+                            if (t.getAmount()>0)
+                            {
+                                return new TransactionItem(t);
+                            }
+                            else
+                            {
+                                return null;
+                            }
+                        }));
+    }
+    
+    @SuppressWarnings("nls")
+    private void addKontoauszugGiro()
+    {
+        DocumentType type = new DocumentType("Kontoauszug", (context, lines) -> {
+            Pattern pCurrency = Pattern.compile("^(Kontonummer|IBAN){1} (.*) (?<currency>[A-Z]{3}+)\\s?");
+            
+            for (String line : lines)
+            {
+                Matcher mCurrency = pCurrency.matcher(line);
+
+                if (mCurrency.matches())
+                {
+                    context.put("currency", mCurrency.group("currency"));
+                    break;
+                }
+            }
+
+        });
+        this.addDocumentTyp(type);
+        
+        String removalPattern = "^(\\d{2}.\\d{2}.\\d{2}\\s)?(E-FINANCE|AUFTRAG.+IRECT|ESR|GIRO.+OST|GIRO.+ANK|ÜBERTRAG AUF KONTO|ÜBERTRAG A UF K ONTO|AUFTRAG.+ASISLASTSCHRIFT|KAUF.+IENSTLEISTUNG(.+\\.\\d{4}){0,1}|KAUF.+HOPPING(.+\\.\\d{4}){0,1}|GIRO INTERNATIONAL \\(SEPA\\)|BARGELDBEZUG(.+\\.\\d{4})?|ONLINE-SHOPPING|TWINT.+(ENDEN|DIENSTLEISTUNG)){1}.*?\\s(?<amount>[\\d+',.\\s]+)\\s(?<date>\\d{2}.\\d{2}.\\d{2}+)\\s?([\\d+',.\\s]+)?$"; 
+        Block removalBlock = new Block(removalPattern);
+        type.addBlock(removalBlock);
+        removalBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction entry = new AccountTransaction();
+                            entry.setType(AccountTransaction.Type.REMOVAL);
+                            return entry;
+                        })
+
+                        .section("date", "amount")
+                        .match(removalPattern)
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+                            t.setDateTime(asDate(v.get("date")));     
+                            t.setAmount(asAmount(stripBlanks(v.get("amount"))));
+                            t.setCurrencyCode(context.get("currency"));
+                        })
+
                         .wrap(TransactionItem::new));
+        
+        String depositPattern = "^(\\d{2}.\\d{2}.\\d{2}\\s)?(GIRO AUSLAND|GIRO AUS ONLINE-SIC \\d{3,4}|GIRO.+ONTO|ÜBERTRAG AUS KONTO|ÜBERTRAG A US K ONTO|GUTSCHRIFT.+HOPPING|GUTSCHRIFT.+REMDBANK \\d{3,4}|GUTSCHRIFT.+REMDBANK|. EINZAHLUNGSSCHEIN\\/QR-ZAHLTEIL){1}.*?\\s(?<amount>[\\d+',.\\s]+)\\s(?<date>\\d{2}.\\d{2}.\\d{2}+)(\\s)?([\\d+',.\\s]+)?$";
+        Block depositBlock = new Block(depositPattern);
+        type.addBlock(depositBlock);
+        depositBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction entry = new AccountTransaction();
+                            entry.setType(AccountTransaction.Type.DEPOSIT);
+                            return entry;
+                        })
+
+                        .section("date", "amount")
+                        .match(depositPattern)
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(stripBlanks(v.get("amount"))));
+                            t.setCurrencyCode(context.get("currency"));
+                        })
+
+                        .wrap(TransactionItem::new));
+
+        String transferPattern = "^(\\d{2}.\\d{2}.\\d{2}\\s)?(ÜBERTRAG)?\\s(?<amount>[\\d+',.\\s]+)\\s(?<date>\\d{2}.\\d{2}.\\d{2}+)\\s?([\\d+',.\\s]+)?$";
+        Block transferBlock = new Block(transferPattern);
+        type.addBlock(transferBlock);
+        transferBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction entry = new AccountTransaction();
+                            return entry;
+                        })
+
+                        .section("date", "amount")
+                        .match(transferPattern)
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(stripBlanks(v.get("amount"))));
+                            t.setCurrencyCode(context.get("currency"));
+                        })
+                        .section("direction").optional()
+                        .match("^(?<direction>AUS|AUF) KONTO.*")
+                        .assign((t, v) -> {
+                            AccountTransaction.Type transactionType = v.get("direction").equals("AUF") ? AccountTransaction.Type.REMOVAL : AccountTransaction.Type.DEPOSIT;
+                            t.setType(transactionType);
+                        })
+
+                        .wrap(TransactionItem::new));
+        
+        String feePattern = "^(\\d{2}.\\d{2}.\\d{2}\\s)?(FÜR DIE KONTOFÜHRUNG|PREIS.+ONTOFÜHRUNG|PREIS.*SCHALTER|JAHRESPREIS LOGIN|FÜR KONTOAUSZUG PAPIER|FÜR GIRO INTERNATIONAL \\(SEPA\\)){1}.*?\\s+(?<amount>[\\d+',.\\s]+)\\s(?<date>\\d{2}.\\d{2}.\\d{2}+)(\\s)?([\\d+',.\\s]+)?$";
+        Block feeBlock = new Block(feePattern);
+        type.addBlock(feeBlock);
+        feeBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction entry = new AccountTransaction();
+                            entry.setType(AccountTransaction.Type.FEES);
+                            return entry;
+                        })
+
+                        .section("date", "amount")
+                        .match(feePattern)
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+                            t.setDateTime(asDate(v.get("date")));     
+                            t.setAmount(asAmount(stripBlanks(v.get("amount"))));
+                            t.setCurrencyCode(context.get("currency"));
+                        })
+
+                        .wrap(t -> {
+                            if (t.getAmount()>0)
+                            {
+                                return new TransactionItem(t);
+                            }
+                            else
+                            {
+                                return null;
+                            }
+                        }));
+        
+        String interestPattern = "^(\\d{2}.\\d{2}.\\d{2}\\s)?(ZINSABSCHLUSS.+\\d{4,6}){1}.*?\\s(?<amount>[\\d+',.\\s]+)\\s(?<date>\\d{2}.\\d{2}.\\d{2}+)(\\s)?([\\d+',.\\s]+)?$";
+        Block interestBlock = new Block(interestPattern);
+        type.addBlock(interestBlock);
+        interestBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction entry = new AccountTransaction();
+                            entry.setType(AccountTransaction.Type.INTEREST);
+                            return entry;
+                        })
+
+                        .section("date", "amount")
+                        .match(interestPattern)
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+                            t.setDateTime(asDate(v.get("date")));     
+                            t.setAmount(asAmount(stripBlanks(v.get("amount"))));
+                            t.setCurrencyCode(context.get("currency"));
+                        })
+
+                        .wrap(t -> {
+                            if (t.getAmount()>0)
+                            {
+                                return new TransactionItem(t);
+                            }
+                            else
+                            {
+                                return null;
+                            }
+                        }));
     }
     
     @SuppressWarnings("nls")
@@ -364,6 +530,11 @@ public class PostfinancePDFExtractor extends SwissBasedPDFExtractor
             Money monetaryTax = Money.of(asCurrencyCode(v.get("currency")), tax);
             PDFExtractorUtils.checkAndSetTax(monetaryTax, transaction, type);
         }
+    }
+    
+    private String stripBlanks(String input)
+    {
+        return input.replaceAll(" ", ""); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     @Override
