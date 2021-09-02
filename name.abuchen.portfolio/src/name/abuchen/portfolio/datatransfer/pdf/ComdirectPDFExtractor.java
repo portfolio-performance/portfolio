@@ -964,11 +964,19 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
             // read the current context here
             for (int i = 0; i < lines.length; i++)
             {
+                
                 // After 2013:
+                // Ohne Währungsanlagekonto
                 // Ihre aktuellen Salden IBAN Saldo in EUR
                 if (lines[i].compareTo("Ihre aktuellen Salden IBAN Saldo in") == 0)
                 {
                     context.put("currency", lines[i+1]);
+                }
+                // Mit Währungsanlagekonto
+                // Ihre aktuellen Salden IBAN Saldo in Saldo in EUR
+                if (lines[i].compareTo("Ihre aktuellen Salden IBAN Saldo in Saldo in") == 0)
+                {
+                    context.put("currency", lines[i+1].substring(13, 16));
                 }
                 // Until 2013:
                 // Ihre aktuellen Salden Saldo in IBAN EUR
@@ -980,7 +988,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
         });
         this.addDocumentTyp(type);
 
-        Block removalblock = new Block("(^|^A)\\d+.\\d+.[\\d]{4} (.bertrag|Lastschrift|Visa-Umsatz|Auszahlung|Barauszahlung|Kartenverf.gun|Guthaben.bertr).* [-]([.,\\d]+)$");
+        Block removalblock = new Block("(^|^A)\\d+.\\d+.[\\d]{4} (Konto.bertrag|.bertrag|Lastschrift|Visa-Umsatz|Auszahlung|Barauszahlung|Kartenverf.gun|Guthaben.bertr|Wechselgeld-Sparen).* [-]([.,\\d]+)$");
         type.addBlock(removalblock);
         removalblock.set(new Transaction<AccountTransaction>()
 
@@ -991,7 +999,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date", "amount")
-                        .match("(^|^A)\\d+.\\d+.[\\d]{4} (.bertrag|Lastschrift|Visa-Umsatz|Auszahlung|Barauszahlung|Kartenverf.gun|Guthaben.bertr).* [-](?<amount>[.,\\d]+)$")
+                        .match("(^|^A)\\d+.\\d+.[\\d]{4} (Konto.bertrag|.bertrag|Lastschrift|Visa-Umsatz|Auszahlung|Barauszahlung|Kartenverf.gun|Guthaben.bertr|Wechselgeld-Sparen).* [-](?<amount>[.,\\d]+)$")
                         .match("^(?<date>\\d+.\\d+.[\\d]{4}).*$")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
@@ -1002,7 +1010,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
         
-        Block depositblock = new Block("^\\d+.\\d+.\\d+ (Konto.bertrag|.bertrag|Guthaben.bertr|Gutschrift|Bar|Visa-Kartenabre).* [+]([.,\\d]+)$");
+        Block depositblock = new Block("^\\d+.\\d+.\\d+ (Konto.bertrag|.bertrag|Guthaben.bertr|Gutschrift|Bar|Visa-Kartenabre|Korrektur Barauszahlung).* [+]([.,\\d]+)$");
         type.addBlock(depositblock);
         depositblock.set(new Transaction<AccountTransaction>()
 
@@ -1013,7 +1021,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date", "amount")
-                        .match("^\\d+.\\d+.[\\d]{4} (Konto.bertrag|.bertrag|Guthaben.bertr|Gutschrift|Bar|Visa-Kartenabre).* [+](?<amount>[.,\\d]+)$")
+                        .match("^\\d+.\\d+.[\\d]{4} (Konto.bertrag|.bertrag|Guthaben.bertr|Gutschrift|Bar|Visa-Kartenabre|Korrektur Barauszahlung).* [+](?<amount>[.,\\d]+)$")
                         .match("^(?<date>\\d+.\\d+.[\\d]{4}).*$")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
