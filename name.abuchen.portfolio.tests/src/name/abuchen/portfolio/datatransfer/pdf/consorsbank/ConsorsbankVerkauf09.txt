@@ -1,0 +1,68 @@
+PDF Autor: 'Consorsbank'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Consorsbank  90318 Nürnberg
+Depotnummer: xxxx xxx xxx
+100xxxxxxx/00
+Vermerk der Bank: 2100
+2
+[Name]
+[Name2} Datum: 25.08.2021
+[Strasse}
+[PLZ ORT] Seite: 1 von 2ran ur
+Ordernummer 208nnnnnn.001
+Orderdatum 25.08.2021
+ORDERABRECHNUNG
+VERKAUF AM 25.08.2021 UM 09:25:18 TRADEGATE EXCHANGE NR. 208nnnnnn.001
+Bezeichnung WKN ISIN
+STEICO SE A0LR93 DE000A0LR936
+Einheit Umsatz
+ST 23,00000
+Preis pro Anteil 126,600000 EUR FRANCO COURTAGE
+Kurswert 2.911,80 EUR
+abzgl. Grundgebühr 3,95 EUR
+abzgl. Kapitalertragssteuer anteilig 50,00% 25,00% 208,72 EUR 52,18 EUR
+abzgl. Solidaritätszuschlag 5,50% 52,18 EUR 2,86 EUR
+abzgl. Kapitalertragssteuer anteilig 50,00% 25,00% 208,71 EUR 52,18 EUR
+abzgl. Solidaritätszuschlag 5,50% 52,18 EUR 2,86 EUR
+zugunsten Konto-Nr. 0920844078 2.797,77 EUR
+Valuta 27.08.2021
+Bestand zulasten Girosammelverwahrung
+CBF 2126
+JAHRESSTEUERBESCHEINIGUNG FOLGT
+Limitkurs 126,600000 EUR
+Beratungsfreies Geschäft
+Hinweis für Orderabrechnungen und Depotbuchungsanzeigen:
+Einwendungen wegen Unrichtigkeit oder Unvollständigkeit dieser Mitteilung müssen unverzüglich erhoben werden, vgl. Nummer B. Ziffer I. 11 (4) und (5) der
+Allgemeinen Geschäftsbedingungen (AGB Banken).
+Machen Sie Ihre Einwendungen in Textform geltend, genügt die Absendung innerhalb der Sechs-Wochen-Frist an die Consorsbank oder per Fax oder Mail an die
+unten angegebenen Adressen. Das Unterlassen rechtzeitiger Einwendungen gilt als Genehmigung.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+PrØsident du Conseil dAdministration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur GØnØral (Generaldirektor): Jean-Laurent BonnafØ
+Depotnummer: nnnn nnn nnn
+100xxxxxxx/00
+Vermerk der Bank: 2100
+2
+Datum: 25.08.2021
+Seite: 2 von 2
+Ordernummer 208nnnnnn.001
+Orderdatum 25.08.2021
+Informationen bei Gewinn Aktien / Wertpapiere ungleich Aktien
+Veräusserungsgewinn nach Differenzmethode 417,43 EUR
+Bemessungsgrundlage für Kapitalertragsteuer 417,43 EUR
+Bemessungsgrundlage für KAPST anteilig 50,00% 208,72 EUR
+Bemessungsgrundlage für KAPST anteilig 50,00% 208,71 EUR
+Stand Ihrer Töpfe und Freibeträge nach dem Geschäft
+Sparerpauschbetrag nach dem Geschäft 0,00 EUR
+Verrechnungstopf Aktien nach dem Geschäft 0,00 EUR
+Verrechnungstopf Allg. nach dem Geschäft 0,00 EUR
+Verrechnungstopf QUST nach dem Geschäft 0,00 EUR
+Es wurde keine Kirchensteuer einbehalten.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+PrØsident du Conseil dAdministration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur GØnØral (Generaldirektor): Jean-Laurent BonnafØ
