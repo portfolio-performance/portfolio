@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.TreeMap;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -111,7 +112,8 @@ public final class TaxonomyModel
     private List<TaxonomyModelUpdatedListener> listeners = new ArrayList<>();
     private List<DirtyListener> dirtyListener = new ArrayList<>();
 
-    private Rebalancer.RebalancingSolution rebalancingSolution;
+    private Rebalancer.RebalancingSolution zeroSumRebalancingSolution;
+    private Map<Money, Rebalancer.RebalancingSolution> rebalancingSolutions;
 
     @Inject
     /* package */ TaxonomyModel(ExchangeRateProviderFactory factory, Client client, Taxonomy taxonomy)
@@ -121,6 +123,7 @@ public final class TaxonomyModel
         this.factory = Objects.requireNonNull(factory);
 
         this.converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
+        rebalancingSolutions = new TreeMap<>();
 
         this.filteredClient = client;
         this.snapshot = ClientSnapshot.create(client, converter, LocalDate.now());
@@ -250,7 +253,8 @@ public final class TaxonomyModel
     private void runRecalculations()
     {
         this.attachedModels.forEach(m -> m.recalculate(this));
-        rebalance();
+        zeroSumRebalancingSolution = rebalance(Money.of(this.getCurrencyCode(), 0));
+        rebalancingSolutions.clear();
     }
 
     public boolean isUnassignedCategoryInChartsExcluded()
@@ -473,17 +477,27 @@ public final class TaxonomyModel
 
     public Rebalancer.RebalancingSolution getRebalancingSolution()
     {
-        return rebalancingSolution;
+        return zeroSumRebalancingSolution;
     }
 
-    private void rebalance()
+    public Rebalancer.RebalancingSolution getRebalancingSolution(Money amount)
+    {
+        if(!rebalancingSolutions.containsKey(amount))
+        {
+            rebalancingSolutions.put(amount, rebalance(amount));
+        }
+        return rebalancingSolutions.get(amount);
+    }
+
+    private Rebalancer.RebalancingSolution rebalance(Money amount)
     {
         List<InvestmentVehicle> inexactResultsDueToEmptyClassifications = new ArrayList<>();
-        FixedSumRebalancer rebalancer = new FixedSumRebalancer(Money.of(this.getCurrencyCode(), 0));
+        FixedSumRebalancer rebalancer = new FixedSumRebalancer(amount);
         collectConstraints(classificationRootNode, rebalancer, Collections.emptyMap(),
-                        inexactResultsDueToEmptyClassifications, Money.of(snapshot.getCurrencyCode(), 0));
-        rebalancingSolution = rebalancer.solve();
-        rebalancingSolution.markAllAsInexact(inexactResultsDueToEmptyClassifications);
+                        inexactResultsDueToEmptyClassifications, amount);
+        Rebalancer.RebalancingSolution solution = rebalancer.solve();
+        solution.markAllAsInexact(inexactResultsDueToEmptyClassifications);
+        return solution;
     }
 
     private void collectConstraints(ClassificationNode node, FixedSumRebalancer rebalancer,

@@ -143,6 +143,7 @@ public class Messages extends NLS
     public static String ColumnDeltaPercentRelative_Description;
     public static String ColumnDeltaShares;
     public static String ColumnRebalanceAmount;
+    public static String ColumnRebalanceSavingPlan;
     public static String RebalanceAmbiguousTooltip;
     public static String RebalanceInexactTooltip;
     public static String ColumnDeltaValue;
@@ -999,6 +1000,9 @@ public class Messages extends NLS
     public static String PrefTitleDivvyDiary;
     public static String PrefTitleFinnhub;
     public static String PrefTitleQuandl;
+    public static String RebalancingSavingPlansSum;
+    public static String RebalancingSavingPlansExecutionsTextBefore;
+    public static String RebalancingSavingPlansExecutionsTextAfter;
     public static String SecurityFilter;
     public static String SecurityFilterSharesHeldEqualZero;
     public static String SecurityFilterSharesHeldNotZero;

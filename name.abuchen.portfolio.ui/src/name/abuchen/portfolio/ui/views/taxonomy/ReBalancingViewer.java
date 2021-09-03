@@ -11,7 +11,15 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowData;
+import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 
 import com.ibm.icu.text.MessageFormat;
 
@@ -27,6 +35,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.StringToCurrencyConverter;
 import name.abuchen.portfolio.ui.util.swt.ActiveShell;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.FunctionalBooleanEditingSupport;
@@ -36,10 +45,23 @@ import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
 
 public class ReBalancingViewer extends AbstractNodeTreeViewer
 {
+    private static final String SAVINGSPLAN_AMOUNT_KEY = "rebalancing-savingsplan-amount:"; //$NON-NLS-1$
+    private static final String SAVINGSPLAN_EXECUTIONS_KEY = "rebalancing-savingsplan-executions:"; //$NON-NLS-1$
+    private static final int SAVINGSPLAN_SUM_TEXT_WIDTH = 40;
+    private static final int SAVINGSPLAN_EXECUTIONS_TEXT_WIDTH = 13;
+    
+    private Control controlForData;
+    private Composite savingsPlansComposite;
+    private Text savingsPlansSumText, savingsPlanExecutionsText;
+    private Money savingsPlansSum; // null represents invalid
+    private Integer savingsPlanExecutions; // null represents invalid
+    private StringToCurrencyConverter savingsPlanSumConverter;
+    
     @Inject
     public ReBalancingViewer(AbstractFinanceView view, TaxonomyModel model, TaxonomyNodeRenderer renderer)
     {
         super(view, model, renderer);
+        savingsPlanSumConverter = new StringToCurrencyConverter(Values.Amount, true);
     }
 
     @Override
@@ -52,6 +74,70 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
     protected void storeExpansionState(String expanded)
     {
         getModel().setExpansionStateRebalancing(expanded);
+    }
+    
+    @Override
+    public final Control createControl(Composite parent)
+    {
+        Composite container = new Composite(parent, SWT.NONE) {
+            @Override
+            public void setData(Object data)
+            {
+                controlForData.setData(data);
+            }
+            
+            @Override
+            public Object getData()
+            {
+                return controlForData.getData();
+            }
+        };
+        GridLayout gridLayout = new GridLayout();
+        gridLayout.numColumns = 1;
+        container.setLayout(gridLayout);
+        
+        savingsPlansComposite = new Composite(container, SWT.NONE);
+        RowLayout savingsPlanLayout = new RowLayout();
+        savingsPlanLayout.center = true;
+        savingsPlansComposite.setLayout(savingsPlanLayout);
+
+        Label sumLabel = new Label(savingsPlansComposite, SWT.NONE);
+        sumLabel.setText(Messages.RebalancingSavingPlansSum);
+        
+        savingsPlansSumText = new Text(savingsPlansComposite, SWT.BORDER);
+        Object storedSavingsPlansSumText = getModel().getTaxonomy().getRoot().getData(SAVINGSPLAN_AMOUNT_KEY);
+        if(storedSavingsPlansSumText != null)
+            savingsPlansSumText.setText((String) storedSavingsPlansSumText);
+        savingsPlansSumText.addModifyListener(e -> onSavingsPlansChanged());
+        RowData savingsPlansSumTextLayoutData = new RowData();
+        savingsPlansSumTextLayoutData.width = SAVINGSPLAN_SUM_TEXT_WIDTH;
+        savingsPlansSumText.setLayoutData(savingsPlansSumTextLayoutData);
+
+        Label beforeExecutionsLabel = new Label(savingsPlansComposite, SWT.NONE);
+        beforeExecutionsLabel.setText(getModel().getCurrencyCode() + ".  " + Messages.RebalancingSavingPlansExecutionsTextBefore); //$NON-NLS-1$
+        
+        savingsPlanExecutionsText = new Text(savingsPlansComposite, SWT.BORDER);
+        Object storedSavingsPlanExecutionsText = getModel().getTaxonomy().getRoot().getData(SAVINGSPLAN_EXECUTIONS_KEY);
+        if(storedSavingsPlanExecutionsText != null)
+            savingsPlanExecutionsText.setText((String) storedSavingsPlanExecutionsText);
+        savingsPlanExecutionsText.addModifyListener(e -> onSavingsPlansChanged());
+        RowData savingsPlansExecutionsTextLayoutData = new RowData();
+        savingsPlansExecutionsTextLayoutData.width = SAVINGSPLAN_EXECUTIONS_TEXT_WIDTH;
+        savingsPlanExecutionsText.setLayoutData(savingsPlansExecutionsTextLayoutData);
+
+        Label afterExecutionsLabel = new Label(savingsPlansComposite, SWT.NONE);
+        afterExecutionsLabel.setText(Messages.RebalancingSavingPlansExecutionsTextAfter);
+        
+        onSavingsPlansChanged(); // Re-calculate, since we now have loaded the stored data.
+        
+        controlForData = super.createControl(container);
+        GridData gridData = new GridData();
+        gridData.verticalAlignment = GridData.FILL;
+        gridData.horizontalAlignment = GridData.FILL;
+        gridData.grabExcessHorizontalSpace = true;
+        gridData.grabExcessVerticalSpace = true;
+        controlForData.setLayoutData(gridData);
+        return container;
     }
 
     @Override
@@ -270,6 +356,88 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
 
                 InvestmentVehicle investmentVehicle = node.getBackingInvestmentVehicle();
                 if (investmentVehicle == null || !getModel().getTaxonomy().isUsedForRebalancing(investmentVehicle))
+                    return null;
+
+                if (!getModel().getRebalancingSolution().isExact(investmentVehicle))
+                    return Messages.RebalanceInexactTooltip;
+                if (getModel().getRebalancingSolution().isAmbigous(investmentVehicle))
+                    return Messages.RebalanceAmbiguousTooltip;
+                return null;
+            }
+        });
+        support.addColumn(column);
+        
+
+        column = new Column("rebalanceSavingPlan", Messages.ColumnRebalanceSavingPlan, SWT.RIGHT, 100); //$NON-NLS-1$
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+
+                // no delta shares for unassigned securities
+                if (node.getParent() != null && node.getParent().isUnassignedCategory())
+                    return null;
+
+                InvestmentVehicle investmentVehicle = node.getBackingInvestmentVehicle();
+                if (investmentVehicle == null || !getModel().getTaxonomy().isUsedForRebalancing(investmentVehicle))
+                    return null;
+                
+                if(savingsPlansSum == null || savingsPlanExecutions == null)
+                    return Messages.LabelNotAvailable;
+
+                Money rebalancingAmount = getModel().getRebalancingSolution(savingsPlansSum.multiply(savingsPlanExecutions)).getMoney(investmentVehicle);
+                rebalancingAmount = rebalancingAmount.divide(savingsPlanExecutions);
+                return Values.Money.format(rebalancingAmount);
+            }
+
+            @Override
+            public Color getBackground(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+
+                InvestmentVehicle investmentVehicle = node.getBackingInvestmentVehicle();
+                if (investmentVehicle == null || !getModel().getTaxonomy().isUsedForRebalancing(investmentVehicle))
+                    return null;
+
+                if(savingsPlansSum == null || savingsPlanExecutions == null)
+                    return null;
+
+                if (!getModel().getRebalancingSolution().isExact(investmentVehicle))
+                    return Colors.theme().redBackground();
+                if (getModel().getRebalancingSolution().isAmbigous(investmentVehicle))
+                    return Colors.theme().warningBackground();
+                return null;
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+
+                if(savingsPlansSum == null || savingsPlanExecutions == null)
+                    return null;
+
+                InvestmentVehicle investmentVehicle = node.getBackingInvestmentVehicle();
+                if (investmentVehicle == null)
+                    return null;
+
+                if (!node.isPrimary())
+                    return Colors.theme().grayForeground();
+                return null;
+            }
+
+            @Override
+            public String getToolTipText(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+
+                InvestmentVehicle investmentVehicle = node.getBackingInvestmentVehicle();
+                if (investmentVehicle == null || !getModel().getTaxonomy().isUsedForRebalancing(investmentVehicle))
+                    return null;
+                
+                if(savingsPlansSum == null || savingsPlanExecutions == null)
                     return null;
 
                 if (!getModel().getRebalancingSolution().isExact(investmentVehicle))
@@ -522,5 +690,33 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
             classification.setWeight(weight);
         }
         onTaxnomyNodeEdited(node);
+    }
+
+    private void onSavingsPlansChanged()
+    {
+        try
+        {
+            String amountString = savingsPlansSumText.getText();
+            getModel().getTaxonomy().getRoot().setData(SAVINGSPLAN_AMOUNT_KEY, amountString);
+            long amount = savingsPlanSumConverter.convert(amountString);
+            savingsPlansSum = Money.of(getModel().getCurrencyCode(), amount);
+        }
+        catch (NumberFormatException e)
+        {
+            savingsPlansSum = null;
+        }
+        
+        try
+        {
+            String executionsString = savingsPlanExecutionsText.getText();
+            getModel().getTaxonomy().getRoot().setData(SAVINGSPLAN_EXECUTIONS_KEY, executionsString);
+            savingsPlanExecutions = Integer.parseInt(executionsString);
+        }
+        catch(NumberFormatException e)
+        {
+            savingsPlanExecutions = null;
+        }
+
+        getModel().markDirty();
     }
 }

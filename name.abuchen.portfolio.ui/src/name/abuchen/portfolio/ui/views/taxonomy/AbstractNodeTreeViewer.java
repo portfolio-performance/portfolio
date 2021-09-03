@@ -357,7 +357,7 @@ import name.abuchen.portfolio.util.TextUtil;
     }
 
     @Override
-    public final Control createControl(Composite parent)
+    public Control createControl(Composite parent)
     {
         Composite container = new Composite(parent, SWT.NONE);
         TreeColumnLayout layout = new TreeColumnLayout();
