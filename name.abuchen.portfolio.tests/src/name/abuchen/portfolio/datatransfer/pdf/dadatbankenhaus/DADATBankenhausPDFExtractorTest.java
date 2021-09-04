@@ -75,13 +75,13 @@ public class DADATBankenhausPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierKauf02()
+    public void testKontoauszug01()
     {
         DADATBankenhausPDFExtractor extractor = new DADATBankenhausPDFExtractor(new Client());
         
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf02.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(4));
@@ -135,13 +135,13 @@ public class DADATBankenhausPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierKauf03()
+    public void testKontoauszug02()
     {
         DADATBankenhausPDFExtractor extractor = new DADATBankenhausPDFExtractor(new Client());
         
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -176,13 +176,13 @@ public class DADATBankenhausPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierKauf04()
+    public void testKontoauszug03()
     {
         DADATBankenhausPDFExtractor extractor = new DADATBankenhausPDFExtractor(new Client());
         
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf04.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -217,13 +217,13 @@ public class DADATBankenhausPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierVerkauf01()
+    public void testKontoauszug04()
     {
         DADATBankenhausPDFExtractor extractor = new DADATBankenhausPDFExtractor(new Client());
         
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -258,51 +258,13 @@ public class DADATBankenhausPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierDividende01WithEURAccount()
+    public void testKontoauszug05()
     {
         DADATBankenhausPDFExtractor extractor = new DADATBankenhausPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
-
-        assertThat(errors, empty());
-        assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
-
-        // check security
-        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("US09247X1019"));
-        assertThat(security.getName(), is("B L A C K R O C K  I NC. Reg. Shares Class A DL -,01"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
-
-        // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-04T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(3)));
-
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7.51))));
-        assertThat(transaction.getGrossValue(), 
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.35))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), 
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.84))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), 
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-    }
-
-    @Test
-    public void testWertpapierDividende02()
-    {
-        DADATBankenhausPDFExtractor extractor = new DADATBankenhausPDFExtractor(new Client());
-
-        List<Exception> errors = new ArrayList<>();
-
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug05.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -334,13 +296,13 @@ public class DADATBankenhausPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierDividende03()
+    public void testKontoauszug06()
     {
         DADATBankenhausPDFExtractor extractor = new DADATBankenhausPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug06.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(4));
@@ -389,13 +351,13 @@ public class DADATBankenhausPDFExtractorTest
     }
 
     @Test
-    public void testSteuernAusschuettungsgleicheErtraege01()
+    public void testKontoauszug07()
     {
         DADATBankenhausPDFExtractor extractor = new DADATBankenhausPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuernAusschuettungsgleicheErtraege01.txt"),
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug07.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -422,6 +384,82 @@ public class DADATBankenhausPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.34))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX), 
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+    }
+
+    @Test
+    public void testKontoauszug08()
+    {
+        DADATBankenhausPDFExtractor extractor = new DADATBankenhausPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug08.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findAny().get().getSecurity();
+        assertThat(security.getIsin(), is("LU0378449770"));
+        assertThat(security.getName(), is("COMST.-NASDAQ-100 U.ETF I"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+
+        // check transaction
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-09-18T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(6.05)));
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(33.62))));
+        assertThat(transaction.getGrossValue(), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(33.62))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+    }
+
+    @Test
+    public void testWertpapierDividende01WithEURAccount()
+    {
+        DADATBankenhausPDFExtractor extractor = new DADATBankenhausPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("US09247X1019"));
+        assertThat(security.getName(), is("B L A C K R O C K  I NC. Reg. Shares Class A DL -,01"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+
+        // check dividends transaction
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-04T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(3)));
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7.51))));
+        assertThat(transaction.getGrossValue(), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.35))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.84))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE), 
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
     }
