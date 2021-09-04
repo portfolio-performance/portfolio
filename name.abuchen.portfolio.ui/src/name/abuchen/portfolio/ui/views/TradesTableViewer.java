@@ -26,6 +26,7 @@ import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.TouchClientListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.MoneyColorLabelProvider;
@@ -79,7 +80,12 @@ public class TradesTableViewer
     private void createTradesColumns(ShowHideColumnHelper support, ViewMode viewMode)
     {
         if (viewMode == ViewMode.MULTIPLE_SECURITES)
-            support.addColumn(new NameColumn(view.getClient()));
+        {
+            NameColumn column = new NameColumn(view.getClient());
+            column.getEditingSupport().addListener(new TouchClientListener(view.getClient()));
+            column.getEditingSupport().addListener((e, n, o) -> trades.refresh(true));
+            support.addColumn(column);
+        }
 
         Column column = new Column("start", Messages.ColumnStartDate, SWT.None, 80); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
