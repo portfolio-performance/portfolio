@@ -412,7 +412,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^\\d+.\\d+ Steuern aussch.ttungsgl. Ertr.ge .*$");
+        Block firstRelevantLine = new Block("^\\d+.\\d+ (Steuern aussch.ttungsgl. Ertr.ge|Steuerdividende) .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -428,7 +428,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                 // Kurs                      0,000000  KEST                     -1,51 USD
                 // DevKurs        1,123200/2.1.2020
                 .section("date", "year", "amount", "isin", "name", "shares", "fxAmount", "fxCurrency", "exchangeRate")
-                .match("^(?<date>\\d+.\\d+) Steuern aussch.ttungsgl. Ertr.ge ([\\s]+)?Depot [\\s]+[\\d]+\\/(?<year>[\\d]{4})[\\d]+\\-[\\d]+ [\\d]+.[\\d]+ (?<amount>[.,\\d]+)([-])?$")
+                .match("^(?<date>\\d+.\\d+) (Steuern aussch.ttungsgl. Ertr.ge|Steuerdividende) ([\\s]+)?Depot [\\s]+[\\d]+\\/(?<year>[\\d]{4})[\\d]+\\-[\\d]+ [\\d]+.[\\d]+ (?<amount>[.,\\d]+)([-])?$")
                 .match("^ISIN (?<isin>[\\w]{12}) (?<name>.*) [\\s]+(?<shares>[.,\\d]+) STK$")
                 .match("^.* KEST [\\s]+\\-(?<fxAmount>[.,\\d]+) (?<fxCurrency>[\\w]{3})$")
                 .match("^DevKurs [\\s]+(?<exchangeRate>[.,\\d]+)\\/.*")
