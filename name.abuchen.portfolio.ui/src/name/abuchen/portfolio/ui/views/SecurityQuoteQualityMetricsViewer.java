@@ -26,6 +26,7 @@ import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.util.Interval;
 
@@ -71,6 +72,8 @@ public class SecurityQuoteQualityMetricsViewer
         container.setLayout(layout);
 
         missing = new TableViewer(container, SWT.FULL_SELECTION);
+
+        CopyPasteSupport.enableFor(missing);
 
         ShowHideColumnHelper support = new ShowHideColumnHelper(
                         SecurityQuoteQualityMetricsViewer.class.getSimpleName() + "@missing", //$NON-NLS-1$

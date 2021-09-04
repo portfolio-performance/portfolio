@@ -44,6 +44,7 @@ import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.views.AccountContextMenu;
 import name.abuchen.portfolio.ui.views.SecurityContextMenu;
 import name.abuchen.portfolio.ui.views.payments.PaymentsViewModel.Line;
@@ -111,6 +112,7 @@ public class PaymentsPerMonthMatrixTab implements PaymentsTab
 
         tableViewer = new TableViewer(container, SWT.FULL_SELECTION);
         ColumnViewerToolTipSupport.enableFor(tableViewer, ToolTip.NO_RECREATE);
+        CopyPasteSupport.enableFor(tableViewer);
 
         // make sure to apply the styles (including font information to the
         // table) before creating the bold font. Otherwise the font does not

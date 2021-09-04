@@ -29,6 +29,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.LogoManager;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 public class ExportSelectionPage extends AbstractWizardPage
@@ -69,6 +70,7 @@ public class ExportSelectionPage extends AbstractWizardPage
         TreeColumnLayout layout = new TreeColumnLayout();
         treeComposite.setLayout(layout);
         treeViewer = new TreeViewer(treeComposite, SWT.BORDER | SWT.SINGLE);
+        CopyPasteSupport.enableFor(treeViewer);
         Tree tree = treeViewer.getTree();
         tree.setHeaderVisible(false);
         tree.setLinesVisible(true);
@@ -80,8 +82,8 @@ public class ExportSelectionPage extends AbstractWizardPage
         treeViewer.setContentProvider(new ExportItemsContentProvider());
         treeViewer.setLabelProvider(new ExportItemsLabelProvider(client));
         treeViewer.setInput(client);
-        treeViewer.setExpandedElements(new Object[] { AccountTransaction.class, PortfolioTransaction.class,
-                        Security.class });
+        treeViewer.setExpandedElements(
+                        new Object[] { AccountTransaction.class, PortfolioTransaction.class, Security.class });
 
         // wiring
         setPageComplete(false);
@@ -146,7 +148,7 @@ public class ExportSelectionPage extends AbstractWizardPage
                     return new String[] { Messages.ExportWizardSecurityMasterData,
                                     Messages.ExportWizardMergedSecurityPrices,
                                     Messages.ExportWizardAllTransactionsAktienfreundeNet,
-                                    Messages.ExportWizardVINISApp};
+                                    Messages.ExportWizardVINISApp };
                 else if (parentElement == SecurityPrice.class)
                     return client.getSecurities().stream().sorted(new Security.ByName()).toArray();
             }
@@ -175,12 +177,12 @@ public class ExportSelectionPage extends AbstractWizardPage
     static class ExportItemsLabelProvider extends LabelProvider
     {
         private Client client;
-        
-        public ExportItemsLabelProvider(Client client) 
+
+        public ExportItemsLabelProvider(Client client)
         {
             this.client = client;
         }
-        
+
         @Override
         public String getText(Object element)
         {

@@ -25,6 +25,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 public class PreviewQuotesPage extends AbstractWizardPage
@@ -99,6 +100,7 @@ public class PreviewQuotesPage extends AbstractWizardPage
         tableContainer.setLayout(layout);
 
         tableViewer = new TableViewer(tableContainer, SWT.BORDER);
+        CopyPasteSupport.enableFor(tableViewer);
         Table table = tableViewer.getTable();
         table.setHeaderVisible(true);
         table.setLinesVisible(true);

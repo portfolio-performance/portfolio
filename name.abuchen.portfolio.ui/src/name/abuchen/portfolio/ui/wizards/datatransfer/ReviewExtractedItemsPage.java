@@ -74,6 +74,7 @@ import name.abuchen.portfolio.ui.jobs.AbstractClientJob;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 public class ReviewExtractedItemsPage extends AbstractWizardPage implements ImportAction.Context
@@ -256,6 +257,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         tableViewer.setContentProvider(ArrayContentProvider.getInstance());
 
         ColumnViewerToolTipSupport.enableFor(tableViewer, ToolTip.NO_RECREATE);
+        CopyPasteSupport.enableFor(tableViewer);
 
         Table table = tableViewer.getTable();
         table.setHeaderVisible(true);
@@ -267,6 +269,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         layout = new TableColumnLayout();
         errorTable.setLayout(layout);
         errorTableViewer = new TableViewer(errorTable, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+        CopyPasteSupport.enableFor(errorTableViewer);
         errorTableViewer.setContentProvider(ArrayContentProvider.getInstance());
 
         table = errorTableViewer.getTable();

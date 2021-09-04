@@ -27,6 +27,7 @@ import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.MoneyColorLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.NumberColorLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
@@ -60,6 +61,7 @@ public class TradesTableViewer
 
         ColumnEditingSupport.prepare(trades);
         ColumnViewerToolTipSupport.enableFor(trades, ToolTip.NO_RECREATE);
+        CopyPasteSupport.enableFor(trades);
 
         support = new ShowHideColumnHelper(
                         SecuritiesPerformanceView.class.getSimpleName() + "@trades@" + viewMode.name(), //$NON-NLS-1$

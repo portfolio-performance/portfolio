@@ -34,6 +34,7 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.util.TextUtil;
 
 public class EditReportingPeriodsDialog extends Dialog
@@ -74,6 +75,8 @@ public class EditReportingPeriodsDialog extends Dialog
         tableArea.setLayout(layout);
 
         tableViewer = new TableViewer(tableArea, SWT.BORDER | SWT.MULTI);
+        CopyPasteSupport.enableFor(tableViewer);
+
         final Table table = tableViewer.getTable();
         table.setHeaderVisible(false);
         table.setLinesVisible(false);

@@ -46,6 +46,7 @@ import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
 import name.abuchen.portfolio.ui.views.columns.CurrencyColumn;
@@ -200,6 +201,7 @@ public class AccountListView extends AbstractFinanceView implements Modification
 
         ColumnEditingSupport.prepare(accounts);
         ColumnViewerToolTipSupport.enableFor(accounts, ToolTip.NO_RECREATE);
+        CopyPasteSupport.enableFor(accounts);
 
         accountColumns = new ShowHideColumnHelper(AccountListView.class.getSimpleName() + "@top2", //$NON-NLS-1$
                         getPreferenceStore(), accounts, layout);
