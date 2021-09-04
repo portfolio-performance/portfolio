@@ -25,6 +25,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.viewers.Column;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.MoneyColorLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.NumberColorLabelProvider;
@@ -57,6 +58,7 @@ public class TradesTableViewer
 
         trades = new TableViewer(container, SWT.FULL_SELECTION);
 
+        ColumnEditingSupport.prepare(trades);
         ColumnViewerToolTipSupport.enableFor(trades, ToolTip.NO_RECREATE);
 
         support = new ShowHideColumnHelper(
