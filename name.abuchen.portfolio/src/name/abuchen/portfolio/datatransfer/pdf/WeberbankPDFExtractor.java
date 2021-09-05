@@ -90,9 +90,9 @@ public class WeberbankPDFExtractor extends AbstractPDFExtractor
                         .match("^Schlusstag\\/-Zeit (?<date>\\d+.\\d+.\\d{4}) (?<time>\\d+:\\d+:\\d+) .*$")
                         .assign((t, v) -> {
                             if (v.get("time") != null)
-                                t.setDate(asDate(v.get("date").replaceAll("/", "."), v.get("time")));
+                                t.setDate(asDate(v.get("date"), v.get("time")));
                             else
-                                t.setDate(asDate(v.get("date").replaceAll("/", ".")));
+                                t.setDate(asDate(v.get("date")));
                         })
 
                         // Ausmachender Betrag 9.978,18- EUR
@@ -107,7 +107,6 @@ public class WeberbankPDFExtractor extends AbstractPDFExtractor
                         .wrap(BuySellEntryItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
-        addFeesSectionsTransaction(pdfTransaction, type);
     }
 
     private void addDividendeTransaction()
@@ -207,7 +206,6 @@ public class WeberbankPDFExtractor extends AbstractPDFExtractor
                         .wrap(TransactionItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
-        addFeesSectionsTransaction(pdfTransaction, type);
 
         block.set(pdfTransaction);
     }
@@ -239,19 +237,6 @@ public class WeberbankPDFExtractor extends AbstractPDFExtractor
                         .section("quellenstanr", "currency").optional()
                         .match("^Anrechenbare Quellensteuer [.,\\d]+ % .* (?<quellenstanr>[.,\\d]+) (?<currency>[\\w]{3})$")
                         .assign((t, v) -> addTax(type, t, v, "quellenstanr"));
-    }
-
-    private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
-    {
-        // transaction
-        // At this time there are no known fees or similar in the PDF debugs.
-        // IF you found some, add this here like
-
-        // Example
-        // some fees
-        // .section("fee", "currency").optional()
-        // .match("^ABC (?<fee>[.,\\d]+)[-]? (?<currency>[\\w]{3})$")
-        // .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
     private void addTax(DocumentType type, Object t, Map<String, String> v, String taxtype)
