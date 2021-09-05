@@ -11,14 +11,14 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 
-public class ViacPDFExtractor extends SwissBasedPDFExtractor
+public class ViacPDFExtractor extends AbstractPDFExtractor
 {
     public ViacPDFExtractor(Client client)
     {
         super(client);
 
-        addBankIdentifier("Terzo"); //$NON-NLS-1$
         addBankIdentifier("WIR Bank"); //$NON-NLS-1$
 
         addDepositTransaction();
@@ -35,6 +35,18 @@ public class ViacPDFExtractor extends SwissBasedPDFExtractor
         addDividendsTransactionEnglish();
         addTaxRefundTransaction();
         addTaxRefundTransactionEnglish();
+    }
+
+    @Override
+    public String getPDFAuthor()
+    {
+        return ""; //$NON-NLS-1$
+    }
+
+    @Override
+    public String getLabel()
+    {
+        return "WIR Bank Genossenschaft"; //$NON-NLS-1$
     }
 
     @SuppressWarnings("nls")
@@ -643,8 +655,20 @@ public class ViacPDFExtractor extends SwissBasedPDFExtractor
     }
 
     @Override
-    public String getLabel()
+    protected long asAmount(String value)
     {
-        return "VIAC"; //$NON-NLS-1$
+        return PDFExtractorUtils.convertToNumberLong(value, Values.Amount, "de", "CH");  //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    @Override
+    protected long asShares(String value)
+    {
+        return PDFExtractorUtils.convertToNumberLong(value, Values.Share, "de", "CH"); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    @Override
+    protected BigDecimal asExchangeRate(String value)
+    {
+        return PDFExtractorUtils.convertToNumberBigDecimal(value, Values.Share, "de", "CH"); //$NON-NLS-1$ //$NON-NLS-2$
     }
 }
