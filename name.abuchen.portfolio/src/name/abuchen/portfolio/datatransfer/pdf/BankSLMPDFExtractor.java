@@ -13,9 +13,10 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
-public class BankSLMPDFExtractor extends SwissBasedPDFExtractor
+public class BankSLMPDFExtractor extends AbstractPDFExtractor
 {
     public BankSLMPDFExtractor(Client client)
     {
@@ -298,5 +299,23 @@ public class BankSLMPDFExtractor extends SwissBasedPDFExtractor
             PDFExtractorUtils.checkAndSetFee(fee,
                             ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
         }
+    }
+
+    @Override
+    protected long asAmount(String value)
+    {
+        return PDFExtractorUtils.convertToNumberLong(value, Values.Amount, "de", "CH");
+    }
+
+    @Override
+    protected long asShares(String value)
+    {
+        return PDFExtractorUtils.convertToNumberLong(value, Values.Share, "de", "CH");
+    }
+
+    @Override
+    protected BigDecimal asExchangeRate(String value)
+    {
+        return PDFExtractorUtils.convertToNumberBigDecimal(value, Values.Share, "de", "CH");
     }
 }
