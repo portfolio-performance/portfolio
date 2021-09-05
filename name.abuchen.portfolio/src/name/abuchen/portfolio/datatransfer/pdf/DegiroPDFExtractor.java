@@ -19,6 +19,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 
 public class DegiroPDFExtractor extends AbstractPDFExtractor
 {
@@ -649,8 +650,6 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 + "[-.,\\d\\s]* [\\w]{3} "
                                                 + "-?(?<amount>[.\\d\\s]+,[\\d]*) (?<currency>[\\w]{3})$") 
                                 .assign((t, v) -> {
-                                    v.put("amount", stripBlanks(v.get("amount")));
-
                                     t.setSecurity(getOrCreateSecurity(v));
                                     t.setDate(asDate(v.get("date")));
                                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -734,9 +733,6 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 + "-?(?<fee>[.,\\d\\s]*) (?<currencyFee>\\w{3}) "
                                                 + "-?(?<amount>[.,\\d\\s]*) (?<currency>\\w{3})$") 
                                 .assign((t, v) -> {
-                                    v.put("fee", stripBlanks(v.get("fee")));
-                                    v.put("amount", stripBlanks(v.get("amount")));
-
                                     t.setSecurity(getOrCreateSecurity(v));
                                     t.setDate(asDate(v.get("date")));
                                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -849,10 +845,6 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 + "(?<fee>-?[.\\d\\s]+,\\d{2}) (?<currencyFee>\\w{3}) "
                                                 + "-?(?<amount>[.\\d\\s]+,\\d{2}) (?<currencyAccount>\\w{3})$") 
                                 .assign((t, v) -> {
-                                    v.put("fee", stripBlanks(v.get("fee")));
-                                    v.put("amountFx", stripBlanks(v.get("amountFx")));
-                                    v.put("amount", stripBlanks(v.get("amount")));
-
                                     t.setSecurity(getOrCreateSecurity(v));
                                     t.setDate(asDate(v.get("date")));
                                     t.setCurrencyCode(asCurrencyCode(v.get("currencyAccount")));
@@ -969,9 +961,6 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 + "(?<exchangeRate>[.\\d]+,\\d{1,6}) "
                                                 + "-?(?<amount>[.\\d\\s]+,\\d{2}) (?<currencyAccount>\\w{3})$") 
                                 .assign((t, v) -> {
-                                    v.put("amountFx", stripBlanks(v.get("amountFx")));
-                                    v.put("amount", stripBlanks(v.get("amount")));
-
                                     t.setSecurity(getOrCreateSecurity(v));
                                     t.setDate(asDate(v.get("date")));
                                     t.setCurrencyCode(asCurrencyCode(v.get("currencyAccount")));
@@ -1028,10 +1017,6 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 + "(?<fee>-?[.\\d\\s]+[,\\d]*) (?<currencyFee>[\\w]{3}) "
                                                 + "(?<amount>-?[.\\d\\s]+[,\\d]*) (?<currencyAccount>[\\w]{3})$")
                                 .assign((t, v) -> {
-                                    v.put("fee", stripBlanks(v.get("fee")));
-                                    v.put("amountFx", stripBlanks(v.get("amountFx")));
-                                    v.put("amount", stripBlanks(v.get("amount")));
-
                                     t.setSecurity(getOrCreateSecurity(v));
                                     t.setDate(asDate(v.get("date")));
                                     t.setCurrencyCode(asCurrencyCode(v.get("currencyAccount")));
@@ -1103,7 +1088,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                     t.setSecurity(getOrCreateSecurity(v));
                                     t.setDate(asDate(v.get("date")));
                                     t.setCurrencyCode(asCurrencyCode(v.get("currencyAccount")));
-                                    t.setAmount(asAmount(convertAmount(v.get("amount"))));
+                                    t.setAmount(asAmount(v.get("amount")));
 
                                     if (v.get("shares").startsWith("-"))
                                     {
@@ -1115,15 +1100,15 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         t.setShares(asShares(v.get("shares")));
                                     }
 
-                                    Money feeAmount = Money.of(asCurrencyCode(v.get("currencyFee")), asAmount(convertAmount(v.get("fee"))));
+                                    Money feeAmount = Money.of(asCurrencyCode(v.get("currencyFee")), asAmount(v.get("fee")));
                                     t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, feeAmount));
 
-                                    long amountFx = asAmount(convertAmount(v.get("amountFx")));
+                                    long amountFx = asAmount(v.get("amountFx"));
                                     String currencyFx = asCurrencyCode(v.get("currency"));
 
                                     if (currencyFx.equals(t.getPortfolioTransaction().getSecurity().getCurrencyCode()))
                                     {
-                                        Money amount = Money.of(asCurrencyCode(v.get("currencyAccount")), asAmount(convertAmount(v.get("amount"))));
+                                        Money amount = Money.of(asCurrencyCode(v.get("currencyAccount")), asAmount(v.get("amount")));
                                         if (t.getPortfolioTransaction().getType() == PortfolioTransaction.Type.BUY)
                                         {
                                             amount = amount.subtract(feeAmount);
@@ -1132,7 +1117,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         {
                                             amount = amount.add(feeAmount);
                                         }
-                                        BigDecimal exchangeRate = BigDecimal.ONE.divide(asExchangeRate(convertExchangeRate(v.get("exchangeRate"))), 10, RoundingMode.HALF_DOWN);
+                                        BigDecimal exchangeRate = BigDecimal.ONE.divide(asExchangeRate(v.get("exchangeRate")), 10, RoundingMode.HALF_DOWN);
                                         Money forex = Money.of(asCurrencyCode(v.get("currency")), amountFx);
                                         Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, forex, exchangeRate);
                                         t.getPortfolioTransaction().addUnit(grossValue);
@@ -1164,9 +1149,6 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 + "-?(?<fee>[.\\d\\s]+,[\\d]*) (?<currencyFee>[\\w]{3}) "
                                                 + "-?(?<amount>[.\\d\\s]+,[\\d]*) (?<currency>[\\w]{3})$")
                                 .assign((t, v) -> {
-                                    v.put("fee", stripBlanks(v.get("fee")));
-                                    v.put("amount", stripBlanks(v.get("amount")));
-
                                     t.setSecurity(getOrCreateSecurity(v));
                                     t.setDate(asDate(v.get("date")));
                                     t.setCurrencyCode(asCurrencyCode(v.get("currency"))); 
@@ -1209,13 +1191,10 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 + "-?(?<fee>([\\d]+,[\\d]{3}.\\d+|\\d+.\\d+)*) (?<currencyFee>[\\w]{3}) "
                                                 + "-?(?<amount>([\\d]+,[\\d]{3}.\\d+|\\d+.\\d+)*) (?<currency>[\\w]{3})$")
                                 .assign((t, v) -> {
-                                    v.put("fee", stripBlanks(v.get("fee")));
-                                    v.put("amount", stripBlanks(v.get("amount")));
-
                                     t.setSecurity(getOrCreateSecurity(v));
                                     t.setDate(asDate(v.get("date")));
                                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                    t.setAmount(asAmount(convertAmount(v.get("amount"))));
+                                    t.setAmount(asAmount(v.get("amount")));
 
                                     if (v.get("shares").startsWith("-"))
                                     {
@@ -1226,7 +1205,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                     {
                                         t.setShares(asShares(v.get("shares")));
                                     }
-                                    Money feeAmount = Money.of(asCurrencyCode(v.get("currencyFee")), asAmount(convertAmount(v.get("fee"))));
+                                    Money feeAmount = Money.of(asCurrencyCode(v.get("currencyFee")), asAmount(v.get("fee")));
                                     t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, feeAmount));
                             }),
 
@@ -1309,7 +1288,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                     t.setSecurity(getOrCreateSecurity(v));
                                     t.setDate(asDate(v.get("date")));
                                     t.setCurrencyCode(asCurrencyCode(v.get("currencyAccount")));
-                                    t.setAmount(asAmount(convertAmount(v.get("amount"))));
+                                    t.setAmount(asAmount(v.get("amount")));
 
                                     if (v.get("shares").startsWith("-"))
                                     {
@@ -1321,13 +1300,13 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         t.setShares(asShares(v.get("shares")));
                                     }
 
-                                    long amountFx = asAmount(convertAmount(v.get("amountFx")));
+                                    long amountFx = asAmount(v.get("amountFx"));
                                     String currencyFx = asCurrencyCode(v.get("currency"));
 
                                     if (currencyFx.equals(t.getPortfolioTransaction().getSecurity().getCurrencyCode()))
                                     {
-                                        Money amount = Money.of(asCurrencyCode(v.get("currencyAccount")), asAmount(convertAmount(v.get("amount"))));
-                                        BigDecimal exchangeRate = BigDecimal.ONE.divide(asExchangeRate(convertExchangeRate(v.get("exchangeRate"))), 10, RoundingMode.HALF_DOWN);
+                                        Money amount = Money.of(asCurrencyCode(v.get("currencyAccount")), asAmount(v.get("amount")));
+                                        BigDecimal exchangeRate = BigDecimal.ONE.divide(asExchangeRate(v.get("exchangeRate")), 10, RoundingMode.HALF_DOWN);
                                         Money forex = Money.of(asCurrencyCode(v.get("currency")), amountFx);
                                         Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, forex, exchangeRate);
                                         t.getPortfolioTransaction().addUnit(grossValue);
@@ -1355,8 +1334,6 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 + "[-.,\\d\\s]* \\w{3} "
                                                 + "-?(?<amount>[.,\\d\\s]*) (?<currency>\\w{3})$") 
                                 .assign((t, v) -> {
-                                    v.put("amount", stripBlanks(v.get("amount")));
-
                                     t.setSecurity(getOrCreateSecurity(v));
                                     t.setDate(asDate(v.get("date")));
                                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -1378,25 +1355,94 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                         .wrap(t -> new BuySellEntryItem(t)));
     }
 
-    @SuppressWarnings("nls")
-    private String convertAmount(String inputAmount)
+    @Override
+    protected long asAmount(String value)
     {
-        // 43.30        --> 43,30
-        // -1,082.50    --> 1082,50
-        String amount1 = inputAmount.replace(",", "");
-        return amount1.replace(".", ",");
-    }
+        value = value.trim().replaceAll(" ", ""); //$NON-NLS-1$ //$NON-NLS-2$
+
+        String language = "de"; //$NON-NLS-1$
+        String country = "DE"; //$NON-NLS-1$
+
+        int apostrophe = value.indexOf("\'"); //$NON-NLS-1$
+        if (apostrophe >= 0)
+        {
+            language = "de"; //$NON-NLS-1$
+            country = "CH"; //$NON-NLS-1$
+        }
+        else
+        {
+            int lastDot = value.lastIndexOf("."); //$NON-NLS-1$
+            int lastComma = value.lastIndexOf(","); //$NON-NLS-1$
     
-    @SuppressWarnings("nls") 
-    private String convertExchangeRate(String inputExchangeRate)
-    {
-        // 1.112    --> 1,112
-        return inputExchangeRate.replace(".", ",");
+            // returns the greater of two int values
+            if (Math.max(lastDot, lastComma) == lastDot)
+            {
+                language = "en"; //$NON-NLS-1$
+                country = "US"; //$NON-NLS-1$
+            }
+        }
+
+        return PDFExtractorUtils.convertToNumberLong(value, Values.Amount, language, country);
     }
 
-    private String stripBlanks(String input)
+    @Override
+    protected long asShares(String value)
     {
-        return input.replaceAll(" ", ""); //$NON-NLS-1$ //$NON-NLS-2$
+        value = value.trim().replaceAll(" ", ""); //$NON-NLS-1$ //$NON-NLS-2$
+
+        String language = "de"; //$NON-NLS-1$
+        String country = "DE"; //$NON-NLS-1$
+
+        int apostrophe = value.indexOf("\'"); //$NON-NLS-1$
+        if (apostrophe >= 0)
+        {
+            language = "de"; //$NON-NLS-1$
+            country = "CH"; //$NON-NLS-1$
+        }
+        else
+        {
+            int lastDot = value.lastIndexOf("."); //$NON-NLS-1$
+            int lastComma = value.lastIndexOf(","); //$NON-NLS-1$
+    
+            // returns the greater of two int values
+            if (Math.max(lastDot, lastComma) == lastDot)
+            {
+                language = "en"; //$NON-NLS-1$
+                country = "US"; //$NON-NLS-1$
+            }
+        }
+
+        return PDFExtractorUtils.convertToNumberLong(value, Values.Share, language, country);
+    }
+
+    @Override
+    protected BigDecimal asExchangeRate(String value)
+    {
+        value = value.trim().replaceAll(" ", ""); //$NON-NLS-1$ //$NON-NLS-2$
+
+        String language = "de"; //$NON-NLS-1$
+        String country = "DE"; //$NON-NLS-1$
+
+        int apostrophe = value.indexOf("\'"); //$NON-NLS-1$
+        if (apostrophe >= 0)
+        {
+            language = "de"; //$NON-NLS-1$
+            country = "CH"; //$NON-NLS-1$
+        }
+        else
+        {
+            int lastDot = value.lastIndexOf("."); //$NON-NLS-1$
+            int lastComma = value.lastIndexOf(","); //$NON-NLS-1$
+    
+            // returns the greater of two int values
+            if (Math.max(lastDot, lastComma) == lastDot)
+            {
+                language = "en"; //$NON-NLS-1$
+                country = "US"; //$NON-NLS-1$
+            }
+        }
+
+        return PDFExtractorUtils.convertToNumberBigDecimal(value, Values.Share, language, country);
     }
 
     @Override
