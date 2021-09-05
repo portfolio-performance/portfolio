@@ -1,8 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -21,7 +18,6 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class SelfWealthPDFExtractor extends AbstractPDFExtractor
 {
-    private static final DecimalFormat australianNumberFormat = (DecimalFormat) NumberFormat.getInstance(new Locale("en", "AU"));
     private static final DateTimeFormatter australianDateFormat = DateTimeFormatter.ofPattern("d MMM yyyy", Locale.ENGLISH);
 
     public SelfWealthPDFExtractor(Client client)
@@ -142,14 +138,12 @@ public class SelfWealthPDFExtractor extends AbstractPDFExtractor
     @Override
     protected long asAmount(String value)
     {
-        try
-        {
-            return Math.abs(Math.round(australianNumberFormat.parse(value).doubleValue() * Values.Amount.factor()));
-        }
-        catch (ParseException e)
-        {
-            throw new IllegalArgumentException(e);
-        }
+        return PDFExtractorUtils.convertToNumberLong(value, Values.Amount, "en", "AU");
     }
 
+    @Override
+    protected long asShares(String value)
+    {
+        return PDFExtractorUtils.convertToNumberLong(value, Values.Share, "en", "AU");
+    }
 }
