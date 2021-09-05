@@ -10,6 +10,7 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
 public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
@@ -72,8 +73,6 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                 .match("^.* ISIN (?<isin>[\\w]{12})$")
                 .match("^Kurswert (?<currency>[\\w]{3}) [.,\\d]+$")
                 .assign((t, v) -> {
-                    v.put("shares", convertAmount(v.get("shares")));
-
                     t.setShares(asShares(v.get("shares")));
                     t.setSecurity(getOrCreateSecurity(v));
                 })
@@ -88,8 +87,6 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                 .match("^.* ISIN (?<isin>[\\w]{12})$")
                 .match("^Kurswert (?<currency>[\\w]{3}) [.,\\d]+$")
                 .assign((t, v) -> {
-                    v.put("shares", convertAmount(v.get("shares")));
-
                     /***
                      * Workaround for bonds 
                      */
@@ -108,7 +105,7 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                 .match("^(Belastung|Gutschrift) (?<currency>[\\w]{3}) (?<amount>[.,\\d]+)$")
                 .assign((t, v) -> {
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                    t.setAmount(asAmount(convertAmount(v.get("amount"))));
+                    t.setAmount(asAmount(v.get("amount")));
                 })
 
                 /***
@@ -125,7 +122,7 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                 .section("feeRefund", "currency").optional()
                 .match("^Internet-Verg.nstigung (?<currency>[\\w]{3}) ([-\\s]+)?(?<feeRefund>[.,\\d]+)$")
                 .assign((t, v) -> {
-                    t.setAmount(t.getPortfolioTransaction().getAmount() + asAmount(convertAmount(v.get("feeRefund"))));
+                    t.setAmount(t.getPortfolioTransaction().getAmount() + asAmount(v.get("feeRefund")));
                 })
 
                 .wrap(t -> new BuySellEntryItem(t));
@@ -158,8 +155,6 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                 .match("^.* ISIN (?<isin>[\\w]{12})$")
                 .match("^Bruttoertrag (?<currency>[\\w]{3}) [.,\\d]+$")
                 .assign((t, v) -> {
-                    v.put("shares", convertAmount(v.get("shares")));
-        
                     t.setShares(asShares(v.get("shares")));
                     t.setSecurity(getOrCreateSecurity(v));
                 })
@@ -174,8 +169,6 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                 .match("^.* ISIN (?<isin>[\\w]{12})$")
                 .match("^Bruttoertrag (?<currency>[\\w]{3}) [.,\\d]+$")
                 .assign((t, v) -> {
-                    v.put("shares", convertAmount(v.get("shares")));
-
                     /***
                      * Workaround for bonds 
                      */
@@ -193,7 +186,7 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                 .match("^Gutschrift (?<currency>[\\w]{3}) (?<amount>[.,\\d]+)$")
                 .assign((t, v) -> {
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                    t.setAmount(asAmount(convertAmount(v.get("amount"))));
+                    t.setAmount(asAmount(v.get("amount")));
                 })
 
                 .wrap(TransactionItem::new);
@@ -243,8 +236,6 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                 .match("^.* ISIN (?<isin>[\\w]{12})$")
                 .match("^Kurswert (?<currency>[\\w]{3}) [.,\\d]+$")
                 .assign((t, v) -> {
-                    v.put("shares", convertAmount(v.get("shares")));
-
                     /***
                      * Workaround for bonds 
                      */
@@ -262,8 +253,6 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                 .section("currency", "amount").optional()
                 .match("^Internet-Verg.nstigung (?<currency>[\\w]{3}) ([-\\s]+)?(?<amount>[.,\\d]+)$")
                 .assign((t, v) -> {
-                    v.put("amount", convertAmount(v.get("amount")));
-
                     t.setCurrencyCode(v.get("currency"));
                     t.setAmount(asAmount(v.get("amount")));
                 })
@@ -281,18 +270,12 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                 // Eidgenössische Umsatzabgabe USD 40.91
                 .section("tax", "currency").optional()
                 .match("^Eidgen.ssische Umsatzabgabe (?<currency>[\\w]{3}) ([-\\s]+)?(?<tax>[.,\\d]+)$")
-                .assign((t, v) -> {
-                    v.put("tax", convertAmount(v.get("tax")));
-                    processTaxEntries(t, v, type);   
-                })
+                .assign((t, v) -> processTaxEntries(t, v, type))
 
                 // Quellensteuer USD - 167.00
                 .section("tax", "currency").optional()
                 .match("^Quellensteuer (?<currency>[\\w]{3}) - (?<tax>[.,\\d]+)$")
-                .assign((t, v) -> {
-                    v.put("tax", convertAmount(v.get("tax")));
-                    processTaxEntries(t, v, type);   
-                });
+                .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
@@ -301,26 +284,17 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                 // Kommission Schweiz/Ausland USD 463.60
                 .section("currency", "fee").optional()
                 .match("^Kommission Schweiz\\/Ausland (?<currency>[\\w]{3}) ([-\\s]+)?(?<fee>[.,\\d]+)$")
-                .assign((t, v) -> {
-                    v.put("fee", convertAmount(v.get("fee")));
-                    processFeeEntries(t, v, type);   
-                })
+                .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Kommission Schweiz USD 1,413.65
                 .section("currency", "fee").optional()
                 .match("^Kommission Schweiz (?<currency>[\\w]{3}) ([-\\s]+)?(?<fee>[.,\\d]+)$")
-                .assign((t, v) -> {
-                    v.put("fee", convertAmount(v.get("fee")));
-                    processFeeEntries(t, v, type);   
-                })
+                .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Kosten und Abgaben Ausland USD 2.00
                 .section("currency", "fee").optional()
                 .match("^Kosten und Abgaben (?<currency>[\\w]{3}) ([-\\s]+)?(?<fee>[.,\\d]+)$")
-                .assign((t, v) -> {
-                    v.put("fee", convertAmount(v.get("fee")));
-                    processFeeEntries(t, v, type);   
-                });
+                .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
     private void processTaxEntries(Object t, Map<String, String> v, DocumentType type)
@@ -353,9 +327,15 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
         }
     }
 
-    private String convertAmount(String inputAmount)
+    @Override
+    protected long asAmount(String value)
     {
-        String amount = inputAmount.replace(",", "");
-        return amount.replace(".", ",");
+        return PDFExtractorUtils.convertToNumberLong(value, Values.Amount, "en", "US");
+    }
+
+    @Override
+    protected long asShares(String value)
+    {
+        return PDFExtractorUtils.convertToNumberLong(value, Values.Share, "en", "US");
     }
 }
