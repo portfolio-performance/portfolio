@@ -14,12 +14,19 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 
-public class PostfinancePDFExtractor extends SwissBasedPDFExtractor
+public class PostfinancePDFExtractor extends AbstractPDFExtractor
 {
-
     public PostfinancePDFExtractor(Client client)
     {
+        /***
+         * Postfinance offers three accounts with different currencies (CHF, EUR, USD)
+         * There are two possibilities to buy shares of foreign currencies:
+         * - Transfer money from CHF account to EUR/USD account and buy it in foreign currency
+         * - Buy EUR/USD shares from CHF account directly (actual exchange rate will be taken) 
+         */
+
         super(client);
 
         addBankIdentifier("PostFinance"); //$NON-NLS-1$
@@ -32,14 +39,20 @@ public class PostfinancePDFExtractor extends SwissBasedPDFExtractor
         addInterestTransaction();
         addKontoauszugGiro();
     }
-    
+
+    @Override
+    public String getPDFAuthor()
+    {
+        return ""; //$NON-NLS-1$
+    }
+
+    @Override
+    public String getLabel()
+    {
+        return "PostFinance AG"; //$NON-NLS-1$
+    }
+
     @SuppressWarnings("nls")
-    /***
-     * Postfinance offers three accounts with different currencies (CHF, EUR, USD)
-     * There are two possibilities to buy shares of foreign currencies:
-     * - Transfer money from CHF account to EUR/USD account and buy it in foreign currency
-     * - Buy EUR/USD shares from CHF account directly (actual exchange rate will be taken) 
-     */
     private void addBuyTransaction()
     {
         DocumentType type = new DocumentType("Börsentransaktion: Kauf");
@@ -54,7 +67,7 @@ public class PostfinancePDFExtractor extends SwissBasedPDFExtractor
                             entry.setType(PortfolioTransaction.Type.BUY);
                             return entry;
                         })
-                        
+
                         .section("name", "isin", "shares", "currency", "transactionCurrency", "amount")
                         .find("Titel Ort der Ausführung")
                         .match("^(?<name>.*) ISIN: (?<isin>\\S*) (.*)$")
@@ -66,7 +79,7 @@ public class PostfinancePDFExtractor extends SwissBasedPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(v.get("transactionCurrency")));
                             t.setAmount(asAmount(v.get("amount")));
                         })
-                        
+
                         .section("feecurrency", "fee").optional()
                         .match("^Kommission (?<feecurrency>\\w{3}+) (?<fee>[\\d+',.]*)$")
                         .assign((t, v) -> {
@@ -74,7 +87,7 @@ public class PostfinancePDFExtractor extends SwissBasedPDFExtractor
                             if (fee.getCurrencyCode().equals(t.getAccountTransaction().getCurrencyCode()))
                                 t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, fee));
                         })
-                        
+
                         .section("taxcurrency", "tax").optional()
                         .match("^Abgabe \\(Eidg. Stempelsteuer\\) (?<taxcurrency>\\w{3}+) (?<tax>[\\d+',.]*)$")
                         .assign((t, v) -> {
@@ -82,7 +95,7 @@ public class PostfinancePDFExtractor extends SwissBasedPDFExtractor
                             if (tax.getCurrencyCode().equals(t.getAccountTransaction().getCurrencyCode()))
                                 t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX, tax));
                         })
-                        
+
                         .section("stockfeecurrency", "stockfee").optional()
                         .match("^Börsengebühren (?<stockfeecurrency>\\w{3}+) (?<stockfee>[\\d+',.]*)$")
                         .assign((t, v) -> {
@@ -90,7 +103,7 @@ public class PostfinancePDFExtractor extends SwissBasedPDFExtractor
                             if (stock_fee.getCurrencyCode().equals(t.getAccountTransaction().getCurrencyCode()))
                                 t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, stock_fee));
                         })
-                        
+
                         // buy shares directly from CHF account
                         .section("amount", "currency", "exchangeRate", "forexCurrency", "forexAmount").optional()
                         .match("^Total (?<forexCurrency>\\w{3}+) (?<forexAmount>[\\d+',.]*)$")
@@ -109,14 +122,14 @@ public class PostfinancePDFExtractor extends SwissBasedPDFExtractor
                                                 .addUnit(new Unit(Unit.Type.GROSS_VALUE, gross, forex, exchangeRate));
                             }
                         })
-                        
+
                         .section("date")
                         .match("^Betrag belastet auf Kontonummer (\\d+), Valutadatum (?<date>\\d+\\.\\d+\\.\\d{4})$")
                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                         .wrap(BuySellEntryItem::new));
     }
-    
+
     @SuppressWarnings("nls")
     private void addSellTransaction()
     {
@@ -132,7 +145,7 @@ public class PostfinancePDFExtractor extends SwissBasedPDFExtractor
                             entry.setType(PortfolioTransaction.Type.SELL);
                             return entry;
                         })
-                        
+
                         .section("name", "isin", "shares", "currency")
                         .find("Titel Ort der Ausführung")
                         .match("^(?<name>.*) ISIN: (?<isin>\\S*) (.*)$")
@@ -142,7 +155,7 @@ public class PostfinancePDFExtractor extends SwissBasedPDFExtractor
                             t.setShares(asShares(v.get("shares")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
-                        
+
                         .section("feecurrency", "fee").optional()
                         .match("^Kommission (?<feecurrency>\\w{3}+) (?<fee>[\\d+',.]*)$")
                         .assign((t, v) -> {
@@ -150,7 +163,7 @@ public class PostfinancePDFExtractor extends SwissBasedPDFExtractor
                             if (fee.getCurrencyCode().equals(t.getAccountTransaction().getCurrencyCode()))
                                 t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, fee));
                         })
-                        
+
                         .section("taxcurrency", "tax").optional()
                         .match("^Abgabe \\(Eidg. Stempelsteuer\\) (?<taxcurrency>\\w{3}+) (?<tax>[\\d+',.]*)$")
                         .assign((t, v) -> {
@@ -158,7 +171,7 @@ public class PostfinancePDFExtractor extends SwissBasedPDFExtractor
                             if (tax.getCurrencyCode().equals(t.getAccountTransaction().getCurrencyCode()))
                                 t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX, tax));
                         })
-                        
+
                         .section( "stockfeecurrency", "stockfee").optional()
                         .match("^Börsengebühren (?<stockfeecurrency>\\w{3}+) (?<stockfee>[\\d+',.]*)$")
                         .assign((t, v) -> {
@@ -166,20 +179,20 @@ public class PostfinancePDFExtractor extends SwissBasedPDFExtractor
                             if (stock_fee.getCurrencyCode().equals(t.getAccountTransaction().getCurrencyCode()))
                                 t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, stock_fee));
                         })
-                        
+
                         .section("amount")
                         .match("^Zu Ihren Gunsten (\\w{3}+) (?<amount>[\\d+',.]*)$")
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
                         })
-                        
+
                         .section("date")
                         .match("^Betrag gutgeschrieben auf Ihrer Kontonummer (\\d+), Valutadatum (?<date>\\d+\\.\\d+\\.\\d{4})$")
                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                         .wrap(BuySellEntryItem::new));
     }
-    
+
     @SuppressWarnings("nls")
     private void addDividendsTransaction()
     {
@@ -195,7 +208,7 @@ public class PostfinancePDFExtractor extends SwissBasedPDFExtractor
                             transaction.setType(AccountTransaction.Type.DIVIDENDS);
                             return transaction;
                         })
-                        
+
                         .oneOf(
                                         // There are two kinds of dividend exports
                                         // 1st:
@@ -217,13 +230,13 @@ public class PostfinancePDFExtractor extends SwissBasedPDFExtractor
                                             t.setShares(asShares(v.get("shares")));
                                         })
                         )
-                        
+
                         .section("date")
                         .match("^Ausführungsdatum (?<date>\\d+\\.\\d+\\.\\d{4})$")
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                         })
-                        
+
                         .section("gross", "grosscurrency", "amount", "currency")
                         .match("^Betrag (?<grosscurrency>\\w{3}+) (?<gross>[\\d+',.]*)$")
                         .match("^Total (?<currency>\\w{3}+) (?<amount>[\\d+',.]*)$")
@@ -237,10 +250,10 @@ public class PostfinancePDFExtractor extends SwissBasedPDFExtractor
                             if (unit.getAmount().getCurrencyCode().equals(t.getCurrencyCode()))
                                 t.addUnit(unit);
                         })
-                        
+
                         .wrap(TransactionItem::new));
     }
-    
+
     @SuppressWarnings("nls")
     private void addCapitalGainTransaction()
     {
@@ -256,7 +269,7 @@ public class PostfinancePDFExtractor extends SwissBasedPDFExtractor
                             transaction.setType(AccountTransaction.Type.DIVIDENDS);
                             return transaction;
                         })
-                        
+
                         .oneOf(
                                         // There are two kinds of dividend exports
                                         // 1st:
@@ -278,13 +291,13 @@ public class PostfinancePDFExtractor extends SwissBasedPDFExtractor
                                             t.setShares(asShares(v.get("shares")));
                                         })
                         )
-                        
+
                         .section("date")
                         .match("^Ausführungsdatum (?<date>\\d+\\.\\d+\\.\\d{4})$")
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                         })
-                        
+
                         .section("currency", "amount")
                         .match("^Total (?<currency>\\w{3}+) (?<amount>[\\d+',.]*)$")
                         .assign((t, v) -> {
@@ -292,10 +305,10 @@ public class PostfinancePDFExtractor extends SwissBasedPDFExtractor
                             t.getSecurity().setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
-                        
+
                         .wrap(TransactionItem::new));
     }
-    
+
     @SuppressWarnings("nls")
     private void addFeeTransaction()
     {
@@ -323,7 +336,7 @@ public class PostfinancePDFExtractor extends SwissBasedPDFExtractor
                         })
                         .wrap(TransactionItem::new));
     }
-    
+
     @SuppressWarnings("nls")
     private void addInterestTransaction()
     {
@@ -363,7 +376,7 @@ public class PostfinancePDFExtractor extends SwissBasedPDFExtractor
                             }
                         }));
     }
-    
+
     @SuppressWarnings("nls")
     private void addKontoauszugGiro()
     {
@@ -383,7 +396,7 @@ public class PostfinancePDFExtractor extends SwissBasedPDFExtractor
 
         });
         this.addDocumentTyp(type);
-        
+
         String removalPattern = "^(\\d{2}.\\d{2}.\\d{2}\\s)?(E-FINANCE|AUFTRAG.+IRECT|ESR|GIRO.+OST|GIRO.+ANK|ÜBERTRAG AUF KONTO|ÜBERTRAG A UF K ONTO|AUFTRAG.+ASISLASTSCHRIFT|KAUF.+IENSTLEISTUNG(.+\\.\\d{4}){0,1}|KAUF.+HOPPING(.+\\.\\d{4}){0,1}|GIRO INTERNATIONAL \\(SEPA\\)|BARGELDBEZUG(.+\\.\\d{4})?|ONLINE-SHOPPING|TWINT.+(ENDEN|DIENSTLEISTUNG)){1}.*?\\s(?<amount>[\\d+',.\\s]+)\\s(?<date>\\d{2}.\\d{2}.\\d{2}+)\\s?([\\d+',.\\s]+)?$"; 
         Block removalBlock = new Block(removalPattern);
         type.addBlock(removalBlock);
@@ -400,12 +413,12 @@ public class PostfinancePDFExtractor extends SwissBasedPDFExtractor
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
                             t.setDateTime(asDate(v.get("date")));     
-                            t.setAmount(asAmount(stripBlanks(v.get("amount"))));
+                            t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(context.get("currency"));
                         })
 
                         .wrap(TransactionItem::new));
-        
+
         String depositPattern = "^(\\d{2}.\\d{2}.\\d{2}\\s)?(GIRO AUSLAND|GIRO AUS ONLINE-SIC \\d{3,4}|GIRO.+ONTO|ÜBERTRAG AUS KONTO|ÜBERTRAG A US K ONTO|GUTSCHRIFT.+HOPPING|GUTSCHRIFT.+REMDBANK \\d{3,4}|GUTSCHRIFT.+REMDBANK|. EINZAHLUNGSSCHEIN\\/QR-ZAHLTEIL){1}.*?\\s(?<amount>[\\d+',.\\s]+)\\s(?<date>\\d{2}.\\d{2}.\\d{2}+)(\\s)?([\\d+',.\\s]+)?$";
         Block depositBlock = new Block(depositPattern);
         type.addBlock(depositBlock);
@@ -422,7 +435,7 @@ public class PostfinancePDFExtractor extends SwissBasedPDFExtractor
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
                             t.setDateTime(asDate(v.get("date")));
-                            t.setAmount(asAmount(stripBlanks(v.get("amount"))));
+                            t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(context.get("currency"));
                         })
 
@@ -443,7 +456,7 @@ public class PostfinancePDFExtractor extends SwissBasedPDFExtractor
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
                             t.setDateTime(asDate(v.get("date")));
-                            t.setAmount(asAmount(stripBlanks(v.get("amount"))));
+                            t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(context.get("currency"));
                         })
                         .section("direction").optional()
@@ -454,7 +467,7 @@ public class PostfinancePDFExtractor extends SwissBasedPDFExtractor
                         })
 
                         .wrap(TransactionItem::new));
-        
+
         String feePattern = "^(\\d{2}.\\d{2}.\\d{2}\\s)?(FÜR DIE KONTOFÜHRUNG|PREIS.+ONTOFÜHRUNG|PREIS.*SCHALTER|JAHRESPREIS LOGIN|FÜR KONTOAUSZUG PAPIER|FÜR GIRO INTERNATIONAL \\(SEPA\\)){1}.*?\\s+(?<amount>[\\d+',.\\s]+)\\s(?<date>\\d{2}.\\d{2}.\\d{2}+)(\\s)?([\\d+',.\\s]+)?$";
         Block feeBlock = new Block(feePattern);
         type.addBlock(feeBlock);
@@ -471,7 +484,7 @@ public class PostfinancePDFExtractor extends SwissBasedPDFExtractor
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
                             t.setDateTime(asDate(v.get("date")));     
-                            t.setAmount(asAmount(stripBlanks(v.get("amount"))));
+                            t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(context.get("currency"));
                         })
 
@@ -485,7 +498,7 @@ public class PostfinancePDFExtractor extends SwissBasedPDFExtractor
                                 return null;
                             }
                         }));
-        
+
         String interestPattern = "^(\\d{2}.\\d{2}.\\d{2}\\s)?(ZINSABSCHLUSS.+\\d{4,6}){1}.*?\\s(?<amount>[\\d+',.\\s]+)\\s(?<date>\\d{2}.\\d{2}.\\d{2}+)(\\s)?([\\d+',.\\s]+)?$";
         Block interestBlock = new Block(interestPattern);
         type.addBlock(interestBlock);
@@ -502,7 +515,7 @@ public class PostfinancePDFExtractor extends SwissBasedPDFExtractor
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
                             t.setDateTime(asDate(v.get("date")));     
-                            t.setAmount(asAmount(stripBlanks(v.get("amount"))));
+                            t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(context.get("currency"));
                         })
 
@@ -517,7 +530,7 @@ public class PostfinancePDFExtractor extends SwissBasedPDFExtractor
                             }
                         }));
     }
-    
+
     @SuppressWarnings("nls")
     private void processTaxEntry(name.abuchen.portfolio.model.Transaction transaction, Map<String, String> v, DocumentType type)
     {
@@ -531,16 +544,25 @@ public class PostfinancePDFExtractor extends SwissBasedPDFExtractor
             PDFExtractorUtils.checkAndSetTax(monetaryTax, transaction, type);
         }
     }
-    
-    private String stripBlanks(String input)
+
+    @Override
+    protected long asAmount(String value)
     {
-        return input.replaceAll(" ", ""); //$NON-NLS-1$ //$NON-NLS-2$
+        value = value.trim().replaceAll(" ", ""); //$NON-NLS-1$ //$NON-NLS-2$
+        return PDFExtractorUtils.convertToNumberLong(value, Values.Amount, "de", "CH"); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     @Override
-    public String getLabel()
+    protected long asShares(String value)
     {
-        return "PostFinance"; //$NON-NLS-1$
+        value = value.trim().replaceAll(" ", ""); //$NON-NLS-1$ //$NON-NLS-2$
+        return PDFExtractorUtils.convertToNumberLong(value, Values.Share, "de", "CH"); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
+    @Override
+    protected BigDecimal asExchangeRate(String value)
+    {
+        value = value.trim().replaceAll(" ", ""); //$NON-NLS-1$ //$NON-NLS-2$
+        return PDFExtractorUtils.convertToNumberBigDecimal(value, Values.Share, "de", "CH"); //$NON-NLS-1$ //$NON-NLS-2$
+    }
 }
