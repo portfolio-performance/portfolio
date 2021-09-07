@@ -275,6 +275,35 @@ public class IBFlexStatementExtractor implements Extractor
                 throw new IllegalArgumentException();
             }
 
+            if (transaction.getType().equals(AccountTransaction.Type.DIVIDENDS) || transaction.getType().equals(AccountTransaction.Type.TAXES))
+            {
+                //if the account currency differs from transaction currency
+                //convert currency, if there is a matching security with the account currency
+                 if (!this.ibAccountCurrency.equals(currency)) 
+                 {
+                    boolean foundEsinBase = false; //matching esin & base currency
+                    boolean foundEsinTransaction = false; //matching esin & transaction currency
+                    for (Security s : allSecurities)
+                    {
+                        // Find security with same isin & currency
+                        if (element.getAttribute("isin").length() > 0 && element.getAttribute("isin").equals(s.getIsin()))
+                            if (currency.equals(s.getCurrencyCode()))
+                                foundEsinTransaction = true;
+                            else if (this.ibAccountCurrency.equals(s.getCurrencyCode()))
+                                foundEsinBase = true;
+                    }
+                
+                    if(!foundEsinTransaction && foundEsinBase)
+                    {
+                         if (element.getAttribute("fxRateToBase").length() > 0)
+                         {
+                             amount = amount * Double.parseDouble(element.getAttribute("fxRateToBase"));
+                             currency = asCurrencyUnit(this.ibAccountCurrency);
+                         }
+                    }
+                 }
+            }
+            
             amount = Math.abs(amount);
             setAmount(element, transaction, amount, currency);
 
