@@ -28,6 +28,7 @@ import name.abuchen.portfolio.money.Values;
 public abstract class AbstractPDFExtractor implements Extractor
 {
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy", Locale.GERMANY); //$NON-NLS-1$
+    private static final DateTimeFormatter DATE_FORMAT_YEAR_TWO_DIGIT = DateTimeFormatter.ofPattern("d.M.yy", Locale.GERMANY); //$NON-NLS-1$
     private static final DateTimeFormatter DATE_FORMAT_DASHES = DateTimeFormatter.ofPattern("yyyy-M-d", Locale.GERMANY); //$NON-NLS-1$
     private static final DateTimeFormatter DATE_FORMAT_DASHES_REVERSE = DateTimeFormatter.ofPattern("d-M-yyyy", //$NON-NLS-1$
                     Locale.GERMANY);
@@ -259,7 +260,14 @@ public abstract class AbstractPDFExtractor implements Extractor
             }
             catch (DateTimeParseException e2)
             {
-                date = LocalDate.parse(value, DATE_FORMAT_DASHES_REVERSE).atStartOfDay();
+                try 
+                {
+                    date = LocalDate.parse(value, DATE_FORMAT_DASHES_REVERSE).atStartOfDay();
+                }
+                catch(DateTimeParseException e3)
+                {
+                    date = LocalDate.parse(value, DATE_FORMAT_YEAR_TWO_DIGIT).atStartOfDay();
+                }
             }
         }
         return date;

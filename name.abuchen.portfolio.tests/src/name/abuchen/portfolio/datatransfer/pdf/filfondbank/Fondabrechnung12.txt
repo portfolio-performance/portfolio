@@ -1,0 +1,82 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Depotführung: Ihr der FFB benannte Vermittler:
+Herr Andreas Nönnig
+Hauptstraße 9
+01683 Nossen
+Tel: 0352 / 4265210
+Fax: 0352 / 4265211
+Frau Mail: info@deutuna.de
+Max Mustermann
+Musterstr. 32a
+01234 FFB-City
+Es schreibt Ihnen:
+FFB Kundenbetreuung
+Kronberg im Taunus, 02. Januar 2019
+Fondsabrechnung
+Auszug  1 Blatt 1
+Depotinhaber Max Mustermann
+Depotnummer 1111111111 (Privatvermögen)
+Transaktion Fondsname Betrag Preis Anteile
+Auftrags-Nr. WKN / ISIN Wechselkurs Preisdatum Bestand alt
+Fondsgesellschaft Währungsbetrag Zwischengewinn Bestand neu
+Verwahrart, Lagerland Rücknahmepreis
+Splittkauf Betrag hausInvest 20,00 EUR 42,8963 EUR 0,466
+2530389235 980701 / DE0009807016 02.01.2019 21,426
+Commerz Real Investmentgesellschaft mbH 0,0000 EUR 21,892
+Girosammelverwahrung, Deutschland 41,8500 EUR
+Abrechnungsbetrag 20,00 EUR
+Ausgabeaufschlag / Provision (2,50 %) 0,50 EUR
+Entgeltbelastung hausInvest 25,00 EUR 41,8500 EUR -0,597
+2531092602 980701 / DE0009807016 02.01.2019 21,892
+Commerz Real Investmentgesellschaft mbH 0,0000 EUR 21,295
+Girosammelverwahrung, Deutschland 41,8500 EUR
+Auszahlungsbetrag 0,00 EUR
+abgeführte Kapitalertragsteuer 0,00 EUR
+abgeführter Solidaritätszuschlag 0,00 EUR
+Depotführungsentgelt 2018 25,00 EUR
+darin enthalten 19 % gesetzl. MwSt 3,99 EUR
+FIL Fondsbank GmbH Postanschrift: Vorsitzender Geschäftsführung: Sitz: Kronberg im Taunus
+Kastanienhöhe 1 Postfach 11 06 63 des Aufsichtsrats: Gerhard Oehne (Sprecher) Amtsgericht
+61476 Kronberg im Taunus 60041 Frankfurt am Main Ferdinand-Alexander Leisten Peter Nonner Königstein HRB 8336
+info@ffb.de Telefon (069) 7 70 60 - 200 Gerald Rink Umsatzsteuer-ID Nr.
+www.ffb.de Telefax (069) 7 70 60 - 555 DE213709602
+ABGST_V1.0
+Depotführung: Ihr der FFB benannte Vermittler:
+Herr Andreas Nönnig
+Hauptstraße 9
+01683 Nossen
+Tel: 0352 / 4265210
+Fax: 0352 / 4265211
+Frau Mail: info@deutuna.de
+Max Mustermann
+Musterstr. 32a
+01234 FFB-City
+Es schreibt Ihnen:
+FFB Kundenbetreuung
+Kronberg im Taunus, 02. Januar 2019
+Fondsabrechnung
+Auszug  1 Blatt 2
+Depotinhaber Max Mustermann
+Depotnummer 1111111111 (Privatvermögen)
+Anlagen in Investmentfonds können erst nach Kenntnisnahme der gesetzlichen Verkaufsunterlagen (aktueller Verkaufsprospekt, wesentliche 
+Anlegerinformationen, Halb-/Jahresbericht) erfolgen. Diese Unterlagen haben Sie direkt von Ihrem Vermittler erhalten. Sofern Sie keine 
+elektronischen Orderwege nutzen, verwenden Sie bitte für Investmentfonds-Aufträge ausschließlich die Serviceformulare der FFB, die Sie 
+online oder über Ihren Vermittler erhalten.
+Steuerliche Informationen
+Erteilter Freistellungsauftrag 250,00 EUR gültig bis: unbefristet Verlustverrechnungstopf neu 0,46 EUR
+davon noch verfügbar 250,00 EUR Quellensteuertopf neu 0,00 EUR
+Hinweise:
+Auslandzahlungen, die 12.500 EUR übersteigen, sind gemäß der Außenwirtschaftsverordnung (AWV) durch Sie meldepflichtig. Weitergehende Informationen zur 
+Meldepflicht nach AWV erhalten Sie direkt von der Deutschen Bundesbank, unter www.bundesbank.de oder unter der Rufnummer 0800 1234 111.
+Einwendungen gegen diese Fondsabrechnung wegen Unrichtigkeit oder Unvollständigkeit richten Sie bitte schriftlich spätestens einen Monat nach Zugang an:
+FIL Fondsbank GmbH, Revision, Postfach 11 06 63, 60041 Frankfurt am Main, Telefax (069) 7 70 60 - 444.
+Aufgrund der Regelungen des Einkommensteuergesetzes (EStG) sowie des Investmentsteuergesetzes (InvStG) sind wir verpflichtet, im Rahmen der von Ihnen getätigten Transaktion
+Steuern an das Finanzamt abzuführen.
+FIL Fondsbank GmbH Postanschrift: Vorsitzender Geschäftsführung: Sitz: Kronberg im Taunus
+Kastanienhöhe 1 Postfach 11 06 63 des Aufsichtsrats: Gerhard Oehne (Sprecher) Amtsgericht
+61476 Kronberg im Taunus 60041 Frankfurt am Main Ferdinand-Alexander Leisten Peter Nonner Königstein HRB 8336
+info@ffb.de Telefon (069) 7 70 60 - 200 Gerald Rink Umsatzsteuer-ID Nr.
+www.ffb.de Telefax (069) 7 70 60 - 555 DE213709602
+ABGST_V1.0

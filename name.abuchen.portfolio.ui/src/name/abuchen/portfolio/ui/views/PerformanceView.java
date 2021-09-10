@@ -62,7 +62,10 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.TreeViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.Column;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.MarkDirtyClientListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.MoneyTrailToolTipSupport;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
@@ -218,7 +221,9 @@ public class PerformanceView extends AbstractHistoricView
 
         calculation = new TreeViewer(container, SWT.FULL_SELECTION);
 
+        ColumnEditingSupport.prepare(calculation);
         MoneyTrailToolTipSupport.enableFor(calculation, ToolTip.NO_RECREATE);
+        CopyPasteSupport.enableFor(calculation);
 
         // make sure to apply the styles (including font information to the
         // table) before creating the bold font. Otherwise the font does not
@@ -291,9 +296,10 @@ public class PerformanceView extends AbstractHistoricView
                 return null;
             }
         });
+        column.getEditingSupport().addListener(new MarkDirtyClientListener(getClient()));
         support.addColumn(column);
 
-        column = new NameColumn("value", Messages.ColumnValue, SWT.RIGHT, 80, getClient()); //$NON-NLS-1$
+        column = new Column("value", Messages.ColumnValue, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -335,7 +341,7 @@ public class PerformanceView extends AbstractHistoricView
         });
         support.addColumn(column);
 
-        column = new NameColumn("forex", Messages.ColumnThereofForeignCurrencyGains, SWT.RIGHT, 80, getClient()); //$NON-NLS-1$
+        column = new Column("forex", Messages.ColumnThereofForeignCurrencyGains, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -405,6 +411,7 @@ public class PerformanceView extends AbstractHistoricView
 
         TableViewer transactionViewer = new TableViewer(container, SWT.FULL_SELECTION);
         ColumnViewerToolTipSupport.enableFor(transactionViewer, ToolTip.NO_RECREATE);
+        CopyPasteSupport.enableFor(transactionViewer);
 
         transactionViewer.addSelectionChangedListener(event -> {
             TransactionPair<?> tx = ((TransactionPair<?>) ((IStructuredSelection) event.getSelection())
@@ -666,6 +673,7 @@ public class PerformanceView extends AbstractHistoricView
 
         earningsByAccount = new TableViewer(container, SWT.FULL_SELECTION);
         ColumnViewerToolTipSupport.enableFor(earningsByAccount, ToolTip.NO_RECREATE);
+        CopyPasteSupport.enableFor(earningsByAccount);
 
         ShowHideColumnHelper support = new ShowHideColumnHelper(PerformanceView.class.getSimpleName() + "@byaccounts2", //$NON-NLS-1$
                         getPreferenceStore(), earningsByAccount, layout);

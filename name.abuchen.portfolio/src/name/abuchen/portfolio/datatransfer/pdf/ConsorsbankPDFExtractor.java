@@ -24,7 +24,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
     private static final String IS_JOINT_ACCOUNT = "isjointaccount"; //$NON-NLS-1$
 
     BiConsumer<Map<String, String>, String[]> isJointAccount = (context, lines) -> {
-        Pattern pJointAccount = Pattern.compile("^KAPST anteilig 50,00.*$"); //$NON-NLS-1$
+        Pattern pJointAccount = Pattern.compile("^(abzgl. Kapitalertragssteuer|KAPST) anteilig 50,00.*$"); //$NON-NLS-1$
         Boolean bJointAccount = false;
         for (String line : lines)
         {
@@ -717,6 +717,27 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                     }
                 })
 
+                // Kapitalerstragsteuer (Joint Account)
+                // abzgl. Kapitalertragssteuer anteilig 50,00% 25,00% 208,72 EUR 52,18 EUR
+                // abzgl. Kapitalertragssteuer anteilig 50,00% 25,00% 208,72 EUR 52,18 EUR
+                .section("tax1", "currency1", "tax2", "currency2").optional()
+                .match("^abzgl. Kapitalertragssteuer anteilig [.,\\d]+% [.,\\d]+% [.,\\d]+ [\\w]{3} (?<tax1>[.,\\d]+) (?<currency1>[\\w]{3})$")
+                .match("^abzgl. Kapitalertragssteuer anteilig [.,\\d]+% [.,\\d]+% [.,\\d]+ [\\w]{3} (?<tax2>[.,\\d]+) (?<currency2>[\\w]{3})$")
+                .assign((t, v) -> {
+                    if (Boolean.parseBoolean(type.getCurrentContext().get(IS_JOINT_ACCOUNT)))
+                    {
+                        // Account 1
+                        v.put("currency", v.get("currency1"));
+                        v.put("tax", v.get("tax1"));
+                        processTaxEntries(t, v, type);
+
+                        // Account 2
+                        v.put("currency", v.get("currency2"));
+                        v.put("tax", v.get("tax2"));
+                        processTaxEntries(t, v, type);
+                    }
+                })
+
                 // Solitaritätszuschlag (Account)
                 // SOLZ                                   5,50 % EUR                  6,10 
                 .section("tax", "currency").optional()
@@ -793,6 +814,27 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                     }
                 })
 
+                // Solidaritätszuschlag (Joint Account)
+                // abzgl. Solidaritätszuschlag 5,50% 52,18 EUR 2,86 EUR
+                // abzgl. Solidaritätszuschlag 5,50% 52,18 EUR 2,86 EUR
+                .section("tax1", "currency1", "tax2", "currency2").optional()
+                .match("^abzgl. Solidarit.tszuschlag [.,\\d]+% [.,\\d]+ [\\w]{3} (?<tax1>[.,\\d]+) (?<currency1>[\\w]{3})$")
+                .match("^abzgl. Solidarit.tszuschlag [.,\\d]+% [.,\\d]+ [\\w]{3} (?<tax2>[.,\\d]+) (?<currency2>[\\w]{3})$")
+                .assign((t, v) -> {
+                    if (Boolean.parseBoolean(type.getCurrentContext().get(IS_JOINT_ACCOUNT)))
+                    {
+                        // Account 1
+                        v.put("currency", v.get("currency1"));
+                        v.put("tax", v.get("tax1"));
+                        processTaxEntries(t, v, type);
+
+                        // Account 2
+                        v.put("currency", v.get("currency2"));
+                        v.put("tax", v.get("tax2"));
+                        processTaxEntries(t, v, type);
+                    }
+                })
+
                 // Kirchensteuer (Account)
                 // KIST                                   5,50 % EUR                  6,10 
                 .section("tax", "currency").optional()
@@ -843,6 +885,27 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 .section("tax1", "currency1", "tax2", "currency2").optional()
                 .match("^KIST [.,\\d]+% (?<currency1>[\\w]{3}) (?<tax1>[.,\\d]+)$")
                 .match("^KIST [.,\\d]+% (?<currency2>[\\w]{3}) (?<tax2>[.,\\d]+)$")
+                .assign((t, v) -> {
+                    if (Boolean.parseBoolean(type.getCurrentContext().get(IS_JOINT_ACCOUNT)))
+                    {
+                        // Account 1
+                        v.put("currency", v.get("currency1"));
+                        v.put("tax", v.get("tax1"));
+                        processTaxEntries(t, v, type);
+
+                        // Account 2
+                        v.put("currency", v.get("currency2"));
+                        v.put("tax", v.get("tax2"));
+                        processTaxEntries(t, v, type);
+                    }
+                })
+
+                // Kirchensteuer (Joint Account)
+                // abzgl. Kirchensteuer 9% 52,18 EUR 2,86 EUR
+                // abzgl. Kirchensteuer 9% 52,18 EUR 2,86 EUR
+                .section("tax1", "currency1", "tax2", "currency2").optional()
+                .match("^abzgl. Kirchensteuer [.,\\d]+% [.,\\d]+ [\\w]{3} (?<tax1>[.,\\d]+) (?<currency1>[\\w]{3})$")
+                .match("^abzgl. Kirchensteuer [.,\\d]+% [.,\\d]+ [\\w]{3} (?<tax2>[.,\\d]+) (?<currency2>[\\w]{3})$")
                 .assign((t, v) -> {
                     if (Boolean.parseBoolean(type.getCurrentContext().get(IS_JOINT_ACCOUNT)))
                     {

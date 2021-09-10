@@ -29,6 +29,7 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.DisplayTextDialog;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 
 public class ErrorLogPart
 {
@@ -89,6 +90,8 @@ public class ErrorLogPart
         container.setLayout(layout);
 
         logViewer = new TreeViewer(container, SWT.FULL_SELECTION);
+
+        CopyPasteSupport.enableFor(logViewer);
 
         TreeViewerColumn column = new TreeViewerColumn(logViewer, SWT.NONE);
         column.getColumn().setText(Messages.ColumnDate);

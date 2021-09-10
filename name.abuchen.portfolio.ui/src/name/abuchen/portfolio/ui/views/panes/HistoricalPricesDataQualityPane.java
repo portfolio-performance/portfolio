@@ -1,7 +1,7 @@
 package name.abuchen.portfolio.ui.views.panes;
 
-import java.util.ArrayList;
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 import javax.inject.Inject;
 
@@ -29,6 +29,7 @@ import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.views.SecurityQuoteQualityMetricsViewer;
 import name.abuchen.portfolio.util.Holiday;
@@ -121,6 +122,7 @@ public class HistoricalPricesDataQualityPane implements InformationPanePage
         container.setLayout(layout);
 
         TableViewer tableViewer = new TableViewer(container, SWT.FULL_SELECTION);
+        CopyPasteSupport.enableFor(tableViewer);
 
         ShowHideColumnHelper support = new ShowHideColumnHelper(
                         SecurityQuoteQualityMetricsViewer.class.getSimpleName() + showHideColumnHelperSuffix,

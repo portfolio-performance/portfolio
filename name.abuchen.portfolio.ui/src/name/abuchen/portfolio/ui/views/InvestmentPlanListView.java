@@ -50,6 +50,7 @@ import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.DateEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ListEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
@@ -136,6 +137,7 @@ public class InvestmentPlanListView extends AbstractFinanceView implements Modif
         plans = new TableViewer(container, SWT.FULL_SELECTION);
 
         ColumnEditingSupport.prepare(plans);
+        CopyPasteSupport.enableFor(plans);
 
         planColumns = new ShowHideColumnHelper(InvestmentPlanListView.class.getSimpleName() + "@top", //$NON-NLS-1$
                         getPreferenceStore(), plans, layout);

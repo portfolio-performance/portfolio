@@ -110,6 +110,7 @@ import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupportWrapper;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 import name.abuchen.portfolio.util.TextUtil;
@@ -262,6 +263,9 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
         compositeTable.setLayout(layout);
 
         tableViewer = new TableViewer(compositeTable, SWT.BORDER | SWT.FULL_SELECTION);
+
+        CopyPasteSupport.enableFor(tableViewer);
+
         final Table table = tableViewer.getTable();
         table.setHeaderVisible(true);
         table.setLinesVisible(true);
@@ -543,7 +547,6 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
             tableViewer.refresh();
             tableViewer.getTable().pack();
 
-
             TableColumn[] columns = tableViewer.getTable().getColumns();
             for (TableColumn column : columns)
                 column.pack();
@@ -799,6 +802,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
             final Composite keyArea = new Composite(details, SWT.NONE);
             glf.applyTo(keyArea);
             final TableViewer tableViewer = new TableViewer(keyArea, SWT.FULL_SELECTION);
+            CopyPasteSupport.enableFor(tableViewer);
             tableViewer.setContentProvider(new KeyMappingContentProvider());
             tableViewer.getTable().setLinesVisible(true);
             tableViewer.getTable().setHeaderVisible(true);

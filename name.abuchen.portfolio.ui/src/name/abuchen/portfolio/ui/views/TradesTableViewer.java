@@ -25,7 +25,10 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.viewers.Column;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.TouchClientListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.MoneyColorLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.NumberColorLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
@@ -57,7 +60,9 @@ public class TradesTableViewer
 
         trades = new TableViewer(container, SWT.FULL_SELECTION);
 
+        ColumnEditingSupport.prepare(trades);
         ColumnViewerToolTipSupport.enableFor(trades, ToolTip.NO_RECREATE);
+        CopyPasteSupport.enableFor(trades);
 
         support = new ShowHideColumnHelper(
                         SecuritiesPerformanceView.class.getSimpleName() + "@trades@" + viewMode.name(), //$NON-NLS-1$
@@ -75,7 +80,12 @@ public class TradesTableViewer
     private void createTradesColumns(ShowHideColumnHelper support, ViewMode viewMode)
     {
         if (viewMode == ViewMode.MULTIPLE_SECURITES)
-            support.addColumn(new NameColumn(view.getClient()));
+        {
+            NameColumn column = new NameColumn(view.getClient());
+            column.getEditingSupport().addListener(new TouchClientListener(view.getClient()));
+            column.getEditingSupport().addListener((e, n, o) -> trades.refresh(true));
+            support.addColumn(column);
+        }
 
         Column column = new Column("start", Messages.ColumnStartDate, SWT.None, 80); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()

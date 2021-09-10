@@ -1,0 +1,172 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Depotführung: Ihr der FFB benannte Vermittler:
+Herr Andreas Nönnig
+Hauptstraße 9
+01683 Nossen OT Wolkau
+Tel: 0352 / 4265210
+Fax: 0352 / 4265211
+Frau Mail: info@deutuna.de
+Max Mustermann
+Musterstr. 32a
+01234 FFB-City
+Es schreibt Ihnen:
+FFB Kundenbetreuung
+Kronberg im Taunus, 10. August 2021
+Fondsabrechnung
+Auszug  4 Blatt 1
+Depotinhaber Max Mustermann
+Depotnummer 1111111111 (Privatvermögen)
+Transaktion Fondsname Betrag Preis Anteile
+Auftrags-Nr. WKN / ISIN Wechselkurs Preisdatum Bestand alt
+Fondsgesellschaft Währungsbetrag Zwischengewinn Bestand neu
+Verwahrart, Lagerland Rücknahmepreis
+Splitkauf Betrag BGF World Mining Fund A2 USD 20,00 EUR 64,7595 USD 0,363
+2567655380 986932 / LU0075056555 1,175902 USD 01.07.2021 47,132
+BlackRock Investment Management (UK) Ltd. 23,52 USD 0,0000 EUR 47,495
+Wertpapierrechnung, Luxemburg 63,1800 USD
+Abrechnungsbetrag 20,00 EUR
+Ausgabeaufschlag / Provision (2,50 %) 0,50 EUR
+Splitkauf Betrag hausInvest 20,00 EUR 43,5420 EUR 0,459
+2567655380 980701 / DE0009807016 01.07.2021 34,477
+Commerz Real Investmentgesellschaft mbH 0,0000 EUR 34,936
+Girosammelverwahrung, Deutschland 42,4800 EUR
+Abrechnungsbetrag 20,00 EUR
+Ausgabeaufschlag / Provision (2,50 %) 0,50 EUR
+Splitkauf Betrag Fidelity F.- Europ.Growth F. A 20,00 EUR 17,4770 EUR 1,145
+2567655380 973270 / LU0048578792 01.07.2021 101,212
+FIL (Luxemburg) S.A. 0,0000 EUR 102,357
+Wertpapierrechnung, Luxemburg 17,0300 EUR
+Abrechnungsbetrag 20,00 EUR
+Ausgabeaufschlag / Provision (2,63 %) 0,50 EUR
+Splitkauf Betrag Templeton Growth (Euro) Fund 20,00 EUR 19,5674 EUR 1,022
+2567655380 941034 / LU0114760746 01.07.2021 82,330
+Franklin Templeton International Services S.à 0,0000 EUR 83,352
+r.l.
+Wertpapierrechnung, Luxemburg 19,0400 EUR
+Abrechnungsbetrag 20,00 EUR
+Ausgabeaufschlag / Provision (2,77 %) 0,54 EUR
+Splitkauf Betrag Fid Fd - Euro Blue Chip Fd A 20,00 EUR 27,0725 EUR 0,739
+2567655380 988525 / LU0088814487 01.07.2021 66,034
+FIL (Luxemburg) S.A. 0,0000 EUR 66,773
+Wertpapierrechnung, Luxemburg 26,3800 EUR
+Abrechnungsbetrag 20,00 EUR
+Ausgabeaufschlag / Provision (2,63 %) 0,51 EUR
+FIL Fondsbank GmbH Postanschrift: Vorsitzender Geschäftsführung: Sitz: Kronberg im Taunus
+Kastanienhöhe 1 Postfach 11 06 63 des Aufsichtsrats: Peter Nonner Amtsgericht
+61476 Kronberg im Taunus 60041 Frankfurt am Main Ferdinand-Alexander Leisten Oliver Schulte Königstein HRB 8336
+info@ffb.de Telefon (069) 7 70 60 - 200 Umsatzsteuer-ID Nr.
+www.ffb.de Telefax (069) 7 70 60 - 555 DE213709602
+ABGST_V1.0
+Depotführung: Ihr der FFB benannte Vermittler:
+Herr Andreas Nönnig
+Hauptstraße 9
+01683 Nossen OT Wolkau
+Tel: 0352 / 4265210
+Fax: 0352 / 4265211
+Frau Mail: info@deutuna.de
+Max Mustermann
+Musterstr. 32a
+01234 FFB-City
+Es schreibt Ihnen:
+FFB Kundenbetreuung
+Kronberg im Taunus, 10. August 2021
+Fondsabrechnung
+Auszug  4 Blatt 2
+Depotinhaber Max Mustermann
+Depotnummer 1111111111 (Privatvermögen)
+Transaktion Fondsname Betrag Preis Anteile
+Auftrags-Nr. WKN / ISIN Wechselkurs Preisdatum Bestand alt
+Fondsgesellschaft Währungsbetrag Zwischengewinn Bestand neu
+Verwahrart, Lagerland Rücknahmepreis
+Splitkauf Betrag BGF World Mining Fund A2 USD 20,00 EUR 67,6705 USD 0,349
+2568789861 986932 / LU0075056555 1,180651 USD 02.08.2021 47,495
+BlackRock Investment Management (UK) Ltd. 23,61 USD 0,0000 EUR 47,844
+Wertpapierrechnung, Luxemburg 66,0200 USD
+Abrechnungsbetrag 20,00 EUR
+Ausgabeaufschlag / Provision (2,50 %) 0,48 EUR
+Splitkauf Betrag hausInvest 20,00 EUR 43,6138 EUR 0,459
+2568789861 980701 / DE0009807016 02.08.2021 34,936
+Commerz Real Investmentgesellschaft mbH 0,0000 EUR 35,395
+Girosammelverwahrung, Deutschland 42,5500 EUR
+Abrechnungsbetrag 20,00 EUR
+Ausgabeaufschlag / Provision (2,50 %) 0,47 EUR
+Splitkauf Betrag Fidelity F.- Europ.Growth F. A 20,00 EUR 17,6310 EUR 1,135
+2568789861 973270 / LU0048578792 02.08.2021 102,357
+FIL (Luxemburg) S.A. 0,0000 EUR 103,492
+Wertpapierrechnung, Luxemburg 17,1800 EUR
+Abrechnungsbetrag 20,00 EUR
+Ausgabeaufschlag / Provision (2,63 %) 0,50 EUR
+Splitkauf Betrag Templeton Growth (Euro) Fund 20,00 EUR 19,4030 EUR 1,031
+2568789861 941034 / LU0114760746 02.08.2021 83,352
+Franklin Templeton International Services S.à 0,0000 EUR 84,383
+r.l.
+Wertpapierrechnung, Luxemburg 18,8800 EUR
+Abrechnungsbetrag 20,00 EUR
+Ausgabeaufschlag / Provision (2,77 %) 0,53 EUR
+Splitkauf Betrag Fid Fd - Euro Blue Chip Fd A 20,00 EUR 27,2777 EUR 0,733
+2568789861 988525 / LU0088814487 02.08.2021 66,773
+FIL (Luxemburg) S.A. 0,0000 EUR 67,506
+Wertpapierrechnung, Luxemburg 26,5800 EUR
+Abrechnungsbetrag 20,00 EUR
+Ausgabeaufschlag / Provision (2,63 %) 0,52 EUR
+FIL Fondsbank GmbH Postanschrift: Vorsitzender Geschäftsführung: Sitz: Kronberg im Taunus
+Kastanienhöhe 1 Postfach 11 06 63 des Aufsichtsrats: Peter Nonner Amtsgericht
+61476 Kronberg im Taunus 60041 Frankfurt am Main Ferdinand-Alexander Leisten Oliver Schulte Königstein HRB 8336
+info@ffb.de Telefon (069) 7 70 60 - 200 Umsatzsteuer-ID Nr.
+www.ffb.de Telefax (069) 7 70 60 - 555 DE213709602
+ABGST_V1.0
+Depotführung: Ihr der FFB benannte Vermittler:
+Herr Andreas Nönnig
+Hauptstraße 9
+01683 Nossen OT Wolkau
+Tel: 0352 / 4265210
+Fax: 0352 / 4265211
+Frau Mail: info@deutuna.de
+Max Mustermann
+Musterstr. 32a
+01234 FFB-City
+Es schreibt Ihnen:
+FFB Kundenbetreuung
+Kronberg im Taunus, 10. August 2021
+Fondsabrechnung
+Auszug  4 Blatt 3
+Depotinhaber Max Mustermann
+Depotnummer 1111111111 (Privatvermögen)
+Transaktion Fondsname Betrag Preis Anteile
+Auftrags-Nr. WKN / ISIN Wechselkurs Preisdatum Bestand alt
+Fondsgesellschaft Währungsbetrag Zwischengewinn Bestand neu
+Verwahrart, Lagerland Rücknahmepreis
+Wiederanlage Fidelity F.- Europ.Growth F. A 5,37 EUR 17,5000 EUR 0,307
+2569249320 973270 / LU0048578792 10.08.2021 103,492
+FIL (Luxemburg) S.A. 0,0000 EUR 103,7995
+Wertpapierrechnung, Luxemburg 17,5000 EUR
+Abrechnungsbetrag 5,37 EUR
+Ausgabeaufschlag / Provision (0,00 %) 0,00 EUR
+Wiederanlage Fid Fd - Euro Blue Chip Fd A 2,43 EUR 27,1100 EUR 0,090
+2569273184 988525 / LU0088814487 10.08.2021 67,506
+FIL (Luxemburg) S.A. 0,0000 EUR 67,596
+Wertpapierrechnung, Luxemburg 27,1100 EUR
+Abrechnungsbetrag 2,43 EUR
+Ausgabeaufschlag / Provision (0,00 %) 0,00 EUR
+Anlagen in Investmentfonds können erst nach Kenntnisnahme der gesetzlichen Verkaufsunterlagen (aktueller Verkaufsprospekt, wesentliche 
+Anlegerinformationen, Halb-/Jahresbericht) erfolgen. Diese Unterlagen haben Sie direkt von Ihrem Vermittler erhalten. Sofern Sie keine 
+elektronischen Orderwege nutzen, verwenden Sie bitte für Investmentfonds-Aufträge ausschließlich die Serviceformulare der FFB, die Sie 
+online oder über Ihren Vermittler erhalten.
+ 
+Steuerliche Informationen
+Erteilter Freistellungsauftrag 250,00 EUR gültig bis: unbefristet Verlustverrechnungstopf neu 0,00 EUR
+davon noch verfügbar 235,87 EUR Quellensteuertopf neu 0,00 EUR
+Hinweise:
+Auslandszahlungen, die 12.500 EUR übersteigen, sind gemäß der Außenwirtschaftsverordnung (AWV) durch Sie meldepflichtig. Weitergehende Informationen zur 
+Meldepflicht nach AWV erhalten Sie direkt von der Deutschen Bundesbank, unter www.bundesbank.de oder unter der Rufnummer 0800 1234 111.
+Einwendungen gegen diese Fondsabrechnung wegen Unrichtigkeit oder Unvollständigkeit richten Sie bitte schriftlich spätestens einen Monat nach Zugang an:
+FIL Fondsbank GmbH, Revision, Postfach 11 06 63, 60041 Frankfurt am Main, Telefax (069) 7 70 60 - 444.
+Bitte beachten Sie unter www.ffb.de/BGH2021 die Informationen zum BGH-Urteil vom 27. April 2021.
+FIL Fondsbank GmbH Postanschrift: Vorsitzender Geschäftsführung: Sitz: Kronberg im Taunus
+Kastanienhöhe 1 Postfach 11 06 63 des Aufsichtsrats: Peter Nonner Amtsgericht
+61476 Kronberg im Taunus 60041 Frankfurt am Main Ferdinand-Alexander Leisten Oliver Schulte Königstein HRB 8336
+info@ffb.de Telefon (069) 7 70 60 - 200 Umsatzsteuer-ID Nr.
+www.ffb.de Telefax (069) 7 70 60 - 555 DE213709602
+ABGST_V1.0
