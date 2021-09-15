@@ -517,6 +517,7 @@ public class Messages extends NLS
     public static String LabelChartDetailMovingAverage_100days;
     public static String LabelChartDetailMovingAverage_200days;
     public static String LabelChartDetailSettings;
+    public static String LabelChartDetailSettingsShowLimits;
     public static String LabelChartDetailSettingsShowMarkerLines;
     public static String LabelChartDetailSettingsShowDataLabel;
     public static String LabelChartDetailSettingsShowMissingTradingDays;

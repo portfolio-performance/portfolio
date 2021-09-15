@@ -15,6 +15,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Iterator;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -46,6 +47,7 @@ import com.ibm.icu.text.MessageFormat;
 
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.LimitPrice;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityEvent;
@@ -232,7 +234,8 @@ public class SecuritiesChart
         EMA_200DAYS(Messages.LabelChartDetailMovingAverage_200days), //
         SHOW_MARKER_LINES(Messages.LabelChartDetailSettingsShowMarkerLines), //
         SHOW_DATA_LABELS(Messages.LabelChartDetailSettingsShowDataLabel), //
-        SHOW_MISSING_TRADING_DAYS(Messages.LabelChartDetailSettingsShowMissingTradingDays);
+        SHOW_MISSING_TRADING_DAYS(Messages.LabelChartDetailSettingsShowMissingTradingDays), //
+        SHOW_LIMITS(Messages.LabelChartDetailSettingsShowLimits);
 
         private final String label;
 
@@ -591,6 +594,7 @@ public class SecuritiesChart
         subMenuChartMarker.add(addMenuAction(ChartDetails.EXTREMES));
         subMenuChartMarker.add(addMenuAction(ChartDetails.FIFOPURCHASE));
         subMenuChartMarker.add(addMenuAction(ChartDetails.FLOATINGAVGPURCHASE));
+        subMenuChartMarker.add(addMenuAction(ChartDetails.SHOW_LIMITS));
         subMenuChartIndicator.add(addMenuAction(ChartDetails.BOLLINGERBANDS));
         subMenuChartMovingAverageSMA.add(addMenuAction(ChartDetails.SMA_5DAYS));
         subMenuChartMovingAverageSMA.add(addMenuAction(ChartDetails.SMA_20DAYS));
@@ -910,6 +914,9 @@ public class SecuritiesChart
         if (chartConfig.contains(ChartDetails.EMA_200DAYS))
             addEMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageEMA,
                             Messages.LabelChartDetailMovingAverage_200days, 200, colorEMA7);
+        
+        if(chartConfig.contains(ChartDetails.SHOW_LIMITS))
+            addLimitLines(chartInterval);
     }
 
     private void addChartMarkerForeground(ChartInterval chartInterval)
@@ -931,6 +938,56 @@ public class SecuritiesChart
 
         if (chartConfig.contains(ChartDetails.EXTREMES))
             addExtremesMarkerLines(chartInterval);
+    }
+    
+    private void addLimitLines(ChartInterval chartInterval)
+    {
+
+        for(Iterator<LimitPrice> i = this.security.getAttributes().getAllValues()
+                        .filter(a -> a .getClass() == LimitPrice.class)
+                        .map(LimitPrice.class::cast).iterator(); i.hasNext();)
+        {
+            LimitPrice limitAttribute = i.next();
+
+            // TODO: Replace "LimitPrice" prefix with attribute name
+            @SuppressWarnings("nls")
+            String lineID = "LimitPrice (" + limitAttribute.toString() + ")";  
+            
+            // horizontal line: only two points required
+            LocalDate[] dates = new LocalDate[2];
+            double[] values = new double[2];
+            
+            // first x = start of interval or first price (that one which is greater)
+            LocalDate firstPriceDate = security.getPrices().get(0).getDate();
+            LocalDate firstChartIntervalDate = chartInterval.getStart();
+            if(firstPriceDate.isAfter(firstChartIntervalDate))
+            {
+                dates[0] = firstPriceDate;
+            }
+            else
+            {
+                dates[0] = firstChartIntervalDate;
+            }
+
+            // second x = end of interval
+            dates[1] = chartInterval.getEnd();
+                                        
+            // both points with same y-value
+            values[0] = limitAttribute.getValue() / Values.Quote.divider();
+            values[1] = limitAttribute.getValue() / Values.Quote.divider();
+
+            ILineSeries lineSeriesLimit = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, lineID);
+            lineSeriesLimit.setXDateSeries(TimelineChart.toJavaUtilDate(dates));
+            lineSeriesLimit.setLineWidth(1);
+            lineSeriesLimit.setLineStyle(LineStyle.DASH);
+            lineSeriesLimit.enableArea(false);
+            lineSeriesLimit.setSymbolType(PlotSymbolType.NONE);
+            lineSeriesLimit.setYSeries(values);
+            lineSeriesLimit.setAntialias(swtAntialias);
+            lineSeriesLimit.setLineColor(Colors.ICON_ORANGE);
+            lineSeriesLimit.setYAxisId(0);
+            lineSeriesLimit.setVisibleInLegend(true);
+        }
     }
 
     private void addSMAMarkerLines(ChartInterval chartInterval, String smaSeries, String smaDaysWording, int smaDays,
