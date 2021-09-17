@@ -323,8 +323,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                 // S T K            1 . 9 0 0 , 0  0 0                C e r t . v .A a n d e  l e n  E  O -, 1 6            NL  0 00  0 00  9 3 5 5
                 // EUR 0,208      Dividende pro Stück für Geschäftsjahr        01.01.10 bis 31.12.10
                 .section("name", "wkn", "shares", "nameContinued", "isin", "currency").optional()
-                .match("^([\\s]+)?(p([\\s]+)?e([\\s]+)?r) ([\\s]+)?[.\\d\\s]+ ([\\s]+)?(?<name>.*) [\\s]{3,}(?<wkn>.*)$")
-                .match("^([\\s]+)?(S([\\s]+)?T([\\s]+)?K) ([\\s]+)?(?<shares>[.,\\d\\s]+) (?<nameContinued>.*) [\\s]{3,}(?<isin>.*)$")
+                .match("^([\\s]+)?(p([\\s]+)?e([\\s]+)?r) ([\\s]+)?[.\\d\\s]+ ([\\s]+)?(?<name>.*)[\\s]{3,}(?<wkn>.*)$")
+                .match("^([\\s]+)?(S([\\s]+)?T([\\s]+)?K) ([\\s]+)?(?<shares>[.,\\d\\s]+) (?<nameContinued>.*)[\\s]{3,}(?<isin>.*)$")
                 .match("^(?<currency>[\\w]{3}) [.,\\d]+ ([\\s]+)?(Dividende|Aussch.ttung) pro St.ck .*$")
                 .assign((t, v) -> {
                     v.put("wkn", stripBlanks(v.get("wkn")));
@@ -337,30 +337,16 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                 // p e  r  0 3. 1  2 .2  0 20            v  a r ia  b el       SA N H A  G m b  H &   C o.  K  G                     A 1 T NA  7
                 // E U R             5. 0 0  0 ,0 0 0                 ST  Z- A n l e  ih e  v  .2  0 1 3 ( 2 3 / 2 6)         D  E0  00  A1 T N A 7 0 
                 .section("name", "wkn", "shares", "nameContinued", "isin", "currency").optional()
-                .match("^([\\s]+)?(p([\\s]+)?e([\\s]+)?r) ([\\s]+)?[.\\d\\s]+ [\\s\\w]{3,} [\\s]{3,}(?<name>.*) [\\s]{3,}(?<wkn>.*)$")
-                .match("^(?<currency>[A-Z\\s]+) (?<shares>[.,\\d\\s]+) ST ([\\s]+)?(?<nameContinued>.*) [\\s]{3,}(?<isin>[\\w\\s]+)$")
+                .match("^([\\s]+)?(p([\\s]+)?e([\\s]+)?r) ([\\s]+)?[.\\d\\s]+ [\\s\\w]{3,} [\\s]{3,}(?<name>.*)[\\s]{3,}(?<wkn>.*)$")
+                .match("^(?<currency>[A-Z\\s]+) (?<shares>[.,\\d\\s]+) ST ([\\s]+)?(?<nameContinued>.*)[\\s]{3,}(?<isin>[\\w\\s]+)$")
                 .assign((t, v) -> {
                     v.put("wkn", stripBlanks(v.get("wkn")));
                     v.put("shares", stripBlanks(v.get("shares")));
                     v.put("currency", stripBlanks(v.get("currency")));
                     v.put("isin", stripBlanks(v.get("isin")));
 
-                    t.setShares((asShares(v.get("shares"))));
-                    t.setSecurity(getOrCreateSecurity(v));
-                })
-
-                // p e  r  0 3. 1  2 .2  0 20            v  a r ia  b el       SA N H A  G m b  H &   C o.  K  G                     A 1 T NA  7
-                // E U R             5. 0 0  0 ,0 0 0                 ST  Z- A n l e  ih e  v  .2  0 1 3 ( 2 3 / 2 6)         D  E0  00  A1 T N A 7 0 
-                .section("name", "wkn", "shares", "nameContinued", "isin", "currency").optional()
-                .match("^([\\s]+)?(p([\\s]+)?e([\\s]+)?r) ([\\s]+)?[.\\d\\s]+ [\\s\\w]{3,} [\\s]{3,}(?<name>.*) [\\s]{3,}(?<wkn>.*)$")
-                .match("^(?<currency>[A-Z\\s]+) (?<shares>[.,\\d\\s]+) ST ([\\s]+)?(?<nameContinued>.*) [\\s]{3,}(?<isin>[\\w\\s]+)$")
-                .assign((t, v) -> {
-                    v.put("wkn", stripBlanks(v.get("wkn")));
-                    v.put("shares", stripBlanks(v.get("shares")));
-                    v.put("currency", stripBlanks(v.get("currency")));
-                    v.put("isin", stripBlanks(v.get("isin")));
-
-                    t.setShares((asShares(v.get("shares"))));
+                    // Workaround for bonds
+                    t.setShares((asShares(v.get("shares")) / 100));
                     t.setSecurity(getOrCreateSecurity(v));
                 })
 
@@ -437,10 +423,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                 // zahlbar ab 19.10.2017                 monatl. Dividende                            
                 .section("note").optional()
                 .match("^zahlbar ab \\d+.\\d+.[\\d]{4} ([\\s]+)(?<note>.*)$")
-                .assign((t, v) -> {
-                    t.setNote(v.get("note"));
-                })
-
+                .assign((t, v) -> t.setNote(v.get("note")))
+                
                 .wrap(TransactionItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
