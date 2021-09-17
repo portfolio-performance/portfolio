@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.model;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -32,5 +33,12 @@ public class Attributes
     {
         return map.values().stream();
     }
+    
+    public Map<String, Object> getMap()
+    {
+        return Collections.unmodifiableMap(map);
+    }
+    
+    
 
 }

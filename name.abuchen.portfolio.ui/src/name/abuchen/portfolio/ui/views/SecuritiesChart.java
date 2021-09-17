@@ -15,7 +15,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Iterator;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -46,6 +45,7 @@ import com.google.common.primitives.Doubles;
 import com.ibm.icu.text.MessageFormat;
 
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.LimitPrice;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -942,16 +942,23 @@ public class SecuritiesChart
     
     private void addLimitLines(ChartInterval chartInterval)
     {
-
-        for(Iterator<LimitPrice> i = this.security.getAttributes().getAllValues()
-                        .filter(a -> a .getClass() == LimitPrice.class)
-                        .map(LimitPrice.class::cast).iterator(); i.hasNext();)
+        this.security.getAttributes().getMap().forEach((key, val) -> 
         {
-            LimitPrice limitAttribute = i.next();
+            if(val.getClass() != LimitPrice.class)
+            { // not Limit Price --> ignore
+                return;
+            }
+            
+            LimitPrice limitAttribute = (LimitPrice)val;
+            
+            Optional<AttributeType> attributeName = client.getSettings().getAttributeTypes().filter(attr -> key != null && key.equals(attr.getId())).findFirst();
+            if(attributeName.isEmpty())
+            { // could not find name of limit attribute --> don't draw
+                return;
+            }
 
-            // TODO: Replace "LimitPrice" prefix with attribute name
             @SuppressWarnings("nls")
-            String lineID = "LimitPrice (" + limitAttribute.toString() + ")";  
+            String lineID = attributeName.get().getName() +" (" + limitAttribute.toString() + ")";  
             
             // horizontal line: only two points required
             LocalDate[] dates = new LocalDate[2];
@@ -973,12 +980,11 @@ public class SecuritiesChart
             dates[1] = chartInterval.getEnd();
                                         
             // both points with same y-value
-            values[0] = limitAttribute.getValue() / Values.Quote.divider();
-            values[1] = limitAttribute.getValue() / Values.Quote.divider();
-
+            values[0] = values[1] = limitAttribute.getValue() / Values.Quote.divider();
+            
             ILineSeries lineSeriesLimit = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, lineID);
             lineSeriesLimit.setXDateSeries(TimelineChart.toJavaUtilDate(dates));
-            lineSeriesLimit.setLineWidth(1);
+            lineSeriesLimit.setLineWidth(2);
             lineSeriesLimit.setLineStyle(LineStyle.DASH);
             lineSeriesLimit.enableArea(false);
             lineSeriesLimit.setSymbolType(PlotSymbolType.NONE);
@@ -987,7 +993,8 @@ public class SecuritiesChart
             lineSeriesLimit.setLineColor(Colors.ICON_ORANGE);
             lineSeriesLimit.setYAxisId(0);
             lineSeriesLimit.setVisibleInLegend(true);
-        }
+            
+        });
     }
 
     private void addSMAMarkerLines(ChartInterval chartInterval, String smaSeries, String smaDaysWording, int smaDays,
