@@ -27,10 +27,13 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
+
+import java.util.*;
 
 public class ExportSelectionPage extends AbstractWizardPage
 {
@@ -132,7 +135,7 @@ public class ExportSelectionPage extends AbstractWizardPage
         public Object[] getElements(Object inputElement)
         {
             return new Class[] { AccountTransaction.class, PortfolioTransaction.class, Security.class,
-                            SecurityPrice.class };
+                            SecurityPrice.class, Taxonomy.class };
         }
 
         @Override
@@ -151,6 +154,16 @@ public class ExportSelectionPage extends AbstractWizardPage
                                     Messages.ExportWizardVINISApp };
                 else if (parentElement == SecurityPrice.class)
                     return client.getSecurities().stream().sorted(new Security.ByName()).toArray();
+                else if (parentElement == Taxonomy.class)
+                {
+                    List<String> result = new ArrayList<>();
+                    Object[] tempArr = client.getTaxonomies().stream().sorted(new Taxonomy.ByName()).toArray();
+                    for(Object elem : tempArr)
+                    {
+                        result.add(((Taxonomy)elem).getName());
+                    }
+                    return result.toArray();
+                }
             }
 
             return null;
@@ -200,6 +213,8 @@ public class ExportSelectionPage extends AbstractWizardPage
                 return Messages.ExportWizardSecurities;
             else if (element == SecurityPrice.class)
                 return Messages.ExportWizardHistoricalQuotes;
+            else if (element == Taxonomy.class)
+                return Messages.LabelTaxonomies;
             else if (element instanceof String)
                 return (String) element;
             else

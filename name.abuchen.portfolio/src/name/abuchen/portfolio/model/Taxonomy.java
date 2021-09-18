@@ -2,7 +2,9 @@ package name.abuchen.portfolio.model;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -11,6 +13,20 @@ import name.abuchen.portfolio.model.Classification.Assignment;
 
 public class Taxonomy
 {
+    
+    public static final class ByName implements Comparator<Taxonomy>, Serializable
+    {
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public int compare(Taxonomy t1, Taxonomy t2)
+        {
+            if (t1 == null)
+                return t2 == null ? 0 : -1;
+            return t1.name.compareToIgnoreCase(t2.name);
+        }
+    }
+    
     public static interface Visitor
     {
         default void visit(Classification classification)
