@@ -50,6 +50,7 @@ import name.abuchen.portfolio.util.OnlineHelper;
 import name.abuchen.portfolio.util.Pair;
 import name.abuchen.portfolio.util.TextUtil;
 import name.abuchen.portfolio.util.WebAccess;
+import name.abuchen.portfolio.util.WebAccess.WebAccessException;
 
 public class HTMLTableQuoteFeed implements QuoteFeed
 {
@@ -473,6 +474,11 @@ public class HTMLTableQuoteFeed implements QuoteFeed
             List<LatestSecurityPrice> prices = parse(url, document, data);
 
             return new Pair<>(collectRawResponse ? html : "", prices); //$NON-NLS-1$
+        }
+        catch (WebAccessException e)
+        {
+            data.addError(e);
+            return new Pair<>(String.valueOf(e.getMessage()), Collections.emptyList());
         }
         catch (URISyntaxException | IOException | UncheckedIOException e)
         {
