@@ -180,11 +180,13 @@ public class IBFlexStatementExtractor implements Extractor
         private Function<Element, Item> buildAccountTransaction = element -> {
             AccountTransaction transaction = new AccountTransaction();
 
-            //New Format dateTime has now also Time [YYYYMMDD;HHMMSS], I cut Date from string [YYYYMMDD]
-            //Checks for old format [YYYY-MM-DD, HH:MM:SS], too. Quapla 11.1.20
-            //Changed from dateTime to reportDate + Check for old Data-Formats, Quapla 14.2.20
-            
-            if (element.hasAttribute("reportDate")) 
+            // New Format dateTime has now also Time [YYYYMMDD;HHMMSS], I cut
+            // Date from string [YYYYMMDD]
+            // Checks for old format [YYYY-MM-DD, HH:MM:SS], too. Quapla 11.1.20
+            // Changed from dateTime to reportDate + Check for old Data-Formats,
+            // Quapla 14.2.20
+
+            if (element.hasAttribute("reportDate"))
             {
                 if (element.getAttribute("reportDate").length() == 15)
                 {
@@ -206,7 +208,7 @@ public class IBFlexStatementExtractor implements Extractor
                     transaction.setDateTime(convertDate(element.getAttribute("dateTime")));
                 }
             }
-                     
+
             Double amount = Double.parseDouble(element.getAttribute("amount"));
             String currency = asCurrencyUnit(element.getAttribute("currency"));
 
@@ -275,35 +277,41 @@ public class IBFlexStatementExtractor implements Extractor
                 throw new IllegalArgumentException();
             }
 
-            if (transaction.getType().equals(AccountTransaction.Type.DIVIDENDS) || transaction.getType().equals(AccountTransaction.Type.TAXES))
+            if (transaction.getType().equals(AccountTransaction.Type.DIVIDENDS)
+                            || transaction.getType().equals(AccountTransaction.Type.TAXES))
             {
-                //if the account currency differs from transaction currency
-                //convert currency, if there is a matching security with the account currency
-                 if (!this.ibAccountCurrency.equals(currency)) 
-                 {
-                    boolean foundEsinBase = false; //matching esin & base currency
-                    boolean foundEsinTransaction = false; //matching esin & transaction currency
+                // if the account currency differs from transaction currency
+                // convert currency, if there is a matching security with the
+                // account currency
+                if (this.ibAccountCurrency != null && !this.ibAccountCurrency.equals(currency)) // NOSONAR
+                {
+                    // matching isin & base currency
+                    boolean foundIsinBase = false;
+                    // matching isin & transaction currency
+                    boolean foundIsinTransaction = false;
+
                     for (Security s : allSecurities)
                     {
+                        String isin = element.getAttribute("isin");
                         // Find security with same isin & currency
-                        if (element.getAttribute("isin").length() > 0 && element.getAttribute("isin").equals(s.getIsin()))
+                        if (isin.length() > 0 && isin.equals(s.getIsin()))
+                        {
                             if (currency.equals(s.getCurrencyCode()))
-                                foundEsinTransaction = true;
+                                foundIsinTransaction = true;
                             else if (this.ibAccountCurrency.equals(s.getCurrencyCode()))
-                                foundEsinBase = true;
+                                foundIsinBase = true;
+                        }
+
                     }
-                
-                    if(!foundEsinTransaction && foundEsinBase)
+
+                    if (!foundIsinTransaction && foundIsinBase && element.getAttribute("fxRateToBase").length() > 0)
                     {
-                         if (element.getAttribute("fxRateToBase").length() > 0)
-                         {
-                             amount = amount * Double.parseDouble(element.getAttribute("fxRateToBase"));
-                             currency = asCurrencyUnit(this.ibAccountCurrency);
-                         }
+                        amount = amount * Double.parseDouble(element.getAttribute("fxRateToBase"));
+                        currency = asCurrencyUnit(this.ibAccountCurrency);
                     }
-                 }
+                }
             }
-            
+
             amount = Math.abs(amount);
             setAmount(element, transaction, amount, currency);
 
@@ -339,24 +347,27 @@ public class IBFlexStatementExtractor implements Extractor
                 throw new IllegalArgumentException();
             }
 
-            // Sometimes IB-FlexStatement doesn't include "tradeDate" - in this case tradeDate will be replaced by "000000". 
-            // New format is stored in dateTime, take care for double imports). 
+            // Sometimes IB-FlexStatement doesn't include "tradeDate" - in this
+            // case tradeDate will be replaced by "000000".
+            // New format is stored in dateTime, take care for double imports).
             if (element.hasAttribute("dateTime"))
             {
-                transaction.setDate(convertDate(element.getAttribute("dateTime").substring(0,8), element.getAttribute("dateTime").substring(9,15)));
+                transaction.setDate(convertDate(element.getAttribute("dateTime").substring(0, 8),
+                                element.getAttribute("dateTime").substring(9, 15)));
             }
             else
             {
                 if (element.hasAttribute("tradeTime"))
                 {
-                    transaction.setDate(convertDate(element.getAttribute("tradeDate"), element.getAttribute("tradeTime")));
+                    transaction.setDate(
+                                    convertDate(element.getAttribute("tradeDate"), element.getAttribute("tradeTime")));
                 }
                 else
                 {
                     transaction.setDate(convertDate(element.getAttribute("tradeDate"), "000000"));
                 }
             }
-            
+
             // transaction currency
             String currency = asCurrencyUnit(element.getAttribute("currency"));
 
@@ -642,10 +653,11 @@ public class IBFlexStatementExtractor implements Extractor
             }
 
             Security s2 = null;
-            
+
             for (Security s : allSecurities)
             {
-                // Find security with same conID or isin & currency or yahooSymbol
+                // Find security with same conID or isin & currency or
+                // yahooSymbol
                 if (conID != null && conID.length() > 0 && conID.equals(s.getWkn()))
                     return s;
                 if (isin.length() > 0 && isin.equals(s.getIsin()))
@@ -659,7 +671,7 @@ public class IBFlexStatementExtractor implements Extractor
 
             if (s2 != null)
                 return s2;
-            
+
             if (!doCreate)
                 return null;
 

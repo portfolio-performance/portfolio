@@ -34,9 +34,8 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Quote;
 import name.abuchen.portfolio.money.Values;
 
-
 @SuppressWarnings("nls")
-public class IBFlexStatementExtractorWithForeignDividend
+public class IBFlexStatementExtractorWithForeignDividendTest
 {
 
     private List<Item> runExtractor(List<Exception> errors) throws IOException
@@ -66,7 +65,7 @@ public class IBFlexStatementExtractorWithForeignDividend
                         .collect(Collectors.toList());
 
         assertThat(securityItems.size(), is(numSecurity));
-        
+
         List<Extractor.Item> buySellTransactions = results.stream().filter(i -> i instanceof BuySellEntryItem)
                         .collect(Collectors.toList());
 
@@ -95,7 +94,7 @@ public class IBFlexStatementExtractorWithForeignDividend
         assertThat(security.getTickerSymbol(), is("MMM.DE"));
         assertThat(security.getCurrencyCode(), is("EUR"));
     }
-    
+
     private void assertFirstBuySell(Optional<Item> item)
     {
         assertThat(item.isPresent(), is(true));
@@ -114,7 +113,7 @@ public class IBFlexStatementExtractorWithForeignDividend
         assertThat(entry.getPortfolioTransaction().getGrossPricePerShare(),
                         is(Quote.of("EUR", Values.Quote.factorize(181.35))));
     }
-    
+
     private void assertFirstTransaction(Optional<Item> item)
     {
         assertThat(item.isPresent(), is(true));
@@ -128,9 +127,9 @@ public class IBFlexStatementExtractorWithForeignDividend
         assertThat(entry.getMonetaryAmount(), is(Money.of("EUR", 7_74L)));
         assertThat(entry.getCurrencyCode(), is("EUR"));
         assertThat(entry.getSecurity().getCurrencyCode(), is("EUR"));
-        assertTrue(entry.getUnit(Unit.Type.GROSS_VALUE).isEmpty());    
+        assertTrue(!entry.getUnit(Unit.Type.GROSS_VALUE).isPresent());
     }
-    
+
     private void assertSecondTransaction(Optional<Item> item)
     {
         assertThat(item.isPresent(), is(true));
@@ -144,7 +143,7 @@ public class IBFlexStatementExtractorWithForeignDividend
         assertThat(entry.getMonetaryAmount(), is(Money.of("EUR", 8_04L)));
         assertThat(entry.getCurrencyCode(), is("EUR"));
         assertThat(entry.getSecurity().getCurrencyCode(), is("USD"));
-        assertTrue(entry.getUnit(Unit.Type.GROSS_VALUE).isPresent());    
+        assertTrue(entry.getUnit(Unit.Type.GROSS_VALUE).isPresent());
     }
 
     private Extractor.InputFile createTempFile(InputStream input) throws IOException
