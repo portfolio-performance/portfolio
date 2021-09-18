@@ -256,10 +256,15 @@ public class SecuritiesChart
         public final int start;
         public final int size;
 
-        public ChartRange(int start, int end)
+        public final LocalDate startDate;
+        public final LocalDate endDate;
+
+        public ChartRange(int start, int end, LocalDate startDate, LocalDate endDate)
         {
             this.start = start;
             this.size = end - start;
+            this.startDate = startDate;
+            this.endDate = endDate;
         }
 
         /**
@@ -289,7 +294,8 @@ public class SecuritiesChart
             if (end <= start)
                 return null;
 
-            return new ChartRange(start, end);
+            return new ChartRange(start, end, prices.get(start).getDate(),
+                            prices.get(Math.min(end, prices.size() - 1)).getDate());
         }
     }
 
@@ -757,7 +763,7 @@ public class SecuritiesChart
                     showAreaRelativeToFirstQuote = false;
             }
 
-            addChartMarkerBackground(chartInterval);
+            addChartMarkerBackground(chartInterval, range);
 
             for (int ii = 0; ii < range.size; ii++)
             {
@@ -846,7 +852,7 @@ public class SecuritiesChart
         }
     }
 
-    private void addChartMarkerBackground(ChartInterval chartInterval)
+    private void addChartMarkerBackground(ChartInterval chartInterval, ChartRange range)
     {
         if (chartConfig.contains(ChartDetails.BOLLINGERBANDS))
             addBollingerBandsMarkerLines(chartInterval, 20, 2);
@@ -914,9 +920,9 @@ public class SecuritiesChart
         if (chartConfig.contains(ChartDetails.EMA_200DAYS))
             addEMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageEMA,
                             Messages.LabelChartDetailMovingAverage_200days, 200, colorEMA7);
-        
-        if(chartConfig.contains(ChartDetails.SHOW_LIMITS))
-            addLimitLines(chartInterval);
+
+        if (chartConfig.contains(ChartDetails.SHOW_LIMITS))
+            addLimitLines(chartInterval, range);
     }
 
     private void addChartMarkerForeground(ChartInterval chartInterval)
@@ -939,49 +945,33 @@ public class SecuritiesChart
         if (chartConfig.contains(ChartDetails.EXTREMES))
             addExtremesMarkerLines(chartInterval);
     }
-    
-    private void addLimitLines(ChartInterval chartInterval)
-    {
-        this.security.getAttributes().getMap().forEach((key, val) -> 
-        {
-            if(val.getClass() != LimitPrice.class)
-            { // not Limit Price --> ignore
-                return;
-            }
-            
-            LimitPrice limitAttribute = (LimitPrice)val;
-            
-            Optional<AttributeType> attributeName = client.getSettings().getAttributeTypes().filter(attr -> key != null && key.equals(attr.getId())).findFirst();
-            if(attributeName.isEmpty())
-            { // could not find name of limit attribute --> don't draw
-                return;
-            }
 
-            @SuppressWarnings("nls")
-            String lineID = attributeName.get().getName() +" (" + limitAttribute.toString() + ")";  
-            
+    private void addLimitLines(ChartInterval chartInterval, ChartRange range)
+    {
+        this.security.getAttributes().getMap().forEach((key, val) -> {
+            // not Limit Price --> ignore
+            if (val.getClass() != LimitPrice.class)
+                return;
+
+            LimitPrice limitAttribute = (LimitPrice) val;
+
+            Optional<AttributeType> attributeName = client.getSettings().getAttributeTypes()
+                            .filter(attr -> attr.getId().equals(key)).findFirst();
+            // could not find name of limit attribute --> don't draw
+            if (attributeName.isEmpty())
+                return;
+
+            String lineID = attributeName.get().getName() + " (" + limitAttribute.toString() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
+
             // horizontal line: only two points required
             LocalDate[] dates = new LocalDate[2];
-            double[] values = new double[2];
-            
-            // first x = start of interval or first price (that one which is greater)
-            LocalDate firstPriceDate = security.getPrices().get(0).getDate();
-            LocalDate firstChartIntervalDate = chartInterval.getStart();
-            if(firstPriceDate.isAfter(firstChartIntervalDate))
-            {
-                dates[0] = firstPriceDate;
-            }
-            else
-            {
-                dates[0] = firstChartIntervalDate;
-            }
+            dates[0] = range.startDate;
+            dates[1] = range.endDate;
 
-            // second x = end of interval
-            dates[1] = chartInterval.getEnd();
-                                        
             // both points with same y-value
+            double[] values = new double[2];
             values[0] = values[1] = limitAttribute.getValue() / Values.Quote.divider();
-            
+
             ILineSeries lineSeriesLimit = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, lineID);
             lineSeriesLimit.setXDateSeries(TimelineChart.toJavaUtilDate(dates));
             lineSeriesLimit.setLineWidth(2);
@@ -993,7 +983,6 @@ public class SecuritiesChart
             lineSeriesLimit.setLineColor(Colors.ICON_ORANGE);
             lineSeriesLimit.setYAxisId(0);
             lineSeriesLimit.setVisibleInLegend(true);
-            
         });
     }
 
