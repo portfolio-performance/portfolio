@@ -348,6 +348,24 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
         column.getEditingSupport().addListener(this);
         transactionsColumns.addColumn(column);
 
+        column = new Column("source", Messages.ColumnSource, SWT.None, 120); //$NON-NLS-1$
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                return ((AccountTransaction) e).getSource();
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                return colorFor((AccountTransaction) element);
+            }
+        });
+        ColumnViewerSorter.create(e -> ((AccountTransaction) e).getSource()).attachTo(column); // $NON-NLS-1$
+        transactionsColumns.addColumn(column);
+
         transactionsColumns.createColumns();
 
         transactions.getTable().setHeaderVisible(true);

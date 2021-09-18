@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
@@ -601,9 +603,11 @@ public class ClientFactory
                 fixLimitQuotesWith4AdditionalDecimalPlaces(client);
             case 50: // NOSONAR
                 assignTxUUIDsAndUpdateAtInstants(client);
-            case 51:
+            case 51: // NOSONAR
                 permanentelyRemoveCPIData(client);
                 fixDimensionsList(client);
+            case 52:
+                fixSourceAttributeOfTransactions(client);
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
@@ -1168,6 +1172,29 @@ public class ClientFactory
             if (t.getDimensions() != null)
                 t.setDimensions(new ArrayList<>(t.getDimensions()));
         });
+    }
+
+    private static void fixSourceAttributeOfTransactions(Client client)
+    {
+        List<Transaction> allTransactions = new ArrayList<>();
+        client.getAccounts().forEach(a -> allTransactions.addAll(a.getTransactions()));
+        client.getPortfolios().forEach(p -> allTransactions.addAll(p.getTransactions()));
+
+        Pattern pattern = Pattern.compile("^((?<note>.*) \\| )?(?<file>[^ ]*\\.(pdf|csv))$"); //$NON-NLS-1$
+
+        for (Transaction tx : allTransactions)
+        {
+            String note = tx.getNote();
+            if (note == null)
+                continue;
+
+            Matcher m = pattern.matcher(note);
+            if (m.matches())
+            {
+                tx.setNote(m.group("note")); //$NON-NLS-1$
+                tx.setSource(m.group("file")); //$NON-NLS-1$
+            }
+        }
     }
 
     @SuppressWarnings("nls")
