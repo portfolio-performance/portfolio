@@ -1,340 +1,128 @@
-!define PACKAGE_NAME "Portfolio Performance"
-!define EXECUTABLE_NAME "PortfolioPerformance"
-!define COMPANY_NAME "Andreas Buchen"
-!define COMPANY_URL "http://www.portfolio-performance.info"
+# Windows installer definition for an Eclipse based application
 
-#
-# PARAMETERS WILL BE PASSED BY makensis:
-# makensis -DARCHITECTURE=x64 -DSOFTWARE_VERSION=0.30.1 setup.nsi
-#
-!if ${ARCHITECTURE} == x64
-  !define PROCESSOR_TYPE "x86_64"
-!else
-  !define PROCESSOR_TYPE "x86"
-!endif
+# required (if not uncomment below) input parameters:
+!define APPNAME "Portfolio Performance"
+!define EXECUTABLENAME "PortfolioPerformance"
+!define APPEXE "PortfolioPerformance.exe"
+!define APPINI "PortfolioPerformance.ini"
+!define FOLDER_NAME "PortfolioPerformance"
+!define INPUT_DIR "..\..\portfolio-product\target\products\name.abuchen.portfolio.distro.product\win32\win32\x86_64\portfolio"
+!define INSTDIR "$LOCALAPPDATA\Programs\${FOLDER_NAME}"
+!define INSTALLSIZE 177818 # size (in kB)
+!define PUBLISHER "Andreas Buchen"
 
-#
-# COMPRESSION
-# USE lzma, otherwise Windows will throw an error when the script was compiled under linux.
-#
-SetCompressor lzma
+!include nsDialogs.nsh
 
-#
-# GENERAL SYMBOL DEFINITIONS
-#
-Name "${PACKAGE_NAME}"
-!define REGKEY "SOFTWARE\$(^Name)"
-!define VERSION ${SOFTWARE_VERSION}
-!define COMPANY "${COMPANY_NAME}"
-!define URL "${COMPANY_URL}"
+OutFile "..\..\portfolio-product\target\products\${EXECUTABLENAME}-${SOFTWARE_VERSION}-setup.exe"
+Name "${APPNAME}"
 
-#
-# SOURCE CODE, PROCESSOR DEFINITIONS
-#
-!define SOURCE_CODE "..\..\portfolio-product\target\products\name.abuchen.portfolio.distro.product\win32\win32\${PROCESSOR_TYPE}\portfolio"
+BrandingText " "
 
-#
-# MULTIUSER SYMBOL DEFINITIONS
-#
-!define MULTIUSER_MUI
-!define MULTIUSER_EXECUTIONLEVEL Highest
-!define MULTIUSER_INSTALLMODE_COMMANDLINE
-!define MULTIUSER_INSTALLMODE_INSTDIR "${PACKAGE_NAME}"
-!define MULTIUSER_INSTALLMODE_INSTDIR_REGISTRY_KEY "${REGKEY}"
-!define MULTIUSER_INSTALLMODE_INSTDIR_REGISTRY_VALUE "Path"
+ChangeUI all "${NSISDIR}\Contrib\UIs\sdbarker_tiny.exe"
 
-#
-# MUI SYMBOL DEFINITIONS
-#
-!define MUI_ICON ".\NSIS\install.ico"
-!define MUI_UNICON ".\NSIS\uninstall.ico"
+Icon ".\NSIS\install.ico"
+ShowInstDetails nevershow
+InstProgressFlags smooth
+ManifestDPIAware true
 
-#
-# MUI SETTINGS / HEADER
-#
-!define MUI_HEADERIMAGE
-!define MUI_HEADERIMAGE_RIGHT
-!define MUI_HEADERIMAGE_BITMAP ".\NSIS\header.bmp"
-!define MUI_HEADERIMAGE_UNBITMAP ".\NSIS\header.bmp"
-!define MUI_WELCOMEPAGE_TITLE_3LINES
+InstallDir "${INSTDIR}"
 
-#
-# MUI SETTINGS / WIZARD
-#
-!define MUI_WELCOMEFINISHPAGE_BITMAP ".\NSIS\wizard.bmp"
-!define MUI_UNWELCOMEFINISHPAGE_BITMAP ".\NSIS\wizard.bmp"
-!define MUI_STARTMENUPAGE_REGISTRY_KEY ${REGKEY}
-!define MUI_STARTMENUPAGE_REGISTRY_VALUENAME StartMenuGroup
-!define MUI_STARTMENUPAGE_DEFAULTFOLDER "${PACKAGE_NAME}"
-!define MUI_FINISHPAGE_RUN $INSTDIR\${EXECUTABLE_NAME}.exe
+Page directory
+Page instfiles
 
-#
-#--------------------------------------------------------------INCLUDES
-#
+Section
 
-#
-# MODERN INTERFACE
-#
-!include MultiUser.nsh
-!include Sections.nsh
-!include MUI2.nsh
+  Var /GLOBAL APPNAMEFULL
+  StrCpy $APPNAMEFULL "${APPNAME}"
 
-#
-# PROFILES
-#
-#!include "NSIS\Libs\NTProfiles.nsh"
+  # output
+  SetOutPath $INSTDIR
 
-#
-# RESERVED FILES
-#
-ReserveFile "${NSISDIR}\Plugins\x86-unicode\AdvSplash.dll"
+  # uninstall previous version
+  IfFileExists "$INSTDIR\uninstall.exe" 0 noprevious
+  ExecWait '"$INSTDIR\uninstall.exe" /S _?=$INSTDIR'
+  noprevious:
 
-#
-#--------------------------------------------------------------VARIABLES
-#
+  # all files
+  #SetOverWrite try
+  File /r "${INPUT_DIR}\*"
 
-Var StartMenuGroup
+  # uninstall.exe
+  WriteUninstaller "$INSTDIR\uninstall.exe"
 
-#
-#--------------------------------------------------------------PAGES
-#
+  AccessControl::GrantOnFile "$INSTDIR" "(BU)" "GenericRead + GenericWrite + Delete"
+  Pop $0
+  ${If} $0 == error
+    Pop $0
+    DetailPrint `AccessControl error: $0`
+  ${EndIf}
 
-!insertmacro MUI_PAGE_WELCOME
-!insertmacro MUI_PAGE_DIRECTORY
-!insertmacro MUI_PAGE_STARTMENU Application $StartMenuGroup
-!insertmacro MUI_PAGE_INSTFILES
-!insertmacro MUI_PAGE_FINISH
-!insertmacro MUI_UNPAGE_CONFIRM
-!insertmacro MUI_UNPAGE_INSTFILES
+  # shortcuts
+  CreateShortcut "$DESKTOP\$APPNAMEFULL.lnk" "$INSTDIR\${APPEXE}"
 
-#
-# INSTALLER LANGUAGES
-#
-!insertmacro MUI_LANGUAGE English
-!insertmacro MUI_LANGUAGE German
-!insertmacro MUI_LANGUAGE Spanish
+  CreateDirectory  "$SMPROGRAMS\$APPNAMEFULL"
+  CreateShortCut   "$SMPROGRAMS\$APPNAMEFULL\$APPNAMEFULL.lnk" "$INSTDIR\${APPEXE}"
+  WriteINIStr      "$SMPROGRAMS\$APPNAMEFULL\$APPNAMEFULL Website.URL" "InternetShortcut" "URL" "https://www.portfolio-performance.info"
+  WriteINIStr      "$SMPROGRAMS\$APPNAMEFULL\$APPNAMEFULL Forum.URL" "InternetShortcut" "URL" "https://forum.portfolio-performance.info"
+  CreateShortCut   "$SMPROGRAMS\$APPNAMEFULL\Uninstall $APPNAMEFULL.lnk" "$INSTDIR\uninstall.exe"
 
-#
-#--------------------------------------------------------------INCLUDES
-#
+  # register uninstaller
+  # see http://nsis.sourceforge.net/A_simple_installer_with_start_menu_shortcut_and_uninstaller
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\$APPNAMEFULL" "DisplayName" "$APPNAMEFULL"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\$APPNAMEFULL" "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\$APPNAMEFULL" "QuietUninstallString" "$\"$INSTDIR\uninstall.exe$\" /S"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\$APPNAMEFULL" "InstallLocation" "$\"$INSTDIR$\""
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\$APPNAMEFULL" "DisplayIcon" "$\"$INSTDIR\${APPEXE}$\""
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\$APPNAMEFULL" "Publisher" "${PUBLISHER}"
+  # there is no option for modifying or repairing the install
+  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\$APPNAMEFULL" "NoModify" 1
+  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\$APPNAMEFULL" "NoRepair" 1
+  # set the INSTALLSIZE constant (!defined at the top of this script) so Add/Remove Programs can accurately report the size
+  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\$APPNAMEFULL" "EstimatedSize" ${INSTALLSIZE}
 
-#
-# INSTALLER VALUES
-#
-OutFile ..\..\portfolio-product\target\products\${EXECUTABLE_NAME}-${VERSION}-win-${PROCESSOR_TYPE}-setup.exe
-InstallDir $INSTDIR
-CRCCheck on
-XPStyle on
-ShowInstDetails show
-VIProductVersion 0.2.0.0
-VIAddVersionKey /LANG=${LANG_ENGLISH} ProductName "${PACKAGE_NAME}"
-VIAddVersionKey /LANG=${LANG_ENGLISH} ProductVersion "${VERSION}"
-VIAddVersionKey /LANG=${LANG_ENGLISH} CompanyName "${COMPANY}"
-VIAddVersionKey /LANG=${LANG_ENGLISH} CompanyWebsite "${URL}"
-VIAddVersionKey /LANG=${LANG_ENGLISH} FileVersion "${VERSION}"
-VIAddVersionKey /LANG=${LANG_ENGLISH} FileDescription ""
-VIAddVersionKey /LANG=${LANG_ENGLISH} LegalCopyright "${COMPANY_NAME}"
-InstallDirRegKey HKLM "${REGKEY}" Path
-ShowUninstDetails show
-
-#
-#--------------------------------------------------------------INSTALL SECTIONS
-#
-
-#
-# SEC0000
-#
-Section -XCompilation SEC0000
-    #
-    # SET THE INSTALL PATH
-    #
-    SetOutPath $INSTDIR
-    SetOverwrite on
-      
-    #
-    # INSTALL APPLICATION FILES
-    #
-    SetOutPath $INSTDIR\configuration
-    File /r "${SOURCE_CODE}\configuration\*"
-
-    SetOutPath $INSTDIR\features
-    File /r "${SOURCE_CODE}\features\*"
-
-    SetOutPath $INSTDIR\p2
-    File /r "${SOURCE_CODE}\p2\*"
-    
-    SetOutPath $INSTDIR\plugins
-    File /r "${SOURCE_CODE}\plugins\*"
-
-    SetOutPath $INSTDIR
-    File "${SOURCE_CODE}\artifacts.xml"
-    File "${SOURCE_CODE}\${EXECUTABLE_NAME}.exe"
-    File "${SOURCE_CODE}\${EXECUTABLE_NAME}.ini"
-
-    WriteRegStr HKLM "${REGKEY}\Components" "${PACKAGE_NAME}" 1
 SectionEnd
 
-#
-# SEC0001
-#
-Section -post SEC0001
-    #
-    # GET THE INSTALL PATH
-    #
-    WriteRegStr HKLM "${REGKEY}" Path $INSTDIR
-    SetOutPath $INSTDIR
-    WriteUninstaller $INSTDIR\uninstall.exe
-    !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
-    #
-    # MENU/PROGRAM ICONS
-    #
-    SetOutPath $SMPROGRAMS\$StartMenuGroup
-    SetOutPath $INSTDIR
-    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\$(^UninstallLink).lnk" "$INSTDIR\uninstall.exe"
-    CreateShortCut "$SMPROGRAMS\$StartMenuGroup\${PACKAGE_NAME}.lnk" "$INSTDIR\${EXECUTABLE_NAME}.exe"
-    CreateShortCut "$DESKTOP\${PACKAGE_NAME}.lnk" "$INSTDIR\${EXECUTABLE_NAME}.exe"
-    CreateShortCut "$QUICKLAUNCH\${PACKAGE_NAME}.lnk" "$INSTDIR\${EXECUTABLE_NAME}.exe"
+Section "Uninstall"
 
-    #
-    # REGISTRY 
-    #
-    !insertmacro MUI_STARTMENU_WRITE_END
-    WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayName "$(^Name)"
-    WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayVersion "${VERSION}"
-    WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" Publisher "${COMPANY}"
-    WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" URLInfoAbout "${URL}"
-    WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayIcon $INSTDIR\uninstall.exe
-    WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" UninstallString $INSTDIR\uninstall.exe
-    WriteRegDWORD HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" NoModify 1
-    WriteRegDWORD HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" NoRepair 1
+  # all files but not workspace
+  RMDir /r $INSTDIR\configuration
+  RMDir /r $INSTDIR\features
+  RMDir /r $INSTDIR\p2
+  RMDir /r $INSTDIR\plugins
+  Delete $INSTDIR\artifacts.xml
+  Delete $INSTDIR\${APPEXE}
+  Delete $INSTDIR\${APPINI}
+
+  # remove uninstaller from the registry
+  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}"
+
+  # remove shortcuts
+  RMDir /r "$SMPROGRAMS\${APPNAME}"
+#  Delete "$SMPROGRAMS\${APPNAME}"
+  Delete "$DESKTOP\${APPNAME}.lnk"
+
+  # remove uninstaller
+  Delete $INSTDIR\uninstall.exe
+
+  # remove install directory if empty
+  # see http://nsis.sourceforge.net/Delete_dir_only_if_empty
+  StrCpy $0 "$INSTDIR"
+  Call un.DeleteDirIfEmpty
+
 SectionEnd
 
-#
-#--------------------------------------------------------------UNINSTALL SECTIONS
-#
 
-# Macro for selecting uninstaller sections
-!macro SELECT_UNSECTION SECTION_NAME UNSECTION_ID
-    Push $R0
-    ReadRegStr $R0 HKLM "${REGKEY}\Components" "${SECTION_NAME}"
-    StrCmp $R0 1 0 next${UNSECTION_ID}
-    !insertmacro SelectSection "${UNSECTION_ID}"
-    GoTo done${UNSECTION_ID}
-
-    next${UNSECTION_ID}:
-    !insertmacro UnselectSection "${UNSECTION_ID}"
-
-    done${UNSECTION_ID}:
-    Pop $R0
-!macroend
-
-#
-# UNSEC0000
-#
-Section /o -un.XCompilation UNSEC0000
-    DeleteRegValue HKLM "${REGKEY}\Components" "${PACKAGE_NAME}"
-SectionEnd
-
-#
-# UNSEC0001
-#
-Section -un.post UNSEC0001
-    #
-    # DELETE REGISTRY ENTRIES
-    #
-    DeleteRegKey HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)"
-    DeleteRegValue HKLM "${REGKEY}" StartMenuGroup
-    DeleteRegValue HKLM "${REGKEY}" Path
-    DeleteRegKey /IfEmpty HKLM "${REGKEY}\Components"
-    DeleteRegKey /IfEmpty HKLM "${REGKEY}"
-     
-    #
-    # DELETE FILES
-    #
-    Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\$(^UninstallLink).lnk"
-    Delete /REBOOTOK "$DESKTOP\${PACKAGE_NAME}.lnk"
-    Delete /REBOOTOK "$QUICKLAUNCH\${PACKAGE_NAME}.lnk"
-
-    Delete /REBOOTOK "$INSTDIR\uninstall.exe"
-    Delete /REBOOTOK "$INSTDIR\${EXECUTABLE_NAME}.exe"
-    Delete /REBOOTOK "$INSTDIR\${EXECUTABLE_NAME}.ini"
-    Delete /REBOOTOK "$INSTDIR\artifacts.xml"
-
-    #
-    # DELETE DIRS
-    #
-    RMDir /R /REBOOTOK "$SMPROGRAMS\$StartMenuGroup"
-
-    #
-    # RMDir /REBOOTOK $INSTDIR (DELETE IF NOT EMPTY => WITHOUT /R)
-    #
-    RMDir /R /REBOOTOK "$INSTDIR\configuration"
-    RMDir /R /REBOOTOK "$INSTDIR\features"
-    RMDir /R /REBOOTOK "$INSTDIR\p2"
-    RMDir /R /REBOOTOK "$INSTDIR\plugins"
-
-    RMDir /REBOOTOK "$INSTDIR"
-
-    Push $R0
-    StrCpy $R0 $StartMenuGroup 1
-    StrCmp $R0 ">" no_smgroup
-    
-    no_smgroup:
-    Pop $R0
-SectionEnd
-
-#
-#--------------------------------------------------------------FUNCTIONS
-#
-
-#
-# INSTALLER
-#
-Function .onInit
-    #
-    # SET THE CORRECT REGISTRY ACCESS
-    #
-    !if ${ARCHITECTURE} == x64
-      SetRegView 64
-    !else
-      SetRegView 32
-    !endif
-    #
-    # INSTALL
-    #
-    InitPluginsDir
-    !insertmacro MULTIUSER_INIT
-    !if ${ARCHITECTURE} == x64
-      StrCpy $INSTDIR "$PROGRAMFILES64\${PACKAGE_NAME}"
-    !else
-      StrCpy $INSTDIR "$PROGRAMFILES\${PACKAGE_NAME}"
-    !endif
+Function un.DeleteDirIfEmpty
+  FindFirst $R0 $R1 "$0\*.*"
+  strcmp $R1 "." 0 NoDelete
+   FindNext $R0 $R1
+   strcmp $R1 ".." 0 NoDelete
+    ClearErrors
+    FindNext $R0 $R1
+    IfErrors 0 NoDelete
+     FindClose $R0
+     Sleep 1000
+     RMDir "$0"
+  NoDelete:
+   FindClose $R0
 FunctionEnd
-
-#
-# UNINSTALLER
-#
-Function un.onInit
-    #
-    # SET THE CORRECT REGISTRY ACCESS
-    #    
-    !if ${ARCHITECTURE} == x64
-      SetRegView 64
-    !else
-      SetRegView 32
-    !endif
-    #
-    # UNINSTALL
-    #
-    SetAutoClose true
-    !insertmacro MUI_STARTMENU_GETFOLDER Application $StartMenuGroup
-    !insertmacro MULTIUSER_UNINIT
-    !insertmacro SELECT_UNSECTION "${PACKAGE_NAME}" ${UNSEC0000}
-FunctionEnd
-
-#
-# LANGUAGE STRINGS
-#
-LangString ^UninstallLink ${LANG_ENGLISH} "Uninstall $(^Name)"
-LangString ^UninstallLink ${LANG_GERMAN} "Uninstall $(^Name)"
-LangString ^UninstallLink ${LANG_SPANISH} "Uninstall $(^Name)"

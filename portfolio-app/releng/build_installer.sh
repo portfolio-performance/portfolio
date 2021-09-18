@@ -8,5 +8,4 @@ fi
 
 rm ../../portfolio-product/target/products/*.exe
 
-makensis -DARCHITECTURE=x32 -DSOFTWARE_VERSION=$version ./setup.nsi
-makensis -DARCHITECTURE=x64 -DSOFTWARE_VERSION=$version ./setup.nsi
+makensis -DSOFTWARE_VERSION=$version ./setup.nsi
