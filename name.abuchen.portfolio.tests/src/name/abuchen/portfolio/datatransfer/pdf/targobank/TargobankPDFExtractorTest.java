@@ -2,8 +2,8 @@ package name.abuchen.portfolio.datatransfer.pdf.targobank;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsEmptyCollection.empty;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -274,7 +274,7 @@ public class TargobankPDFExtractorTest
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(15.59)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(81)));
-        assertThat(transaction.getNote(), is(
+        assertThat(transaction.getSource(), is(
                         "Ertragsgutschrift_01_Ertragsgutschrift_(WPX024).txt; Ertragsgutschrift_01_Steuerbeilage_(WPX040).txt"));
 
         Unit grossValue = transaction.getUnit(Unit.Type.GROSS_VALUE).get();
@@ -326,7 +326,7 @@ public class TargobankPDFExtractorTest
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(15.59)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(81)));
-        assertThat(transaction.getNote(), is("Ertragsgutschrift_01_Steuerbeilage_(WPX040).txt"));
+        assertThat(transaction.getSource(), is("Ertragsgutschrift_01_Steuerbeilage_(WPX040).txt"));
         assertThat(transaction.getUnitSum(Unit.Type.TAX).getAmount(), is(Values.Amount.factorize(5.59)));
     }
 
