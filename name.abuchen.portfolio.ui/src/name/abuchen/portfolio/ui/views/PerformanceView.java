@@ -179,20 +179,20 @@ public class PerformanceView extends AbstractHistoricView
         // result tabs
         CTabFolder folder = new CTabFolder(parent, SWT.BORDER);
 
-        createCalculationItem(folder, Messages.PerformanceTabCalculation);
+        createCalculationItem(folder, Images.VIEW_TABLE, Messages.PerformanceTabCalculation);
 
-        snapshotStart = createStatementOfAssetsItem(folder, Messages.PerformanceTabAssetsAtStart);
+        snapshotStart = createStatementOfAssetsItem(folder, Images.VIEW_TABLE, Messages.PerformanceTabAssetsAtStart);
         snapshotStart.getTableViewer().addSelectionChangedListener(
                         e -> setInformationPaneInput(e.getStructuredSelection().getFirstElement()));
 
-        snapshotEnd = createStatementOfAssetsItem(folder, Messages.PerformanceTabAssetsAtEnd);
+        snapshotEnd = createStatementOfAssetsItem(folder, Images.VIEW_TABLE, Messages.PerformanceTabAssetsAtEnd);
         snapshotEnd.getTableViewer().addSelectionChangedListener(
                         e -> setInformationPaneInput(e.getStructuredSelection().getFirstElement()));
 
-        earnings = createTransactionViewer(folder, Messages.PerformanceTabEarnings);
-        createEarningsByAccountsItem(folder, Messages.PerformanceTabEarningsByAccount);
-        taxes = createTransactionViewer(folder, Messages.PerformanceTabTaxes);
-        fees = createTransactionViewer(folder, Messages.PerformanceTabFees);
+        earnings = createTransactionViewer(folder, Images.VIEW_TABLE, Messages.PerformanceTabEarnings);
+        createEarningsByAccountsItem(folder, Images.VIEW_TABLE, Messages.PerformanceTabEarningsByAccount);
+        taxes = createTransactionViewer(folder, Images.VIEW_TABLE, Messages.PerformanceTabTaxes);
+        fees = createTransactionViewer(folder, Images.VIEW_TABLE, Messages.PerformanceTabFees);
 
         folder.setSelection(0);
 
@@ -201,7 +201,7 @@ public class PerformanceView extends AbstractHistoricView
         return folder;
     }
 
-    private StatementOfAssetsViewer createStatementOfAssetsItem(CTabFolder folder, String title)
+    private StatementOfAssetsViewer createStatementOfAssetsItem(CTabFolder folder, Images image, String title)
     {
         StatementOfAssetsViewer viewer = make(StatementOfAssetsViewer.class);
         Control control = viewer.createControl(folder);
@@ -209,11 +209,12 @@ public class PerformanceView extends AbstractHistoricView
         CTabItem item = new CTabItem(folder, SWT.NONE);
         item.setText(title);
         item.setControl(control);
+        item.setImage(image.image());
 
         return viewer;
     }
 
-    private void createCalculationItem(CTabFolder folder, String title)
+    private void createCalculationItem(CTabFolder folder, Images image, String title)
     {
         Composite container = new Composite(folder, SWT.NONE);
         TreeColumnLayout layout = new TreeColumnLayout();
@@ -389,6 +390,7 @@ public class PerformanceView extends AbstractHistoricView
         CTabItem item = new CTabItem(folder, SWT.NONE);
         item.setText(title);
         item.setControl(container);
+        item.setImage(image.image());
 
         hookContextMenu(calculation.getTree(), this::fillContextMenu);
     }
@@ -403,7 +405,7 @@ public class PerformanceView extends AbstractHistoricView
         new SecurityContextMenu(this).menuAboutToShow(manager, security);
     }
 
-    private TableViewer createTransactionViewer(CTabFolder folder, String title)
+    private TableViewer createTransactionViewer(CTabFolder folder, Images image, String title)
     {
         Composite container = new Composite(folder, SWT.NONE);
         TableColumnLayout layout = new TableColumnLayout();
@@ -502,6 +504,7 @@ public class PerformanceView extends AbstractHistoricView
         CTabItem item = new CTabItem(folder, SWT.NONE);
         item.setText(title);
         item.setControl(container);
+        item.setImage(image.image());
 
         return transactionViewer;
     }
@@ -677,7 +680,7 @@ public class PerformanceView extends AbstractHistoricView
         support.addColumn(column);
     }
 
-    private void createEarningsByAccountsItem(CTabFolder folder, String title)
+    private void createEarningsByAccountsItem(CTabFolder folder, Images image, String title)
     {
         Composite container = new Composite(folder, SWT.NONE);
         TableColumnLayout layout = new TableColumnLayout();
@@ -789,6 +792,7 @@ public class PerformanceView extends AbstractHistoricView
         CTabItem item = new CTabItem(folder, SWT.NONE);
         item.setText(title);
         item.setControl(container);
+        item.setImage(image.image());
     }
 
     @Override
