@@ -188,6 +188,28 @@
 						</executions>
 					</plugin>
 					<plugin>
+						<artifactId>maven-resources-plugin</artifactId>
+						<version>3.2.0</version>
+						<executions>
+							<execution>
+								<id>copy-resources</id>
+								<phase>package</phase>
+								<goals>
+									<goal>copy-resources</goal>
+								</goals>
+								<configuration>
+									<outputDirectory>${basedir}/target/config</outputDirectory>
+									<resources>
+										<resource>
+											<directory>src/main/config</directory>
+											<filtering>true</filtering>
+										</resource>
+									</resources>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>exec-maven-plugin</artifactId>
 						<version>1.6.0</version>
@@ -253,6 +275,22 @@
 									<arguments>
 										<argument>Portfolio Performance ${project.artifact.selectedVersion.majorVersion}.${project.artifact.selectedVersion.minorVersion}.${project.artifact.selectedVersion.incrementalVersion}.dmg</argument>
 										<argument>PortfolioPerformance-${project.version}.dmg</argument>
+									</arguments>
+									<skip>${applesigner.skip}</skip>
+								</configuration>
+							</execution>
+							<execution>
+								<id>notarize</id>
+								<phase>package</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+								<configuration>
+									<!-- install from https://github.com/mitchellh/gon -->
+									<executable>gon</executable>
+									<workingDirectory>${project.build.directory}/products</workingDirectory>
+									<arguments>
+										<argument>${basedir}/target/config/notarization-config.json</argument>
 									</arguments>
 									<skip>${applesigner.skip}</skip>
 								</configuration>
