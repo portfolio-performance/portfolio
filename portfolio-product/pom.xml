@@ -295,6 +295,22 @@
 									<skip>${applesigner.skip}</skip>
 								</configuration>
 							</execution>
+							<execution>
+								<id>build-installer</id>
+								<phase>package</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+								<configuration>
+									<executable>makensis</executable>
+									<workingDirectory>${project.basedir}/installer</workingDirectory>
+									<arguments>
+										<argument>-DSOFTWARE_VERSION=${project.version}</argument>
+										<argument>${project.basedir}/installer/installer.nsi</argument>
+									</arguments>
+									<skip>${installer.skip}</skip>
+								</configuration>
+							</execution>
 						</executions>
 					</plugin>
 					<plugin>
@@ -313,6 +329,10 @@
 										<artifact>
 											<file>${project.build.directory}/products/PortfolioPerformance-${project.version}.dmg</file>
 											<type>dmg</type>
+										</artifact>
+										<artifact>
+											<file>${project.build.directory}/products/PortfolioPerformance-${project.version}-setup.exe</file>
+											<type>exe</type>
 										</artifact>
 									</artifacts>
 								</configuration>

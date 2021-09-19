@@ -6,21 +6,21 @@
 !define APPEXE "PortfolioPerformance.exe"
 !define APPINI "PortfolioPerformance.ini"
 !define FOLDER_NAME "PortfolioPerformance"
-!define INPUT_DIR "..\..\portfolio-product\target\products\name.abuchen.portfolio.distro.product\win32\win32\x86_64\portfolio"
+!define INPUT_DIR "..\target\products\name.abuchen.portfolio.distro.product\win32\win32\x86_64\portfolio"
 !define INSTDIR "$LOCALAPPDATA\Programs\${FOLDER_NAME}"
 !define INSTALLSIZE 177818 # size (in kB)
 !define PUBLISHER "Andreas Buchen"
 
 !include nsDialogs.nsh
 
-OutFile "..\..\portfolio-product\target\products\${EXECUTABLENAME}-${SOFTWARE_VERSION}-setup.exe"
+OutFile "..\target\products\${EXECUTABLENAME}-${SOFTWARE_VERSION}-setup.exe"
 Name "${APPNAME}"
 
 BrandingText " "
 
 ChangeUI all "${NSISDIR}\Contrib\UIs\sdbarker_tiny.exe"
 
-Icon ".\NSIS\install.ico"
+Icon ".\install.ico"
 ShowInstDetails nevershow
 InstProgressFlags smooth
 ManifestDPIAware true
