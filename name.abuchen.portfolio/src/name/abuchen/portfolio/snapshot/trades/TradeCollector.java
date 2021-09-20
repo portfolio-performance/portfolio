@@ -228,7 +228,7 @@ public class TradeCollector
         PortfolioTransaction t = entry.getPortfolioTransaction();
 
         BuySellEntry copy = new BuySellEntry();
-        copy.setPortfolio(portfolio);
+        copy.setPortfolio(entry.getPortfolio());
         copy.setAccount(entry.getAccount());
 
         copy.setDate(t.getDateTime());
