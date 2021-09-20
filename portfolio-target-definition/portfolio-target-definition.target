@@ -32,9 +32,7 @@
 		<unit id="org.mockito.source" version="2.23.0.v20190527-1420"/>
 		<unit id="net.bytebuddy.byte-buddy-agent.source" version="1.9.0.v20181106-1534"/>
 		<unit id="net.bytebuddy.byte-buddy.source" version="1.9.0.v20181107-1410"/>
-        <unit id="org.objenesis" version="2.6.0.v20180420-1519"/>
-        <unit id="org.objenesis.source" version="2.6.0.v20180420-1519"/>
-		<unit id="org.objectweb.asm" version="5.0.1.v201404251740"/>
+		<unit id="org.apache.commons.math3" version="3.5.0.v20190611-1023"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<repository location="https://download.eclipse.org/nebula/releases/2.3.0"/>

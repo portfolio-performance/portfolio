@@ -93,6 +93,7 @@ import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.TouchClientListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.OptionLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ReportingPeriodColumnOptions;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
@@ -298,6 +299,7 @@ public class StatementOfAssetsViewer
         assets = new TableViewer(container, SWT.FULL_SELECTION);
         ColumnViewerToolTipSupport.enableFor(assets, ToolTip.NO_RECREATE);
         ColumnEditingSupport.prepare(assets);
+        CopyPasteSupport.enableFor(assets);
 
         ImportFromURLDropAdapter.attach(this.assets.getControl(), owner.getPart());
         ImportFromFileDropAdapter.attach(this.assets.getControl(), owner.getPart());

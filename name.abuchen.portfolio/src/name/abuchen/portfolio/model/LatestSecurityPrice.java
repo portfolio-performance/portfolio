@@ -9,7 +9,8 @@ public class LatestSecurityPrice extends SecurityPrice
     private long low;
     private long volume;
 
-    private long previousClose;
+    @Deprecated
+    /* package */ transient long previousClose;
 
     public static final long NOT_AVAILABLE = -1L;
 
@@ -61,21 +62,10 @@ public class LatestSecurityPrice extends SecurityPrice
         this.volume = volume;
     }
 
-    @Deprecated
-    public long getPreviousClose()
-    {
-        return previousClose;
-    }
-
-    public void setPreviousClose(long previousClose)
-    {
-        this.previousClose = previousClose;
-    }
-
     @Override
     public int hashCode()
     {
-        return 31 * super.hashCode() + Objects.hash(high, low, previousClose, volume);
+        return 31 * super.hashCode() + Objects.hash(high, low, volume);
     }
 
     @Override
@@ -88,6 +78,6 @@ public class LatestSecurityPrice extends SecurityPrice
         if (getClass() != obj.getClass())
             return false;
         LatestSecurityPrice other = (LatestSecurityPrice) obj;
-        return super.equals(other) && high == other.high && low == other.low && previousClose == other.previousClose && volume == other.volume;
+        return super.equals(other) && high == other.high && low == other.low && volume == other.volume;
     }
 }

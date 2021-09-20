@@ -10,7 +10,8 @@ public final class Money implements Comparable<Money>
 
     private Money(String currencyCode, long amount)
     {
-        Objects.requireNonNull(currencyCode);
+        if (currencyCode == null || currencyCode.isEmpty())
+            throw new NullPointerException();
 
         this.currencyCode = currencyCode;
         this.amount = amount;
@@ -80,6 +81,11 @@ public final class Money implements Comparable<Money>
     public Money multiply(long multiplicand)
     {
         return Money.of(currencyCode, amount * multiplicand);
+    }
+
+    public Money multiplyAndRound(double multiplicand)
+    {
+        return Money.of(currencyCode, Math.round(amount * multiplicand));
     }
 
     public Money with(MonetaryOperator operator)

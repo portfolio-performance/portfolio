@@ -37,7 +37,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         addAccountTransaction();
         addTransferOutTransaction();
         addTransferInTransaction();
-        addAdvanceFeeTransaction();
+        addAdvanceTaxTransaction();
     }
 
     @Override
@@ -971,7 +971,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         addTransferInOutTaxReturnBlock(type);
     }
 
-    private void addAdvanceFeeTransaction()
+    private void addAdvanceTaxTransaction()
     {
         final DocumentType type = new DocumentType("Wertpapierabrechnung Vorabpauschale", (context, lines) -> {
             Pattern pDate = Pattern.compile("Buchungsdatum +(?<date>\\d+.\\d+.\\d{4}+) *");

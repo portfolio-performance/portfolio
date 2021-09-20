@@ -6,11 +6,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
@@ -306,5 +308,437 @@ public class PostfinancePDFExtractorTest
                         is(Money.of("CHF", Values.Amount.factorize(90.00))));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-01-03T00:00")));
+    }
+    
+    @Test
+    public void testZinsabschluss01()
+    {
+        Client client = new Client();
+
+        PostfinancePDFExtractor extractor = new PostfinancePDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "PostfinanceZinsabschluss01.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+       
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(4.59))));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-31T00:00")));
+    }
+    
+    @Test
+    public void testZinsabschluss02()
+    {
+        Client client = new Client();
+
+        PostfinancePDFExtractor extractor = new PostfinancePDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "PostfinanceZinsabschluss02.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+       
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
+        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(116.66))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(75.83))));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-31T00:00")));
+        
+        Optional<Unit> unit = transaction.getUnit(Unit.Type.TAX);
+        assertThat("Expect tax unit", unit.isPresent());
+        assertThat(unit.get().getAmount(), is(Money.of("CHF", Values.Amount.factorize(40.83))));
+    }
+    
+    @Test
+    public void testZinsabschlussBefore2018_01()
+    {
+        Client client = new Client();
+
+        PostfinancePDFExtractor extractor = new PostfinancePDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        //test format used before 2018
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "PostfinanceZinsabschlussBefore2018_01.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+       
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(1.00))));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-12-31T00:00")));
+    }
+    
+    @Test
+    public void testZinsabschlussBefore2018_02()
+    {
+        Client client = new Client();
+
+        PostfinancePDFExtractor extractor = new PostfinancePDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        //test format used before 2018
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "PostfinanceZinsabschlussBefore2018_02.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+       
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
+        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(400.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(260.00))));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-12-31T00:00")));
+
+        Optional<Unit> unit = transaction.getUnit(Unit.Type.TAX);
+        assertThat("Expect tax unit", unit.isPresent());
+        assertThat(unit.get().getAmount(), is(Money.of("CHF", Values.Amount.factorize(140.00))));
+    }
+    
+    @Test
+    public void testKontoauszugGiroBefore2018_01()
+    {
+        Client client = new Client();
+
+        PostfinancePDFExtractor extractor = new PostfinancePDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        //Capture formatting used before 04/2018
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "PostfinanceKontoauszugGiroBefore2018_01.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(54));
+        new AssertImportActions().check(results, "CHF");
+       
+        // get transactions
+        Iterator<Extractor.Item> iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
+        assertThat(results.stream().filter(i -> i instanceof TransactionItem).count(), is(54L));
+
+        //removals
+        
+        //E-FINANCE 00-000000-0
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 250.00, "2015-04-01T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 1000.00, "2015-04-02T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 350.00, "2015-04-02T00:00");
+        
+        //AUFTRAG DEBIT DIRECT
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 250.00, "2015-04-03T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 250.00, "2015-04-04T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 1150.00, "2015-04-04T00:00");
+
+        //KAUF/ONLINE-SHOPPING
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 200.00, "2015-04-05T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 100.00, "2015-04-06T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 150.00, "2015-04-06T00:00");
+
+        //KAUF/ONLINE-SHOPPING
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 150.00, "2015-04-07T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 100.00, "2015-04-08T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 200.00, "2015-04-08T00:00");
+        
+        //BARGELDBEZUG
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 50.00, "2015-04-09T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 100.00, "2015-04-10T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 150.00, "2015-04-10T00:00");
+        
+        //ONLINE-SHOPPING
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 50.00, "2015-04-11T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 75.00, "2015-04-12T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 25.00, "2015-04-12T00:00");
+
+        //KAUF/DIENSTLEISTUNG
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 100.00, "2015-04-13T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 50.00, "2015-04-14T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 100.00, "2015-04-14T00:00");
+      
+        //AUFTRAG CH-DD-BASISLASTSCHRIFT
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 100.00, "2015-04-15T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 200.00, "2015-04-16T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 300.00, "2015-04-16T00:00");
+        
+        //GIRO INTERNATIONAL (SEPA)
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 100.00, "2015-04-17T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 150.00, "2015-04-18T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 250.00, "2015-04-18T00:00");
+        
+        //deposits
+
+        //GIRO AUSLAND
+        assertAccountTransaction(iter, AccountTransaction.Type.DEPOSIT, 100.00, "2015-04-22T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.DEPOSIT, 150.00, "2015-04-22T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.DEPOSIT, 250.00, "2015-04-22T00:00");
+        
+        //GIRO AUS ONLINE-SIC 000|0000
+        assertAccountTransaction(iter, AccountTransaction.Type.DEPOSIT, 1300.00, "2015-04-22T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.DEPOSIT, 2000.00, "2015-04-22T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.DEPOSIT, 250.00, "2015-04-22T00:00");
+
+        //GIRO AUS KONTO
+        assertAccountTransaction(iter, AccountTransaction.Type.DEPOSIT, 1000.00, "2015-04-23T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.DEPOSIT, 500.00, "2015-04-23T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.DEPOSIT, 250.00, "2015-04-23T00:00");
+        
+        //GUTSCHRIFT ONLINE-SHOPPING
+        assertAccountTransaction(iter, AccountTransaction.Type.DEPOSIT, 100.00, "2015-04-24T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.DEPOSIT, 500.00, "2015-04-24T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.DEPOSIT, 250.00, "2015-04-24T00:00");
+
+        //GUTSCHRIFT VON FREMDBANK 000|0000
+        assertAccountTransaction(iter, AccountTransaction.Type.DEPOSIT, 100.00, "2015-04-25T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.DEPOSIT, 500.00, "2015-04-25T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.DEPOSIT, 1250.00, "2015-04-25T00:00");
+
+        //GUTSCHRIFT VON FREMDBANK
+        assertAccountTransaction(iter, AccountTransaction.Type.DEPOSIT, 100.00, "2015-04-26T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.DEPOSIT, 500.00, "2015-04-26T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.DEPOSIT, 250.00, "2015-04-26T00:00");
+
+        //transfer
+        
+        //ÜBERTRAG
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 100.00, "2015-04-27T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.DEPOSIT, 150.00, "2015-04-27T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 250.00, "2015-04-27T00:00");
+        
+        //fees
+        
+        //FÜR GIRO INTERNATIONAL (SEPA) > 0
+        assertAccountTransaction(iter, AccountTransaction.Type.FEES, 1.00, "2015-04-30T00:00");
+
+        //PREIS FÜR DIE KONTOFÜHRUNG > 0
+        assertAccountTransaction(iter, AccountTransaction.Type.FEES, 2.00, "2015-04-30T00:00");
+        
+        //FÜR DIE KONTOFÜHRUNG > 0
+        assertAccountTransaction(iter, AccountTransaction.Type.FEES, 5.00, "2015-04-30T00:00");
+        
+        //JAHRESPREIS LOGIN
+        assertAccountTransaction(iter, AccountTransaction.Type.FEES, 4.00, "2015-04-30T00:00");
+        
+        //FÜR KONTOAUSZUG PAPIER
+        assertAccountTransaction(iter, AccountTransaction.Type.FEES, 24.00, "2015-04-30T00:00");
+       
+        //interest
+        
+        //ZINSABSCHLUSS > 0
+        assertAccountTransaction(iter, AccountTransaction.Type.INTEREST, 1.00, "2015-04-30T00:00");
+        
+        assertThat("No additional bookings found", !iter.hasNext());
+    }
+    
+    @Test
+    public void testKontoauszugGiro01()
+    {
+        Client client = new Client();
+
+        PostfinancePDFExtractor extractor = new PostfinancePDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        //Capture formatting used since 04/2018
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "PostfinanceKontoauszugGiro01.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(60));
+        new AssertImportActions().check(results, "CHF");
+       
+        // get transactions
+        Iterator<Extractor.Item> iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
+        assertThat(results.stream().filter(i -> i instanceof TransactionItem).count(), is(60L));
+
+        //removals
+        
+        //AUFTRAG C H-D D-B ASISLASTSCHRIFT
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 100.00, "2018-04-01T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 150.00, "2018-04-01T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 250.00, "2018-04-01T00:00");
+        
+        //ESR
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 250.00, "2018-04-02T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 150.00, "2018-04-02T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 100.00, "2018-04-02T00:00");
+        
+        //KAUF/DIENSTLEISTUNG
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 25.00, "2018-04-03T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 15.00, "2018-04-03T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 10.00, "2018-04-03T00:00");
+        
+        //ÜBERTRAG A UF K ONTO
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 2000.00, "2018-04-04T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 1000.00, "2018-04-04T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 500.00, "2018-04-04T00:00");
+
+        //GIRO P OST
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 1300.00, "2018-04-05T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 150.00, "2018-04-05T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 200.00, "2018-04-05T00:00");
+        
+        //GIRO B ANK
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 1000.00, "2018-04-06T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 100.00, "2018-04-06T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 200.00, "2018-04-06T00:00");
+        
+        //KAUF/ONLINE S HOPPING
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 10.00, "2018-04-07T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 15.00, "2018-04-07T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 25.00, "2018-04-07T00:00");
+
+        //BARGELDBEZUG V OM 0 0.00.0000
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 150.00, "2018-04-07T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 100.00, "2018-04-07T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 100.00, "2018-04-07T00:00");
+        
+        //BARGELDBEZUG
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 100.00, "2018-04-08T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 150.00, "2018-04-08T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 250.00, "2018-04-08T00:00");
+
+        //KAUF/DIENSTLEISTUNG VOM 00.00.0000
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 100.00, "2018-04-08T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 150.00, "2018-04-08T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 250.00, "2018-04-08T00:00");
+        
+        //KAUF/DIENSTLEISTUNG V OM 0 0.00.0000
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 100.00, "2018-04-08T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 150.00, "2018-04-08T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 250.00, "2018-04-08T00:00");
+        
+        //KAUF/ONLINE-SHOPPING VOM 00.00.0000
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 10.00, "2018-04-09T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 15.00, "2018-04-09T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 25.00, "2018-04-09T00:00");
+        
+        //KAUF/ONLINE-SHOPPING V OM 0 0.00.0000
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 10.00, "2018-04-09T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 15.00, "2018-04-09T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 25.00, "2018-04-09T00:00");
+        
+        //TWINT GELD SENDEN
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 10.00, "2018-04-10T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 15.00, "2018-04-10T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 25.00, "2018-04-10T00:00");
+        
+        //TWINT G ELD S ENDEN
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 10.00, "2018-04-10T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 15.00, "2018-04-10T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 25.00, "2018-04-10T00:00");
+        
+        //TWINT KAUF/DIENSTLEISTUNG
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 10.00, "2018-04-10T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 15.00, "2018-04-10T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 25.00, "2018-04-10T00:00");
+        
+        //deposits
+        
+        //GUTSCHRIFT V ON F REMDBANK
+        assertAccountTransaction(iter, AccountTransaction.Type.DEPOSIT, 10000.00, "2018-04-20T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.DEPOSIT, 600.00, "2018-04-20T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.DEPOSIT, 500.00, "2018-04-20T00:00");
+        
+        //A EINZAHLUNGSSCHEIN/QR-ZAHLTEIL
+        assertAccountTransaction(iter, AccountTransaction.Type.DEPOSIT, 50.00, "2018-04-21T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.DEPOSIT, 150.00, "2018-04-21T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.DEPOSIT, 250.00, "2018-04-21T00:00");
+
+        //GUTSCHRIFT ONLINE SHOPPING
+        assertAccountTransaction(iter, AccountTransaction.Type.DEPOSIT, 50.00, "2018-04-22T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.DEPOSIT, 150.00, "2018-04-22T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.DEPOSIT, 250.00, "2018-04-22T00:00");
+        
+        //fees
+        
+        //PREIS F ÜR D IE K ONTOFÜHRUNG > 0
+        assertAccountTransaction(iter, AccountTransaction.Type.FEES, 5.00, "2018-04-30T00:00");
+        
+        //PREIS FÜR EINZAHLUNGEN AM SCHALTER  
+        assertAccountTransaction(iter, AccountTransaction.Type.FEES, 2.40, "2018-04-30T00:00");
+
+        //interest
+        
+        //ZINSABSCHLUSS > 0
+        assertAccountTransaction(iter, AccountTransaction.Type.INTEREST, 1.00, "2018-04-30T00:00");
+        
+        assertThat("No additional bookings found", !iter.hasNext());
+    }
+    
+    @Test
+    public void testKontoauszugGiro02()
+    {
+        Client client = new Client();
+
+        PostfinancePDFExtractor extractor = new PostfinancePDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "PostfinanceKontoauszugGiro02.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(6));
+        new AssertImportActions().check(results, "CHF");
+        
+        // get transactions
+        Iterator<Extractor.Item> iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
+        assertThat(results.stream().filter(i -> i instanceof TransactionItem).count(), is(6L));
+
+        //ÜBERTRAG AUF KONTO
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 20000.00, "2018-04-09T00:00");
+        
+        //ÜBERTRAG A UF K ONTO
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 20000.00, "2018-04-09T00:00");
+        
+        //ÜBERTRAG AUS KONTO
+        assertAccountTransaction(iter, AccountTransaction.Type.DEPOSIT, 25000.00, "2018-04-10T00:00");
+        
+        //ÜBERTRAG A US K ONTO
+        assertAccountTransaction(iter, AccountTransaction.Type.DEPOSIT, 25000.00, "2018-04-11T00:00");
+        
+        //ÜBERTRAG
+        //AUF KONTO 00-00000-0
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 40000.00, "2018-04-12T00:00");
+        
+        //ÜBERTRAG
+        //AUS KONTO 00-00000-0
+        assertAccountTransaction(iter, AccountTransaction.Type.DEPOSIT, 10000.00, "2018-04-13T00:00");
+
+        assertThat("No additional bookings found", !iter.hasNext());
+    }
+    
+    private static void assertAccountTransaction(Iterator<Item> iter, AccountTransaction.Type transactionType, double value, String dateTime)
+    {
+        assertThat("Expected transaction to exist", iter.hasNext());
+        
+        Item item = iter.next();
+
+        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        String itemDescription = "Transaction: " + transaction.getMonetaryAmount() + " " + transaction.getDateTime().toString();
+        assertThat(itemDescription, transaction.getType(), is(transactionType));
+        assertThat(itemDescription, transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(value))));
+        assertThat(itemDescription, transaction.getDateTime(), is(LocalDateTime.parse(dateTime)));
     }
 }

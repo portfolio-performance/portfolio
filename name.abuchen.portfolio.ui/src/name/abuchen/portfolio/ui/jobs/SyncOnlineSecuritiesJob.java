@@ -17,6 +17,7 @@ import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
 import name.abuchen.portfolio.online.impl.PortfolioReportNet;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.util.WebAccess.WebAccessException;
 
 public final class SyncOnlineSecuritiesJob extends AbstractClientJob
 {
@@ -59,6 +60,10 @@ public final class SyncOnlineSecuritiesJob extends AbstractClientJob
                     PortfolioPlugin.info(MessageFormat.format("No data found for ''{0}'' with OnlineId {1}", //$NON-NLS-1$
                                     security.getName(), security.getOnlineId()));
                 }
+            }
+            catch (WebAccessException e)
+            {
+                PortfolioPlugin.log(e.getMessage());
             }
             catch (IOException e)
             {

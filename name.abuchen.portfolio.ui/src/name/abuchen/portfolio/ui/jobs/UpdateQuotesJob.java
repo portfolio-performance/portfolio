@@ -28,6 +28,7 @@ import name.abuchen.portfolio.online.impl.HTMLTableQuoteFeed;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.util.RateLimitExceededException;
+import name.abuchen.portfolio.util.WebAccess.WebAccessException;
 
 public final class UpdateQuotesJob extends AbstractClientJob
 {
@@ -298,7 +299,9 @@ public final class UpdateQuotesJob extends AbstractClientJob
     {
         MultiStatus status = new MultiStatus(PortfolioPlugin.PLUGIN_ID, IStatus.ERROR, label, null);
         for (Exception exception : exceptions)
-            status.add(new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, exception.getMessage(), exception));
+            status.add(new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, exception.getMessage(),
+                            exception instanceof WebAccessException ? null : exception));
+
         return status;
     }
 

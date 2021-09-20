@@ -5,6 +5,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 import org.apache.http.Header;
@@ -17,6 +18,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.EnglishReasonPhraseCatalog;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHeader;
@@ -86,6 +88,7 @@ import org.apache.http.util.EntityUtils;
  *                       .get();
  */
 //@formatter:on
+@SuppressWarnings("restriction")
 public class WebAccess
 {
     @FunctionalInterface
@@ -202,7 +205,7 @@ public class WebAccess
             response = client.execute(request);
 
             if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK)
-                throw new WebAccessException(uri.toString() + " --> " + response.getStatusLine().getStatusCode(), //$NON-NLS-1$
+                throw new WebAccessException(buildMessage(uri, response.getStatusLine().getStatusCode()),
                                 response.getStatusLine().getStatusCode());
 
             return response;
@@ -211,6 +214,22 @@ public class WebAccess
         {
             throw new IOException(e);
         }
+    }
+
+    private String buildMessage(URI uri, int statusCode)
+    {
+        String message = uri.toString() + " --> " + statusCode; //$NON-NLS-1$
+        try
+        {
+            String reason = EnglishReasonPhraseCatalog.INSTANCE.getReason(statusCode, Locale.getDefault());
+            if (reason != null)
+                return message + " " + reason; //$NON-NLS-1$
+        }
+        catch (IllegalArgumentException e)
+        {
+            // ignore -> unable to retrieve message
+        }
+        return message;
     }
 
     public String getURL() throws URISyntaxException

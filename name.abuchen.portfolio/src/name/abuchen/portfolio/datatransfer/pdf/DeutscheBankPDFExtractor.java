@@ -49,6 +49,14 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
         pdfTransaction.subject(() -> {
             BuySellEntry entry = new BuySellEntry();
             entry.setType(PortfolioTransaction.Type.BUY);
+            
+            /***
+             * If we have multiple entries in the document,
+             * with fee and fee refunds,
+             * then the "noProvision" flag must be removed.
+             */
+            type.getCurrentContext().remove("noProvision");
+
             return entry;
         });
 
@@ -243,12 +251,34 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
     {
+        /***
+         * If the provision fee and the fee refund are the same, 
+         * then we set a flag and don't book provision fee
+         */
+        transaction
+                // Provision EUR 1,26
+                // Ausgekehrte Zuwendungen, die die Bank von DWS Xtrackers erhält EUR -1,26
+                .section("currency", "fee", "feeRefund").optional()
+                .match("^Provision (?<currency>[\\w]{3}) ([-])?(?<fee>[.,\\d]+)$")
+                .match("^Ausgekehrte Zuwendungen, .* (?<currency>[\\w]{3}) -(?<feeRefund>[.,\\d]+)$")
+                .assign((t, v) -> {
+                    if (v.get("fee").equals(v.get("feeRefund")))
+                    {
+                        type.getCurrentContext().put("noProvision", "X");
+                    }
+                });
+
         transaction
                 // Provision EUR 7,90
                 // Provision EUR -7,90
                 .section("currency", "fee").optional()
                 .match("^Provision (?<currency>[\\w]{3}) ([-])?(?<fee>[.,\\d]+)$")
-                .assign((t, v) -> processFeeEntries(t, v, type))
+                .assign((t, v) -> {
+                    if (!"X".equals(type.getCurrentContext().get("noProvision")))
+                    {
+                        processFeeEntries(t, v, type);
+                    }
+                })
 
                 // Provision (0,25 %) EUR 8,78
                 // Provision (0,25 %) EUR -8,78

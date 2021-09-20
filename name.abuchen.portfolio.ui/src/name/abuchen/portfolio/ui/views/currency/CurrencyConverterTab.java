@@ -38,6 +38,7 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
 import name.abuchen.portfolio.ui.util.BindingHelper.Model;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.viewers.Column;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.views.AbstractTabbedView;
 
@@ -250,6 +251,8 @@ public class CurrencyConverterTab implements AbstractTabbedView.Tab
         area.setLayout(layout);
 
         TreeViewer nodeViewer = new TreeViewer(area, SWT.BORDER);
+
+        CopyPasteSupport.enableFor(nodeViewer);
 
         ShowHideColumnHelper support = new ShowHideColumnHelper(getClass().getSimpleName(), preferences, nodeViewer,
                         layout);

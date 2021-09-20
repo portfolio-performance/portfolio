@@ -34,6 +34,7 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 
@@ -66,6 +67,7 @@ public class CalculationLineItemPane implements InformationPanePage
 
         transactions = new TableViewer(container, SWT.FULL_SELECTION);
         ColumnViewerToolTipSupport.enableFor(transactions, ToolTip.NO_RECREATE);
+        CopyPasteSupport.enableFor(transactions);
 
         support = new ShowHideColumnHelper(CalculationLineItemPane.class.getSimpleName(), preferences, transactions,
                         layout);

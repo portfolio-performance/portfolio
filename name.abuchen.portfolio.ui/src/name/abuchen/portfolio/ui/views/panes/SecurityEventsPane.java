@@ -35,6 +35,7 @@ import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.swt.ActiveShell;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.DateEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
@@ -91,6 +92,7 @@ public class SecurityEventsPane implements InformationPanePage
         container.setLayout(layout);
 
         events = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
+        CopyPasteSupport.enableFor(events);
 
         ShowHideColumnHelper support = new ShowHideColumnHelper(SecurityEventsPane.class.getSimpleName(), // $NON-NLS-1$
                         preferences, events, layout);

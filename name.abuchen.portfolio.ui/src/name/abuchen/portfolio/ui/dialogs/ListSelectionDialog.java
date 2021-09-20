@@ -26,6 +26,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
+
 public class ListSelectionDialog extends Dialog
 {
     private class ElementFilter extends ViewerFilter
@@ -166,6 +168,7 @@ public class ListSelectionDialog extends Dialog
         if (isMultiSelection)
             style |= SWT.MULTI;
         tableViewer = new TableViewer(tableArea, style);
+        CopyPasteSupport.enableFor(tableViewer);
         final Table table = tableViewer.getTable();
         table.setHeaderVisible(false);
         table.setLinesVisible(false);

@@ -65,6 +65,7 @@ import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.TouchClientListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.MoneyColorLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.MoneyTrailToolTipSupport;
 import name.abuchen.portfolio.ui.util.viewers.NumberColorLabelProvider;
@@ -89,7 +90,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
 {
     private class FilterDropDown extends DropDown implements IMenuListener
     {
-        private final Predicate<SecurityPerformanceRecord> sharesGreaterZero = record -> record.getSharesHeld() > 0;
+        private final Predicate<SecurityPerformanceRecord> sharesNotZero = record -> record.getSharesHeld() != 0;
         private final Predicate<SecurityPerformanceRecord> sharesEqualZero = record -> record.getSharesHeld() == 0;
 
         private ClientFilterMenu clientFilterMenu;
@@ -99,7 +100,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
             super(Messages.SecurityFilter, Images.FILTER_OFF, SWT.NONE);
 
             if (preferenceStore.getBoolean(SecuritiesPerformanceView.class.getSimpleName() + "-sharesGreaterZero")) //$NON-NLS-1$
-                recordFilter.add(sharesGreaterZero);
+                recordFilter.add(sharesNotZero);
 
             if (preferenceStore.getBoolean(SecuritiesPerformanceView.class.getSimpleName() + "-sharesEqualZero")) //$NON-NLS-1$
                 recordFilter.add(sharesEqualZero);
@@ -122,7 +123,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
 
             addDisposeListener(e -> {
                 preferenceStore.setValue(SecuritiesPerformanceView.class.getSimpleName() + "-sharesGreaterZero", //$NON-NLS-1$
-                                recordFilter.contains(sharesGreaterZero));
+                                recordFilter.contains(sharesNotZero));
                 preferenceStore.setValue(SecuritiesPerformanceView.class.getSimpleName() + "-sharesEqualZero", //$NON-NLS-1$
                                 recordFilter.contains(sharesEqualZero));
             });
@@ -144,7 +145,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         @Override
         public void menuAboutToShow(IMenuManager manager)
         {
-            manager.add(createAction(Messages.SecurityFilterSharesHeldGreaterZero, sharesGreaterZero));
+            manager.add(createAction(Messages.SecurityFilterSharesHeldNotZero, sharesNotZero));
             manager.add(createAction(Messages.SecurityFilterSharesHeldEqualZero, sharesEqualZero));
 
             manager.add(new Separator());
@@ -169,10 +170,10 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
                     // uncheck mutually exclusive actions if new filter is added
                     if (!isChecked)
                     {
-                        if (predicate == sharesGreaterZero)
+                        if (predicate == sharesNotZero)
                             recordFilter.remove(sharesEqualZero);
                         else if (predicate == sharesEqualZero)
-                            recordFilter.remove(sharesGreaterZero);
+                            recordFilter.remove(sharesNotZero);
                     }
 
                     setImage(recordFilter.isEmpty() && !clientFilterMenu.hasActiveFilter() ? Images.FILTER_OFF
@@ -253,6 +254,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
 
         MoneyTrailToolTipSupport.enableFor(records, ToolTip.NO_RECREATE);
         ColumnEditingSupport.prepare(records);
+        CopyPasteSupport.enableFor(records);
 
         createCommonColumns();
         createDividendColumns();

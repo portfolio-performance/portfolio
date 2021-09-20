@@ -1,8 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.text.ParseException;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -23,7 +21,6 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class CommSecPDFExtractor extends AbstractPDFExtractor
 {
-    private static final DecimalFormat australianNumberFormat = (DecimalFormat) NumberFormat.getInstance(new Locale("en", "AU"));
     private static final DateTimeFormatter australianDateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.ENGLISH);
 
     public CommSecPDFExtractor(Client client)
@@ -118,14 +115,14 @@ public class CommSecPDFExtractor extends AbstractPDFExtractor
                 .section("shares").optional()
                 .match("^AS AT DATE: .* (?<shares>[.,\\d]+) [.,\\d]+$")
                 .assign((t, v) -> {
-                    t.setShares(asShares(convertShares(v.get("shares"))));
+                    t.setShares(asShares(v.get("shares")));
                 })
 
                 // CONFIRMATION NO: XXXXXXX 1,000 28.060000
                 .section("shares").optional()
                 .match("^CONFIRMATION NO: .* (?<shares>[.,\\d]+) [.,\\d]+$")
                 .assign((t, v) -> {
-                    t.setShares(asShares(convertShares(v.get("shares"))));
+                    t.setShares(asShares(v.get("shares")));
                 })
 
                 // TOTAL COST: $1,092.92
@@ -231,19 +228,18 @@ public class CommSecPDFExtractor extends AbstractPDFExtractor
     @Override
     protected long asAmount(String value)
     {
-        try
-        {
-            return Math.abs(Math.round(australianNumberFormat.parse(value).doubleValue() * Values.Amount.factor()));
-        }
-        catch (ParseException e)
-        {
-            throw new IllegalArgumentException(e);
-        }
+        return PDFExtractorUtils.convertToNumberLong(value, Values.Amount, "en", "AU");
     }
 
-    private String convertShares(String inputShares)
+    @Override
+    protected long asShares(String value)
     {
-        String shares = inputShares.replace(",", "");
-        return shares.replace(".", ",");
+        return PDFExtractorUtils.convertToNumberLong(value, Values.Share, "en", "AU");
+    }
+
+    @Override
+    protected BigDecimal asExchangeRate(String value)
+    {
+        return PDFExtractorUtils.convertToNumberBigDecimal(value, Values.Share, "en", "AU");
     }
 }

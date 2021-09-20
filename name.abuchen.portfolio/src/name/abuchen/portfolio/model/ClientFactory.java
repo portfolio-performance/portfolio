@@ -546,7 +546,7 @@ public class ClientFactory
                 // added currency support --> designate a default currency (user
                 // will get a dialog to change)
                 setAllCurrencies(client, CurrencyUnit.EUR);
-                bumpUpCPIMonthValue(client);
+                // bumpUpCPIMonthValue --> CPI removed anyways
                 convertFeesAndTaxesToTransactionUnits(client);
             case 29: // NOSONAR
                 // added decimal places to stock quotes
@@ -582,25 +582,28 @@ public class ClientFactory
                 // added data map to classification and assignment
             case 43:
                 // added LimitPrice as attribute type
-            case 44:
+            case 44: // NOSONAR
                 // added weights to dashboard columns
                 fixDashboardColumnWeights(client);
             case 45:
                 // added custom security type NOTE
-            case 46:
+            case 46: // NOSONAR
                 // added dividend payment security event
                 addDefaultLogoAttributes(client);
             case 47:
                 // added fees to dividend transactions
-            case 48:
+            case 48: // NOSONAR
                 incrementSharesPrecisionFromSixToEightDigitsAfterDecimalSign(client);
                 // add 4 more decimal places to the quote to make it 8
                 addDecimalPlacesToQuotes(client);
                 addDecimalPlacesToQuotes(client);
-            case 49:
+            case 49: // NOSONAR
                 fixLimitQuotesWith4AdditionalDecimalPlaces(client);
-            case 50:
+            case 50: // NOSONAR
                 assignTxUUIDsAndUpdateAtInstants(client);
+            case 51:
+                permanentelyRemoveCPIData(client);
+                fixDimensionsList(client);
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
@@ -953,16 +956,6 @@ public class ClientFactory
     }
 
     /**
-     * Previously, January had the index 0 (in line with java.util.Date). Bump
-     * it up by one since we are using new Java 8 Time API.
-     */
-    private static void bumpUpCPIMonthValue(Client client)
-    {
-        for (ConsumerPriceIndex i : client.getConsumerPriceIndices())
-            i.setMonth(i.getMonth() + 1);
-    }
-
-    /**
      * Sets all currency codes of accounts, securities, and transactions to the
      * given currency code.
      */
@@ -1016,8 +1009,8 @@ public class ClientFactory
                     l.setHigh(l.getHigh() * decimalPlacesAdded);
                 if (l.getLow() != -1)
                     l.setLow(l.getLow() * decimalPlacesAdded);
-                if (l.getPreviousClose() != -1)
-                    l.setPreviousClose(l.getPreviousClose() * decimalPlacesAdded);
+                if (l.previousClose != -1)
+                    l.previousClose = l.previousClose * decimalPlacesAdded;
             }
         }
 
@@ -1162,6 +1155,19 @@ public class ClientFactory
         {
             s.setUpdatedAt(Instant.now());
         }
+    }
+
+    private static void permanentelyRemoveCPIData(Client client)
+    {
+        client.consumerPriceIndeces = null;
+    }
+
+    private static void fixDimensionsList(Client client)
+    {
+        client.getTaxonomies().forEach(t -> {
+            if (t.getDimensions() != null)
+                t.setDimensions(new ArrayList<>(t.getDimensions()));
+        });
     }
 
     @SuppressWarnings("nls")

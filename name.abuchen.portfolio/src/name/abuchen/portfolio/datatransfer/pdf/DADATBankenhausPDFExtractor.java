@@ -31,7 +31,10 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
         addBuySellAccountStatementTransaction();
         addDividendeTransaction();
         addDividendeAccountStatementTransaction();
-        addDividendTaxesAccountStatementTransaction();
+        addDividendeTaxesAccountStatementTransaction();
+        addInterestAccountStatementTransaction();
+        addFeesAccountStatementTransaction();
+        addDepositRemovalAccountStatementTransaction();
     }
 
     @Override
@@ -318,7 +321,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
     private void addDividendeAccountStatementTransaction()
     {
         final DocumentType type = new DocumentType("KONTOAUSZUG", (context, lines) -> {
-            Pattern pCurrency = Pattern.compile(".* (?<currency>[\\w]{3}) [.,\\d]+([-])?$");
+            Pattern pCurrency = Pattern.compile("^.* (?<currency>[\\w]{3}) [.,\\d]+([-])?$");
 
             for (String line : lines)
             {
@@ -394,10 +397,10 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
         block.set(pdfTransaction);
     }
 
-    private void addDividendTaxesAccountStatementTransaction()
+    private void addDividendeTaxesAccountStatementTransaction()
     {
         final DocumentType type = new DocumentType("KONTOAUSZUG", (context, lines) -> {
-            Pattern pCurrency = Pattern.compile(".* (?<currency>[\\w]{3}) [.,\\d]+([-])?$");
+            Pattern pCurrency = Pattern.compile("^.* (?<currency>[\\w]{3}) [.,\\d]+([-])?$");
 
             for (String line : lines)
             {
@@ -412,7 +415,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^\\d+.\\d+ Steuern aussch.ttungsgl. Ertr.ge .*$");
+        Block firstRelevantLine = new Block("^\\d+.\\d+ (Steuern aussch.ttungsgl. Ertr.ge|Steuerdividende) .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -428,10 +431,10 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                 // Kurs                      0,000000  KEST                     -1,51 USD
                 // DevKurs        1,123200/2.1.2020
                 .section("date", "year", "amount", "isin", "name", "shares", "fxAmount", "fxCurrency", "exchangeRate")
-                .match("^(?<date>\\d+.\\d+) Steuern aussch.ttungsgl. Ertr.ge ([\\s]+)?Depot [\\s]+[\\d]+\\/(?<year>[\\d]{4})[\\d]+\\-[\\d]+ [\\d]+.[\\d]+ (?<amount>[.,\\d]+)([-])?$")
+                .match("^(?<date>\\d+.\\d+) (Steuern aussch.ttungsgl. Ertr.ge|Steuerdividende) ([\\s]+)?Depot [\\s]+[\\d]+\\/(?<year>[\\d]{4})[\\d]+\\-[\\d]+ [\\d]+.[\\d]+ (?<amount>[.,\\d]+)([-])?$")
                 .match("^ISIN (?<isin>[\\w]{12}) (?<name>.*) [\\s]+(?<shares>[.,\\d]+) STK$")
                 .match("^.* KEST [\\s]+\\-(?<fxAmount>[.,\\d]+) (?<fxCurrency>[\\w]{3})$")
-                .match("^DevKurs [\\s]+(?<exchangeRate>[.,\\d]+)\\/.*")
+                .match("^(.*)?DevKurs [\\s]+(?<exchangeRate>[.,\\d]+)\\/.*")
                 .assign((t, v) -> {
                     t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
                     t.setShares(asShares(v.get("shares")));
@@ -459,6 +462,187 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
 
                         t.addUnit(grossValue);
                     }
+                })
+
+                .wrap(t -> {
+                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                        return new TransactionItem(t);
+                    return null;
+                });
+    }
+
+    private void addInterestAccountStatementTransaction()
+    {
+        final DocumentType type = new DocumentType("KONTOAUSZUG", (context, lines) -> {
+            Pattern pCurrency = Pattern.compile("^.* (?<currency>[\\w]{3}) [.,\\d]+([-])?$");
+
+            for (String line : lines)
+            {
+                Matcher m = pCurrency.matcher(line);
+                if (m.matches())
+                {
+                    context.put("currency", m.group("currency"));
+                }
+            }
+        });
+        this.addDocumentTyp(type);
+
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+
+        Block firstRelevantLine = new Block("^\\d+.\\d+ Abschluss .*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction
+                .subject(() -> {
+                    AccountTransaction t = new AccountTransaction();
+                    t.setType(AccountTransaction.Type.INTEREST);
+                    return t;
+                })
+
+                // 31.03 Abschluss 31.03 7,26-
+                // Sollzinsen
+                // AB 2021-01-01          3,9000%               4,76-
+                .section("date", "year", "note", "amount")
+                .match("^(?<date>\\d+.\\d+) Abschluss [\\d]+.[\\d]+ [.,\\d]+([-])?$")
+                .find("^(?<note>Sollzinsen)$")
+                .match("^AB (?<year>[\\d]{4})-[\\d]+-[\\d]+ ([\\s]+)?[.,\\d]+% ([\\s]+)?(?<amount>[.,\\d]+)([-])?$")
+                .assign((t, v) -> {
+                    t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
+                    t.setNote(v.get("note"));
+                    t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("currency")));
+                    t.setAmount(asAmount(v.get("amount")));
+                })
+
+                .wrap(t -> {
+                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                        return new TransactionItem(t);
+                    return null;
+                });
+    }
+
+    private void addFeesAccountStatementTransaction()
+    {
+        final DocumentType type = new DocumentType("KONTOAUSZUG", (context, lines) -> {
+            Pattern pCurrency = Pattern.compile("^.* (?<currency>[\\w]{3}) [.,\\d]+([-])?$");
+
+            for (String line : lines)
+            {
+                Matcher m = pCurrency.matcher(line);
+                if (m.matches())
+                {
+                    context.put("currency", m.group("currency"));
+                }
+            }
+        });
+        this.addDocumentTyp(type);
+
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+
+        Block firstRelevantLine = new Block("^\\d+.\\d+ (Abschluss|Depotgeb.hrenabrechnung) .*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction
+                .subject(() -> {
+                    AccountTransaction t = new AccountTransaction();
+                    t.setType(AccountTransaction.Type.FEES);
+                    return t;
+                })
+
+                // 31.03 Abschluss 31.03 7,26-
+                // Sollzinsen
+                // AB 2021-01-01          3,9000%               4,76-
+                // Kontoführungsgebühr                          2,50-
+                .section("date", "year", "note", "amount").optional()
+                .match("^(?<date>\\d+.\\d+) Abschluss [\\d]+.[\\d]+ [.,\\d]+([-])?$")
+                .find("^Sollzinsen$")
+                .match("^AB (?<year>[\\d]{4})-[\\d]+-[\\d]+ .*$")
+                .match("^(?<note>Kontof.hrungsgeb.hr) ([\\s]+)?(?<amount>[.,\\d]+)([-])?$")
+                .assign((t, v) -> {
+                    t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
+                    t.setNote(v.get("note"));
+                    t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("currency")));
+                    t.setAmount(asAmount(v.get("amount")));
+                })
+
+                // 07.01 Depotgebührenabrechnung per 31.12.2020  20210106  12345678 31.12 63,68-
+                // DPNR.:  0123456789             53,07 ZUZüGL.             10,61 UST
+                .section("date", "note", "year", "amount").optional()
+                .match("^(?<date>\\d+.\\d+) (?<note>Depotgeb.hrenabrechnung per \\d+.\\d+.\\d{4}) ([\\s]+)?(?<year>[\\d]{4})[\\d]+ ([\\s]+)?[\\d]+ \\d+.\\d+ (?<amount>[.,\\d]+)([-])?$")
+                .assign((t, v) -> {
+                    t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
+                    t.setNote(v.get("note"));
+                    t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("currency")));
+                    t.setAmount(asAmount(v.get("amount")));
+                })
+
+                .wrap(t -> {
+                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                        return new TransactionItem(t);
+                    return null;
+                });
+    }
+
+    private void addDepositRemovalAccountStatementTransaction()
+    {
+        final DocumentType type = new DocumentType("KONTOAUSZUG", (context, lines) -> {
+            Pattern pCurrency = Pattern.compile("^.* (?<currency>[\\w]{3}) [.,\\d]+([-])?$");
+            Pattern pYear = Pattern.compile("^Alter Saldo per \\d+.\\d+.(?<year>\\d{4}) .*$");
+            
+            for (String line : lines)
+            {
+                Matcher m = pCurrency.matcher(line);
+                if (m.matches())
+                {
+                    context.put("currency", m.group("currency"));
+                }
+
+                m = pYear.matcher(line);
+                if (m.matches())
+                {
+                    context.put("year", m.group("year"));
+                }
+            }
+        });
+        this.addDocumentTyp(type);
+
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+
+        Block firstRelevantLine = new Block("^\\d+.\\d+ .*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction
+                .subject(() -> {
+                    AccountTransaction t = new AccountTransaction();
+                    t.setType(AccountTransaction.Type.DEPOSIT);
+                    return t;
+                })
+
+                // 18.06 Max Muster 19.06 100,00
+                // IBAN: DE17 1234 1234 1234 1234 12
+                .section("date", "amount").optional()
+                .match("^(?<date>\\d+.\\d+) .* \\d+.\\d+ (?<amount>[.,\\d]+)$")
+                .match("^IBAN: .*$")
+                .assign((t, v) -> {
+                    t.setDateTime(asDate(v.get("date") + "." + type.getCurrentContext().get("year")));
+                    t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("currency")));
+                    t.setAmount(asAmount(v.get("amount")));
+                })
+
+                // 18.06 Max Muster 19.06 100,00-
+                // IBAN: DE17 1234 1234 1234 1234 12
+                .section("date", "amount").optional()
+                .match("^(?<date>\\d+.\\d+) .* \\d+.\\d+ (?<amount>[.,\\d]+)-$")
+                .match("^IBAN: .*$")
+                .assign((t, v) -> {
+                    // change from DEPOSIT to REMOVAL
+                    t.setType(AccountTransaction.Type.REMOVAL);
+
+                    t.setDateTime(asDate(v.get("date") + "." + type.getCurrentContext().get("year")));
+                    t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("currency")));
+                    t.setAmount(asAmount(v.get("amount")));
                 })
 
                 .wrap(t -> {

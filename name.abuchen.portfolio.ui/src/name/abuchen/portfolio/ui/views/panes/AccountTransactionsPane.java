@@ -56,6 +56,7 @@ import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.DateTimeEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
@@ -121,8 +122,8 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
 
         transactions = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
         ColumnViewerToolTipSupport.enableFor(transactions, ToolTip.NO_RECREATE);
-
         ColumnEditingSupport.prepare(transactions);
+        CopyPasteSupport.enableFor(transactions);
 
         transactionsColumns = new ShowHideColumnHelper(AccountListView.class.getSimpleName() + "@bottom5", //$NON-NLS-1$
                         view.getPreferenceStore(), transactions, layout);

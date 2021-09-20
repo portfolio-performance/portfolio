@@ -13,6 +13,7 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
 public class LGTBankPDFExtractor extends AbstractPDFExtractor
@@ -92,7 +93,7 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
                 .match("^(Belastung.* Konto) .* (?<currency>[\\w]{3}) (?<amount>['.,\\d]+)$")
                 .assign((t, v) -> {
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                    t.setAmount(asAmount(convertAmount(v.get("amount"))));
+                    t.setAmount(asAmount(v.get("amount")));
                 })
     
                 .wrap(BuySellEntryItem::new);
@@ -143,7 +144,7 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
                 .match("^(Netto) (?<currency>[\\w]{3}) *(?<amount>['.,\\d]+)$")
                 .assign((t, v) -> {
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                    t.setAmount(asAmount(convertAmount(v.get("amount"))));
+                    t.setAmount(asAmount(v.get("amount")));
                 })
     
                 .wrap(TransactionItem::new);
@@ -160,18 +161,12 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
                 // Eidg. Umsatzabgabe  DKK 121.19
                 .section("tax", "currency").optional()
                 .match("^(Eidg. Umsatzabgabe)\\s+(?<currency>[\\w]{3}) (?<tax>['.,\\d]+)$")
-                .assign((t, v) -> {
-                    v.put("tax", convertAmount(v.get("tax")));
-                    processTaxEntries(t, v, type);
-                })
+                .assign((t, v) -> processTaxEntries(t, v, type))
 
                 // Quellensteuer 28 % EUR -77.14
                 .section("tax", "currency").optional()
                 .match("^(Quellensteuer) .* (?<currency>[\\w]{3}) (?<tax>-['.,\\d]+)$")
-                .assign((t, v) -> {
-                    v.put("tax", convertAmount(v.get("tax")));
-                    processTaxEntries(t, v, type);
-                });
+                .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
@@ -180,18 +175,12 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
                 // Courtage  DKK 1'534.90
                 .section("fee", "currency").optional()
                 .match("^(Courtage)\\s+(?<currency>[\\w]{3}) (?<fee>['.,\\d]+)$")
-                .assign((t, v) -> {
-                    v.put("fee", convertAmount(v.get("fee")));
-                    processFeeEntries(t, v, type);
-                })
+                .assign((t, v) -> processFeeEntries(t, v, type))
         
                 // Broker Kommission  DKK 12.12
                 .section("fee", "currency").optional()
                 .match("^(Broker Kommission)\\s+(?<currency>[\\w]{3}) (?<fee>['.,\\d]+)$")
-                .assign((t, v) -> {
-                    v.put("fee", convertAmount(v.get("fee")));
-                    processFeeEntries(t, v, type);
-                });
+                .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
     private void processTaxEntries(Object t, Map<String, String> v, DocumentType type)
@@ -224,9 +213,15 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
         }
     }
     
-    private String convertAmount(String inputAmount)
+    @Override
+    protected long asAmount(String value)
     {
-        String amount = inputAmount.replace("'", "");
-        return amount.replace(".", ",");
+        return PDFExtractorUtils.convertToNumberLong(value, Values.Amount, "de", "CH");
+    }
+
+    @Override
+    protected long asShares(String value)
+    {
+        return PDFExtractorUtils.convertToNumberLong(value, Values.Share, "de", "CH");
     }
 }

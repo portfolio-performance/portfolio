@@ -51,7 +51,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("((Limit|Stop-Market|Market)-Order )?(Kauf|Verkauf|Sparplanausführung)");
+        DocumentType type = new DocumentType("(((Limit|Stop-Market|Market)-Order )?(Kauf|Verkauf|Sparplanausf.hrung) .*|REINVESTIERUNG)");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -61,7 +61,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^((Limit|Stop-Market|Market)-Order )?(Kauf|Verkauf|Sparplanausf.hrung) .*$");
+        Block firstRelevantLine = new Block("^(((Limit|Stop-Market|Market)-Order )?(Kauf|Verkauf|Sparplanausf.hrung) .*|REINVESTIERUNG)$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -86,13 +86,36 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 // Registered Shares o.N.
                 // AU000000CUV3
                 // ISIN: DE000A3H23V7
-                .section("name", "shares", "currency", "isin", "nameContinued")
+                .section("name", "shares", "currency", "isin", "nameContinued").optional()
                 .match("^(?<name>.*) (?<shares>[.,\\d]+) Stk. [.,\\d]+ (?<currency>[\\w]{3}) [.,\\d]+ [\\w]{3}$")
                 .match("^(?<nameContinued>.*)$")
                 .match("^(ISIN: )?(?<isin>[\\w]{12})$")
                 .assign((t, v) -> {
                     t.setSecurity(getOrCreateSecurity(v));
                     t.setShares(asShares(v.get("shares")));
+                })
+
+                /***
+                 * This is for the reinvestment of dividends
+                 * We pick the second 
+                 */
+
+                // 1 Reinvestierung Vodafone Group PLC 699 Stk.
+                // 2 Reinvestierung Vodafone Group PLC 22 Stk.
+                // Registered Shares DL 0,2095238
+                // GB00BH4HKS39
+                // 2 Barausgleich 0,37 GBP
+                .section("name", "shares", "nameContinued", "isin", "currency", "date").optional()
+                .match("^[.\\d]+ Reinvestierung (?<name>.*) [.,\\d]+ Stk.$")
+                .match("^[.\\d]+ Reinvestierung (?<name>.*) (?<shares>[.,\\d]+) Stk.$")
+                .match("^(?<nameContinued>.*)$")
+                .match("^(?<isin>[\\w]{12})$")
+                .match("^[.\\d]+ Barausgleich [.,\\d]+ (?<currency>[\\w]{3})$")
+                .match("^[\\w]+ (?<date>\\d+.\\d+.\\d{4}|\\d{4}-\\d+-\\d+) [.,\\d+]+ [\\w]{3}$")
+                .assign((t, v) -> {
+                    t.setDate(asDate(v.get("date")));
+                    t.setShares(asShares(v.get("shares")));
+                    t.setSecurity(getOrCreateSecurity(v));
                 })
 
                 // Market-Order Verkauf am 18.06.2019, um 17:50 Uhr an der Lang & Schwarz Exchange.
@@ -168,6 +191,48 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                     {
                         t.setAmount(asAmount(v.get("amount")));
                         t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                    }
+                })
+
+                /***
+                 * This is for the reinvestment of dividends
+                 * 
+                 * We subtract the second amount from 
+                 * the first amount and set this,
+                 */
+
+                // 1 Bruttoertrag 26,80 GBP
+                // 2 Barausgleich 0,37 GBP
+                // Zwischensumme 0,85267 EUR/GBP 0,44 EUR
+                .section("amount1", "amount2", "fxCurrency", "exchangeRate").optional()
+                .match("^[.\\d]+ Bruttoertrag (?<amount1>[.,\\d]+) [\\w]{3}$")
+                .match("^[.\\d]+ Barausgleich (?<amount2>[.,\\d]+) (?<fxCurrency>[\\w]{3})$")
+                .match("^Zwischensumme (?<exchangeRate>[.,\\d]+) (?<currency>[\\w]{3})\\/[\\w]{3} [.,\\d]+ [\\w]{3}$")
+                .assign((t, v) -> {
+                    // read the forex currency, exchange rate, account
+                    // currency and gross amount in account currency
+                    String forex = asCurrencyCode(v.get("fxCurrency"));
+                    if (t.getPortfolioTransaction().getSecurity().getCurrencyCode().equals(forex))
+                    {
+                        BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                        BigDecimal reverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
+                                        RoundingMode.HALF_DOWN);
+                        
+                        // gross given in account currency
+                        long gross = asAmount(v.get("amount1")) - asAmount(v.get("amount2"));
+                        long grossFX = reverseRate.multiply(BigDecimal.valueOf(gross))
+                                        .setScale(0, RoundingMode.HALF_DOWN).longValue();
+                        
+                        // set amount in account currency
+                        Money amount = Money.of(t.getPortfolioTransaction().getCurrencyCode(), grossFX);                        
+                        t.setAmount(amount.getAmount());
+                        t.setCurrencyCode(amount.getCurrencyCode());
+
+                        Unit grossValue = new Unit(Unit.Type.GROSS_VALUE,
+                                        Money.of(asCurrencyCode(v.get("currency")), grossFX),
+                                        Money.of(forex, gross), reverseRate);
+
+                        t.getPortfolioTransaction().addUnit(grossValue);
                     }
                 })
 
@@ -288,10 +353,10 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("(AUSSCHÜTTUNG|DIVIDENDE)");
+        DocumentType type = new DocumentType("(AUSSCHÜTTUNG|DIVIDENDE|REINVESTIERUNG)");
         this.addDocumentTyp(type);
 
-        Block block = new Block("^(AUSSCH.TTUNG|DIVIDENDE)$");
+        Block block = new Block("^(AUSSCH.TTUNG|DIVIDENDE|REINVESTIERUNG)$");
         type.addBlock(block);
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
         pdfTransaction.subject(() -> {
@@ -311,18 +376,33 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 // iShsV-EM Dividend UCITS ETF 10 Stk. 0,563 USD 5,63 USD
                 // Registered Shares USD o.N.
                 // IE00B652H904
-                .section("name", "shares", "currency", "isin", "nameContinued")
+                .section("name", "shares", "currency", "isin", "nameContinued").optional()
                 .match("^(?<name>.*) (?<shares>[.,\\d]+) Stk. [.,\\d]+ (?<currency>[\\w]{3}) [.,\\d]+ [\\w]{3}$")
                 .match("^(?<nameContinued>.*)$")
                 .match("^(ISIN: )?(?<isin>[\\w]{12})$")
                 .assign((t, v) -> {
-                    t.setSecurity(getOrCreateSecurity(v));
                     t.setShares(asShares(v.get("shares")));
+                    t.setSecurity(getOrCreateSecurity(v));
+                })
+
+                // 1 Reinvestierung Vodafone Group PLC 699 Stk.
+                // Registered Shares DL 0,2095238
+                // GB00BH4HKS39
+                // 1 Bruttoertrag 26,80 GBP
+                .section("name", "shares", "nameContinued", "isin", "currency").optional()
+                .match("^[.\\d]+ Reinvestierung (?<name>.*) (?<shares>[.,\\d]+) Stk.$")
+                .match("^(?<nameContinued>.*)$")
+                .match("^(?<isin>[\\w]{12})$")
+                .match("^[.\\d]+ Reinvestierung .*$")
+                .match("^[.\\d]+ Bruttoertrag [.,\\d]+ (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    t.setShares(asShares(v.get("shares")));
+                    t.setSecurity(getOrCreateSecurity(v));
                 })
 
                 // DExxxxxx 25.09.2019 4,18 EUR
                 .section("date")
-                .match("^[\\w]+ (?<date>\\d+.\\d+.\\d{4}|\\d{4}-\\d+-\\d+) [.,\\d+]+ [\\w]{3}$")
+                .match("^[\\w]+ (?<date>\\d+.\\d+.[\\d]{4}|[\\d]{4}-\\d+-\\d+) [.,\\d+]+ [\\w]{3}$")
                 .assign((t, v) -> {
                     t.setDateTime(asDate(v.get("date")));
                 })
@@ -374,6 +454,50 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                     Unit unit = new Unit(Unit.Type.GROSS_VALUE, t.getMonetaryAmount(), forex, inverseRate);
                     if (unit.getForex().getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
                         t.addUnit(unit);
+                })
+
+                // 1 Bruttoertrag 26,80 GBP
+                // Zwischensumme 0,85267 EUR/GBP 0,44 EUR
+                // GESAMT 4,18 EUR
+                .section("fxAmount", "currency", "fxCurrency", "exchangeRate").optional()
+                .match("^[.\\d]+ Bruttoertrag (?<fxAmount>[.,\\d]+) (?<fxCurrency>[\\w]{3})$")
+                .match("^Zwischensumme (?<exchangeRate>[.,\\d]+) (?<currency>[\\w]{3})\\/[\\w]{3} [.,\\d]+ [\\w]{3}$")
+                .assign((t, v) -> {                    
+                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                    if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
+                    {
+                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+                    }
+                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
+                    
+                    // create gross value unit only, 
+                    // if transaction currency is different to security currency
+                    if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
+                    {
+                        // create a Unit only, 
+                        // if security and transaction currency are different
+                        if (!t.getCurrencyCode().equalsIgnoreCase(asCurrencyCode(v.get("fxCurrency"))))
+                        {
+                            // get exchange rate (in Fx/EUR) and
+                            // calculate inverse exchange rate (in EUR/Fx)
+                            BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
+                                            RoundingMode.HALF_DOWN);
+
+                            // get gross amount and calculate equivalent in EUR
+                            Money gross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxAmount")));
+                            BigDecimal amount = BigDecimal.valueOf(gross.getAmount())
+                                                .divide(exchangeRate, 10, RoundingMode.HALF_DOWN)
+                                                .setScale(0, RoundingMode.HALF_DOWN);
+
+                            Money fxAmount = Money.of(t.getCurrencyCode(), amount.longValue());
+
+                            t.setAmount(fxAmount.getAmount());
+                            t.setCurrencyCode(fxAmount.getCurrencyCode());
+
+                            t.addUnit(new Unit(Unit.Type.GROSS_VALUE, fxAmount, gross,
+                                            inverseRate));
+                        }
+                    }
                 })
 
                 .wrap(TransactionItem::new);

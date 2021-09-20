@@ -116,9 +116,15 @@ public abstract class TaxonomyNode implements Adaptable
         {
             return getName();
         }
+
+        @Override
+        public boolean isPrimary()
+        {
+            return true;
+        }
     }
 
-    /* protected */static class AssignmentNode extends TaxonomyNode
+    /* package */static class AssignmentNode extends TaxonomyNode
     {
         private Assignment assignment;
 
@@ -135,6 +141,12 @@ public abstract class TaxonomyNode implements Adaptable
                 return (Security) assignment.getInvestmentVehicle();
             else
                 return null;
+        }
+
+        @Override
+        public InvestmentVehicle getBackingInvestmentVehicle()
+        {
+            return assignment.getInvestmentVehicle();
         }
 
         @Override
@@ -221,6 +233,23 @@ public abstract class TaxonomyNode implements Adaptable
                 return type.cast(assignment.getInvestmentVehicle());
             else
                 return super.adapt(type);
+        }
+
+        @Override
+        public boolean isPrimary()
+        {
+            if (getWeight() == Classification.ONE_HUNDRED_PERCENT)
+                return true; // This is the only node
+
+            TaxonomyNode[] firstNodeWithThisInvestmentVehicle = new TaxonomyNode[] { null };
+
+            // Find first node with the same security:
+            this.getRoot().accept(node -> {
+                if (firstNodeWithThisInvestmentVehicle[0] == null && node
+                                .getBackingInvestmentVehicle() == AssignmentNode.this.getBackingInvestmentVehicle())
+                    firstNodeWithThisInvestmentVehicle[0] = node;
+            });
+            return firstNodeWithThisInvestmentVehicle[0] == this;
         }
     }
 
@@ -309,6 +338,11 @@ public abstract class TaxonomyNode implements Adaptable
         return null;
     }
 
+    public InvestmentVehicle getBackingInvestmentVehicle()
+    {
+        return null;
+    }
+
     public boolean isClassification()
     {
         return getClassification() != null;
@@ -361,6 +395,13 @@ public abstract class TaxonomyNode implements Adaptable
     public abstract int getRank();
 
     public abstract void setRank(int rank);
+
+    /**
+     * A security can be the backed security of multiple assignment nodes. For
+     * each security, exactly one their assignment nodes of them is primary.
+     * Classifications are always primary.
+     */
+    public abstract boolean isPrimary();
 
     public abstract String getColor();
 

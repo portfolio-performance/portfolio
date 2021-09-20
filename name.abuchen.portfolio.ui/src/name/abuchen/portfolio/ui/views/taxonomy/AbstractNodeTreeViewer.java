@@ -68,6 +68,7 @@ import name.abuchen.portfolio.ui.util.TreeViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
@@ -367,6 +368,7 @@ import name.abuchen.portfolio.util.TextUtil;
 
         ColumnEditingSupport.prepare(nodeViewer);
         ColumnViewerToolTipSupport.enableFor(nodeViewer, ToolTip.NO_RECREATE);
+        CopyPasteSupport.enableFor(nodeViewer);
 
         support = new ShowHideColumnHelper(getClass().getSimpleName() + '-' + getModel().getTaxonomy().getId(),
                         getPreferenceStore(), nodeViewer, layout);

@@ -41,6 +41,7 @@ import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.DateEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
@@ -103,6 +104,7 @@ public class HistoricalPricesPane implements InformationPanePage
 
         prices = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI | SWT.VIRTUAL);
         ColumnEditingSupport.prepare(prices);
+        CopyPasteSupport.enableFor(prices);
         ShowHideColumnHelper support = new ShowHideColumnHelper(HistoricalPricesPane.class.getSimpleName(), preferences,
                         prices, layout);
 

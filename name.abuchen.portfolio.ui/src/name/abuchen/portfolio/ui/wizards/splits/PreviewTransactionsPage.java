@@ -32,6 +32,7 @@ import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 public class PreviewTransactionsPage extends AbstractWizardPage
@@ -127,6 +128,7 @@ public class PreviewTransactionsPage extends AbstractWizardPage
         tableContainer.setLayout(layout);
 
         tableViewer = new TableViewer(tableContainer, SWT.BORDER);
+        CopyPasteSupport.enableFor(tableViewer);
         Table table = tableViewer.getTable();
         table.setHeaderVisible(true);
         table.setLinesVisible(true);

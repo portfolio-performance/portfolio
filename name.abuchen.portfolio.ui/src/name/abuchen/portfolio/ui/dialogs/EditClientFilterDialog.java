@@ -39,6 +39,7 @@ import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 
@@ -145,6 +146,7 @@ public class EditClientFilterDialog extends Dialog
 
         ColumnEditingSupport.prepare(treeViewer);
         ColumnViewerToolTipSupport.enableFor(treeViewer, ToolTip.NO_RECREATE);
+        CopyPasteSupport.enableFor(treeViewer);
 
         ShowHideColumnHelper columns = new ShowHideColumnHelper(EditClientFilterDialog.class.toString(), preferences,
                         treeViewer, layout);

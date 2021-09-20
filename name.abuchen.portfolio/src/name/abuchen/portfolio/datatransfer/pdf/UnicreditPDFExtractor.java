@@ -129,21 +129,7 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(t -> new BuySellEntryItem(t));
 
-        addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
-    }
-
-    private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
-    {
-        // transaction
-        // At this time there are no known tax or similar in the PDF debugs.
-        // If you found some, add this here like
-
-        // Example
-        // some tax's
-        // .section("tax", "currency").optional()
-        // .match("^ABC (?<tax>[.,\\d]+) (?<currency>[\\w]{3})$")
-        // .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)

@@ -36,6 +36,7 @@ import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.views.AbstractTabbedView;
@@ -137,6 +138,7 @@ public class AttributeListTab implements AbstractTabbedView.Tab, ModificationLis
         container.setLayout(layout);
 
         tableViewer = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
+        CopyPasteSupport.enableFor(tableViewer);
 
         ColumnEditingSupport.prepare(tableViewer);
 

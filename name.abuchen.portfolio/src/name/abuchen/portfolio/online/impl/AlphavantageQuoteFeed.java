@@ -136,7 +136,6 @@ public class AlphavantageQuoteFeed implements QuoteFeed
             price.setHigh(asPrice(values[2]));
             price.setLow(asPrice(values[3]));
             price.setVolume(Long.parseLong(values[5]));
-            price.setPreviousClose(LatestSecurityPrice.NOT_AVAILABLE);
 
             if (price.getValue() != 0)
                 return Optional.of(price);
@@ -232,7 +231,6 @@ public class AlphavantageQuoteFeed implements QuoteFeed
                 price.setHigh(asPrice(values[2]));
                 price.setLow(asPrice(values[3]));
                 price.setVolume(Long.parseLong(values[5]));
-                price.setPreviousClose(LatestSecurityPrice.NOT_AVAILABLE);
 
                 if (price.getValue() != 0)
                     data.addPrice(price);

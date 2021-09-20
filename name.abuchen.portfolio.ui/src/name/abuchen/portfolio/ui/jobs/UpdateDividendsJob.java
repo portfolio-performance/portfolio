@@ -19,6 +19,7 @@ import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.impl.DivvyDiaryDividendFeed;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.util.WebAccess.WebAccessException;
 
 public final class UpdateDividendsJob extends AbstractClientJob
 {
@@ -76,14 +77,17 @@ public final class UpdateDividendsJob extends AbstractClientJob
                         }
                     }
 
-                    security.removeEventIf(event -> current.contains(event));
+                    security.removeEventIf(current::contains);
 
                     isDirty = isDirty || !current.isEmpty();
                 }
             }
             catch (IOException e)
             {
-                PortfolioPlugin.log(e);
+                if (e instanceof WebAccessException)
+                    PortfolioPlugin.log(e.getMessage());
+                else
+                    PortfolioPlugin.log(e);
             }
         }
 

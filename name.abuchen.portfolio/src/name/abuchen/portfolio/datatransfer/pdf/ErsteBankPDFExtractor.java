@@ -16,6 +16,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
 public class ErsteBankPDFExtractor extends AbstractPDFExtractor
@@ -270,7 +271,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                 .section("shares").optional()
                 .match("^Anspruchsberechtigter : (?<shares>[.,\\d]+)$")
                 .assign((t, v) -> {
-                    t.setShares(asShares(convertAmount(v.get("shares"))));
+                    t.setShares(asShares(v.get("shares")));
                 })
 
                 // WP-Bestand : 35,000 Dividendenbetrag : EUR 148,17
@@ -301,7 +302,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                 .match("^Gesamtbetrag .in : (?<currency>[\\w]{3}) (?<amount>['.,\\d]+)$")
                 .assign((t, v) -> {
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                    t.setAmount(asAmount(convertAmount(v.get("amount"))));
+                    t.setAmount(asAmount(v.get("amount")));
                 })
 
                 // Dividende Netto : EUR 127,54
@@ -309,7 +310,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                 .match("^(.*)?Dividende Netto : (?<currency>[\\w]{3}) (?<amount>['.,\\d]+)$")
                 .assign((t, v) -> {
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                    t.setAmount(asAmount(convertAmount(v.get("amount"))));
+                    t.setAmount(asAmount(v.get("amount")));
                 })
 
                 // Auszahlungsbetrag : EUR 3,84
@@ -317,7 +318,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                 .match("^(.*)?Auszahlungsbetrag : (?<currency>[\\w]{3}) (?<amount>['.,\\d]+)$")
                 .assign((t, v) -> {
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                    t.setAmount(asAmount(convertAmount(v.get("amount"))));
+                    t.setAmount(asAmount(v.get("amount")));
                 })
 
                 // Brutto-Betrag : USD 0.7
@@ -328,7 +329,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                 .match("^Devisenkurs : (?<exchangeRate>[.,\\d]+)$")
                 .match("^Gesamtbetrag .in : (?<currency>[\\w]{3}) (?<amount>['.,\\d]+)$")
                 .assign((t, v) -> {
-                    BigDecimal exchangeRate = asExchangeRate(convertExchangeRate(v.get("exchangeRate")));
+                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                     if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
                     {
                         exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
@@ -346,17 +347,17 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         if (!asCurrencyCode(v.get("fxCurrency")).equals(t.getCurrencyCode()))
                         {
                             Money fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")),
-                                            asAmount(convertAmount(v.get("fxAmount"))));
+                                            asAmount(v.get("fxAmount")));
                             Money amount = Money.of(asCurrencyCode(v.get("currency")),
-                                            asAmount(convertAmount(v.get("amount"))));
+                                            asAmount(v.get("amount")));
                             grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
                         }
                         else
                         {
                             Money amount = Money.of(asCurrencyCode(v.get("fxCurrency")), 
-                                            asAmount(convertAmount(v.get("fxAmount"))));
+                                            asAmount(v.get("fxAmount")));
                             Money fxAmount = Money.of(asCurrencyCode(v.get("currency")), 
-                                            asAmount(convertAmount(v.get("amount"))));
+                                            asAmount(v.get("amount")));
                             grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
                         }
                         t.addUnit(grossValue);
@@ -372,9 +373,9 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                 .match("^Dividende Netto : (?<currency>[\\w]{3}) (?<amount>['.,\\d]+)$")
                 .assign((t, v) -> {
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                    t.setAmount(asAmount(convertAmount(v.get("amount"))));
+                    t.setAmount(asAmount(v.get("amount")));
 
-                    BigDecimal exchangeRate = asExchangeRate(convertExchangeRate(v.get("exchangeRate")));
+                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                     if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
                     {
                         exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
@@ -392,17 +393,17 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         if (!asCurrencyCode(v.get("fxCurrency")).equals(t.getCurrencyCode()))
                         {
                             Money fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")),
-                                            asAmount(convertAmount(v.get("fxAmount"))));
+                                            asAmount(v.get("fxAmount")));
                             Money amount = Money.of(asCurrencyCode(v.get("currency")),
-                                            asAmount(convertAmount(v.get("amount"))));
+                                            asAmount(v.get("amount")));
                             grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
                         }
                         else
                         {
                             Money amount = Money.of(asCurrencyCode(v.get("fxCurrency")), 
-                                            asAmount(convertAmount(v.get("fxAmount"))));
+                                            asAmount(v.get("fxAmount")));
                             Money fxAmount = Money.of(asCurrencyCode(v.get("currency")), 
-                                            asAmount(convertAmount(v.get("amount"))));
+                                            asAmount(v.get("amount")));
                             grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
                         }
                         t.addUnit(grossValue);
@@ -425,40 +426,28 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                 .section("currency", "tax").optional()
                 .match("^Steuer : Quellensteuer")
                 .match("^Steuern : (?<currency>[\\w]{3}) (?<tax>['.,\\d]+)")
-                .assign((t, v) -> {
-                    v.put("tax", convertAmount(v.get("tax")));
-                    processTaxEntries(t, v, type);
-                })
+                .assign((t, v) -> processTaxEntries(t, v, type))
 
                 // Steuer : KESt1
                 // Steuern : USD 0.18
                 .section("currency", "tax").optional()
                 .match("^Steuer : KESt1")
                 .match("^Steuern : (?<currency>[\\w]{3}) (?<tax>['.,\\d]+)")
-                .assign((t, v) -> {
-                    v.put("tax", convertAmount(v.get("tax")));
-                    processTaxEntries(t, v, type);
-                })
+                .assign((t, v) -> processTaxEntries(t, v, type))
 
                 // Steuer : KESt2
                 // Steuern : EUR 1.97
                 .section("currency", "tax").optional()
                 .match("^Steuer : KESt2")
                 .match("^Steuern : (?<currency>[\\w]{3}) (?<tax>['.,\\d]+)")
-                .assign((t, v) -> {
-                    v.put("tax", convertAmount(v.get("tax")));
-                    processTaxEntries(t, v, type);
-                })
+                .assign((t, v) -> processTaxEntries(t, v, type))
 
                 // Steuer : KESt3
                 // Steuern : EUR 0.00
                 .section("currency", "tax").optional()
                 .match("^Steuer : KESt3")
                 .match("^Steuern : (?<currency>[\\w]{3}) (?<tax>['.,\\d]+)")
-                .assign((t, v) -> {
-                    v.put("tax", convertAmount(v.get("tax")));
-                    processTaxEntries(t, v, type);
-                })
+                .assign((t, v) -> processTaxEntries(t, v, type))
 
                 // WP-Kenn-Nr. : DE0008430026 Fremde Steuer : EUR 53,08
                 .section("currency", "tax").optional()
@@ -547,15 +536,66 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
         }
     }
 
-    private String convertAmount(String inputAmount)
+    @Override
+    protected long asAmount(String value)
     {
-        String amount = inputAmount.replace("'", "");
-        return amount.replace(".", ",");
+        value = value.trim();
+        
+        String language = "de";
+        String country = "DE";
+
+        int lastDot = value.lastIndexOf(".");
+        int lastComma = value.lastIndexOf(",");
+
+        // returns the greater of two int values
+        if (Math.max(lastDot, lastComma) == lastDot)
+        {
+            language = "en";
+            country = "US";
+        }
+
+        return PDFExtractorUtils.convertToNumberLong(value, Values.Amount, language, country);
     }
 
-    private String convertExchangeRate(String inputExchangeRate)
+    @Override
+    protected long asShares(String value)
     {
-        // 0.888889    --> 0,888889
-        return inputExchangeRate.replace(".", ",");
+        value = value.trim();
+        
+        String language = "de";
+        String country = "DE";
+
+        int lastDot = value.lastIndexOf(".");
+        int lastComma = value.lastIndexOf(",");
+
+        // returns the greater of two int values
+        if (Math.max(lastDot, lastComma) == lastDot)
+        {
+            language = "en";
+            country = "US";
+        }
+
+        return PDFExtractorUtils.convertToNumberLong(value, Values.Share, language, country);
+    }
+
+    @Override
+    protected BigDecimal asExchangeRate(String value)
+    {
+        value = value.trim();
+        
+        String language = "de";
+        String country = "DE";
+
+        int lastDot = value.lastIndexOf(".");
+        int lastComma = value.lastIndexOf(",");
+
+        // returns the greater of two int values
+        if (Math.max(lastDot, lastComma) == lastDot)
+        {
+            language = "en";
+            country = "US";
+        }
+
+        return PDFExtractorUtils.convertToNumberBigDecimal(value, Values.Share, language, country);
     }
 }

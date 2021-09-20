@@ -46,8 +46,13 @@ public class IBFlexStatementExtractorTest
 
         Extractor.InputFile tempFile = createTempFile(activityStatement);
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
         List<Item> results = extractor.extract(Collections.singletonList(tempFile), errors);
+
+        if (!errors.isEmpty())
+            errors.forEach(Exception::printStackTrace);
+
+        assertThat(errors.size(), is(0));
 
         results.stream().filter(i -> !(i instanceof SecurityItem))
                         .forEach(i -> assertThat(i.getAmount(), notNullValue()));
@@ -208,11 +213,11 @@ public class IBFlexStatementExtractorTest
     @Test
     public void testThatExceptionIsAddedForNonFlexStatementDocuments() throws IOException
     {
-        InputStream otherFile = getClass().getResourceAsStream("pdf/comdirect/comdirectGutschrift1.txt");
+        InputStream otherFile = getClass().getResourceAsStream("pdf/comdirect/Dividende05.txt");
         Extractor.InputFile tempFile = createTempFile(otherFile);
         Client client = new Client();
         IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(client);
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
         List<Item> results = extractor.extract(Collections.singletonList(tempFile), errors);
 
         assertThat(results.isEmpty(), is(true));
