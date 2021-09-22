@@ -9,7 +9,6 @@ import java.util.Scanner;
 
 import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.util.PDFTextStripper;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.Version;
