@@ -38,12 +38,6 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
     }
 
     @Override
-    public String getPDFAuthor()
-    {
-        return ""; //$NON-NLS-1$
-    }
-
-    @Override
     public String getLabel()
     {
         return "DADAT / Bankhaus Schelhammer & Schattera AG"; //$NON-NLS-1$

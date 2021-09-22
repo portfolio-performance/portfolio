@@ -70,11 +70,6 @@ public abstract class AbstractPDFExtractor implements Extractor
         return bankIdentifier;
     }
 
-    public String getPDFAuthor()
-    {
-        return null;
-    }
-
     @Override
     public List<Item> extract(SecurityCache securityCache, Extractor.InputFile inputFile, List<Exception> errors)
     {

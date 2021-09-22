@@ -30,12 +30,6 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
     }
 
     @Override
-    public String getPDFAuthor()
-    {
-        return ""; //$NON-NLS-1$
-    }
-
-    @Override
     public String getLabel()
     {
         return "Swissquote Bank AG"; //$NON-NLS-1$

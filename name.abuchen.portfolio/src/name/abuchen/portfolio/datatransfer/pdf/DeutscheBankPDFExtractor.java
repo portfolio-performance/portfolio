@@ -29,12 +29,6 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
     }
 
     @Override
-    public String getPDFAuthor()
-    {
-        return ""; //$NON-NLS-1$
-    }
-
-    @Override
     public String getLabel()
     {
         return "Deutsche Bank Privat- und Geschäftskunden AG"; //$NON-NLS-1$

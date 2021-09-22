@@ -37,12 +37,6 @@ public class DABPDFExtractor extends AbstractPDFExtractor
     }
 
     @Override
-    public String getPDFAuthor()
-    {
-        return ""; //$NON-NLS-1$
-    }
-
-    @Override
     public String getLabel()
     {
         return "DAB Bank / BNP Paribas S.A."; //$NON-NLS-1$
@@ -278,8 +272,9 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 })
 
                 // Netto in USD zugunsten IBAN DE90 209,38 USD
+                // Netto zugunsten IBAN DE11 7603 0080 0111 1111 14 437,22 EUR
                 .section("amount", "currency").optional()
-                .match("^Netto .* zugunsten IBAN .* (?<amount>[.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^Netto (.*)?zugunsten IBAN .* (?<amount>[.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     t.setCurrencyCode(v.get("currency"));
                     t.setAmount(asAmount(v.get("amount")));

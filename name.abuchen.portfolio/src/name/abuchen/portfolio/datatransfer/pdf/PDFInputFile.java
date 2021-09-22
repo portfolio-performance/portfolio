@@ -19,7 +19,6 @@ import name.abuchen.portfolio.datatransfer.Extractor;
 public class PDFInputFile extends Extractor.InputFile
 {
     private String text;
-    private String author;
 
     public PDFInputFile(File file)
     {
@@ -64,11 +63,6 @@ public class PDFInputFile extends Extractor.InputFile
         return text;
     }
 
-    public String getAuthor()
-    {
-        return author;
-    }
-
     public Version getPDFBoxVersion()
     {
         return FrameworkUtil.getBundle(PDDocument.class).getVersion();
@@ -84,8 +78,6 @@ public class PDFInputFile extends Extractor.InputFile
                 document.decrypt(""); //$NON-NLS-1$
                 document.setAllSecurityToBeRemoved(true);
             }
-            PDDocumentInformation pdd = document.getDocumentInformation();
-            author = pdd.getAuthor() == null ? "" : pdd.getAuthor(); //$NON-NLS-1$
 
             PDFTextStripper textStripper = new PDFTextStripper();
             textStripper.setSortByPosition(true);

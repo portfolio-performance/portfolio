@@ -28,12 +28,6 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
     }
 
     @Override
-    public String getPDFAuthor()
-    {
-        return ""; //$NON-NLS-1$
-    }
-
-    @Override
     public String getLabel()
     {
         return "Keytrade Bank"; //$NON-NLS-1$

@@ -36,6 +36,12 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
         addTransactionWith2021Format();
     }
 
+    @Override
+    public String getLabel()
+    {
+        return "Renault Bank direkt"; //$NON-NLS-1$
+    }
+
     private void addTransactionWith2019Format()
     {
         DocumentType type = new DocumentType("305 200 37", contextProvider2019());
@@ -159,17 +165,5 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
                 context.put(CONTEXT_KEY_CURRENCY, currencyMatcher.group("currency"));
             }
         }
-    }
-
-    @Override
-    public String getLabel()
-    {
-        return "Renault Bank direkt"; //$NON-NLS-1$
-    }
-    
-    @Override
-    public String getPDFAuthor()
-    {
-        return ""; //$NON-NLS-1$
     }
 }

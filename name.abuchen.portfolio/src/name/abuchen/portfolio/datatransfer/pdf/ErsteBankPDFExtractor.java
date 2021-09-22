@@ -34,12 +34,6 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
     }
 
     @Override
-    public String getPDFAuthor()
-    {
-        return ""; //$NON-NLS-1$
-    }
-
-    @Override
     public String getLabel()
     {
         return "Erste Bank Gruppe / BrokerJet"; //$NON-NLS-1$

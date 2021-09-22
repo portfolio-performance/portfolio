@@ -23,12 +23,6 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
     }
 
     @Override
-    public String getPDFAuthor()
-    {
-        return "MLP Banking AG"; //$NON-NLS-1$
-    }
-
-    @Override
     public String getLabel()
     {
         return "MLP Banking AG"; //$NON-NLS-1$
