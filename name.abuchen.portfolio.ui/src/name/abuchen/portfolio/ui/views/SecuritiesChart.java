@@ -1184,16 +1184,26 @@ public class SecuritiesChart
                     IAxis xAxis = chart.getAxisSet().getXAxis(0);
                     IAxis yAxis = chart.getAxisSet().getYAxis(0);
 
+                    int x_total = 0;
+                    int y_total = 0;
+
                     for (int index = 0; index < dates.length; index++)
                     {
                         int x = xAxis.getPixelCoordinate(dates[index].getTime());
                         int y = yAxis.getPixelCoordinate(values[index]);
-
+                        
                         String label = getDividendLabel(dividends.get(index));
                         Point textExtent = event.gc.textExtent(label);
 
                         event.gc.setForeground(Colors.theme().defaultForeground());
-                        event.gc.drawText(label, x - (textExtent.x / 2), y - 22, true);
+
+                        if (Math.abs((x_total - x)) < 52)
+                            y_total = y_total - 15;
+                        else
+                            y_total = y - 22;
+
+                        event.gc.drawText(label, x - (textExtent.x / 2), y_total, true);
+                        x_total = x;
                     }
                 });
             }
@@ -1236,9 +1246,9 @@ public class SecuritiesChart
                         .filter(p -> chartInterval.contains(p.getDate())) //
                         .min(Comparator.comparing(SecurityPrice::getValue));
 
-        max.ifPresent(high -> addExtremeMarker(high, PlotSymbolType.TRIANGLE, 10, //
+        max.ifPresent(high -> addExtremeMarker(high, PlotSymbolType.TRIANGLE, -25, //
                         Messages.LabelChartDetailMarkerHigh, colorHigh));
-        min.ifPresent(low -> addExtremeMarker(low, PlotSymbolType.INVERTED_TRIANGLE, -25,
+        min.ifPresent(low -> addExtremeMarker(low, PlotSymbolType.INVERTED_TRIANGLE, 10,
                         Messages.LabelChartDetailMarkerLow, colorLow));
     }
 
