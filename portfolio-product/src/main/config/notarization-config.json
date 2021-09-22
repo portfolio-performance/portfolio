@@ -1,0 +1,13 @@
+{
+    "apple_id": {
+        "password": "@env:CODESIGN_APPLEID_PWD",
+        "username": "${env.CODESIGN_APPLEID_USER}"
+    },
+    "notarize": [
+        {
+            "bundle_id": "name.abuchen.portfolio.distro.product.x8664.zip",
+            "path": "PortfolioPerformance-${project.version}.dmg",
+            "staple": true
+        }
+    ]
+}

@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>name.abuchen.portfolio</groupId>
 		<artifactId>portfolio-app</artifactId>
-		<version>0.54.4-SNAPSHOT</version>
+		<version>0.56.0-SNAPSHOT</version>
 		<relativePath>../portfolio-app</relativePath>
 	</parent>
 
@@ -188,6 +188,28 @@
 						</executions>
 					</plugin>
 					<plugin>
+						<artifactId>maven-resources-plugin</artifactId>
+						<version>3.2.0</version>
+						<executions>
+							<execution>
+								<id>copy-resources</id>
+								<phase>package</phase>
+								<goals>
+									<goal>copy-resources</goal>
+								</goals>
+								<configuration>
+									<outputDirectory>${basedir}/target/config</outputDirectory>
+									<resources>
+										<resource>
+											<directory>src/main/config</directory>
+											<filtering>true</filtering>
+										</resource>
+									</resources>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>exec-maven-plugin</artifactId>
 						<version>1.6.0</version>
@@ -257,6 +279,38 @@
 									<skip>${applesigner.skip}</skip>
 								</configuration>
 							</execution>
+							<execution>
+								<id>notarize</id>
+								<phase>package</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+								<configuration>
+									<!-- install from https://github.com/mitchellh/gon -->
+									<executable>gon</executable>
+									<workingDirectory>${project.build.directory}/products</workingDirectory>
+									<arguments>
+										<argument>${basedir}/target/config/notarization-config.json</argument>
+									</arguments>
+									<skip>${applesigner.skip}</skip>
+								</configuration>
+							</execution>
+							<execution>
+								<id>build-installer</id>
+								<phase>package</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+								<configuration>
+									<executable>makensis</executable>
+									<workingDirectory>${project.basedir}/installer</workingDirectory>
+									<arguments>
+										<argument>-DSOFTWARE_VERSION=${project.version}</argument>
+										<argument>${project.basedir}/installer/installer.nsi</argument>
+									</arguments>
+									<skip>${installer.skip}</skip>
+								</configuration>
+							</execution>
 						</executions>
 					</plugin>
 					<plugin>
@@ -275,6 +329,10 @@
 										<artifact>
 											<file>${project.build.directory}/products/PortfolioPerformance-${project.version}.dmg</file>
 											<type>dmg</type>
+										</artifact>
+										<artifact>
+											<file>${project.build.directory}/products/PortfolioPerformance-${project.version}-setup.exe</file>
+											<type>exe</type>
 										</artifact>
 									</artifacts>
 								</configuration>

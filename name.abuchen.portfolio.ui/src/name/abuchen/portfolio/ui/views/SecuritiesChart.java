@@ -949,8 +949,8 @@ public class SecuritiesChart
     private void addLimitLines(ChartInterval chartInterval, ChartRange range)
     {
         this.security.getAttributes().getMap().forEach((key, val) -> {
-            // not Limit Price --> ignore
-            if (val.getClass() != LimitPrice.class)
+            // null OR not Limit Price --> ignore
+            if (val == null || val.getClass() != LimitPrice.class)
                 return;
 
             LimitPrice limitAttribute = (LimitPrice) val;

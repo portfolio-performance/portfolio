@@ -30,12 +30,6 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
     }
 
     @Override
-    public String getPDFAuthor()
-    {
-        return "1822direkt"; //$NON-NLS-1$
-    }
-
-    @Override
     public String getLabel()
     {
         return "1822direkt"; //$NON-NLS-1$

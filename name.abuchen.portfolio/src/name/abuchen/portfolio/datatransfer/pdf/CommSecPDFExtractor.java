@@ -33,12 +33,6 @@ public class CommSecPDFExtractor extends AbstractPDFExtractor
     }
 
     @Override
-    public String getPDFAuthor()
-    {
-        return ""; //$NON-NLS-1$
-    }
-
-    @Override
     public String getLabel()
     {
         return "Commonwealth Securities Limited"; //$NON-NLS-1$

@@ -25,6 +25,12 @@ public class QuirionPDFExtractor extends AbstractPDFExtractor
         addPeriodenauszugTransactions();
     }
 
+    @Override
+    public String getLabel()
+    {
+        return "Quirion"; //$NON-NLS-1$
+    }
+
     @SuppressWarnings("nls")
     private void addPeriodenauszugTransactions()
     {
@@ -380,11 +386,5 @@ public class QuirionPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(BuySellEntryItem::new));
 
-    }
-
-    @Override
-    public String getLabel()
-    {
-        return "Quirion"; //$NON-NLS-1$
     }
 }

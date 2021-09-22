@@ -57,12 +57,6 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
     }
 
     @Override
-    public String getPDFAuthor()
-    {
-        return ""; //$NON-NLS-1$
-    }
-
-    @Override
     public String getLabel()
     {
         return "Consorsbank"; //$NON-NLS-1$

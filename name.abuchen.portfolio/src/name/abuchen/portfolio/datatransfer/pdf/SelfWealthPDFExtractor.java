@@ -29,12 +29,6 @@ public class SelfWealthPDFExtractor extends AbstractPDFExtractor
     }
 
     @Override
-    public String getPDFAuthor()
-    {
-        return ""; //$NON-NLS-1$
-    }
-
-    @Override
     public String getLabel()
     {
         return "SelfWealth"; //$NON-NLS-1$

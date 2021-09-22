@@ -25,12 +25,6 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
     }
 
     @Override
-    public String getPDFAuthor()
-    {
-        return ""; //$NON-NLS-1$
-    }
-
-    @Override
     public String getLabel()
     {
         return "UniCredit Bank AG / HypoVereinsbank (HVB)"; //$NON-NLS-1$

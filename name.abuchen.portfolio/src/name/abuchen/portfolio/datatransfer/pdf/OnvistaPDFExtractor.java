@@ -51,6 +51,12 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
         addAdvanceTaxTransaction();
     }
 
+    @Override
+    public String getLabel()
+    {
+        return "Onvista-Bank"; //$NON-NLS-1$
+    }
+
     private void addBuyTransaction()
     {
         DocumentType type = new DocumentType("Wir haben für Sie gekauft");
@@ -1793,10 +1799,5 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                                         + t.getCurrencyCode()));
 
         block.set(advanceTaxTransaction);
-    }
-    @Override
-    public String getLabel()
-    {
-        return "Onvista-Bank"; //$NON-NLS-1$
     }
 }

@@ -38,12 +38,6 @@ public class ViacPDFExtractor extends AbstractPDFExtractor
     }
 
     @Override
-    public String getPDFAuthor()
-    {
-        return ""; //$NON-NLS-1$
-    }
-
-    @Override
     public String getLabel()
     {
         return "WIR Bank Genossenschaft"; //$NON-NLS-1$

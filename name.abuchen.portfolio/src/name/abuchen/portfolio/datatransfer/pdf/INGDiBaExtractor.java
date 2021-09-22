@@ -53,12 +53,6 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
     }
 
     @Override
-    public String getPDFAuthor()
-    {
-        return "ING-DiBa"; //$NON-NLS-1$
-    }
-
-    @Override
     public String getLabel()
     {
         return "ING-DiBa AG"; //$NON-NLS-1$

@@ -22,6 +22,12 @@ public class BondoraGoAndGrowPDFExtractor extends AbstractPDFExtractor
         addAccountStatementTransaction();
     }
 
+    @Override
+    public String getLabel()
+    {
+        return "Bondora"; //$NON-NLS-1$
+    }
+
     private void addAccountStatementTransaction()
     {
         final DocumentType type = new DocumentType(ACCOUNT_STATEMENT_DOCUMENT_TYPE);
@@ -76,11 +82,5 @@ public class BondoraGoAndGrowPDFExtractor extends AbstractPDFExtractor
                         .wrap(t -> {
                             return new TransactionItem(t);
                         });
-    }
-
-    @Override
-    public String getLabel()
-    {
-        return "Bondora"; //$NON-NLS-1$
     }
 }
