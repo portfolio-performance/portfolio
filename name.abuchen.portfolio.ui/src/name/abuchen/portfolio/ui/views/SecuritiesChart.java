@@ -1191,7 +1191,7 @@ public class SecuritiesChart
                     {
                         int x = xAxis.getPixelCoordinate(dates[index].getTime());
                         int y = yAxis.getPixelCoordinate(values[index]);
-                        
+
                         String label = getDividendLabel(dividends.get(index));
                         Point textExtent = event.gc.textExtent(label);
 
