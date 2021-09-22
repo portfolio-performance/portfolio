@@ -33,7 +33,6 @@ import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
-import java.util.*;
 
 public class ExportSelectionPage extends AbstractWizardPage
 {
@@ -155,17 +154,8 @@ public class ExportSelectionPage extends AbstractWizardPage
                 else if (parentElement == SecurityPrice.class)
                     return client.getSecurities().stream().sorted(new Security.ByName()).toArray();
                 else if (parentElement == Taxonomy.class)
-                {
-                    List<String> result = new ArrayList<>();
-                    Object[] tempArr = client.getTaxonomies().stream().sorted(new Taxonomy.ByName()).toArray();
-                    for(Object elem : tempArr)
-                    {
-                        result.add(((Taxonomy)elem).getName());
-                    }
-                    return result.toArray();
-                }
+                    return client.getTaxonomies().stream().sorted(new Taxonomy.ByName()).toArray(); 
             }
-
             return null;
         }
 
@@ -215,6 +205,8 @@ public class ExportSelectionPage extends AbstractWizardPage
                 return Messages.ExportWizardHistoricalQuotes;
             else if (element == Taxonomy.class)
                 return Messages.LabelTaxonomies;
+            else if (element instanceof Taxonomy)
+                return ((Taxonomy)element).getName();
             else if (element instanceof String)
                 return (String) element;
             else

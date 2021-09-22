@@ -21,6 +21,7 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
@@ -115,6 +116,16 @@ public class ExportWizard extends Wizard
             {
                 new CSVExporter().exportSecurityPrices(file, (Security) exportItem);
             }
+            
+            // taxonomy
+            else if (exportItem == Taxonomy.class)
+            {
+                new CSVExporter().exportTaxonomy(file, client.getTaxonomies());
+            }
+            else if (exportClass == Taxonomy.class)
+            {
+                new CSVExporter().exportTaxonomy(file, (Taxonomy)exportItem);
+            }
             else
             {
                 throw new UnsupportedOperationException(
@@ -154,6 +165,8 @@ public class ExportWizard extends Wizard
                 name = ((Security) exportItem).getIsin();
             else if (exportItem instanceof String)
                 name = (String) exportItem;
+            else if (exportItem instanceof Taxonomy)
+                name = ((Taxonomy)exportItem).getName();
 
             FileDialog dialog = new FileDialog(getShell(), SWT.SAVE);
             dialog.setOverwrite(true);

@@ -17,10 +17,13 @@ import org.apache.commons.csv.CSVPrinter;
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.Classification;
+import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
@@ -205,6 +208,81 @@ public class CSVExporter
             exportSecurityPrices(new File(directory, security.getIsin() + ".csv"), security); //$NON-NLS-1$
     }
 
+    public void exportTaxonomy(File file, Taxonomy taxonomy) throws IOException
+    {
+        try (CSVPrinter printer = new CSVPrinter(
+                        new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8), STRATEGY))
+        {
+            printer.printRecord("Name",             //$NON-NLS-1$ 
+                            "Parent",               //$NON-NLS-1$ 
+                            "Color",                //$NON-NLS-1$ 
+                            "Complete Path",        //$NON-NLS-1$ 
+                            "Investment Rank",      //$NON-NLS-1$
+                            "Investment Name",      //$NON-NLS-1$   
+                            "Investment Weight",    //$NON-NLS-1$ 
+                            "WKN",                  //$NON-NLS-1$ 
+                            "ISIN");                //$NON-NLS-1$
+    
+            for (Classification taxClass :taxonomy.getAllClassifications())
+            {
+                if(taxClass != null)
+                {
+                    String name,parent = "",    //$NON-NLS-1$ 
+                                    path = "",  //$NON-NLS-1$ 
+                                    color ="",  //$NON-NLS-1$
+                                    rank = "";  //$NON-NLS-1$
+                    name = taxClass.getName();
+                    if (taxClass.getParent() !=null)
+                    {
+                        parent = taxClass.getParent().getName();
+                        path = taxClass.getPathName(true);
+                        color= taxClass.getColor();
+                        rank =Integer.toString(taxClass.getRank());
+                    }
+                    if(taxClass.getAssignments().isEmpty())
+                    {
+                        printer.print(name);
+                        printer.print(parent);
+                        printer.print(color);
+                        printer.print(path);
+                        printer.print(rank);
+                        printer.println();
+                    }
+                    else
+                    {
+                        for(Assignment ass : taxClass.getAssignments())
+                        {
+                            printer.print(name);
+                            printer.print(parent);
+                            printer.print(color);
+                            printer.print(path);
+                            printer.print(ass.getRank());
+                            printer.print(ass.getInvestmentVehicle().getName());
+                            printer.print(ass.getWeight());                           
+                            if(ass.getInvestmentVehicle().getClass() ==  Security.class)
+                            {
+                                printer.print(((Security)ass.getInvestmentVehicle()).getWkn());
+                                printer.print(((Security)ass.getInvestmentVehicle()).getIsin());
+                            }
+                            printer.println();
+                        }
+                    }
+                }
+                else
+                {
+                    printer.print(""); //$NON-NLS-1$
+                }
+            }
+        }
+    }
+
+    public void exportTaxonomy(File directory, List<Taxonomy> taxonomies) throws IOException
+    {
+        for (Taxonomy taxonomy : taxonomies)
+            exportTaxonomy(new File(directory, taxonomy.getName() + ".csv"), taxonomy); //$NON-NLS-1$
+    }
+
+    
     public void exportMergedSecurityPrices(File file, List<Security> securities) throws IOException
     {
         // prepare: (a) find earliest date (b) ignore securities w/o quotes
