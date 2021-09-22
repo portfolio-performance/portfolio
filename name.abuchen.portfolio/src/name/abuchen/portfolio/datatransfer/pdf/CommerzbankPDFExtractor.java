@@ -33,6 +33,12 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
         addKontoauszugGiro();
     }
 
+    @Override
+    public String getLabel()
+    {
+        return "Commerzbank"; //$NON-NLS-1$
+    }
+
     private void addBuySellTransaction()
     {
         DocumentType type = new DocumentType("W e r t p a p i e r (k a u f|v e r k a u f)");
@@ -485,11 +491,5 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
     private String stripBlanks(String input)
     {
         return input.replaceAll(" ", ""); //$NON-NLS-1$ //$NON-NLS-2$
-    }
-
-    @Override
-    public String getLabel()
-    {
-        return "Commerzbank"; //$NON-NLS-1$
     }
 }

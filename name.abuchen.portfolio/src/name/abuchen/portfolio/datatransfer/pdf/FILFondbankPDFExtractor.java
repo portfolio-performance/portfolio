@@ -29,12 +29,6 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
     }
 
     @Override
-    public String getPDFAuthor()
-    {
-        return ""; //$NON-NLS-1$
-    }
-
-    @Override
     public String getLabel()
     {
         return "FIL Fondsbank GmbH (Fidelity Group)"; //$NON-NLS-1$

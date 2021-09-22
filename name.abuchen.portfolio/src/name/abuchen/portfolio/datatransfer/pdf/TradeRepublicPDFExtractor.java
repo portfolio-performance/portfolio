@@ -38,12 +38,6 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
     }
 
     @Override
-    public String getPDFAuthor()
-    {
-        return ""; //$NON-NLS-1$
-    }
-
-    @Override
     public String getLabel()
     {
         return "Trade Republic Bank GmbH"; //$NON-NLS-1$

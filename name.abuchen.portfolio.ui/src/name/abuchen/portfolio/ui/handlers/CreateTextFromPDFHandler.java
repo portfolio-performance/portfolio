@@ -2,7 +2,6 @@ package name.abuchen.portfolio.ui.handlers;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.MessageFormat;
 
 import javax.inject.Named;
 
@@ -41,8 +40,7 @@ public class CreateTextFromPDFHandler
             PDFInputFile inputFile = new PDFInputFile(file);
             inputFile.convertPDFtoText();
 
-            String text = MessageFormat.format(Messages.PDFImportDebugAuthor, inputFile.getAuthor());
-            text += "\nPDFBox Version: " + inputFile.getPDFBoxVersion().toString(); //$NON-NLS-1$
+            String text = "PDFBox Version: " + inputFile.getPDFBoxVersion().toString(); //$NON-NLS-1$
             text += "\n-----------------------------------------\n"; //$NON-NLS-1$
             text += inputFile.getText().replace("\r","");   // CRLF to spac; //$NON-NLS-1$ //$NON-NLS-2$
 

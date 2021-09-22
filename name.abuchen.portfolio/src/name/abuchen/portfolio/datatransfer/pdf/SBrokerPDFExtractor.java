@@ -32,12 +32,6 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
         return "S Broker AG & Co. KG / Sparkasse"; //$NON-NLS-1$
     }
 
-    @Override
-    public String getPDFAuthor()
-    {
-        return ""; //$NON-NLS-1$
-    }
-
     private void addBuySellTransaction()
     {
         DocumentType type = new DocumentType("(Kauf(.*)?|Verkauf(.*)?|Wertpapier Abrechnung Ausgabe Investmentfonds)");

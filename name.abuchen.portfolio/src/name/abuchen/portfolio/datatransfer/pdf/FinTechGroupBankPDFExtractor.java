@@ -41,12 +41,6 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
     }
 
     @Override
-    public String getPDFAuthor()
-    {
-        return ""; //$NON-NLS-1$
-    }
-
-    @Override
     public String getLabel()
     {
         return "flatexDEGIRO Bank AG / FinTech Group Bank AG / biw AG"; //$NON-NLS-1$

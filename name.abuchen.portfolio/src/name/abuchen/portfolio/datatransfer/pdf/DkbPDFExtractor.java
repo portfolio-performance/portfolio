@@ -48,9 +48,9 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
     }
 
     @Override
-    public String getPDFAuthor()
+    public String getLabel()
     {
-        return "DKB AG"; //$NON-NLS-1$
+        return "Deutsche Kreditbank AG"; //$NON-NLS-1$
     }
 
     private void addBuyTransaction()
@@ -1084,11 +1084,5 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(TransactionItem::new));
-    }
-
-    @Override
-    public String getLabel()
-    {
-        return "DKB"; //$NON-NLS-1$
     }
 }

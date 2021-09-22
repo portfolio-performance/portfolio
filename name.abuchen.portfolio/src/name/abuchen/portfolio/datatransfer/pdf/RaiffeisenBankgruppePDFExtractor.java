@@ -28,12 +28,6 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
     }
 
     @Override
-    public String getPDFAuthor()
-    {
-        return ""; //$NON-NLS-1$
-    }
-
-    @Override
     public String getLabel()
     {
         return "Raiffeisenbank Bankgruppe"; //$NON-NLS-1$

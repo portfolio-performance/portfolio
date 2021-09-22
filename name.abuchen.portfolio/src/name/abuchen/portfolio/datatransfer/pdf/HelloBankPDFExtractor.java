@@ -29,12 +29,6 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
     }
 
     @Override
-    public String getPDFAuthor()
-    {
-        return ""; //$NON-NLS-1$
-    }
-
-    @Override
     public String getLabel()
     {
         return "Hello Bank"; //$NON-NLS-1$

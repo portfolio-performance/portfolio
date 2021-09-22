@@ -31,12 +31,6 @@ public class GLSBankengemeinschaftPDFExtractor extends AbstractPDFExtractor
     }
 
     @Override
-    public String getPDFAuthor()
-    {
-        return ""; //$NON-NLS-1$
-    }
-
-    @Override
     public String getLabel()
     {
         return "GLS Gemeinschaftsbank eG"; //$NON-NLS-1$

@@ -39,12 +39,6 @@ public class DZBankPDFExtractor extends AbstractPDFExtractor
     }
 
     @Override
-    public String getPDFAuthor()
-    {
-        return "DZBank"; //$NON-NLS-1$
-    }
-
-    @Override
     public String getLabel()
     {
         return "DZBank"; //$NON-NLS-1$

@@ -51,12 +51,6 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
     }
 
     @Override
-    public String getPDFAuthor()
-    {
-        return ""; //$NON-NLS-1$
-    }
-
-    @Override
     public String getLabel()
     {
         return "Comdirect Bank AG"; //$NON-NLS-1$
