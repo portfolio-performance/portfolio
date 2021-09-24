@@ -141,9 +141,9 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                 .match("^(?<shares>[.,\\d]+) Stk(.*)?$")
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                // Extag: 28.04.2021
+                // Valuta 30.04.2021
                 .section("date")
-                .match("^Extag: (?<date>\\d+.\\d+.\\d{4})$")
+                .match("^Valuta (?<date>\\d+.\\d+.\\d{4})$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                 // Zu Gunsten IBAN AT99 9999 9000 0011 1111 110,02 EUR 
