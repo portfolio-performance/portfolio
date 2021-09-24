@@ -99,17 +99,21 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 // Registered Shares DL 0,2095238
                 // GB00BH4HKS39
                 // 2 Barausgleich 0,37 GBP
-                .section("name", "shares", "nameContinued", "isin", "currency", "date").optional()
+                .section("name", "shares", "nameContinued", "isin", "amount1", "amount2", "currency", "date").optional()
                 .match("^[.\\d]+ Reinvestierung (?<name>.*) [.,\\d]+ Stk.$")
                 .match("^[.\\d]+ Reinvestierung (?<name>.*) (?<shares>[.,\\d]+) Stk.$")
                 .match("^(?<nameContinued>.*)$")
                 .match("^(?<isin>[\\w]{12})$")
-                .match("^[.\\d]+ Barausgleich [.,\\d]+ (?<currency>[\\w]{3})$")
+                .match("^[.\\d]+ Bruttoertrag (?<amount1>[.,\\d]+) [\\w]{3}$")
+                .match("^[.\\d]+ Barausgleich (?<amount2>[.,\\d]+) (?<currency>[\\w]{3})$")
                 .match("^[\\w]+ (?<date>\\d+.\\d+.\\d{4}|\\d{4}-\\d+-\\d+) [.,\\d+]+ [\\w]{3}$")
                 .assign((t, v) -> {
                     t.setDate(asDate(v.get("date")));
                     t.setShares(asShares(v.get("shares")));
                     t.setSecurity(getOrCreateSecurity(v));
+
+                    t.setAmount(asAmount(v.get("amount1")) - asAmount(v.get("amount2")));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 })
 
                 // Market-Order Verkauf am 18.06.2019, um 17:50 Uhr an der Lang & Schwarz Exchange.
@@ -198,33 +202,37 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 // 1 Bruttoertrag 26,80 GBP
                 // 2 Barausgleich 0,37 GBP
                 // Zwischensumme 0,85267 EUR/GBP 0,44 EUR
-                .section("amount1", "amount2", "fxCurrency", "exchangeRate").optional()
+                .section("amount1", "amount2", "currency", "fxCurrency", "exchangeRate").optional()
                 .match("^[.\\d]+ Bruttoertrag (?<amount1>[.,\\d]+) [\\w]{3}$")
-                .match("^[.\\d]+ Barausgleich (?<amount2>[.,\\d]+) (?<fxCurrency>[\\w]{3})$")
-                .match("^Zwischensumme (?<exchangeRate>[.,\\d]+) (?<currency>[\\w]{3})\\/[\\w]{3} [.,\\d]+ [\\w]{3}$")
+                .match("^[.\\d]+ Barausgleich (?<amount2>[.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^Zwischensumme (?<exchangeRate>[.,\\d]+) (?<fxCurrency>[\\w]{3})\\/[\\w]{3} [.,\\d]+ [\\w]{3}$")
                 .assign((t, v) -> {
                     // read the forex currency, exchange rate, account
                     // currency and gross amount in account currency
                     String forex = asCurrencyCode(v.get("fxCurrency"));
-                    if (t.getPortfolioTransaction().getSecurity().getCurrencyCode().equals(forex))
-                    {
-                        BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                        BigDecimal reverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
-                                        RoundingMode.HALF_DOWN);
-                        
-                        // gross given in account currency
-                        long gross = asAmount(v.get("amount1")) - asAmount(v.get("amount2"));
-                        long grossFX = reverseRate.multiply(BigDecimal.valueOf(gross))
-                                        .setScale(0, RoundingMode.HALF_DOWN).longValue();
-                        
-                        // set amount in account currency
-                        Money amount = Money.of(t.getPortfolioTransaction().getCurrencyCode(), grossFX);                        
-                        t.setAmount(amount.getAmount());
-                        t.setCurrencyCode(amount.getCurrencyCode());
 
+                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                    BigDecimal reverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
+                                    RoundingMode.HALF_DOWN);
+
+                    // gross given in forex currency
+                    long gross = asAmount(v.get("amount1")) - asAmount(v.get("amount2"));
+                    long amount = reverseRate.multiply(BigDecimal.valueOf(gross))
+                                    .setScale(0, RoundingMode.HALF_DOWN).longValue();
+
+                    // set amount in account currency
+                    Money fxAmount = Money.of(forex, amount);
+
+                    t.setAmount(fxAmount.getAmount());
+                    t.setCurrencyCode(asCurrencyCode(forex));
+
+                    // create a Unit only, 
+                    // if security and transaction currency are different
+                    if (!t.getPortfolioTransaction().getSecurity().getCurrencyCode().equals(forex))
+                    {
                         Unit grossValue = new Unit(Unit.Type.GROSS_VALUE,
-                                        Money.of(asCurrencyCode(v.get("currency")), grossFX),
-                                        Money.of(forex, gross), reverseRate);
+                                        Money.of(forex, amount),
+                                        Money.of(asCurrencyCode(v.get("currency")), gross), reverseRate);
 
                         t.getPortfolioTransaction().addUnit(grossValue);
                     }
@@ -383,15 +391,18 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 // Registered Shares DL 0,2095238
                 // GB00BH4HKS39
                 // 1 Bruttoertrag 26,80 GBP
-                .section("name", "shares", "nameContinued", "isin", "currency").optional()
+                .section("name", "shares", "nameContinued", "isin", "amount", "currency").optional()
                 .match("^[.\\d]+ Reinvestierung (?<name>.*) (?<shares>[.,\\d]+) Stk.$")
                 .match("^(?<nameContinued>.*)$")
                 .match("^(?<isin>[\\w]{12})$")
                 .match("^[.\\d]+ Reinvestierung .*$")
-                .match("^[.\\d]+ Bruttoertrag [.,\\d]+ (?<currency>[\\w]{3})$")
+                .match("^[.\\d]+ Bruttoertrag (?<amount>[.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     t.setShares(asShares(v.get("shares")));
                     t.setSecurity(getOrCreateSecurity(v));
+
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 })
 
                 // DExxxxxx 25.09.2019 4,18 EUR
@@ -405,8 +416,12 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 .section("amount", "currency").optional()
                 .match("^GESAMT (?<amount>[.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                    // if amount is already set, we do nothing
+                    if (t.getAmount() == 0L)
+                    {
+                        t.setAmount(asAmount(v.get("amount")));
+                        t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                    }
                 })
 
                 /***
@@ -452,25 +467,38 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                 // 1 Bruttoertrag 26,80 GBP
                 // Zwischensumme 0,85267 EUR/GBP 0,44 EUR
-                // GESAMT 4,18 EUR
+                // GESAMT 0,44 EUR
                 .section("fxAmount", "currency", "fxCurrency", "exchangeRate").optional()
-                .match("^[.\\d]+ Bruttoertrag (?<fxAmount>[.,\\d]+) (?<fxCurrency>[\\w]{3})$")
+                .match("^[\\d]+ Bruttoertrag (?<fxAmount>[.,\\d]+) (?<fxCurrency>[\\w]{3})$")
                 .match("^Zwischensumme (?<exchangeRate>[.,\\d]+) (?<currency>[\\w]{3})\\/[\\w]{3} [.,\\d]+ [\\w]{3}$")
-                .assign((t, v) -> {                    
+                .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                    if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
-                    {
-                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
-                    }
                     type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
                     
-                    // create gross value unit only, 
                     // if transaction currency is different to security currency
                     if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
                     {
+                        // if security and transaction currency are different
+                        if (!t.getCurrencyCode().equalsIgnoreCase(asCurrencyCode(v.get("currency"))))
+                        {
+                            // get gross amount and calculate equivalent in EUR
+                            Money gross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxAmount")));
+                            BigDecimal amount = BigDecimal.valueOf(gross.getAmount())
+                                                .divide(exchangeRate, 10, RoundingMode.HALF_DOWN)
+                                                .setScale(0, RoundingMode.HALF_DOWN);
+
+                            // set amount in account currency
+                            Money fxAmount = Money.of(v.get("currency"), amount.longValue());
+
+                            t.setAmount(fxAmount.getAmount());
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        }
+                    }
+                    else
+                    {
                         // create a Unit only, 
                         // if security and transaction currency are different
-                        if (!t.getCurrencyCode().equalsIgnoreCase(asCurrencyCode(v.get("fxCurrency"))))
+                        if (t.getCurrencyCode().equalsIgnoreCase(asCurrencyCode(v.get("fxCurrency"))))
                         {
                             // get exchange rate (in Fx/EUR) and
                             // calculate inverse exchange rate (in EUR/Fx)
@@ -483,10 +511,11 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                 .divide(exchangeRate, 10, RoundingMode.HALF_DOWN)
                                                 .setScale(0, RoundingMode.HALF_DOWN);
 
-                            Money fxAmount = Money.of(t.getCurrencyCode(), amount.longValue());
+                            // set amount in account currency
+                            Money fxAmount = Money.of(v.get("currency"), amount.longValue());
 
                             t.setAmount(fxAmount.getAmount());
-                            t.setCurrencyCode(fxAmount.getCurrencyCode());
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
 
                             t.addUnit(new Unit(Unit.Type.GROSS_VALUE, fxAmount, gross,
                                             inverseRate));
