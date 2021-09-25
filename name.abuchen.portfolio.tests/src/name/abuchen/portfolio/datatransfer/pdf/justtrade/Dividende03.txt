@@ -1,0 +1,36 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+justTRADE
+Ein Service der Sutor Bank
+JT Technologies GmbH
+Kaiserhofstraße 16
+Herr 60313 Frankfurt am Main
+x x Email: service@justtrade.com
+x x Str 1 Web: www.justtrade.com
+56987 x
+Name des Kunden: x x
+Depotnummer: 9874563
+24. September 2021
+Dividende - Interim
+Produktbezeichnung - Rio Tinto PLC
+Internationale Wertpapierkennnummer GB0007188757
+(ISIN)
+Anzahl/Nominale 30,00
+Referenz 8654
+Ex Datum - Tag 12. August 2021
+Zahlbarkeitstag 23. September 2021
+Valutadatum 23. September 2021
+Dividende pro Stück/Nominal EUR 4,710998
+Devisenkurs (EUR/ GBP) 0,8578
+Dividendengutschrift EUR 141,33
+Ausmachender Betrag EUR 141,33
+Bei Fragen oder im Falle einer fehlerhaften Abrechnung wenden Sie sich bitte an den justTRADE -
+Kundenservice. Sie finden die Kontaktdetails im Briefkopf dieser Abrechnung.
+Der Gegenwert der Transaktion wird per Valutatag gebucht. Dies ist keine Steuerbescheinigung.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+MAX HEINR. SUTOR OHG TELEFON 040-8090685-0 GESCHÄFTSLEITUNG FINANZAMT HAMBURG AMTSGERICHT HAMBURG
+HERMANNSTRASSE 46 TELEFAX 040-8090685-810 ROBERT FREITAG STNR: 2761000074 HRA 25379
+20095 HAMBURG THOMAS MEIER UST-IDNR: DE155617009
+POSTFACH 11 33 37 INFO@SUTORBANK.DE BANKLEITZAHL 202 308 00
+20433 HAMBURG WWW.SUTORBANK.DE BIC CODE: MHSBDEHBXXX
