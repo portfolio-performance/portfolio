@@ -6,8 +6,14 @@
     "notarize": [
         {
             "bundle_id": "name.abuchen.portfolio.distro.product.x8664.zip",
-            "path": "PortfolioPerformance-${project.version}.dmg",
+            "path": "PortfolioPerformance-${project.version}-x86_64.dmg",
+            "staple": true
+        },
+        {
+            "bundle_id": "name.abuchen.portfolio.distro.product.aarch64.zip",
+            "path": "PortfolioPerformance-${project.version}-aarch64.dmg",
             "staple": true
         }
+
     ]
 }

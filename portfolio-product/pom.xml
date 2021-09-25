@@ -232,7 +232,7 @@
 								</configuration>
 							</execution>
 							<execution>
-								<id>sign-macos-distro</id>
+								<id>sign-macos-distro-x86_64</id>
 								<phase>package</phase>
 								<goals>
 									<goal>exec</goal>
@@ -248,7 +248,7 @@
 								</configuration>
 							</execution>
 							<execution>
-								<id>build-dmg-distro</id>
+								<id>build-dmg-distro-x86_64</id>
 								<phase>package</phase>
 								<goals>
 									<goal>exec</goal>
@@ -264,7 +264,7 @@
 								</configuration>
 							</execution>
 							<execution>
-								<id>rename-dmg</id>
+								<id>rename-dmg-x86_64</id>
 								<phase>package</phase>
 								<goals>
 									<goal>exec</goal>
@@ -274,7 +274,55 @@
 									<workingDirectory>${project.build.directory}/products</workingDirectory>
 									<arguments>
 										<argument>Portfolio Performance ${project.artifact.selectedVersion.majorVersion}.${project.artifact.selectedVersion.minorVersion}.${project.artifact.selectedVersion.incrementalVersion}.dmg</argument>
-										<argument>PortfolioPerformance-${project.version}.dmg</argument>
+										<argument>PortfolioPerformance-${project.version}-x86_64.dmg</argument>
+									</arguments>
+									<skip>${applesigner.skip}</skip>
+								</configuration>
+							</execution>
+							<execution>
+								<id>sign-macos-distro-aarch64</id>
+								<phase>package</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+								<configuration>
+									<executable>${project.basedir}/signing/codesign-macos-product.sh</executable>
+									<workingDirectory>/tmp</workingDirectory>
+									<arguments>
+										<argument>${project.basedir}</argument>
+										<argument>${project.build.directory}/products/name.abuchen.portfolio.distro.product/macosx/cocoa/aarch64/PortfolioPerformance.app</argument>
+									</arguments>
+									<skip>${applesigner.skip}</skip>
+								</configuration>
+							</execution>
+							<execution>
+								<id>build-dmg-distro-aarch64</id>
+								<phase>package</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+								<configuration>
+									<!-- install from https://github.com/sindresorhus/create-dmg -->
+									<executable>create-dmg</executable>
+									<workingDirectory>${project.build.directory}/products</workingDirectory>
+									<arguments>
+										<argument>${project.build.directory}/products/name.abuchen.portfolio.distro.product/macosx/cocoa/aarch64/PortfolioPerformance.app</argument>
+									</arguments>
+									<skip>${applesigner.skip}</skip>
+								</configuration>
+							</execution>
+							<execution>
+								<id>rename-dmg-aarch64</id>
+								<phase>package</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+								<configuration>
+									<executable>mv</executable>
+									<workingDirectory>${project.build.directory}/products</workingDirectory>
+									<arguments>
+										<argument>Portfolio Performance ${project.artifact.selectedVersion.majorVersion}.${project.artifact.selectedVersion.minorVersion}.${project.artifact.selectedVersion.incrementalVersion}.dmg</argument>
+										<argument>PortfolioPerformance-${project.version}-aarch64.dmg</argument>
 									</arguments>
 									<skip>${applesigner.skip}</skip>
 								</configuration>
@@ -327,7 +375,13 @@
 								<configuration>
 									<artifacts>
 										<artifact>
-											<file>${project.build.directory}/products/PortfolioPerformance-${project.version}.dmg</file>
+											<file>${project.build.directory}/products/PortfolioPerformance-${project.version}-x86_64.dmg</file>
+											<classifier>x86_64</classifier>
+											<type>dmg</type>
+										</artifact>
+										<artifact>
+											<file>${project.build.directory}/products/PortfolioPerformance-${project.version}-aarch64.dmg</file>
+											<classifier>aarch64</classifier>
 											<type>dmg</type>
 										</artifact>
 										<artifact>
