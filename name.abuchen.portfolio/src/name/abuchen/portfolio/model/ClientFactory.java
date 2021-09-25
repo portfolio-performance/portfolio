@@ -23,6 +23,8 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.text.MessageFormat;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -1177,7 +1179,15 @@ public class ClientFactory
         {
             xstream = new XStream();
 
+            xstream.allowTypesByWildcard(new String[] { "name.abuchen.portfolio.model.**" });
+
             xstream.setClassLoader(ClientFactory.class.getClassLoader());
+
+            // because we introduced LocalDate and LocalDateTime before Xstream
+            // was supporting it, we must declare it referenceable for backward
+            // compatibility reasons
+            xstream.addImmutableType(LocalDate.class, true);
+            xstream.addImmutableType(LocalDateTime.class, true);
 
             xstream.registerConverter(new XStreamLocalDateConverter());
             xstream.registerConverter(new XStreamLocalDateTimeConverter());

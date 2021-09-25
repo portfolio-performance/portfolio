@@ -11,7 +11,7 @@
 	<name>Portfolio Performance</name>
 
 	<properties>
-		<tycho-version>1.5.1</tycho-version>
+		<tycho-version>2.4.0</tycho-version>
 		<jarsigner.skip>true</jarsigner.skip>
 		<gpgsigner.skip>true</gpgsigner.skip>
 		<applesigner.skip>true</applesigner.skip>
@@ -22,8 +22,8 @@
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
 		<argLine>-ea</argLine>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.compiler.source>11</maven.compiler.source>
+		<maven.compiler.target>11</maven.compiler.target>
 	</properties>
 
 	<modules>
@@ -41,7 +41,7 @@
 		<repository>
 			<id>portfolio-jre11</id>
 			<layout>p2</layout>
-			<url>http://buchen.github.io/bundled-jre/11.0.4</url>
+			<url>http://buchen.github.io/bundled-jre/11.0.12</url>
 		</repository>
 	</repositories>
 
@@ -83,6 +83,7 @@
 				<configuration>
 					<resolver>p2</resolver>
 					<pomDependencies>consider</pomDependencies>
+					<executionEnvironment>JavaSE-11</executionEnvironment>
 					<target>
 						<artifact>
 							<groupId>name.abuchen.portfolio</groupId>
@@ -327,7 +328,7 @@
 				<plugin>
 					<groupId>name.abuchen</groupId>
 					<artifactId>fix-info-plist-maven-plugin</artifactId>
-					<version>1.6</version>
+					<version>1.7</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
