@@ -1117,7 +1117,7 @@ public class SecuritiesChart
                         Point textExtent = event.gc.textExtent(label);
 
                         event.gc.setForeground(Colors.theme().defaultForeground());
-                        event.gc.drawText(label, x - (textExtent.x / 2), y + 10, true);
+                        event.gc.drawText(label, x - (textExtent.x / 2), y + border.getSymbolSize(), true);
                     }
                 });
             }
@@ -1184,8 +1184,17 @@ public class SecuritiesChart
                     IAxis xAxis = chart.getAxisSet().getXAxis(0);
                     IAxis yAxis = chart.getAxisSet().getYAxis(0);
 
+                    int yPosLabel = 0;
+                    int lastWriteLabelLevel1 = 0;
+                    int lastWriteLabelLevel2 = 0;
+                    int lastWriteLabelLevel3 = 0;
+
                     for (int index = 0; index < dates.length; index++)
                     {
+                        boolean freeSpaceForLabelLevel1 = true;
+                        boolean freeSpaceForLabelLevel2 = true;
+                        boolean freeSpaceForLabelLevel3 = true;
+
                         int x = xAxis.getPixelCoordinate(dates[index].getTime());
                         int y = yAxis.getPixelCoordinate(values[index]);
 
@@ -1193,7 +1202,35 @@ public class SecuritiesChart
                         Point textExtent = event.gc.textExtent(label);
 
                         event.gc.setForeground(Colors.theme().defaultForeground());
-                        event.gc.drawText(label, x - (textExtent.x / 2), y - 22, true);
+
+                        if (((x - (textExtent.x / 2)) - lastWriteLabelLevel1) <= 0)
+                            freeSpaceForLabelLevel1 = false;
+
+                        if (((x - (textExtent.x / 2)) - lastWriteLabelLevel2) <= 0)
+                            freeSpaceForLabelLevel2 = false;
+
+                        if (((x - (textExtent.x / 2)) - lastWriteLabelLevel3) <= 0)
+                            freeSpaceForLabelLevel3 = false;
+
+                        if (freeSpaceForLabelLevel1 || freeSpaceForLabelLevel2 || freeSpaceForLabelLevel3)
+                        {
+                            if (freeSpaceForLabelLevel1)
+                            {
+                                yPosLabel = y - textExtent.y - border.getSymbolSize();
+                                lastWriteLabelLevel1 = (x + (textExtent.x / 2));
+                            }
+                            if (freeSpaceForLabelLevel2 && !freeSpaceForLabelLevel1)
+                            {
+                                yPosLabel = yPosLabel - textExtent.y;
+                                lastWriteLabelLevel2 = (x + (textExtent.x / 2));
+                            }
+                            if (freeSpaceForLabelLevel3 && !freeSpaceForLabelLevel2 && !freeSpaceForLabelLevel1)
+                            {
+                                yPosLabel = yPosLabel - textExtent.y;
+                                lastWriteLabelLevel3 = (x + (textExtent.x / 2));
+                            }
+                            event.gc.drawText(label, x - (textExtent.x / 2), yPosLabel, true);
+                        }
                     }
                 });
             }
@@ -1236,14 +1273,13 @@ public class SecuritiesChart
                         .filter(p -> chartInterval.contains(p.getDate())) //
                         .min(Comparator.comparing(SecurityPrice::getValue));
 
-        max.ifPresent(high -> addExtremeMarker(high, PlotSymbolType.TRIANGLE, 10, //
+        max.ifPresent(high -> addExtremeMarker(high, PlotSymbolType.TRIANGLE, // 
                         Messages.LabelChartDetailMarkerHigh, colorHigh));
-        min.ifPresent(low -> addExtremeMarker(low, PlotSymbolType.INVERTED_TRIANGLE, -25,
+        min.ifPresent(low -> addExtremeMarker(low, PlotSymbolType.INVERTED_TRIANGLE, // 
                         Messages.LabelChartDetailMarkerLow, colorLow));
     }
 
-    private void addExtremeMarker(SecurityPrice price, PlotSymbolType plotSymbolType, int labelOffset,
-                    String seriesLabel, Color color)
+    private void addExtremeMarker(SecurityPrice price, PlotSymbolType plotSymbolType, String seriesLabel, Color color)
     {
         LocalDate eventDate = price.getDate();
         String valueFormat = Values.Quote.format(price.getValue());
@@ -1276,7 +1312,13 @@ public class SecuritiesChart
                     Point textExtent = event.gc.textExtent(valueFormat);
 
                     event.gc.setForeground(Colors.theme().defaultForeground());
-                    event.gc.drawText(valueFormat, x - (textExtent.x / 2), y + labelOffset, true);
+
+                    if (inner.getSymbolColor() == colorHigh)
+                        y = y - textExtent.y - inner.getSymbolSize();
+                    else
+                        y = y + inner.getSymbolSize();
+
+                    event.gc.drawText(valueFormat, x - (textExtent.x / 2), y, true);
                 });
             }
         }
