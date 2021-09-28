@@ -215,6 +215,8 @@ public class ECBExchangeRateProvider implements ExchangeRateProvider
                 {
                     XStream xstream = new XStream();
 
+                    xstream.allowTypesByWildcard(new String[] { "name.abuchen.portfolio.money.**" });
+
                     xstream.setClassLoader(ECBExchangeRateProvider.class.getClassLoader());
 
                     xstream.registerConverter(new XStreamLocalDateConverter());

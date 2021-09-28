@@ -13,7 +13,7 @@ import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
 
 public class ExchangeRateTimeSeriesImpl implements ExchangeRateTimeSeries
 {
-    private transient ExchangeRateProvider provider;
+    private transient ExchangeRateProvider provider; // NOSONAR
 
     private String baseCurrency;
     private String termCurrency;
