@@ -28,10 +28,12 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.zip.Deflater;
@@ -58,6 +60,7 @@ import com.thoughtworks.xstream.converters.reflection.ReflectionProvider;
 import com.thoughtworks.xstream.mapper.Mapper;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.AttributeType.ImageConverter;
 import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
@@ -97,7 +100,7 @@ public class ClientFactory
 
     }
 
-    private static class XmlSerialization
+    /* package */ static class XmlSerialization
     {
         public Client load(Reader input) throws IOException
         {
@@ -129,7 +132,7 @@ public class ClientFactory
         }
     }
 
-    private interface ClientPersister
+    interface ClientPersister
     {
         Client load(InputStream input) throws IOException;
 
@@ -141,22 +144,29 @@ public class ClientFactory
         @Override
         public Client load(InputStream input) throws IOException
         {
-            return new XmlSerialization().load(new InputStreamReader(input, StandardCharsets.UTF_8));
+            Client client = new XmlSerialization().load(new InputStreamReader(input, StandardCharsets.UTF_8));
+            client.getSaveFlags().add(SaveFlag.XML);
+            return client;
         }
 
         @Override
         public void save(Client client, OutputStream output) throws IOException
         {
-            try (Writer writer = new OutputStreamWriter(output, StandardCharsets.UTF_8))
-            {
-                xstream().toXML(client, writer);
-                writer.flush();
-            }
+            Writer writer = new OutputStreamWriter(output, StandardCharsets.UTF_8);
+            xstream().toXML(client, writer);
+            writer.flush();
         }
     }
 
     private static class PlainWriterZIP implements ClientPersister
     {
+        private ClientPersister body;
+
+        public PlainWriterZIP(ClientPersister body)
+        {
+            this.body = body;
+        }
+
         @Override
         public Client load(InputStream input) throws IOException
         {
@@ -165,11 +175,17 @@ public class ClientFactory
             {
                 ZipEntry entry = zipin.getNextEntry();
 
-                if (!ZIP_DATA_FILE.equals(entry.getName()))
-                    throw new IOException(MessageFormat.format(Messages.MsgErrorUnexpectedZipEntry, ZIP_DATA_FILE,
-                                    entry.getName()));
+                if (body == null)
+                {
+                    if (entry.getName().endsWith(".portfolio")) //$NON-NLS-1$
+                        body = new ProtobufWriter();
+                    else
+                        body = new PlainWriter();
+                }
 
-                return new XmlSerialization().load(new InputStreamReader(zipin, StandardCharsets.UTF_8));
+                Client client = body.load(zipin);
+                client.getSaveFlags().add(SaveFlag.COMPRESSED);
+                return client;
             }
         }
 
@@ -181,13 +197,30 @@ public class ClientFactory
             {
                 zipout.setLevel(Deflater.BEST_COMPRESSION);
 
-                zipout.putNextEntry(new ZipEntry(ZIP_DATA_FILE));
-                new XmlSerialization().save(client, zipout);
+                String name = body instanceof ProtobufWriter ? "data.portfolio" : "data.xml"; //$NON-NLS-1$ //$NON-NLS-2$
+
+                zipout.putNextEntry(new ZipEntry(name));
+                body.save(client, zipout);
                 zipout.closeEntry();
             }
         }
     }
 
+    /**
+     * Encrypts the portfolio data.
+     * <p/>
+     * File format:
+     * 
+     * <pre>
+     *   signature (8 bytes, PORTFOLIO)
+     *   method (1 byte, 0 = AES126, 1 = AES256)
+     *   initialization vector (16 bytes)
+     *   ---
+     *   content type (4 bytes, 1 = XML, 2 = PROTOBUF)
+     *   version (4 bytes)
+     *   compressed content
+     * </pre>
+     */
     private static class Decryptor implements ClientPersister
     {
         private static final byte[] SIGNATURE = new byte[] { 'P', 'O', 'R', 'T', 'F', 'O', 'L', 'I', 'O' };
@@ -204,13 +237,15 @@ public class ClientFactory
         private static final int AES128_KEYLENGTH = 128;
         private static final int AES256_KEYLENGTH = 256;
 
+        private ClientPersister body;
         private char[] password;
         private int keyLength;
 
-        public Decryptor(String method, char[] password)
+        public Decryptor(ClientPersister body, Set<SaveFlag> flags, char[] password)
         {
+            this.body = body;
             this.password = password;
-            this.keyLength = "AES256".equals(method) ? AES256_KEYLENGTH : AES128_KEYLENGTH; //$NON-NLS-1$
+            this.keyLength = flags.contains(SaveFlag.AES256) ? AES256_KEYLENGTH : AES128_KEYLENGTH;
         }
 
         @Override
@@ -251,11 +286,11 @@ public class ClientFactory
                 {
                     // read version information
                     byte[] bytes = new byte[4];
-                    read = decrypted.read(bytes); // major version number
+                    read = decrypted.read(bytes); // content type
                     if (read != bytes.length)
                         throw new IOException();
 
-                    int majorVersion = ByteBuffer.wrap(bytes).getInt();
+                    int contentType = ByteBuffer.wrap(bytes).getInt();
                     read = decrypted.read(bytes); // version number
                     if (read != bytes.length)
                         throw new IOException();
@@ -263,17 +298,27 @@ public class ClientFactory
                     int version = ByteBuffer.wrap(bytes).getInt();
 
                     // sanity check if the file was properly decrypted
-                    if (majorVersion < 1 || majorVersion > 10 || version < 1 || version > 100)
+                    if (contentType < 1 || contentType > 2 || version < 1 || version > Client.CURRENT_VERSION + 20)
                         throw new IOException(Messages.MsgIncorrectPassword);
-                    if (majorVersion > Client.MAJOR_VERSION || version > Client.CURRENT_VERSION)
+                    if (version > Client.CURRENT_VERSION)
                         throw new IOException(MessageFormat.format(Messages.MsgUnsupportedVersionClientFiled, version));
+
+                    if (body == null)
+                    {
+                        if (contentType == 2)
+                            body = new ProtobufWriter();
+                        else
+                            body = new PlainWriter();
+                    }
 
                     // wrap with zip input stream
                     try (ZipInputStream zipin = new ZipInputStream(decrypted))
                     {
                         zipin.getNextEntry();
 
-                        client = new XmlSerialization().load(new InputStreamReader(zipin, StandardCharsets.UTF_8));
+                        client = body.load(zipin);
+                        client.getSaveFlags().add(SaveFlag.ENCRYPTED);
+                        client.getSaveFlags().add(method == 1 ? SaveFlag.AES256 : SaveFlag.AES128);
 
                         try // NOSONAR
                         {
@@ -343,16 +388,19 @@ public class ClientFactory
                 try (OutputStream encrypted = new CipherOutputStream(output, cipher))
                 {
                     // write version information
-                    encrypted.write(ByteBuffer.allocate(4).putInt(Client.MAJOR_VERSION).array());
+
+                    int contentType = body instanceof ProtobufWriter ? 2 : 1;
+
+                    encrypted.write(ByteBuffer.allocate(4).putInt(contentType).array());
                     encrypted.write(ByteBuffer.allocate(4).putInt(client.getVersion()).array());
 
                     // wrap with zip output stream
                     try (ZipOutputStream zipout = new ZipOutputStream(encrypted))
                     {
                         zipout.setLevel(Deflater.BEST_COMPRESSION);
-                        zipout.putNextEntry(new ZipEntry(ZIP_DATA_FILE));
+                        zipout.putNextEntry(new ZipEntry("data")); //$NON-NLS-1$
 
-                        new XmlSerialization().save(client, zipout);
+                        body.save(client, zipout);
                         zipout.closeEntry();
                     }
                 }
@@ -372,18 +420,74 @@ public class ClientFactory
         }
     }
 
-    private static final String ZIP_DATA_FILE = "data.xml"; //$NON-NLS-1$
-
     private static XStream xstream;
 
     public static boolean isEncrypted(File file)
     {
-        return file.getName().endsWith(".portfolio"); //$NON-NLS-1$
+        try
+        {
+            return getFlags(file).contains(SaveFlag.ENCRYPTED);
+        }
+        catch (IOException e)
+        {
+            return false;
+        }
     }
 
-    public static boolean isCompressed(File file)
+    public static Set<SaveFlag> getFlags(File file) throws IOException
     {
-        return file.getName().endsWith(".zip"); //$NON-NLS-1$
+        Set<SaveFlag> flags = EnumSet.noneOf(SaveFlag.class);
+
+        if (file.getName().endsWith(".zip")) //$NON-NLS-1$
+        {
+            flags.add(SaveFlag.XML);
+            flags.add(SaveFlag.COMPRESSED);
+        }
+        else if (file.getName().endsWith(".portfolio")) //$NON-NLS-1$
+        {
+            try (InputStream input = new BufferedInputStream(new FileInputStream(file)))
+            {
+                // read signature
+
+                byte[] signature = new byte[Decryptor.SIGNATURE.length];
+                int read = input.read(signature);
+                if (read != Decryptor.SIGNATURE.length)
+                    throw new IOException();
+
+                if (Arrays.equals(Decryptor.SIGNATURE, signature))
+                {
+                    flags.add(SaveFlag.ENCRYPTED);
+                }
+                else if (startsWith(new byte[] { 80, 75, 3, 4 }, signature))
+                {
+                    // https://en.wikipedia.org/wiki/List_of_file_signatures
+                    flags.add(SaveFlag.COMPRESSED);
+                }
+            }
+        }
+
+        if (flags.isEmpty())
+            flags.add(SaveFlag.XML);
+
+        return flags;
+    }
+
+    private static boolean startsWith(byte[] expected, byte[] actual)
+    {
+        if (actual == null || expected == null)
+            return false;
+
+        int la = actual.length;
+        int le = expected.length;
+
+        if (la < le)
+            return false;
+
+        for (int ii = 0; ii < le; ii++)
+            if (actual[ii] != expected[ii])
+                return false;
+
+        return true;
     }
 
     public static boolean isKeyLengthSupported(int keyLength)
@@ -400,7 +504,9 @@ public class ClientFactory
 
     public static Client load(File file, char[] password, IProgressMonitor monitor) throws IOException
     {
-        if (isEncrypted(file) && password == null)
+        Set<SaveFlag> flags = getFlags(file);
+
+        if (flags.contains(SaveFlag.ENCRYPTED) && password == null)
             throw new IOException(Messages.MsgPasswordMissing);
 
         try
@@ -414,7 +520,12 @@ public class ClientFactory
             try (InputStream input = new ProgressMonitorInputStream(
                             new BufferedInputStream(new FileInputStream(file), 65536), increment, monitor))
             {
-                return buildPersister(file, null, password).load(input);
+                ClientPersister persister = buildPersister(flags, password);
+                Client client = persister.load(input);
+
+                PortfolioLog.info(String.format("Loaded %s with %s", file.getName(), client.getSaveFlags().toString())); //$NON-NLS-1$
+
+                return client;
             }
         }
         catch (FileNotFoundException e)
@@ -444,26 +555,65 @@ public class ClientFactory
         return load(new InputStreamReader(input, StandardCharsets.UTF_8));
     }
 
-    public static void save(final Client client, final File file, String method, char[] password) throws IOException
+    public static void save(final Client client, final File file) throws IOException
     {
-        if (isEncrypted(file) && password == null && client.getSecret() == null)
+        Set<SaveFlag> flags = EnumSet.copyOf(client.getSaveFlags());
+
+        if (flags.isEmpty())
+            flags.add(SaveFlag.XML);
+
+        if (flags.contains(SaveFlag.ENCRYPTED) && client.getSecret() == null)
             throw new IOException(Messages.MsgPasswordMissing);
+
+        writeFile(client, file, null, flags);
+    }
+
+    public static void saveAs(final Client client, final File file, char[] password, Set<SaveFlag> flags)
+                    throws IOException
+    {
+        if (flags.isEmpty())
+            flags.add(SaveFlag.XML);
+
+        if (flags.contains(SaveFlag.ENCRYPTED) && password == null)
+            throw new IOException(Messages.MsgPasswordMissing);
+
+        writeFile(client, file, password, flags);
+    }
+
+    private static void writeFile(final Client client, final File file, char[] password, Set<SaveFlag> flags)
+                    throws IOException
+    {
+        PortfolioLog.info(String.format("Saving %s with %s", file.getName(), flags.toString())); //$NON-NLS-1$
+
         // open an output stream for the file using a 64 KB buffer to speed up
         // writing
         try (OutputStream output = new BufferedOutputStream(new FileOutputStream(file), 65536))
         {
-            buildPersister(file, method, password).save(client, output);
+            ClientPersister persister = buildPersister(flags, password);
+            persister.save(client, output);
+            client.getSaveFlags().clear();
+            client.getSaveFlags().addAll(flags);
         }
     }
 
-    private static ClientPersister buildPersister(File file, String method, char[] password)
+    private static ClientPersister buildPersister(Set<SaveFlag> flags, char[] password)
     {
-        if (file != null && isEncrypted(file))
-            return new Decryptor(method, password);
-        else if (file != null && isCompressed(file))
-            return new PlainWriterZIP();
-        else
+        ClientPersister body = null;
+
+        if (flags.contains(SaveFlag.BINARY))
+            body = new ProtobufWriter();
+        else if (flags.contains(SaveFlag.XML))
+            body = new PlainWriter();
+
+        if (flags.contains(SaveFlag.ENCRYPTED))
+            return new Decryptor(body, flags, password);
+        else if (flags.contains(SaveFlag.COMPRESSED))
+            return new PlainWriterZIP(body);
+
+        if (body == null)
             return new PlainWriter();
+        else
+            return body;
     }
 
     private static void upgradeModel(Client client)

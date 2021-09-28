@@ -76,6 +76,11 @@ public class PortfolioTransaction extends Transaction
         // needed for xstream de-serialization
     }
 
+    /* protobuf only */ PortfolioTransaction(String uuid)
+    {
+        super(uuid);
+    }
+
     public PortfolioTransaction(LocalDateTime date, String currencyCode, long amount, Security security, long shares,
                     Type type, long fees, long taxes)
     {
@@ -189,8 +194,7 @@ public class PortfolioTransaction extends Transaction
         if (getShares() == 0)
             return Quote.of(getCurrencyCode(), 0);
 
-        long grossPrice = BigDecimal.valueOf(getGrossValueAmount())
-                        .movePointRight(Values.Quote.precisionDeltaToMoney()) //
+        long grossPrice = BigDecimal.valueOf(getGrossValueAmount()).movePointRight(Values.Quote.precisionDeltaToMoney()) //
                         .movePointRight(Values.Share.precision()) //
                         .divide(BigDecimal.valueOf(getShares()), Values.MC) //
                         .setScale(0, RoundingMode.HALF_EVEN).longValue();

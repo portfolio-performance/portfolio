@@ -84,7 +84,7 @@ public interface UIConstants
     {
         String PART = "name.abuchen.portfolio.ui.param.part"; //$NON-NLS-1$
         String FILE = "name.abuchen.portfolio.ui.param.file"; //$NON-NLS-1$
-        String EXTENSION = "name.abuchen.portfolio.ui.param.extension"; //$NON-NLS-1$
+        String FILE_TYPE = "name.abuchen.portfolio.ui.param.file-type"; //$NON-NLS-1$
         String ENCRYPTION_METHOD = "name.abuchen.portfolio.ui.param.encryptionmethod"; //$NON-NLS-1$
         String SAMPLE_FILE = "name.abuchen.portfolio.ui.param.samplefile"; //$NON-NLS-1$
         String NAME = "name.abuchen.portfolio.ui.param.name"; //$NON-NLS-1$

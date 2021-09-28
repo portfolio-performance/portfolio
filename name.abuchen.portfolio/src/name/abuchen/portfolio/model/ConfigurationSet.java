@@ -25,6 +25,11 @@ public class ConfigurationSet
             // used for xml deserialisation
         }
 
+        /* protobuf only */ Configuration(String uuid)
+        {
+            this.uuid = uuid;
+        }
+
         public Configuration(String name, String data)
         {
             this.uuid = UUID.randomUUID().toString();

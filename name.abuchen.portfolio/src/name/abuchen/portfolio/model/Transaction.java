@@ -162,6 +162,11 @@ public abstract class Transaction implements Annotated, Adaptable
 
     private Instant updatedAt;
 
+    /* protobuf only */ Transaction(String uuid)
+    {
+        this.uuid = uuid;
+    }
+
     public Transaction()
     {
         this.uuid = UUID.randomUUID().toString();

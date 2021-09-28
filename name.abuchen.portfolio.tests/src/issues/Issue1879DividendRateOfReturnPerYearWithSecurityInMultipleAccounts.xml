@@ -105,7 +105,7 @@
           <type>BUY</type>
         </account-transaction>
         <account-transaction>
-          <date>2020-08-01T00:00</date>
+          <date>2020-08-01T10:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>4000</amount>
           <security reference="../../../../../securities/security"/>
@@ -113,7 +113,7 @@
           <type>DIVIDENDS</type>
         </account-transaction>
         <account-transaction>
-          <date>2020-08-01T00:00</date>
+          <date>2020-08-01T11:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>4000</amount>
           <security reference="../../../../../securities/security"/>

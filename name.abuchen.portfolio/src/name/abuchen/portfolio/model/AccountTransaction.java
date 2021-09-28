@@ -81,6 +81,11 @@ public class AccountTransaction extends Transaction
         // needed for xstream de-serialization
     }
 
+    /* protobuf only */ AccountTransaction(String uuid)
+    {
+        super(uuid);
+    }
+
     public AccountTransaction(LocalDateTime date, String currencyCode, long amount, Security security, Type type)
     {
         super(date, currencyCode, amount, security, 0, null);
