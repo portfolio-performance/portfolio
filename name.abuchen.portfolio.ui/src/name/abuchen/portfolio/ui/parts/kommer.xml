@@ -1006,10 +1006,8 @@
     <taxonomy>
       <id>assetclasses</id>
       <name>Anlagekategorien</name>
-      <dimensions class="java.util.Arrays$ArrayList">
-        <a class="string-array">
-          <string>Anlagekategorie</string>
-        </a>
+      <dimensions>
+        <string>Anlagekategorie</string>
       </dimensions>
       <root>
         <id>assetclasses</id>
@@ -1275,10 +1273,8 @@
     <taxonomy>
       <id>industry-gics-1st-level</id>
       <name>Branchen (GICS, Sektoren)</name>
-      <dimensions class="java.util.Arrays$ArrayList">
-        <a class="string-array">
-          <string>Sektor</string>
-        </a>
+      <dimensions>
+        <string>Sektor</string>
       </dimensions>
       <root>
         <id>industry-gics-1st-level</id>
@@ -1698,12 +1694,10 @@
     <taxonomy>
       <id>regions</id>
       <name>Regionen</name>
-      <dimensions class="java.util.Arrays$ArrayList">
-        <a class="string-array">
-          <string>Kontinent</string>
-          <string>Region</string>
-          <string>Land</string>
-        </a>
+      <dimensions>
+        <string>Kontinent</string>
+        <string>Region</string>
+        <string>Land</string>
       </dimensions>
       <root>
         <id>regions</id>
@@ -6762,12 +6756,10 @@
     <taxonomy>
       <id>regions-msci</id>
       <name>Regionen (MSCI)</name>
-      <dimensions class="java.util.Arrays$ArrayList">
-        <a class="string-array">
-          <string>Markt</string>
-          <string>Region</string>
-          <string>Land</string>
-        </a>
+      <dimensions>
+        <string>Markt</string>
+        <string>Region</string>
+        <string>Land</string>
       </dimensions>
       <root>
         <id>regions-msci</id>
