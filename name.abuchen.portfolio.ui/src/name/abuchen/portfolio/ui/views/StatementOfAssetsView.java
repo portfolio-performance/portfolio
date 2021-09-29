@@ -205,7 +205,10 @@ public class StatementOfAssetsView extends AbstractFinanceView
         assetViewer.setToolBarManager(getViewToolBarManager());
 
         updateTitle(getDefaultTitle());
-        assetViewer.getColumnHelper().addListener(() -> updateTitle(getDefaultTitle()));
+        assetViewer.getColumnHelper().addListener(() -> {
+            updateTitle(getDefaultTitle());
+            notifyModelUpdated();
+        });
 
         hookContextMenu(assetViewer.getTableViewer().getControl(),
                         manager -> assetViewer.hookMenuListener(manager, StatementOfAssetsView.this));
