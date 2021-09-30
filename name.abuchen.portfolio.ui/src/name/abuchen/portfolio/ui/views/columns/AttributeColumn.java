@@ -1,11 +1,14 @@
 package name.abuchen.portfolio.ui.views.columns;
 
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.StringJoiner;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -25,8 +28,10 @@ import name.abuchen.portfolio.model.Bookmark;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ImageManager;
 import name.abuchen.portfolio.model.LimitPrice;
+import name.abuchen.portfolio.model.LimitPriceSettings;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.Colors;
@@ -155,10 +160,12 @@ public class AttributeColumn extends Column
     private static final class LimitPriceLabelProvider extends ColumnLabelProvider
     {
         private final AttributeType attribute;
+        private final LimitPriceSettings settings;
 
         private LimitPriceLabelProvider(AttributeType attribute)
         {
             this.attribute = attribute;
+            this.settings = (LimitPriceSettings)attribute.getSettings();
         }
 
         @Override
@@ -171,9 +178,34 @@ public class AttributeColumn extends Column
             Attributes attributes = security.getAttributes();
             if (attributes == null)
                 return null;
-
-            Object value = attributes.get(attribute);
-            return attribute.getConverter().toString(value);
+            
+            LimitPrice limit = (LimitPrice) attributes.get(attribute);
+            // raw limit
+            String result = attribute.getConverter().toString(limit);
+                        
+            SecurityPrice latestSecurityPrice = security.getSecurityPrice(LocalDate.now());    
+            // add relative/absolute difference to latest price if configured
+            if(latestSecurityPrice != null && (settings.getShowAbsoluteDiff() || settings.getShowRelativeDiff()))
+            {
+                var joiner = new StringJoiner(" / "); //$NON-NLS-1$
+                if(settings.getShowAbsoluteDiff())
+                {
+                    double absDistance = (limit.getValue() - latestSecurityPrice.getValue()) / Values.Quote.divider();
+                    DecimalFormat df = new DecimalFormat("+#.##;-#.##"); //$NON-NLS-1$
+                    joiner.add(df.format(absDistance));
+                }
+                
+                if(settings.getShowRelativeDiff())
+                {
+                    double relativeDistance = ((double)limit.getValue()/latestSecurityPrice.getValue() - 1);
+                    DecimalFormat df = new DecimalFormat("+#.#%;-#.#%"); //$NON-NLS-1$
+                    joiner.add(df.format(relativeDistance));
+                }
+                
+                result = result + " (" + joiner.toString() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
+            }
+            
+            return result;
         }
 
         @Override
@@ -195,16 +227,28 @@ public class AttributeColumn extends Column
             switch (limit.getRelationalOperator())
             {
                 case GREATER_OR_EQUAL:
-                    return latestSecurityPrice.getValue() >= limit.getValue() ? Colors.theme().greenBackground() : null;
+                    return latestSecurityPrice.getValue() >= limit.getValue() 
+                                    ? getSettingsColorOrDefault(settings::getLimitExceededColor, Colors.theme().greenBackground()) : null;
                 case SMALLER_OR_EQUAL:
-                    return latestSecurityPrice.getValue() <= limit.getValue() ? Colors.theme().redBackground() : null;
+                    return latestSecurityPrice.getValue() <= limit.getValue() 
+                                    ? getSettingsColorOrDefault(settings::getLimitUndercutColor, Colors.theme().redBackground()) : null;
                 case GREATER:
-                    return latestSecurityPrice.getValue() > limit.getValue() ? Colors.theme().greenBackground() : null;
+                    return latestSecurityPrice.getValue() > limit.getValue() 
+                                    ? getSettingsColorOrDefault(settings::getLimitExceededColor, Colors.theme().greenBackground()) : null;
                 case SMALLER:
-                    return latestSecurityPrice.getValue() < limit.getValue() ? Colors.theme().redBackground() : null;
+                    return latestSecurityPrice.getValue() < limit.getValue() 
+                                    ? getSettingsColorOrDefault(settings::getLimitUndercutColor, Colors.theme().redBackground()) : null;
                 default:
                     return null;
             }
+        }
+        
+        private Color getSettingsColorOrDefault(Supplier<Color> getSettings, Color defaultColor)
+        {
+            var color = getSettings.get();
+            if(color == null)
+                return defaultColor;
+            return color;
         }
     }
 

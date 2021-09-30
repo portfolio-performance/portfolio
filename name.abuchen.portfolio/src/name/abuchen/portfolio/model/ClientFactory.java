@@ -55,7 +55,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.XStreamException;
-import com.thoughtworks.xstream.converters.collections.MapConverter;
 import com.thoughtworks.xstream.converters.reflection.ReflectionConverter;
 import com.thoughtworks.xstream.converters.reflection.ReflectionProvider;
 import com.thoughtworks.xstream.mapper.Mapper;
@@ -759,7 +758,8 @@ public class ClientFactory
                 fixDimensionsList(client);
             case 52:
                 // added properties to attribute types
-
+                addDefaultSettingsToLimitAttributes(client);
+                                
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
             case Client.CURRENT_VERSION:
@@ -767,6 +767,17 @@ public class ClientFactory
             default:
                 break;
         }
+    }
+    
+    private static void addDefaultSettingsToLimitAttributes(Client client)
+    {
+        client.getSettings().getAttributeTypes().forEach(attr ->
+        {
+            if(attr.getType() != LimitPrice.class)
+                return;
+
+            attr.setSettings(new LimitPriceSettings());
+        });
     }
 
     private static void fixAssetClassTypes(Client client)
@@ -1348,8 +1359,6 @@ public class ClientFactory
             xstream.registerConverter(new XStreamSecurityPriceConverter());
             xstream.registerConverter(
                             new PortfolioTransactionConverter(xstream.getMapper(), xstream.getReflectionProvider()));
-
-            xstream.registerConverter(new MapConverter(xstream.getMapper(), TypedMap.class));
 
             xstream.useAttributeFor(Money.class, "amount");
             xstream.useAttributeFor(Money.class, "currencyCode");
