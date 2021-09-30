@@ -30,6 +30,7 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LabelOnly;
@@ -89,6 +90,9 @@ public class AttributeListTab implements AbstractTabbedView.Tab, ModificationLis
 
     private TableViewer tableViewer;
 
+    @Inject
+    private AbstractFinanceView view;
+
     @Override
     public String getTitle()
     {
@@ -133,6 +137,7 @@ public class AttributeListTab implements AbstractTabbedView.Tab, ModificationLis
     @Override
     public Composite createTab(Composite parent)
     {
+
         Composite container = new Composite(parent, SWT.NONE);
         TableColumnLayout layout = new TableColumnLayout();
         container.setLayout(layout);
@@ -155,6 +160,9 @@ public class AttributeListTab implements AbstractTabbedView.Tab, ModificationLis
 
         tableViewer.setInput(client.getSettings().getAttributeTypes().filter(t -> t.getTarget() == mode.getType())
                         .toArray());
+
+        tableViewer.addSelectionChangedListener(
+                        event -> view.setInformationPaneInput(event.getStructuredSelection().getFirstElement()));
 
         new ContextMenu(tableViewer.getTable(), this::fillContextMenu).hook();
 

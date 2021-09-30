@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.graphics.RGBA;
 import org.junit.Test;
 
 @SuppressWarnings("nls")
@@ -14,20 +15,20 @@ public class ColorConversionTest
     public void testInvalidRGB()
     {
         String hex = "#K10203";
-        int[] rgb = ColorConversion.toRGB(hex);
-        assertEquals(rgb[0], 0);
-        assertEquals(rgb[1], 0);
-        assertEquals(rgb[2], 0);
+        RGB rgb = ColorConversion.hex2RGB(hex);
+        assertEquals(rgb.red, 0);
+        assertEquals(rgb.green, 0);
+        assertEquals(rgb.blue, 0);
     }
 
     @Test
     public void testToRGB()
     {
         String hex = "#010203";
-        int[] rgb = ColorConversion.toRGB(hex);
-        assertEquals(rgb[0], 1);
-        assertEquals(rgb[1], 2);
-        assertEquals(rgb[2], 3);
+        RGB rgb = ColorConversion.hex2RGB(hex);
+        assertEquals(rgb.red, 1);
+        assertEquals(rgb.green, 2);
+        assertEquals(rgb.blue, 3);
     }
 
     @Test
@@ -37,6 +38,15 @@ public class ColorConversionTest
         RGB colour = new RGB(1, 2, 3);
         RGB colour2 = ColorConversion.hex2RGB(hex);
         assertEquals(colour, colour2);
+    }
+
+    @Test
+    public void testHex2RGBA()
+    {
+        String hex = "#EF0C2238";
+        RGBA color = new RGBA(12, 34, 56, 239);
+        RGBA color2 = ColorConversion.hex2RGBA(hex);
+        assertEquals(color, color2);
     }
 
     @Test
@@ -60,6 +70,14 @@ public class ColorConversionTest
     }
 
     @Test
+    public void testToHexRGBA()
+    {
+        RGBA rgba = new RGBA(12, 34, 56, 239);
+        String color = ColorConversion.toHex(rgba);
+        assertEquals("#EF0C2238", color.toUpperCase());
+    }
+
+    @Test
     public void testToHexIntIntInt()
     {
         String hex = "#010203";
@@ -71,8 +89,8 @@ public class ColorConversionTest
     public void testToHexFloatFloatFloat()
     {
         String hex = "#123354";
-        String colour2 = ColorConversion.toHex((float) 210.0, (float) 0.79, (float) 0.33);
-        assertEquals(hex, colour2);
+        String color2 = ColorConversion.toHex((float) 210.0, (float) 0.79, (float) 0.33);
+        assertEquals(hex, color2);
     }
 
     @Test

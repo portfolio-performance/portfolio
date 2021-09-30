@@ -17,6 +17,16 @@ public class Messages extends NLS
     public static String AccountMenuImportCSV;
     public static String AccountMenuImportPDF;
     public static String AccountMenuTransfer;
+    public static String AttributeSettings;
+    public static String AttributeSettings_NoSettingAvailable;
+    public static String AttributeSettings_LimitPrice_ColorSettings;
+    public static String AttributeSettings_LimitPrice_ColorSettings_LimitExceededPositively;
+    public static String AttributeSettings_LimitPrice_ColorSettings_LimitExceededNegatively;
+    public static String AttributeSettings_LimitPrice_ColorSettings_ResetColors;
+    public static String AttributeSettings_LimitPrice_ColorSettings_SwapColors;
+    public static String AttributeSettings_LimitPrice_ColumnSettings;
+    public static String AttributeSettings_LimitPrice_ColumnSettings_ShowAbsoluteDiff;
+    public static String AttributeSettings_LimitPrice_ColumnSettings_ShowRelativeDiff;
     public static String Balance;
     public static String BaseCurrencyCue;
     public static String BaseCurrencyMigrationPage_Description;

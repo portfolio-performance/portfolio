@@ -22,7 +22,7 @@ import name.abuchen.portfolio.model.LimitPrice.RelationalOperator;
 import name.abuchen.portfolio.model.proto.v1.PAnyValue;
 import name.abuchen.portfolio.money.Values;
 
-public class AttributeType
+public class AttributeType implements Named
 {
     private static final Pattern PATTERN = Pattern.compile("^([\\d.,-]*)$"); //$NON-NLS-1$
     private static final Pattern LIMIT_PRICE_PATTERN = Pattern.compile("^\\s*(<=?|>=?)\\s*([0-9,.']+)$"); //$NON-NLS-1$
@@ -529,11 +529,13 @@ public class AttributeType
         return id;
     }
 
+    @Override
     public String getName()
     {
         return name;
     }
 
+    @Override
     public void setName(String name)
     {
         this.name = name;
@@ -608,7 +610,7 @@ public class AttributeType
     public boolean isNumber()
     {
         return Number.class.isAssignableFrom(type);
-    }
+    } 
 
     @SuppressWarnings("unchecked")
     public Comparator<Object> getComparator()
@@ -637,5 +639,19 @@ public class AttributeType
         if (properties == null)
             properties = new TypedMap();
         return properties;
+    }
+
+    @Override
+    public String getNote()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void setNote(String note)
+    {
+        // TODO Auto-generated method stub
+        
     }
 }

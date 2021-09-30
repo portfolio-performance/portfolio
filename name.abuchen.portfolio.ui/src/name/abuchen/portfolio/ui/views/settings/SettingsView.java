@@ -5,6 +5,8 @@ import java.util.List;
 
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.views.AbstractTabbedView;
+import name.abuchen.portfolio.ui.views.AttributeSettingsPane;
+import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
 
 public class SettingsView extends AbstractTabbedView<AbstractTabbedView.Tab>
 {
@@ -23,4 +25,12 @@ public class SettingsView extends AbstractTabbedView<AbstractTabbedView.Tab>
                         make(AttributeListTab.class, AttributeListTab.Mode.PORTFOLIO),
                         make(AttributeListTab.class, AttributeListTab.Mode.INVESTMENT_PLAN));
     }
+
+    @Override
+    protected void addPanePages(List<InformationPanePage> pages)
+    {
+        super.addPanePages(pages);
+        pages.add(make(AttributeSettingsPane.class));
+    }
+
 }
