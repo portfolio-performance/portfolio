@@ -756,7 +756,9 @@ public class ClientFactory
             case 51:
                 permanentelyRemoveCPIData(client);
                 fixDimensionsList(client);
-
+            case 52:
+                addDefaultSettingsToLimitAttributes(client);
+                                
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
             case Client.CURRENT_VERSION:
@@ -764,6 +766,17 @@ public class ClientFactory
             default:
                 break;
         }
+    }
+    
+    private static void addDefaultSettingsToLimitAttributes(Client client)
+    {
+        client.getSettings().getAttributeTypes().forEach(attr ->
+        {
+            if(attr.getType() != LimitPrice.class)
+                return;
+
+            attr.setSettings(new LimitPriceSettings());
+        });
     }
 
     private static void fixAssetClassTypes(Client client)

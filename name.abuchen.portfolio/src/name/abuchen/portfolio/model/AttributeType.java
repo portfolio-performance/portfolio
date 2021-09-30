@@ -509,6 +509,7 @@ public class AttributeType
     private String source;
     private Class<? extends Attributable> target;
     private Class<?> type;
+    private Object settings;
 
     /**
      * Converter. Do not persist (includes formats, etc.) but recreate out of
@@ -606,6 +607,16 @@ public class AttributeType
     public boolean isNumber()
     {
         return Number.class.isAssignableFrom(type);
+    }
+    
+    public void setSettings(Object settings)
+    {
+        this.settings = settings;
+    }
+    
+    public Object getSettings()
+    {
+        return this.settings;
     }
 
     @SuppressWarnings("unchecked")
