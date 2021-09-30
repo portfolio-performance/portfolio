@@ -6,7 +6,13 @@ public class LimitPriceSettings
 {
     private boolean showRelativeDiff;
     private boolean showAbsoluteDiff;
+    /**
+     * If null color from theme should be used
+     */
     private Color limitExceededColor;
+    /**
+     * If null color from theme should be used
+     */
     private Color limitUndercutColor;
     
     
@@ -35,6 +41,9 @@ public class LimitPriceSettings
         limitExceededColor = value;
     }
     
+    /**
+     * If null color from theme should be used
+     */
     public Color getLimitExceededColor()
     {
         return limitExceededColor;
@@ -45,6 +54,9 @@ public class LimitPriceSettings
         limitUndercutColor = value;
     }
     
+    /**
+     * If null color from theme should be used
+     */
     public Color getLimitUndercutColor()
     {
         return limitUndercutColor;
@@ -54,8 +66,5 @@ public class LimitPriceSettings
     {
         showRelativeDiff = false;
         showAbsoluteDiff = false;
-        // TODO: default color from theme (reference missing?)
-        //limitExceededColor = Colors.theme().greenBackground();
-        //limitUndercutColor = Colors.theme().redBackground();
     }
 }
