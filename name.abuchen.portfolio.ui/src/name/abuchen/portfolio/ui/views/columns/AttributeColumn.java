@@ -185,7 +185,7 @@ public class AttributeColumn extends Column
                         
             SecurityPrice latestSecurityPrice = security.getSecurityPrice(LocalDate.now());    
             // add relative/absolute difference to latest price if configured
-            if(latestSecurityPrice != null && (settings.getShowAbsoluteDiff() || settings.getShowRelativeDiff()))
+            if(limit != null && latestSecurityPrice != null && (settings.getShowAbsoluteDiff() || settings.getShowRelativeDiff()))
             {
                 var joiner = new StringJoiner(" / "); //$NON-NLS-1$
                 if(settings.getShowAbsoluteDiff())
