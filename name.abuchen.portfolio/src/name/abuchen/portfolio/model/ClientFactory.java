@@ -760,6 +760,7 @@ public class ClientFactory
                 // added properties to attribute types
                 addDefaultSettingsToLimitAttributes(client);
                                 
+
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
             case Client.CURRENT_VERSION:
