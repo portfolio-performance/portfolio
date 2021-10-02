@@ -1,0 +1,49 @@
+PDF Author: '' 
+PDFBox Version: 1.8.13
+-----------------------------------------
+10919 Berlin Seite 1
+Depotnummer 512341234
+Kundennummer 4312341234
+Max Mustermann
+Herrn Abrechnungsnr. 63136911234
+Max Mustermann Datum 11.05.2018
+Strasse 5A
+12345 Stadt
+Gutschrift
+Kapitalrückzahlung
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 1 CHOCOLADEF. LINDT & SPRUENGLI CH0010570767 (870503)
+INHABER-PART.SCH. SF 10
+Zahlbarkeitstag 11.05.2018 Auszahlung pro Stück 42,00 CHF
+Bestandsstichtag 07.05.2018 Herkunftsland Schweiz
+Ex-Tag 08.05.2018
+Devisenkurs EUR / CHF 1,1959
+Devisenkursdatum 11.05.2018
+Kurswert 42,00 CHF 35,12+ EUR
+Umrechnung in EUR 35,12 EUR
+Verrechnete anrechenbare ausländische Quellensteuer
+(Verhältnis 100/25) auf 8,78 EUR 35,12 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 0,00 EUR
+Ausmachender Betrag 35,12+ EUR
+Lagerstelle Clearstream Banking FFM (849000 / 4003)
+Den Betrag buchen wir mit Wertstellung 15.05.2018 zu Gunsten des Kontos 1012341234 (IBAN DE76 1234 0000 1234
+1234 01), BLZ 120 300 00 (BIC BYLADEM1001).
+Keine Steuerbescheinigung.
+Bitte ggf. Rückseite beachten.
+0883.05120103.0011111ER01
+
+Seite 2
+Depotnummer 512341234
+Kundennummer 4312341234
+Abrechnungsnr. 63136911234
+Datum 11.05.2018
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2018 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 38,89 0,00
+Ertrag 0,00 0,00 0,00 8,78- 0,00
+Nachher 0,00 0,00 0,00 30,11 0,00
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0883.05120103.0011112ER01
