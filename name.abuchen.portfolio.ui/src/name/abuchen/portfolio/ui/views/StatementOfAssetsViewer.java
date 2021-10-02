@@ -90,6 +90,7 @@ import name.abuchen.portfolio.ui.util.AttributeComparator;
 import name.abuchen.portfolio.ui.util.CacheKey;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.LabelOnly;
+import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.TouchClientListener;
@@ -109,6 +110,7 @@ import name.abuchen.portfolio.ui.views.columns.SymbolColumn;
 import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
 import name.abuchen.portfolio.ui.views.columns.WknColumn;
 import name.abuchen.portfolio.util.Interval;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class StatementOfAssetsViewer
 {
@@ -901,15 +903,10 @@ public class StatementOfAssetsViewer
         manager.add(new LabelOnly(Messages.LabelTaxonomies));
         for (final Taxonomy t : client.getTaxonomies())
         {
-            Action action = new Action(t.getName())
-            {
-                @Override
-                public void run()
-                {
-                    taxonomy = t;
-                    setInput(model.clientFilter, model.getDate(), model.getCurrencyConverter());
-                }
-            };
+            Action action = new SimpleAction(TextUtil.tooltip(t.getName()), a -> {
+                taxonomy = t;
+                setInput(model.clientFilter, model.getDate(), model.getCurrencyConverter());
+            });
             action.setChecked(t.equals(taxonomy));
             manager.add(action);
         }
