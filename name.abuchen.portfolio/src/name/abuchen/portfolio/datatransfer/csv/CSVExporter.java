@@ -30,9 +30,9 @@ import name.abuchen.portfolio.util.TextUtil;
 /* not thread safe */
 public class CSVExporter
 {
-    /* package */static final CSVFormat STRATEGY = CSVFormat //
-                    .newFormat(TextUtil.getListSeparatorChar()).withQuote('"').withRecordSeparator("\r\n") //$NON-NLS-1$
-                    .withAllowDuplicateHeaderNames();
+    /* package */ static final CSVFormat STRATEGY = CSVFormat.DEFAULT.builder() //
+                    .setDelimiter(TextUtil.getListSeparatorChar()).setQuote('"').setRecordSeparator("\r\n") //$NON-NLS-1$
+                    .setAllowDuplicateHeaderNames(true).build();
 
     public void exportAccountTransactions(File file, Account account) throws IOException
     {

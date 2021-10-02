@@ -145,8 +145,14 @@ public class HistoricalPricesPane implements InformationPanePage
             }
         });
         ColumnViewerSorter.create(SecurityPrice.class, "date").attachTo(column, SWT.UP); //$NON-NLS-1$
-        new DateEditingSupport(SecurityPrice.class, "date").addListener((e, o, n) -> client.markDirty()) //$NON-NLS-1$
-                        .attachTo(column);
+        new DateEditingSupport(SecurityPrice.class, "date") //$NON-NLS-1$
+                        .addListener((e, o, n) -> {
+                            SecurityPrice price = (SecurityPrice) e;
+                            security.removePrice(price);
+                            security.addPrice(price);
+
+                            client.markDirty();
+                        }).attachTo(column);
         support.addColumn(column);
 
         column = new Column(Messages.ColumnQuote, SWT.RIGHT, 80);

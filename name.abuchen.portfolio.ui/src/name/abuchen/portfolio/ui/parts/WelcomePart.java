@@ -43,7 +43,6 @@ import name.abuchen.portfolio.ui.util.RecentFilesCache;
 import name.abuchen.portfolio.ui.util.swt.StyledLabel;
 import name.abuchen.portfolio.util.BuildInfo;
 
-@SuppressWarnings("restriction")
 public class WelcomePart
 {
     private static final String OPEN = "open:"; //$NON-NLS-1$

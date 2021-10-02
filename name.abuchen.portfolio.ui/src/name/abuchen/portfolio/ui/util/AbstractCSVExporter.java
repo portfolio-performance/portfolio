@@ -15,8 +15,10 @@ import name.abuchen.portfolio.util.TextUtil;
 
 public abstract class AbstractCSVExporter
 {
-    protected static final CSVFormat STRATEGY = CSVFormat //
-                    .newFormat(';').withQuote('"').withRecordSeparator("\r\n").withAllowDuplicateHeaderNames(); //$NON-NLS-1$
+    protected static final CSVFormat STRATEGY = CSVFormat.DEFAULT.builder() //
+                    .setDelimiter(TextUtil.getListSeparatorChar()).setQuote('"').setRecordSeparator("\r\n") //$NON-NLS-1$
+                    .setAllowDuplicateHeaderNames(true)
+                    .build();
 
     protected abstract Shell getShell();
 
