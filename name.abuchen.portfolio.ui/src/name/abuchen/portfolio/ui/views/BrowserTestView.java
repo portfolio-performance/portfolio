@@ -1,5 +1,8 @@
 package name.abuchen.portfolio.ui.views;
 
+import java.util.function.Consumer;
+
+import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
@@ -20,7 +23,7 @@ public class BrowserTestView extends AbstractFinanceView
     {
         EmbeddedBrowser browser = make(EmbeddedBrowser.class);
         browser.setHtmlpage("/META-INF/html/test.html"); //$NON-NLS-1$
-        return browser.createControl(parent, null);
+        return browser.createControl(parent, (Consumer<Browser>[]) null);
     }
 
 }

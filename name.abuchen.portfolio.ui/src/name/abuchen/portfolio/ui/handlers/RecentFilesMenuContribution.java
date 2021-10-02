@@ -23,7 +23,6 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.RecentFilesCache;
 
-@SuppressWarnings("restriction")
 public class RecentFilesMenuContribution
 {
     @Inject

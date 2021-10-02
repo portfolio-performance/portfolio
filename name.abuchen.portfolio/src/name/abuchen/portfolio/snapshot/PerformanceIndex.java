@@ -412,8 +412,9 @@ public class PerformanceIndex
 
     private void exportTo(File file, IntPredicate filter) throws IOException
     {
-        CSVFormat csvformat = CSVFormat //
-                        .newFormat(';').withQuote('"').withRecordSeparator("\r\n").withAllowDuplicateHeaderNames(); //$NON-NLS-1$
+        CSVFormat csvformat = CSVFormat.DEFAULT.builder() //
+                        .setDelimiter(';').setQuote('"').setRecordSeparator("\r\n").setAllowDuplicateHeaderNames(true) //$NON-NLS-1$
+                        .build();
 
         try (CSVPrinter printer = new CSVPrinter(
                         new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8), csvformat))

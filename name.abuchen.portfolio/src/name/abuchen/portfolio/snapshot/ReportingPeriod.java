@@ -82,7 +82,7 @@ public abstract class ReportingPeriod
                 }
                 else
                 {
-                    return type.implementation.newInstance();
+                    return type.implementation.getDeclaredConstructor().newInstance();
                 }
             }
             catch (ReflectiveOperationException | RuntimeException e)

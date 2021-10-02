@@ -115,7 +115,7 @@ public class RawResponsesDialog extends Dialog
 
             try
             {
-                JsonElement jsonElement = new JsonParser().parse(rawText.getText());
+                JsonElement jsonElement = JsonParser.parseString(rawText.getText());
                 Gson gson = new GsonBuilder().setPrettyPrinting().create();
                 rawText.setText(gson.toJson(jsonElement));
             }

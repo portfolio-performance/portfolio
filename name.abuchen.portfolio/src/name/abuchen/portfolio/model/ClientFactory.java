@@ -1161,8 +1161,8 @@ public class ClientFactory
                     l.setHigh(l.getHigh() * decimalPlacesAdded);
                 if (l.getLow() != -1)
                     l.setLow(l.getLow() * decimalPlacesAdded);
-                if (l.previousClose != -1)
-                    l.previousClose = l.previousClose * decimalPlacesAdded;
+                if (l.previousClose != -1) // NOSONAR
+                    l.previousClose = l.previousClose * decimalPlacesAdded; // NOSONAR
             }
         }
 
@@ -1311,7 +1311,7 @@ public class ClientFactory
 
     private static void permanentelyRemoveCPIData(Client client)
     {
-        client.consumerPriceIndeces = null;
+        client.consumerPriceIndeces = null; // NOSONAR
     }
 
     private static void fixDimensionsList(Client client)
@@ -1375,13 +1375,13 @@ public class ClientFactory
 
             xstream.alias("limitPrice", LimitPrice.class);
 
-            xstream.alias("cpi", ConsumerPriceIndex.class);
-            xstream.useAttributeFor(ConsumerPriceIndex.class, "year");
-            xstream.aliasField("y", ConsumerPriceIndex.class, "year");
-            xstream.useAttributeFor(ConsumerPriceIndex.class, "month");
-            xstream.aliasField("m", ConsumerPriceIndex.class, "month");
-            xstream.useAttributeFor(ConsumerPriceIndex.class, "index");
-            xstream.aliasField("i", ConsumerPriceIndex.class, "index");
+            xstream.alias("cpi", ConsumerPriceIndex.class); // NOSONAR
+            xstream.useAttributeFor(ConsumerPriceIndex.class, "year"); // NOSONAR
+            xstream.aliasField("y", ConsumerPriceIndex.class, "year"); // NOSONAR
+            xstream.useAttributeFor(ConsumerPriceIndex.class, "month"); // NOSONAR
+            xstream.aliasField("m", ConsumerPriceIndex.class, "month"); // NOSONAR
+            xstream.useAttributeFor(ConsumerPriceIndex.class, "index"); // NOSONAR
+            xstream.aliasField("i", ConsumerPriceIndex.class, "index"); // NOSONAR
 
             xstream.alias("buysell", BuySellEntry.class);
             xstream.alias("account-transfer", AccountTransferEntry.class);
