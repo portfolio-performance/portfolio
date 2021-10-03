@@ -129,6 +129,8 @@ import name.abuchen.portfolio.money.Money;
 
         client.getSaveFlags().add(SaveFlag.BINARY);
 
+        ClientFactory.upgradeModel(client);
+
         return client;
     }
 
