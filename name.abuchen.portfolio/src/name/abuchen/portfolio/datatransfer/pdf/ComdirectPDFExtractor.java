@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
@@ -939,27 +941,61 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
     private void addFinancialReport()
     {
         DocumentType type = new DocumentType("Finanzreport", (context, lines) -> {
+            Pattern pBaseCurrency = Pattern.compile("^(Kontow.hrung) ([\\w]{3})$");
+            Pattern pForeignCurrencyAccount = Pattern.compile("^(W.hrungsanlagekonto) \\(([\\w]{3})\\) .*$");
+            Pattern pStartForeignCurrency = Pattern.compile("^(W.hrungsanlagekonto) \\(([\\w]{3})\\)$");
+            Pattern pEndForeignCurrency = Pattern.compile("^Neuer Saldo .*$");
+
+            Boolean ForeignCurrencyAccount = false;
+
             // read the current context here
             for (int i = 0; i < lines.length; i++)
             {
-                // After 2013:
-                // Ihre aktuellen Salden IBAN Saldo in EUR
+                // Ihre aktuellen Salden IBAN Saldo in
+                // EUR
                 if (lines[i].compareTo("Ihre aktuellen Salden IBAN Saldo in") == 0)
                 {
                     context.put("currency", lines[i+1]);
                 }
-                // Until 2013:
-                // Ihre aktuellen Salden Saldo in IBAN EUR
+                // Ihre aktuellen Salden Saldo in
+                // IBAN EUR
                 if ((lines[i].compareTo("Ihre aktuellen Salden Saldo in") == 0) && (lines[i+1].substring(0,4).compareTo("IBAN") == 0))
                 {
                     context.put("currency", lines[i+1].substring(5, 8));
+                }
+                // Kontowährung EUR
+                Matcher m = pBaseCurrency.matcher(lines[i]);
+                if (m.matches())
+                {
+                    context.put("currency", m.group(2));
+                }
+                // Währungsanlagekonto (USD) DE31 2004 1155 1234 5678 05 +554,83 +487,76
+                m = pForeignCurrencyAccount.matcher(lines[i]);
+                if (m.matches())
+                {
+                    context.put("foreignCurrency", m.group(2));
+                }
+                
+                // Sets the start and end line of the foreign currency transactions
+                m = pStartForeignCurrency.matcher(lines[i]);
+                if (m.matches())
+                {
+                    context.put("startInForeignCurrency", Integer.toString(i));
+                    ForeignCurrencyAccount = true;
+                }
+                m = pEndForeignCurrency.matcher(lines[i]);
+                if (m.matches() && ForeignCurrencyAccount)
+                {
+                    context.put("endInForeignCurrency", Integer.toString(i));
+                    ForeignCurrencyAccount = false;
                 }
             }
         });
         this.addDocumentTyp(type);
 
-        Block removalblock = new Block("(^|^A)\\d+.\\d+.[\\d]{4} (.bertrag|Lastschrift|Visa-Umsatz|Auszahlung|Barauszahlung|Kartenverf.gun|Guthaben.bertr).* [-]([.,\\d]+)$");
+        Block removalblock = new Block("(^|^A)\\d+.\\d+.[\\d]{4} (Konto.bertrag|.bertrag|Lastschrift|Visa-Umsatz|Auszahlung|Barauszahlung|Kartenverf.gun|Guthaben.bertr|Wechselgeld-Sparen).* [-]([.,\\d]+)$");
         type.addBlock(removalblock);
+        removalblock.setMaxSize(3);
         removalblock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
@@ -968,20 +1004,38 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                             return entry;
                         })
 
-                        .section("date", "amount")
-                        .match("(^|^A)\\d+.\\d+.[\\d]{4} (.bertrag|Lastschrift|Visa-Umsatz|Auszahlung|Barauszahlung|Kartenverf.gun|Guthaben.bertr).* [-](?<amount>[.,\\d]+)$")
+                        .section("date", "amount", "note")
+                        .match("(^|^A)\\d+.\\d+.[\\d]{4} (?<note>Konto.bertrag|.bertrag|Lastschrift|Visa-Umsatz|Auszahlung|Barauszahlung|Kartenverf.gun|Guthaben.bertr|Wechselgeld-Sparen).* [-](?<amount>[.,\\d]+)$")
                         .match("^(?<date>\\d+.\\d+.[\\d]{4}).*$")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
                             t.setDateTime(asDate(v.get("date")));     
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(context.get("currency"));
+
+                            // When we recognize a foreign currency account,
+                            // we change from currency to foreign currency
+
+                            boolean hasForeignCurrencyBlock = context.containsKey("startInForeignCurrency")
+                                            && context.containsKey("endInForeignCurrency");
+
+                            if (hasForeignCurrencyBlock
+                                            && v.getStartLineNumber() >= Integer
+                                                            .parseInt(context.get("startInForeignCurrency"))
+                                            && v.getEndLineNumber() <= Integer
+                                                            .parseInt(context.get("endInForeignCurrency")))
+                            {
+                                    t.setCurrencyCode(context.get("foreignCurrency"));
+                            }
+
+                            t.setNote(v.get("note"));
                         })
 
                         .wrap(TransactionItem::new));
         
-        Block depositblock = new Block("^\\d+.\\d+.\\d+ (Konto.bertrag|.bertrag|Guthaben.bertr|Gutschrift|Bar|Visa-Kartenabre).* [+]([.,\\d]+)$");
+        Block depositblock = new Block("(^|^A)\\d+.\\d+.\\d+ (Konto.bertrag|.bertrag|Guthaben.bertr|Gutschrift|Bar|Visa-Kartenabre|Korrektur Barauszahlung).* [+]([.,\\d]+)$");
         type.addBlock(depositblock);
+        depositblock.setMaxSize(3);
         depositblock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
@@ -990,14 +1044,31 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                             return entry;
                         })
 
-                        .section("date", "amount")
-                        .match("^\\d+.\\d+.[\\d]{4} (Konto.bertrag|.bertrag|Guthaben.bertr|Gutschrift|Bar|Visa-Kartenabre).* [+](?<amount>[.,\\d]+)$")
-                        .match("^(?<date>\\d+.\\d+.[\\d]{4}).*$")
+                        .section("date", "amount", "note")
+                        .match("(^|^A)\\d+.\\d+.[\\d]{4} (?<note>Konto.bertrag|.bertrag|Guthaben.bertr|Gutschrift|Bar|Visa-Kartenabre|Korrektur Barauszahlung).* [+](?<amount>[.,\\d]+)$")
+                        .match("(^|^A)(?<date>\\d+.\\d+.[\\d]{4}).*$")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(context.get("currency"));
+
+                            // When we recognize a foreign currency account,
+                            // we change from currency to foreign currency
+
+                            boolean hasForeignCurrencyBlock = context.containsKey("startInForeignCurrency")
+                                            && context.containsKey("endInForeignCurrency");
+
+                            if (hasForeignCurrencyBlock
+                                            && v.getStartLineNumber() >= Integer
+                                                            .parseInt(context.get("startInForeignCurrency"))
+                                            && v.getEndLineNumber() <= Integer
+                                                            .parseInt(context.get("endInForeignCurrency")))
+                            {
+                                    t.setCurrencyCode(context.get("foreignCurrency"));
+                            }
+
+                            t.setNote(v.get("note"));
                         })
 
                         .wrap(TransactionItem::new));
@@ -1012,14 +1083,15 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                             return entry;
                         })
 
-                        .section("date", "amount")
-                        .match("^\\d+.\\d+.\\d{4} (Kontoabschluss Kontof.hrung|Geb.hren\\/Spesen|Geb.hr Barauszahlung|Entgelte|Auslandsentgelt).* [-](?<amount>[.,\\d]+)$")
+                        .section("date", "amount", "note")
+                        .match("^\\d+.\\d+.\\d{4} (?<note>Kontoabschluss Kontof.hrung|Geb.hren\\/Spesen|Geb.hr Barauszahlung|Entgelte|Auslandsentgelt).* [-](?<amount>[.,\\d]+)$")
                         .match("^(?<date>\\d+.\\d+.\\d{4}).*$")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(context.get("currency"));
+                            t.setNote(v.get("note"));
                         })
 
                         .wrap(TransactionItem::new));
@@ -1034,19 +1106,20 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                             return entry;
                         })
 
-                        .section("date", "amount")
-                        .match("^\\d+.\\d+.\\d{4} (Kontoabschluss Abschluss Zinsen).* [+](?<amount>[.,\\d]+)$")
+                        .section("date", "amount", "note")
+                        .match("^\\d+.\\d+.\\d{4} (?<note>Kontoabschluss Abschluss Zinsen).* [+](?<amount>[.,\\d]+)$")
                         .match("^(?<date>\\d+.\\d+.\\d{4}).*$")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(context.get("currency"));
+                            t.setNote(v.get("note"));
                         })
-                        
-                        .section("kest", "soli", "kestcur", "solicur").optional()
-                        .match("^Kapitalertragsteuer (?<kest>[.,\\d]+)- (?<kestcur>[\\w]{3})$")
-                        .match("^Solidarit.tszuschlag (?<soli>[.,\\d]+)([-])? (?<solicur>[\\w]{3})$")
+
+                        .section("kest", "soli", "kestcur", "solicur", "note1", "note2").optional()
+                        .match("^(?<note1>Kapitalertragsteuer) (?<kest>[.,\\d]+)- (?<kestcur>[\\w]{3})$")
+                        .match("^(?<note2>Solidarit.tszuschlag) (?<soli>[.,\\d]+)([-])? (?<solicur>[\\w]{3})$")
                         .assign((t, v) -> {
                             Money kest = Money.of(asCurrencyCode(v.get("kestcur")), asAmount(v.get("kest")));
                             if (kest.getCurrencyCode().equals(t.getCurrencyCode()))
@@ -1055,6 +1128,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                             Money soli = Money.of(asCurrencyCode(v.get("solicur")), asAmount(v.get("soli")));
                             if (soli.getCurrencyCode().equals(t.getCurrencyCode()))
                                 t.addUnit(new Unit(Unit.Type.TAX, soli));
+
+                            t.setNote(v.get("note1") + "/" + v.get("note2"));
                         })
 
                         .wrap(TransactionItem::new));
@@ -1069,14 +1144,15 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                             return entry;
                         })
 
-                        .section("date", "amount")
-                        .match("^\\d+.\\d+.\\d{4} (Kontoabschluss Abschluss Zinsen).* [-](?<amount>[.,\\d]+)$")
+                        .section("date", "amount", "note")
+                        .match("^\\d+.\\d+.\\d{4} (?<note>Kontoabschluss Abschluss Zinsen).* [-](?<amount>[.,\\d]+)$")
                         .match("^(?<date>\\d+.\\d+.\\d+).*$")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(context.get("currency"));
+                            t.setNote(v.get("note"));
                         })
 
                         .wrap(TransactionItem::new));
