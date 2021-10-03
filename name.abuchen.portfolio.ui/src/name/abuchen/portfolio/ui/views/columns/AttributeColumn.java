@@ -165,7 +165,7 @@ public class AttributeColumn extends Column
         private LimitPriceLabelProvider(AttributeType attribute)
         {
             this.attribute = attribute;
-            this.settings = (LimitPriceSettings)attribute.getSettings();
+            this.settings = new LimitPriceSettings(attribute.getProperties());
         }
 
         @Override
@@ -183,11 +183,16 @@ public class AttributeColumn extends Column
             // raw limit
             String result = attribute.getConverter().toString(limit);
                         
-            SecurityPrice latestSecurityPrice = security.getSecurityPrice(LocalDate.now());    
+               
             // add relative/absolute difference to latest price if configured
-            if(limit != null && latestSecurityPrice != null && (settings.getShowAbsoluteDiff() || settings.getShowRelativeDiff()))
+            if(limit != null && (settings.getShowAbsoluteDiff() || settings.getShowRelativeDiff()))
             {
-                var joiner = new StringJoiner(" / "); //$NON-NLS-1$
+                SecurityPrice latestSecurityPrice = security.getSecurityPrice(LocalDate.now()); 
+                
+                if(latestSecurityPrice == null)
+                    return result; // no price, no difference calculable
+                
+                StringJoiner joiner = new StringJoiner(" / "); //$NON-NLS-1$
                 if(settings.getShowAbsoluteDiff())
                 {
                     double absDistance = (limit.getValue() - latestSecurityPrice.getValue()) / Values.Quote.divider();

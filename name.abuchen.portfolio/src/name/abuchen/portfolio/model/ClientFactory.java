@@ -758,8 +758,6 @@ public class ClientFactory
                 fixDimensionsList(client);
             case 52:
                 // added properties to attribute types
-                addDefaultSettingsToLimitAttributes(client);
-                                
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
@@ -770,17 +768,6 @@ public class ClientFactory
         }
     }
     
-    private static void addDefaultSettingsToLimitAttributes(Client client)
-    {
-        client.getSettings().getAttributeTypes().forEach(attr ->
-        {
-            if(attr.getType() != LimitPrice.class)
-                return;
-
-            attr.setSettings(new LimitPriceSettings());
-        });
-    }
-
     private static void fixAssetClassTypes(Client client)
     {
         for (Security security : client.getSecurities())

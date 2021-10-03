@@ -117,7 +117,6 @@ public class AttributeListTab implements AbstractTabbedView.Tab, ModificationLis
                         attributeType.setConverter(fieldType.getConverterClass());
                         attributeType.setType(fieldType.getFieldClass());
                         attributeType.setTarget(mode.getType());
-                        attributeType.setSettings(fieldType.getDefaultSetting());
 
                         client.getSettings().addAttributeType(attributeType);
                         tableViewer.setInput(client.getSettings().getAttributeTypes()

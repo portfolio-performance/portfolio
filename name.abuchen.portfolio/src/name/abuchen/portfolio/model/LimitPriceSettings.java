@@ -4,8 +4,18 @@ import org.eclipse.swt.graphics.Color;
 
 public class LimitPriceSettings
 {
-    private boolean showRelativeDiff;
-    private boolean showAbsoluteDiff;
+    private interface PropertyKeys
+    {
+        String SHOW_RELATIVE_DIFF = "SHOW_RELATIVE_DIFF";//$NON-NLS-1$
+        String SHOW_ABSOLUTE_DIFF = "SHOW_ABSOLUTE_DIFF";//$NON-NLS-1$
+    }
+    
+    
+    public LimitPriceSettings(TypedMap properties)
+    {
+        this.properties = properties;
+    }
+    
     /**
      * If null color from theme should be used
      */
@@ -14,26 +24,27 @@ public class LimitPriceSettings
      * If null color from theme should be used
      */
     private Color limitUndercutColor;
+    private final TypedMap properties;
     
     
     public void setShowRelativeDiff(boolean value)
     {
-        showRelativeDiff = value;        
+        properties.putBoolean(PropertyKeys.SHOW_RELATIVE_DIFF, value);      
     }
     
     public boolean getShowRelativeDiff()
     {
-        return showRelativeDiff;
+        return properties.getBoolean(PropertyKeys.SHOW_RELATIVE_DIFF);
     }
     
     public void setShowAbsoluteDiff(boolean value)
     {
-        showAbsoluteDiff = value;        
+        properties.putBoolean(PropertyKeys.SHOW_ABSOLUTE_DIFF, value);        
     }
     
     public boolean getShowAbsoluteDiff()
     {
-        return showAbsoluteDiff;
+        return properties.getBoolean(PropertyKeys.SHOW_ABSOLUTE_DIFF);
     }
     
     public void setLimitExceededColor(Color value)
@@ -62,9 +73,5 @@ public class LimitPriceSettings
         return limitUndercutColor;
     }
     
-    public LimitPriceSettings()
-    {
-        showRelativeDiff = false;
-        showAbsoluteDiff = false;
-    }
+
 }

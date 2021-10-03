@@ -2,7 +2,6 @@ package name.abuchen.portfolio.ui.views.settings;
 
 import java.time.LocalDate;
 import java.util.ResourceBundle;
-import java.util.function.Supplier;
 
 import name.abuchen.portfolio.model.Attributable;
 import name.abuchen.portfolio.model.AttributeType;
@@ -21,7 +20,6 @@ import name.abuchen.portfolio.model.AttributeType.StringConverter;
 import name.abuchen.portfolio.model.AttributeType.ImageConverter;
 import name.abuchen.portfolio.model.Bookmark;
 import name.abuchen.portfolio.model.LimitPrice;
-import name.abuchen.portfolio.model.LimitPriceSettings;
 import name.abuchen.portfolio.model.Security;
 
 public enum AttributeFieldType
@@ -35,7 +33,7 @@ public enum AttributeFieldType
     SHARE(Long.class, ShareConverter.class), //
     DATE(LocalDate.class, DateConverter.class), //
     BOOLEAN(Boolean.class, BooleanConverter.class), //
-    LIMIT_PRICE(LimitPrice.class, LimitPriceConverter.class, Security.class, LimitPriceSettings::new), //
+    LIMIT_PRICE(LimitPrice.class, LimitPriceConverter.class, Security.class), //
     BOOKMARK(Bookmark.class, BookmarkConverter.class), //
     IMAGE(String.class, ImageConverter.class);
 
@@ -45,27 +43,20 @@ public enum AttributeFieldType
     private final Class<?> type;
     private final Class<? extends Converter> converterClass;
     private final Class<? extends Attributable> target;
-    private final Supplier<Object> defaultSettingsFactory;
 
     private AttributeFieldType(Class<?> type, Class<? extends Converter> converterClass)
     {
-        this(type, converterClass, null, null);
+        this(type, converterClass, null);
     }
 
     private AttributeFieldType(Class<?> type, Class<? extends Converter> converterClass,
-                    Class<? extends Attributable> target, Supplier<Object> defaultSettingsFactory)
+                    Class<? extends Attributable> target)
     {
         this.type = type;
         this.converterClass = converterClass;
         this.target = target;
-        this.defaultSettingsFactory = defaultSettingsFactory;
     }
     
-    public Object getDefaultSetting()
-    {      
-        return this.defaultSettingsFactory != null ? this.defaultSettingsFactory.get() : null;
-    }
-
     public Class<?> getFieldClass()
     {
         return type;
