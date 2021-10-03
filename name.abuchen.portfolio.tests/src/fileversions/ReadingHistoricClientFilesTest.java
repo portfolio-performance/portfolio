@@ -31,7 +31,7 @@ public class ReadingHistoricClientFilesTest
     public static Collection<Object[]> getFiles()
     {
         return Arrays.asList(new Object[][] { // NOSONAR
-                        { "client52", 52 } });
+                        { "client52", 52 }, { "client53", 53 } });
     }
 
     private Path testDir = Paths.get(new File(

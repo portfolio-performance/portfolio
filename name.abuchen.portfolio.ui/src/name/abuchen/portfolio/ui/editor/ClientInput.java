@@ -187,7 +187,7 @@ public class ClientInput
     {
         if (clientFile == null)
         {
-            doSaveAs(shell, null, null);
+            doSaveAs(shell, null, EnumSet.of(SaveFlag.XML));
             return;
         }
 

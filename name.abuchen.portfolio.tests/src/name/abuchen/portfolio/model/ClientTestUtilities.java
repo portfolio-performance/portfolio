@@ -85,6 +85,8 @@ public class ClientTestUtilities
         client.getSettings().clearConfigurationSets();
         client.getSettings().putAllConfigurationSets(configurations);
 
+        client.getSettings().getAttributeTypes().forEach(AttributeType::getProperties);
+
         client.getTaxonomies().forEach(t -> {
             if (t.getDimensions() == null)
                 t.setDimensions(new ArrayList<>());

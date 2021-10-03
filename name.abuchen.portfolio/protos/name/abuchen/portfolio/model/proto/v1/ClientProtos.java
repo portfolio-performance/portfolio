@@ -284,36 +284,37 @@ public final class ClientProtos {
       ".name.abuchen.portfolio.PDashboard.Widge" +
       "t\0324\n\022ConfigurationEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005" +
       "value\030\002 \001(\t:\0028\001\"+\n\tPBookmark\022\r\n\005label\030\001 " +
-      "\001(\t\022\017\n\007pattern\030\002 \001(\t\"\225\001\n\016PAttributeType\022" +
+      "\001(\t\022\017\n\007pattern\030\002 \001(\t\"\307\001\n\016PAttributeType\022" +
       "\n\n\002id\030\001 \001(\t\022\014\n\004name\030\002 \001(\t\022\023\n\013columnLabel" +
       "\030\003 \001(\t\022\023\n\006source\030\004 \001(\tH\000\210\001\001\022\016\n\006target\030\005 " +
       "\001(\t\022\014\n\004type\030\006 \001(\t\022\026\n\016converterClass\030\007 \001(" +
-      "\tB\t\n\007_source\"J\n\021PConfigurationSet\022\013\n\003key" +
-      "\030\001 \001(\t\022\014\n\004uuid\030\002 \001(\t\022\014\n\004name\030\003 \001(\t\022\014\n\004da" +
-      "ta\030\004 \001(\t\"\307\001\n\tPSettings\0224\n\tbookmarks\030\001 \003(" +
-      "\0132!.name.abuchen.portfolio.PBookmark\022>\n\016" +
-      "attributeTypes\030\002 \003(\0132&.name.abuchen.port" +
-      "folio.PAttributeType\022D\n\021configurationSet" +
-      "s\030\003 \003(\0132).name.abuchen.portfolio.PConfig" +
-      "urationSet\"\205\005\n\007PClient\022\017\n\007version\030\001 \001(\005\022" +
-      "5\n\nsecurities\030\002 \003(\0132!.name.abuchen.portf" +
-      "olio.PSecurity\0222\n\010accounts\030\003 \003(\0132 .name." +
-      "abuchen.portfolio.PAccount\0226\n\nportfolios" +
-      "\030\004 \003(\0132\".name.abuchen.portfolio.PPortfol" +
-      "io\022:\n\014transactions\030\005 \003(\0132$.name.abuchen." +
-      "portfolio.PTransaction\0226\n\005plans\030\006 \003(\0132\'." +
-      "name.abuchen.portfolio.PInvestmentPlan\0226" +
-      "\n\nwatchlists\030\007 \003(\0132\".name.abuchen.portfo" +
-      "lio.PWatchlist\0225\n\ntaxonomies\030\010 \003(\0132!.nam" +
-      "e.abuchen.portfolio.PTaxonomy\0226\n\ndashboa" +
-      "rds\030\t \003(\0132\".name.abuchen.portfolio.PDash" +
-      "board\022C\n\nproperties\030\n \003(\0132/.name.abuchen" +
-      ".portfolio.PClient.PropertiesEntry\0223\n\010se" +
-      "ttings\030\013 \001(\0132!.name.abuchen.portfolio.PS" +
-      "ettings\0321\n\017PropertiesEntry\022\013\n\003key\030\001 \001(\t\022" +
-      "\r\n\005value\030\002 \001(\t:\0028\001B7\n%name.abuchen.portf" +
-      "olio.model.proto.v1B\014ClientProtosP\001b\006pro" +
-      "to3"
+      "\t\0220\n\nproperties\030\010 \001(\0132\034.name.abuchen.por" +
+      "tfolio.PMapB\t\n\007_source\"J\n\021PConfiguration" +
+      "Set\022\013\n\003key\030\001 \001(\t\022\014\n\004uuid\030\002 \001(\t\022\014\n\004name\030\003" +
+      " \001(\t\022\014\n\004data\030\004 \001(\t\"\307\001\n\tPSettings\0224\n\tbook" +
+      "marks\030\001 \003(\0132!.name.abuchen.portfolio.PBo" +
+      "okmark\022>\n\016attributeTypes\030\002 \003(\0132&.name.ab" +
+      "uchen.portfolio.PAttributeType\022D\n\021config" +
+      "urationSets\030\003 \003(\0132).name.abuchen.portfol" +
+      "io.PConfigurationSet\"\205\005\n\007PClient\022\017\n\007vers" +
+      "ion\030\001 \001(\005\0225\n\nsecurities\030\002 \003(\0132!.name.abu" +
+      "chen.portfolio.PSecurity\0222\n\010accounts\030\003 \003" +
+      "(\0132 .name.abuchen.portfolio.PAccount\0226\n\n" +
+      "portfolios\030\004 \003(\0132\".name.abuchen.portfoli" +
+      "o.PPortfolio\022:\n\014transactions\030\005 \003(\0132$.nam" +
+      "e.abuchen.portfolio.PTransaction\0226\n\005plan" +
+      "s\030\006 \003(\0132\'.name.abuchen.portfolio.PInvest" +
+      "mentPlan\0226\n\nwatchlists\030\007 \003(\0132\".name.abuc" +
+      "hen.portfolio.PWatchlist\0225\n\ntaxonomies\030\010" +
+      " \003(\0132!.name.abuchen.portfolio.PTaxonomy\022" +
+      "6\n\ndashboards\030\t \003(\0132\".name.abuchen.portf" +
+      "olio.PDashboard\022C\n\nproperties\030\n \003(\0132/.na" +
+      "me.abuchen.portfolio.PClient.PropertiesE" +
+      "ntry\0223\n\010settings\030\013 \001(\0132!.name.abuchen.po" +
+      "rtfolio.PSettings\0321\n\017PropertiesEntry\022\013\n\003" +
+      "key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001B7\n%name.abu" +
+      "chen.portfolio.model.proto.v1B\014ClientPro" +
+      "tosP\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -464,7 +465,7 @@ public final class ClientProtos {
     internal_static_name_abuchen_portfolio_PAttributeType_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_name_abuchen_portfolio_PAttributeType_descriptor,
-        new java.lang.String[] { "Id", "Name", "ColumnLabel", "Source", "Target", "Type", "ConverterClass", "Source", });
+        new java.lang.String[] { "Id", "Name", "ColumnLabel", "Source", "Target", "Type", "ConverterClass", "Properties", "Source", });
     internal_static_name_abuchen_portfolio_PConfigurationSet_descriptor =
       getDescriptor().getMessageTypes().get(18);
     internal_static_name_abuchen_portfolio_PConfigurationSet_fieldAccessorTable = new

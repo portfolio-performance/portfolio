@@ -517,6 +517,8 @@ public class AttributeType
     private transient Converter converter; // NOSONAR
     private String converterClass;
 
+    private TypedMap properties;
+
     public AttributeType(String id)
     {
         this.id = id;
@@ -628,5 +630,12 @@ public class AttributeType
             else
                 return ((Comparable<Object>) o1).compareTo((Comparable<Object>) o2);
         };
+    }
+
+    public TypedMap getProperties()
+    {
+        if (properties == null)
+            properties = new TypedMap();
+        return properties;
     }
 }

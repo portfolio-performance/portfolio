@@ -260,6 +260,7 @@ message PAttributeType {
   string target = 5;
   string type = 6;
   string converterClass = 7;
+  PMap properties = 8;
 }
 
 message PConfigurationSet {

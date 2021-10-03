@@ -98,6 +98,19 @@ private static final long serialVersionUID = 0L;
             converterClass_ = s;
             break;
           }
+          case 66: {
+            name.abuchen.portfolio.model.proto.v1.PMap.Builder subBuilder = null;
+            if (properties_ != null) {
+              subBuilder = properties_.toBuilder();
+            }
+            properties_ = input.readMessage(name.abuchen.portfolio.model.proto.v1.PMap.parser(), extensionRegistry);
+            if (subBuilder != null) {
+              subBuilder.mergeFrom(properties_);
+              properties_ = subBuilder.buildPartial();
+            }
+
+            break;
+          }
           default: {
             if (!parseUnknownField(
                 input, unknownFields, extensionRegistry, tag)) {
@@ -405,6 +418,32 @@ private static final long serialVersionUID = 0L;
     }
   }
 
+  public static final int PROPERTIES_FIELD_NUMBER = 8;
+  private name.abuchen.portfolio.model.proto.v1.PMap properties_;
+  /**
+   * <code>.name.abuchen.portfolio.PMap properties = 8;</code>
+   * @return Whether the properties field is set.
+   */
+  @java.lang.Override
+  public boolean hasProperties() {
+    return properties_ != null;
+  }
+  /**
+   * <code>.name.abuchen.portfolio.PMap properties = 8;</code>
+   * @return The properties.
+   */
+  @java.lang.Override
+  public name.abuchen.portfolio.model.proto.v1.PMap getProperties() {
+    return properties_ == null ? name.abuchen.portfolio.model.proto.v1.PMap.getDefaultInstance() : properties_;
+  }
+  /**
+   * <code>.name.abuchen.portfolio.PMap properties = 8;</code>
+   */
+  @java.lang.Override
+  public name.abuchen.portfolio.model.proto.v1.PMapOrBuilder getPropertiesOrBuilder() {
+    return getProperties();
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -440,6 +479,9 @@ private static final long serialVersionUID = 0L;
     if (!getConverterClassBytes().isEmpty()) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 7, converterClass_);
     }
+    if (properties_ != null) {
+      output.writeMessage(8, getProperties());
+    }
     unknownFields.writeTo(output);
   }
 
@@ -469,6 +511,10 @@ private static final long serialVersionUID = 0L;
     }
     if (!getConverterClassBytes().isEmpty()) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(7, converterClass_);
+    }
+    if (properties_ != null) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeMessageSize(8, getProperties());
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -502,6 +548,11 @@ private static final long serialVersionUID = 0L;
         .equals(other.getType())) return false;
     if (!getConverterClass()
         .equals(other.getConverterClass())) return false;
+    if (hasProperties() != other.hasProperties()) return false;
+    if (hasProperties()) {
+      if (!getProperties()
+          .equals(other.getProperties())) return false;
+    }
     if (!unknownFields.equals(other.unknownFields)) return false;
     return true;
   }
@@ -529,6 +580,10 @@ private static final long serialVersionUID = 0L;
     hash = (53 * hash) + getType().hashCode();
     hash = (37 * hash) + CONVERTERCLASS_FIELD_NUMBER;
     hash = (53 * hash) + getConverterClass().hashCode();
+    if (hasProperties()) {
+      hash = (37 * hash) + PROPERTIES_FIELD_NUMBER;
+      hash = (53 * hash) + getProperties().hashCode();
+    }
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -676,6 +731,12 @@ private static final long serialVersionUID = 0L;
 
       converterClass_ = "";
 
+      if (propertiesBuilder_ == null) {
+        properties_ = null;
+      } else {
+        properties_ = null;
+        propertiesBuilder_ = null;
+      }
       return this;
     }
 
@@ -714,6 +775,11 @@ private static final long serialVersionUID = 0L;
       result.target_ = target_;
       result.type_ = type_;
       result.converterClass_ = converterClass_;
+      if (propertiesBuilder_ == null) {
+        result.properties_ = properties_;
+      } else {
+        result.properties_ = propertiesBuilder_.build();
+      }
       result.bitField0_ = to_bitField0_;
       onBuilt();
       return result;
@@ -791,6 +857,9 @@ private static final long serialVersionUID = 0L;
       if (!other.getConverterClass().isEmpty()) {
         converterClass_ = other.converterClass_;
         onChanged();
+      }
+      if (other.hasProperties()) {
+        mergeProperties(other.getProperties());
       }
       this.mergeUnknownFields(other.unknownFields);
       onChanged();
@@ -1359,6 +1428,125 @@ private static final long serialVersionUID = 0L;
       converterClass_ = value;
       onChanged();
       return this;
+    }
+
+    private name.abuchen.portfolio.model.proto.v1.PMap properties_;
+    private com.google.protobuf.SingleFieldBuilderV3<
+        name.abuchen.portfolio.model.proto.v1.PMap, name.abuchen.portfolio.model.proto.v1.PMap.Builder, name.abuchen.portfolio.model.proto.v1.PMapOrBuilder> propertiesBuilder_;
+    /**
+     * <code>.name.abuchen.portfolio.PMap properties = 8;</code>
+     * @return Whether the properties field is set.
+     */
+    public boolean hasProperties() {
+      return propertiesBuilder_ != null || properties_ != null;
+    }
+    /**
+     * <code>.name.abuchen.portfolio.PMap properties = 8;</code>
+     * @return The properties.
+     */
+    public name.abuchen.portfolio.model.proto.v1.PMap getProperties() {
+      if (propertiesBuilder_ == null) {
+        return properties_ == null ? name.abuchen.portfolio.model.proto.v1.PMap.getDefaultInstance() : properties_;
+      } else {
+        return propertiesBuilder_.getMessage();
+      }
+    }
+    /**
+     * <code>.name.abuchen.portfolio.PMap properties = 8;</code>
+     */
+    public Builder setProperties(name.abuchen.portfolio.model.proto.v1.PMap value) {
+      if (propertiesBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        properties_ = value;
+        onChanged();
+      } else {
+        propertiesBuilder_.setMessage(value);
+      }
+
+      return this;
+    }
+    /**
+     * <code>.name.abuchen.portfolio.PMap properties = 8;</code>
+     */
+    public Builder setProperties(
+        name.abuchen.portfolio.model.proto.v1.PMap.Builder builderForValue) {
+      if (propertiesBuilder_ == null) {
+        properties_ = builderForValue.build();
+        onChanged();
+      } else {
+        propertiesBuilder_.setMessage(builderForValue.build());
+      }
+
+      return this;
+    }
+    /**
+     * <code>.name.abuchen.portfolio.PMap properties = 8;</code>
+     */
+    public Builder mergeProperties(name.abuchen.portfolio.model.proto.v1.PMap value) {
+      if (propertiesBuilder_ == null) {
+        if (properties_ != null) {
+          properties_ =
+            name.abuchen.portfolio.model.proto.v1.PMap.newBuilder(properties_).mergeFrom(value).buildPartial();
+        } else {
+          properties_ = value;
+        }
+        onChanged();
+      } else {
+        propertiesBuilder_.mergeFrom(value);
+      }
+
+      return this;
+    }
+    /**
+     * <code>.name.abuchen.portfolio.PMap properties = 8;</code>
+     */
+    public Builder clearProperties() {
+      if (propertiesBuilder_ == null) {
+        properties_ = null;
+        onChanged();
+      } else {
+        properties_ = null;
+        propertiesBuilder_ = null;
+      }
+
+      return this;
+    }
+    /**
+     * <code>.name.abuchen.portfolio.PMap properties = 8;</code>
+     */
+    public name.abuchen.portfolio.model.proto.v1.PMap.Builder getPropertiesBuilder() {
+      
+      onChanged();
+      return getPropertiesFieldBuilder().getBuilder();
+    }
+    /**
+     * <code>.name.abuchen.portfolio.PMap properties = 8;</code>
+     */
+    public name.abuchen.portfolio.model.proto.v1.PMapOrBuilder getPropertiesOrBuilder() {
+      if (propertiesBuilder_ != null) {
+        return propertiesBuilder_.getMessageOrBuilder();
+      } else {
+        return properties_ == null ?
+            name.abuchen.portfolio.model.proto.v1.PMap.getDefaultInstance() : properties_;
+      }
+    }
+    /**
+     * <code>.name.abuchen.portfolio.PMap properties = 8;</code>
+     */
+    private com.google.protobuf.SingleFieldBuilderV3<
+        name.abuchen.portfolio.model.proto.v1.PMap, name.abuchen.portfolio.model.proto.v1.PMap.Builder, name.abuchen.portfolio.model.proto.v1.PMapOrBuilder> 
+        getPropertiesFieldBuilder() {
+      if (propertiesBuilder_ == null) {
+        propertiesBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+            name.abuchen.portfolio.model.proto.v1.PMap, name.abuchen.portfolio.model.proto.v1.PMap.Builder, name.abuchen.portfolio.model.proto.v1.PMapOrBuilder>(
+                getProperties(),
+                getParentForChildren(),
+                isClean());
+        properties_ = null;
+      }
+      return propertiesBuilder_;
     }
     @java.lang.Override
     public final Builder setUnknownFields(

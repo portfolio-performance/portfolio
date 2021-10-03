@@ -95,4 +95,19 @@ public interface PAttributeTypeOrBuilder extends
    */
   com.google.protobuf.ByteString
       getConverterClassBytes();
+
+  /**
+   * <code>.name.abuchen.portfolio.PMap properties = 8;</code>
+   * @return Whether the properties field is set.
+   */
+  boolean hasProperties();
+  /**
+   * <code>.name.abuchen.portfolio.PMap properties = 8;</code>
+   * @return The properties.
+   */
+  name.abuchen.portfolio.model.proto.v1.PMap getProperties();
+  /**
+   * <code>.name.abuchen.portfolio.PMap properties = 8;</code>
+   */
+  name.abuchen.portfolio.model.proto.v1.PMapOrBuilder getPropertiesOrBuilder();
 }

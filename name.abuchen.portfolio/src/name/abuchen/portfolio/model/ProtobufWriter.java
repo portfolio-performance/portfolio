@@ -579,6 +579,8 @@ import name.abuchen.portfolio.money.Money;
                 attributeType.setConverter(
                                 (Class<? extends Converter>) Class.forName(newAttributeType.getConverterClass()));
 
+                attributeType.getProperties().fromProto(newAttributeType.getProperties());
+
                 settings.addAttributeType(attributeType);
             }
             catch (ClassNotFoundException e)
@@ -1175,6 +1177,9 @@ import name.abuchen.portfolio.money.Money;
             newAttributeType.setTarget(t.getTarget().getName());
             newAttributeType.setType(t.getType().getName());
             newAttributeType.setConverterClass(t.getConverter().getClass().getName());
+
+            newAttributeType.setProperties(t.getProperties().toProto());
+
             newSettings.addAttributeTypes(newAttributeType);
         });
 
