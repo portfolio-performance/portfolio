@@ -757,7 +757,10 @@ public class ClientFactory
                 permanentelyRemoveCPIData(client);
                 fixDimensionsList(client);
             case 52:
+<<<<<<< HEAD
                 // added properties to attribute types
+=======
+>>>>>>> branch 'attribute_settings' of https://github.com/OnkelDok/portfolio
                 addDefaultSettingsToLimitAttributes(client);
                                 
                 client.setVersion(Client.CURRENT_VERSION);
