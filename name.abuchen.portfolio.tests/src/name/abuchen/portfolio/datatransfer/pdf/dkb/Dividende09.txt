@@ -1,0 +1,55 @@
+﻿## PDF author: ''
+PDFBox Version: 1.8.16
+
+10919 Berlin Seite 1
+Depotnummer 123456789
+Kundennummer 0101010101
+Max Mustermann
+Abrechnungsnr. 8127381273
+Herrn Datum 19.02.2015
+Max Mustermann
+Muster Str. 1
+12345 Musterstadt
+Gutschrift von Investmenterträgen
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 53 IS.II-DEV.MARK.PR.YLD. UC. ETF DE000A0LGQL5 (A0LGQL)
+BEARER SHARES (DT. ZERT.) O.N.
+Zahlbarkeitstag 19.02.2015 Ertrag pro St. 0,167900000 USD
+Bestandsstichtag 28.01.2015 Zinsanteil pro St. 0,012194300 USD
+Ex-Tag 29.01.2015 Ausländischer Dividenden- und Veräußerungs-
+Geschäftsjahr 01.11.2014 - 31.10.2015 gewinnanteil pro St. 0,190620200 USD
+Devisenkurs EUR / USD 1,1426 Herkunftsland Irland
+Ausschüttung 8,90 USD 7,79+ EUR
+Anrechenbare Quellensteuer pro Stück 0,015993 USD 0,85 USD
+Kapitalertragsteuerpflichtiger Zinsanteil gesamt 0,65 USD
+Umrechnung in EUR 0,57 EUR
+Eingebuchte sonstige negative Kapitalerträge 0,57 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 0,00 EUR
+Kapitalertragsteuerpflichtiger ausländischer Dividenden-
+und Veräußerungsgewinnanteil gesamt 10,10 USD
+Umrechnung in EUR 8,84 EUR
+Eingebuchte sonstige negative Kapitalerträge 8,84 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 0,00 EUR
+Ausmachender Betrag 7,79+ EUR
+Lagerstelle Clearstream Banking FFM (849000 / 4003)
+Den Betrag buchen wir mit Wertstellung 23.02.2015 zu Gunsten des Kontos 1234567890 (IBAN DE52 1203 0000 1234
+5678 90), BLZ 120 300 00 (BIC BYLADEM1001).
+Keine Steuerbescheinigung.
+Bitte ggf. Rückseite beachten.
+1234.12345678.1234567AB12
+
+Seite 2
+Depotnummer 123456789
+Kundennummer 0101010101
+Abrechnungsnr. 8127381273
+Datum 19.02.2015
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2015 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 731,52 300,00 0,00 0,00
+Ertrag 0,00 9,41- 0,00 0,74 0,00
+Nachher 0,00 722,11 300,00 0,74 0,00
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+1234.12345678.1234567AB12

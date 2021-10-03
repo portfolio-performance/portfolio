@@ -1,0 +1,49 @@
+﻿PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+10919 Berlin Seite 1
+Depotnummer 12345678
+Kundennummer 1234567890
+Anton Müller
+Herrn Abrechnungsnr. 12345678901Datum 09.10.2015
+Anton Müller
+Bayerstr. 1
+85685 München
+Dividendengutschrift
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 450 ADMIRAL GROUP PLC GB00B02J6398 (A0DJ58)
+REGISTERED SHARES LS -,001
+Zahlbarkeitstag 09.10.2015 Dividende pro Stück 0,51 GBP
+Bestandsstichtag 09.09.2015 Herkunftsland Großbritannien und Nordirland
+Ex-Tag 10.09.2015 Art der Dividende Zwischendividende
+Geschäftsjahr 01.01.2015 - 31.12.2015
+Devisenkurs EUR / GBP 0,7423
+Dividendengutschrift 229,50 GBP 309,17+ EUR
+Umrechnung in EUR 309,17 EUR
+Kapitalertragsteuerpflichtige Dividende 309,17 EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 309,17 EUR
+Kapitalertragsteuer 25 % auf 309,17 EUR 77,29- EUR
+Solidaritätszuschlag 5,5 % auf 77,29 EUR 4,25- EUR
+Ausmachender Betrag 227,63+ EUR
+Lagerstelle Clearstream Banking Lux (849133 / 64003)
+Den Betrag buchen wir mit Wertstellung 13.10.2015 zu Gunsten des Kontos 1036573226 (IBAN DE24 1203 0000 1036
+5732 26), BLZ 120 300 00 (BIC BYLADEM1001).
+Keine Steuerbescheinigung.
+Bitte ggf. Rückseite beachten.
+0883.10100101.0000623ER01
+
+Seite 2
+Depotnummer 12345678
+Kundennummer 1234567890
+Abrechnungsnr. 12345678901
+Datum 09.10.2015
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2015 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 102,09
+Ertrag 0,00 0,00 0,00 0,00 309,17
+Nachher 0,00 0,00 0,00 0,00 411,26
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0883.10100101.0000624ER01

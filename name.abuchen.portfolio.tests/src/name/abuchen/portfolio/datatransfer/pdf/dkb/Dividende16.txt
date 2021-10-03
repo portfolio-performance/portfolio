@@ -1,0 +1,33 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+
+10919 Berlin
+Depotnummer 500123456
+Kundennummer 191111111
+Florian Mustermann
+Abrechnungsnr. 63310000000
+Herrn Datum 13.05.2014
+Florian Mustermann
+Musterstr. 11
+12345 Musterstadt
+Ertragsgutschrift nach § 27 KStG
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 200 FREENET AG DE000A0Z2ZZ5 (A0Z2ZZ)
+NAMENS-AKTIEN O.N.
+Zahlbarkeitstag 14.05.2014 Ertrag pro Stück 1,45 EUR
+Bestandsstichtag 13.05.2014
+Ex-Tag 14.05.2014
+Geschäftsjahr 01.01.2013 - 31.12.2013
+Dividendengutschrift nach § 27 KStG 290,00+ EUR
+Ausmachender Betrag 290,00+ EUR
+Lagerstelle Clearstream Banking FFM (849000 / 4003)
+Den Betrag buchen wir mit Wertstellung 14.05.2014 zu Gunsten des Kontos 1234567890 (IBAN DE64 1203 0000 1234
+5678 90), BLZ 120 300 00 (BIC BYLADEM1001).
+Keine Steuerbescheinigung.
+Es handelt sich bei der Ausschüttung um Leistungen aus dem steuerlichen Einlagekonto der Kapitalgesellschaft (§27 Abs.
+1-7 KStG). Dieser Ertrag unterliegt laut Gesetz zum Zeitpunkt des Zuflusses keinem Steuerabzug und ist
+einkommensteuerfrei. Er mindert jedoch im Nachhinein den Kaufkurs der bezogenen Aktie, so dass bei deren Verkauf
+möglicherweise ein entsprechend höherer Kursgewinn zu versteuern ist.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Bitte ggf. Rückseite beachten.
+0883.05140101.0001313ER01

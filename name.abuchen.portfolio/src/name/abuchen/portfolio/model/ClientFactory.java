@@ -616,7 +616,7 @@ public class ClientFactory
             return body;
     }
 
-    private static void upgradeModel(Client client)
+    /* package */ static void upgradeModel(Client client)
     {
         client.doPostLoadInitialization();
 
