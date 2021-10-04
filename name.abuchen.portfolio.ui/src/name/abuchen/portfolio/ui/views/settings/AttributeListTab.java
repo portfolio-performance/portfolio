@@ -41,7 +41,7 @@ import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.views.AbstractTabbedView;
 
-public class AttributeListTab implements AbstractTabbedView.Tab, ModificationListener
+public class AttributeListTab implements AbstractTabbedView.Tab, ModificationListener 
 {
     /* package */ enum Mode
     {
@@ -61,7 +61,7 @@ public class AttributeListTab implements AbstractTabbedView.Tab, ModificationLis
             this.label = label;
             this.listFunction = listFunction;
         }
-
+        
         public Class<? extends Attributable> getType()
         {
             return type;
@@ -89,11 +89,14 @@ public class AttributeListTab implements AbstractTabbedView.Tab, ModificationLis
 
     private TableViewer tableViewer;
 
+    @Inject
+    private SettingsView paneController;
+    
     @Override
     public String getTitle()
     {
         return Messages.AttributeTypeTitle + ": " + mode.getLabel(); //$NON-NLS-1$
-    }
+    }    
 
     @Override
     public void addButtons(ToolBarManager manager)
@@ -130,9 +133,12 @@ public class AttributeListTab implements AbstractTabbedView.Tab, ModificationLis
         }));
     }
 
+  
+    
     @Override
     public Composite createTab(Composite parent)
     {
+        
         Composite container = new Composite(parent, SWT.NONE);
         TableColumnLayout layout = new TableColumnLayout();
         container.setLayout(layout);
@@ -155,6 +161,20 @@ public class AttributeListTab implements AbstractTabbedView.Tab, ModificationLis
 
         tableViewer.setInput(client.getSettings().getAttributeTypes().filter(t -> t.getTarget() == mode.getType())
                         .toArray());
+        
+        tableViewer.addSelectionChangedListener(event -> 
+        {
+            Object item = null;
+            
+            IStructuredSelection sel = event.getStructuredSelection();
+            if(sel.size() == 1)
+            {
+                item = sel.getFirstElement();
+            }
+            
+            if(paneController != null)
+                paneController.setInformationPaneInput(item);
+        });
 
         new ContextMenu(tableViewer.getTable(), this::fillContextMenu).hook();
 
