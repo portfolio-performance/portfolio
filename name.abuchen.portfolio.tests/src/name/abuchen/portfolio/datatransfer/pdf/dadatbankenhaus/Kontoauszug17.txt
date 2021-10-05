@@ -1,0 +1,22 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+DADAT-Bank KONTOAUSZUG
+BH Schelhammer & Schattera AG vom 31.10.2018
+Alter Saldo per 30.09.2018 0,83-
+Summe der Gutschriften 75,00
+Online Summe der Lastschriften 0,00
+BH Schelhammer, PF 123456, 5027 Salzburg
+Neuer Saldo zu Ihren Gunsten
+Max Muster EUR 74,17
+Musterstraße 5
+1234 Dorf
+Konto-Nr.: 00012345678 Bankleitzahl: 19190
+Empfängerhinweis: 
+Datum Buchungstext Wert Betrag
+31.10 Werbebonus 31.10 75,00
+1234567890123456
+Neuer Saldo zu Ihren Gunsten 74,17
+AT41 1234 1234 1234 1234 BSSWATWW 01 1234 1/1
+IBAN BIC Filiale Auszug Blatt/Gesamt
+R1234 12345 Doknr.: EK20-045-0123456789
