@@ -1,6 +1,9 @@
-package name.abuchen.portfolio.model;
+package name.abuchen.portfolio.ui.views.columns;
 
 import org.eclipse.swt.graphics.Color;
+
+import name.abuchen.portfolio.model.TypedMap;
+import name.abuchen.portfolio.ui.util.Colors;
 
 public class LimitPriceSettings
 {
@@ -8,6 +11,8 @@ public class LimitPriceSettings
     {
         String SHOW_RELATIVE_DIFF = "SHOW_RELATIVE_DIFF";//$NON-NLS-1$
         String SHOW_ABSOLUTE_DIFF = "SHOW_ABSOLUTE_DIFF";//$NON-NLS-1$
+        String LIMIT_EXCEEDED_COLOR = "LIMIT_EXCEEDED_COLOR";//$NON-NLS-1$
+        String LIMIT_UNDERCUT_COLOR = "LIMIT_UNDERCUT_COLOR";//$NON-NLS-1$
     }
     
     
@@ -16,14 +21,6 @@ public class LimitPriceSettings
         this.properties = properties;
     }
     
-    /**
-     * If null color from theme should be used
-     */
-    private Color limitExceededColor;
-    /**
-     * If null color from theme should be used
-     */
-    private Color limitUndercutColor;
     private final TypedMap properties;
     
     
@@ -44,33 +41,33 @@ public class LimitPriceSettings
     
     public boolean getShowAbsoluteDiff()
     {
-        return properties.getBoolean(PropertyKeys.SHOW_ABSOLUTE_DIFF);
+        return properties.getBoolean(PropertyKeys.SHOW_ABSOLUTE_DIFF).booleanValue();
     }
     
     public void setLimitExceededColor(Color value)
     {
-        limitExceededColor = value;
+        properties.putRGBA(PropertyKeys.LIMIT_EXCEEDED_COLOR , value.getRGBA());
     }
     
-    /**
-     * If null color from theme should be used
-     */
     public Color getLimitExceededColor()
     {
-        return limitExceededColor;
+        if(!properties.containsKey(PropertyKeys.LIMIT_EXCEEDED_COLOR))
+            properties.putRGBA(PropertyKeys.LIMIT_EXCEEDED_COLOR, Colors.theme().greenBackground().getRGBA()); // default value
+        
+        return new Color(properties.getRGBA(PropertyKeys.LIMIT_EXCEEDED_COLOR));
     }
     
     public void setLimitUndercutColor(Color value)
     {
-        limitUndercutColor = value;
+        properties.putRGBA(PropertyKeys.LIMIT_UNDERCUT_COLOR , value.getRGBA());
     }
     
-    /**
-     * If null color from theme should be used
-     */
     public Color getLimitUndercutColor()
     {
-        return limitUndercutColor;
+        if(!properties.containsKey(PropertyKeys.LIMIT_UNDERCUT_COLOR))
+            properties.putRGBA(PropertyKeys.LIMIT_UNDERCUT_COLOR, Colors.theme().redBackground().getRGBA()); // default value
+        
+        return new Color(properties.getRGBA(PropertyKeys.LIMIT_UNDERCUT_COLOR));
     }
     
 

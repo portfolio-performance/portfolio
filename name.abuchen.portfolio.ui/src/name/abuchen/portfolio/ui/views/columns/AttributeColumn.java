@@ -28,7 +28,6 @@ import name.abuchen.portfolio.model.Bookmark;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ImageManager;
 import name.abuchen.portfolio.model.LimitPrice;
-import name.abuchen.portfolio.model.LimitPriceSettings;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
@@ -250,7 +249,7 @@ public class AttributeColumn extends Column
         
         private Color getSettingsColorOrDefault(Supplier<Color> getSettings, Color defaultColor)
         {
-            var color = getSettings.get();
+            Color color = getSettings.get();
             if(color == null)
                 return defaultColor;
             return color;
