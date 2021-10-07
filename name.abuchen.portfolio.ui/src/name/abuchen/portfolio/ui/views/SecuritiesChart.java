@@ -955,7 +955,8 @@ public class SecuritiesChart
 
             LimitPrice limitAttribute = (LimitPrice) val;
 
-            Optional<AttributeType> attributeName = client.getSettings().getAttributeTypes()
+            Optional<AttributeType> attributeName = ReadOnlyClient.unwrap(client) // unwrap because ReadOnlyClient only contains/provides default attributes
+                            .getSettings().getAttributeTypes()
                             .filter(attr -> attr.getId().equals(key)).findFirst();
             // could not find name of limit attribute --> don't draw
             if (attributeName.isEmpty())
