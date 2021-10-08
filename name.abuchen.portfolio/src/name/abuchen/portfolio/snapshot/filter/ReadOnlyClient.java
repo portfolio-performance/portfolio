@@ -16,10 +16,7 @@ public class ReadOnlyClient extends Client
         super();
 
         this.source = Objects.requireNonNull(source);
-        
-        //super.getSettings().clearAttributeTypes();
-        //source.getSettings().getAttributeTypes().forEach((attr) -> super.getSettings().addAttributeType(attr));
-        
+              
         super.setBaseCurrency(source.getBaseCurrency());
     }
 
