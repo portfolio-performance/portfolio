@@ -14,6 +14,9 @@ import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import javax.inject.Inject;
+
+import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.InputDialog;
@@ -26,6 +29,7 @@ import name.abuchen.portfolio.model.TaxonomyTemplate;
 import name.abuchen.portfolio.model.Watchlist;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.ConfirmAction;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
@@ -33,6 +37,7 @@ import name.abuchen.portfolio.ui.views.AccountListView;
 import name.abuchen.portfolio.ui.views.AllTransactionsView;
 import name.abuchen.portfolio.ui.views.BrowserTestView;
 import name.abuchen.portfolio.ui.views.HoldingsPieChartView;
+import name.abuchen.portfolio.ui.views.HoldingsPieChartView2;
 import name.abuchen.portfolio.ui.views.InvestmentPlanListView;
 import name.abuchen.portfolio.ui.views.PerformanceChartView;
 import name.abuchen.portfolio.ui.views.PerformanceView;
@@ -183,6 +188,9 @@ public final class Navigation
     private List<Item> roots = new ArrayList<>();
     private List<Listener> listeners = new ArrayList<>();
 
+    private boolean useSWTCharts = false;
+
+    @Inject
     /* protected */ Navigation(Client client)
     {
         createGeneralDataSection(client);
@@ -190,6 +198,12 @@ public final class Navigation
         createPerformanceSection();
         createTaxonomyDataSection(client);
         createMiscSection();
+    }
+
+    @Inject
+    public void setUseSWTCharts(@Preference(UIConstants.Preferences.ENABLE_SWTCHART_PIECHARTS) boolean useSWTCharts)
+    {
+        this.useSWTCharts = useSWTCharts;
     }
 
     public Stream<Item> getRoots()
@@ -444,7 +458,14 @@ public final class Navigation
         section.add(statementOfAssets);
 
         statementOfAssets.add(new Item(Messages.ClientEditorLabelChart, StatementOfAssetsHistoryView.class, true));
-        statementOfAssets.add(new Item(Messages.ClientEditorLabelHoldings, HoldingsPieChartView.class, true));
+        statementOfAssets.add(new Item(Messages.ClientEditorLabelHoldings, HoldingsPieChartView.class, true)
+        {
+            @Override
+            public Class<? extends AbstractFinanceView> getViewClass()
+            {
+                return useSWTCharts ? HoldingsPieChartView2.class : HoldingsPieChartView.class;
+            }
+        });
 
         Item performance = new Item(Messages.ClientEditorLabelPerformance, DashboardView.class, true);
         section.add(performance);
