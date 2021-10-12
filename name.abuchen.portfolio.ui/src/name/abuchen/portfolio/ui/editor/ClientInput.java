@@ -557,7 +557,7 @@ public class ClientInput
         this.exchangeRateProviderFacory = ContextInjectionFactory //
                         .make(ExchangeRateProviderFactory.class, this.context, c2);
 
-        this.navigation = new Navigation(client);
+        this.navigation = ContextInjectionFactory.make(Navigation.class, this.context, c2);
 
         client.addPropertyChangeListener(event -> {
 

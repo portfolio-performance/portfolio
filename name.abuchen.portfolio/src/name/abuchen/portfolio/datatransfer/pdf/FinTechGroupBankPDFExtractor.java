@@ -34,7 +34,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         addBuySellTransaction();
         addSummaryStatementBuySellTransaction();
         addDividendeTransaction();
-        addAccountTransaction();
+        addAccountStatementTransaction();
         addTransferOutTransaction();
         addTransferInTransaction();
         addAdvanceTaxTransaction();
@@ -488,7 +488,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         block.set(pdfTransaction);
     }
 
-    private void addAccountTransaction()
+    private void addAccountStatementTransaction()
     {
         final DocumentType type = new DocumentType("Kontoauszug Nr:", (context, lines) -> {
             Pattern pYear = Pattern.compile("Kontoauszug Nr:[ ]*\\d+/(\\d+).*");
@@ -683,7 +683,11 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                     t.setNote(v.get("note"));
                 })
 
-                .wrap(TransactionItem::new));
+                .wrap(t -> {
+                    if (t.getAmount() != 0)
+                        return new TransactionItem(t);
+                    return null;
+                }));
 
         // 30.12.     31.12.  Zinsabschluss   01.10.2014 - 31.12.2014               7,89+
         block = new Block("\\d+\\.\\d+\\.[ ]+\\d+\\.\\d+\\.[ ]+Zinsabschluss[ ]+(.*)");

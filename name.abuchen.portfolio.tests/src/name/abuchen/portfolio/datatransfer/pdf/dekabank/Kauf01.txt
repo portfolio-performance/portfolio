@@ -1,0 +1,98 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Wertpapierabrechnung
+Depot-Tagesauszug
+Depot: xxxx
+Depotinhaber:
+xxx
+xxxx
+xxxx Bankverbindung generell:IBAN:
+xxx
+Sparkasse xxxx
+Kontoinhaber:
+xxxxx
+18. Mai 2021
+Käufe von Wertpapieren Auszug: 1 / Seite 1 von 3
+Sehr geehrter Herr xxxx,
+folgende Buchungen haben wir für Ihr Depot durchgeführt:
+
+LASTSCHRIFTEINZUG / Vorabankündigung (Pre-Notification) erteilt per Deka.de - Internet
+Auftraggeber: xxx
+Auftragserteilung: Geschäft ohne Beratung
+Bankverbindung: IBAN: xxxx
+Kontoinhaber: xxx
+Sparkasse xxxx
+Mandatsdaten: Mandatsreferenz: 0102162260003
+Gläubiger-ID: DE02DBD00000081995
+Bezeichnung: Deka-UmweltInvest TF
+ISIN: DE000DK0ECT0 Unterdepot: 00 Auftragsnummer: 8103 1017
+Verwahrart: GiroSammel Abrechnungstag: 18.05.2021
+Abrechnungsbetrag Betrag in Währung Wertpapierdaten Bestandsdaten
+des Wertpapiers je Anteil in Stück
+Einzugsbetrag EUR 4.000,00 Kurs/Kaufpreis Bestand alt: 11,291
+=Abrechnungsbetrag EUR 4.000,00 EUR 4.000,00 EUR 187,770000 Anteilumsatz: 21,303
+Bestand neu: 32,594
+Wir werden aufgrund des von Ihnen erteilten Lastschriftmandats den zur Zahlung fälligen Betrag 
+(siehe Abrechnungsbetrag) mit der Mandatsreferenz: 0102162260003 und der
+Gläubiger-ID: DE02DBD00000081995 am 20.05.2021 von Ihrem Konto einziehen.
+Sollten Sie nicht der Inhaber des angegebenen Kontos sein, bitten wir Sie, den Kontoinhaber entsprechend zu
+informieren.
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: USt-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht DE 114103563
+60625 Frankfurt www.deka.de Frankfurt am Main
+HRA 16068
+Depot: xxxx
+Auszug: 1 / Seite 2 von 3
+LASTSCHRIFTEINZUG / Vorabankündigung (Pre-Notification) erteilt per Deka.de - Internet
+Auftraggeber: xxxx
+Auftragserteilung: Geschäft ohne Beratung
+Bankverbindung: IBAN: xxx
+Kontoinhaber: xxxx
+xxxx
+Mandatsdaten: Mandatsreferenz: 0102162260003
+Gläubiger-ID: DE02DBD00000081995
+Bezeichnung: DekaLux-BioTech TF
+ISIN: LU0348461897 Unterdepot: 00 Auftragsnummer: 8103 3945
+Verwahrart: GiroSammel Abrechnungstag: 18.05.2021
+Abrechnungsbetrag Betrag in Währung Wertpapierdaten Bestandsdaten
+des Wertpapiers je Anteil in Stück
+Einzugsbetrag EUR 4.000,00 Kurs/Kaufpreis Bestand alt: 3,355
+=Abrechnungsbetrag EUR 4.000,00 EUR 4.000,00 EUR 494,260000 Anteilumsatz: 8,093
+Bestand neu: 11,448
+Wir werden aufgrund des von Ihnen erteilten Lastschriftmandats den zur Zahlung fälligen Betrag 
+(siehe Abrechnungsbetrag) mit der Mandatsreferenz: 0102162260003 und der
+Gläubiger-ID: DE02DBD00000081995 am 20.05.2021 von Ihrem Konto einziehen.
+Sollten Sie nicht der Inhaber des angegebenen Kontos sein, bitten wir Sie, den Kontoinhaber entsprechend zu
+informieren.
+Ihr erteilter Sparer-Pauschbetrag für xxxxx beträgt EUR 250,00.
+Aktuelle steuerliche Daten
+Stückzinsen und realisierte Veräußerungsverluste EUR 0,00
+(sonstiger Verlusttopf)
+Verfügbarer Sparer-Pauschbetrag EUR 0,00
+Alle steuerlich relevanten Informationen und Daten des aktuellen Jahres werden Ihnen mit der
+Steuerbescheinigung des Jahresdepotauszuges übersandt, den Sie bis Ende Januar des Folgejahres erhalten. Die
+erwirtschafteten Erträge der Vorsorgeprodukte Deka-BonusRente, Deka-BasisRente und Deka-ZukunftsPlan sind
+in der Ansparphase abgeltungsteuerfrei. Die Leistungen werden in der Regel erst in der Auszahlungsphase als
+sog. Sonstige Einkünfte versteuert. Leistungen, die auf geförderten Beiträgen beruhen, werden in der
+Auszahlungsphase voll versteuert (persönlicher Steuersatz).
+Bitte prüfen Sie die vorliegenden Informationen.
+Zu Ihrer persönlichen Anlagestrategie beraten Sie gern die Berater der Sparkasse xxxx.
+Dort erhalten Sie ebenfalls die aktuellen Verkaufsunterlagen und Dokumentationen mit den Details Ihrer
+Vermögensanlage. Diese Unterlagen können Sie auch bei uns anfordern oder über www.deka.de abrufen.
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: USt-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht DE 114103563
+60625 Frankfurt www.deka.de Frankfurt am Main
+HRA 16068
+Depot: xxxx
+Auszug: 1 / Seite 3 von 3
+Über Chancen, Risiken und Kosten der Anlage informieren Sie die "Wesentlichen Anlegerinformationen" bzw.
+das Produktinformationsblatt. Wünschen Sie weitere aktuelle Informationen zu Ihrer Anlage, können Sie diese
+jederzeit im Internet über www.deka.de aufrufen.
+Mit freundlichen Grüßen
+DekaBank
+Deutsche Girozentrale
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: USt-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht DE 114103563
+60625 Frankfurt www.deka.de Frankfurt am Main
+HRA 16068

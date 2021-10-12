@@ -166,17 +166,21 @@ public class StatementOfAssetsViewer
         {
             // when flattening, assign sortOrder to keep the tree structure for
             // sorting (only positions within a category are sorted)
-            int sortOrder = 0;
-
+            int sortOrder = 1;
             List<Element> answer = new ArrayList<>();
 
-            Element root = new Element(groupByTaxonomy, Integer.MAX_VALUE);
+            // Show the grand total at both the top & bottom
+            Element totalTop = new Element(groupByTaxonomy, 0);
+            Element totalBottom = new Element(groupByTaxonomy, Integer.MAX_VALUE);
+
+            answer.add(totalTop);
 
             for (AssetCategory cat : groupByTaxonomy.asList())
             {
                 Element category = new Element(groupByTaxonomy, cat, sortOrder);
                 answer.add(category);
-                root.addChild(category);
+                totalTop.addChild(category);
+                totalBottom.addChild(category);
                 sortOrder++;
 
                 for (AssetPosition p : cat.getPositions())
@@ -188,7 +192,7 @@ public class StatementOfAssetsViewer
                 sortOrder++;
             }
 
-            answer.add(root);
+            answer.add(totalBottom);
             return answer;
         }
 
