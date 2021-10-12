@@ -125,12 +125,31 @@ public class AttributeSettingsPane implements InformationPanePage
             undercutLabel.redraw();
         })) ;
         
+        // reset to default colors button
+        Button resetButton = new Button(container, SWT.PUSH);
+        resetButton.setText("reset to default"); //$NON-NLS-1$
+        //button.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+        resetButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(event -> 
+        {
+            // swap settings
+            Color exceed = Colors.theme().greenBackground();
+            Color undercut = Colors.theme().redBackground();
+            settings.setLimitExceededColor(exceed);
+            settings.setLimitUndercutColor(undercut);
+            
+            // swap label colors
+            exceedLabel.setBackdropColor(exceed);
+            exceedLabel.redraw();
+            undercutLabel.setBackdropColor(undercut);
+            undercutLabel.redraw();
+        })) ;
+        
     }
     
     private ColoredLabel createColorButtons(Composite parent, Supplier<Color> getColor, Consumer<Color> setColor, String labelText, Supplier<Color> getThemeColor)
     {
         Composite colorContainer = new Composite(parent, SWT.NONE);
-        colorContainer.setLayout(new GridLayout(SWT.HORIZONTAL, false));
+        colorContainer.setLayout(new GridLayout(3, false));
         
         CLabel textLabel = new CLabel(colorContainer, SWT.CENTER);
         textLabel.setText(labelText); 
