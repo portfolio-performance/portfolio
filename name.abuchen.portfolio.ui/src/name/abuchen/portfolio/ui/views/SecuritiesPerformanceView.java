@@ -964,7 +964,10 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         }
 
         AttributeColumn.createFor(getClient(), Security.class) //
-                        .forEach(column -> recordColumns.addColumn(column));
+                        .forEach(column -> {
+                            column.getEditingSupport().addListener(new TouchClientListener(getClient()));
+                            recordColumns.addColumn(column);                        
+                        });
     }
 
     @Override
