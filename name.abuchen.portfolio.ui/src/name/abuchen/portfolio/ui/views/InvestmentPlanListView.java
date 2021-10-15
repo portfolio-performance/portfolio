@@ -45,6 +45,7 @@ import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LogoManager;
+import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.viewers.BooleanEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
@@ -391,6 +392,16 @@ public class InvestmentPlanListView extends AbstractFinanceView implements Modif
         new OpenDialogAction(this, Messages.MenuEditInvestmentPlan) //
                         .type(InvestmentPlanDialog.class, d -> d.setPlan(plan)) //
                         .parameters(plan.getPlanType()).addTo(manager);
+
+        manager.add(new Separator());
+
+        if (LogoManager.instance().hasCustomLogo(plan, getClient().getSettings()))
+        {
+            manager.add(new SimpleAction(Messages.LabelRemoveLogo, a -> {
+                LogoManager.instance().clearCustomLogo(plan, getClient().getSettings());
+                markDirty();
+            }));
+        }
 
         manager.add(new Action(Messages.InvestmentPlanMenuDelete)
         {

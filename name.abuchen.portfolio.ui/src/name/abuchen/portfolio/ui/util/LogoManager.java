@@ -34,14 +34,40 @@ public final class LogoManager
         return logo != null ? logo : getFallbackColumnImage(object);
     }
 
+    public boolean hasCustomLogo(Attributable object, ClientSettings settings)
+    {
+        if (object == null)
+            return false;
+
+        Optional<AttributeType> logoAttr = settings.getOptionalLogoAttributeType(object.getClass());
+        if (!logoAttr.isPresent())
+            return false;
+
+        if (!object.getAttributes().exists(logoAttr.get()))
+            return false;
+
+        return object.getAttributes().get(logoAttr.get()) != null;
+    }
+
+    public void clearCustomLogo(Attributable object, ClientSettings settings)
+    {
+        if (object == null)
+            return;
+
+        Optional<AttributeType> logoAttr = settings.getOptionalLogoAttributeType(object.getClass());
+        if (!logoAttr.isPresent())
+            return;
+
+        object.getAttributes().remove(logoAttr.get());
+    }
+
     private Image getLogoImage(Object object, ClientSettings settings)
     {
         if (object instanceof Attributable)
         {
             Attributable target = (Attributable) object;
             Optional<AttributeType> logoAttr = settings.getOptionalLogoAttributeType(target.getClass());
-            Image logo = logoAttr.isPresent() ? ImageManager.instance().getImage(target, logoAttr.get()) : null;
-            return logo;
+            return logoAttr.isPresent() ? ImageManager.instance().getImage(target, logoAttr.get()) : null;
         }
         return null;
     }
