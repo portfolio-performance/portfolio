@@ -1,5 +1,8 @@
 package name.abuchen.portfolio.ui.wizards.splits;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.typed.BeanProperties;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
@@ -51,8 +54,10 @@ public class PreviewQuotesPage extends AbstractWizardPage
                 case 2:
                     if (model.isChangeHistoricalQuotes() && p.getDate().isBefore(model.getExDate()))
                     {
-                        long shares = p.getValue() * model.getOldShares() / model.getNewShares();
-                        return Values.Quote.format(shares);
+                        long quote = BigDecimal.valueOf(p.getValue()).multiply(model.getNewShares())
+                                        .divide(model.getOldShares(), Values.MC).setScale(0, RoundingMode.HALF_EVEN)
+                                        .longValue();
+                        return Values.Quote.format(quote);
                     }
                     return null;
                 default:
