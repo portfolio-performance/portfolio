@@ -1,15 +1,17 @@
 package name.abuchen.portfolio.model;
 
+import static name.abuchen.portfolio.util.ProtobufUtil.asDecimalValue;
+import static name.abuchen.portfolio.util.ProtobufUtil.asTimestamp;
+import static name.abuchen.portfolio.util.ProtobufUtil.asUpdatedAtTimestamp;
+import static name.abuchen.portfolio.util.ProtobufUtil.fromDecimalValue;
+import static name.abuchen.portfolio.util.ProtobufUtil.fromTimestamp;
+import static name.abuchen.portfolio.util.ProtobufUtil.fromUpdatedAtTimestamp;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.math.MathContext;
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -17,9 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import com.google.protobuf.ByteString;
-import com.google.protobuf.Timestamp;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.AttributeType.Converter;
@@ -34,7 +33,6 @@ import name.abuchen.portfolio.model.proto.v1.PBookmark;
 import name.abuchen.portfolio.model.proto.v1.PClient;
 import name.abuchen.portfolio.model.proto.v1.PConfigurationSet;
 import name.abuchen.portfolio.model.proto.v1.PDashboard;
-import name.abuchen.portfolio.model.proto.v1.PDecimalValue;
 import name.abuchen.portfolio.model.proto.v1.PFullHistoricalPrice;
 import name.abuchen.portfolio.model.proto.v1.PHistoricalPrice;
 import name.abuchen.portfolio.model.proto.v1.PInvestmentPlan;
@@ -1270,39 +1268,4 @@ import name.abuchen.portfolio.money.Money;
             newClient.addPlans(newPlan);
         });
     }
-
-    private Timestamp asTimestamp(LocalDateTime localDateTime)
-    {
-        Instant instant = localDateTime.toInstant(ZoneOffset.UTC);
-
-        return Timestamp.newBuilder().setSeconds(instant.getEpochSecond()).setNanos(instant.getNano()).build();
-    }
-
-    private LocalDateTime fromTimestamp(Timestamp ts)
-    {
-        return LocalDateTime.ofInstant(Instant.ofEpochSecond(ts.getSeconds(), ts.getNanos()), ZoneOffset.UTC);
-    }
-
-    private Timestamp asUpdatedAtTimestamp(Instant instant)
-    {
-        return Timestamp.newBuilder().setSeconds(instant.getEpochSecond()).setNanos(instant.getNano()).build();
-    }
-
-    private Instant fromUpdatedAtTimestamp(Timestamp ts)
-    {
-        return Instant.ofEpochSecond(ts.getSeconds(), ts.getNanos());
-    }
-
-    private PDecimalValue asDecimalValue(BigDecimal number)
-    {
-        return PDecimalValue.newBuilder().setScale(number.scale()).setPrecision(number.precision())
-                        .setValue(ByteString.copyFrom(number.unscaledValue().toByteArray())).build();
-    }
-
-    private BigDecimal fromDecimalValue(PDecimalValue number)
-    {
-        MathContext mc = new MathContext(number.getPrecision());
-        return new BigDecimal(new BigInteger(number.getValue().toByteArray()), number.getScale(), mc);
-    }
-
 }

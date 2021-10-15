@@ -88,6 +88,12 @@ public class ExchangeRateTimeSeriesImpl implements ExchangeRateTimeSeries
             rates.set(index, rate);
     }
 
+    /* package */ void replaceAll(List<ExchangeRate> newRates)
+    {
+        Collections.sort(newRates, (r, l) -> r.getTime().compareTo(l.getTime()));
+        this.rates = newRates;
+    }
+
     public Optional<ExchangeRate> getLatest()
     {
         return rates.isEmpty() ? Optional.empty() : Optional.of(rates.get(rates.size() - 1));

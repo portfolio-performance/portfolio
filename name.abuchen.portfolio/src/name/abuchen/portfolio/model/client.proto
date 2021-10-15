@@ -294,3 +294,19 @@ message PClient {
    
   PSettings settings = 11;
 }
+
+message PExchangeRate {
+  int64 date = 1;
+  PDecimalValue value = 2;
+}
+
+message PExchangeRateTimeSeries {
+  string baseCurrency = 1;
+  string termCurrency = 2;
+  repeated PExchangeRate exchangeRates = 3;
+}
+
+message PECBData {
+  int64 lastModified = 1;
+  repeated PExchangeRateTimeSeries series = 2;
+}

@@ -154,6 +154,21 @@ public final class ClientProtos {
   static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_name_abuchen_portfolio_PClient_PropertiesEntry_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_name_abuchen_portfolio_PExchangeRate_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_name_abuchen_portfolio_PExchangeRate_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_name_abuchen_portfolio_PExchangeRateTimeSeries_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_name_abuchen_portfolio_PExchangeRateTimeSeries_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_name_abuchen_portfolio_PECBData_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_name_abuchen_portfolio_PECBData_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -312,9 +327,17 @@ public final class ClientProtos {
       "me.abuchen.portfolio.PClient.PropertiesE" +
       "ntry\0223\n\010settings\030\013 \001(\0132!.name.abuchen.po" +
       "rtfolio.PSettings\0321\n\017PropertiesEntry\022\013\n\003" +
-      "key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001B7\n%name.abu" +
-      "chen.portfolio.model.proto.v1B\014ClientPro" +
-      "tosP\001b\006proto3"
+      "key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001\"S\n\rPExchang" +
+      "eRate\022\014\n\004date\030\001 \001(\003\0224\n\005value\030\002 \001(\0132%.nam" +
+      "e.abuchen.portfolio.PDecimalValue\"\203\001\n\027PE" +
+      "xchangeRateTimeSeries\022\024\n\014baseCurrency\030\001 " +
+      "\001(\t\022\024\n\014termCurrency\030\002 \001(\t\022<\n\rexchangeRat" +
+      "es\030\003 \003(\0132%.name.abuchen.portfolio.PExcha" +
+      "ngeRate\"a\n\010PECBData\022\024\n\014lastModified\030\001 \001(" +
+      "\003\022?\n\006series\030\002 \003(\0132/.name.abuchen.portfol" +
+      "io.PExchangeRateTimeSeriesB7\n%name.abuch" +
+      "en.portfolio.model.proto.v1B\014ClientProto" +
+      "sP\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -490,6 +513,24 @@ public final class ClientProtos {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_name_abuchen_portfolio_PClient_PropertiesEntry_descriptor,
         new java.lang.String[] { "Key", "Value", });
+    internal_static_name_abuchen_portfolio_PExchangeRate_descriptor =
+      getDescriptor().getMessageTypes().get(21);
+    internal_static_name_abuchen_portfolio_PExchangeRate_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_name_abuchen_portfolio_PExchangeRate_descriptor,
+        new java.lang.String[] { "Date", "Value", });
+    internal_static_name_abuchen_portfolio_PExchangeRateTimeSeries_descriptor =
+      getDescriptor().getMessageTypes().get(22);
+    internal_static_name_abuchen_portfolio_PExchangeRateTimeSeries_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_name_abuchen_portfolio_PExchangeRateTimeSeries_descriptor,
+        new java.lang.String[] { "BaseCurrency", "TermCurrency", "ExchangeRates", });
+    internal_static_name_abuchen_portfolio_PECBData_descriptor =
+      getDescriptor().getMessageTypes().get(23);
+    internal_static_name_abuchen_portfolio_PECBData_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_name_abuchen_portfolio_PECBData_descriptor,
+        new java.lang.String[] { "LastModified", "Series", });
     com.google.protobuf.TimestampProto.getDescriptor();
     com.google.protobuf.StructProto.getDescriptor();
   }
