@@ -41,6 +41,7 @@ import name.abuchen.portfolio.ui.handlers.ImportCSVHandler;
 import name.abuchen.portfolio.ui.handlers.ImportPDFHandler;
 import name.abuchen.portfolio.ui.util.ConfirmAction;
 import name.abuchen.portfolio.ui.util.DropDown;
+import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
@@ -291,6 +292,16 @@ public class AccountListView extends AbstractFinanceView implements Modification
 
         manager.add(new SimpleAction(Messages.AccountMenuImportPDF, a -> ImportPDFHandler.runImport(getPart(),
                         Display.getDefault().getActiveShell(), getClient(), account, null)));
+
+        manager.add(new Separator());
+
+        if (LogoManager.instance().hasCustomLogo(account, getClient().getSettings()))
+        {
+            manager.add(new SimpleAction(Messages.LabelRemoveLogo, a -> {
+                LogoManager.instance().clearCustomLogo(account, getClient().getSettings());
+                markDirty();
+            }));
+        }
 
         manager.add(new SimpleAction(
                         account.isRetired() ? Messages.AccountMenuActivate : Messages.AccountMenuDeactivate, a -> {

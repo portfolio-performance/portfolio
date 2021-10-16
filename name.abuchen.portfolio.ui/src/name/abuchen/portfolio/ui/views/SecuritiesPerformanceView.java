@@ -64,6 +64,7 @@ import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown.ReportingPeriodLis
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.MarkDirtyClientListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.TouchClientListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
@@ -965,7 +966,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
 
         AttributeColumn.createFor(getClient(), Security.class) //
                         .forEach(column -> {
-                            column.setEditingSupport(null);
+                            column.getEditingSupport().addListener(new MarkDirtyClientListener(getClient()));
                             recordColumns.addColumn(column);
                         });
     }

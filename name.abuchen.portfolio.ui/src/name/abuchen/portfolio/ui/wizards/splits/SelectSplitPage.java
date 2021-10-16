@@ -1,8 +1,10 @@
 package name.abuchen.portfolio.ui.wizards.splits;
 
 import static name.abuchen.portfolio.ui.util.FormDataFactory.startingWith;
+import static name.abuchen.portfolio.ui.util.SWTHelper.amountWidth;
 import static name.abuchen.portfolio.ui.util.SWTHelper.widest;
 
+import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.List;
@@ -10,6 +12,8 @@ import java.util.List;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.typed.BeanProperties;
+import org.eclipse.core.databinding.conversion.text.NumberToStringConverter;
+import org.eclipse.core.databinding.conversion.text.StringToNumberConverter;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.validation.MultiValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
@@ -23,12 +27,16 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Spinner;
+import org.eclipse.swt.widgets.Text;
+
+import com.ibm.icu.text.DecimalFormat;
+import com.ibm.icu.text.NumberFormat;
 
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.BindingHelper;
 import name.abuchen.portfolio.ui.util.DatePicker;
+import name.abuchen.portfolio.ui.util.IValidatingConverter;
 import name.abuchen.portfolio.ui.util.SimpleDateTimeDateSelectionProperty;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
@@ -92,30 +100,23 @@ public class SelectSplitPage extends AbstractWizardPage
         Label labelSplit = new Label(container, SWT.NONE);
         labelSplit.setText(Messages.SplitWizardLabelSplit);
 
-        Spinner spinnerNewShares = new Spinner(container, SWT.BORDER);
-        spinnerNewShares.setMinimum(1);
-        spinnerNewShares.setMaximum(1000000);
-        spinnerNewShares.setSelection(1);
-        spinnerNewShares.setIncrement(1);
-        spinnerNewShares.setFocus();
+        Text newShares = new Text(container, SWT.BORDER | SWT.RIGHT);
+        newShares.setFocus();
 
         Label labelColon = new Label(container, SWT.NONE);
         labelColon.setText(Messages.SplitWizardLabelNewForOld);
 
-        Spinner spinnerOldShares = new Spinner(container, SWT.BORDER);
-        spinnerOldShares.setMinimum(1);
-        spinnerOldShares.setMaximum(1000000);
-        spinnerOldShares.setSelection(1);
-        spinnerOldShares.setIncrement(1);
+        Text oldShares = new Text(container, SWT.BORDER | SWT.RIGHT);
 
         // form layout data
 
+        int amountWidth = amountWidth(oldShares);
         int labelWidth = widest(labelSecurity, labelExDate, labelSplit);
 
         startingWith(comboSecurity.getControl(), labelSecurity) //
                         .thenBelow(boxExDate.getControl()).label(labelExDate) //
-                        .thenBelow(spinnerNewShares).label(labelSplit).thenRight(labelColon)
-                        .thenRight(spinnerOldShares);
+                        .thenBelow(newShares).width(amountWidth).label(labelSplit).thenRight(labelColon)
+                        .thenRight(oldShares).width(amountWidth);
 
         startingWith(labelSecurity).width(labelWidth);
 
@@ -135,15 +136,10 @@ public class SelectSplitPage extends AbstractWizardPage
                                                         Messages.ColumnExDate))),
                         null);
 
-        final IObservableValue<?> newSharesTargetObservable = WidgetProperties.spinnerSelection()
-                        .observe(spinnerNewShares);
-        IObservableValue<?> newSharesModelObservable = BeanProperties.value("newShares").observe(model); //$NON-NLS-1$
-        context.bindValue(newSharesTargetObservable, newSharesModelObservable);
-
-        final IObservableValue<?> oldSharesTargetObservable = WidgetProperties.spinnerSelection()
-                        .observe(spinnerOldShares);
-        IObservableValue<?> oldSharesModelObservable = BeanProperties.value("oldShares").observe(model); //$NON-NLS-1$
-        context.bindValue(oldSharesTargetObservable, oldSharesModelObservable);
+        IObservableValue<String> newSharesTargetObservable = setupBinding(context, newShares, "newShares", //$NON-NLS-1$
+                        Messages.ColumnUpdatedShares);
+        IObservableValue<String> oldSharesTargetObservable = setupBinding(context, oldShares, "oldShares", //$NON-NLS-1$
+                        Messages.ColumnCurrentShares);
 
         MultiValidator validator = new MultiValidator()
         {
@@ -161,5 +157,32 @@ public class SelectSplitPage extends AbstractWizardPage
 
         };
         context.addValidationStatusProvider(validator);
+    }
+
+    private IObservableValue<String> setupBinding(DataBindingContext context, Text input, String propertyName,
+                    String propertyLabel)
+    {
+        NumberFormat format = new DecimalFormat("#,##0"); //$NON-NLS-1$
+
+        IValidatingConverter<Object, BigDecimal> converter = IValidatingConverter
+                        .wrap(StringToNumberConverter.toBigDecimal());
+
+        IObservableValue<String> targetObservable = WidgetProperties.text(SWT.Modify).observe(input);
+        IObservableValue<BigDecimal> modelObservable = BeanProperties.value(propertyName, BigDecimal.class)
+                        .observe(model);
+
+        context.bindValue(targetObservable, modelObservable, //
+                        new UpdateValueStrategy<String, BigDecimal>().setAfterGetValidator(converter)
+                                        .setConverter(converter)
+                                        .setAfterConvertValidator(convertedValue -> convertedValue != null
+                                                        && convertedValue.compareTo(BigDecimal.ZERO) > 0
+                                                                        ? ValidationStatus.ok()
+                                                                        : ValidationStatus.error(MessageFormat.format(
+                                                                                        Messages.MsgDialogInputRequired,
+                                                                                        propertyLabel))),
+                        new UpdateValueStrategy<BigDecimal, String>()
+                                        .setConverter(NumberToStringConverter.fromBigDecimal(format)));
+
+        return targetObservable;
     }
 }

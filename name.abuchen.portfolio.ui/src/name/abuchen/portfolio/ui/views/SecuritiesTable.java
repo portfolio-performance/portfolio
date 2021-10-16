@@ -76,6 +76,7 @@ import name.abuchen.portfolio.ui.util.BookmarkMenu;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ConfirmActionWithSelection;
 import name.abuchen.portfolio.ui.util.LogoManager;
+import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.viewers.BooleanEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
@@ -928,9 +929,17 @@ public final class SecuritiesTable implements ModificationListener
                 manager.add(new Separator());
                 manager.add(new LinkToPortfolioReport(security));
             }
-        }
 
-        manager.add(new Separator());
+            manager.add(new Separator());
+
+            if (LogoManager.instance().hasCustomLogo(security, getClient().getSettings()))
+            {
+                manager.add(new SimpleAction(Messages.LabelRemoveLogo, a -> {
+                    LogoManager.instance().clearCustomLogo(security, getClient().getSettings());
+                    markDirty();
+                }));
+            }
+        }
 
         // if any retired security in selection, add "unretire/activate all"
         // option

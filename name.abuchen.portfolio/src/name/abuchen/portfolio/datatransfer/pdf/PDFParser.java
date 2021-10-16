@@ -3,9 +3,11 @@ package name.abuchen.portfolio.datatransfer.pdf;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -269,6 +271,102 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
         }
     }
 
+    /* package */static class ParsedData implements Map<String, String>
+    {
+        private final Map<String, String> base;
+        private final int startLineNumber;
+        private final int endLineNumber;
+
+        public ParsedData(Map<String, String> base, int startLineNumber, int endLineNumber)
+        {
+            this.base = base;
+            this.startLineNumber = startLineNumber;
+            this.endLineNumber = endLineNumber;
+        }
+
+        public int getStartLineNumber()
+        {
+            return startLineNumber;
+        }
+
+        public int getEndLineNumber()
+        {
+            return endLineNumber;
+        }
+
+        @Override
+        public String put(String key, String value)
+        {
+            return base.put(key, value);
+        }
+
+        @Override
+        public int size()
+        {
+            return base.size();
+        }
+
+        @Override
+        public boolean isEmpty()
+        {
+            return base.isEmpty();
+        }
+
+        @Override
+        public boolean containsKey(Object key)
+        {
+            return base.containsKey(key);
+        }
+
+        @Override
+        public boolean containsValue(Object value)
+        {
+            return base.containsValue(value);
+        }
+
+        @Override
+        public String get(Object key)
+        {
+            return base.get(key);
+        }
+
+        @Override
+        public String remove(Object key)
+        {
+            return base.remove(key);
+        }
+
+        @Override
+        public void putAll(Map<? extends String, ? extends String> m)
+        {
+            base.putAll(m);
+        }
+
+        @Override
+        public void clear()
+        {
+            base.clear();
+        }
+
+        @Override
+        public Set<String> keySet()
+        {
+            return base.keySet();
+        }
+
+        @Override
+        public Collection<String> values()
+        {
+            return base.values();
+        }
+
+        @Override
+        public Set<Entry<String, String>> entrySet()
+        {
+            return base.entrySet();
+        }
+    }
+
     /* package */static class Section<T>
     {
         private boolean isOptional = false;
@@ -276,7 +374,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
         private Transaction<T> transaction;
         private String[] attributes;
         private List<Pattern> pattern = new ArrayList<>();
-        private BiConsumer<T, Map<String, String>> assignment;
+        private BiConsumer<T, ParsedData> assignment;
 
         public Section(Transaction<T> transaction, String[] attributes)
         {
@@ -314,7 +412,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
             return this;
         }
 
-        public Transaction<T> assign(BiConsumer<T, Map<String, String>> assignment)
+        public Transaction<T> assign(BiConsumer<T, ParsedData> assignment)
         {
             this.assignment = assignment;
             return transaction;
@@ -350,7 +448,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
                                             Messages.MsgErrorMissingValueMatches, values.keySet().toString(),
                                             Arrays.toString(attributes), filename, lineNo + 1, lineNoEnd + 1));
 
-                        assignment.accept(target, values);
+                        assignment.accept(target, new ParsedData(values, lineNo, lineNoEnd));
 
                         // if there might be multiple occurrences that match,
                         // the found values need to be added and the search

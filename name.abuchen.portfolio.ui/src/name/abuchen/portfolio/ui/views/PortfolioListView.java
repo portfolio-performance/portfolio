@@ -39,6 +39,7 @@ import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.handlers.ImportPDFHandler;
 import name.abuchen.portfolio.ui.util.ConfirmAction;
 import name.abuchen.portfolio.ui.util.DropDown;
+import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
@@ -303,6 +304,14 @@ public class PortfolioListView extends AbstractFinanceView implements Modificati
         }
 
         manager.add(new Separator());
+
+        if (LogoManager.instance().hasCustomLogo(portfolio, getClient().getSettings()))
+        {
+            manager.add(new SimpleAction(Messages.LabelRemoveLogo, a -> {
+                LogoManager.instance().clearCustomLogo(portfolio, getClient().getSettings());
+                markDirty();
+            }));
+        }
 
         manager.add(new SimpleAction(
                         portfolio.isRetired() ? Messages.PortfolioMenuActivate : Messages.PortfolioMenuDeactivate,

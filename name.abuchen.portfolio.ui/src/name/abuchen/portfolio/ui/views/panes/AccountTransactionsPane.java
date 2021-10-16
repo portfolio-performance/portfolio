@@ -120,7 +120,7 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
         TableColumnLayout layout = new TableColumnLayout();
         container.setLayout(layout);
 
-        transactions = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
+        transactions = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI | SWT.VIRTUAL);
         ColumnViewerToolTipSupport.enableFor(transactions, ToolTip.NO_RECREATE);
         ColumnEditingSupport.prepare(transactions);
         CopyPasteSupport.enableFor(transactions);

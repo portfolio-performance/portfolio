@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.wizards.splits;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.List;
 
@@ -75,7 +77,9 @@ public class PreviewTransactionsPage extends AbstractWizardPage
                 case 3:
                     if (model.isChangeTransactions() && t.getDateTime().toLocalDate().isBefore(model.getExDate()))
                     {
-                        long shares = t.getShares() * model.getNewShares() / model.getOldShares();
+                        long shares = BigDecimal.valueOf(t.getShares()).multiply(model.getNewShares())
+                                        .divide(model.getOldShares(), Values.MC).setScale(0, RoundingMode.HALF_EVEN)
+                                        .longValue();
                         return Values.Share.format(shares);
                     }
                     return null;
