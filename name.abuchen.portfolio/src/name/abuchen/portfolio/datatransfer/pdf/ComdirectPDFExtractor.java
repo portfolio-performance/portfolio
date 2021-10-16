@@ -60,7 +60,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("Wertpapierkauf|Wertpapierverkauf");
+        DocumentType type = new DocumentType("Wertpapierkauf|Wertpapierverkauf|Wertpapierbezug");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -70,14 +70,14 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^(\\*[\\s]+)?(Wertpapierkauf|Wertpapierverkauf)(.*)?$");
+        Block firstRelevantLine = new Block("^(\\*[\\s]+)?(Wertpapierkauf|Wertpapierverkauf|Wertpapierbezug)(.*)?$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
                 // Is type --> "Verkauf" change from BUY to SELL
                 .section("type").optional()
-                .match("^(\\*[\\s]+)?(?<type>(Wertpapierkauf|Wertpapierverkauf))(.*)?$")
+                .match("^(\\*[\\s]+)?(?<type>(Wertpapierkauf|Wertpapierverkauf|Wertpapierbezug))(.*)?$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("Wertpapierverkauf"))
                     {
