@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
+import name.abuchen.portfolio.datatransfer.pdf.PDFParser.ParsedData;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
@@ -114,7 +115,7 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
                         .wrap(TransactionItem::new);
     }
 
-    private BiConsumer<AccountTransaction, Map<String, String>> assignmentsProvider(DocumentType type)
+    private BiConsumer<AccountTransaction, ParsedData> assignmentsProvider(DocumentType type)
     {
         return (transaction, matcherMap) -> {
             Map<String, String> context = type.getCurrentContext();

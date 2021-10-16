@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
+import name.abuchen.portfolio.datatransfer.pdf.PDFParser.ParsedData;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
@@ -486,7 +487,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
         // * if it needs conversion, also fix gross value if present
         // * otherwise use exchange rate stored in context
 
-        BiConsumer<AccountTransaction, Map<String, String>> taxAssignment = (t, v) -> {
+        BiConsumer<AccountTransaction, ParsedData> taxAssignment = (t, v) -> {
             Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
 
             if (t.getCurrencyCode().equals(tax.getCurrencyCode()))
@@ -1553,7 +1554,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
     private void addFeesSectionsTransaction(Transaction<BuySellEntry> pdfTransaction)
     {
-        BiConsumer<BuySellEntry, Map<String, String>> feeProcessor = (t, v) -> {
+        BiConsumer<BuySellEntry, ParsedData> feeProcessor = (t, v) -> {
             String currency = asCurrencyCode(v.get("currency"));
 
             if (t.getPortfolioTransaction().getCurrencyCode().equals(currency))
