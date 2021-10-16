@@ -538,7 +538,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 .find("Gattungsbezeichnung ISIN")
                 .match("^(?<name>.*) (?<isin>[\\w]{12})$")
                 .match("^(?<name1>.*)")
-                .match("STK (?<shares>[\\.,\\d]+)(.*)?$")
+                .match("^STK (?<shares>[\\.,\\d]+)(.*)?$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Nominal"))
                         v.put("name", v.get("name") + " " + v.get("name1"));
@@ -914,8 +914,8 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
     {
         /***
          * If changes are made in this area,
-         * the transfer in/out transaction function must be adjusted.
-         * addTransferOutInTransaction();
+         * the delivery in/out transaction function must be adjusted.
+         * addDeliveryInOutBoundTransaction();
          */
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
         pdfTransaction.subject(() -> {
