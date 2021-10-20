@@ -28,7 +28,7 @@ EO-Medium-Term Notes 2003(33)
 Nominal Zahltag Zinssatz
 EUR 5.000,000 14.02.2020 5,875000 %
 Wert Konto-Nr. Betrag zu Ihren Gunsten
-14.02.2020 [removed] EUR 219,17
+14.02.2020 123456789 EUR 219,17
 Hinweise zur steuerlichen Verrechnung: vorher aktuell
 Zinsertrag EUR 293,75
 Aktienverlusttopf EUR 0,00 0,00

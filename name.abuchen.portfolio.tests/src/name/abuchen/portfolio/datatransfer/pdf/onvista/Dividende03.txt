@@ -27,7 +27,7 @@ Main Street Capital Corp. Registered Shares DL -,01 US56035L1044
 Nominal Ex-Tag Zahltag Dividenden-Betrag pro Stück
 STK 100,000 27.06.2019 15.07.2019 USD 0,205000
 Wert Konto-Nr. Devisenkurs Betrag zu Ihren Gunsten
-15.07.2019 <mydepot> EUR/USD 1,1327 EUR 13,47
+15.07.2019 123456789 EUR/USD 1,1327 EUR 13,47
 Hinweise zur steuerlichen Verrechnung: vorher aktuell
 ausländische Dividende EUR 18,10
 US-Quellensteuer 15% USD 3,08

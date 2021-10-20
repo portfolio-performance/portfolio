@@ -25,7 +25,7 @@ Deka DAX UCITS ETF Inhaber-Anteile DE000ETFL011
 Nominal Ex-Tag Zahltag Jahreswert Vorabpauschale pro Stück
 STK 0,4298 02.01.2020 02.01.2020 EUR 0,3477
 Wert Konto-Nr. Betrag zu Ihren Lasten
-10.01.2020 35XXXXXXX EUR 0,02
+10.01.2020 123456789 EUR 0,02
 Investmentertrag für 2019 (besitzzeitanteilig, vor Teilfreistellung) EUR 0,11
 Hinweise zur steuerlichen Verrechnung: vorher aktuell
 steuerpflichtige Vorabpauschale vor Teilfreistellung (TFQ) EUR 0,11
@@ -105,7 +105,7 @@ iShares MDAX UCITS ETF DE Inhaber-Anteile DE0005933923
 Nominal Ex-Tag Zahltag Jahreswert Vorabpauschale pro Stück
 STK 0,9265 02.01.2020 02.01.2020 EUR 0,6672
 Wert Konto-Nr. Betrag zu Ihren Lasten
-10.01.2020 35XXXXXXX EUR 0,09
+10.01.2020 123456789 EUR 0,09
 Investmentertrag für 2019 (besitzzeitanteilig, vor Teilfreistellung) EUR 0,49
 Hinweise zur steuerlichen Verrechnung: vorher aktuell
 steuerpflichtige Vorabpauschale vor Teilfreistellung (TFQ) EUR 0,49

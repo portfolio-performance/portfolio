@@ -1,0 +1,93 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=XXXXXXXXXXXX
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Wertpapierabrechnung ADRESSZEILE1=Herr
+ADRESSZEILE2=XXXXXXXXX
+Verkauf Limitauftrag ADRESSZEILE3=XXXXXXXXXX
+Kommissionsgeschäft ADRESSZEILE4=XXXXXXXXXXXXXXXXXXXXXX
+Herr ADRESSZEILE5=
+XXXXXXXXX ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+XXXXXXXXXX BELEGNUMMER=XXXXXXXXXXX
+XXXXXXXXXXX XXXXXXXXXXXXX XXXXXXXXXX / 21.01.2020 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+XXXXXXXXXXXXX
+Frankfurt am Main, 21.01.2020
+Wir haben für Sie verkauft
+Gattungsbezeichnung ISIN
+Porsche Automobil Holding SE Inhaber-Bezugsrechte auf VZO DE000A1KRRB1
+Nominal Kurs
+STK 4,000 EUR 5,5500
+Handelstag 21.01.2020 Kurswert EUR 22,20 
+Handelszeit 16:34 Orderprovision EUR 0,25-
+Handelsplatz außerbörslich Commerzbank Handelsplatzgebühr EUR 0,20-
+Verwahrart Wertpapierrechnung Kapitalertragsteuer EUR 0,25-
+Lagerland Grossbritannien Solidaritätszuschlag EUR 0,05-
+Wert Konto-Nr. Betrag zu Ihren Gunsten
+23.01.2020 123456238 EUR 21,45
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Gesamtveräußerungsergebnis vor Anwendung einer TFQ EUR XXXXX
+Veräußerungsgewinn Fonds EUR XXXXXXX
+Aktienverlusttopf EUR XXXXX XXXX
+allgemeiner Verlusttopf EUR XXXX XXXX
+Freistellungsauftrag (eingereicht: EUR XXXXX) EUR XXXX XXXX
+Quellensteuertopf EUR XXXX XXXXX
+zu versteuern EUR XXXX
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 12,25
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 1,02
+Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer nach gemeldetem Kirchensteuersatz verrechnet mit dem
+Finanzamt Itzehoe, Steuernummer XXXXXXXXX.
+Es folgt Seite 2
+onvista bank Wildunger Straße 6a 60487 Frankfurt am Main T: +49 (0)69-7107-0 F: +49 (0)69-7107-100 info@onvista-bank.de www.onvista-bank.de
+onvista bank ist eine Marke der comdirect bank AG
+Sitz der comdirect bank AG: Pascalkehre 15 25451 Quickborn (AG Pinneberg HRB 4889) T: +49 (0)4106-704-0 F: +49 (0)4106-708-258-5 www.comdirect.de
+Vorstand: Frauke Hegemann (Vorsitzende), Dietmar von Blücher, Matthias Hach Vorsitzender des Aufsichtsrates: Dr. Jochen Sutor
+3.18/ABREABHNHANDVFDI/GAAASAFG/017670/220120/013803
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=XXXXXXXXX
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+ADRESSZEILE1=Herr
+Depot-Nr. Abrechnungs-Nr. Seite-Nr. ADRESSZEILE2=XXXXXXXXXX
+XXXXXXXX XXXXXX 2 ADRESSZEILE3=XXXXXXXXX
+ADRESSZEILE4=XXXXXXXXX
+ADRESSZEILE5=
+ADRESSZEILE6=
+BELEGNUMMER=XXXXXXX
+Jahressteuerbescheinigung folgt SEITENNUMMER=2
+STEUERERSTATTUNG=N
+Die jährlich zu zahlende Verwaltungsvergütung und die Gesamtkostenquote sind dem Verkaufsprospekt bzw. den
+Vertragsbedingungen zu entnehmen.
+Diese Order wurde von einem zur Commerzbank Gruppe zugehörigen Unternehmen ausgeführt.
+Fondsart: Aktienfonds (§ 2 Abs. 6 InvStG)
+Angewendete Teilfreistellungsquote: 30%
+Im Steuerabzugsverfahren werden generell - auch bei betrieblichen Anlegern - die Teilfreistellungsquoten (TFQ) für
+Privatanleger herangezogen.
+Betriebliche Anleger
+Höhe der Teilfreistellung Privatanleger Körperschaft
+(natürliche Person)
+Aktienfonds 30% 60% 80%
+Mischfonds 15% 30% 40%
+Immobilienfonds 60% 60% 60%
+Immobilienfonds mit
+überwiegend 80% 80% 80%
+Auslandsimmobilien
+Sonstiger Investmentfonds 0% 0% 0%
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+onvista bank Wildunger Straße 6a 60487 Frankfurt am Main T: +49 (0)69-7107-0 F: +49 (0)69-7107-100 info@onvista-bank.de www.onvista-bank.de
+onvista bank ist eine Marke der comdirect bank AG
+Sitz der comdirect bank AG: Pascalkehre 15 25451 Quickborn (AG Pinneberg HRB 4889) T: +49 (0)4106-704-0 F: +49 (0)4106-708-258-5 www.comdirect.de
+Vorstand: Frauke Hegemann (Vorsitzende), Dietmar von Blücher, Matthias Hach Vorsitzender des Aufsichtsrates: Dr. Jochen Sutor
+3.18/ABREABHNHANDVFDI/GAAASAFG/017670/220120/013803
