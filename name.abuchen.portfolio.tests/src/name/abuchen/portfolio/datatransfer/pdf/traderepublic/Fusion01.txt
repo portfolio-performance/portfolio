@@ -1,0 +1,36 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KASTANIENALLEE 32  10435 BERLIN
+Name Name SEITE 1 von 1
+Straße 1 DATUM 27.07.2021
+12345 Ort DEPOT 0111111111
+FUSION
+ÜBERSICHT
+NR. BUCHUNG WERTPAPIER BETRAG
+1 Ausbuchung Slack Technologies Inc. 10 Stk.
+Registered Shs Cl.A o.N.
+US83088V1026
+2 Einbuchung salesforce.com Inc. 0,776 Stk.
+Registered Shares DL -,001
+US79466L3024
+ABRECHNUNG
+NR. POSITION BETRAG
+1 Barausgleich 267,90 USD
+Zwischensumme 267,90 USD
+Zwischensumme 1,1785 EUR/USD 227,32 EUR
+Kapitalertragsteuer -55,58 EUR
+Solidaritätszuschlag -3,06 EUR
+Kirchensteuer -5,00 EUR
+GESAMT 163,68 EUR
+BUCHUNG
+VERRECHNUNGSKONTO VALUTA BETRAG
+DE00000000000000000000 22.07.2021 163,68 EUR
+salesforce.com Inc. Registered Shares DL -,001 in Girosammelverwahrung in Deutschland.
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie 
+Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Düsseldorf Geschäftsführer
+Kastanienallee 32 service@traderepublic.com AG Düsseldorf HRB 85864 Andreas Willius
+10435 Berlin USt-ID DE307510626 Karsten Müller
+ABRE / 27.07.2021 / 15069493 / d5d7-d5e6
