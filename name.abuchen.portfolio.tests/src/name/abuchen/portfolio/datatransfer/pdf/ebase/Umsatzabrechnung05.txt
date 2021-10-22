@@ -22,9 +22,6 @@ Entgelte zzgl. Entgelte
 ETF-Transaktionsentgelt 0,03 EUR
 Zahlungsbetrag aus Überweisung 15,00 EUR
 
-Entgelte zzgl. Entgelte
-ETF-Transaktionsentgelt 0,03 EUR
-Zahlungsbetrag aus Überweisung 15,00 EUR
 Entgelt Verkauf mit Kursdatum 20.12.2017 aus Depotposition 11111111111.01
 db x-trackers DAX ETF (DR) Inhaber-Anteile 1C o.N.
 Ref. Nr. 111111111/11111111, Buchungsdatum 22.12.2017
