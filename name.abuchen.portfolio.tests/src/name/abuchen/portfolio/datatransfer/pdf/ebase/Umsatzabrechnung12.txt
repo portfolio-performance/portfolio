@@ -1,0 +1,32 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+European Bank for Financial Services GmbH, 80218 München
+Depotauszug-Nr. 19
+Depot-Nr. 99999999999
+Seite 1 von 2
+Herrn
+XXX XXX
+XXXXXXXXXXX 123 
+12345 XXXXX
+06.04.2021
+Depotauszug für Ihr VL-FondsDepot bei ebase
+für den Zeitraum vom 17.03.2021 bis 01.04.2021
+Entgeltermittlung für Depot 99999999999
+Ref. Nr. 99999999999/01042021, Buchungsdatum 01.04.2021
+Zahlungsbetrag 0,00 EUR
+Entgelte Betrag offene Forderung belasteter Betrag
+Depotführungsentgelt inkl. 19 %
+USt 3,00 EUR 3,00 EUR 0,00 EUR
+zum 31.03.2021
+Die Belastung der offenen Forderung erfolgt in Depotposition 99999999999.01 mit Ref. Nr. 99999999999/01042021
+Bestand Depotpositionen
+Pos. Fonds Anteile Bewertungskurs zum Datum Bestand
+01 DE0002635307 99,999999 99,999999 EUR 31.03.2021 9.999,99 EUR
+iSh.STOXX Europe 600 U.ETF DE Inhaber-Anteile
+vermögenswirksame Leistungen
+Bis 01.01.2026 sind 99,999999 Anteile gemäß Vermögensbildungsgesetz gesperrt.
+Ihre Depotbestände werden in der Girosammelverwahrung geführt - es sei denn, es ist ein besonderer Verwahrart-Hinweis in der
+Aufstellung vermerkt.
+4Ihr Freistellungsauftrag in Höhe von 999,99 EUR ist vorgemerkt.
+4Sie haben einen verbleibenden Freistellungsbetrag in Höhe von 999,99 EUR.
