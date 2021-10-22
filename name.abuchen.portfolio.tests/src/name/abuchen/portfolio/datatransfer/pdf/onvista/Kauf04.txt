@@ -1,0 +1,36 @@
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=173458000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Wertpapierabrechnung ADRESSZEILE1=Herr
+ADRESSZEILE2=Max MUSTERMANN
+Kauf Limitauftrag ADRESSZEILE3=Musterstrasse 2
+Kommissionsgeschäft ADRESSZEILE4=54321 Musterhausen
+Herr ADRESSZEILE5=
+Max MUSTERMANN ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+Musterstrasse 2 BELEGNUMMER=2522
+54321 Musterhausen 173458000 27097281 / 12.01.2015 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Max MUSTERMANN
+Frankfurt am Main, 12.01.2015
+Wir haben für Sie gekauft
+Gattungsbezeichnung ISIN
+Commerzbank AG Inhaber-Aktien o.N. DE000CBK1001
+Nominal Kurs
+STK 5,000 EUR 10,5000
+Handelstag 12.01.2015 Kurswert EUR 52,50-
+Handelszeit 10:11 Orderprovision EUR 5,55-
+Börse Xetra/EDE Börsengebühr EUR 1,50-
+Verwahrart Girosammelverwahrung
+Wert Konto-Nr. Betrag zu Ihren Lasten
+14.01.2015 172306238 EUR 59,55
+Wir werden in Ihrem Depot wie angegeben buchen.
+Ausfuehrung zu XETRA Order Nummer: 0065491687277
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+3.18/ABREABHNHANDKFDI/GAAASAFG/002522/130115/000036

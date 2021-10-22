@@ -14,7 +14,7 @@ für den Zeitraum vom 05.04.2017 bis 31.12.2017
 
 Verkauf 60,000000 Anteile mit Kursdatum 03.06.2016 aus Depotposition XXXXXXXXXXX.XX
 Lyxor ETF MSCI WORLD FCP Actions au Port.D-EUR o.N.
-Ref. Nr. XXXXXXXXX/XXXXXXXX, Buchungsdatum TT.MM.JJJJ
+Ref. Nr. XXXXXXXXX/XXXXXXXX, Buchungsdatum 04.06.2016
 ISIN Anteile Abrechnungskurs Betrag
 FR0010315770 -60,000000 103,230000 EUR 6.193,80 EUR
 Abwicklung über IBAN Institut Zahlungsbetrag
