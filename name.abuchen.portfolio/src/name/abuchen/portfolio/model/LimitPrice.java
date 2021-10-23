@@ -93,4 +93,21 @@ public class LimitPrice implements Comparable<LimitPrice>
     {
         return operator.getOperatorString() + " " + Values.Quote.format(value); //$NON-NLS-1$
     }
+
+    public boolean isExceeded(SecurityPrice price)
+    {
+        switch (getRelationalOperator())
+        {
+            case GREATER_OR_EQUAL:
+                return price.getValue() >= getValue();
+            case SMALLER_OR_EQUAL:
+                return price.getValue() <= getValue();
+            case GREATER:
+                return price.getValue() > getValue();
+            case SMALLER:
+                return price.getValue() < getValue();
+            default:
+                return false;
+        }
+    }
 }

@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views;
 
 import java.io.File;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
@@ -36,8 +37,10 @@ import org.eclipse.swt.widgets.Text;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Exchange;
+import name.abuchen.portfolio.model.LimitPrice;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Watchlist;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.impl.EurostatHICPQuoteFeed;
@@ -198,6 +201,7 @@ public class SecurityListView extends AbstractFinanceView
         private final Predicate<Security> onlyExchangeRates = record -> record.isExchangeRate();
         private final Predicate<Security> sharesNotZero = record -> getSharesHeld(getClient(), record) != 0;
         private final Predicate<Security> sharesEqualZero = record -> getSharesHeld(getClient(), record) == 0;
+        private final Predicate<Security> limitPriceExceeded = record -> isLimitPriceExceeded(record);
 
         public FilterDropDown(IPreferenceStore preferenceStore)
         {
@@ -221,6 +225,8 @@ public class SecurityListView extends AbstractFinanceView
                 filter.add(sharesNotZero);
             if ((savedFilters & (1 << 5)) != 0)
                 filter.add(sharesEqualZero);
+            if ((savedFilters & (1 << 6)) != 0)
+                filter.add(limitPriceExceeded);
 
             if (!filter.isEmpty())
                 setImage(Images.FILTER_ON);
@@ -277,6 +283,23 @@ public class SecurityListView extends AbstractFinanceView
                             }).sum(), 0);
         }
 
+        private boolean isLimitPriceExceeded(Security security)
+        {
+            for (Object attribute : security.getAttributes().getMap().values())
+            {
+                if (!(attribute instanceof LimitPrice))
+                    continue;
+
+                LimitPrice limit = (LimitPrice) attribute;
+
+                SecurityPrice latest = security.getSecurityPrice(LocalDate.now());
+                if (latest != null && limit.isExceeded(latest))
+                    return true;
+            }
+
+            return false;
+        }
+
         @Override
         public void menuAboutToShow(IMenuManager manager)
         {
@@ -285,6 +308,7 @@ public class SecurityListView extends AbstractFinanceView
             manager.add(createAction(Messages.SecurityListFilterOnlyExchangeRates, onlyExchangeRates));
             manager.add(createAction(Messages.SecurityFilterSharesHeldNotZero, sharesNotZero));
             manager.add(createAction(Messages.SecurityFilterSharesHeldEqualZero, sharesEqualZero));
+            manager.add(createAction(Messages.SecurityListFilterLimitPriceExceeded, limitPriceExceeded));
         }
 
         private Action createAction(String label, Predicate<Security> predicate)
