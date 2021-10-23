@@ -28,8 +28,8 @@ public class ColorConversion
     {
         try
         {
-            Long intval = Long.decode(hex);
-            long i = intval.longValue();
+            Long longval = Long.decode(hex); // long needed because #FF...... is too big for integer
+            long i = longval.longValue();
             return new int[] {
                             (int) ((i >> 24) & 0xFF), // A
                             (int) ((i >> 16) & 0xFF), // R
