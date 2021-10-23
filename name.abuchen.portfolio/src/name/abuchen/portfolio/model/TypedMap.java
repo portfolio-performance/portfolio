@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.eclipse.swt.graphics.RGBA;
-
 import com.google.protobuf.NullValue;
 
 import name.abuchen.portfolio.model.proto.v1.PAnyValue;
@@ -44,30 +42,10 @@ public class TypedMap extends HashMap<String, Object>
             return;
         if (value instanceof String)
             return;
-        if (value instanceof RGBA)
-            return;
 
         throw new IllegalArgumentException(value.getClass().getName());
     }    
     
-    public void putRGBA(String key, RGBA value)
-    {
-        super.put(key, value);        
-    }
-    
-    public RGBA getRGBA(String key)
-    {
-        Object answer = get(key);
-
-        if (answer == null)
-            return null;
-
-        if (answer instanceof RGBA)
-            return (RGBA) answer;
-
-        throw new IllegalArgumentException(key);
-    }
-
     public Boolean getBoolean(String key)
     {
         Object answer = get(key);

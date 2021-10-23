@@ -4,6 +4,7 @@ import org.eclipse.swt.graphics.Color;
 
 import name.abuchen.portfolio.model.TypedMap;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.util.ColorConversion;
 
 public class LimitPriceSettings
 {
@@ -46,29 +47,31 @@ public class LimitPriceSettings
     
     public void setLimitExceededColor(Color value)
     {
-        properties.putRGBA(PropertyKeys.LIMIT_EXCEEDED_COLOR , value.getRGBA());
+        properties.putString(PropertyKeys.LIMIT_EXCEEDED_COLOR , ColorConversion.toHex(value.getRGBA()));
     }
     
     public Color getLimitExceededColor()
     {
         if(!properties.containsKey(PropertyKeys.LIMIT_EXCEEDED_COLOR))
-            properties.putRGBA(PropertyKeys.LIMIT_EXCEEDED_COLOR, Colors.theme().greenBackground().getRGBA()); // default value
+            properties.putString(PropertyKeys.LIMIT_EXCEEDED_COLOR, ColorConversion.toHex(Colors.theme().greenBackground().getRGBA())); // default value
         
-        return new Color(properties.getRGBA(PropertyKeys.LIMIT_EXCEEDED_COLOR));
+        return new Color(ColorConversion.hex2RGBA(properties.getString(PropertyKeys.LIMIT_EXCEEDED_COLOR)));
     }
     
     public void setLimitUndercutColor(Color value)
     {
-        properties.putRGBA(PropertyKeys.LIMIT_UNDERCUT_COLOR , value.getRGBA());
+        properties.putString(PropertyKeys.LIMIT_UNDERCUT_COLOR , ColorConversion.toHex(value.getRGBA()));
     }
     
     public Color getLimitUndercutColor()
     {
         if(!properties.containsKey(PropertyKeys.LIMIT_UNDERCUT_COLOR))
-            properties.putRGBA(PropertyKeys.LIMIT_UNDERCUT_COLOR, Colors.theme().redBackground().getRGBA()); // default value
+            properties.putString(PropertyKeys.LIMIT_UNDERCUT_COLOR, ColorConversion.toHex(Colors.theme().redBackground().getRGBA())); // default value
         
-        return new Color(properties.getRGBA(PropertyKeys.LIMIT_UNDERCUT_COLOR));
+        return new Color(ColorConversion.hex2RGBA(properties.getString(PropertyKeys.LIMIT_UNDERCUT_COLOR)));
     }
+    
+    
     
 
 }

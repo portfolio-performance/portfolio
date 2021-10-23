@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.graphics.RGBA;
 import org.junit.Test;
 
 @SuppressWarnings("nls")
@@ -38,6 +39,15 @@ public class ColorConversionTest
         RGB colour2 = ColorConversion.hex2RGB(hex);
         assertEquals(colour, colour2);
     }
+    
+    @Test
+    public void testHex2RGBA()
+    {
+        String hex = "#EF0C2238";
+        RGBA colour = new RGBA(12, 34, 56, 239);
+        RGBA colour2 = ColorConversion.hex2RGBA(hex);
+        assertEquals(colour, colour2);
+    }
 
     @Test
     public void testToHSB()
@@ -57,6 +67,15 @@ public class ColorConversionTest
         String hex = "#010203";
         String colour2 = ColorConversion.toHex(rgb);
         assertEquals(hex, colour2);
+    }
+    
+    @Test
+    public void testToHexRGBA()
+    {
+        RGBA rgba = new RGBA(12, 34, 56, 239);
+        String hex = "#EF0C2238";
+        String colour2 = ColorConversion.toHex(rgba);
+        assertEquals(hex.toUpperCase(), colour2.toUpperCase());
     }
 
     @Test
