@@ -58,8 +58,6 @@ Section
   ${EndIf}
 
   # shortcuts
-  CreateShortcut "$DESKTOP\$APPNAMEFULL.lnk" "$INSTDIR\${APPEXE}"
-
   CreateDirectory  "$SMPROGRAMS\$APPNAMEFULL"
   CreateShortCut   "$SMPROGRAMS\$APPNAMEFULL\$APPNAMEFULL.lnk" "$INSTDIR\${APPEXE}"
   WriteINIStr      "$SMPROGRAMS\$APPNAMEFULL\$APPNAMEFULL Website.URL" "InternetShortcut" "URL" "https://www.portfolio-performance.info"
