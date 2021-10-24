@@ -41,6 +41,7 @@ import name.abuchen.portfolio.ui.util.viewers.CellItemImageClickedListener;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.ImageAttributeEditingSupport;
+import name.abuchen.portfolio.util.ColorConversion;
 
 public class AttributeColumn extends Column
 {
@@ -215,19 +216,26 @@ public class AttributeColumn extends Column
         @Override
         public Color getBackground(Object element)
         {
+            background = null;
             Security security = Adaptor.adapt(Security.class, element);
             if (security == null)
-                return null;
+                return background;
 
             Attributes attributes = security.getAttributes();
             LimitPrice limit = (LimitPrice) attributes.get(attribute);
             if (limit == null)
-                return null;
+                return background;
 
             SecurityPrice latestSecurityPrice = security.getSecurityPrice(LocalDate.now());
             if (latestSecurityPrice == null)
-                return null;
+                return background;
 
+            background = getColor(limit, latestSecurityPrice);
+            return background;         
+        }
+        
+        private Color getColor(LimitPrice limit, SecurityPrice latestSecurityPrice)
+        {
             switch (limit.getRelationalOperator())
             {
                 case GREATER_OR_EQUAL:
@@ -245,6 +253,20 @@ public class AttributeColumn extends Column
                 default:
                     return null;
             }
+        }
+        
+        private Color background = null;
+        
+        @Override
+        public Color getForeground(Object element)
+        {
+            if(background == null)
+                return null;
+            
+            // calculate foreground depending on background to keep cell readable
+            return ColorConversion.calculateLuminance(background.getRGB()) < 140 // adjust threshold if needed
+                            ? new Color(255, 255, 255)
+                            : new Color(0, 0, 0);            
         }
         
         private Color getSettingsColorOrDefault(Supplier<Color> getSettings, Color defaultColor)

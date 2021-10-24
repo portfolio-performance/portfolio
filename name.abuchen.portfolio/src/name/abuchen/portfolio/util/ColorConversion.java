@@ -75,4 +75,9 @@ public class ColorConversion
     {
         return toHex(brighter(hex2RGB(hex)));
     }
+    
+    public static float calculateLuminance(RGB rgb)
+    {
+        return (float) (0.2126*rgb.red + 0.7152*rgb.green + 0.0722*rgb.blue);
+    }
 }
