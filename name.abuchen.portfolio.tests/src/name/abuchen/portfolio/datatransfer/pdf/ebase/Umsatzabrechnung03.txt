@@ -7,7 +7,6 @@ Depot-Nr. XXXXXXXXXXX
 Seite 1 von 4
 Herrn
 XXX
-
 Fondsertrag (Ausschüttung) mit Bestandsdatum 14.10.2019 in Depotposition XXXXXXXXX.21
 iSh.DJ U.S.Select Div.U.ETF DE Inhaber-Anteile
 Ref. Nr. XXXXXXXXX/XXXXXXXXX, Buchungsdatum 16.10.2019
@@ -17,7 +16,6 @@ Kapitalertragsteuer Solidaritätszuschlag Kirchensteuer Devisenkurs abzgl. Steue
 0,06 EUR 0,00 EUR 0,00 EUR 1,104600 0,07 USD
 Zahlungsbetrag in Fremdwährung 0,32 USD
 Zahlungsbetrag nach Währungskonvertierung mit Devisenkurs 1,104600 0,29 EUR
-
 Verkauf wegen Vorabpauschale 0,13 EUR mit Kursdatum 27.01.2020 aus Depotposition XXXXXXXX.02
 Xtrackers MSCI Europe Mid Cap Inhaber-Anteile 1C o.N.
 Ref. Nr. XXXXXXXX/XXXXXXXX, Buchungsdatum 27.01.2020
@@ -26,7 +24,6 @@ ISIN Anteile Abrechnungskurs Betrag
 LU0322253732 -0,001162 111,900000 EUR 0,13 EUR
 abzgl. Steuereinbehalt 0,13 EUR
 Zahlungsbetrag 0,00 EUR
-
 Kauf 50,00 EUR mit Kursdatum 21.10.2019 in Depotposition 1234567890.09
 iSh.ST.Gl.Sel.Div.100 U.ETF DE Inhaber-Anteile
 Ref. Nr. XXXXXXXXX/XXXXXXXX, Buchungsdatum 22.10.2019
@@ -35,7 +32,6 @@ DE000A0F5UH1 1,705860 29,252100 EUR 49,90 EUR
 vermögenswirksame Leistungen
 gezahlte Vertriebsprovision 0,00 EUR (im Abrechnungskurs enthalten, 100% Bonus)
 Zahlungsbetrag aus Überweisung 50,00 EUR
-
 Für Fragen steht Ihnen Ihr Berater oder ebase unter der Rufnummer +49 89 45460-890 gerne zur Verfügung.
 Diese Mitteilung wird nicht unterschrieben.
 ebase - Amtsgericht München HRB 141 740 Fax: +49 89 45460-892 Vorsitzende des Aufsichtsrats:
@@ -50,7 +46,6 @@ Pos. Fonds Anteile Bewertungskurs zum Datum Devisenkurs Bestand
 XX FONDSNAME XX
 Verwahrart: Wertpapierrechnung, Lagerland: Luxemburg
 Depotgesamtwert XXX EUR
-
 Ihre Depotbestände werden in der Girosammelverwahrung geführt - es sei denn, es ist ein besonderer Verwahrart-Hinweis in der
 Aufstellung vermerkt.
 4Ihr Freistellungsauftrag in Höhe von XXX EUR ist vorgemerkt ab dem 1.1.2018.

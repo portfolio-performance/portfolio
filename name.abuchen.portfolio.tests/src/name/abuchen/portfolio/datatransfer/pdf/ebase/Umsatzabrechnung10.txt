@@ -12,7 +12,6 @@ xxx
 04.01.2021
 Depotauszug für Ihr finvesto Depot bei ebase
 für den Zeitraum vom 03.10.2020 bis 31.12.2020
-
 Kauf 40,00 EUR mit Kursdatum 16.10.2020 in Depotposition xxx.01
 iShsIII-Core MSCI World U.ETF Registered Shs USD (Acc) o.N.
 Ref. Nr. xxx/16102020, Buchungsdatum 19.10.2020
@@ -22,7 +21,6 @@ vermögenswirksame Leistungen
 Entgelte zzgl. Entgelte
 ETF-Transaktionsentgelt 0,08 EUR
 Zahlungsbetrag aus Überweisung 40,00 EUR
-
 Kauf 40,00 EUR mit Kursdatum 16.11.2020 in Depotposition xxx.01
 iShsIII-Core MSCI World U.ETF Registered Shs USD (Acc) o.N.
 Ref. Nr. xxx/16112020, Buchungsdatum 17.11.2020
@@ -31,7 +29,6 @@ IE00B4L5Y983 0,678808 69,676900 USD 1,184800 39,92 EUR
 Entgelte zzgl. Entgelte
 ETF-Transaktionsentgelt 0,08 EUR
 Zahlungsbetrag aus Überweisung 40,00 EUR
-
 Kauf 40,00 EUR mit Kursdatum 16.12.2020 in Depotposition xxx.01
 iShsIII-Core MSCI World U.ETF Registered Shs USD (Acc) o.N.
 Ref. Nr. xxx/16122020, Buchungsdatum 17.12.2020
@@ -40,7 +37,6 @@ IE00B4L5Y983 0,674710 72,230000 USD 1,220800 39,92 EUR
 Entgelte zzgl. Entgelte
 ETF-Transaktionsentgelt 0,08 EUR
 Zahlungsbetrag aus Überweisung 40,00 EUR
-
 Gerne beantworten wir Ihre Fragen unter der Info-Line +49 89 45460-380.
 Das Team der finvesto Anlageberatung erreichen Sie unter +49 89 45460-389.
 Diese Mitteilung wird nicht unterschrieben.
@@ -51,7 +47,6 @@ Financial Services GmbH (ebase®) Gläubiger-ID: Aufsichtsratsvorsitzender: E-Ma
 Depotauszug-Nr. 7
 Depot-Nr. xxx
 Seite 2 von 2
-
 Entgelt Verkauf mit Kursdatum 21.12.2020 aus Depotposition xxx.01
 iShsIII-Core MSCI World U.ETF Registered Shs USD (Acc) o.N.
 Ref. Nr. xxx/11122020, Buchungsdatum 23.12.2020
@@ -60,7 +55,6 @@ IE00B4L5Y983 -0,167976 71,243400 USD 1,227400 9,75 EUR
 Entgelte abzgl. Entgelte
 VL-Vertragsentgelt inkl. 16 % USt 9,75 EUR
 Zahlungsbetrag 0,00 EUR
-
 Bestand Depotpositionen
 Pos. Fonds Anteile Bewertungskurs zum Datum Devisenkurs Bestand
 01 IE00B4L5Y983 12,240769 73,026800 USD 29.12.2020 1,224800 729,84 EUR

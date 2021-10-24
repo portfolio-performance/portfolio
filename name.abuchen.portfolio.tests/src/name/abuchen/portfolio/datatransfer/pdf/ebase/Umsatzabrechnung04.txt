@@ -5,7 +5,6 @@ European Bank for Financial Services GmbH, 80218 München
 Umsatzabrechnung-Nr. 19
 Depot-Nr. 1234567890
 Seite 1 von 12
-
 Fondsertrag (Ausschüttung) mit Bestandsdatum 11.12.2019 in Depotposition 1234567890.31
 Vanguard FTSE All-World U.ETF Registered Shares USD Dis.oN
 Ref. Nr. XXXXXXXX/XXXXXXXX, Buchungsdatum 02.01.2020

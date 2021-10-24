@@ -1,0 +1,398 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+European Bank for Financial Services GmbH, 80218 München
+Depotauszug-Nr. 63
+Depot-Nr. xxx
+Seite 1 von 9
+Herrn
+Mustermann
+Musterstr. 1
+12345 Musterstadt
+06.04.2021
+Depotauszug für Ihr ebase Depot
+für den Zeitraum vom 13.01.2021 bis 01.04.2021
+Vorabpauschale zum Stichtag 31.12.2020 aus Depotposition xxx.01
+DWS Akt.Strategie Deutschl. Inhaber-Anteile LC
+Ref. Nr. 000/22012021, Buchungsdatum 22.01.2021
+ISIN Betrag je Anteil
+DE0009769869 0,216653500 EUR
+Kapitalertragsteuer Solidaritätszuschlag Kirchensteuer
+0,90 EUR 0,04 EUR 0,00 EUR
+Belastung der angefallenen Steuern in Höhe von 0,94 EUR erfolgt durch Verkauf aus Depotposition xxx.01 mit Ref. Nr.
+000/22012021
+Sie haben Fragen zur Vorabpauschale? Weitere Informationen finden Sie unter Steuern & Gesetze auf unserer Homepage
+(https://www.ebase.com/faq).
+Verkauf wegen Vorabpauschale 0,94 EUR mit Kursdatum 25.01.2021 aus Depotposition xxx.01
+DWS Akt.Strategie Deutschl. Inhaber-Anteile LC
+Ref. Nr. 000/22012021, Buchungsdatum 25.01.2021
+Belastung der angefallenen Steuern aus Depotposition xxx.01 mit Ref. Nr. 000/22012021 (Vorabpauschale)
+ISIN Anteile Abrechnungskurs Betrag
+DE0009769869 -0,002155 466,010000 EUR 1,00 EUR
+Kapitalertragsteuer Solidaritätszuschlag Kirchensteuer abzgl. Steuern
+0,06 EUR 0,00 EUR 0,00 EUR 0,06 EUR
+Zahlungsbetrag Verkauf 0,94 EUR
+abzgl. Steuereinbehalt 0,94 EUR
+Zahlungsbetrag 0,00 EUR
+Vorabpauschale zum Stichtag 31.12.2020 aus Depotposition xxx.16
+Siemens Global Growth Inhaber-Anteile A
+Ref. Nr. 000/22012021, Buchungsdatum 22.01.2021
+Für Fragen steht Ihnen Ihr Berater oder ebase unter der Rufnummer +49 89 45460-890 gerne zur Verfügung.
+Diese Mitteilung wird nicht unterschrieben.
+European Bank for Financial Amtsgericht München HRB 141 740 Geschäftsführung: Fax: +49 89 45460-892
+Services GmbH (ebase®) - Ein USt-ID Nr. DE 813330104 Kai Friedrich, Jürgen Keller E-Mail: service@ebase.com
+Unternehmen der FNZ Group Gläubiger-ID: Aufsichtsratsvorsitzender: Web: www.ebase.com
+80218 München DE68ZZZ00000025032 Frank Strauß
+Depotauszug-Nr. 63
+Depot-Nr. xxx
+Seite 2 von 9
+ISIN Betrag je Anteil
+DE0009772657 0,005345900 EUR
+Kapitalertragsteuer Solidaritätszuschlag Kirchensteuer
+0,04 EUR 0,00 EUR 0,00 EUR
+Belastung der angefallenen Steuern in Höhe von 0,04 EUR erfolgt durch Verkauf aus Depotposition xxx.16 mit Ref. Nr.
+000/22012021
+Sie haben Fragen zur Vorabpauschale? Weitere Informationen finden Sie unter Steuern & Gesetze auf unserer Homepage
+(https://www.ebase.com/faq).
+Verkauf wegen Vorabpauschale 0,04 EUR mit Kursdatum 25.01.2021 aus Depotposition xxx.16
+Siemens Global Growth Inhaber-Anteile A
+Ref. Nr. 000/22012021, Buchungsdatum 26.01.2021
+Belastung der angefallenen Steuern aus Depotposition xxx.16 mit Ref. Nr. 000/22012021 (Vorabpauschale)
+ISIN Anteile Abrechnungskurs Betrag
+DE0009772657 -0,002987 13,390000 EUR 0,04 EUR
+abzgl. Steuereinbehalt 0,04 EUR
+Zahlungsbetrag 0,00 EUR
+Vorabpauschale zum Stichtag 31.12.2020 aus Depotposition xxx.17
+JPMorgan-US Technology Fund Actions Nom. A (acc.) EUR o.N.
+Ref. Nr. 000/22012021, Buchungsdatum 22.01.2021
+ISIN Betrag je Anteil
+LU0159052710 0,199341800 EUR
+Kapitalertragsteuer Solidaritätszuschlag Kirchensteuer
+0,07 EUR 0,00 EUR 0,00 EUR
+Belastung der angefallenen Steuern in Höhe von 0,07 EUR erfolgt durch Verkauf aus Depotposition xxx.17 mit Ref. Nr.
+000/22012021
+Sie haben Fragen zur Vorabpauschale? Weitere Informationen finden Sie unter Steuern & Gesetze auf unserer Homepage
+(https://www.ebase.com/faq).
+Verkauf wegen Vorabpauschale 0,07 EUR mit Kursdatum 25.01.2021 aus Depotposition xxx.17
+JPMorgan-US Technology Fund Actions Nom. A (acc.) EUR o.N.
+Ref. Nr. 000/22012021, Buchungsdatum 26.01.2021
+Belastung der angefallenen Steuern aus Depotposition xxx.17 mit Ref. Nr. 000/22012021 (Vorabpauschale)
+ISIN Anteile Abrechnungskurs Betrag
+LU0159052710 -0,000110 741,500000 EUR 0,08 EUR
+Kapitalertragsteuer Solidaritätszuschlag Kirchensteuer abzgl. Steuern
+0,01 EUR 0,00 EUR 0,00 EUR 0,01 EUR
+Für Fragen steht Ihnen Ihr Berater oder ebase unter der Rufnummer +49 89 45460-890 gerne zur Verfügung.
+Diese Mitteilung wird nicht unterschrieben.
+European Bank for Financial Amtsgericht München HRB 141 740 Geschäftsführung: Fax: +49 89 45460-892
+Services GmbH (ebase®) - Ein USt-ID Nr. DE 813330104 Kai Friedrich, Jürgen Keller E-Mail: service@ebase.com
+Unternehmen der FNZ Group Gläubiger-ID: Aufsichtsratsvorsitzender: Web: www.ebase.com
+80218 München DE68ZZZ00000025032 Frank Strauß
+Depotauszug-Nr. 63
+Depot-Nr. xxx
+Seite 3 von 9
+Zahlungsbetrag Verkauf 0,07 EUR
+abzgl. Steuereinbehalt 0,07 EUR
+Zahlungsbetrag 0,00 EUR
+Vorabpauschale zum Stichtag 31.12.2020 aus Depotposition xxx.21
+Mor.St.Inv.-Global Opportunity Actions Nominatives A USD o.N.
+Ref. Nr. 000/22012021, Buchungsdatum 22.01.2021
+ISIN Betrag je Anteil
+LU0552385295 0,038342500 EUR
+Kapitalertragsteuer Solidaritätszuschlag Kirchensteuer
+0,03 EUR 0,00 EUR 0,00 EUR
+Belastung der angefallenen Steuern in Höhe von 0,03 EUR erfolgt durch Verkauf aus Depotposition xxx.21 mit Ref. Nr.
+000/22012021
+Sie haben Fragen zur Vorabpauschale? Weitere Informationen finden Sie unter Steuern & Gesetze auf unserer Homepage
+(https://www.ebase.com/faq).
+Verkauf wegen Vorabpauschale 0,03 EUR mit Kursdatum 25.01.2021 aus Depotposition xxx.21
+Mor.St.Inv.-Global Opportunity Actions Nominatives A USD o.N.
+Ref. Nr. 000/22012021, Buchungsdatum 26.01.2021
+Belastung der angefallenen Steuern aus Depotposition xxx.21 mit Ref. Nr. 000/22012021 (Vorabpauschale)
+ISIN Anteile Abrechnungskurs Devisenkurs Betrag
+LU0552385295 -0,000268 136,090000 USD 1,216800 0,03 EUR
+abzgl. Steuereinbehalt 0,03 EUR
+Zahlungsbetrag 0,00 EUR
+Vorabpauschale zum Stichtag 31.12.2020 aus Depotposition xxx.25
+BGF - World Technology Fund Act. Nom. Classe A2 EUR o.N.
+Ref. Nr. 000/22012021, Buchungsdatum 22.01.2021
+ISIN Betrag je Anteil
+LU0171310443 0,018752300 EUR
+Kapitalertragsteuer Solidaritätszuschlag Kirchensteuer
+0,01 EUR 0,00 EUR 0,00 EUR
+Belastung der angefallenen Steuern in Höhe von 0,01 EUR erfolgt durch Verkauf aus Depotposition xxx.25 mit Ref. Nr.
+000/22012021
+Sie haben Fragen zur Vorabpauschale? Weitere Informationen finden Sie unter Steuern & Gesetze auf unserer Homepage
+(https://www.ebase.com/faq).
+Verkauf wegen Vorabpauschale 0,01 EUR mit Kursdatum 25.01.2021 aus Depotposition xxx.25
+BGF - World Technology Fund Act. Nom. Classe A2 EUR o.N.
+Ref. Nr. 000/22012021, Buchungsdatum 25.01.2021
+Für Fragen steht Ihnen Ihr Berater oder ebase unter der Rufnummer +49 89 45460-890 gerne zur Verfügung.
+Diese Mitteilung wird nicht unterschrieben.
+European Bank for Financial Amtsgericht München HRB 141 740 Geschäftsführung: Fax: +49 89 45460-892
+Services GmbH (ebase®) - Ein USt-ID Nr. DE 813330104 Kai Friedrich, Jürgen Keller E-Mail: service@ebase.com
+Unternehmen der FNZ Group Gläubiger-ID: Aufsichtsratsvorsitzender: Web: www.ebase.com
+80218 München DE68ZZZ00000025032 Frank Strauß
+Depotauszug-Nr. 63
+Depot-Nr. xxx
+Seite 4 von 9
+Belastung der angefallenen Steuern aus Depotposition xxx.25 mit Ref. Nr. 000/22012021 (Vorabpauschale)
+ISIN Anteile Abrechnungskurs Betrag
+LU0171310443 -0,000143 69,800000 EUR 0,01 EUR
+abzgl. Steuereinbehalt 0,01 EUR
+Zahlungsbetrag 0,00 EUR
+Ansparplan 25,00 EUR mit Kursdatum 01.02.2021 in Depotposition xxx.08
+Lyxor World Water(DR)UCITS ETF Actions au Port.Dist o.N.
+Ref. Nr. 450159982/29012021, Buchungsdatum 01.02.2021
+ISIN Anteile Abrechnungskurs Betrag
+FR0010527275 0,525761 47,455000 EUR 24,95 EUR
+Belastete Entgelte abzgl. Entgelte
+Summe 0,05 EUR
+Abwicklung über IBAN Institut Zahlungsbetrag
+DE123 Frankfurter Sparkasse 25,00 EUR
+Entgelte Betrag offene Forderung belasteter Betrag
+ETF-Transaktionsentgelt 0,05 EUR 0,00 EUR 0,05 EUR
+Summe der belasteten Entgelte 0,05 EUR
+Kauf 40,00 EUR mit Kursdatum 29.01.2021 in Depotposition xxx.16
+Siemens Global Growth Inhaber-Anteile A
+Ref. Nr. 000/29012021, Buchungsdatum 01.02.2021
+ISIN Anteile Abrechnungskurs Betrag
+DE0009772657 3,084040 12,970000 EUR 40,00 EUR
+vermögenswirksame Leistungen
+Zahlungsbetrag aus Überweisung 40,00 EUR
+Ansparplan 25,00 EUR mit Kursdatum 01.02.2021 in Depotposition xxx.01
+DWS Akt.Strategie Deutschl. Inhaber-Anteile LC
+Ref. Nr. 450083460/29012021, Buchungsdatum 02.02.2021
+ISIN Anteile Abrechnungskurs Betrag
+DE0009769869 0,054216 461,120000 EUR 25,00 EUR
+gezahlte Vertriebsprovision 0,00 EUR (im Abrechnungskurs enthalten, 100,000 % Bonus)
+Abwicklung über IBAN Institut Zahlungsbetrag
+DE123 Frankfurter Sparkasse 25,00 EUR
+Ansparplan 100,00 EUR mit Kursdatum 01.02.2021 in Depotposition xxx.17
+JPMorgan-US Technology Fund Actions Nom. A (acc.) EUR o.N.
+Ref. Nr. 450246382/29012021, Buchungsdatum 02.02.2021
+ISIN Anteile Abrechnungskurs Betrag
+LU0159052710 0,142943 699,580000 EUR 100,00 EUR
+Für Fragen steht Ihnen Ihr Berater oder ebase unter der Rufnummer +49 89 45460-890 gerne zur Verfügung.
+Diese Mitteilung wird nicht unterschrieben.
+European Bank for Financial Amtsgericht München HRB 141 740 Geschäftsführung: Fax: +49 89 45460-892
+Services GmbH (ebase®) - Ein USt-ID Nr. DE 813330104 Kai Friedrich, Jürgen Keller E-Mail: service@ebase.com
+Unternehmen der FNZ Group Gläubiger-ID: Aufsichtsratsvorsitzender: Web: www.ebase.com
+80218 München DE68ZZZ00000025032 Frank Strauß
+Depotauszug-Nr. 63
+Depot-Nr. xxx
+Seite 5 von 9
+ISIN Anteile Abrechnungskurs Betrag
+gezahlte Vertriebsprovision 0,00 EUR (im Abrechnungskurs enthalten, 100,000 % Bonus)
+Abwicklung über IBAN Institut Zahlungsbetrag
+DE123 Frankfurter Sparkasse 100,00 EUR
+Ansparplan 100,00 EUR mit Kursdatum 01.02.2021 in Depotposition xxx.25
+BGF - World Technology Fund Act. Nom. Classe A2 EUR o.N.
+Ref. Nr. 450089736/29012021, Buchungsdatum 02.02.2021
+ISIN Anteile Abrechnungskurs Betrag
+LU0171310443 1,494992 66,890000 EUR 100,00 EUR
+gezahlte Vertriebsprovision 0,00 EUR (im Abrechnungskurs enthalten, 100,000 % Bonus)
+Abwicklung über IBAN Institut Zahlungsbetrag
+DE123 Frankfurter Sparkasse 100,00 EUR
+Ansparplan 50,00 EUR mit Kursdatum 01.02.2021 in Depotposition xxx.27
+Mor.St.Inv.-US Growth Fund Actions Nom. A o.N.
+Ref. Nr. 450061638/29012021, Buchungsdatum 02.02.2021
+ISIN Anteile Abrechnungskurs Devisenkurs Betrag
+LU0073232471 0,224522 267,190000 USD 1,199800 50,00 EUR
+gezahlte Vertriebsprovision 0,00 EUR (im Abrechnungskurs enthalten, 100,000 % Bonus)
+Abwicklung über IBAN Institut Zahlungsbetrag
+DE123 Frankfurter Sparkasse 50,00 EUR
+Ansparplan 100,00 EUR mit Kursdatum 01.02.2021 in Depotposition xxx.29
+MS Invt Fds-Global Advantage Actions Nom. A USD o.N.
+Ref. Nr. 450263877/29012021, Buchungsdatum 02.02.2021
+ISIN Anteile Abrechnungskurs Devisenkurs Betrag
+LU0868753731 1,175007 102,110000 USD 1,199800 100,00 EUR
+gezahlte Vertriebsprovision 0,00 EUR (im Abrechnungskurs enthalten, 100,000 % Bonus)
+Abwicklung über IBAN Institut Zahlungsbetrag
+DE123 Frankfurter Sparkasse 100,00 EUR
+Ansparplan 25,00 EUR mit Kursdatum 01.03.2021 in Depotposition xxx.01
+DWS Akt.Strategie Deutschl. Inhaber-Anteile LC
+Ref. Nr. 450083904/26022021, Buchungsdatum 01.03.2021
+ISIN Anteile Abrechnungskurs Betrag
+DE0009769869 0,053239 469,580000 EUR 25,00 EUR
+gezahlte Vertriebsprovision 0,00 EUR (im Abrechnungskurs enthalten, 100,000 % Bonus)
+Abwicklung über IBAN Institut Zahlungsbetrag
+DE123 Frankfurter Sparkasse 25,00 EUR
+Für Fragen steht Ihnen Ihr Berater oder ebase unter der Rufnummer +49 89 45460-890 gerne zur Verfügung.
+Diese Mitteilung wird nicht unterschrieben.
+European Bank for Financial Amtsgericht München HRB 141 740 Geschäftsführung: Fax: +49 89 45460-892
+Services GmbH (ebase®) - Ein USt-ID Nr. DE 813330104 Kai Friedrich, Jürgen Keller E-Mail: service@ebase.com
+Unternehmen der FNZ Group Gläubiger-ID: Aufsichtsratsvorsitzender: Web: www.ebase.com
+80218 München DE68ZZZ00000025032 Frank Strauß
+Depotauszug-Nr. 63
+Depot-Nr. xxx
+Seite 6 von 9
+Ansparplan 25,00 EUR mit Kursdatum 01.03.2021 in Depotposition xxx.08
+Lyxor World Water(DR)UCITS ETF Actions au Port.Dist o.N.
+Ref. Nr. 450161611/26022021, Buchungsdatum 01.03.2021
+ISIN Anteile Abrechnungskurs Betrag
+FR0010527275 0,520901 47,897800 EUR 24,95 EUR
+Belastete Entgelte abzgl. Entgelte
+Summe 0,05 EUR
+Abwicklung über IBAN Institut Zahlungsbetrag
+DE123 Frankfurter Sparkasse 25,00 EUR
+Entgelte Betrag offene Forderung belasteter Betrag
+ETF-Transaktionsentgelt 0,05 EUR 0,00 EUR 0,05 EUR
+Summe der belasteten Entgelte 0,05 EUR
+Kauf 40,00 EUR mit Kursdatum 26.02.2021 in Depotposition xxx.16
+Siemens Global Growth Inhaber-Anteile A
+Ref. Nr. 000/26022021, Buchungsdatum 01.03.2021
+ISIN Anteile Abrechnungskurs Betrag
+DE0009772657 3,037206 13,170000 EUR 40,00 EUR
+vermögenswirksame Leistungen
+Zahlungsbetrag aus Überweisung 40,00 EUR
+Ansparplan 100,00 EUR mit Kursdatum 01.03.2021 in Depotposition xxx.25
+BGF - World Technology Fund Act. Nom. Classe A2 EUR o.N.
+Ref. Nr. 450089969/26022021, Buchungsdatum 01.03.2021
+ISIN Anteile Abrechnungskurs Betrag
+LU0171310443 1,473622 67,860000 EUR 100,00 EUR
+gezahlte Vertriebsprovision 0,00 EUR (im Abrechnungskurs enthalten, 100,000 % Bonus)
+Abwicklung über IBAN Institut Zahlungsbetrag
+DE123 Frankfurter Sparkasse 100,00 EUR
+Ansparplan 100,00 EUR mit Kursdatum 01.03.2021 in Depotposition xxx.17
+JPMorgan-US Technology Fund Actions Nom. A (acc.) EUR o.N.
+Ref. Nr. 450249782/26022021, Buchungsdatum 02.03.2021
+ISIN Anteile Abrechnungskurs Betrag
+LU0159052710 0,137031 729,760000 EUR 100,00 EUR
+gezahlte Vertriebsprovision 0,00 EUR (im Abrechnungskurs enthalten, 100,000 % Bonus)
+Abwicklung über IBAN Institut Zahlungsbetrag
+DE123 Frankfurter Sparkasse 100,00 EUR
+Für Fragen steht Ihnen Ihr Berater oder ebase unter der Rufnummer +49 89 45460-890 gerne zur Verfügung.
+Diese Mitteilung wird nicht unterschrieben.
+European Bank for Financial Amtsgericht München HRB 141 740 Geschäftsführung: Fax: +49 89 45460-892
+Services GmbH (ebase®) - Ein USt-ID Nr. DE 813330104 Kai Friedrich, Jürgen Keller E-Mail: service@ebase.com
+Unternehmen der FNZ Group Gläubiger-ID: Aufsichtsratsvorsitzender: Web: www.ebase.com
+80218 München DE68ZZZ00000025032 Frank Strauß
+Depotauszug-Nr. 63
+Depot-Nr. xxx
+Seite 7 von 9
+Ansparplan 50,00 EUR mit Kursdatum 01.03.2021 in Depotposition xxx.27
+Mor.St.Inv.-US Growth Fund Actions Nom. A o.N.
+Ref. Nr. 450061809/26022021, Buchungsdatum 02.03.2021
+ISIN Anteile Abrechnungskurs Devisenkurs Betrag
+LU0073232471 0,211233 284,070000 USD 1,200100 50,00 EUR
+gezahlte Vertriebsprovision 0,00 EUR (im Abrechnungskurs enthalten, 100,000 % Bonus)
+Abwicklung über IBAN Institut Zahlungsbetrag
+DE123 Frankfurter Sparkasse 50,00 EUR
+Ansparplan 100,00 EUR mit Kursdatum 01.03.2021 in Depotposition xxx.29
+MS Invt Fds-Global Advantage Actions Nom. A USD o.N.
+Ref. Nr. 450267643/26022021, Buchungsdatum 02.03.2021
+ISIN Anteile Abrechnungskurs Devisenkurs Betrag
+LU0868753731 1,117828 107,360000 USD 1,200100 100,00 EUR
+gezahlte Vertriebsprovision 0,00 EUR (im Abrechnungskurs enthalten, 100,000 % Bonus)
+Abwicklung über IBAN Institut Zahlungsbetrag
+DE123 Frankfurter Sparkasse 100,00 EUR
+Ansparplan 25,00 EUR mit Kursdatum 01.04.2021 in Depotposition xxx.01
+DWS Akt.Strategie Deutschl. Inhaber-Anteile LC
+Ref. Nr. 450085597/31032021, Buchungsdatum 01.04.2021
+ISIN Anteile Abrechnungskurs Betrag
+DE0009769869 0,049875 501,250000 EUR 25,00 EUR
+gezahlte Vertriebsprovision 0,00 EUR (im Abrechnungskurs enthalten, 100,000 % Bonus)
+Abwicklung über IBAN Institut Zahlungsbetrag
+DE123 Frankfurter Sparkasse 25,00 EUR
+Ansparplan 25,00 EUR mit Kursdatum 01.04.2021 in Depotposition xxx.08
+Lyxor World Water(DR)UCITS ETF Actions au Port.Dist o.N.
+Ref. Nr. 450165636/31032021, Buchungsdatum 01.04.2021
+ISIN Anteile Abrechnungskurs Betrag
+FR0010527275 0,488794 51,044000 EUR 24,95 EUR
+Belastete Entgelte abzgl. Entgelte
+Summe 0,05 EUR
+Abwicklung über IBAN Institut Zahlungsbetrag
+DE123 Frankfurter Sparkasse 25,00 EUR
+Entgelte Betrag offene Forderung belasteter Betrag
+ETF-Transaktionsentgelt 0,05 EUR 0,00 EUR 0,05 EUR
+Summe der belasteten Entgelte 0,05 EUR
+Für Fragen steht Ihnen Ihr Berater oder ebase unter der Rufnummer +49 89 45460-890 gerne zur Verfügung.
+Diese Mitteilung wird nicht unterschrieben.
+European Bank for Financial Amtsgericht München HRB 141 740 Geschäftsführung: Fax: +49 89 45460-892
+Services GmbH (ebase®) - Ein USt-ID Nr. DE 813330104 Kai Friedrich, Jürgen Keller E-Mail: service@ebase.com
+Unternehmen der FNZ Group Gläubiger-ID: Aufsichtsratsvorsitzender: Web: www.ebase.com
+80218 München DE68ZZZ00000025032 Frank Strauß
+Depotauszug-Nr. 63
+Depot-Nr. xxx
+Seite 8 von 9
+Kauf 40,00 EUR mit Kursdatum 31.03.2021 in Depotposition xxx.16
+Siemens Global Growth Inhaber-Anteile A
+Ref. Nr. 000/31032021, Buchungsdatum 01.04.2021
+ISIN Anteile Abrechnungskurs Betrag
+DE0009772657 2,947679 13,570000 EUR 40,00 EUR
+vermögenswirksame Leistungen
+Zahlungsbetrag aus Überweisung 40,00 EUR
+Bestand Depotpositionen
+Pos. Fonds Anteile Bewertungskurs zum Datum Devisenkurs Bestand
+01 DE0009769869 1,0 501,250000 EUR 01.04.2021 1,00 EUR
+DWS Akt.Strategie Deutschl. Inhaber-Anteile LC
+08 FR0010527275 1,0 50,551000 EUR 31.03.2021 1,00 EUR
+Lyxor World Water(DR)UCITS ETF Actions au Port.Dist o.N.
+10 DE0009807016 0,049184 42,770000 EUR 01.04.2021 2,10 EUR
+hausInvest Inhaber-Anteile
+Diese Depotposition enthält einen Fonds, der dem Anlegerschutzgesetz unterliegt. Der gesamte Bestand unterliegt den
+Einschränkungen des §255 KAGB.
+16 DE0009772657 1,0 13,570000 EUR 31.03.2021 1,00 EUR
+Siemens Global Growth Inhaber-Anteile A
+vermögenswirksame Leistungen
+Bis 01.01.2026 sind 1,0 Anteile gemäß Vermögensbildungsgesetz gesperrt.
+17 LU0159052710 1,0 695,130000 EUR 31.03.2021 1,00 EUR
+JPMorgan-US Technology Fund Actions Nom. A (acc.) EUR o.N.
+Verwahrart: Wertpapierrechnung, Lagerland: Luxemburg
+21 LU0552385295 1,0 133,900000 USD 01.04.2021 1,173700 1,00 EUR
+Mor.St.Inv.-Global Opportunity Actions Nominatives A USD o.N.
+Verwahrart: Wertpapierrechnung, Lagerland: Luxemburg
+23 DE0009807008 1,011425 39,540000 EUR 01.04.2021 39,99 EUR
+grundbesitz europa Inhaber-Anteile RC
+Diese Depotposition enthält einen Fonds, der dem Anlegerschutzgesetz unterliegt. Der gesamte Bestand unterliegt den
+Einschränkungen des §255 KAGB.
+25 LU0171310443 1,0 64,280000 EUR 31.03.2021 1,00 EUR
+BGF - World Technology Fund Act. Nom. Classe A2 EUR o.N.
+Verwahrart: Wertpapierrechnung, Lagerland: Luxemburg
+27 LU0073232471 1,0 265,310000 USD 01.04.2021 1,173700 1,00 EUR
+Mor.St.Inv.-US Growth Fund Actions Nom. A o.N.
+Verwahrart: Wertpapierrechnung, Lagerland: Luxemburg
+29 LU0868753731 5,881026 100,090000 USD 01.04.2021 1,173700 501,52 EUR
+MS Invt Fds-Global Advantage Actions Nom. A USD o.N.
+Verwahrart: Wertpapierrechnung, Lagerland: Luxemburg
+Für Fragen steht Ihnen Ihr Berater oder ebase unter der Rufnummer +49 89 45460-890 gerne zur Verfügung.
+Diese Mitteilung wird nicht unterschrieben.
+European Bank for Financial Amtsgericht München HRB 141 740 Geschäftsführung: Fax: +49 89 45460-892
+Services GmbH (ebase®) - Ein USt-ID Nr. DE 813330104 Kai Friedrich, Jürgen Keller E-Mail: service@ebase.com
+Unternehmen der FNZ Group Gläubiger-ID: Aufsichtsratsvorsitzender: Web: www.ebase.com
+80218 München DE68ZZZ00000025032 Frank Strauß
+Depotauszug-Nr. 63
+Depot-Nr. xxx
+Seite 9 von 9
+Pos. Fonds Anteile Bewertungskurs zum Datum Devisenkurs Bestand
+Depotgesamtwert 5,00 EUR
+Ihre Depotbestände werden in der Girosammelverwahrung geführt - es sei denn, es ist ein besonderer Verwahrart-Hinweis in der
+Aufstellung vermerkt.
+4Wir haben keinen Freistellungsauftrag für Sie vorgemerkt.
+Bitte beachten Sie folgende Hinweise:
+Einwendungen
+Wir bitten Sie, diesen Depotauszug auf seine Richtigkeit und Vollständigkeit zu überprüfen. Einwendungen wegen Unrichtigkeit
+oder Unvollständigkeit erheben Sie bitte unverzüglich, nach Erhalt dieses Depotauszugs, gegenüber der ebase unter Nennung der
+Depotnummer und des Datums des Depotauszugs.
+Das Unterlassen der rechtzeitigen Einwendung(en) gilt als Genehmigung der Abrechnung(en)/des Depotauszugs, gemäß Punkt
+"Prüfungen und Einwendungen bei Mitteilungen der ebase" der Allgemeinen Geschäftsbedingungen der European Bank for
+Financial Services GmbH für Privatanleger.
+Bitte denken Sie daran, uns frühzeitig über Änderungen Ihrer persönlichen Daten zu informieren.
+Hinweis Ihrer Verwaltungsgesellschaft zum Widerrufsrecht bei dem Kauf/Verkauf von Investmentanteilen/Organismen für gemein-
+same Anlagen in Wertpapieren (OGAW)/Alternative Investmentfonds (AIF)
+Wenn der Kauf von Anteilen aufgrund mündlicher Verhandlungen außerhalb der ständigen Geschäftsräume desjenigen, der die
+Anteile verkauft oder den Verkauf der Anteile vermittelt hat, zustande kommt, so ist der Käufer nach § 305 KAGB berechtigt, ohne
+Angabe von Gründen, seine Kauferklärung zu widerrufen (Widerrufsrecht). Dies gilt auch dann, wenn derjenige, der die Anteile
+verkauft oder den Verkauf vermittelt, keine ständigen Geschäftsräume hat. Der Widerruf hat innerhalb einer Frist von zwei Wochen
+gegenüber der Verwaltungsgesellschaft oder ihrem Repräsentanten im Sinne von § 319 KAGB in Textform zu erfolgen.
+Zur Wahrung der Frist genügt die rechtzeitige Absendung der Widerrufserklärung. Die vorstehenden Ausführungen gelten ent-
+sprechend beim Verkauf von Anteilen durch den Anleger. Die detaillierten Hinweise zum Widerrufsrecht bei dem Kauf/Verkauf von
+Investmentanteilen/OGAW/AIF finden sie unter Punkt 13 der Bedingungen für das Investmentdepot für Privatanleger bei der European
+Bank for Financial Services GmbH. Genaue Angaben zur Verwaltungsgesellschaft oder zu ihrem Repräsentanten entnehmen Sie den
+Verkaufsunterlagen. Die European Bank for Financial Services GmbH ist lediglich depotführende Stelle.
+Für Fragen steht Ihnen Ihr Berater oder ebase unter der Rufnummer +49 89 45460-890 gerne zur Verfügung.
+Diese Mitteilung wird nicht unterschrieben.
+European Bank for Financial Amtsgericht München HRB 141 740 Geschäftsführung: Fax: +49 89 45460-892
+Services GmbH (ebase®) - Ein USt-ID Nr. DE 813330104 Kai Friedrich, Jürgen Keller E-Mail: service@ebase.com
+Unternehmen der FNZ Group Gläubiger-ID: Aufsichtsratsvorsitzender: Web: www.ebase.com
+80218 München DE68ZZZ00000025032 Frank Strauß
