@@ -63,6 +63,7 @@ public class JClient
         transactions.stream().map(JTransaction::from).forEach(client::addTransaction);
         return client;
     }
+    
 
     public static JClient from(String file) throws IOException
     {

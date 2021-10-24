@@ -5,6 +5,8 @@ import org.glassfish.jersey.process.internal.RequestScoped;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.server.resources.AccountResource;
+import name.abuchen.portfolio.server.resources.SecuritiesResource;
 import name.abuchen.portfolio.server.resources.TransactionResource;
 
 @SuppressWarnings("restriction")
@@ -16,6 +18,8 @@ public class JerseyApplication extends ResourceConfig
         register(LocalDateParameterProvider.class);
 
         register(TransactionResource.class);
+        register(SecuritiesResource.class);
+        register(AccountResource.class);
 
         register(new AbstractBinder()
         {
