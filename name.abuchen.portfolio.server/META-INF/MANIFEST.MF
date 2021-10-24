@@ -1,12 +1,11 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: name.abuchen.portfolio.server
-Bundle-SymbolicName: name.abuchen.portfolio.server
+Bundle-SymbolicName: name.abuchen.portfolio.server;singleton:=true
 Bundle-Version: 0.56.0.qualifier
 Automatic-Module-Name: name.abuchen.portfolio.server
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Require-Bundle: name.abuchen.portfolio;bundle-version="0.56.0",
- name.abuchen.portfolio.ui;bundle-version="0.56.0",
  org.glassfish.jersey.containers.servlet,
  org.glassfish.jersey.containers.servlet.core,
  org.glassfish.jersey.core.jersey-client,
@@ -28,5 +27,9 @@ Require-Bundle: name.abuchen.portfolio;bundle-version="0.56.0",
  org.eclipse.e4.core.di.extensions,
  javax.inject,
  javax.servlet,
- org.eclipse.osgi
-Import-Package: org.eclipse.core.runtime
+ org.eclipse.osgi,
+ name.abuchen.portfolio.ui
+Import-Package: name.abuchen.portfolio.ui,
+ org.eclipse.core.runtime
+Bundle-ActivationPolicy: lazy
+Export-Package: name.abuchen.portfolio.server

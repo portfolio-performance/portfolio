@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.server;
+package name.abuchen.portfolio.server.addons;
 
 import java.util.EnumSet;
 
@@ -15,11 +15,13 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.servlet.ServletProperties;
-
+import name.abuchen.portfolio.server.SetClientFilter;
+import name.abuchen.portfolio.server.JerseyApplication;
+import name.abuchen.portfolio.server.ServerLog;
+import name.abuchen.portfolio.server.TokenAuthenticationFilter;
 import name.abuchen.portfolio.ui.UIConstants;
 
-public class WebServerAddon
-{
+public class WebServerAddon {
     private static final String PATH = "/api/v0/*"; //$NON-NLS-1$
 
     @Inject
