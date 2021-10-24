@@ -68,6 +68,8 @@ import name.abuchen.portfolio.util.TradeCalendarManager;
 
 public class SecurityListView extends AbstractFinanceView
 {
+    public static final int LIMIT_PRICE_FILTER_ID = 1 << 6;
+
     private class CreateSecurityDropDown extends DropDown implements IMenuListener
     {
         public CreateSecurityDropDown()
@@ -209,7 +211,9 @@ public class SecurityListView extends AbstractFinanceView
             setMenuListener(this);
 
             int savedFilters;
-            if (watchlist != null)
+            if (adhocFilter != 0)
+                savedFilters = adhocFilter;
+            else if (watchlist != null)
                 savedFilters = preferenceStore.getInt(
                                 this.getClass().getSimpleName() + "-filterSettings" + "-" + watchlist.getName()); //$NON-NLS-1$ //$NON-NLS-2$
             else
@@ -225,13 +229,17 @@ public class SecurityListView extends AbstractFinanceView
                 filter.add(sharesNotZero);
             if ((savedFilters & (1 << 5)) != 0)
                 filter.add(sharesEqualZero);
-            if ((savedFilters & (1 << 6)) != 0)
+            if ((savedFilters & LIMIT_PRICE_FILTER_ID) != 0)
                 filter.add(limitPriceExceeded);
 
             if (!filter.isEmpty())
                 setImage(Images.FILTER_ON);
 
             addDisposeListener(e -> {
+
+                // save filter configuration only if it is not an ad hoc filter
+                if (adhocFilter != 0)
+                    return;
 
                 int savedFilter = 0;
                 if (filter.contains(securityIsNotInactive))
@@ -244,6 +252,8 @@ public class SecurityListView extends AbstractFinanceView
                     savedFilter += (1 << 4);
                 if (filter.contains(sharesEqualZero))
                     savedFilter += (1 << 5);
+                if (filter.contains(limitPriceExceeded))
+                    savedFilter += LIMIT_PRICE_FILTER_ID;
                 if (watchlist != null)
                     preferenceStore.setValue(
                                     this.getClass().getSimpleName() + "-filterSettings" + "-" + watchlist.getName(), //$NON-NLS-1$ //$NON-NLS-2$
@@ -325,6 +335,10 @@ public class SecurityListView extends AbstractFinanceView
                     else
                         filter.add(predicate);
 
+                    // as the user manually changes the filter, remove the flag
+                    // that this is an ad hoc filter
+                    adhocFilter = 0;
+
                     // uncheck mutually exclusive actions if new filter is added
                     if (!isChecked)
                     {
@@ -358,6 +372,8 @@ public class SecurityListView extends AbstractFinanceView
 
     private Pattern filterPattern;
 
+    private int adhocFilter;
+
     @Override
     protected String getDefaultTitle()
     {
@@ -388,6 +404,13 @@ public class SecurityListView extends AbstractFinanceView
     public void setup(@Named(UIConstants.Parameter.VIEW_PARAMETER) Watchlist parameter)
     {
         this.watchlist = parameter;
+    }
+
+    @Inject
+    @Optional
+    public void setup(@Named(UIConstants.Parameter.VIEW_PARAMETER) int adhocFilter)
+    {
+        this.adhocFilter = adhocFilter;
     }
 
     @Override

@@ -26,6 +26,11 @@ public class LimitPrice implements Comparable<LimitPrice>
             return operatorString;
         }
 
+        public boolean isGreater()
+        {
+            return this == GREATER_OR_EQUAL || this == GREATER;
+        }
+
         public static Optional<RelationalOperator> findByOperator(String op)
         {
             for (RelationalOperator t : RelationalOperator.values())

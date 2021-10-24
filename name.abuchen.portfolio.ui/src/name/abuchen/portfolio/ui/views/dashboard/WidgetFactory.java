@@ -264,6 +264,8 @@ public enum WidgetFactory
 
     ACTIVITY_CHART(Messages.LabelTradingActivityChart, Messages.LabelCommon, ActivityWidget::new),
 
+    LIMIT_EXCEEDED(Messages.SecurityListFilterLimitPriceExceeded, Messages.LabelCommon, LimitExceededWidget::new),
+
     // typo is API now!!
     VERTICAL_SPACEER(Messages.LabelVerticalSpacer, Messages.LabelCommon, VerticalSpacerWidget::new);
 
