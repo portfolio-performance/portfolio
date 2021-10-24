@@ -6,6 +6,7 @@ import org.glassfish.jersey.server.ResourceConfig;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.server.resources.AccountResource;
+import name.abuchen.portfolio.server.resources.PortfolioResource;
 import name.abuchen.portfolio.server.resources.SecuritiesResource;
 import name.abuchen.portfolio.server.resources.TransactionResource;
 
@@ -20,6 +21,7 @@ public class JerseyApplication extends ResourceConfig
         register(TransactionResource.class);
         register(SecuritiesResource.class);
         register(AccountResource.class);
+        register(PortfolioResource.class);
 
         register(new AbstractBinder()
         {

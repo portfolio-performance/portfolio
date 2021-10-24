@@ -21,7 +21,7 @@ import name.abuchen.portfolio.ui.editor.ClientInputFactory;
 public class SetClientFilter implements Filter
 {
     @Inject
-    private ClientInputFactory factory;
+    private ClientInputFactory factory;   
 
     @Override
     public void init(FilterConfig fConfig) throws ServletException // NOSONAR

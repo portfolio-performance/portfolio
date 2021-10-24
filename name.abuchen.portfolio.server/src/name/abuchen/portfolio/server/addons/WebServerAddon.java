@@ -21,7 +21,8 @@ import name.abuchen.portfolio.server.ServerLog;
 import name.abuchen.portfolio.server.TokenAuthenticationFilter;
 import name.abuchen.portfolio.ui.UIConstants;
 
-public class WebServerAddon {
+public class WebServerAddon 
+{
     private static final String PATH = "/api/v0/*"; //$NON-NLS-1$
 
     @Inject
