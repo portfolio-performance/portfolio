@@ -19,6 +19,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries.ClientDataSeries;
+import name.abuchen.portfolio.util.ColorConversion;
 
 /**
  * The set of available data series for a given presentation use case.
@@ -268,7 +269,7 @@ public class DataSeriesSet
                         return;
 
                     availableSeries.add(new DataSeries(DataSeries.Type.CLASSIFICATION, taxonomy, classification,
-                                    classification.getName(), Colors.toRGB(classification.getColor())));
+                                    classification.getName(), ColorConversion.hex2RGB(classification.getColor())));
                 }
             });
         }

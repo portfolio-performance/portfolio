@@ -17,6 +17,7 @@ import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
+import name.abuchen.portfolio.util.ColorConversion;
 
 /* package */class DefinitionViewer extends AbstractNodeTreeViewer
 {
@@ -97,7 +98,7 @@ import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 
     private void doEditColor(TaxonomyNode node)
     {
-        RGB oldColor = Colors.toRGB(node.getClassification().getColor());
+        RGB oldColor = ColorConversion.hex2RGB(node.getClassification().getColor());
 
         ColorDialog colorDialog = new ColorDialog(getNodeViewer().getControl().getShell());
         colorDialog.setRGB(oldColor);

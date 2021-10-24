@@ -9,6 +9,7 @@ import org.swtchart.LineStyle;
 
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries.ClientDataSeries;
+import name.abuchen.portfolio.util.ColorConversion;
 
 /**
  * Convert a list of DataSeries object to a string and re-create again from a
@@ -50,7 +51,7 @@ public class DataSeriesSerializer
 
                 if (data.length == 4)
                 {
-                    s.setColor(Colors.toRGB(data[1]));
+                    s.setColor(ColorConversion.hex2RGB(data[1]));
                     s.setLineStyle(LineStyle.valueOf(data[2]));
                     s.setShowArea(Boolean.parseBoolean(data[3]));
                 }

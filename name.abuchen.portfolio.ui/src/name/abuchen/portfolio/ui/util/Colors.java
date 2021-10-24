@@ -216,12 +216,6 @@ public final class Colors
         return ColorConversion.toHex(rgb.red, rgb.green, rgb.blue);
     }
 
-    public static RGB toRGB(String hex)
-    {
-        int[] rgb = ColorConversion.toRGB(hex);
-        return new RGB(rgb[0], rgb[1], rgb[2]);
-    }
-
     /**
      * Returns an appropriate text color (black or white) for the given
      * background color.

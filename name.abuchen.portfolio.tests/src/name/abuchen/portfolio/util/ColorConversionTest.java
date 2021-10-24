@@ -15,20 +15,20 @@ public class ColorConversionTest
     public void testInvalidRGB()
     {
         String hex = "#K10203";
-        int[] rgb = ColorConversion.toRGB(hex);
-        assertEquals(rgb[0], 0);
-        assertEquals(rgb[1], 0);
-        assertEquals(rgb[2], 0);
+        RGB rgb = ColorConversion.hex2RGB(hex);
+        assertEquals(rgb.red, 0);
+        assertEquals(rgb.green, 0);
+        assertEquals(rgb.blue, 0);
     }
 
     @Test
     public void testToRGB()
     {
         String hex = "#010203";
-        int[] rgb = ColorConversion.toRGB(hex);
-        assertEquals(rgb[0], 1);
-        assertEquals(rgb[1], 2);
-        assertEquals(rgb[2], 3);
+        RGB rgb = ColorConversion.hex2RGB(hex);
+        assertEquals(rgb.red, 1);
+        assertEquals(rgb.green, 2);
+        assertEquals(rgb.blue, 3);
     }
 
     @Test

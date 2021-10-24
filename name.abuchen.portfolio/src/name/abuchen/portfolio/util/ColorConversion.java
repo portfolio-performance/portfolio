@@ -9,50 +9,28 @@ public class ColorConversion
     {
     }
 
-    public static int[] toRGB(String hex)
+    public static RGB hex2RGB(String hex)
     {
-        try
-        {
-            Integer intval = Integer.decode(hex);
-            int i = intval.intValue();
-            return new int[] { (i >> 16) & 0xFF, (i >> 8) & 0xFF, i & 0xFF };
-        }
-        catch (NumberFormatException ignore)
-        {
-            return new int[] { 0, 0, 0 };
-        }
+        return hex2RGBA(hex).rgb;
     }
     
     
-    public static int[] toRGBA(String hex)
+    public static RGBA hex2RGBA(String hex)
     {
         try
         {
             Long longval = Long.decode(hex); // long needed because #FF...... is too big for integer
             long i = longval.longValue();
-            return new int[] {
-                            (int) ((i >> 24) & 0xFF), // A
-                            (int) ((i >> 16) & 0xFF), // R
+            return new RGBA((int) ((i >> 16) & 0xFF), // R
                             (int) ((i >> 8) & 0xFF), // G
-                            (int) (i & 0xFF) // B
-                            };
+                            (int) (i & 0xFF), // B
+                            (int) ((i >> 24) & 0xFF) // A
+                            );
         }
         catch (NumberFormatException ignore)
         {
-            return new int[] { 0, 0, 0, 0 };
+            return new RGBA(0, 0, 0, 0);
         }
-    }
-
-    public static RGB hex2RGB(String hex)
-    {
-        int[] rgb = toRGB(hex);
-        return new RGB(rgb[0], rgb[1], rgb[2]);
-    }
-    
-    public static RGBA hex2RGBA(String hex)
-    {
-        int[] rgb = toRGBA(hex);
-        return new RGBA(rgb[1], rgb[2], rgb[3], rgb[0]);
     }
 
     public static float[] toHSB(String hex)
