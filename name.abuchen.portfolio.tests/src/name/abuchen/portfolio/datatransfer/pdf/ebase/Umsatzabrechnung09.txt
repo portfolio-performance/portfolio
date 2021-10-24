@@ -9,7 +9,6 @@ Herrn
 Max Mustermann
 Straße 1
 12345 Stadt
-
 Fondsertrag (Ausschüttung) mit Bestandsdatum 13.11.2019 in Depotposition XXXXXXXXXX.34
 iShsII- BRIC 50 UCITS ETF Registered Shs USD (Dist) o.N.
 Ref. Nr. XXXXXXXXXX/XXXXXXXXXX, Buchungsdatum 28.11.2019
@@ -22,7 +21,6 @@ Wiederanlage des Zahlungsbetrags erfolgt in Depotposition XXXXXXXXXX.34 mit Ref.
 Wiederanlage Fondsertrag 6,16 USD mit Kursdatum 29.11.2019 in Depotposition XXXXXXXXXX.34
 iShsII- BRIC 50 UCITS ETF Registered Shs USD (Dist) o.N.
 Ref. Nr. XXXXXXXXXX/XXXXXXXXXX, Buchungsdatum 02.12.2019
-
 Wiederanlage Fondsertrag erfolgt aus Depotposition XXXXXXXXXX.34 mit Ref. Nr. XXXXXXXXXX/XXXXXXXXXX
 ISIN Anteile Abrechnungskurs Betrag
 IE00B1W57M07 0,200653 30,699800 USD 6,16 USD

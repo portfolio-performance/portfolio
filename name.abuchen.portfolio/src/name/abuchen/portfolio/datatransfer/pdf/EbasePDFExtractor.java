@@ -39,36 +39,81 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("(Kauf|Ansparplan|Verkauf|Entgelt Verkauf|Entgeltbelastung Verkauf|Wiederanlage Fondsertrag)");
+        DocumentType type = new DocumentType("(Kauf"
+                        + "|Ansparplan"
+                        + "|Fondsertrag"
+                        + "|Verkauf"
+                        + "|Entgelt Verkauf"
+                        + "|Entgeltbelastung Verkauf"
+                        + "|Entnahmeplan"
+                        + "|Fondsumschichtung"
+                        + "|Wiederanlage Fondsertrag)");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
         pdfTransaction.subject(() -> {
             BuySellEntry entry = new BuySellEntry();
             entry.setType(PortfolioTransaction.Type.BUY);
+
+            /***
+             * We have multiple entries in the document
+             * and cannot split it with "endWith",
+             * so the "skipTransaction" flag must be removed.
+             */
+            type.getCurrentContext().remove("skipTransaction");
+
             return entry;
         });
 
         Block firstRelevantLine = new Block("^(Kauf"
-                        + "|Ansparplan"
-                        + "|Verkauf"
-                        + "|Entgelt Verkauf"
-                        + "|Entgeltbelastung Verkauf"
-                        + "|Wiederanlage Fondsertrag [\\.,\\d]+ [\\w]+) .*$");
+                                                + "|Ansparplan"
+                                                + "|Fondsertrag"
+                                                + "|Verkauf"
+                                                + "|Entgelt Verkauf"
+                                                + "|Entgeltbelastung Verkauf"
+                                                + "|Entnahmeplan"
+                                                + "|Fondsumschichtung \\((Abgang|Zugang)\\) .*"
+                                                + "|Wiederanlage Fondsertrag [\\.,\\d]+ [\\w]+) .*$");
         type.addBlock(firstRelevantLine);
-        firstRelevantLine.setMaxSize(12);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
                 // Is type --> "Verkauf" change from BUY to SELL
                 .section("type").optional()
-                .match("^(?<type>(Kauf|Ansparplan|Verkauf|Entgelt Verkauf|Entgeltbelastung Verkauf|Wiederanlage)) .*$")
+                .match("^(?<type>(Kauf"
+                                + "|Ansparplan"
+                                + "|Fondsertrag"
+                                + "|Verkauf"
+                                + "|Entgelt Verkauf"
+                                + "|Entgeltbelastung Verkauf"
+                                + "|Entnahmeplan"
+                                + "|Fondsumschichtung \\(Abgang\\)"
+                                + "|Fondsumschichtung \\(Zugang\\)"
+                                + "|Wiederanlage Fondsertrag)) .*$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("Verkauf")
                                     || v.get("type").equals("Entgelt Verkauf")
-                                    || v.get("type").equals("Entgeltbelastung Verkauf"))
+                                    || v.get("type").equals("Entgeltbelastung Verkauf")
+                                    || v.get("type").equals("Entnahmeplan")
+                                    || v.get("type").equals("Fondsumschichtung (Abgang)"))
                     {
                         t.setType(PortfolioTransaction.Type.SELL);
+                    }
+                })
+
+                /***
+                 * Here we set a flag for all entries 
+                 * which should be skipped.
+                 * 
+                 * If this is not done, it can happen that taxes and fees 
+                 * are included from the following entries
+                 */
+                .section("type").optional()
+                .match("^(?<type>Fondsertrag) .*$")
+                .assign((t, v) -> {
+                    if (v.get("type").equals("Fondsertrag"))
+                    {
+                        type.getCurrentContext().put("skipTransaction", Boolean.TRUE.toString());
                     }
                 })
 
@@ -76,12 +121,18 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                 // Xtr.(IE) - Russell Midcap Registered Shares 1C USD o.N.
                 // IE00BJZ2DC62 12,729132 26,002300 USD 1,105500 299,40 EUR
                 .section("name", "isin", "currency")
-                .find("(Kauf|Ansparplan|Verkauf|Entgelt Verkauf|Entgeltbelastung Verkauf|Wiederanlage Fondsertrag [\\.,\\d]+ [\\w]+) .*")
+                .find("(Kauf"
+                            + "|Ansparplan"
+                            + "|Fondsertrag"
+                            + "|Verkauf"
+                            + "|Entgelt Verkauf"
+                            + "|Entgeltbelastung Verkauf"
+                            + "|Entnahmeplan"
+                            + "|Fondsumschichtung \\((Abgang|Zugang)\\)"
+                            + "|Wiederanlage Fondsertrag [\\.,\\d]+ [\\w]+) .*")
                 .match("^(?<name>.*)$")
                 .match("^(?<isin>[\\w]{12}) ([-])?[\\.,\\d]+ [\\.,\\d]+ (?<currency>[\\w]{3})( [\\.,\\d]+)? [\\.,\\d]+ [\\w]{3}$")
-                .assign((t, v) -> {
-                    t.setSecurity(getOrCreateSecurity(v));
-                })
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // Ref. Nr. XXXXXXXX/XXXXXXXX, Buchungsdatum 21.11.2019
                 .section("date")
@@ -114,26 +165,17 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                 })
 
                 // Zahlungsbetrag 0,37 EUR
-                .section("amount", "currency").optional()
-                .match("^Zahlungsbetrag (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
-                .assign((t, v) -> {
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(v.get("currency"));
-                })
-
                 // Zahlungsbetrag aus Überweisung 50,00 EUR
                 .section("amount", "currency").optional()
-                .match("^Zahlungsbetrag aus Überweisung (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^Zahlungsbetrag( aus Überweisung)? (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(v.get("currency"));
                 })
 
                 /***
-                 * If we have a "Verkauf wegen Vorabpauschale" 
-                 * in which taxes are immediately withheld, 
-                 * without a separate transaction, 
-                 * we first post the sale and then the advance tax payment.
+                 * If we have a "Verkauf wegen Vorabpauschale"
+                 * we set this amount.
                  */
                 // Verkauf wegen Vorabpauschale 0,13 EUR mit Kursdatum 27.01.2020 aus Depotposition XXXXXXXX.02
                 // abzgl. Steuereinbehalt 0,13 EUR
@@ -146,8 +188,8 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                 })
 
                 /***
-                 * If we have a "Entgelt Verkauf" 
-                 * in which fee are immediately withheld, 
+                 * If we have a "Entgelt Verkauf"
+                 * in which fee are immediately withheld,
                  * without a separate transaction, 
                  * we first post the sale and then the fee payment.
                  */
@@ -163,9 +205,9 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                 })
 
                 /***
-                 * If we have a "Entgeltbelastung Verkauf" 
-                 * in which fee are immediately withheld, 
-                 * without a separate transaction, 
+                 * If we have a "Entgeltbelastung Verkauf"
+                 * in which fee are immediately withheld,
+                 * without a separate transaction,
                  * we first post the sale and then the fee payment.
                  */
                 // Entgeltbelastung Verkauf 3,00 EUR mit Kursdatum 06.04.2021 aus Depotposition 99999999999.01
@@ -181,13 +223,14 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                 })
 
                 // IE00BJZ2DC62 12,729132 26,002300 USD 1,105500 299,40 EUR
+                // LU0552385295 -0,000268 136,090000 USD 1,216800 0,03 EUR
                 .section("fxCurrency", "exchangeRate", "amount", "currency").optional()
                 .match("^[\\w]{12} ([-])?[\\.,\\d]+ [\\.,\\d]+ (?<fxCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+) (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     // read the forex currency, exchange rate, account
                     // currency and gross amount in account currency
-                    String fxCurrency = asCurrencyCode(v.get("fxCurrency"));
-                    if (t.getPortfolioTransaction().getSecurity().getCurrencyCode().equals(fxCurrency))
+                    String forex = asCurrencyCode(v.get("fxCurrency"));
+                    if (t.getPortfolioTransaction().getSecurity().getCurrencyCode().equals(forex))
                     {
                         BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                         BigDecimal reverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
@@ -200,7 +243,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
 
                         Unit grossValue = new Unit(Unit.Type.GROSS_VALUE,
                                         Money.of(asCurrencyCode(v.get("currency")), amount),
-                                        Money.of(fxCurrency, fxAmount), reverseRate);
+                                        Money.of(forex, fxAmount), reverseRate);
 
                         t.getPortfolioTransaction().addUnit(grossValue);
                     }
@@ -228,10 +271,14 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
 
                 // vermögenswirksame Leistungen
                 .section("note").optional()
-                .match("^(?<note>vermögenswirksame Leistungen)$")
+                .match("^(?<note>verm.genswirksame Leistungen)$")
                 .assign((t, v) -> t.setNote(v.get("note")))
 
-                .wrap(BuySellEntryItem::new);
+                .wrap(t -> {
+                    if (type.getCurrentContext().get("skipTransaction") == null)
+                        return new BuySellEntryItem(t);
+                    return null;
+                });
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
@@ -242,9 +289,8 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Fondsertrag");
         this.addDocumentTyp(type);
 
-        Block block = new Block("^Fondsertrag .*");
+        Block block = new Block("^Fondsertrag .*", "(Zahlungsbetrag nach|Zahlungsbetrag(?! in)|Die Auszahlung|Summe der belasteten) .*");
         type.addBlock(block);
-        block.setMaxSize(12);
         Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>()
             .subject(() -> {
                 AccountTransaction entry = new AccountTransaction();
@@ -260,9 +306,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                 .find("Fondsertrag .*")
                 .match("^(?<name>.*)$")
                 .match("^(?<isin>[\\w]{12}) [\\.,\\d]+ [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$")
-                .assign((t, v) -> {
-                    t.setSecurity(getOrCreateSecurity(v));
-                })
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // Ref. Nr. XXXXXXXX/XXXXXXXX, Buchungsdatum 02.01.2020
                 .section("date")
@@ -283,6 +327,16 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
                         )
 
+                // DE123 European Bank for Financial Services 0,03 EUR
+                // Die Auszahlung erfolgt über die oben genannte Bankverbindung.
+                .section("amount", "currency").optional()
+                .match("^.* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("Die Auszahlung erfolgt über die oben genannte Bankverbindung.")
+                .assign((t, v) -> {
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(v.get("currency"));
+                })
+
                 // Zahlungsbetrag 1,79 USD
                 .section("amount", "currency").optional()
                 .match("^Zahlungsbetrag (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
@@ -291,7 +345,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                     t.setCurrencyCode(v.get("currency"));
                 })
 
-                // ahlungsbetrag nach Währungskonvertierung mit Devisenkurs 1,104600 0,29 EUR
+                // Zahlungsbetrag nach Währungskonvertierung mit Devisenkurs 1,104600 0,29 EUR
                 .section("amount", "currency").optional()
                 .match("^Zahlungsbetrag nach W.hrungskonvertierung .* [\\.,\\d]+ (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
@@ -362,7 +416,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
 
     private void addAdvanceTaxTransaction()
     {
-        DocumentType type = new DocumentType("(Vorabpauschale zum Stichtag|Verkauf wegen Vorabpauschale)");
+        DocumentType type = new DocumentType("Vorabpauschale zum Stichtag");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
@@ -372,15 +426,43 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^(Vorabpauschale zum Stichtag|Verkauf wegen Vorabpauschale) .*$");
+        Block firstRelevantLine = new Block("^Vorabpauschale zum Stichtag .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
+
+        /**
+         * The advance tax payment is always paid in local currency.
+         * If the security is in foreign currency,
+         * the exchange rate is missing in the document for posting.
+         * 
+         * Vorabpauschale zum Stichtag 31.12.2020 aus Depotposition xxx.21
+         * Mor.St.Inv.-Global Opportunity Actions Nominatives A USD o.N.
+         * Ref. Nr. 000/22012021, Buchungsdatum 22.01.2021
+         * ISIN Betrag je Anteil
+         * LU0552385295 0,038342500 EUR <-- MISSING Exchange Rate
+         * Kapitalertragsteuer Solidaritätszuschlag Kirchensteuer
+         * 0,03 EUR 0,00 EUR 0,00 EUR
+         * Belastung der angefallenen Steuern in Höhe von 0,03 EUR erfolgt durch Verkauf aus Depotposition xxx.21 mit Ref. Nr.
+         * 000/22012021
+         * 
+         * --------------------------------------------------------
+         * 
+         * Verkauf wegen Vorabpauschale 0,03 EUR mit Kursdatum 25.01.2021 aus Depotposition xxx.21
+         * Mor.St.Inv.-Global Opportunity Actions Nominatives A USD o.N.
+         * Ref. Nr. 000/22012021, Buchungsdatum 26.01.2021
+         * Belastung der angefallenen Steuern aus Depotposition xxx.21 mit Ref. Nr. 000/22012021 (Vorabpauschale)
+         * ISIN Anteile Abrechnungskurs Devisenkurs Betrag
+         * LU0552385295 -0,000268 136,090000 USD 1,216800 0,03 EUR <-- Exchange Rate
+         * abzgl. Steuereinbehalt 0,03 EUR
+         * Zahlungsbetrag 0,00 EUR
+         * Vorabpauschale zum Stichtag 31.12.2020 aus Depotposition xxx.25
+         */
 
         pdfTransaction
                 // Vorabpauschale zum Stichtag 31.12.2019 aus Depotposition XXXXXXXXXX.05
                 // Xtrackers MSCI Philippines Inhaber-Anteile 1C-USD o.N.
                 // LU0592215403 0,005674390 EUR
-                .section("note", "name", "isin", "currency").optional()
+                .section("note", "name", "isin", "currency")
                 .match("^(?<note>Vorabpauschale zum Stichtag [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$")
                 .match("^(?<name>.*)$")
                 .match("^(?<isin>[\\w]{12}) ([-])?[\\.,\\d]+ (?<currency>[\\w]{3})$")
@@ -388,21 +470,6 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                     t.setShares(0L);
                     t.setSecurity(getOrCreateSecurity(v));
                     t.setNote(v.get("note"));
-                })
-
-                // Verkauf wegen Vorabpauschale 0,13 EUR mit Kursdatum 27.01.2020 aus Depotposition XXXXXXXX.02
-                // Xtrackers MSCI Europe Mid Cap Inhaber-Anteile 1C o.N.
-                // LU0322253732 -0,001162 111,900000 EUR 0,13 EUR
-                // abzgl. Steuereinbehalt 0,13 EUR
-                .section("note1", "note2", "name", "isin", "currency").optional()
-                .match("^Verkauf wegen (?<note1>Vorabpauschale) [\\.,\\d]+ [\\w]{3} (?<note2>mit Kursdatum [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$")
-                .match("^(?<name>.*)$")
-                .match("^(?<isin>[\\w]{12}) ([-])?[\\.,\\d]+ [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ (?<currency>[\\w]{3})$")
-                .match("^abzgl. Steuereinbehalt [\\.,\\d]+ [\\w]{3}$")
-                .assign((t, v) -> {
-                    t.setShares(0L);
-                    t.setSecurity(getOrCreateSecurity(v));
-                    t.setNote(v.get("note1") + " " + v.get("note2"));
                 })
 
                 // Ref. Nr. XXXXXXXXXX/XXXXXXXXXX, Buchungsdatum 24.01.2020
@@ -415,15 +482,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                 .match("^Belastung der angefallenen Steuern in H.he von (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}) .*$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                })
-
-                // abzgl. Steuereinbehalt 0,13 EUR
-                .section("currency", "amount").optional()
-                .match("^abzgl. Steuereinbehalt (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
-                .assign((t, v) -> {
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                    t.setCurrencyCode(v.get("currency"));
                 })
 
                 .wrap(t -> new TransactionItem(t));
@@ -443,7 +502,6 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
 
         Block firstRelevantLine = new Block("^(Entgelt|Entgeltbelastung) Verkauf .*$");
         type.addBlock(firstRelevantLine);
-        firstRelevantLine.setMaxSize(12);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
@@ -454,9 +512,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                 .find("(Entgelt|Entgeltbelastung) Verkauf .*")
                 .match("^(?<name>.*)$")
                 .match("^(?<isin>[\\w]{12}) -[\\.,\\d]+ [\\.,\\d]+ (?<currency>[\\w]{3})( [\\.,\\d]+)? [\\.,\\d]+ [\\w]{3}$")
-                .assign((t, v) -> {
-                    t.setSecurity(getOrCreateSecurity(v));
-                })
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 .oneOf(
                                 // IE00BJZ2DC62 -12,729132 26,002300 USD 1,105500 299,40 EUR
@@ -552,7 +608,6 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
 
         Block firstRelevantLine = new Block("^Entgeltermittlung .*$");
         type.addBlock(firstRelevantLine);
-        firstRelevantLine.setMaxSize(12);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
@@ -589,9 +644,8 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^Eingang externer Übertrag .*$");
+        Block firstRelevantLine = new Block("^Eingang externer Übertrag .*$", "^Gegenwert der Anteile: .*$");
         type.addBlock(firstRelevantLine);
-        firstRelevantLine.setMaxSize(12);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
@@ -614,9 +668,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                 .match("^(?<name>.*)$")
                 .match("^(?<isin>[\\w]{12}) [\\.,\\d]+$")
                 .match("^Gegenwert der Anteile: [\\,.\\d]+ (?<currency>[\\w]{3})$")
-                .assign((t, v) -> {
-                    t.setSecurity(getOrCreateSecurity(v));
-                })
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // Ref. Nr. XXXXXXXX/XXXXXXXX, Buchungsdatum 30.09.2019
                 .section("date")
@@ -650,6 +702,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                 .section("tax", "currency").optional()
                 .find("Kapitalertragsteuer .*")
                 .match("^(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3}) .*$")
+                .match("^(Zahlungsbetrag|Abwicklung|Summe der belasteten) .*$")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
                 // Kapitalertragsteuer Solidaritätszuschlag Kirchensteuer Devisenkurs abzgl. Steuern
@@ -657,6 +710,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                 .section("tax", "currency").optional()
                 .find(".* Solidaritätszuschlag .*")
                 .match("^[\\.,\\d]+ [\\w]{3} (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3}) .*$")
+                .match("^(Zahlungsbetrag|Abwicklung|Summe der belasteten) .*$")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
                 // Kapitalertragsteuer Solidaritätszuschlag Kirchensteuer Devisenkurs abzgl. Steuern
@@ -664,6 +718,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                 .section("tax", "currency").optional()
                 .find(".* Kirchensteuer .*")
                 .match("^[\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3} (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3}) .*$")
+                .match("^(Zahlungsbetrag|Abwicklung) .*$")
                 .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
@@ -671,13 +726,24 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
     {
         transaction
                 // ETF-Transaktionsentgelt 0,60 EUR
+                // Abwicklung über IBAN Institut Zahlungsbetrag
                 .section("fee", "currency").optional()
                 .match("^ETF-Transaktionsentgelt (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^(Zahlungsbetrag nach|Zahlungsbetrag(?! in)|Die Auszahlung|Abwicklung|Summe der belasteten) .*$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
-                // gezahlte Vertriebsprovision 0,00 EUR (im Abrechnungskurs enthalten, 100% Bonus)
+                // ETF-Transaktionsentgelt 0,05 EUR 0,00 EUR 0,05 EUR
+                // Abwicklung über IBAN Institut Zahlungsbetrag
+                .section("fee", "currency").optional()
+                .match("^ETF-Transaktionsentgelt (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3}$")
+                .match("^(Zahlungsbetrag nach|Zahlungsbetrag(?! in)|Die Auszahlung|Abwicklung|Summe der belasteten) .*$")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+
+                // gezahlte Vertriebsprovision 0,00 EUR (im Abrechnungskurs enthalten, 100,000 % Bonus)
+                // Abwicklung über IBAN Institut Zahlungsbetrag
                 .section("fee", "currency").optional()
                 .match("^gezahlte Vertriebsprovision (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3}) .*$")
+                .match("^(Zahlungsbetrag nach|Zahlungsbetrag(?! in)|Die Auszahlung|Abwicklung|Summe der belasteten) .*$")
                 .assign((t, v) -> processFeeEntries(t, v, type));                
     }
 

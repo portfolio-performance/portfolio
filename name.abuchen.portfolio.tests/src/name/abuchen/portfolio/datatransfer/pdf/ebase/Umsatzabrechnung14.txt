@@ -21,15 +21,15 @@ USt 3,00 EUR 3,00 EUR 0,00 EUR
 zum 30.06.2021
 Die Belastung der offenen Forderung erfolgt in Depotposition 123456789.01 mit Ref. Nr. 123456789/123456789
 
-Kauf 1234,1234 EUR mit Kursdatum 02.07.2021 in Depotposition 123456789.01
+Kauf 1234,12 EUR mit Kursdatum 02.07.2021 in Depotposition 123456789.01
 iShare.NASDAQ-100 UCITS ETF DE Inhaber-Anteile
 Ref. Nr. 123456789/123456789, Buchungsdatum 02.07.2021
 ISIN Anteile Abrechnungskurs Betrag
-DE000A0F5UF5 1234,1234 120,560000 EUR 1234,1234 EUR
+DE000A0F5UF5 1234,1234 120,560000 EUR 1234,12 EUR
 vermögenswirksame Leistungen
 Belastete Entgelte abzgl. Entgelte
-Summe 1234,1234 EUR
-Zahlungsbetrag aus Überweisung 1234,1234 EUR
+Summe 0,05 EUR
+Zahlungsbetrag aus Überweisung 1234,12 EUR
 Entgelte Betrag offene Forderung belasteter Betrag
-ETF-Transaktionsentgelt 1234,1234 EUR 0,00 EUR 1234,1234 EUR
-Summe der belasteten Entgelte 1234,1234 EUR
+ETF-Transaktionsentgelt 0,05 EUR 0,00 EUR 0,05 EUR
+Summe der belasteten Entgelte 0,05 EUR
