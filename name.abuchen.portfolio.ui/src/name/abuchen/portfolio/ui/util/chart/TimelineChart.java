@@ -429,7 +429,7 @@ public class TimelineChart extends Chart // NOSONAR
             setRedraw(false);
 
             getAxisSet().adjustRange();
-            ChartUtil.addYMargins(this, 0.03);
+            ChartUtil.addYMargins(this, 0.08);
         }
         finally
         {
