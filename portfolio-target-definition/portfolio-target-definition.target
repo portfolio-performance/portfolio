@@ -43,6 +43,10 @@
 		<unit id="javax.xml.stream" version="1.0.1.v201004272200"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+    		<repository location="http://download.eclipse.org/releases/2021-09"/>
+    		<unit id="javax.servlet" version="3.1.0.v201410161800"/>
+    </location>
+	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<repository location="https://download.eclipse.org/nebula/releases/2.5.0"/>
 		<unit id="org.eclipse.nebula.widgets.cdatetime.feature.feature.group" version="1.5.0.202106201019"/>
 	</location>
