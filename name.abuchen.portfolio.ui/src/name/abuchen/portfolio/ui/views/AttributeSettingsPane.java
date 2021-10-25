@@ -3,6 +3,8 @@ package name.abuchen.portfolio.ui.views;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import javax.inject.Inject;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.events.SelectionListener;
@@ -21,6 +23,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 
 import name.abuchen.portfolio.model.AttributeType;
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.LimitPrice;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.Colors;
@@ -31,6 +34,9 @@ import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
 public class AttributeSettingsPane implements InformationPanePage
 {
 
+    @Inject
+    private Client client;
+    
     @Override
     public String getLabel()
     {
@@ -71,7 +77,7 @@ public class AttributeSettingsPane implements InformationPanePage
         Class<?> type = attribute.getType();
         if(type == LimitPrice.class)
         {
-            LimitPriceSettingsViewFactory.createView(attribute, parent);            
+            LimitPriceSettingsViewFactory.createView(attribute, parent, client);            
         }
         else
         {          
@@ -92,20 +98,20 @@ public class AttributeSettingsPane implements InformationPanePage
     private static class LimitPriceSettingsViewFactory
     {
         
-        private static void createView(AttributeType attribute, Composite parent)
+        private static void createView(AttributeType attribute, Composite parent, Client client)
         {       
             LimitPriceSettings settings = new LimitPriceSettings(attribute.getProperties());
             Composite container = new Composite(parent, SWT.NONE);
             RowLayout layout = new RowLayout(SWT.HORIZONTAL);
             container.setLayout(layout);
 
-            createColorView(container, settings);
-            createDistanceView(container, settings);          
+            createColorView(container, settings, client);
+            createDistanceView(container, settings, client);          
             
         }
         
         
-        private static void createDistanceView(Composite parent, LimitPriceSettings settings)
+        private static void createDistanceView(Composite parent, LimitPriceSettings settings, Client client)
         {
           //---------------------------------------------------
             //-- Distance settings
@@ -116,15 +122,23 @@ public class AttributeSettingsPane implements InformationPanePage
             Button btn = new Button(gpDistance, SWT.CHECK);
             btn.setText(Messages.AttributeSettings_LimitPrice_ColumnSettings_ShowRelativeDiff);
             btn.setSelection(settings.getShowRelativeDiff());
-            btn.addSelectionListener(SelectionListener.widgetSelectedAdapter(event -> settings.setShowRelativeDiff(((Button)event.getSource()).getSelection())));
+            btn.addSelectionListener(SelectionListener.widgetSelectedAdapter(event -> 
+            {
+                settings.setShowRelativeDiff(((Button)event.getSource()).getSelection());
+                client.touch();
+            }));
 
             btn = new Button(gpDistance, SWT.CHECK);
             btn.setText(Messages.AttributeSettings_LimitPrice_ColumnSettings_ShowAbsoluteDiff);
             btn.setSelection(settings.getShowAbsoluteDiff());
-            btn.addSelectionListener(SelectionListener.widgetSelectedAdapter(event -> settings.setShowAbsoluteDiff(((Button)event.getSource()).getSelection())));
+            btn.addSelectionListener(SelectionListener.widgetSelectedAdapter(event ->
+            {
+                settings.setShowAbsoluteDiff(((Button)event.getSource()).getSelection());
+                client.touch();
+            }));
         }
         
-        private static void createColorView(Composite parent, LimitPriceSettings settings)
+        private static void createColorView(Composite parent, LimitPriceSettings settings, Client client)
         {
           //---------------------------------------------------
             //-- Color settings
@@ -135,8 +149,8 @@ public class AttributeSettingsPane implements InformationPanePage
             
             Composite colorContainer = new Composite(gpColors, SWT.NONE);
             colorContainer.setLayout(new GridLayout(3, false));
-            ColoredLabel exceedLabel = createColorButtons(colorContainer, settings::getLimitExceededColor, settings::setLimitExceededColor, Messages.AttributeSettings_LimitPrice_ColorSettings_LimitExceededColor, () -> Colors.theme().greenBackground());
-            ColoredLabel undercutLabel = createColorButtons(colorContainer, settings::getLimitUndercutColor, settings::setLimitUndercutColor, Messages.AttributeSettings_LimitPrice_ColorSettings_LimitUndercutColor, () -> Colors.theme().redBackground());                      
+            ColoredLabel exceedLabel = createColorButtons(colorContainer, settings::getLimitExceededColor, settings::setLimitExceededColor, Messages.AttributeSettings_LimitPrice_ColorSettings_LimitExceededColor, () -> Colors.theme().greenBackground(), client);
+            ColoredLabel undercutLabel = createColorButtons(colorContainer, settings::getLimitUndercutColor, settings::setLimitUndercutColor, Messages.AttributeSettings_LimitPrice_ColorSettings_LimitUndercutColor, () -> Colors.theme().redBackground(), client);                      
 
             Composite buttonsContainer = new Composite(gpColors, SWT.NONE);
             RowLayout layout = new RowLayout(SWT.HORIZONTAL);
@@ -153,6 +167,7 @@ public class AttributeSettingsPane implements InformationPanePage
                 Color undercut = settings.getLimitUndercutColor();
                 settings.setLimitUndercutColor(exceed);
                 settings.setLimitExceededColor(undercut);
+                client.touch();
                 
                 // swap label colors
                 exceedLabel.setBackdropColor(undercut);
@@ -171,6 +186,7 @@ public class AttributeSettingsPane implements InformationPanePage
                 Color undercut = Colors.theme().redBackground();
                 settings.setLimitExceededColor(exceed);
                 settings.setLimitUndercutColor(undercut);
+                client.touch();
                 
                 // swap label colors
                 exceedLabel.setBackdropColor(exceed);
@@ -181,7 +197,7 @@ public class AttributeSettingsPane implements InformationPanePage
         }       
        
         
-        private static ColoredLabel createColorButtons(Composite parent, Supplier<Color> getColor, Consumer<Color> setColor, String labelText, Supplier<Color> getThemeColor)
+        private static ColoredLabel createColorButtons(Composite parent, Supplier<Color> getColor, Consumer<Color> setColor, String labelText, Supplier<Color> getThemeColor, Client client)
         {          
             CLabel textLabel = new CLabel(parent, SWT.CENTER);
             textLabel.setText(labelText); 
@@ -223,6 +239,7 @@ public class AttributeSettingsPane implements InformationPanePage
                     setColor.accept(new Color(rgb));
                     colorLabel.setBackground(getColor.get()); 
                     colorLabel.setBackdropColor(getColor.get());
+                    client.touch();
                 }
             })) ;
             
