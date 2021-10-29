@@ -25,6 +25,7 @@ import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.swt.ColoredLabel;
 import name.abuchen.portfolio.ui.util.swt.StyledLabel;
+import name.abuchen.portfolio.ui.views.columns.LimitPriceSettings;
 import name.abuchen.portfolio.ui.views.settings.AttributeFieldType;
 import name.abuchen.portfolio.ui.views.settings.SettingsView;
 
@@ -34,12 +35,14 @@ public class LimitExceededWidget extends AbstractSecurityListWidget<LimitExceede
     {
         private LimitPrice limit;
         private SecurityPrice price;
+        private AttributeType attributeType;
 
-        public LimitItem(Security security, LimitPrice limit, SecurityPrice price)
+        public LimitItem(Security security, LimitPrice limit, SecurityPrice price, AttributeType type)
         {
             super(security);
             this.limit = limit;
             this.price = price;
+            this.attributeType = type;
         }
 
     }
@@ -74,7 +77,7 @@ public class LimitExceededWidget extends AbstractSecurityListWidget<LimitExceede
                     SecurityPrice latest = security.getSecurityPrice(LocalDate.now());
                     if (latest != null && limit.isExceeded(latest))
                     {
-                        items.add(new LimitItem(security, limit, latest));
+                        items.add(new LimitItem(security, limit, latest, t));
                     }
                 }
             }
@@ -98,12 +101,17 @@ public class LimitExceededWidget extends AbstractSecurityListWidget<LimitExceede
         name.setText(item.getSecurity().getName());
 
         ColoredLabel price = new ColoredLabel(composite, SWT.RIGHT);
-        price.setBackdropColor(item.limit.getRelationalOperator().isGreater() ? Colors.theme().greenBackground()
-                        : Colors.theme().redBackground());
+
+        // determine colors
+        LimitPriceSettings settings = new LimitPriceSettings(item.attributeType.getProperties());
+        price.setBackdropColor(item.limit.getRelationalOperator().isGreater()
+                        ? settings.getLimitExceededPositivelyColor(Colors.theme().greenBackground())
+                        : settings.getLimitExceededNegativelyColor(Colors.theme().redBackground()));
+
         price.setText(Values.Quote.format(item.getSecurity().getCurrencyCode(), item.price.getValue()));
 
         Label limit = new Label(composite, SWT.NONE);
-        limit.setText(item.limit.toString());
+        limit.setText(settings.getFullLabel(item.limit, item.price));
 
         composite.addMouseListener(mouseUpAdapter);
         name.addMouseListener(mouseUpAdapter);

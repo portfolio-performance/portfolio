@@ -1,13 +1,11 @@
 package name.abuchen.portfolio.ui.views.columns;
 
-import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.StringJoiner;
 import java.util.stream.Stream;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -29,7 +27,6 @@ import name.abuchen.portfolio.model.ImageManager;
 import name.abuchen.portfolio.model.LimitPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
-import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.Colors;
@@ -178,36 +175,19 @@ public class AttributeColumn extends Column
                 return null;
 
             LimitPrice limit = (LimitPrice) attributes.get(attribute);
-            // raw limit
-            String result = attribute.getConverter().toString(limit);
+            if (limit == null)
+                return null;
 
             // add relative/absolute difference to latest price if configured
-            if (limit != null && (settings.getShowAbsoluteDiff() || settings.getShowRelativeDiff()))
+            if (settings.getShowAbsoluteDiff() || settings.getShowRelativeDiff())
             {
                 SecurityPrice latestSecurityPrice = security.getSecurityPrice(LocalDate.now());
-
-                if (latestSecurityPrice == null)
-                    return result; // no price, no difference calculable
-
-                StringJoiner joiner = new StringJoiner(" / "); //$NON-NLS-1$
-                if (settings.getShowAbsoluteDiff())
-                {
-                    double absDistance = (limit.getValue() - latestSecurityPrice.getValue()) / Values.Quote.divider();
-                    DecimalFormat df = new DecimalFormat("+#.##;-#.##"); //$NON-NLS-1$
-                    joiner.add(df.format(absDistance));
-                }
-
-                if (settings.getShowRelativeDiff())
-                {
-                    double relativeDistance = ((double) limit.getValue() / latestSecurityPrice.getValue() - 1);
-                    DecimalFormat df = new DecimalFormat("+#.#%;-#.#%"); //$NON-NLS-1$
-                    joiner.add(df.format(relativeDistance));
-                }
-
-                result = result + " (" + joiner.toString() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
+                return settings.getFullLabel(limit, latestSecurityPrice);
             }
-
-            return result;
+            else
+            {
+                return limit.toString();
+            }
         }
 
         @Override
@@ -238,12 +218,10 @@ public class AttributeColumn extends Column
             {
                 case GREATER_OR_EQUAL:
                 case GREATER:
-                    return getSettingsColorOrDefault(settings.getLimitExceededPositivelyColor(),
-                                    Colors.theme().greenBackground());
+                    return settings.getLimitExceededPositivelyColor(Colors.theme().greenBackground());
                 case SMALLER_OR_EQUAL:
                 case SMALLER:
-                    return getSettingsColorOrDefault(settings.getLimitExceededNegativelyColor(),
-                                    Colors.theme().redBackground());
+                    return settings.getLimitExceededNegativelyColor(Colors.theme().redBackground());
                 default:
                     return null;
             }
@@ -257,11 +235,6 @@ public class AttributeColumn extends Column
                 return null;
 
             return Colors.getTextColor(background);
-        }
-
-        private Color getSettingsColorOrDefault(Color settingsColor, Color defaultColor)
-        {
-            return settingsColor != null ? settingsColor : defaultColor;
         }
     }
 

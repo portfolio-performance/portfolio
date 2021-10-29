@@ -1,8 +1,14 @@
 package name.abuchen.portfolio.ui.views.columns;
 
+import java.text.DecimalFormat;
+import java.util.StringJoiner;
+
 import org.eclipse.swt.graphics.Color;
 
+import name.abuchen.portfolio.model.LimitPrice;
+import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.TypedMap;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.ColorConversion;
 
 public class LimitPriceSettings
@@ -42,6 +48,29 @@ public class LimitPriceSettings
         return properties.getBoolean(PropertyKeys.SHOW_ABSOLUTE_DIFF);
     }
 
+    public String getFullLabel(LimitPrice limit, SecurityPrice price)
+    {
+        if (price == null)
+            return limit.toString();
+
+        StringJoiner joiner = new StringJoiner(" / ", " (", ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        if (getShowAbsoluteDiff())
+        {
+            double absDistance = (limit.getValue() - price.getValue()) / Values.Quote.divider();
+            DecimalFormat df = new DecimalFormat("+#.##;-#.##"); //$NON-NLS-1$
+            joiner.add(df.format(absDistance));
+        }
+
+        if (getShowRelativeDiff())
+        {
+            double relativeDistance = ((double) limit.getValue() / price.getValue() - 1);
+            DecimalFormat df = new DecimalFormat("+#.#%;-#.#%"); //$NON-NLS-1$
+            joiner.add(df.format(relativeDistance));
+        }
+
+        return limit.toString() + joiner.toString();
+    }
+
     public void setLimitExceededPositivelyColor(Color value)
     {
         if (value != null)
@@ -52,8 +81,13 @@ public class LimitPriceSettings
 
     public Color getLimitExceededPositivelyColor()
     {
+        return getLimitExceededPositivelyColor(null);
+    }
+
+    public Color getLimitExceededPositivelyColor(Color fallback)
+    {
         String hex = properties.getString(PropertyKeys.LIMIT_EXCEEDED_POSITIVELY_COLOR);
-        return hex != null ? new Color(ColorConversion.hex2RGBA(hex)) : null;
+        return hex != null ? new Color(ColorConversion.hex2RGBA(hex)) : fallback;
     }
 
     public void setLimitExceededNegativelyColor(Color value)
@@ -66,8 +100,12 @@ public class LimitPriceSettings
 
     public Color getLimitExceededNegativelyColor()
     {
-        String hex = properties.getString(PropertyKeys.LIMIT_UNDERCUT_NEGATIVELY_COLOR);
-        return hex != null ? new Color(ColorConversion.hex2RGBA(hex)) : null;
+        return getLimitExceededNegativelyColor(null);
     }
 
+    public Color getLimitExceededNegativelyColor(Color fallback)
+    {
+        String hex = properties.getString(PropertyKeys.LIMIT_UNDERCUT_NEGATIVELY_COLOR);
+        return hex != null ? new Color(ColorConversion.hex2RGBA(hex)) : fallback;
+    }
 }
