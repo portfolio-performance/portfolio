@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,9 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.LogoManager;
+import name.abuchen.portfolio.ui.util.swt.StyledLabel;
+import name.abuchen.portfolio.ui.views.settings.AttributeFieldType;
+import name.abuchen.portfolio.ui.views.settings.SettingsView;
 
 public class FollowUpWidget extends AbstractSecurityListWidget<FollowUpWidget.FollowUpItem>
 {
@@ -127,9 +131,20 @@ public class FollowUpWidget extends AbstractSecurityListWidget<FollowUpWidget.Fo
         name.addMouseListener(mouseUpAdapter);
         date.addMouseListener(mouseUpAdapter);
 
-        FormDataFactory.startingWith(logo).thenRight(name).right(new FormAttachment(100))
-                        .thenBelow(date);
+        FormDataFactory.startingWith(logo).thenRight(name).right(new FormAttachment(100)).thenBelow(date);
 
         return composite;
     }
+
+    @Override
+    protected void createEmptyControl(Composite parent)
+    {
+        if (get(AttributesConfig.class).hasTypes())
+            return;
+
+        title = new StyledLabel(parent, SWT.WRAP);
+        title.setText(MessageFormat.format(Messages.MsgHintNoAttributesConfigured, AttributeFieldType.DATE.toString()));
+        title.setOpenLinkHandler(d -> view.getPart().activateView(SettingsView.class, 1));
+    }
+
 }

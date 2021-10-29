@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,10 +19,14 @@ import name.abuchen.portfolio.model.LimitPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.swt.ColoredLabel;
+import name.abuchen.portfolio.ui.util.swt.StyledLabel;
+import name.abuchen.portfolio.ui.views.settings.AttributeFieldType;
+import name.abuchen.portfolio.ui.views.settings.SettingsView;
 
 public class LimitExceededWidget extends AbstractSecurityListWidget<LimitExceededWidget.LimitItem>
 {
@@ -80,7 +85,6 @@ public class LimitExceededWidget extends AbstractSecurityListWidget<LimitExceede
         };
     }
 
-
     @Override
     protected Composite createItemControl(Composite parent, LimitItem item)
     {
@@ -110,5 +114,17 @@ public class LimitExceededWidget extends AbstractSecurityListWidget<LimitExceede
                         .thenRight(limit);
 
         return composite;
+    }
+
+    @Override
+    protected void createEmptyControl(Composite parent)
+    {
+        if (get(AttributesConfig.class).hasTypes())
+            return;
+
+        title = new StyledLabel(parent, SWT.WRAP);
+        title.setText(MessageFormat.format(Messages.MsgHintNoAttributesConfigured,
+                        AttributeFieldType.LIMIT_PRICE.toString()));
+        title.setOpenLinkHandler(d -> view.getPart().activateView(SettingsView.class, 1));
     }
 }

@@ -40,6 +40,11 @@ public class AttributesConfig implements WidgetConfig
         return selectedType != null ? Arrays.asList(selectedType) : availableTypes;
     }
 
+    public boolean hasTypes()
+    {
+        return !availableTypes.isEmpty();
+    }
+
     @Override
     public void menuAboutToShow(IMenuManager manager)
     {
@@ -55,7 +60,7 @@ public class AttributesConfig implements WidgetConfig
         });
         any.setChecked(selectedType == null);
         subMenu.add(any);
-        
+
         for (AttributeType type : availableTypes)
         {
             Action action = new SimpleAction(type.getName(), a -> {

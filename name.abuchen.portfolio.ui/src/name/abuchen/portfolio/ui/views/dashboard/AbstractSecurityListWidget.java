@@ -131,21 +131,30 @@ public abstract class AbstractSecurityListWidget<T extends AbstractSecurityListW
             if (!child.isDisposed())
                 child.dispose();
 
-        int count = 0;
-        for (T item : items)
+        if (items.isEmpty())
         {
-            // limit the number of securities listed on the dashboard to 25
-            if (count >= 25)
-                break;
+            createEmptyControl(list);
+        }
+        else
+        {
+            int count = 0;
+            for (T item : items)
+            {
+                // limit the number of securities listed on the dashboard to 25
+                if (count >= 25)
+                    break;
 
-            Composite child = createItemControl(list, item);
-            child.setData(item);
-            count++;
+                Composite child = createItemControl(list, item);
+                child.setData(item);
+                count++;
+            }
         }
 
         list.setData(items);
         list.layout(true);
     }
+
+    protected abstract void createEmptyControl(Composite parent);
 
     protected abstract Composite createItemControl(Composite parent, T item);
 
