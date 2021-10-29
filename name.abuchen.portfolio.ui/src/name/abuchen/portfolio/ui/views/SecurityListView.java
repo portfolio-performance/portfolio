@@ -68,8 +68,6 @@ import name.abuchen.portfolio.util.TradeCalendarManager;
 
 public class SecurityListView extends AbstractFinanceView
 {
-    public static final int LIMIT_PRICE_FILTER_ID = 1 << 6;
-
     private class CreateSecurityDropDown extends DropDown implements IMenuListener
     {
         public CreateSecurityDropDown()
@@ -210,9 +208,10 @@ public class SecurityListView extends AbstractFinanceView
             super(Messages.SecurityListFilter, Images.FILTER_OFF, SWT.NONE);
             setMenuListener(this);
 
-            int savedFilters;
-            if (adhocFilter != 0)
-                savedFilters = adhocFilter;
+            int savedFilters = 0;
+
+            if (adhocFilter != null)
+                filter.add(adhocFilter);
             else if (watchlist != null)
                 savedFilters = preferenceStore.getInt(
                                 this.getClass().getSimpleName() + "-filterSettings" + "-" + watchlist.getName()); //$NON-NLS-1$ //$NON-NLS-2$
@@ -229,7 +228,7 @@ public class SecurityListView extends AbstractFinanceView
                 filter.add(sharesNotZero);
             if ((savedFilters & (1 << 5)) != 0)
                 filter.add(sharesEqualZero);
-            if ((savedFilters & LIMIT_PRICE_FILTER_ID) != 0)
+            if ((savedFilters & (1 << 6)) != 0)
                 filter.add(limitPriceExceeded);
 
             if (!filter.isEmpty())
@@ -238,7 +237,7 @@ public class SecurityListView extends AbstractFinanceView
             addDisposeListener(e -> {
 
                 // save filter configuration only if it is not an ad hoc filter
-                if (adhocFilter != 0)
+                if (adhocFilter != null)
                     return;
 
                 int savedFilter = 0;
@@ -253,7 +252,7 @@ public class SecurityListView extends AbstractFinanceView
                 if (filter.contains(sharesEqualZero))
                     savedFilter += (1 << 5);
                 if (filter.contains(limitPriceExceeded))
-                    savedFilter += LIMIT_PRICE_FILTER_ID;
+                    savedFilter += (1 << 6);
                 if (watchlist != null)
                     preferenceStore.setValue(
                                     this.getClass().getSimpleName() + "-filterSettings" + "-" + watchlist.getName(), //$NON-NLS-1$ //$NON-NLS-2$
@@ -313,6 +312,12 @@ public class SecurityListView extends AbstractFinanceView
         @Override
         public void menuAboutToShow(IMenuManager manager)
         {
+            if (adhocFilter != null)
+            {
+                manager.add(createAction(Messages.LabelAdhocFilter, adhocFilter));
+                manager.add(new Separator());
+            }
+
             manager.add(createAction(Messages.SecurityListFilterHideInactive, securityIsNotInactive));
             manager.add(createAction(Messages.SecurityListFilterOnlySecurities, onlySecurities));
             manager.add(createAction(Messages.SecurityListFilterOnlyExchangeRates, onlyExchangeRates));
@@ -334,10 +339,6 @@ public class SecurityListView extends AbstractFinanceView
                         filter.remove(predicate);
                     else
                         filter.add(predicate);
-
-                    // as the user manually changes the filter, remove the flag
-                    // that this is an ad hoc filter
-                    adhocFilter = 0;
 
                     // uncheck mutually exclusive actions if new filter is added
                     if (!isChecked)
@@ -372,7 +373,7 @@ public class SecurityListView extends AbstractFinanceView
 
     private Pattern filterPattern;
 
-    private int adhocFilter;
+    private Predicate<Security> adhocFilter;
 
     @Override
     protected String getDefaultTitle()
@@ -408,7 +409,7 @@ public class SecurityListView extends AbstractFinanceView
 
     @Inject
     @Optional
-    public void setup(@Named(UIConstants.Parameter.VIEW_PARAMETER) int adhocFilter)
+    public void setup(@Named(UIConstants.Parameter.VIEW_PARAMETER) Predicate<Security> adhocFilter)
     {
         this.adhocFilter = adhocFilter;
     }

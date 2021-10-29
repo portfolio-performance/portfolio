@@ -468,9 +468,11 @@ public class Messages extends NLS
     public static String LabelAccumulatedInterest;
     public static String LabelAccumulatedInterestCharge;
     public static String LabelAccumulatedTaxes;
+    public static String LabelAdhocFilter;
     public static String LabelAfterTaxAndFees;
     public static String LabelAggregation;
     public static String LabelAggregationDaily;
+    public static String LabelAllAttributes;
     public static String LabelAllCurrencies;
     public static String LabelAllFiles;
     public static String LabelAllSecurities;
@@ -1004,6 +1006,7 @@ public class Messages extends NLS
     public static String SecurityFilterSharesHeldEqualZero;
     public static String SecurityFilterSharesHeldNotZero;
     public static String SecurityListFilter;
+    public static String SecurityListFilterDateReached;
     public static String SecurityListFilterHideInactive;
     public static String SecurityListFilterLimitPriceExceeded;
     public static String SecurityListFilterOnlyExchangeRates;
@@ -1132,6 +1135,8 @@ public class Messages extends NLS
     public static String HelpURL;
     public static String HoldingsWarningAssetsWithNegativeValuation;
     public static String HoldingsWarningAssetsWithNegativeValuationDetails;
+    public static String OptionDateIsInTheFuture;
+    public static String OptionDateIsInThePast;
     public static String YearlyPerformanceHeatmapToolTip;
     static
     {
