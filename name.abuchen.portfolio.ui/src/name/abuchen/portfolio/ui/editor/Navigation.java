@@ -618,7 +618,7 @@ public final class Navigation
         roots.add(section);
 
         section.add(new Item(Messages.LabelCurrencies, CurrencyView.class, true));
-        section.add(new Item(Messages.LabelSettings, SettingsView.class, true));
+        section.add(new Item(Messages.LabelSettings, SettingsView.class));
 
         if ("yes".equals(System.getProperty("name.abuchen.portfolio.debug"))) //$NON-NLS-1$ //$NON-NLS-2$
             section.add(new Item("Browser Test", BrowserTestView.class)); //$NON-NLS-1$

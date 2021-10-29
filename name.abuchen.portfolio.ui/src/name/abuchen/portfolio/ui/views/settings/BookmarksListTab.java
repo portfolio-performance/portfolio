@@ -27,6 +27,7 @@ import name.abuchen.portfolio.model.ClientSettings;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.DesktopAPI;
 import name.abuchen.portfolio.ui.util.DropDown;
@@ -51,6 +52,9 @@ public class BookmarksListTab implements AbstractTabbedView.Tab, ModificationLis
 
     @Inject
     private IPreferenceStore preferences;
+
+    @Inject
+    private AbstractFinanceView view;
 
     @Override
     public String getTitle()
@@ -149,6 +153,9 @@ public class BookmarksListTab implements AbstractTabbedView.Tab, ModificationLis
 
         bookmarks.setInput(client.getSettings().getBookmarks());
         bookmarks.refresh();
+
+        bookmarks.addSelectionChangedListener(
+                        e -> view.setInformationPaneInput(e.getStructuredSelection().getFirstElement()));
 
         new ContextMenu(bookmarks.getTable(), this::fillContextMenu).hook();
 
