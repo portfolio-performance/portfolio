@@ -8,6 +8,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.server.resources.AccountResource;
 import name.abuchen.portfolio.server.resources.PortfolioResource;
 import name.abuchen.portfolio.server.resources.SecuritiesResource;
+import name.abuchen.portfolio.server.resources.TaxonomiesResource;
 import name.abuchen.portfolio.server.resources.TransactionResource;
 
 @SuppressWarnings("restriction")
@@ -22,6 +23,7 @@ public class JerseyApplication extends ResourceConfig
         register(SecuritiesResource.class);
         register(AccountResource.class);
         register(PortfolioResource.class);
+        register(TaxonomiesResource.class);
 
         register(new AbstractBinder()
         {

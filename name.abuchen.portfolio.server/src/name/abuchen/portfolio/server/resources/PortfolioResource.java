@@ -9,6 +9,7 @@ import javax.ws.rs.NotFoundException;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
@@ -44,7 +45,10 @@ public class PortfolioResource
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{id}/assets")
-    public JPortfolioSnapshot getPortfolioSnapshot(@PathParam("id") String id, @Context Client client) 
+    public JPortfolioSnapshot getPortfolioSnapshot(
+                    @PathParam("id") String id,
+                    @QueryParam("groupBy") String groupBy,
+                    @Context Client client) 
     {
         var oPortfolio = client.getPortfolios().stream().filter(portfolio -> portfolio.getUUID().equals(id)).findFirst();
         
@@ -67,6 +71,18 @@ public class PortfolioResource
         var performanceSnapshot = SecurityPerformanceSnapshot.create(filteredClient, cc, Interval.of(LocalDate.MIN, date), SecurityPerformanceIndicator.Costs.class);
         
         var snapshot = JPortfolioSnapshot.from(clientSnapshot.getPortfolios().get(0), performanceSnapshot);
+        
+        if(groupBy != "") {
+            var taxonomy = client.getTaxonomy(groupBy);
+            
+            if(taxonomy == null) {
+                throw new NotFoundException();
+            }
+            
+            var groupByTaxonomy = clientSnapshot.groupByTaxonomy(taxonomy);
+            
+            var categories = groupByTaxonomy.asList();
+        }
         
         return snapshot;
     }
