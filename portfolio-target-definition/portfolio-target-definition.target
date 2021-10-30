@@ -45,13 +45,13 @@
 		<unit id="name.abuchen.portfolio.dependencies.feature.feature.group" version="1.6.0"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<repository location="https://download.eclipse.org/technology/babel/update-site/R0.19.0/2021-06/"/>
-		<unit id="org.eclipse.babel.nls_eclipse_de.feature.group" version="4.20.0.v20210630020001"/>
-		<unit id="org.eclipse.babel.nls_eclipse_es.feature.group" version="4.20.0.v20210630020001"/>
-		<unit id="org.eclipse.babel.nls_eclipse_fr.feature.group" version="4.20.0.v20210630020001"/>
-		<unit id="org.eclipse.babel.nls_eclipse_it.feature.group" version="4.20.0.v20210630020001"/>
-		<unit id="org.eclipse.babel.nls_eclipse_nl.feature.group" version="4.20.0.v20210630020001"/>
-		<unit id="org.eclipse.babel.nls_eclipse_pt.feature.group" version="4.20.0.v20210630020001"/>
+		<repository location="https://download.eclipse.org/technology/babel/update-site/R0.19.1/2021-09/"/>
+		<unit id="org.eclipse.babel.nls_eclipse_de.feature.group" version="4.21.0.v20210925020001"/>
+		<unit id="org.eclipse.babel.nls_eclipse_es.feature.group" version="4.21.0.v20210925020001"/>
+		<unit id="org.eclipse.babel.nls_eclipse_fr.feature.group" version="4.21.0.v20210925020001"/>
+		<unit id="org.eclipse.babel.nls_eclipse_it.feature.group" version="4.21.0.v20210925020001"/>
+		<unit id="org.eclipse.babel.nls_eclipse_nl.feature.group" version="4.21.0.v20210925020001"/>
+		<unit id="org.eclipse.babel.nls_eclipse_pt.feature.group" version="4.21.0.v20210925020001"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<repository location="https://download.eclipse.org/swtchart/releases/0.13.0/repository"/>
