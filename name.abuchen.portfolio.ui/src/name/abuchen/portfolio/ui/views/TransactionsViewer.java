@@ -437,6 +437,11 @@ public final class TransactionsViewer implements ModificationListener
         ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getNote()).attachTo(column); // $NON-NLS-1$
         new StringEditingSupport(Transaction.class, "note").addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
+
+        column = new Column("source", Messages.ColumnSource, SWT.None, 200); //$NON-NLS-1$
+        column.setLabelProvider(new TransactionLabelProvider(Transaction::getSource));
+        ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getSource()).attachTo(column); // $NON-NLS-1$
+        support.addColumn(column);
     }
 
     public ShowHideColumnHelper getColumnSupport()

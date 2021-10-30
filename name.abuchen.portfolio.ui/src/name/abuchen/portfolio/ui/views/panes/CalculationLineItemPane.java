@@ -278,7 +278,7 @@ public class CalculationLineItemPane implements InformationPanePage
         support.addColumn(column);
 
         // note
-        column = new Column("note", Messages.ColumnNote, SWT.LEFT, 22); //$NON-NLS-1$
+        column = new Column("note", Messages.ColumnNote, SWT.LEFT, 200); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override

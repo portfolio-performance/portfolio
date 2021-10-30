@@ -2,8 +2,8 @@ package name.abuchen.portfolio.datatransfer.pdf.dkb;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsEmptyCollection.empty;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
+
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
@@ -64,7 +65,7 @@ public class DkbPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-11-25T11:02:54")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(20)));
-        assertThat(entry.getNote(),is("Limit 97,50 % | Kauf01.txt"));
+        assertThat(entry.getNote(), is("Limit 97,50 % | Kauf01.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2030.66))));
@@ -106,7 +107,7 @@ public class DkbPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-01-25T09:33:06")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1000)));
-        assertThat(entry.getNote(),is("Limit 1,75 EUR | Kauf02.txt"));
+        assertThat(entry.getNote(), is("Limit 1,75 EUR | Kauf02.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1760.91))));
@@ -353,7 +354,7 @@ public class DkbPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-10-27T09:05:33")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(60)));
-        assertThat(entry.getNote(),is("Limit 85,00 % | Verkauf01.txt"));
+        assertThat(entry.getNote(), is("Limit 85,00 % | Verkauf01.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4937.19))));
@@ -373,8 +374,7 @@ public class DkbPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-10-27T00:00")));
-        assertThat(transaction.getMonetaryAmount(), 
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(56.57))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(56.57))));
     }
 
     @Test
@@ -407,7 +407,7 @@ public class DkbPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-02-10T10:58:02")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(200)));
-        assertThat(entry.getNote(),is("Limit 15,05 EUR | Verkauf02.txt"));
+        assertThat(entry.getNote(), is("Limit 15,05 EUR | Verkauf02.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3000.00))));
@@ -490,7 +490,7 @@ public class DkbPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-02-22T20:56:04")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(20)));
-        assertThat(entry.getNote(),is("Limit 5,44 EUR | Verkauf04.txt"));
+        assertThat(entry.getNote(), is("Limit 5,44 EUR | Verkauf04.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(99.00))));
@@ -510,8 +510,7 @@ public class DkbPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-23T00:00")));
-        assertThat(transaction.getMonetaryAmount(), 
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(16.08))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(16.08))));
     }
 
     @Test
@@ -585,7 +584,7 @@ public class DkbPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-07-06T14:49:39")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(75)));
-        assertThat(entry.getNote(),is("Limit 27,80 EUR | Verkauf06.txt"));
+        assertThat(entry.getNote(), is("Limit 27,80 EUR | Verkauf06.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2051.02))));
@@ -832,10 +831,8 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-01-04T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(100)));
 
-        assertThat(transaction.getMonetaryAmount(), 
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(144.52))));
-        assertThat(transaction.getGrossValue(), 
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(181.25))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(144.52))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(181.25))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(32.09 + 1.76 + 2.88))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -872,10 +869,8 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-04-07T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(30)));
 
-        assertThat(transaction.getMonetaryAmount(), 
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(97.50))));
-        assertThat(transaction.getGrossValue(), 
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(97.50))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(97.50))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(97.50))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -912,10 +907,8 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-12-07T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(216)));
 
-        assertThat(transaction.getMonetaryAmount(), 
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(32.93))));
-        assertThat(transaction.getGrossValue(), 
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(45.61))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(32.93))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(45.61))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(11.18 + 0.61 + 0.89))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -952,10 +945,8 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-05-15T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1)));
 
-        assertThat(transaction.getMonetaryAmount(), 
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(27.72))));
-        assertThat(transaction.getGrossValue(), 
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(42.65))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(27.72))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(42.65))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(14.93))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -992,10 +983,8 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-06-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(10)));
 
-        assertThat(transaction.getMonetaryAmount(), 
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.02))));
-        assertThat(transaction.getGrossValue(), 
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.10))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.02))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.10))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.03 + 0.05))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -1032,10 +1021,8 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-01-11T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(16.3517)));
 
-        assertThat(transaction.getMonetaryAmount(), 
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.45))));
-        assertThat(transaction.getGrossValue(), 
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.99))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.45))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.99))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.52 + 0.02))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -1072,10 +1059,8 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2014-01-02T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(100)));
 
-        assertThat(transaction.getMonetaryAmount(), 
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(173.02))));
-        assertThat(transaction.getGrossValue(), 
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(181.25))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(173.02))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(181.25))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7.81 + 0.42))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -1112,10 +1097,8 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-05-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(92)));
 
-        assertThat(transaction.getMonetaryAmount(), 
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(105.80))));
-        assertThat(transaction.getGrossValue(), 
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(105.80))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(105.80))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(105.80))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -1152,10 +1135,8 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-02-23T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(53)));
 
-        assertThat(transaction.getMonetaryAmount(), 
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7.79))));
-        assertThat(transaction.getGrossValue(), 
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7.79))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7.79))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7.79))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -1192,10 +1173,8 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-10-04T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(10.6841)));
 
-        assertThat(transaction.getMonetaryAmount(), 
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.09))));
-        assertThat(transaction.getGrossValue(), 
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.09))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.09))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.09))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -1231,12 +1210,11 @@ public class DkbPDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-02-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(66)));
-        assertThat(transaction.getNote(),is("Quartalsdividende | Dividende11.txt"));
+        assertThat(transaction.getNote(), is("Quartalsdividende"));
+        assertThat(transaction.getSource(), is("Dividende11.txt"));
 
-        assertThat(transaction.getMonetaryAmount(), 
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(29.95))));
-        assertThat(transaction.getGrossValue(), 
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(35.24))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(29.95))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(35.24))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.29))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -1272,12 +1250,11 @@ public class DkbPDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-07-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(715)));
-        assertThat(transaction.getNote(),is("Schlussdividende | Dividende12.txt"));
+        assertThat(transaction.getNote(), is("Schlussdividende"));
+        assertThat(transaction.getSource(), is("Dividende12.txt"));
 
-        assertThat(transaction.getMonetaryAmount(), 
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(133.58))));
-        assertThat(transaction.getGrossValue(), 
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(180.17))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(133.58))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(180.17))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(27.03 + 18.01 + 0.99 + 0.56))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -1313,12 +1290,11 @@ public class DkbPDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-10-13T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(450)));
-        assertThat(transaction.getNote(),is("Zwischendividende | Dividende13.txt"));
+        assertThat(transaction.getNote(), is("Zwischendividende"));
+        assertThat(transaction.getSource(), is("Dividende13.txt"));
 
-        assertThat(transaction.getMonetaryAmount(), 
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(227.63))));
-        assertThat(transaction.getGrossValue(), 
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(309.17))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(227.63))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(309.17))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(77.29 + 4.25))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -1355,12 +1331,10 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-05T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(935)));
 
-        assertThat(transaction.getMonetaryAmount(), 
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(13.24))));
-        assertThat(transaction.getGrossValue(), 
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(18.36))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.24 + 2.24 + 0.12 + 0.12 + 0.20 + 0.20))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(13.24))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(18.36))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(
+                        Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.24 + 2.24 + 0.12 + 0.12 + 0.20 + 0.20))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
     }
@@ -1395,10 +1369,8 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-05-15T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1)));
 
-        assertThat(transaction.getMonetaryAmount(), 
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(35.12))));
-        assertThat(transaction.getGrossValue(), 
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(35.12))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(35.12))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(35.12))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -1409,15 +1381,15 @@ public class DkbPDFExtractorTest
     public void testWertpapierDividende16()
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
-    
+
         List<Exception> errors = new ArrayList<>();
-    
+
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende16.txt"), errors);
-    
+
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
-    
+
         // check security
         Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
@@ -1425,20 +1397,18 @@ public class DkbPDFExtractorTest
         assertThat(security.getWkn(), is("A0Z2ZZ"));
         assertThat(security.getName(), is("FREENET AG NAMENS-AKTIEN O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
-    
+
         // check dividends transaction
         AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-    
+
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-    
+
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2014-05-14T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(200)));
-    
-        assertThat(transaction.getMonetaryAmount(), 
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(290.00))));
-        assertThat(transaction.getGrossValue(), 
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(290.00))));
+
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(290.00))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(290.00))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -1452,7 +1422,8 @@ public class DkbPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "WertpapierAusgang01.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "WertpapierAusgang01.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -1493,8 +1464,7 @@ public class DkbPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vorabpauschale01.txt"),
-                        errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vorabpauschale01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -1518,10 +1488,8 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-06T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(49.1102)));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.08))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.08))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.08))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -1535,8 +1503,7 @@ public class DkbPDFExtractorTest
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Fondssparplan01.txt"),
-                        errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Fondssparplan01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(7));
@@ -1676,8 +1643,7 @@ public class DkbPDFExtractorTest
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "Fondssparplan02.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Fondssparplan02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(4));
@@ -1702,7 +1668,7 @@ public class DkbPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-02-20T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3.9136)));
-        
+
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(200.00))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
@@ -1758,8 +1724,7 @@ public class DkbPDFExtractorTest
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug01.txt"),
-                        errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(10));
@@ -1875,7 +1840,7 @@ public class DkbPDFExtractorTest
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-29T00:00")));
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(1234.56)));
         }
-        
+
         if (iter.hasNext())
         {
             Item item = iter.next();
@@ -1897,8 +1862,7 @@ public class DkbPDFExtractorTest
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug02.txt"),
-                        errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(4));
@@ -1963,8 +1927,7 @@ public class DkbPDFExtractorTest
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug03.txt"),
-                        errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(6));
@@ -1984,7 +1947,7 @@ public class DkbPDFExtractorTest
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-04-29T00:00")));
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.22)));
         }
-        
+
         if (iter.hasNext())
         {
             Item item = iter.next();
@@ -1996,7 +1959,7 @@ public class DkbPDFExtractorTest
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-11T00:00")));
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(31.95)));
         }
-        
+
         if (iter.hasNext())
         {
             Item item = iter.next();
@@ -2008,7 +1971,7 @@ public class DkbPDFExtractorTest
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-15T00:00")));
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(69.96)));
         }
-        
+
         if (iter.hasNext())
         {
             Item item = iter.next();
@@ -2020,7 +1983,7 @@ public class DkbPDFExtractorTest
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-18T00:00")));
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(1337.96)));
         }
-        
+
         if (iter.hasNext())
         {
             Item item = iter.next();
@@ -2032,7 +1995,7 @@ public class DkbPDFExtractorTest
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-23T00:00")));
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(163.80)));
         }
-        
+
         if (iter.hasNext())
         {
             Item item = iter.next();
@@ -2043,7 +2006,7 @@ public class DkbPDFExtractorTest
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-24T00:00")));
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(1337.69)));
-        }   
+        }
     }
 
     @Test
@@ -2053,8 +2016,7 @@ public class DkbPDFExtractorTest
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug04.txt"),
-                        errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -2062,7 +2024,7 @@ public class DkbPDFExtractorTest
         // check transaction
         // get transactions
         Iterator<Extractor.Item> iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
-        assertThat(results.stream().filter(i -> i instanceof TransactionItem).count(), is(2L));       
+        assertThat(results.stream().filter(i -> i instanceof TransactionItem).count(), is(2L));
         if (iter.hasNext())
         {
             Item item = iter.next();
@@ -2095,8 +2057,7 @@ public class DkbPDFExtractorTest
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug05.txt"),
-                        errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug05.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(21));
@@ -2116,7 +2077,7 @@ public class DkbPDFExtractorTest
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-04-01T00:00")));
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.24)));
         }
-        
+
         if (iter.hasNext())
         {
             Item item = iter.next();
@@ -2356,7 +2317,7 @@ public class DkbPDFExtractorTest
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-04-01T00:00")));
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(52.5)));
         }
-        
+
         if (iter.hasNext())
         {
             Item item = iter.next();
@@ -2377,8 +2338,7 @@ public class DkbPDFExtractorTest
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug06.txt"),
-                        errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug06.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -2420,8 +2380,7 @@ public class DkbPDFExtractorTest
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug07.txt"),
-                        errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug07.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -2462,8 +2421,7 @@ public class DkbPDFExtractorTest
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug08.txt"),
-                        errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug08.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -2504,8 +2462,7 @@ public class DkbPDFExtractorTest
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug09.txt"),
-                        errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug09.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(4));
@@ -2604,7 +2561,7 @@ public class DkbPDFExtractorTest
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-23T00:00")));
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(57.57)));
         }
-        
+
         if (iter.hasNext())
         {
             Item item = iter.next();
@@ -2616,7 +2573,7 @@ public class DkbPDFExtractorTest
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-21T00:00")));
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.01)));
         }
-        
+
         if (iter.hasNext())
         {
             Item item = iter.next();
@@ -2628,7 +2585,7 @@ public class DkbPDFExtractorTest
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-10-23T00:00")));
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.01)));
         }
-        
+
         if (iter.hasNext())
         {
             Item item = iter.next();
@@ -2707,7 +2664,7 @@ public class DkbPDFExtractorTest
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-07-26T00:00")));
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(100.00)));
         }
-        
+
         if (iter.hasNext())
         {
             Item item = iter.next();
@@ -2719,7 +2676,7 @@ public class DkbPDFExtractorTest
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-02T00:00")));
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(100.00)));
         }
-        
+
         if (iter.hasNext())
         {
             Item item = iter.next();

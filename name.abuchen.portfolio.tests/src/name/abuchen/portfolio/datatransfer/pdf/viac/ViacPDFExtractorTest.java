@@ -1,8 +1,8 @@
 package name.abuchen.portfolio.datatransfer.pdf.viac;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsEmptyCollection.empty;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -605,7 +605,9 @@ public class ViacPDFExtractorTest
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(5.73))));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.0)));
-        assertThat(transaction.getNote(), is("CSIF Emerging Markets | ViacDividend03.txt"));
+        assertThat(transaction.getNote(), is("CSIF Emerging Markets"));
+        assertThat(transaction.getSource(), is("ViacDividend03.txt"));
+
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-27T00:00")));
 
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0))));

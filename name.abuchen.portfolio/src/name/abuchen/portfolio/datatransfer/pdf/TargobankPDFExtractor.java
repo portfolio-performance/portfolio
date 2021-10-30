@@ -419,7 +419,8 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
 
                     // combine document notes and mark transaction 2 to be
                     // deleted
-                    a1.setNote(a2.getNote().concat("; ").concat(a1.getNote())); //$NON-NLS-1$
+                    a1.setSource(concat(a2.getSource(), a1.getSource()));
+                    a1.setNote(concat(a2.getNote(), a1.getNote()));
                     a2.setNote(TO_BE_DELETED);
                 }
             });
@@ -468,7 +469,8 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                     }
                     // combine document notes and mark transaction 1 to be
                     // deleted
-                    a2.setNote(a2.getNote().concat("; ").concat(a1.getNote())); //$NON-NLS-1$
+                    a1.setSource(concat(a2.getSource(), a1.getSource()));
+                    a2.setNote(concat(a2.getNote(), a1.getNote()));
                     a1.setNote(TO_BE_DELETED);
                 }
             });
@@ -482,7 +484,7 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
             if (o instanceof AccountTransaction)
             {
                 AccountTransaction a = (AccountTransaction) o;
-                if (a.getNote().equals(TO_BE_DELETED))
+                if (TO_BE_DELETED.equals(a.getNote()))
                 {
                     iter.remove();
                 }
@@ -490,7 +492,7 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
             else if (o instanceof BuySellEntry)
             {
                 BuySellEntry a = (BuySellEntry) o;
-                if (a.getNote().equals(TO_BE_DELETED))
+                if (TO_BE_DELETED.equals(a.getNote()))
                 {
                     iter.remove();
                 }
@@ -498,5 +500,16 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
         }
         return items;
 
+    }
+
+    private String concat(String first, String second)
+    {
+        if (first == null && second == null)
+            return null;
+
+        if (first != null && second == null)
+            return first;
+
+        return first == null ? second : first + "; " + second; //$NON-NLS-1$
     }
 }

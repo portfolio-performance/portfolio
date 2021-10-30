@@ -23,6 +23,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.model.Transaction.Unit.Type;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.util.TextUtil;
 
 @SuppressWarnings("nls")
 public class ComdirectPDFExtractor extends AbstractPDFExtractor
@@ -419,7 +420,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                 // zahlbar ab 19.10.2017                 monatl. Dividende                            
                 .section("note").optional()
                 .match("^zahlbar ab [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} ([\\s]+)(?<note>.*)$")
-                .assign((t, v) -> t.setNote(v.get("note")))
+                .assign((t, v) -> t.setNote(TextUtil.strip(v.get("note"))))
                 
                 .wrap(TransactionItem::new);
 

@@ -352,6 +352,19 @@ public class TransactionsTab implements PaymentsTab
         });
         ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getNote()).attachTo(column);
         support.addColumn(column);
+
+        column = new Column(Messages.ColumnSource, SWT.None, 200);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return ((TransactionPair<?>) element).getTransaction().getSource();
+            }
+        });
+        ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getSource()).attachTo(column);
+        column.setVisible(false);
+        support.addColumn(column);
     }
 
     private Color colorFor(Object element)
