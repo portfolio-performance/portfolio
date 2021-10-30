@@ -493,6 +493,8 @@ import name.abuchen.portfolio.money.Money;
 
         if (newTransaction.hasNote())
             t.setNote(newTransaction.getNote());
+        if (newTransaction.hasSource())
+            t.setSource(newTransaction.getSource());
 
         t.setShares(newTransaction.getShares());
 
@@ -1059,6 +1061,8 @@ import name.abuchen.portfolio.money.Money;
 
         if (t.getNote() != null)
             newTransaction.setNote(t.getNote());
+        if (t.getSource() != null)
+            newTransaction.setSource(t.getSource());
 
         newTransaction.setShares(t.getShares());
 

@@ -246,4 +246,21 @@ public interface PTransactionOrBuilder extends
    * <code>.google.protobuf.Timestamp updatedAt = 16;</code>
    */
   com.google.protobuf.TimestampOrBuilder getUpdatedAtOrBuilder();
+
+  /**
+   * <code>optional string source = 17;</code>
+   * @return Whether the source field is set.
+   */
+  boolean hasSource();
+  /**
+   * <code>optional string source = 17;</code>
+   * @return The source.
+   */
+  java.lang.String getSource();
+  /**
+   * <code>optional string source = 17;</code>
+   * @return The bytes for source.
+   */
+  com.google.protobuf.ByteString
+      getSourceBytes();
 }

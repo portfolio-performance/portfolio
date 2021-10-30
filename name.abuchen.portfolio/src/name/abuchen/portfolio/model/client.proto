@@ -180,6 +180,8 @@ message PTransaction {
   repeated PTransactionUnit units = 15;
 
   google.protobuf.Timestamp updatedAt = 16;
+  
+  optional string source = 17;
 }
 
 message PInvestmentPlan {

@@ -27,6 +27,7 @@ private static final long serialVersionUID = 0L;
     note_ = "";
     security_ = "";
     units_ = java.util.Collections.emptyList();
+    source_ = "";
   }
 
   @java.lang.Override
@@ -176,6 +177,12 @@ private static final long serialVersionUID = 0L;
               updatedAt_ = subBuilder.buildPartial();
             }
 
+            break;
+          }
+          case 138: {
+            java.lang.String s = input.readStringRequireUtf8();
+            bitField0_ |= 0x00000200;
+            source_ = s;
             break;
           }
           default: {
@@ -1004,6 +1011,52 @@ private static final long serialVersionUID = 0L;
     return getUpdatedAt();
   }
 
+  public static final int SOURCE_FIELD_NUMBER = 17;
+  private volatile java.lang.Object source_;
+  /**
+   * <code>optional string source = 17;</code>
+   * @return Whether the source field is set.
+   */
+  @java.lang.Override
+  public boolean hasSource() {
+    return ((bitField0_ & 0x00000200) != 0);
+  }
+  /**
+   * <code>optional string source = 17;</code>
+   * @return The source.
+   */
+  @java.lang.Override
+  public java.lang.String getSource() {
+    java.lang.Object ref = source_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = 
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      source_ = s;
+      return s;
+    }
+  }
+  /**
+   * <code>optional string source = 17;</code>
+   * @return The bytes for source.
+   */
+  @java.lang.Override
+  public com.google.protobuf.ByteString
+      getSourceBytes() {
+    java.lang.Object ref = source_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      source_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -1065,6 +1118,9 @@ private static final long serialVersionUID = 0L;
     }
     if (updatedAt_ != null) {
       output.writeMessage(16, getUpdatedAt());
+    }
+    if (((bitField0_ & 0x00000200) != 0)) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 17, source_);
     }
     unknownFields.writeTo(output);
   }
@@ -1129,6 +1185,9 @@ private static final long serialVersionUID = 0L;
     if (updatedAt_ != null) {
       size += com.google.protobuf.CodedOutputStream
         .computeMessageSize(16, getUpdatedAt());
+    }
+    if (((bitField0_ & 0x00000200) != 0)) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(17, source_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -1209,6 +1268,11 @@ private static final long serialVersionUID = 0L;
       if (!getUpdatedAt()
           .equals(other.getUpdatedAt())) return false;
     }
+    if (hasSource() != other.hasSource()) return false;
+    if (hasSource()) {
+      if (!getSource()
+          .equals(other.getSource())) return false;
+    }
     if (!unknownFields.equals(other.unknownFields)) return false;
     return true;
   }
@@ -1277,6 +1341,10 @@ private static final long serialVersionUID = 0L;
     if (hasUpdatedAt()) {
       hash = (37 * hash) + UPDATEDAT_FIELD_NUMBER;
       hash = (53 * hash) + getUpdatedAt().hashCode();
+    }
+    if (hasSource()) {
+      hash = (37 * hash) + SOURCE_FIELD_NUMBER;
+      hash = (53 * hash) + getSource().hashCode();
     }
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
@@ -1461,6 +1529,8 @@ private static final long serialVersionUID = 0L;
         updatedAt_ = null;
         updatedAtBuilder_ = null;
       }
+      source_ = "";
+      bitField0_ = (bitField0_ & ~0x00000400);
       return this;
     }
 
@@ -1552,6 +1622,10 @@ private static final long serialVersionUID = 0L;
       } else {
         result.updatedAt_ = updatedAtBuilder_.build();
       }
+      if (((from_bitField0_ & 0x00000400) != 0)) {
+        to_bitField0_ |= 0x00000200;
+      }
+      result.source_ = source_;
       result.bitField0_ = to_bitField0_;
       onBuilt();
       return result;
@@ -1687,6 +1761,11 @@ private static final long serialVersionUID = 0L;
       }
       if (other.hasUpdatedAt()) {
         mergeUpdatedAt(other.getUpdatedAt());
+      }
+      if (other.hasSource()) {
+        bitField0_ |= 0x00000400;
+        source_ = other.source_;
+        onChanged();
       }
       this.mergeUnknownFields(other.unknownFields);
       onChanged();
@@ -3171,6 +3250,89 @@ private static final long serialVersionUID = 0L;
         updatedAt_ = null;
       }
       return updatedAtBuilder_;
+    }
+
+    private java.lang.Object source_ = "";
+    /**
+     * <code>optional string source = 17;</code>
+     * @return Whether the source field is set.
+     */
+    public boolean hasSource() {
+      return ((bitField0_ & 0x00000400) != 0);
+    }
+    /**
+     * <code>optional string source = 17;</code>
+     * @return The source.
+     */
+    public java.lang.String getSource() {
+      java.lang.Object ref = source_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        source_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+    /**
+     * <code>optional string source = 17;</code>
+     * @return The bytes for source.
+     */
+    public com.google.protobuf.ByteString
+        getSourceBytes() {
+      java.lang.Object ref = source_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        source_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <code>optional string source = 17;</code>
+     * @param value The source to set.
+     * @return This builder for chaining.
+     */
+    public Builder setSource(
+        java.lang.String value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000400;
+      source_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>optional string source = 17;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearSource() {
+      bitField0_ = (bitField0_ & ~0x00000400);
+      source_ = getDefaultInstance().getSource();
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>optional string source = 17;</code>
+     * @param value The bytes for source to set.
+     * @return This builder for chaining.
+     */
+    public Builder setSourceBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+      bitField0_ |= 0x00000400;
+      source_ = value;
+      onChanged();
+      return this;
     }
     @java.lang.Override
     public final Builder setUnknownFields(
