@@ -61,6 +61,7 @@ public class AllTransactionsView extends AbstractFinanceView
         return Messages.LabelAllTransactions;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected void addButtons(ToolBarManager toolBar)
     {
@@ -73,36 +74,20 @@ public class AllTransactionsView extends AbstractFinanceView
                             a -> new TableViewerCSVExporter(table.getTableViewer())
                                             .export(Messages.LabelAllTransactions + ".csv"))); //$NON-NLS-1$
 
-            String label = table.getTableViewer().getSelection().isEmpty() ? Messages.LabelAllTransactions
-                            : Messages.LabelSelectedTransactions;
+            manager.add(new SimpleAction(Messages.LabelAllTransactions + " (JSON)", //$NON-NLS-1$
+                            exportToJSON(Messages.LabelAllTransactions + ".json", //$NON-NLS-1$
+                                            (List<TransactionPair<?>>) table.getTableViewer().getInput())));
 
-            manager.add(new SimpleAction(label + " (JSON)", a -> { //$NON-NLS-1$
-                IStructuredSelection selection = table.getTableViewer().getStructuredSelection();
+            IStructuredSelection selection = table.getTableViewer().getStructuredSelection();
+            if (!selection.isEmpty())
+            {
+                manager.add(new SimpleAction(Messages.LabelSelectedTransactions + " (CSV)", //$NON-NLS-1$
+                                a -> new TableViewerCSVExporter(table.getTableViewer(), true)
+                                                .export(Messages.LabelSelectedTransactions + ".csv"))); //$NON-NLS-1$
 
-                @SuppressWarnings("unchecked")
-                List<TransactionPair<?>> transactions = selection.isEmpty()
-                                ? (List<TransactionPair<?>>) table.getTableViewer().getInput()
-                                : selection.toList();
-
-                FileDialog dialog = new FileDialog(Display.getDefault().getActiveShell(), SWT.SAVE);
-                dialog.setFileName(TextUtil.sanitizeFilename(Messages.LabelAllTransactions + ".json")); //$NON-NLS-1$
-                dialog.setOverwrite(true);
-                String name = dialog.open();
-                if (name == null)
-                    return;
-
-                File file = new File(name);
-
-                try (Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))
-                {
-                    writer.append(JClient.from(transactions).toJson());
-                }
-                catch (IOException e)
-                {
-                    PortfolioPlugin.log(e);
-                    MessageDialog.openError(Display.getDefault().getActiveShell(), Messages.LabelError, e.getMessage());
-                }
-            }));
+                manager.add(new SimpleAction(Messages.LabelSelectedTransactions + " (JSON)", //$NON-NLS-1$
+                                exportToJSON(Messages.LabelSelectedTransactions + ".json", selection.toList()))); //$NON-NLS-1$
+            }
 
         }));
 
@@ -208,5 +193,29 @@ public class AllTransactionsView extends AbstractFinanceView
         pages.add(make(HistoricalPricesPane.class));
         pages.add(make(TransactionsPane.class));
         pages.add(make(TradesPane.class));
+    }
+
+    private SimpleAction.Runnable exportToJSON(String filename, List<TransactionPair<?>> transactions)
+    {
+        return action -> {
+            FileDialog dialog = new FileDialog(Display.getDefault().getActiveShell(), SWT.SAVE);
+            dialog.setFileName(TextUtil.sanitizeFilename(filename));
+            dialog.setOverwrite(true);
+            String name = dialog.open();
+            if (name == null)
+                return;
+
+            File file = new File(name);
+
+            try (Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))
+            {
+                writer.append(JClient.from(transactions).toJson());
+            }
+            catch (IOException e)
+            {
+                PortfolioPlugin.log(e);
+                MessageDialog.openError(Display.getDefault().getActiveShell(), Messages.LabelError, e.getMessage());
+            }
+        };
     }
 }
