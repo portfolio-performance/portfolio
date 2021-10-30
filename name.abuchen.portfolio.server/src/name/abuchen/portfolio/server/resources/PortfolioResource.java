@@ -14,15 +14,13 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import name.abuchen.portfolio.json.JPortfolio;
-import name.abuchen.portfolio.json.JPortfolioSnapshot;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
-import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
 import name.abuchen.portfolio.snapshot.filter.PortfolioClientFilter;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceIndicator;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
+import name.abuchen.portfolio.ui.views.StatementOfAssetsViewer;
 import name.abuchen.portfolio.util.Interval;
 
 @Path("/portfolios")
@@ -45,7 +43,7 @@ public class PortfolioResource
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{id}/assets")
-    public JPortfolioSnapshot getPortfolioSnapshot(
+    public List<JAssetElement> getPortfolioSnapshot(
                     @PathParam("id") String id,
                     @QueryParam("groupBy") String groupBy,
                     @Context Client client) 
@@ -58,32 +56,26 @@ public class PortfolioResource
         }
         
         var portfolio = oPortfolio.get();
-
-        var filteredClient = new PortfolioClientFilter(portfolio).filter(client);
         
-        var erFactory = new ExchangeRateProviderFactory(filteredClient);
-        var cc = new CurrencyConverterImpl(erFactory, filteredClient.getBaseCurrency());
+        var erFactory = new ExchangeRateProviderFactory(client);
+        var cc = new CurrencyConverterImpl(erFactory, client.getBaseCurrency());
         
         var date = LocalDate.now();
-        
-        var clientSnapshot = ClientSnapshot.create(filteredClient, cc, date);
 
-        var performanceSnapshot = SecurityPerformanceSnapshot.create(filteredClient, cc, Interval.of(LocalDate.MIN, date), SecurityPerformanceIndicator.Costs.class);
+        Taxonomy taxonomy = null;
         
-        var snapshot = JPortfolioSnapshot.from(clientSnapshot.getPortfolios().get(0), performanceSnapshot);
-        
-        if(groupBy != "") {
-            var taxonomy = client.getTaxonomy(groupBy);
-            
-            if(taxonomy == null) {
-                throw new NotFoundException();
-            }
-            
-            var groupByTaxonomy = clientSnapshot.groupByTaxonomy(taxonomy);
-            
-            var categories = groupByTaxonomy.asList();
+        if(groupBy != null)
+        {
+             taxonomy = client.getTaxonomy(groupBy);
         }
         
-        return snapshot;
+        var allTime = Interval.of(LocalDate.MIN, LocalDate.now()); 
+        
+        var model = new StatementOfAssetsViewer.Model(client, new PortfolioClientFilter(portfolio), cc, date, taxonomy);
+        model.calculatePerformanceAndInjectIntoElements(client.getBaseCurrency(), allTime);
+                
+        var elements = model.getElements().stream().map(JAssetElement::from).collect(Collectors.toList());
+        
+        return elements;
     }
 }

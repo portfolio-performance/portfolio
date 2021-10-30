@@ -121,4 +121,5 @@ Require-Bundle: com.ibm.icu,
 Automatic-Module-Name: name.abuchen.portfolio.ui
 Service-Component: OSGI-INF/name.abuchen.portfolio.ui.util.theme.ColorAndFontProviderImpl.xml
 Export-Package: name.abuchen.portfolio.ui,
- name.abuchen.portfolio.ui.editor
+ name.abuchen.portfolio.ui.editor,
+ name.abuchen.portfolio.ui.views

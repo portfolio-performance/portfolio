@@ -196,7 +196,7 @@ public class StatementOfAssetsViewer
             return answer;
         }
 
-        /* package */ final void calculatePerformanceAndInjectIntoElements(String currencyCode, Interval interval)
+        public final void calculatePerformanceAndInjectIntoElements(String currencyCode, Interval interval)
         {
             CacheKey key = new CacheKey(currencyCode, interval);
 
