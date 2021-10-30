@@ -610,7 +610,7 @@ public class AttributeType implements Named
     public boolean isNumber()
     {
         return Number.class.isAssignableFrom(type);
-    } 
+    }
 
     @SuppressWarnings("unchecked")
     public Comparator<Object> getComparator()
@@ -644,14 +644,12 @@ public class AttributeType implements Named
     @Override
     public String getNote()
     {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void setNote(String note)
     {
-        // TODO Auto-generated method stub
-        
+        throw new UnsupportedOperationException();
     }
 }

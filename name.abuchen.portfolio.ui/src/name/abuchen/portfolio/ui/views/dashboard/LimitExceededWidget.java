@@ -16,6 +16,7 @@ import org.eclipse.swt.widgets.Label;
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.model.LimitPrice;
+import name.abuchen.portfolio.model.LimitPriceSettings;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
@@ -25,7 +26,6 @@ import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.swt.ColoredLabel;
 import name.abuchen.portfolio.ui.util.swt.StyledLabel;
-import name.abuchen.portfolio.ui.views.columns.LimitPriceSettings;
 import name.abuchen.portfolio.ui.views.settings.AttributeFieldType;
 import name.abuchen.portfolio.ui.views.settings.SettingsView;
 

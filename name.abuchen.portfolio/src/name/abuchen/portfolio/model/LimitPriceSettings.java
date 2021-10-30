@@ -1,13 +1,10 @@
-package name.abuchen.portfolio.ui.views.columns;
+package name.abuchen.portfolio.model;
 
 import java.text.DecimalFormat;
 import java.util.StringJoiner;
 
 import org.eclipse.swt.graphics.Color;
 
-import name.abuchen.portfolio.model.LimitPrice;
-import name.abuchen.portfolio.model.SecurityPrice;
-import name.abuchen.portfolio.model.TypedMap;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.ColorConversion;
 
@@ -18,7 +15,7 @@ public class LimitPriceSettings
         String SHOW_RELATIVE_DIFF = "SHOW_RELATIVE_DIFF";//$NON-NLS-1$
         String SHOW_ABSOLUTE_DIFF = "SHOW_ABSOLUTE_DIFF";//$NON-NLS-1$
         String LIMIT_EXCEEDED_POSITIVELY_COLOR = "LIMIT_EXCEEDED_POSITIVELY_COLOR";//$NON-NLS-1$
-        String LIMIT_UNDERCUT_NEGATIVELY_COLOR = "LIMIT_UNDERCUT_NEGATIVELY_COLOR";//$NON-NLS-1$
+        String LIMIT_EXCEEDED_NEGATIVELY_COLOR = "LIMIT_EXCEEDED_NEGATIVELY_COLOR";//$NON-NLS-1$
     }
 
     public LimitPriceSettings(TypedMap properties)
@@ -93,9 +90,9 @@ public class LimitPriceSettings
     public void setLimitExceededNegativelyColor(Color value)
     {
         if (value != null)
-            properties.putString(PropertyKeys.LIMIT_UNDERCUT_NEGATIVELY_COLOR, ColorConversion.toHex(value.getRGBA()));
+            properties.putString(PropertyKeys.LIMIT_EXCEEDED_NEGATIVELY_COLOR, ColorConversion.toHex(value.getRGBA()));
         else
-            properties.remove(PropertyKeys.LIMIT_UNDERCUT_NEGATIVELY_COLOR);
+            properties.remove(PropertyKeys.LIMIT_EXCEEDED_NEGATIVELY_COLOR);
     }
 
     public Color getLimitExceededNegativelyColor()
@@ -105,7 +102,7 @@ public class LimitPriceSettings
 
     public Color getLimitExceededNegativelyColor(Color fallback)
     {
-        String hex = properties.getString(PropertyKeys.LIMIT_UNDERCUT_NEGATIVELY_COLOR);
+        String hex = properties.getString(PropertyKeys.LIMIT_EXCEEDED_NEGATIVELY_COLOR);
         return hex != null ? new Color(ColorConversion.hex2RGBA(hex)) : fallback;
     }
 }
