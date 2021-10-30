@@ -1,0 +1,17 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Herr Max Mustermann
+Straße
+PLZ ORT
+Land
+Benutzername: 
+(31009436)
+Transaktionsübersicht von 21-12-2020 bis 03-03-2021
+Datum Uhrzei Produkt ISIN Referen Ausführungso Anzahl Kurs Wert in Wechse Transaktionst zbörse rt Lokalwährung Wert lkurs kosten Gesamt
+21-12-2020 10:33 VARTA AG DE000A0TGJ55 XET XETA -11 111,60 EUR 1.227,60 EUR 1.227,60 EUR -2,22 EUR 1.225,38 EUR
+DEGIRO B.V. DEGIRO B.V. ist als
+Amstelplein 1 E Investmentgesellschaft bei der
+1096 HA Amsterdam kundenservice@degiro.de niederländischen Seite 1 / 1
+I www.degiro.de Finanzaufsichtsbehörde (AFM) Konto 2021-03-03
+registriert.
