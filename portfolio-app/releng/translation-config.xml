@@ -1,6 +1,7 @@
 <translations>
 	<defaultLanguage>en</defaultLanguage>
 	<languages>
+		<string>cs</string>
 		<string>de</string>
 		<string>es</string>
 		<string>nl</string>
