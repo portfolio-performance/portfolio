@@ -47,7 +47,8 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                         + "|Entgeltbelastung Verkauf"
                         + "|Entnahmeplan"
                         + "|Fondsumschichtung"
-                        + "|Wiederanlage Fondsertrag)");
+                        + "|Wiederanlage Fondsertrag"
+                        + "|Wiederanlage Ertragsausschüttung)");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -73,7 +74,8 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                                                 + "|Entgeltbelastung Verkauf"
                                                 + "|Entnahmeplan"
                                                 + "|Fondsumschichtung \\((Abgang|Zugang)\\) .*"
-                                                + "|Wiederanlage Fondsertrag [\\.,\\d]+ [\\w]+) .*$");
+                                                + "|Wiederanlage Fondsertrag [\\.,\\d]+ [\\w]+"
+                                                + "|\\(Anteilpreis\\))( .*)?$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -89,7 +91,8 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                                 + "|Entnahmeplan"
                                 + "|Fondsumschichtung \\(Abgang\\)"
                                 + "|Fondsumschichtung \\(Zugang\\)"
-                                + "|Wiederanlage Fondsertrag)) .*$")
+                                + "|Wiederanlage Fondsertrag"
+                                + "|Wiederanlage Ertragsaussch.ttung)) .*$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("Verkauf")
                                     || v.get("type").equals("Entgelt Verkauf")
@@ -120,7 +123,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                 // Kauf 300,00 EUR mit Kursdatum 20.11.2019 in Depotposition 1234567890.01
                 // Xtr.(IE) - Russell Midcap Registered Shares 1C USD o.N.
                 // IE00BJZ2DC62 12,729132 26,002300 USD 1,105500 299,40 EUR
-                .section("name", "isin", "currency")
+                .section("name", "isin", "currency").optional()
                 .find("(Kauf"
                             + "|Ansparplan"
                             + "|Fondsertrag"
@@ -134,10 +137,26 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                 .match("^(?<isin>[\\w]{12}) ([-])?[\\.,\\d]+ [\\.,\\d]+ (?<currency>[\\w]{3})( [\\.,\\d]+)? [\\.,\\d]+ [\\w]{3}$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-                // Ref. Nr. XXXXXXXX/XXXXXXXX, Buchungsdatum 21.11.2019
-                .section("date")
-                .match(".* Buchungsdatum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
-                .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                // 444444.09 iSh.ST.Gl.Sel.Div.100 U.ETF DE Inhaber-Anteile (ISIN DE000A0F5UH1)
+                // Wiederanlage Ertragsausschüttung 400023594/2001 18.01.2016 23,550000 0,082378 1,94 EUR
+                .section("name", "isin", "currency").optional()
+                .match("^^[\\d]+\\.[\\d]+ (?<name>.*) \\(ISIN (?<isin>[\\w]{12})\\)$$")
+                .match("^Wiederanlage Ertragsaussch.ttung .* (?<currency>[\\w]{3})$")
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                .oneOf(
+                                // Ref. Nr. XXXXXXXX/XXXXXXXX, Buchungsdatum 21.11.2019
+                                section -> section
+                                        .attributes("date")
+                                        .match(".* Buchungsdatum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
+                                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                                ,
+                                // Wiederanlage Ertragsausschüttung 400023594/2001 18.01.2016 23,550000 0,082378 1,94 EUR
+                                section -> section
+                                        .attributes("date")
+                                        .match("^Wiederanlage Ertragsaussch.ttung .* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+ [\\w]{3}$")
+                                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                        )
 
                 .oneOf(
                                 // IE00BJZ2DC62 12,729132 26,002300 USD 1,105500 299,40 EUR
@@ -152,7 +171,21 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                                         .attributes("shares")
                                         .match("^[\\w]{12} ([-])?(?<shares>[\\.,\\d]+) [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3}$")
                                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                                ,
+                                // Wiederanlage Ertragsausschüttung 400023594/2001 18.01.2016 23,550000 0,082378 1,94 EUR
+                                section -> section
+                                        .attributes("shares")
+                                        .match("^Wiederanlage Ertragsaussch.ttung .* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+ (?<shares>[\\.,\\d]+) [\\.,\\d]+ [\\w]{3}")
+                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
                         )
+
+                // Wiederanlage Ertragsausschüttung 400023594/2001 18.01.2016 23,550000 0,082378 1,94 EUR
+                .section("amount", "currency").optional()
+                .match("^Wiederanlage Ertragsaussch.ttung .* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+ [\\.,\\d]+ (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})")
+                .assign((t, v) -> {
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(v.get("currency"));
+                })
 
                 // Abwicklung über IBAN Institut Zahlungsbetrag
                 // DE49XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX 300,00 EUR
@@ -257,6 +290,11 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                 // Wiederanlage Fondsertrag 0,37 EUR mit Kursdatum 20.01.2020 in Depotposition 1234567890.21
                 .section("note").optional()
                 .match("^(?<note>Wiederanlage Fondsertrag) .*$")
+                .assign((t, v) -> t.setNote(v.get("note")))
+
+                // Wiederanlage Ertragsausschüttung 400023594/2001 18.01.2016 23,550000 0,082378 1,94 EUR
+                .section("note").optional()
+                .match("^(?<note>Wiederanlage Ertragsaussch.ttung) .*$")
                 .assign((t, v) -> t.setNote(v.get("note")))
 
                 // Entgelt Verkauf mit Kursdatum 20.12.2017 aus Depotposition 11111111111.01
@@ -744,7 +782,14 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                 .section("fee", "currency").optional()
                 .match("^gezahlte Vertriebsprovision (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3}) .*$")
                 .match("^(Zahlungsbetrag nach|Zahlungsbetrag(?! in)|Die Auszahlung|Abwicklung|Summe der belasteten) .*$")
-                .assign((t, v) -> processFeeEntries(t, v, type));                
+                .assign((t, v) -> processFeeEntries(t, v, type))
+
+                // Additional Trading Costs (ATC) 0,13 EUR
+                // Abwicklung über IBAN Institut Zahlungsbetrag
+                .section("fee", "currency").optional()
+                .match("^Additional Trading Costs \\(ATC\\) (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^(Zahlungsbetrag nach|Zahlungsbetrag(?! in)|Die Auszahlung|Abwicklung|Summe der belasteten) .*$")
+                .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
     private void processTaxEntries(Object t, Map<String, String> v, DocumentType type)
