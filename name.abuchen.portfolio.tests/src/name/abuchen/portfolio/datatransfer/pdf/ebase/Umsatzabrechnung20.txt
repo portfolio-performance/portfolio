@@ -1,0 +1,117 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+European Bank for Financial Services GmbH, 80218 München
+Umsatzabrechnung-Nr. 13
+Depot-Nr. 00000000000
+Seite 1 von 3
+Herrn
+Vorname Nachname
+Strasse 1
+12345 Ort
+06.07.2021
+Umsatzabrechnung für Ihr VL-FondsDepot bei ebase
+für den Zeitraum vom 03.07.2021 bis 05.07.2021
+Entgeltbelastung Verkauf 3,00 EUR mit Kursdatum 05.07.2021 aus Depotposition 00000000000.01
+iShares TecDAX UCITS ETF DE Inhaber-Anteile (Acc.)
+Ref. Nr. 400357714/02072021, Buchungsdatum 05.07.2021
+Belastung der offenen Forderung(en) aus Ref. Nr. 400567248/01072021
+ISIN Anteile Abrechnungskurs Betrag
+DE0005933972 -0,095371 32,190000 EUR 3,07 EUR
+Belastete Entgelte abzgl. Entgelte
+Summe 3,00 EUR
+Kapitalertragsteuer Solidaritätszuschlag Kirchensteuer abzgl. Steuern
+0,07 EUR 0,00 EUR 0,00 EUR 0,07 EUR
+Zahlungsbetrag 0,00 EUR
+Entgelte Betrag offene Forderung belasteter Betrag
+Depotführungsentgelt inkl. 19 %
+USt 3,00 EUR 0,00 EUR 3,00 EUR
+zum 30.06.2021
+Summe der belasteten Entgelte 3,00 EUR
+Bestand der Depotpositionen mit Umsatz nach Verbuchung
+Pos. Fonds Anteile Bewertungskurs zum Datum Bestand
+01 DE0005933972 50,853214 32,280000 EUR 02.07.2021 1.641,54 EUR
+iShares TecDAX UCITS ETF DE Inhaber-Anteile (Acc.)
+vermögenswirksame Leistungen
+Bis 01.01.2025 sind 46,232788 Anteile gemäß Vermögensbildungsgesetz gesperrt.
+Depotgesamtwert 1.641,54 EUR
+Ihre Depotbestände werden in der Girosammelverwahrung geführt - es sei denn, es ist ein besonderer Verwahrart-Hinweis in der
+Aufstellung vermerkt.
+4Wir haben keinen Freistellungsauftrag für Sie vorgemerkt.
+Für Fragen steht Ihnen die ebase unter der Rufnummer +49 (0)89 / 45460 - 890 gerne zur Verfügung.
+Diese Mitteilung wird nicht unterschrieben.
+European Bank for Financial Amtsgericht München HRB 141 740 Geschäftsführung: Fax: +49 89 45460-892
+Services GmbH (ebase®) - Ein USt-ID Nr. DE 813330104 Kai Friedrich, Jürgen Keller Web: www.ebase.com
+Unternehmen der FNZ Group Gläubiger-ID: Aufsichtsratsvorsitzender:
+80218 München DE68ZZZ00000025032 Frank Strauß
+Umsatzabrechnung-Nr. 13
+Depot-Nr. 00000000000
+Seite 2 von 3
+Einzahlungen
+Sofern Sie nicht vom Einzugsverfahren Gebrauch machen, leisten Sie Ihre Zahlungen bitte auf folgendes Treuhandkonto der
+European Bank for Financial Services GmbH (ebase®): Commerzbank AG, München, IBAN: DE32 7004 0041 0212 2331 00,
+BIC: COBADEFFXXX.
+Bitte geben Sie bei Überweisungen immer zusätzlich im Verwendungszweck an:
+• Bei Nachkauf eines Fonds, den Sie bereits in Ihrem Investment Depot halten, die 13-stellige Depotpositionsnummer.
+• Bei Kauf eines neuen Fonds, den Sie noch nicht in Ihrem Investment Depot halten, die 11-stellige Depotnummer + ISIN.
+Für Einzahlungen auf verschiedenen Fonds verwenden Sie bitte jeweils separate Überweisungsformulare.
+Prüfung und Einwendungen
+Wir bitten Sie, die vorliegende Abrechnung und die darin aufgeführten Umsätze auf ihre Richtigkeit und Vollständigkeit zu über-
+prüfen. Einwendungen wegen Unrichtigkeit oder Unvollständigkeit dieser Abrechnung erheben Sie bitte unverzüglich nach
+dessen Zugang gegenüber ebase unter Nennung der Depotnummer und des Datums der Abrechnung. Das Unterlassen der recht-
+zeitigen Einwendung(en) gilt als Genehmigung der Abrechnung(en), gemäß Punkt "Prüfungen und Einwendungen bei Mit-
+teilungen der ebase" der Allgemeinen Geschäftsbedingungen der European Bank for Financial Services GmbH für Privatanleger.
+Bitte denken Sie daran, uns frühzeitig über Änderungen Ihrer persönlichen Daten zu informieren.
+Ausführung und Erfüllung von Aufträgen/ Ausschluss von Beratung/ Keine Risikoklassifizierung durch ebase
+ebase führt Aufträge über den Kauf und/oder Verkauf von Investmentfondsanteilen als Kommissionärin, ggf. unter Einschaltung
+eines Zwischenkommissionärs, mit der Kapitalverwaltungs-/Verwaltungsgesellschaft, als am besten geeignete Stelle im Sinne des
+§ 33a WpHG aus.
+ebase wird gemäß Punkt "Ausführung und Erfüllung von Aufträgen" der Bedingungen für das Investment Depot für Privat-
+anleger, die Orders ggf. unter Einbeziehung eines Zwischenkommissionärs ausschließlich über die jeweilige Kapitalverwaltungs-/
+Verwaltungsgesellschaft als am besten geeignete Stelle zur Beschaffung von Fondsanteilen abwickeln. Ihnen ist bekannt, dass
+durch ebase keine vorherige Beratung und/oder Angemessenheitsprüfung gemäß Punkt "Ausschluss von Beratung ("execution
+only")" sowie keine Risikoklassifizierung gemäß Punkt "keine Risikoklassifizierung durch ebase" der Bedingungen für das
+Investment Depot für Privatanleger bei der European Bank for Financial Services GmbH, erfolgt.
+Zurverfügungstellung von Verkaufsunterlagen
+Der Vermittler, die Kapitalverwaltungs-/Verwaltungsgesellschaft oder ebase haben dem Kunden für sämtlich Geschäfte die jeweils
+gültigen Verkaufsunterlagen (Wesentliche Anlegerinformationen/Key Investor Document [KID] und aktueller Verkaufsprospekt
+sowie der aktuelle Halbjahres-/Jahresbericht bei den unter das Kapitalanlagegesetzbuch [KAGB] fallenden Fonds) kostenlos recht-
+zeitig zur Verfügung gestellt. Zusätzlich können diese Verkaufsunterlagen auf der Homepage von ebase (www.ebase.com) einge-
+sehen und heruntergeladen werden. Bitte beachten Sie die Risikohinweise im jeweils aktuellen Verkaufsprospekt Ihres jeweiligen
+Fonds.
+Pflicht des Kunden zur Einholung von Beratung gemäß Punkt "Mitwirkungspflichten und Obliegenheit des Kunden"
+Ihnen obliegt die vertragliche Verpflichtung, das Erstgeschäft sowie jedes Folgegeschäft nur nach Rücksprache mit Ihrem
+Vermittler zu tätigen, nachdem Ihr Vermittler Ihnen eine anleger- und anlagegerechte Aufklärung und ggf. Beratung (auch
+hinsichtlich der Provisionsentgelte) erteilt hat.
+Hinweis auf Erhalt, Weiterleitung und Auskehr von Provisionen/Zuwendungen
+Sie wurden von ebase ausdrücklich auf den Erhalt, die Weiterleitung und die Auskehr von Provisionen/Zuwendungen gemäß
+Punkt "Hinweis auf den Erhalt und die Weiterleitung und die Auskehr von Provisionen/Zuwendungen" in den Bedingungen für
+das Investment Depot für Privatanleger bei der European Bank for Financial Services GmbH in dem jeweils aktuell gültigen Preis-
+und Leistungsverzeichnis hingewiesen.
+Für Fragen steht Ihnen die ebase unter der Rufnummer +49 (0)89 / 45460 - 890 gerne zur Verfügung.
+Diese Mitteilung wird nicht unterschrieben.
+European Bank for Financial Amtsgericht München HRB 141 740 Geschäftsführung: Fax: +49 89 45460-892
+Services GmbH (ebase®) - Ein USt-ID Nr. DE 813330104 Kai Friedrich, Jürgen Keller Web: www.ebase.com
+Unternehmen der FNZ Group Gläubiger-ID: Aufsichtsratsvorsitzender:
+80218 München DE68ZZZ00000025032 Frank Strauß
+Umsatzabrechnung-Nr. 13
+Depot-Nr. 00000000000
+Seite 3 von 3
+Hinweis Ihrer Verwaltungsgesellschaft zum Widerrufsrecht bei dem Kauf/Verkauf von Investmentanteilen/Organismen für gemein-
+same Anlagen in Wertpapieren (OGAW)/Alternative Investmentfonds (AIF)
+Wenn der Kauf von Anteilen aufgrund mündlicher Verhandlungen außerhalb der ständigen Geschäftsräume desjenigen, der die
+Anteile verkauft oder den Verkauf der Anteile vermittelt hat, zustande kommt, so ist der Käufer nach § 305 KAGB berechtigt, ohne
+Angabe von Gründen, seine Kauferklärung zu widerrufen (Widerrufsrecht). Dies gilt auch dann, wenn derjenige, der die Anteile
+verkauft oder den Verkauf vermittelt, keine ständigen Geschäftsräume hat. Der Widerruf hat innerhalb einer Frist von zwei Wochen
+gegenüber der Verwaltungsgesellschaft oder ihrem Repräsentanten im Sinne von § 319 KAGB in Textform zu erfolgen.
+Zur Wahrung der Frist genügt die rechtzeitige Absendung der Widerrufserklärung. Die vorstehenden Ausführungen gelten ent-
+sprechend beim Verkauf von Anteilen durch den Anleger. Die detaillierten Hinweise zum Widerrufsrecht bei dem Kauf/Verkauf von
+Investmentanteilen/OGAW/AIF finden sie unter Punkt 13 der Bedingungen für das Investmentdepot für Privatanleger bei der European
+Bank for Financial Services GmbH. Genaue Angaben zur Verwaltungsgesellschaft oder zu ihrem Repräsentanten entnehmen Sie den
+Verkaufsunterlagen. Die European Bank for Financial Services GmbH ist lediglich depotführende Stelle.
+Für Fragen steht Ihnen die ebase unter der Rufnummer +49 (0)89 / 45460 - 890 gerne zur Verfügung.
+Diese Mitteilung wird nicht unterschrieben.
+European Bank for Financial Amtsgericht München HRB 141 740 Geschäftsführung: Fax: +49 89 45460-892
+Services GmbH (ebase®) - Ein USt-ID Nr. DE 813330104 Kai Friedrich, Jürgen Keller Web: www.ebase.com
+Unternehmen der FNZ Group Gläubiger-ID: Aufsichtsratsvorsitzender:
+80218 München DE68ZZZ00000025032 Frank Strauß

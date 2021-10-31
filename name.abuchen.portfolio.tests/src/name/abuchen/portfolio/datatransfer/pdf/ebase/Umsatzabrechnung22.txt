@@ -1,0 +1,216 @@
+`PDF Autor: ''
+PDFBox Version: 1.8.16
+
+European Bank for Financial Services GmbH, 80218 München
+Umsatzabrechnung-Nr. 328
+Depot-Nr. 44444444444444
+Seite 1 von 5
+Herrn
+Name Vorname
+Straße Nummer
+PLZ und Ort
+31.10.2018
+Umsatzabrechnung für Ihr ebase Depot
+für den Zeitraum vom 23.10.2018 bis 30.10.2018
+Fondsumschichtung (Abgang) 1,502194 Anteile mit Kursdatum 26.10.2018 aus Depotposition 444444444.44
+ComStage-DJ Sw.Tit.30TM U.ETF Inhaber-Anteile I o.N.
+Ref. Nr. 400006077/25102018, Buchungsdatum 30.10.2018
+ISIN Anteile Abrechnungskurs Devisenkurs Betrag
+LU0392496427 -1,502194 107,233500 CHF 1,140900 141,19 EUR
+Entgelte abzgl. Entgelte
+Additional Trading Costs (ATC) 0,13 EUR
+ETF-Transaktionsentgelt 0,28 EUR
+Kapitalertragsteuer Solidaritätszuschlag Kirchensteuer abzgl. Steuern
+0,63 EUR 0,03 EUR 0,05 EUR 0,71 EUR
+Zahlungsbetrag 140,07 EUR
+Fondsumschichtung erfolgt in Depotposition 22222222.56 mit Ref. Nr. 400006077/25102018
+Fondsumschichtung (Zugang) mit Kursdatum 26.10.2018 in Depotposition 33333333.78
+iShs-MSCI World UCITS ETF Registered Shares USD (Dist)o
+Ref. Nr. 400006077/25102018, Buchungsdatum 30.10.2018
+Fondsumschichtung erfolgt aus Depotposition 4444444.67 mit Ref. Nr. 400006077/25102018
+ISIN Anteile Abrechnungskurs Devisenkurs Betrag
+IE00B0M62Q58 3,760425 42,187100 USD 1,136400 139,60 EUR
+Entgelte zzgl. Entgelte
+Additional Trading Costs (ATC) 0,20 EUR
+ETF-Transaktionsentgelt 0,27 EUR
+Zahlungsbetrag 140,07 EUR
+Fondsumschichtung (Abgang) 0,428056 Anteile mit Kursdatum 26.10.2018 aus Depotposition 4444444.45
+iShares MDAX UCITS ETF DE Inhaber-Anteile
+Ref. Nr. 400006079/25102018, Buchungsdatum 30.10.2018
+ISIN Anteile Abrechnungskurs Betrag
+DE0005933923 -0,428056 200,510000 EUR 85,83 EUR
+Für Fragen steht Ihnen Ihr Berater oder die ebase unter der Rufnummer +49 89 45460-890 gerne zur Verfügung.
+Diese Mitteilung wird nicht unterschrieben.
+ebase - Amtsgericht München HRB 141 740 Fax: +49 89 45460-892 Vorsitzender des Aufsichtsrats:
+European Bank for Financial USt-ID Nr. DE 813330104 E-Mail: service@ebase.com Arno Walter
+Services GmbH (ebase®) Gläubiger-ID: Web: www.ebase.com Geschäftsführung:
+80218 München DE68ZZZ00000025032 Rudolf Geyer, Lars Müller-Lambrecht
+Umsatzabrechnung-Nr. 328
+Depot-Nr. 444444444
+Seite 2 von 5
+Entgelte abzgl. Entgelte
+Additional Trading Costs (ATC) 0,05 EUR
+ETF-Transaktionsentgelt 0,17 EUR
+Zahlungsbetrag 85,61 EUR
+Fondsumschichtung erfolgt in Depotposition 44444444.44 mit Ref. Nr. 400006079/25102018
+Fondsumschichtung (Zugang) mit Kursdatum 26.10.2018 in Depotposition 444444444.44
+iShs-MSCI World UCITS ETF Registered Shares USD (Dist)o
+Ref. Nr. 400006079/25102018, Buchungsdatum 30.10.2018
+Fondsumschichtung erfolgt aus Depotposition 99127334085.25 mit Ref. Nr. 400006079/25102018
+ISIN Anteile Abrechnungskurs Devisenkurs Betrag
+IE00B0M62Q58 2,298277 42,187100 USD 1,136400 85,32 EUR
+Entgelte zzgl. Entgelte
+Additional Trading Costs (ATC) 0,12 EUR
+ETF-Transaktionsentgelt 0,17 EUR
+Zahlungsbetrag 85,61 EUR
+Fondsumschichtung (Abgang) 5,883736 Anteile mit Kursdatum 26.10.2018 aus Depotposition 44444444.44
+iShs S&P 500 UCITS ETF Registered Shares USD (Dist)o
+Ref. Nr. 400006076/25102018, Buchungsdatum 30.10.2018
+ISIN Anteile Abrechnungskurs Devisenkurs Betrag
+IE0031442068 -5,883736 26,484300 USD 1,142400 136,40 EUR
+Entgelte abzgl. Entgelte
+Additional Trading Costs (ATC) 0,11 EUR
+ETF-Transaktionsentgelt 0,27 EUR
+Kapitalertragsteuer Solidaritätszuschlag Kirchensteuer abzgl. Steuern
+0,51 EUR 0,03 EUR 0,04 EUR 0,58 EUR
+Zahlungsbetrag 135,44 EUR
+Fondsumschichtung erfolgt in Depotposition 44444444.44 mit Ref. Nr. 400006076/25102018
+Fondsumschichtung (Zugang) mit Kursdatum 26.10.2018 in Depotposition 44444444.44
+iShs-MSCI World UCITS ETF Registered Shares USD (Dist)o
+Ref. Nr. 400006076/25102018, Buchungsdatum 30.10.2018
+Fondsumschichtung erfolgt aus Depotposition 44444444.44 mit Ref. Nr. 400006076/25102018
+ISIN Anteile Abrechnungskurs Devisenkurs Betrag
+IE00B0M62Q58 3,635976 42,187100 USD 1,136400 134,98 EUR
+Entgelte zzgl. Entgelte
+Additional Trading Costs (ATC) 0,19 EUR
+ETF-Transaktionsentgelt 0,27 EUR
+Zahlungsbetrag 135,44 EUR
+Für Fragen steht Ihnen Ihr Berater oder die ebase unter der Rufnummer +49 89 45460-890 gerne zur Verfügung.
+Diese Mitteilung wird nicht unterschrieben.
+ebase - Amtsgericht München HRB 141 740 Fax: +49 89 45460-892 Vorsitzender des Aufsichtsrats:
+European Bank for Financial USt-ID Nr. DE 813330104 E-Mail: service@ebase.com Arno Walter
+Services GmbH (ebase®) Gläubiger-ID: Web: www.ebase.com Geschäftsführung:
+80218 München DE68ZZZ00000025032 Rudolf Geyer, Lars Müller-Lambrecht
+Umsatzabrechnung-Nr. 328
+Depot-Nr. 444444444
+Seite 3 von 5
+Fondsumschichtung (Abgang) 0,579236 Anteile mit Kursdatum 26.10.2018 aus Depotposition 44444444.44
+ComStage-SDAX UCITS ETF Inhaber-Anteile I o.N.
+Ref. Nr. 400006080/25102018, Buchungsdatum 30.10.2018
+ISIN Anteile Abrechnungskurs Betrag
+LU0603942888 -0,579236 96,221000 EUR 55,73 EUR
+Entgelte abzgl. Entgelte
+Additional Trading Costs (ATC) 0,04 EUR
+ETF-Transaktionsentgelt 0,11 EUR
+Zahlungsbetrag 55,58 EUR
+Fondsumschichtung erfolgt in Depotposition 444444444.44 mit Ref. Nr. 400006080/25102018
+Fondsumschichtung (Zugang) mit Kursdatum 26.10.2018 in Depotposition 444444444.44
+iShs-MSCI World UCITS ETF Registered Shares USD (Dist)o
+Ref. Nr. 400006080/25102018, Buchungsdatum 30.10.2018
+Fondsumschichtung erfolgt aus Depotposition 44444444444.44 mit Ref. Nr. 400006080/25102018
+ISIN Anteile Abrechnungskurs Devisenkurs Betrag
+IE00B0M62Q58 1,492048 42,187100 USD 1,136400 55,39 EUR
+Entgelte zzgl. Entgelte
+Additional Trading Costs (ATC) 0,08 EUR
+ETF-Transaktionsentgelt 0,11 EUR
+Zahlungsbetrag 55,58 EUR
+Bestand der Depotpositionen mit Umsatz nach Verbuchung
+Pos. Fonds Anteile Bewertungskurs zum Datum Devisenkurs Bestand
+11 IE00B0M62Q58 27,355091 42,055600 USD 29.10.2018 1,139400 1.009,68 EUR
+iShs-MSCI World UCITS ETF Registered Shares USD (Dist)o
+Verwahrart: Wertpapierrechnung, Lagerland: Großbritannien
+14 LU0392496427 0,000000 108,637500 CHF 29.10.2018 1,138900 0,00 EUR
+ComStage-DJ Sw.Tit.30TM U.ETF Inhaber-Anteile I o.N.
+25 DE0005933923 0,000000 202,510000 EUR 29.10.2018 0,00 EUR
+iShares MDAX UCITS ETF DE Inhaber-Anteile
+29 IE0031442068 0,000000 26,310500 USD 29.10.2018 1,139400 0,00 EUR
+iShs S&P 500 UCITS ETF Registered Shares USD (Dist)o
+Verwahrart: Wertpapierrechnung, Lagerland: Großbritannien
+32 LU0603942888 0,000000 98,086000 EUR 29.10.2018 0,00 EUR
+ComStage-SDAX UCITS ETF Inhaber-Anteile I o.N.
+Depotgesamtwert 0.00000,00 EUR
+Ihre Depotbestände werden in der Girosammelverwahrung geführt - es sei denn, es ist ein besonderer Verwahrart-Hinweis in der
+Aufstellung vermerkt.
+Für Fragen steht Ihnen Ihr Berater oder die ebase unter der Rufnummer +49 89 45460-890 gerne zur Verfügung.
+Diese Mitteilung wird nicht unterschrieben.
+ebase - Amtsgericht München HRB 141 740 Fax: +49 89 45460-892 Vorsitzender des Aufsichtsrats:
+European Bank for Financial USt-ID Nr. DE 813330104 E-Mail: service@ebase.com Arno Walter
+Services GmbH (ebase®) Gläubiger-ID: Web: www.ebase.com Geschäftsführung:
+80218 München DE68ZZZ00000025032 Rudolf Geyer, Lars Müller-Lambrecht
+Umsatzabrechnung-Nr. 328
+Depot-Nr. 444444444
+Seite 4 von 5
+4Ihr Freistellungsauftrag in Höhe von 000,00EUR ist bis zum 31.12.2018 vorgemerkt.
+4Sie haben einen verbleibenden Freistellungsbetrag in Höhe von 0,00 EUR.
+4Wir haben für Sie den Einbehalt der Kirchensteuer vorgemerkt. ebase wird bei einem steuerpflichtigen Umsatz, unter
+Berücksichtigung Ihrer persönlichen Steuerfreistellung, ggf. anfallende Kirchensteuer direkt an das Finanzamt abführen.
+Einzahlungen
+Sofern Sie nicht vom Einzugsverfahren Gebrauch machen, leisten Sie Ihre Zahlungen bitte auf folgendes Treuhandkonto der
+European Bank for Financial Services GmbH (ebase®): Commerzbank AG, München, IBAN: DE32 7004 0041 0212 2331 00,
+BIC: COBADEFFXXX.
+Bitte geben Sie bei Überweisungen immer zusätzlich im Verwendungszweck an:
+· Bei Nachkauf eines Fonds, den Sie bereits in Ihrem Investment Depot halten, die 13-stellige Depotpositionsnummer.
+· Bei Kauf eines neuen Fonds, den Sie noch nicht in Ihrem Investment Depot halten, die 11-stellige Depotnummer + ISIN.
+Für Einzahlungen auf verschiedenen Fonds verwenden Sie bitte jeweils separate Überweisungsformulare.
+Prüfung und Einwendungen
+Wir bitten Sie, die vorliegende Abrechnung und die darin aufgeführten Umsätze auf ihre Richtigkeit und Vollständigkeit zu über-
+prüfen. Einwendungen wegen Unrichtigkeit oder Unvollständigkeit dieser Abrechnung erheben Sie bitte unverzüglich nach
+dessen Zugang gegenüber ebase unter Nennung der Depotnummer und des Datums der Abrechnung. Das Unterlassen der recht-
+zeitigen Einwendung(en) gilt als Genehmigung der Abrechnung(en), gemäß Punkt "Prüfungen und Einwendungen bei Mit-
+teilungen der ebase" der Allgemeinen Geschäftsbedingungen der European Bank for Financial Services GmbH für Privatanleger.
+Bitte denken Sie daran, uns frühzeitig über Änderungen Ihrer persönlichen Daten zu informieren.
+Ausführung und Erfüllung von Aufträgen/ Ausschluss von Beratung/ Keine Risikoklassifizierung durch ebase
+ebase führt Aufträge über den Kauf und/oder Verkauf von Investmentfondsanteilen als Kommissionärin, ggf. unter Einschaltung
+eines Zwischenkommissionärs, mit der Kapitalverwaltungs-/Verwaltungsgesellschaft, als am besten geeignete Stelle im Sinne des
+§ 33a WpHG aus.
+ebase wird gemäß Punkt "Ausführung und Erfüllung von Aufträgen" der Bedingungen für das Investment Depot für Privat-
+anleger, die Orders ggf. unter Einbeziehung eines Zwischenkommissionärs ausschließlich über die jeweilige Kapitalverwaltungs-/
+Verwaltungsgesellschaft als am besten geeignete Stelle zur Beschaffung von Fondsanteilen abwickeln. Ihnen ist bekannt, dass
+durch ebase keine vorherige Beratung und/oder Angemessenheitsprüfung gemäß Punkt "Ausschluss von Beratung ("execution
+only")" sowie keine Risikoklassifizierung gemäß Punkt "keine Risikoklassifizierung durch ebase" der Bedingungen für das
+Investment Depot für Privatanleger bei der European Bank for Financial Services GmbH, erfolgt.
+Zurverfügungstellung von Verkaufsunterlagen
+Der Vermittler, die Kapitalverwaltungs-/Verwaltungsgesellschaft oder ebase haben dem Kunden für sämtlich Geschäfte die jeweils
+gültigen Verkaufsunterlagen (Wesentliche Anlegerinformationen/Key Investor Document [KID] und aktueller Verkaufsprospekt
+sowie der aktuelle Halbjahres-/Jahresbericht bei den unter das Kapitalanlagegesetzbuch [KAGB] fallenden Fonds) kostenlos recht-
+zeitig zur Verfügung gestellt. Zusätzlich können diese Verkaufsunterlagen auf der Homepage von ebase (www.ebase.com) einge-
+sehen und heruntergeladen werden. Bitte beachten Sie die Risikohinweise im jeweils aktuellen Verkaufsprospekt Ihres jeweiligen
+Fonds.
+Pflicht des Kunden zur Einholung von Beratung gemäß Punkt "Mitwirkungspflichten und Obliegenheit des Kunden"
+Ihnen obliegt die vertragliche Verpflichtung, das Erstgeschäft sowie jedes Folgegeschäft nur nach Rücksprache mit Ihrem
+Vermittler zu tätigen, nachdem Ihr Vermittler Ihnen eine anleger- und anlagegerechte Aufklärung und ggf. Beratung (auch
+hinsichtlich der Provisionsentgelte) erteilt hat.
+Hinweis auf Erhalt, Weiterleitung und Auskehr von Provisionen/Zuwendungen
+Sie wurden von ebase ausdrücklich auf den Erhalt, die Weiterleitung und die Auskehr von Provisionen/Zuwendungen gemäß
+Punkt "Hinweis auf den Erhalt und die Weiterleitung und die Auskehr von Provisionen/Zuwendungen" in den Bedingungen für
+das Investment Depot für Privatanleger bei der European Bank for Financial Services GmbH in dem jeweils aktuell gültigen Preis-
+und Leistungsverzeichnis hingewiesen.
+Für Fragen steht Ihnen Ihr Berater oder die ebase unter der Rufnummer +49 89 45460-890 gerne zur Verfügung.
+Diese Mitteilung wird nicht unterschrieben.
+ebase - Amtsgericht München HRB 141 740 Fax: +49 89 45460-892 Vorsitzender des Aufsichtsrats:
+European Bank for Financial USt-ID Nr. DE 813330104 E-Mail: service@ebase.com Arno Walter
+Services GmbH (ebase®) Gläubiger-ID: Web: www.ebase.com Geschäftsführung:
+80218 München DE68ZZZ00000025032 Rudolf Geyer, Lars Müller-Lambrecht
+Umsatzabrechnung-Nr. 328
+Depot-Nr. 44444444
+Seite 5 von 5
+Hinweise zum Widerrufsrecht bei dem Kauf/Verkauf von Investmentanteilen/Organismen für gemeinsame Anlagen in Wertpapieren
+(OGAW)/Alternative Investmentfonds (AIF)
+Wenn der Kauf von Anteilen aufgrund mündlicher Verhandlungen außerhalb der ständigen Geschäftsräume desjenigen, der die
+Anteile verkauft oder den Verkauf der Anteile vermittelt hat, zustande kommt, so ist der Käufer nach § 305 KAGB berechtigt, ohne
+Angabe von Gründen, seine Kauferklärung zu widerrufen (Widerrufsrecht). Dies gilt auch dann, wenn derjenige, der die Anteile
+verkauft oder den Verkauf vermittelt, keine ständigen Geschäftsräume hat. Der Widerruf hat schriftlich innerhalb einer Frist von
+zwei Wochen unter Angabe der Person des Erklärenden und mit dessen Unterschrift gegenüber der
+European Bank for Financial Services GmbH (ebase®)
+Postfach 80218 München oder Bahnhofstr. 20, 85609 Aschheim
+zu erfolgen.
+Zur Wahrung der Frist genügt die rechtzeitige Absendung der Widerrufserklärung. Die vorstehenden Ausführungen gelten ent-
+sprechend beim Verkauf von Anteilen durch den Anleger. Die detaillierten Hinweise zum Widerrufsrecht bei dem Kauf/Verkauf von
+Investmentanteilen/OGAW/AIF finden Sie unter Punkt 16 der Bedingungen für das Investment Depot für Privatanleger bei der
+European Bank for Financial Services GmbH.
+Für Fragen steht Ihnen Ihr Berater oder die ebase unter der Rufnummer +49 89 45460-890 gerne zur Verfügung.
+Diese Mitteilung wird nicht unterschrieben.
+ebase - Amtsgericht München HRB 141 740 Fax: +49 89 45460-892 Vorsitzender des Aufsichtsrats:
+European Bank for Financial USt-ID Nr. DE 813330104 E-Mail: service@ebase.com Arno Walter
+Services GmbH (ebase®) Gläubiger-ID: Web: www.ebase.com Geschäftsführung:
+80218 München DE68ZZZ00000025032 Rudolf Geyer, Lars Müller-Lambrecht
