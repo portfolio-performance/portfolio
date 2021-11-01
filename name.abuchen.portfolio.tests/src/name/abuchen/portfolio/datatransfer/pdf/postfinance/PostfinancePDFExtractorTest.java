@@ -564,12 +564,12 @@ public class PostfinancePDFExtractorTest
                         errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(60));
+        assertThat(results.size(), is(73));
         new AssertImportActions().check(results, "CHF");
        
         // get transactions
         Iterator<Extractor.Item> iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
-        assertThat(results.stream().filter(i -> i instanceof TransactionItem).count(), is(60L));
+        assertThat(results.stream().filter(i -> i instanceof TransactionItem).count(), is(73L));
 
         //removals
         
@@ -577,6 +577,11 @@ public class PostfinancePDFExtractorTest
         assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 100.00, "2018-04-01T00:00");
         assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 150.00, "2018-04-01T00:00");
         assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 250.00, "2018-04-01T00:00");
+        
+        //LASTSCHRIFT
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 250.00, "2018-04-02T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 150.00, "2018-04-02T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 100.00, "2018-04-02T00:00");
         
         //ESR
         assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 250.00, "2018-04-02T00:00");
@@ -654,6 +659,11 @@ public class PostfinancePDFExtractorTest
         assertAccountTransaction(iter, AccountTransaction.Type.REMOVAL, 25.00, "2018-04-10T00:00");
         
         //deposits
+
+        //TWINT GELD EMPFANGEN
+        assertAccountTransaction(iter, AccountTransaction.Type.DEPOSIT, 10.00, "2018-04-10T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.DEPOSIT, 15.00, "2018-04-10T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.DEPOSIT, 25.00, "2018-04-10T00:00");
         
         //GUTSCHRIFT V ON F REMDBANK
         assertAccountTransaction(iter, AccountTransaction.Type.DEPOSIT, 10000.00, "2018-04-20T00:00");
@@ -670,7 +680,17 @@ public class PostfinancePDFExtractorTest
         assertAccountTransaction(iter, AccountTransaction.Type.DEPOSIT, 150.00, "2018-04-22T00:00");
         assertAccountTransaction(iter, AccountTransaction.Type.DEPOSIT, 250.00, "2018-04-22T00:00");
         
+        //GUTSCHRIFT
+        assertAccountTransaction(iter, AccountTransaction.Type.DEPOSIT, 10.00, "2018-04-23T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.DEPOSIT, 10.00, "2018-04-23T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.DEPOSIT, 10.00, "2018-04-23T00:00");
+        
         //fees
+        
+        //PREIS FÜR > 0
+        assertAccountTransaction(iter, AccountTransaction.Type.FEES, 11.00, "2018-04-30T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.FEES, 10.00, "2018-04-30T00:00");
+        assertAccountTransaction(iter, AccountTransaction.Type.FEES, 9.00, "2018-04-30T00:00");
         
         //PREIS F ÜR D IE K ONTOFÜHRUNG > 0
         assertAccountTransaction(iter, AccountTransaction.Type.FEES, 5.00, "2018-04-30T00:00");
@@ -678,6 +698,9 @@ public class PostfinancePDFExtractorTest
         //PREIS FÜR EINZAHLUNGEN AM SCHALTER  
         assertAccountTransaction(iter, AccountTransaction.Type.FEES, 2.40, "2018-04-30T00:00");
 
+        //GUTHABENGEBÜHR FÜR MM.YYYY
+        assertAccountTransaction(iter, AccountTransaction.Type.FEES, 15.00, "2018-04-30T00:00");
+        
         //interest
         
         //ZINSABSCHLUSS > 0
