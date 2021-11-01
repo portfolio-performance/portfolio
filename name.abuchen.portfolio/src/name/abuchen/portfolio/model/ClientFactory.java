@@ -72,6 +72,7 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
 import name.abuchen.portfolio.util.ProgressMonitorInputStream;
+import name.abuchen.portfolio.util.TextUtil;
 import name.abuchen.portfolio.util.XStreamInstantConverter;
 import name.abuchen.portfolio.util.XStreamLocalDateConverter;
 import name.abuchen.portfolio.util.XStreamLocalDateTimeConverter;
@@ -1339,15 +1340,15 @@ public class ClientFactory
 
         for (Transaction tx : allTransactions)
         {
-            String note = tx.getNote();
-            if (note == null)
+            String note = TextUtil.strip(tx.getNote());
+            if (note == null || note.length() == 0)
                 continue;
 
             Matcher m = pattern.matcher(note);
             if (m.matches())
             {
-                tx.setNote(m.group("note")); //$NON-NLS-1$
-                tx.setSource(m.group("file")); //$NON-NLS-1$
+                tx.setNote(TextUtil.strip(m.group("note"))); //$NON-NLS-1$
+                tx.setSource(TextUtil.strip(m.group("file"))); //$NON-NLS-1$
             }
         }
     }
