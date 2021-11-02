@@ -489,7 +489,6 @@ public class PerformanceView extends AbstractHistoricView
             }
         });
         column.setSorter(ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getSource()));
-        column.setVisible(false);
         support.addColumn(column);
 
         support.createColumns();
