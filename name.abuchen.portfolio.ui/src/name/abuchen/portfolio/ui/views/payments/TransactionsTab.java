@@ -363,7 +363,6 @@ public class TransactionsTab implements PaymentsTab
             }
         });
         ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getSource()).attachTo(column);
-        column.setVisible(false);
         support.addColumn(column);
     }
 
