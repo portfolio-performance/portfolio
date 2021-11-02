@@ -65,7 +65,8 @@ public class DkbPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-11-25T11:02:54")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(20)));
-        assertThat(entry.getNote(), is("Limit 97,50 % | Kauf01.txt"));
+        assertThat(entry.getSource(), is("Kauf01.txt"));
+        assertThat(entry.getNote(), is("Limit 97,50 %"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2030.66))));
@@ -107,7 +108,8 @@ public class DkbPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-01-25T09:33:06")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1000)));
-        assertThat(entry.getNote(), is("Limit 1,75 EUR | Kauf02.txt"));
+        assertThat(entry.getSource(), is("Kauf02.txt"));
+        assertThat(entry.getNote(), is("Limit 1,75 EUR"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1760.91))));
@@ -354,7 +356,8 @@ public class DkbPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-10-27T09:05:33")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(60)));
-        assertThat(entry.getNote(), is("Limit 85,00 % | Verkauf01.txt"));
+        assertThat(entry.getSource(), is("Verkauf01.txt"));
+        assertThat(entry.getNote(), is("Limit 85,00 %"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4937.19))));
@@ -407,7 +410,8 @@ public class DkbPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-02-10T10:58:02")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(200)));
-        assertThat(entry.getNote(), is("Limit 15,05 EUR | Verkauf02.txt"));
+        assertThat(entry.getSource(), is("Verkauf02.txt"));
+        assertThat(entry.getNote(), is("Limit 15,05 EUR"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3000.00))));
@@ -490,7 +494,8 @@ public class DkbPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-02-22T20:56:04")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(20)));
-        assertThat(entry.getNote(), is("Limit 5,44 EUR | Verkauf04.txt"));
+        assertThat(entry.getSource(), is("Verkauf04.txt"));
+        assertThat(entry.getNote(), is("Limit 5,44 EUR"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(99.00))));
@@ -584,7 +589,8 @@ public class DkbPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-07-06T14:49:39")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(75)));
-        assertThat(entry.getNote(), is("Limit 27,80 EUR | Verkauf06.txt"));
+        assertThat(entry.getSource(), is("Verkauf06.txt"));
+        assertThat(entry.getNote(), is("Limit 27,80 EUR"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2051.02))));
@@ -1743,6 +1749,8 @@ public class DkbPDFExtractorTest
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-06T00:00")));
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(1000)));
+            assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
+            assertThat(transaction.getNote(), is("Überweisung"));
         }
 
         if (iter.hasNext())
@@ -2548,6 +2556,8 @@ public class DkbPDFExtractorTest
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-09T00:00")));
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(100)));
+            assertThat(transaction.getSource(), is("KreditKontoauszug01.txt"));
+            assertThat(transaction.getNote(), is("Einzahlung"));
         }
 
         if (iter.hasNext())
@@ -2572,6 +2582,8 @@ public class DkbPDFExtractorTest
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-21T00:00")));
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.01)));
+            assertThat(transaction.getSource(), is("KreditKontoauszug01.txt"));
+            assertThat(transaction.getNote(), is("Habenzins auf 28 Tage"));
         }
 
         if (iter.hasNext())
@@ -2584,6 +2596,8 @@ public class DkbPDFExtractorTest
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-10-23T00:00")));
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.01)));
+            assertThat(transaction.getSource(), is("KreditKontoauszug01.txt"));
+            assertThat(transaction.getNote(), is("Abgeltungsteuer"));
         }
 
         if (iter.hasNext())
@@ -2596,6 +2610,8 @@ public class DkbPDFExtractorTest
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-25T00:00")));
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(62.32)));
+            assertThat(transaction.getSource(), is("KreditKontoauszug01.txt"));
+            assertThat(transaction.getNote(), is("Laden Ort 220,"));
         }
 
         if (iter.hasNext())

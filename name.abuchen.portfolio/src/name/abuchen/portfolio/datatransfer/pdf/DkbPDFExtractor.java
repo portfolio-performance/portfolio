@@ -16,6 +16,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.util.TextUtil;
 
 @SuppressWarnings("nls")
 public class DkbPDFExtractor extends AbstractPDFExtractor
@@ -777,7 +778,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                     + v.get("date").substring(6, 8)));
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(context.get("currency"));
-                    t.setNote(v.get("note"));
+                    t.setNote(TextUtil.strip(v.get("note")));
                 })
 
                 .wrap(TransactionItem::new));
@@ -859,7 +860,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                     if (">".equals(v.get("note").substring(v.get("note").length() - 1)))
                         v.put("note", v.get("note").substring(0, v.get("note").length() - 1));
 
-                    t.setNote(v.get("note"));
+                    t.setNote(TextUtil.strip(v.get("note")));
                 })
 
                 .wrap(TransactionItem::new));
