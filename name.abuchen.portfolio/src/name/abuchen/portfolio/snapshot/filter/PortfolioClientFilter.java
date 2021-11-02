@@ -46,16 +46,21 @@ public class PortfolioClientFilter implements ClientFilter
         this(Arrays.asList(portfolio), Arrays.asList(account));
     }
     
-    public void removePortfolio(Portfolio portfolio)
+    public void removeElement(Object element)
     {
-        portfolios.remove(portfolio);
+        portfolios.remove(element);
+        accounts.remove(element);
     }
     
-    public void removeAccount(Account account)
+    public void addElement(Object element)
     {
-        accounts.remove(account);
+        if(element instanceof Portfolio)
+            portfolios.add((Portfolio)element);
+        
+        if(element instanceof Account)
+            accounts.add((Account)element);
     }
-    
+       
     public Object[] getAllElements()
     {
         return Stream.concat(portfolios.stream(), accounts.stream()).toArray();

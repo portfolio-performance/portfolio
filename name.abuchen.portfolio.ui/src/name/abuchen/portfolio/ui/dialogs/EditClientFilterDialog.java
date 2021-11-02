@@ -18,15 +18,18 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.window.ToolTip;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
@@ -39,6 +42,7 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.ui.util.ContextMenu;
+import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
@@ -96,7 +100,7 @@ public class EditClientFilterDialog extends Dialog
         @Override
         public boolean hasChildren(Object element)
         {
-            return element instanceof ClientFilterMenu.Item;
+            return getChildren(element).length > 0;
         }
     }
 
@@ -198,10 +202,65 @@ public class EditClientFilterDialog extends Dialog
 
     private void fillContextMenu(IMenuManager manager)
     {       
+        if (treeViewer.getStructuredSelection().getFirstElement() instanceof ClientFilterMenu.Item)
+        {
+            manager.add(new Action(Messages.MenuReportingPeriodInsert)  
+            { // insert new sub element (child) to filter
+                @Override
+                public void run()
+                {                   
+                    LabelProvider labelProvider = new LabelProvider()
+                    {
+                        @Override
+                        public Image getImage(Object element)
+                        {
+                            return LogoManager.instance().getDefaultColumnImage(element, client.getSettings());
+                        }
+                    };
+                    
+                    ListSelectionDialog dialog = new ListSelectionDialog(Display.getDefault().getActiveShell(), labelProvider);
+
+                    dialog.setTitle(Messages.LabelClientFilterDialogTitle);
+                    dialog.setMessage(Messages.LabelClientFilterDialogMessage);
+                                
+                    ClientFilterMenu.Item selectedFilterElement = (ClientFilterMenu.Item)treeViewer.getStructuredSelection().getFirstElement();
+                    if(!(selectedFilterElement.getFilter() instanceof PortfolioClientFilter))
+                        return;
+                    
+                    PortfolioClientFilter filter = (PortfolioClientFilter)selectedFilterElement.getFilter();
+                    
+                    List<Object> elements = new ArrayList<>();
+                    elements.addAll(client.getPortfolios());
+                    elements.addAll(client.getAccounts());
+                    for(Object el : filter.getAllElements())
+                        elements.remove(el); // remove already assigned elements
+                    
+                    dialog.setElements(elements);
+
+                    if (dialog.open() == Window.OK)
+                    {
+                        Object[] selected = dialog.getResult();
+                        if (selected.length > 0)
+                        {
+                            for(Object sel : selected)
+                            {
+                                filter.addElement(sel);
+                            }
+                            
+                            // important step: update UUIDs because this is basic information in settings
+                            selectedFilterElement.setUUIDs(ClientFilterMenu.buildUUIDs(filter.getAllElements()));
+                            treeViewer.refresh();
+                        }                        
+                    }
+                }
+            });
+         }
+       
+        
         if ((treeViewer.getStructuredSelection().getFirstElement() instanceof ClientFilterMenu.Item)
                         ||(treeViewer.getStructuredSelection().getFirstElement() instanceof Portfolio)
                         || (treeViewer.getStructuredSelection().getFirstElement() instanceof Account))
-        {           
+        {                      
             manager.add(new Action(Messages.MenuReportingPeriodDelete)
             { // delete filter (parent node), portfolio (child) or account (child)
                 @Override
@@ -226,11 +285,8 @@ public class EditClientFilterDialog extends Dialog
                                 if(it == p.getFirstSegment() && it.getFilter() instanceof PortfolioClientFilter)
                                 { // found parent item --> now remove selected child item
                                     PortfolioClientFilter filter = (PortfolioClientFilter)it.getFilter();
-                                    if(p.getLastSegment() instanceof Portfolio)
-                                        filter.removePortfolio((Portfolio)p.getLastSegment());                                        
-                                    if(p.getLastSegment() instanceof Account)
-                                        filter.removeAccount((Account)p.getLastSegment());
-                                        
+                                    filter.removeElement(p.getLastSegment());
+                                    
                                     // important step: update UUIDs because this is basic information in settings
                                     it.setUUIDs(ClientFilterMenu.buildUUIDs(filter.getAllElements()));
                                 }
