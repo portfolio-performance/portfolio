@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -43,6 +44,21 @@ public class PortfolioClientFilter implements ClientFilter
     public PortfolioClientFilter(Portfolio portfolio, Account account)
     {
         this(Arrays.asList(portfolio), Arrays.asList(account));
+    }
+    
+    public void removePortfolio(Portfolio portfolio)
+    {
+        portfolios.remove(portfolio);
+    }
+    
+    public void removeAccount(Account account)
+    {
+        accounts.remove(account);
+    }
+    
+    public Object[] getAllElements()
+    {
+        return Stream.concat(portfolios.stream(), accounts.stream()).toArray();
     }
 
     @Override

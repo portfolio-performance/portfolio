@@ -66,6 +66,11 @@ public final class ClientFilterMenu implements IMenuListener
         {
             return uuids;
         }
+        
+        public void setUUIDs(String uuids)
+        {
+            this.uuids = uuids;
+        }
 
         public ClientFilter getFilter()
         {
@@ -276,12 +281,10 @@ public final class ClientFilterMenu implements IMenuListener
 
     private Optional<Item> buildItem(String uuids)
     {
-        if (uuids == null || uuids.isEmpty())
+        if (uuids == null)
             return Optional.empty();
 
         String[] ids = uuids.split(","); //$NON-NLS-1$
-        if (ids.length == 0)
-            return Optional.empty();
 
         Map<String, Object> uuid2object = new HashMap<>();
         client.getPortfolios().forEach(p -> uuid2object.put(p.getUUID(), p));
@@ -299,11 +302,16 @@ public final class ClientFilterMenu implements IMenuListener
 
         String label = Arrays.stream(selected).map(String::valueOf).collect(Collectors.joining(", ")); //$NON-NLS-1$
 
-        String uuids = Arrays.stream(selected)
-                        .map(o -> o instanceof Account ? ((Account) o).getUUID() : ((Portfolio) o).getUUID())
-                        .collect(Collectors.joining(",")); //$NON-NLS-1$
+        String uuids = buildUUIDs(selected);
 
         return new Item(label, uuids, new PortfolioClientFilter(portfolios, accounts));
+    }
+    
+    public static String buildUUIDs(Object[] selected) 
+    {
+        return Arrays.stream(selected)
+                        .map(o -> o instanceof Account ? ((Account) o).getUUID() : ((Portfolio) o).getUUID())
+                        .collect(Collectors.joining(",")); //$NON-NLS-1$
     }
 
     public boolean hasActiveFilter()

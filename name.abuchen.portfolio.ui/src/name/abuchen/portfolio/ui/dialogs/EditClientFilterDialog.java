@@ -17,8 +17,9 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ColumnWeightData;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.TreePath;
+import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.window.ToolTip;
@@ -33,6 +34,7 @@ import org.eclipse.swt.widgets.Tree;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.snapshot.filter.PortfolioClientFilter;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.ClientFilterMenu;
@@ -195,22 +197,50 @@ public class EditClientFilterDialog extends Dialog
     }
 
     private void fillContextMenu(IMenuManager manager)
-    {
-        if (!(treeViewer.getStructuredSelection().getFirstElement() instanceof ClientFilterMenu.Item))
-            return;
-
-        manager.add(new Action(Messages.MenuReportingPeriodDelete)
-        {
-            @Override
-            public void run()
-            {
-                IStructuredSelection selection = (IStructuredSelection) treeViewer.getSelection();
-
-                for (Object o : selection.toArray())
-                    items.remove(o);
-
-                treeViewer.refresh();
-            }
-        });
+    {       
+        if ((treeViewer.getStructuredSelection().getFirstElement() instanceof ClientFilterMenu.Item)
+                        ||(treeViewer.getStructuredSelection().getFirstElement() instanceof Portfolio)
+                        || (treeViewer.getStructuredSelection().getFirstElement() instanceof Account))
+        {           
+            manager.add(new Action(Messages.MenuReportingPeriodDelete)
+            { // delete filter (parent node), portfolio (child) or account (child)
+                @Override
+                public void run()
+                {                
+                    if(!(treeViewer.getSelection() instanceof TreeSelection))
+                        return;
+                    
+                    TreeSelection selection = (TreeSelection)treeViewer.getSelection();                   
+                    TreePath[] paths = selection.getPaths();
+                    
+                    for(TreePath p : paths)
+                    {
+                        if(p.getSegmentCount() == 1)
+                        { // parent node clicked (filter itself)
+                            items.remove(p.getFirstSegment());
+                        }
+                        else if(p.getSegmentCount() == 2)
+                        { // child node clicked (portfolio or account)
+                            items.forEach(it ->
+                            {
+                                if(it == p.getFirstSegment() && it.getFilter() instanceof PortfolioClientFilter)
+                                { // found parent item --> now remove selected child item
+                                    PortfolioClientFilter filter = (PortfolioClientFilter)it.getFilter();
+                                    if(p.getLastSegment() instanceof Portfolio)
+                                        filter.removePortfolio((Portfolio)p.getLastSegment());                                        
+                                    if(p.getLastSegment() instanceof Account)
+                                        filter.removeAccount((Account)p.getLastSegment());
+                                        
+                                    // important step: update UUIDs because this is basic information in settings
+                                    it.setUUIDs(ClientFilterMenu.buildUUIDs(filter.getAllElements()));
+                                }
+                            });
+                        }
+                    }
+                    
+                    treeViewer.refresh();
+                }
+            });
+        }  
     }
 }
