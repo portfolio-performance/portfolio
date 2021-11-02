@@ -1336,7 +1336,7 @@ public class ClientFactory
         client.getAccounts().forEach(a -> allTransactions.addAll(a.getTransactions()));
         client.getPortfolios().forEach(p -> allTransactions.addAll(p.getTransactions()));
 
-        Pattern pattern = Pattern.compile("^((?<note>.*) \\| )?(?<file>[^ ]*\\.(pdf|csv))$"); //$NON-NLS-1$
+        Pattern pattern = Pattern.compile("^((?<note>.*) \\| )?(?<file>[^ ]*\\.(pdf|csv))$", Pattern.CASE_INSENSITIVE); //$NON-NLS-1$
 
         for (Transaction tx : allTransactions)
         {
