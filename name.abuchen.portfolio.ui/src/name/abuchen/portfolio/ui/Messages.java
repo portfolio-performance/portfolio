@@ -838,6 +838,8 @@ public class Messages extends NLS
     public static String MenuRenameDashboard;
     public static String MenuRenameLabel;
     public static String MenuReportingPeriodDelete;
+    public static String MenuReportingPeriodDeleteConfirm;
+    public static String MenuReportingPeriodInsert;
     public static String MenuReportingPeriodManage;
     public static String MenuResetChartSeries;
     public static String MenuResetColumns;
