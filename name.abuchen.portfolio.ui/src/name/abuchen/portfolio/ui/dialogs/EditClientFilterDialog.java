@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.dialogs;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -11,6 +12,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -276,7 +278,10 @@ public class EditClientFilterDialog extends Dialog
                     {
                         if(p.getSegmentCount() == 1)
                         { // parent node clicked (filter itself)
-                            items.remove(p.getFirstSegment());
+                            ClientFilterMenu.Item parentFilter = (ClientFilterMenu.Item)p.getFirstSegment();
+                            String message =  MessageFormat.format(Messages.MenuReportingPeriodDeleteConfirm, parentFilter.getLabel());
+                            if (MessageDialog.openConfirm(Display.getDefault().getActiveShell(), getText(), message))
+                                items.remove(p.getFirstSegment());
                         }
                         else if(p.getSegmentCount() == 2)
                         { // child node clicked (portfolio or account)
