@@ -9,6 +9,8 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import org.eclipse.swt.graphics.RGBA;
+
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.AttributeType.AmountPlainConverter;
 import name.abuchen.portfolio.model.AttributeType.ImageConverter;
@@ -42,7 +44,33 @@ public class ClientSettings
 
         if (configurationSets == null)
             configurationSets = new HashMap<>();
+        
+        if(settingsSMA == null)
+            settingsSMA = createDefaultSettingsSMA();
     }
+    
+    private Map<Integer, TypedMap> createDefaultSettingsSMA()
+    {
+        Map<Integer, TypedMap> map = new HashMap<>();
+        IntervalSettings mapWrapper = new IntervalSettings(map);
+        getDefaultSmaColors().forEach((interval, color) -> mapWrapper.add(interval, color, false));
+        return map;
+    }
+
+    public static Map<Integer, RGBA> getDefaultSmaColors()
+    {
+        Map<Integer, RGBA> map = new HashMap<>();
+        map.put(5, new RGBA(179, 107, 107, 255));
+        map.put(20, new RGBA(179, 167, 107, 255));
+        map.put(30, new RGBA(131, 179, 107, 255));
+        map.put(38, new RGBA(107, 179, 143, 255));
+        map.put(50, new RGBA(107, 179, 143, 255));
+        map.put(90, new RGBA(107, 155, 179, 255));
+        map.put(100, new RGBA(119, 107, 179, 255));
+        map.put(200, new RGBA(179, 107, 179, 255));
+        return map;
+    }
+  
 
     public static List<Bookmark> getDefaultBookmarks()
     {
@@ -218,6 +246,12 @@ public class ClientSettings
     public void putAllConfigurationSets(Map<String, ConfigurationSet> newSets)
     {
         configurationSets.putAll(newSets);
+    }
+    
+    private Map<Integer, TypedMap> settingsSMA;
+    public IntervalSettings getIntervalSettingsSMA()
+    {
+        return new IntervalSettings(settingsSMA);
     }
 
     @SuppressWarnings("unchecked")
