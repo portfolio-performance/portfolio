@@ -1188,12 +1188,19 @@ import name.abuchen.portfolio.money.Money;
         for (Map.Entry<String, ConfigurationSet> entry : settings.getConfigurationSets())
         {
             entry.getValue().getConfigurations().forEach(config -> {
-                PConfigurationSet.Builder newConfigurationSet = PConfigurationSet.newBuilder();
-                newConfigurationSet.setKey(entry.getKey());
-                newConfigurationSet.setUuid(config.getUUID());
-                newConfigurationSet.setName(config.getName());
-                newConfigurationSet.setData(config.getData());
-                newSettings.addConfigurationSets(newConfigurationSet);
+
+                // configuration data can be null if the file is empty with no
+                // securities
+                if (config.getData() != null)
+                {
+                    PConfigurationSet.Builder newConfigurationSet = PConfigurationSet.newBuilder();
+                    newConfigurationSet.setKey(entry.getKey());
+                    newConfigurationSet.setUuid(config.getUUID());
+                    newConfigurationSet.setName(config.getName());
+                    newConfigurationSet.setData(config.getData());
+                    newSettings.addConfigurationSets(newConfigurationSet);
+                }
+
             });
         }
 
