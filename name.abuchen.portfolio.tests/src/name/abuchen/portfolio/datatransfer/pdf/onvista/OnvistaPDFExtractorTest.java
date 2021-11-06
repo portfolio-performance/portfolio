@@ -1780,6 +1780,8 @@ public class OnvistaPDFExtractorTest
 
         assertThat(entry.getDateTime(), is(LocalDateTime.parse("2016-05-25T00:00")));
         assertThat(entry.getShares(), is(Values.Share.factorize(25)));
+        assertThat(entry.getSource(), is("EinbuchungVonRechten01.txt"));
+        assertThat(entry.getNote(), is("Einbuchung der Rechte zur Dividende wahlweise."));
 
         assertThat(entry.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
@@ -2295,6 +2297,8 @@ public class OnvistaPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-04-04T00:00")));
+            assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
+            assertThat(transaction.getNote(), is("Überweisungseingang SEPA"));
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(200)));
         }
 
@@ -2384,6 +2388,8 @@ public class OnvistaPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-07T00:00")));
+            assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+            assertThat(transaction.getNote(), is("Portogebühren"));
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.62)));
         }
     }

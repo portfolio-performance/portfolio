@@ -175,6 +175,8 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-01T00:00")));
+            assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
+            assertThat(transaction.getNote(), is("BASISLASTSCHRIFT"));
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(42.13)));
         }
 
@@ -307,6 +309,8 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-23T00:00")));
+            assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
+            assertThat(transaction.getNote(), is("GUTSCHRIFT"));
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(85.65)));
         }
 
@@ -355,6 +359,8 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST_CHARGE));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-31T00:00")));
+            assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
+            assertThat(transaction.getNote(), is("Entgelte vom 01.12.2020 - 31.12.2020"));
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(1.00 + 1.00)));
         }
 
@@ -367,6 +373,8 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-31T00:00")));
+            assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
+            assertThat(transaction.getNote(), is("Abschluss vom 01.10.2020 bis 31.12.2020"));
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(1.95)));
         }
     }

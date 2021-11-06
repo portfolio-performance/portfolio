@@ -2,8 +2,8 @@ package name.abuchen.portfolio.datatransfer.pdf.postbank;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsEmptyCollection.empty;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -216,6 +216,8 @@ public class PostbankPDFExtractorTest
         assertThat(t.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(8.64))));
         assertThat(t.getShares(), is(Values.Share.factorize(12)));
         assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-02-22T00:00")));
+        assertThat(t.getSource(), is("postbank_dividende01.txt"));
+        assertThat(t.getNote(), is("Quartalsdividende"));
 
         assertThat(t.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(10.17))));
         assertThat(t.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(1.53))));

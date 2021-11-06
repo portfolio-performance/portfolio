@@ -464,6 +464,8 @@ public class DADATBankenhausPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-31T00:00")));
+        assertThat(transaction.getSource(), is("Kontoauszug09.txt"));
+        assertThat(transaction.getNote(), is("Kontoführungsgebühr"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.50))));
@@ -494,6 +496,8 @@ public class DADATBankenhausPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-07T00:00")));
+        assertThat(transaction.getSource(), is("Kontoauszug10.txt"));
+        assertThat(transaction.getNote(), is("Depotgebührenabrechnung per 31.12.2020"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(63.68))));
@@ -729,6 +733,8 @@ public class DADATBankenhausPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-12-31T00:00")));
+        assertThat(transaction.getSource(), is("Kontoauszug14.txt"));
+        assertThat(transaction.getNote(), is("Kontoführungsgebühr"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.50))));
@@ -760,6 +766,8 @@ public class DADATBankenhausPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-31T00:00")));
+        assertThat(transaction.getSource(), is("Kontoauszug15.txt"));
+        assertThat(transaction.getNote(), is("Kontoführungsgebühr"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.50))));
@@ -791,6 +799,8 @@ public class DADATBankenhausPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-06-30T00:00")));
+        assertThat(transaction.getSource(), is("Kontoauszug16.txt"));
+        assertThat(transaction.getNote(), is("Spesen"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.53))));
@@ -822,6 +832,8 @@ public class DADATBankenhausPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-10-31T00:00")));
+        assertThat(transaction.getSource(), is("Kontoauszug17.txt"));
+        assertThat(transaction.getNote(), is("Werbebonus"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(75.00))));

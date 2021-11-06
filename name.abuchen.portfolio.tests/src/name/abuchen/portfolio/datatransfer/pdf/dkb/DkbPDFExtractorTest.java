@@ -1924,6 +1924,8 @@ public class DkbPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-29T00:00")));
+            assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
+            assertThat(transaction.getNote(), is("Steuerausgleich"));
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(1.23)));
         }
     }
@@ -2054,6 +2056,8 @@ public class DkbPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-04-23T00:00")));
+            assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
+            assertThat(transaction.getNote(), is("Rechnung"));
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(15.00)));
         }
     }
@@ -2083,6 +2087,8 @@ public class DkbPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST_CHARGE));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-04-01T00:00")));
+            assertThat(transaction.getSource(), is("GiroKontoauszug05.txt"));
+            assertThat(transaction.getNote(), is("Abrechnungszeitraum vom 01.01.2021 bis 31.03.2021"));
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.24)));
         }
 

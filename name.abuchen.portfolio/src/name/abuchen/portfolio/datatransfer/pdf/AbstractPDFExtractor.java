@@ -22,10 +22,12 @@ import name.abuchen.portfolio.datatransfer.SecurityCache;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.model.Annotated;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.CrossEntry;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.util.TextUtil;
 
 public abstract class AbstractPDFExtractor implements Extractor
 {
@@ -112,10 +114,12 @@ public abstract class AbstractPDFExtractor implements Extractor
 
                 if (subject instanceof Transaction)
                     ((Transaction) subject).setSource(filename);
-                else if (subject.getNote() == null || subject.getNote().trim().length() == 0)
+                else if (subject instanceof CrossEntry)
+                    ((CrossEntry) subject).setSource(filename);
+                else if (subject.getNote() == null || TextUtil.strip(subject.getNote()).length() == 0)
                     item.getSubject().setNote(filename);
                 else
-                    item.getSubject().setNote(item.getSubject().getNote().trim().concat(" | ").concat(filename)); //$NON-NLS-1$
+                    item.getSubject().setNote(TextUtil.strip(item.getSubject().getNote()).concat(" | ").concat(filename)); //$NON-NLS-1$
             }
 
             return items;
