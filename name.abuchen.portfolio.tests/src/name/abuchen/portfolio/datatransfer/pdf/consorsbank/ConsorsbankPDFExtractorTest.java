@@ -22,6 +22,7 @@ import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
 import name.abuchen.portfolio.datatransfer.pdf.ConsorsbankPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -31,7 +32,6 @@ import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.model.Account;
 
 @SuppressWarnings("nls")
 public class ConsorsbankPDFExtractorTest
@@ -68,7 +68,6 @@ public class ConsorsbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-01-15T08:13:35")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(132.80212)));
         assertThat(entry.getPortfolioTransaction().getSource(), is("ConsorsbankKauf01.txt"));
-        assertThat(entry.getPortfolioTransaction().getNote(), is(""));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5000.00))));
@@ -156,7 +155,6 @@ public class ConsorsbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-10-16T15:24:22")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.95126)));
         assertThat(entry.getPortfolioTransaction().getSource(), is("ConsorsbankKauf03.txt"));
-        assertThat(entry.getPortfolioTransaction().getNote(), is(""));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(25.00))));
@@ -244,7 +242,6 @@ public class ConsorsbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-02-03T08:02:51")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.01514)));
         assertThat(entry.getPortfolioTransaction().getSource(), is("ConsorsbankKauf05.txt"));
-        assertThat(entry.getPortfolioTransaction().getNote(), is(""));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(25.00))));

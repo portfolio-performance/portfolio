@@ -740,6 +740,8 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2014-11-12T00:00")));
+        assertThat(transaction.getSource(), is("biwAGKontoauszug01.txt"));
+        assertThat(transaction.getNote(), is("Gebühr Kapitaltransaktion Ausland"));
         assertThat(transaction.getMonetaryAmount(), 
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.56))));
 
@@ -2337,6 +2339,8 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-01-26T00:00")));
+        assertThat(transaction.getSource(), is("FinTechKontoauszug02.txt"));
+        assertThat(transaction.getNote(), is("Überweisung"));
         assertThat(transaction.getMonetaryAmount(), 
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(15000.00))));
     }
@@ -2361,6 +2365,8 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-12-31T00:00")));
+        assertThat(transaction.getSource(), is("FinTechKontoauszug03.txt"));
+        assertThat(transaction.getNote(), is("Steuertopfoptimierung 2016"));
         assertThat(transaction.getMonetaryAmount(), 
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.94))));
     }
@@ -2385,6 +2391,8 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-10-01T00:00")));
+        assertThat(transaction.getSource(), is("FinTechKontoauszug04.txt"));
+        assertThat(transaction.getNote(), is("EINZAHLUNG"));
         assertThat(transaction.getMonetaryAmount(), 
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2000.00))));
 
@@ -2394,6 +2402,8 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST_CHARGE));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-12-31T00:00")));
+        assertThat(transaction.getSource(), is("FinTechKontoauszug04.txt"));
+        assertThat(transaction.getNote(), is("Zinsabschluss   01.10.2010 - 31.12.2010"));
         assertThat(transaction.getMonetaryAmount(), 
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.20))));
     }
@@ -3192,6 +3202,8 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-07-20T00:00")));
+        assertThat(transaction.getSource(), is("FlatExKontoauszug01.txt"));
+        assertThat(transaction.getNote(), is("Depotgebühren 01.04.2020 - 30.04.2020"));
         assertThat(transaction.getMonetaryAmount(), 
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.26))));
 
@@ -3230,6 +3242,8 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-18T00:00")));
+        assertThat(transaction.getSource(), is("FlatExKontoauszug02.txt"));
+        assertThat(transaction.getNote(), is("Überweisung"));
         assertThat(transaction.getMonetaryAmount(), 
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000.00))));
 
@@ -3284,6 +3298,8 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-19T00:00")));
+        assertThat(transaction.getSource(), is("FlatExKontoauszug02.txt"));
+        assertThat(transaction.getNote(), is("R-Transaktion"));
         assertThat(transaction.getMonetaryAmount(), 
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(53.00))));
 

@@ -2,8 +2,8 @@ package name.abuchen.portfolio.datatransfer.pdf.commerzbank;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsEmptyCollection.empty;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -530,8 +530,12 @@ public class CommerzbankPDFExtractorTest
         assertThat(t.getSecurity().getCurrencyCode(), is(CurrencyUnit.EUR));
         
         assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
         assertThat(t.getDateTime(), is(LocalDateTime.parse("2020-03-27T00:00")));
         assertThat(t.getShares(), is(Values.Share.factorize(12)));
+        assertThat(t.getSource(), is("CommerzbankDividenden01.txt"));
+        assertThat(t.getNote(), is("Zwischendividende 01.01.20 - 31.12.20"));
+
         assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(61.30))));
         assertThat(t.getUnitSum(Unit.Type.TAX), 
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(17.35))));
@@ -570,8 +574,12 @@ public class CommerzbankPDFExtractorTest
         assertThat(t.getSecurity().getCurrencyCode(), is(CurrencyUnit.EUR));
         
         assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
         assertThat(t.getDateTime(), is(LocalDateTime.parse("2020-02-05T00:00")));
         assertThat(t.getShares(), is(Values.Share.factorize(500)));
+        assertThat(t.getSource(), is("CommerzbankDividenden02.txt"));
+        assertThat(t.getNote(), is("Dividendengutschrift 01.10.18 - 30.09.19"));
+
         assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1950.00))));
         assertThat(t.getUnitSum(Unit.Type.TAX), 
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));

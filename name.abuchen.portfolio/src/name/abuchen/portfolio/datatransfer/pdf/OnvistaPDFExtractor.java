@@ -748,6 +748,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                     t.setDateTime(asDate(v.get("date") + type.getCurrentContext().get("year")));
                     t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
+                    t.setNote(v.get("note"));
                 })
 
                 // 31.10. 31.10. REF: 000017304356 37,66
@@ -759,6 +760,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                     t.setDateTime(asDate(v.get("date") + type.getCurrentContext().get("year")));
                     t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
+                    t.setNote(v.get("note"));
                 })
 
                 // 07.04. 03.04. REF: 000033640646 0,62-
@@ -774,6 +776,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                     t.setDateTime(asDate(v.get("date") + type.getCurrentContext().get("year")));
                     t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
+                    t.setNote(v.get("note"));
                 })
 
                 .wrap(t -> {
