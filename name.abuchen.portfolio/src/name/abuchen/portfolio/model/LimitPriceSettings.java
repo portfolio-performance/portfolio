@@ -51,6 +51,7 @@ public class LimitPriceSettings
             return limit.toString();
 
         StringJoiner joiner = new StringJoiner(" / ", " (", ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        joiner.setEmptyValue(""); //$NON-NLS-1$
         if (getShowAbsoluteDiff())
         {
             double absDistance = (limit.getValue() - price.getValue()) / Values.Quote.divider();
