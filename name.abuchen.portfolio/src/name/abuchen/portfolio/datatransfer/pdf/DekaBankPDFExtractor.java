@@ -41,14 +41,6 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
         pdfTransaction.subject(() -> {
             BuySellEntry entry = new BuySellEntry();
             entry.setType(PortfolioTransaction.Type.BUY);
-
-            /***
-             * If we have multiple entries in the document,
-             * then the "negative" flag must be removed.
-             */
-            type.getCurrentContext().remove("name");
-            type.getCurrentContext().remove("isin");
-
             return entry;
         });
 
