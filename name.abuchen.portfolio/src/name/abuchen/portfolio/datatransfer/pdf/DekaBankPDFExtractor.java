@@ -1,11 +1,16 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.util.TextUtil;
 
 @SuppressWarnings("nls")
 public class DekaBankPDFExtractor extends AbstractPDFExtractor
@@ -17,6 +22,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("DekaBank"); //$NON-NLS-1$
 
         addBuySellTransaction();
+        addDepotStatementTransaction();
     }
 
     @Override
@@ -67,5 +73,195 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                 })
 
                 .wrap(BuySellEntryItem::new);
+    }
+
+    public void addDepotStatementTransaction()
+    {
+        final DocumentType type = new DocumentType("Quartalsbericht per [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}", (context, lines) -> {
+            Pattern pBaseCurrency = Pattern.compile("depot in (?<baseCurrency>[\\w]{3}) in [\\w]{3}");
+            Pattern pIsin = Pattern.compile("ISIN: (?<isin>[\\w]{12}) .*");
+
+            int endBlock = lines.length;
+
+            for (int i = lines.length - 1; i >= 0; i--)
+            {
+                Matcher m = pBaseCurrency.matcher(lines[i]);
+                if (m.matches())
+                    context.put("baseCurrency", m.group("baseCurrency"));
+
+                m = pIsin.matcher(lines[i]);
+                if (m.matches())
+                {
+                    /***
+                     * Stringbuilder:
+                     * security_(security name)_(currency)_(start@line)_(end@line) = isin
+                     * 
+                     * Example:
+                     * Deka-GlobalChampions TF
+                     * ISIN: DE000DK0ECV6 Unterdepot: 00
+                     * EUR Fremdwährung EUR Anteile tag nungstag
+                     */
+                    StringBuilder securityListKey = new StringBuilder("security_");
+                    securityListKey.append(TextUtil.strip(lines[i - 1])).append("_");
+                    securityListKey.append(lines[i + 3].substring(17, 20)).append("_");
+                    securityListKey.append(Integer.toString(i)).append("_");
+                    securityListKey.append(Integer.toString(endBlock));
+                    context.put(securityListKey.toString(), m.group("isin"));
+                    endBlock = i;
+                }
+            }
+        });
+        this.addDocumentTyp(type);
+
+        Block buySellBlock = new Block("^(Lastschrifteinzug|Verkauf) .*$");
+        type.addBlock(buySellBlock);
+        buySellBlock.set(new Transaction<BuySellEntry>()
+            .subject(() -> {
+                BuySellEntry entry = new BuySellEntry();
+                entry.setType(PortfolioTransaction.Type.BUY);
+                return entry;
+        })
+
+                // Is type --> "Verkauf" change from BUY to SELL
+                .section("type").optional()
+                .match("^(?<type>(Lastschrifteinzug|Verkauf)) .*")
+                .assign((t, v) -> {
+                    if (v.get("type").equals("Verkauf"))
+                    {
+                        t.setType(PortfolioTransaction.Type.SELL);
+                    }
+                })
+
+                // Lastschrifteinzug 250,00 198,660000 +1,258 01.04.2021 01.04.2021
+                .section("amount", "shares", "date")
+                .match("^(Lastschrifteinzug|Verkauf) (?<amount>[\\.,\\d]+) [\\.,\\d]+ [-|+](?<shares>[\\.,\\d]+) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
+                .assign((t, v) -> {
+                    Map<String, String> context = type.getCurrentContext();
+
+                    Security securityData = getSecurity(context, v.getStartLineNumber());
+                    if (securityData != null)
+                    {
+                        v.put("name", securityData.getName());
+                        v.put("isin", securityData.getIsin());
+                        v.put("currency", asCurrencyCode(securityData.getCurrency()));
+                    }
+                    
+                    t.setDate(asDate(v.get("date")));
+                    t.setShares(asShares(v.get("shares")));
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(asCurrencyCode(context.get("baseCurrency")));
+                    t.setSecurity(getOrCreateSecurity(v));
+                })
+
+                .wrap(t -> {
+                    type.getCurrentContext().remove("name");
+                    type.getCurrentContext().remove("isin");
+                    type.getCurrentContext().remove("currency");
+                    if (t.getPortfolioTransaction().getCurrencyCode() != null)
+                        return new BuySellEntryItem(t);
+                    return null;
+                }));
+
+        Block deliveryInOutbondblock = new Block("^(Einbuchung|Ausbuchung) .*$");
+        type.addBlock(deliveryInOutbondblock);
+        deliveryInOutbondblock.set(new Transaction<PortfolioTransaction>()
+            .subject(() -> {
+                PortfolioTransaction transaction = new PortfolioTransaction();
+                transaction.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
+                return transaction;
+        })
+
+                // Is type --> "Ausbuchung" change from DELIVERY_INBOUND to DELIVERY_OUTBOUND
+                .section("type").optional()
+                .match("^(?<type>(Einbuchung|Ausbuchung)) .*")
+                .assign((t, v) -> {
+                    if (v.get("type").equals("Ausbuchung"))
+                    {
+                        t.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
+                    }
+                })
+
+                // Ausbuchung w/ Fusion -2,140 31.05.2021 28.05.2021
+                // Einbuchung w/ Fusion +1,315 31.05.2021 28.05.2021
+                .section("shares", "date")
+                .match("^(Einbuchung|Ausbuchung) .* [-|+](?<shares>[\\.,\\d]+) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
+                .assign((t, v) -> {
+                    Map<String, String> context = type.getCurrentContext();
+
+                    Security securityData = getSecurity(context, v.getStartLineNumber());
+                    if (securityData != null)
+                    {
+                        v.put("name", securityData.getName());
+                        v.put("isin", securityData.getIsin());
+                        v.put("currency", asCurrencyCode(securityData.getCurrency()));
+                    }
+                    
+                    t.setDateTime(asDate(v.get("date")));
+                    t.setShares(asShares(v.get("shares")));
+                    t.setAmount(0L);
+                    t.setCurrencyCode(asCurrencyCode(context.get("baseCurrency")));
+                    t.setSecurity(getOrCreateSecurity(v));
+                })
+
+                // Ausbuchung w/ Fusion -2,140 31.05.2021 28.05.2021
+                // Einbuchung w/ Fusion +1,315 31.05.2021 28.05.2021                          
+                .section("note").optional()
+                .match("^(Einbuchung|Ausbuchung) .* (?<note>.*) [-|+][\\.,\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$")
+                .assign((t, v) -> t.setNote(TextUtil.strip(v.get("note"))))
+
+                .wrap(t -> {
+                    type.getCurrentContext().remove("name");
+                    type.getCurrentContext().remove("isin");
+                    type.getCurrentContext().remove("currency");
+                    if (t.getCurrencyCode() != null)
+                        return new TransactionItem(t);
+                    return null;
+                }));
+    }
+
+    private Security getSecurity(Map<String, String> context, Integer entry)
+    {
+        for (String key : context.keySet())
+        {
+            String[] parts = key.split("_"); //$NON-NLS-1$
+            if (parts[0].equalsIgnoreCase("security")) //$NON-NLS-1$
+            {
+                if (entry >= Integer.parseInt(parts[3]) && entry <= Integer.parseInt(parts[4]))
+                {
+                    // returns security name, isin, security currency
+                    return new Security(parts[1], context.get(key), parts[2]);
+                }
+            }
+        }
+        return null;
+    }
+
+    private static class Security
+    {
+        public Security(String name, String isin, String currency)
+        {
+            this.name = name;
+            this.isin = isin;
+            this.currency = currency;
+        }
+
+        private String name;
+        private String isin;
+        private String currency;
+
+        public String getName()
+        {
+            return name;
+        }
+
+        public String getIsin()
+        {
+            return isin;
+        }
+
+        public String getCurrency()
+        {
+            return currency;
+        }
     }
 }
