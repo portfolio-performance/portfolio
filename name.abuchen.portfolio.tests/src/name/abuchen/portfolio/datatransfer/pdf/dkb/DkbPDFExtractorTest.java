@@ -2757,6 +2757,8 @@ public class DkbPDFExtractorTest
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-18T00:00")));
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(4.27)));
+            assertThat(transaction.getSource(), is("KreditKontoauszug02.txt"));
+            assertThat(transaction.getNote(), is("GITHUB, HTTPSGITHUB.C"));
         }
     }
 }
