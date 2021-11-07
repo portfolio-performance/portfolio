@@ -771,7 +771,20 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                 })
 
                 .oneOf(
-
+                                section -> section
+                                        .attributes("date", "note", "amount")
+                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) (?<note>Ausgleich Kreditkarte gem\\. Abrechnung) v\\. (?<amount>[\\.,\\d]+)\\+$")
+                                        .assign((t, v) -> {
+                                            Map<String, String> context = type.getCurrentContext();
+                                            v.put("note", v.get("note"));
+        
+                                            t.setDateTime(asDate(v.get("date").substring(0, 6) + context.get("century")
+                                                            + v.get("date").substring(6, 8)));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                            t.setCurrencyCode(context.get("currency"));
+                                            t.setNote(TextUtil.strip(v.get("note")));
+                                        })
+                                ,
                                 section -> section
                                         .attributes("date", "note", "amount")
                                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2})(?<note>(?! Habenzins).*) [\\w]{3} [\\.,\\d]+ [\\.,\\d]+ (?<amount>[\\.,\\d]+)\\+$")

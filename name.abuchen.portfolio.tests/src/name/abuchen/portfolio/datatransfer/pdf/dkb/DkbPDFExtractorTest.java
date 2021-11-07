@@ -2761,4 +2761,89 @@ public class DkbPDFExtractorTest
             assertThat(transaction.getNote(), is("GITHUB, HTTPSGITHUB.C"));
         }
     }
+
+    @Test
+    public void testKreditKontoauszug03()
+    {
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KreditKontoauszug03.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(5));
+
+        // check transaction
+        // get transactions
+        Iterator<Extractor.Item> iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
+        assertThat(results.stream().filter(i -> i instanceof TransactionItem).count(), is(5L));
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-21T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(40.72)));
+            assertThat(transaction.getSource(), is("KreditKontoauszug03.txt"));
+            assertThat(transaction.getNote(), is("Ausgleich Kreditkarte gem. Abrechnung"));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-09-07T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(400.00)));
+            assertThat(transaction.getNote(), is("Einzahlung"));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-30T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(100.00)));
+            assertThat(transaction.getNote(), is("VB DRESDEN-BAUTZEN EG, DD"));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-09-09T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(100.00)));
+            assertThat(transaction.getNote(), is("VB DRESDEN-BAUTZEN EG, DD"));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-09-20T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(4.27)));
+            assertThat(transaction.getNote(), is("GITHUB, HTTPSGITHUB.C"));
+        }
+    }
 }
