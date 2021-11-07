@@ -74,7 +74,7 @@ public class PDFImportAssistant
         extractors.add(new TradeRepublicPDFExtractor(client));
         extractors.add(new UnicreditPDFExtractor(client));
         extractors.add(new VBankAGPDFExtractor(client));
-        extractors.add(new ViacPDFExtractor(client));
+        extractors.add(new WirBankPDFExtractor(client));
         extractors.add(new WeberbankPDFExtractor(client));
     }
 

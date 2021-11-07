@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.datatransfer.pdf.viac;
+package name.abuchen.portfolio.datatransfer.pdf.wirbank;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -18,7 +18,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
-import name.abuchen.portfolio.datatransfer.pdf.ViacPDFExtractor;
+import name.abuchen.portfolio.datatransfer.pdf.WirBankPDFExtractor;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -30,18 +30,18 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
-public class ViacPDFExtractorTest
+public class WirBankPDFExtractorTest
 {
     @Test
     public void testKauf01()
     {
         Client client = new Client();
 
-        ViacPDFExtractor extractor = new ViacPDFExtractor(client);
+        WirBankPDFExtractor extractor = new WirBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ViacKauf01.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -80,11 +80,11 @@ public class ViacPDFExtractorTest
     {
         Client client = new Client();
 
-        ViacPDFExtractor extractor = new ViacPDFExtractor(client);
+        WirBankPDFExtractor extractor = new WirBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ViacKauf02.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -118,11 +118,11 @@ public class ViacPDFExtractorTest
     {
         Client client = new Client();
 
-        ViacPDFExtractor extractor = new ViacPDFExtractor(client);
+        WirBankPDFExtractor extractor = new WirBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ViacKauf03.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -161,11 +161,11 @@ public class ViacPDFExtractorTest
     {
         Client client = new Client();
 
-        ViacPDFExtractor extractor = new ViacPDFExtractor(client);
+        WirBankPDFExtractor extractor = new WirBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ViacKauf04.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -199,11 +199,11 @@ public class ViacPDFExtractorTest
     {
         Client client = new Client();
 
-        ViacPDFExtractor extractor = new ViacPDFExtractor(client);
+        WirBankPDFExtractor extractor = new WirBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ViacKauf05.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf05.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -242,11 +242,11 @@ public class ViacPDFExtractorTest
     {
         Client client = new Client();
 
-        ViacPDFExtractor extractor = new ViacPDFExtractor(client);
+        WirBankPDFExtractor extractor = new WirBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ViacKauf06_English.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf06_English.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -285,11 +285,11 @@ public class ViacPDFExtractorTest
     {
         Client client = new Client();
 
-        ViacPDFExtractor extractor = new ViacPDFExtractor(client);
+        WirBankPDFExtractor extractor = new WirBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ViacZins01.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zins01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
@@ -310,11 +310,11 @@ public class ViacPDFExtractorTest
     {
         Client client = new Client();
 
-        ViacPDFExtractor extractor = new ViacPDFExtractor(client);
+        WirBankPDFExtractor extractor = new WirBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ViacZins02_English.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zins02_English.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
@@ -335,11 +335,11 @@ public class ViacPDFExtractorTest
     {
         Client client = new Client();
     
-        ViacPDFExtractor extractor = new ViacPDFExtractor(client);
+        WirBankPDFExtractor extractor = new WirBankPDFExtractor(client);
     
         List<Exception> errors = new ArrayList<>();
     
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ViacZins03.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zins03.txt"), errors);
     
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
@@ -360,11 +360,11 @@ public class ViacPDFExtractorTest
     {
         Client client = new Client();
 
-        ViacPDFExtractor extractor = new ViacPDFExtractor(client);
+        WirBankPDFExtractor extractor = new WirBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ViacGebuhren01.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Gebuhren01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
@@ -385,11 +385,11 @@ public class ViacPDFExtractorTest
     {
         Client client = new Client();
 
-        ViacPDFExtractor extractor = new ViacPDFExtractor(client);
+        WirBankPDFExtractor extractor = new WirBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ViacGebuhren02_English.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Gebuhren02_English.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
@@ -410,11 +410,11 @@ public class ViacPDFExtractorTest
     {
         Client client = new Client();
 
-        ViacPDFExtractor extractor = new ViacPDFExtractor(client);
+        WirBankPDFExtractor extractor = new WirBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ViacCreditNote01.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "CreditNote01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
@@ -435,11 +435,11 @@ public class ViacPDFExtractorTest
     {
         Client client = new Client();
 
-        ViacPDFExtractor extractor = new ViacPDFExtractor(client);
+        WirBankPDFExtractor extractor = new WirBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ViacCreditNote02.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "CreditNote02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
@@ -460,11 +460,11 @@ public class ViacPDFExtractorTest
     {
         Client client = new Client();
 
-        ViacPDFExtractor extractor = new ViacPDFExtractor(client);
+        WirBankPDFExtractor extractor = new WirBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ViacCreditNote03_English.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "CreditNote03_English.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
@@ -485,11 +485,11 @@ public class ViacPDFExtractorTest
     {
         Client client = new Client();
 
-        ViacPDFExtractor extractor = new ViacPDFExtractor(client);
+        WirBankPDFExtractor extractor = new WirBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ViacDividend01.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -517,11 +517,11 @@ public class ViacPDFExtractorTest
     {
         Client client = new Client();
 
-        ViacPDFExtractor extractor = new ViacPDFExtractor(client);
+        WirBankPDFExtractor extractor = new WirBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ViacDividend02.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -551,11 +551,11 @@ public class ViacPDFExtractorTest
     {
         Client client = new Client();
 
-        ViacPDFExtractor extractor = new ViacPDFExtractor(client);
+        WirBankPDFExtractor extractor = new WirBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ViacDividend03.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -583,7 +583,7 @@ public class ViacPDFExtractorTest
     {
         Client client = new Client();
 
-        ViacPDFExtractor extractor = new ViacPDFExtractor(client);
+        WirBankPDFExtractor extractor = new WirBankPDFExtractor(client);
 
         // use the same security and pretend it was in USD
         Security existingSecurity = new Security("CSIF Emerging Markets", CurrencyUnit.USD);
@@ -592,7 +592,7 @@ public class ViacPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ViacDividend03.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
@@ -606,7 +606,7 @@ public class ViacPDFExtractorTest
                         is(Money.of("CHF", Values.Amount.factorize(5.73))));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.0)));
         assertThat(transaction.getNote(), is("CSIF Emerging Markets"));
-        assertThat(transaction.getSource(), is("ViacDividend03.txt"));
+        assertThat(transaction.getSource(), is("Dividend03.txt"));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-27T00:00")));
 
@@ -619,11 +619,11 @@ public class ViacPDFExtractorTest
     {
         Client client = new Client();
 
-        ViacPDFExtractor extractor = new ViacPDFExtractor(client);
+        WirBankPDFExtractor extractor = new WirBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ViacDividend04.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -651,11 +651,11 @@ public class ViacPDFExtractorTest
     {
         Client client = new Client();
 
-        ViacPDFExtractor extractor = new ViacPDFExtractor(client);
+        WirBankPDFExtractor extractor = new WirBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ViacDividend05_English.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend05_English.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -686,11 +686,11 @@ public class ViacPDFExtractorTest
     {
         Client client = new Client();
 
-        ViacPDFExtractor extractor = new ViacPDFExtractor(client);
+        WirBankPDFExtractor extractor = new WirBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ViacDividend06_English.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend06_English.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -718,11 +718,11 @@ public class ViacPDFExtractorTest
     {
         Client client = new Client();
 
-        ViacPDFExtractor extractor = new ViacPDFExtractor(client);
+        WirBankPDFExtractor extractor = new WirBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VIACVerkauf1.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -759,11 +759,11 @@ public class ViacPDFExtractorTest
     {
         Client client = new Client();
 
-        ViacPDFExtractor extractor = new ViacPDFExtractor(client);
+        WirBankPDFExtractor extractor = new WirBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VIACVerkauf2_English.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf02_English.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));

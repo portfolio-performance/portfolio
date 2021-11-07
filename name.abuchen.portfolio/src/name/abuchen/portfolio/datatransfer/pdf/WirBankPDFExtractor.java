@@ -13,9 +13,9 @@ import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
-public class ViacPDFExtractor extends AbstractPDFExtractor
+public class WirBankPDFExtractor extends AbstractPDFExtractor
 {
-    public ViacPDFExtractor(Client client)
+    public WirBankPDFExtractor(Client client)
     {
         super(client);
 
@@ -49,24 +49,24 @@ public class ViacPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Einzahlung 3a");
         this.addDocumentTyp(type);
 
-        Block block = new Block("Einzahlung 3a");
+        Block block = new Block("^Einzahlung 3a$");
         type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>()
+        block.set(new Transaction<AccountTransaction>().subject(() -> {
+            AccountTransaction transaction = new AccountTransaction();
+            transaction.setType(AccountTransaction.Type.DEPOSIT);
+            return transaction;
+        })
 
-                        .subject(() -> {
-                            AccountTransaction transaction = new AccountTransaction();
-                            transaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return transaction;
-                        })
-
-                        .section("date", "amount", "currency") //
-                        .find("Einzahlung 3a") //
-                        .match("Gutschrift: Valuta (?<date>\\d+.\\d+.\\d{4}+) (?<currency>\\w{3}+) (?<amount>-?[\\d+',.]*)") //
+                        .section("date", "amount", "currency")
+                        .find("Einzahlung 3a")
+                        .match("^Gutschrift: Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<currency>[\\w]{3}) ([-])?(?<amount>[\\.,'\\d+]+)$")
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                        }).wrap(TransactionItem::new));
+                        })
+
+                        .wrap(TransactionItem::new));
     }
 
     @SuppressWarnings("nls")
@@ -75,62 +75,60 @@ public class ViacPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Deposit 3a");
         this.addDocumentTyp(type);
 
-        Block block = new Block("Deposit 3a");
+        Block block = new Block("^Deposit 3a$");
         type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>()
+        block.set(new Transaction<AccountTransaction>().subject(() -> {
+            AccountTransaction transaction = new AccountTransaction();
+            transaction.setType(AccountTransaction.Type.DEPOSIT);
+            return transaction;
+        })
 
-                        .subject(() -> {
-                            AccountTransaction transaction = new AccountTransaction();
-                            transaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return transaction;
-                        })
-
-                        .section("date", "amount", "currency") //
-                        .find("Deposit 3a") //
-                        .match("Credit: Value date (?<date>\\d+.\\d+.\\d{4}+) (?<currency>\\w{3}+) (?<amount>-?[\\d+',.]*)") //
+                        .section("date", "amount", "currency")
+                        .find("Deposit 3a")
+                        .match("^Credit: Value date (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<currency>[\\w]{3}) ([-])?(?<amount>[\\.,'\\d+]+)$")
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                        }).wrap(TransactionItem::new));
+                        })
+
+                        .wrap(TransactionItem::new));
     }
 
     @SuppressWarnings("nls")
     private void addBuyTransaction()
     {
-        DocumentType type = new DocumentType("B.rsenabrechnung - Kauf");
+        DocumentType type = new DocumentType("Börsenabrechnung - Kauf");
         this.addDocumentTyp(type);
 
-        Block block = new Block("B.rsenabrechnung - Kauf");
+        Block block = new Block("^B.rsenabrechnung - Kauf$");
         type.addBlock(block);
-        block.set(new Transaction<BuySellEntry>()
+        block.set(new Transaction<BuySellEntry>().subject(() -> {
+            BuySellEntry entry = new BuySellEntry();
+            entry.setType(PortfolioTransaction.Type.BUY);
+            return entry;
+        })
 
-                        .subject(() -> {
-                            BuySellEntry entry = new BuySellEntry();
-                            entry.setType(PortfolioTransaction.Type.BUY);
-                            return entry;
-                        })
-
-                        .section("isin", "name", "currency", "shares") //
-                        .find("Order: Kauf") //
-                        .match("(?<shares>[\\d+,.]*) Ant (?<name>.*)$") //
-                        .match("ISIN: (?<isin>\\S*)") //
-                        .match("Kurs: (?<currency>\\w{3}+) .*") //
+                        .section("isin", "name", "currency", "shares")
+                        .find("Order: Kauf")
+                        .match("^(?<shares>[\\.,\\d]+) Ant (?<name>.*)$")
+                        .match("^ISIN: (?<isin>[\\w]{12})")
+                        .match("^Kurs: (?<currency>[\\w]{3}) .*$")
                         .assign((t, v) -> {
                             t.setSecurity(getOrCreateSecurity(v));
                             t.setShares(asShares(v.get("shares")));
                         })
 
-                        .section("date", "amount", "currency") //
-                        .match("Verrechneter Betrag: Valuta (?<date>\\d+.\\d+.\\d{4}+) (?<currency>\\w{3}+) (?<amount>[\\d+',.]*)")
+                        .section("date", "amount", "currency")
+                        .match("^Verrechneter Betrag: Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d+]+)$")
                         .assign((t, v) -> {
                             t.setDate(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
-                        .section("tax", "currency").optional() //
-                        .match("Stempelsteuer (?<currency>\\w{3}+) (?<tax>[\\d+',.]*)") //
+                        .section("tax", "currency").optional()
+                        .match("^Stempelsteuer (?<currency>[\\w]{3}) (?<tax>[\\.,'\\d+]+)$")
                         .assign((t, v) -> {
                             Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
                             if (tax.getCurrencyCode().equals(t.getAccountTransaction().getCurrencyCode()))
@@ -138,11 +136,10 @@ public class ViacPDFExtractor extends AbstractPDFExtractor
 
                         })
 
-                        .section("forex", "forexCurrency", "amount", "currency", "exchangeRate").optional() //
-                        .match("Betrag (?<forexCurrency>\\w{3}+) (?<forex>[\\d+',.]*)")
-                        .match("Umrechnungskurs CHF/\\w{3}+ (?<exchangeRate>[\\d+',.]*) (?<currency>\\w{3}+) (?<amount>[\\d+',.]*)")
+                        .section("forex", "forexCurrency", "amount", "currency", "exchangeRate").optional()
+                        .match("^Betrag (?<forexCurrency>[\\w]{3}) (?<forex>[\\.,'\\d+]+)$")
+                        .match("^Umrechnungskurs CHF/[\\w]{3} (?<exchangeRate>[\\.,'\\d+]+) (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d+]+)$")
                         .assign((t, v) -> {
-
                             Money forex = Money.of(asCurrencyCode(v.get("forexCurrency")), asAmount(v.get("forex")));
                             BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                             Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
@@ -168,36 +165,34 @@ public class ViacPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Exchange Settlement - Buy");
         this.addDocumentTyp(type);
 
-        Block block = new Block("Exchange Settlement - Buy");
+        Block block = new Block("^Exchange Settlement - Buy$");
         type.addBlock(block);
-        block.set(new Transaction<BuySellEntry>()
+        block.set(new Transaction<BuySellEntry>().subject(() -> {
+            BuySellEntry entry = new BuySellEntry();
+            entry.setType(PortfolioTransaction.Type.BUY);
+            return entry;
+        })
 
-                        .subject(() -> {
-                            BuySellEntry entry = new BuySellEntry();
-                            entry.setType(PortfolioTransaction.Type.BUY);
-                            return entry;
-                        })
-
-                        .section("isin", "name", "currency", "shares") //
-                        .find("Order: Buy") //
-                        .match("(?<shares>[\\d+,.]*) Qty (?<name>.*)$") //
-                        .match("ISIN: (?<isin>\\S*)") //
-                        .match("Price: (?<currency>\\w{3}+) .*") //
+                        .section("isin", "name", "currency", "shares")
+                        .find("Order: Buy")
+                        .match("^(?<shares>[\\.,\\d]+) Qty (?<name>.*)$")
+                        .match("^ISIN: (?<isin>[\\w]{12})$")
+                        .match("^Price: (?<currency>[\\w]{3}) .*$")
                         .assign((t, v) -> {
                             t.setSecurity(getOrCreateSecurity(v));
                             t.setShares(asShares(v.get("shares")));
                         })
 
-                        .section("date", "amount", "currency") //
-                        .match("Charged amount: Value date (?<date>\\d+.\\d+.\\d{4}+) (?<currency>\\w{3}+) (?<amount>[\\d+',.]*)")
+                        .section("date", "amount", "currency")
+                        .match("^Charged amount: Value date (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d+]+)$")
                         .assign((t, v) -> {
                             t.setDate(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
-                        .section("tax", "currency").optional() //
-                        .match("Stamp duty (?<currency>\\w{3}+) (?<tax>[\\d+',.]*)") //
+                        .section("tax", "currency").optional()
+                        .match("^Stamp duty (?<currency>[\\w]{3}) (?<tax>[\\.,'\\d+]+)$")
                         .assign((t, v) -> {
                             Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
                             if (tax.getCurrencyCode().equals(t.getAccountTransaction().getCurrencyCode()))
@@ -205,11 +200,10 @@ public class ViacPDFExtractor extends AbstractPDFExtractor
 
                         })
 
-                        .section("forex", "forexCurrency", "amount", "currency", "exchangeRate").optional() //
-                        .match("Amount (?<forexCurrency>\\w{3}+) (?<forex>[\\d+',.]*)")
-                        .match("Exchange rate CHF/\\w{3}+ (?<exchangeRate>[\\d+',.]*) (?<currency>\\w{3}+) (?<amount>[\\d+',.]*)")
+                        .section("forex", "forexCurrency", "amount", "currency", "exchangeRate").optional()
+                        .match("^Amount (?<forexCurrency>[\\w]{3}) (?<forex>[\\.,'\\d+]+)$")
+                        .match("^Exchange rate CHF\\/[\\w]{3} (?<exchangeRate>[\\.,'\\d+]+) (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d+]+)$")
                         .assign((t, v) -> {
-
                             Money forex = Money.of(asCurrencyCode(v.get("forexCurrency")), asAmount(v.get("forex")));
                             BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                             Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
@@ -237,37 +231,34 @@ public class ViacPDFExtractor extends AbstractPDFExtractor
 
         Block block = new Block("B.rsenabrechnung - Verkauf");
         type.addBlock(block);
-        block.set(new Transaction<BuySellEntry>()
+        block.set(new Transaction<BuySellEntry>().subject(() -> {
+            BuySellEntry entry = new BuySellEntry();
+            entry.setType(PortfolioTransaction.Type.SELL);
+            return entry;
+        })
 
-                        .subject(() -> {
-                            BuySellEntry entry = new BuySellEntry();
-                            entry.setType(PortfolioTransaction.Type.SELL);
-                            return entry;
-                        })
-
-                        .section("isin", "name", "currency", "shares") //
-                        .find("Order: Verkauf") //
-                        .match("(?<shares>[\\d+,.]*) Ant (?<name>.*)$") //
-                        .match("ISIN: (?<isin>\\S*)") //
-                        .match("Kurs: (?<currency>\\w{3}+) .*") //
+                        .section("isin", "name", "currency", "shares")
+                        .find("Order: Verkauf")
+                        .match("^(?<shares>[\\d+,.]*) Ant (?<name>.*)$")
+                        .match("^ISIN: (?<isin>[\\w]{12})$")
+                        .match("^Kurs: (?<currency>[\\w]{3}) .*$")
                         .assign((t, v) -> {
                             t.setSecurity(getOrCreateSecurity(v));
                             t.setShares(asShares(v.get("shares")));
                         })
 
-                        .section("date", "amount", "currency") //
-                        .match("Verrechneter Betrag: Valuta (?<date>\\d+.\\d+.\\d{4}+) (?<currency>\\w{3}+) (?<amount>[\\d+',.]*)")
+                        .section("date", "amount", "currency")
+                        .match("^Verrechneter Betrag: Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d+]+)$")
                         .assign((t, v) -> {
                             t.setDate(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
-                        .section("forex", "forexCurrency", "amount", "currency", "exchangeRate").optional() //
-                        .match("Betrag (?<forexCurrency>\\w{3}+) (?<forex>[\\d+',.]*)")
-                        .match("Umrechnungskurs CHF/\\w{3}+ (?<exchangeRate>[\\d+',.]*) (?<currency>\\w{3}+) (?<amount>[\\d+',.]*)")
+                        .section("forex", "forexCurrency", "amount", "currency", "exchangeRate").optional()
+                        .match("^Betrag (?<forexCurrency>[\\w]{3}) (?<forex>[\\.,'\\d+]+)$")
+                        .match("^Umrechnungskurs CHF/[\\w]{3} (?<exchangeRate>[\\.,'\\d+]+) (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d+]+)$")
                         .assign((t, v) -> {
-
                             Money forex = Money.of(asCurrencyCode(v.get("forexCurrency")), asAmount(v.get("forex")));
                             BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                             Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
@@ -293,39 +284,36 @@ public class ViacPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Exchange Settlement - Sell");
         this.addDocumentTyp(type);
 
-        Block block = new Block("Exchange Settlement - Sell");
+        Block block = new Block("^Exchange Settlement - Sell$");
         type.addBlock(block);
-        block.set(new Transaction<BuySellEntry>()
+        block.set(new Transaction<BuySellEntry>().subject(() -> {
+            BuySellEntry entry = new BuySellEntry();
+            entry.setType(PortfolioTransaction.Type.SELL);
+            return entry;
+        })
 
-                        .subject(() -> {
-                            BuySellEntry entry = new BuySellEntry();
-                            entry.setType(PortfolioTransaction.Type.SELL);
-                            return entry;
-                        })
-
-                        .section("isin", "name", "currency", "shares") //
-                        .find("Order: Sell") //
-                        .match("(?<shares>[\\d+,.]*) Qty (?<name>.*)$") //
-                        .match("ISIN: (?<isin>\\S*)") //
-                        .match("Price: (?<currency>\\w{3}+) .*") //
+                        .section("isin", "name", "currency", "shares")
+                        .find("Order: Sell")
+                        .match("^(?<shares>[\\.,\\d]+) Qty (?<name>.*)$")
+                        .match("^ISIN: (?<isin>[\\w]{12})")
+                        .match("^Price: (?<currency>[\\w]{3}) .*$")
                         .assign((t, v) -> {
                             t.setSecurity(getOrCreateSecurity(v));
                             t.setShares(asShares(v.get("shares")));
                         })
 
-                        .section("date", "amount", "currency") //
-                        .match("Charged amount: Value date (?<date>\\d+.\\d+.\\d{4}+) (?<currency>\\w{3}+) (?<amount>[\\d+',.]*)")
+                        .section("date", "amount", "currency")
+                        .match("^Charged amount: Value date (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d+]+)$")
                         .assign((t, v) -> {
                             t.setDate(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
-                        .section("forex", "forexCurrency", "amount", "currency", "exchangeRate").optional() //
-                        .match("Amount (?<forexCurrency>\\w{3}+) (?<forex>[\\d+',.]*)")
-                        .match("Exchange rate CHF/\\w{3}+ (?<exchangeRate>[\\d+',.]*) (?<currency>\\w{3}+) (?<amount>[\\d+',.]*)")
+                        .section("forex", "forexCurrency", "amount", "currency", "exchangeRate").optional()
+                        .match("^Amount (?<forexCurrency>[\\w]{3}) (?<forex>[\\.,'\\d+]+)$")
+                        .match("^Exchange rate CHF\\/[\\w]{3} (?<exchangeRate>[\\.,'\\d+]+) (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d+]+)$")
                         .assign((t, v) -> {
-
                             Money forex = Money.of(asCurrencyCode(v.get("forexCurrency")), asAmount(v.get("forex")));
                             BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                             Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
@@ -353,23 +341,23 @@ public class ViacPDFExtractor extends AbstractPDFExtractor
 
         Block block = new Block("Zins");
         type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>()
+        block.set(new Transaction<AccountTransaction>().subject(() -> {
+            AccountTransaction transaction = new AccountTransaction();
+            transaction.setType(AccountTransaction.Type.INTEREST);
+            return transaction;
+        })
 
-                        .subject(() -> {
-                            AccountTransaction transaction = new AccountTransaction();
-                            transaction.setType(AccountTransaction.Type.INTEREST);
-                            return transaction;
-                        })
-
-                        .section("date", "amount", "currency") //
-                        .find("Zins") //
-                        .match("Am (?<date>\\d+.\\d+.\\d{4}+) haben wir (Ihrem Konto|Ihnen) gutgeschrieben:") //
-                        .match("Zinsgutschrift: (?<currency>\\w{3}+) (?<amount>[\\d+',.]*)") //
+                        .section("date", "amount", "currency")
+                        .find("Zins")
+                        .match("^Am (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) haben wir (Ihrem Konto|Ihnen) gutgeschrieben:$")
+                        .match("^Zinsgutschrift: (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d+]+)$")
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                        }).wrap(TransactionItem::new));
+                        })
+
+                        .wrap(TransactionItem::new));
     }
 
     @SuppressWarnings("nls")
@@ -380,23 +368,23 @@ public class ViacPDFExtractor extends AbstractPDFExtractor
 
         Block block = new Block("Interest");
         type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>()
+        block.set(new Transaction<AccountTransaction>().subject(() -> {
+            AccountTransaction transaction = new AccountTransaction();
+            transaction.setType(AccountTransaction.Type.INTEREST);
+            return transaction;
+        })
 
-                        .subject(() -> {
-                            AccountTransaction transaction = new AccountTransaction();
-                            transaction.setType(AccountTransaction.Type.INTEREST);
-                            return transaction;
-                        })
-
-                        .section("date", "amount", "currency") //
-                        .find("Interest") //
-                        .match("On (?<date>\\d+.\\d+.\\d{4}+) we have credited your account:") //
-                        .match("Interest credit: (?<currency>\\w{3}+) (?<amount>[\\d+',.]*)") //
+                        .section("date", "amount", "currency")
+                        .find("Interest")
+                        .match("^On (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) we have credited your account:$")
+                        .match("^Interest credit: (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d+]+)$")
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                        }).wrap(TransactionItem::new));
+                        })
+
+                        .wrap(TransactionItem::new));
     }
 
     @SuppressWarnings("nls")
@@ -407,22 +395,22 @@ public class ViacPDFExtractor extends AbstractPDFExtractor
 
         Block block = new Block("Belastung");
         type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>()
+        block.set(new Transaction<AccountTransaction>().subject(() -> {
+            AccountTransaction transaction = new AccountTransaction();
+            transaction.setType(AccountTransaction.Type.FEES);
+            return transaction;
+        })
 
-                        .subject(() -> {
-                            AccountTransaction transaction = new AccountTransaction();
-                            transaction.setType(AccountTransaction.Type.FEES);
-                            return transaction;
-                        })
-
-                        .section("date", "amount", "currency") //
-                        .find("Belastung") //
-                        .match("Verrechneter Betrag: Valuta (?<date>\\d+.\\d+.\\d{4}+) (?<currency>\\w{3}+) (?<amount>-?[\\d+',.]*)") //
+                        .section("date", "amount", "currency")
+                        .find("Belastung")
+                        .match("^Verrechneter Betrag: Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<currency>[\\w]{3}) ([-])?(?<amount>[\\.,'\\d+]+)$")
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                        }).wrap(TransactionItem::new));
+                        })
+
+                        .wrap(TransactionItem::new));
     }
 
     @SuppressWarnings("nls")
@@ -433,22 +421,22 @@ public class ViacPDFExtractor extends AbstractPDFExtractor
 
         Block block = new Block("Commission");
         type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>()
+        block.set(new Transaction<AccountTransaction>().subject(() -> {
+            AccountTransaction transaction = new AccountTransaction();
+            transaction.setType(AccountTransaction.Type.FEES);
+            return transaction;
+        })
 
-                        .subject(() -> {
-                            AccountTransaction transaction = new AccountTransaction();
-                            transaction.setType(AccountTransaction.Type.FEES);
-                            return transaction;
-                        })
-
-                        .section("date", "amount", "currency") //
-                        .find("Commission") //
-                        .match("Charged amount: Value date (?<date>\\d+.\\d+.\\d{4}+) (?<currency>\\w{3}+) (?<amount>-?[\\d+',.]*)") //
+                        .section("date", "amount", "currency")
+                        .find("Commission")
+                        .match("^Charged amount: Value date (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<currency>[\\w]{3}) ([-])?(?<amount>[\\.,'\\d+]+)$")
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                        }).wrap(TransactionItem::new));
+                        })
+
+                        .wrap(TransactionItem::new));
     }
 
     @SuppressWarnings("nls")
@@ -457,38 +445,35 @@ public class ViacPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Dividendenaussch");
         this.addDocumentTyp(type);
 
-        Block block = new Block("Dividendenart: Ordentliche Dividende");
+        Block block = new Block("^Dividendenart: Ordentliche Dividende$");
         type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>()
+        block.set(new Transaction<AccountTransaction>().subject(() -> {
+            AccountTransaction transaction = new AccountTransaction();
+            transaction.setType(AccountTransaction.Type.DIVIDENDS);
+            return transaction;
+        })
 
-                        .subject(() -> {
-                            AccountTransaction transaction = new AccountTransaction();
-                            transaction.setType(AccountTransaction.Type.DIVIDENDS);
-                            return transaction;
-                        })
-
-                        .section("shares", "name", "isin", "currency") //
-                        .match("(?<shares>[\\d+,.]*) Ant (?<name>.*)$") //
-                        .match("ISIN: (?<isin>\\S*)") //
-                        .match("Aussch.ttung: (?<currency>\\w{3}+) .*") //
+                        .section("shares", "name", "isin", "currency")
+                        .match("^(?<shares>[\\.,\\d]+) Ant (?<name>.*)$")
+                        .match("^ISIN: (?<isin>[\\w]{12})$")
+                        .match("^Aussch.ttung: (?<currency>[\\w]{3}) .*$")
                         .assign((t, v) -> {
                             t.setSecurity(getOrCreateSecurity(v));
                             t.setShares(asShares(v.get("shares")));
                         })
 
-                        .section("date", "amount", "currency") //
-                        .match("Gutgeschriebener Betrag: Valuta (?<date>\\d+.\\d+.\\d{4}+) (?<currency>\\w{3}+) (?<amount>-?[\\d+',.]*)") //
+                        .section("date", "amount", "currency")
+                        .match("^Gutgeschriebener Betrag: Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<currency>[\\w]{3}) ([-])?(?<amount>[\\.,'\\d+]+)$")
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
-                        .section("forex", "forexCurrency", "amount", "currency", "exchangeRate").optional() //
-                        .match("Betrag (?<forexCurrency>\\w{3}+) (?<forex>[\\d+',.]*)")
-                        .match("Umrechnungskurs CHF/\\w{3}+ (?<exchangeRate>[\\d+',.]*) (?<currency>\\w{3}+) (?<amount>[\\d+',.]*)")
+                        .section("forex", "forexCurrency", "amount", "currency", "exchangeRate").optional()
+                        .match("^Betrag (?<forexCurrency>[\\w]{3}) (?<forex>[\\.,'\\d+]+)$")
+                        .match("^Umrechnungskurs CHF\\/[\\w]{3} (?<exchangeRate>[\\.,'\\d+]+) (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d+]+)$")
                         .assign((t, v) -> {
-
                             Money forex = Money.of(asCurrencyCode(v.get("forexCurrency")), asAmount(v.get("forex")));
                             BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                             Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
@@ -514,36 +499,33 @@ public class ViacPDFExtractor extends AbstractPDFExtractor
 
         Block block = new Block("Type of dividend: Ordinary dividend");
         type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>()
+        block.set(new Transaction<AccountTransaction>().subject(() -> {
+            AccountTransaction transaction = new AccountTransaction();
+            transaction.setType(AccountTransaction.Type.DIVIDENDS);
+            return transaction;
+        })
 
-                        .subject(() -> {
-                            AccountTransaction transaction = new AccountTransaction();
-                            transaction.setType(AccountTransaction.Type.DIVIDENDS);
-                            return transaction;
-                        })
-
-                        .section("shares", "name", "isin", "currency") //
-                        .match("(?<shares>[\\d+,.]*) Qty (?<name>.*)$") //
-                        .match("ISIN: (?<isin>\\S*)") //
-                        .match("Dividend payment: (?<currency>\\w{3}+) .*") //
+                        .section("shares", "name", "isin", "currency")
+                        .match("^(?<shares>[\\d+,.]*) Qty (?<name>.*)$")
+                        .match("^ISIN: (?<isin>[\\w]{12})$")
+                        .match("^Dividend payment: (?<currency>[\\w]{3}) .*$")
                         .assign((t, v) -> {
                             t.setSecurity(getOrCreateSecurity(v));
                             t.setShares(asShares(v.get("shares")));
                         })
 
-                        .section("date", "amount", "currency") //
-                        .match("Amount credited: Value date (?<date>\\d+.\\d+.\\d{4}+) (?<currency>\\w{3}+) (?<amount>-?[\\d+',.]*)") //
+                        .section("date", "amount", "currency")
+                        .match("^Amount credited: Value date (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<currency>[\\w]{3}) ([-])?(?<amount>[\\.,'\\d+]+)$")
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
-                        .section("forex", "forexCurrency", "amount", "currency", "exchangeRate").optional() //
-                        .match("Amount (?<forexCurrency>\\w{3}+) (?<forex>[\\d+',.]*)")
-                        .match("Exchange rate CHF/\\w{3}+ (?<exchangeRate>[\\d+',.]*) (?<currency>\\w{3}+) (?<amount>[\\d+',.]*)")
+                        .section("forex", "forexCurrency", "amount", "currency", "exchangeRate").optional()
+                        .match("^Amount (?<forexCurrency>[\\w]{3}) (?<forex>[\\.,'\\d+]+)$")
+                        .match("^Exchange rate CHF\\/[\\w]{3} (?<exchangeRate>[\\.,'\\d+]+) (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d+]+)$")
                         .assign((t, v) -> {
-
                             Money forex = Money.of(asCurrencyCode(v.get("forexCurrency")), asAmount(v.get("forex")));
                             BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                             Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
@@ -561,7 +543,6 @@ public class ViacPDFExtractor extends AbstractPDFExtractor
                         .wrap(TransactionItem::new));
     }
 
-    
     @SuppressWarnings("nls")
     private void addTaxRefundTransaction()
     {
@@ -569,6 +550,47 @@ public class ViacPDFExtractor extends AbstractPDFExtractor
         this.addDocumentTyp(type);
 
         Block block = new Block("Dividendenart: R.ckerstattung Quellensteuer");
+        type.addBlock(block);
+        block.set(new Transaction<AccountTransaction>().subject(() -> {
+            AccountTransaction transaction = new AccountTransaction();
+            transaction.setType(AccountTransaction.Type.TAX_REFUND);
+            return transaction;
+        })
+
+                        .section("shares", "name", "isin", "currency")
+                        .match("^(?<shares>[\\d+,.]*) Ant (?<name>.*)$")
+                        .match("^ISIN: (?<isin>[\\w]{12})$")
+                        .match("^Aussch.ttung: (?<currency>[\\w]{3}) .*$")
+                        .assign((t, v) -> {
+                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setShares(asShares(v.get("shares")));
+                        })
+
+                        .section("date", "amount", "currency")
+                        .match("^Gutgeschriebener Betrag: Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<currency>[\\w]{3}) ([-])?(?<amount>[\\.,'\\d+]+)$")
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+
+                            if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
+                            {
+                                t.setNote(t.getSecurity().getName());
+                                t.setSecurity(null);
+                                t.setShares(0L);
+                            }
+                        })
+
+                        .wrap(TransactionItem::new));
+    }
+
+    @SuppressWarnings("nls")
+    private void addTaxRefundTransactionEnglish()
+    {
+        DocumentType type = new DocumentType("Dividend Payment");
+        this.addDocumentTyp(type);
+
+        Block block = new Block("^Type of dividend: Refund withholding tax$");
         type.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
 
@@ -578,17 +600,17 @@ public class ViacPDFExtractor extends AbstractPDFExtractor
                             return transaction;
                         })
 
-                        .section("shares", "name", "isin", "currency") //
-                        .match("(?<shares>[\\d+,.]*) Ant (?<name>.*)$") //
-                        .match("ISIN: (?<isin>\\S*)") //
-                        .match("Aussch.ttung: (?<currency>\\w{3}+) .*") //
+                        .section("shares", "name", "isin", "currency")
+                        .match("^(?<shares>[\\.,\\d]+) Qty (?<name>.*)$")
+                        .match("^ISIN: (?<isin>[\\w]{12})$")
+                        .match("^Dividend payment: (?<currency>[\\w]{3}) .*$")
                         .assign((t, v) -> {
                             t.setSecurity(getOrCreateSecurity(v));
                             t.setShares(asShares(v.get("shares")));
                         })
 
-                        .section("date", "amount", "currency") //
-                        .match("Gutgeschriebener Betrag: Valuta (?<date>\\d+.\\d+.\\d{4}+) (?<currency>\\w{3}+) (?<amount>-?[\\d+',.]*)") //
+                        .section("date", "amount", "currency")
+                        .match("^Amount credited: Value date (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<currency>[\\w]{3}) ([-])?(?<amount>[\\.,'\\d+]+)$")
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
 
@@ -604,54 +626,11 @@ public class ViacPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
     }
-    
-    @SuppressWarnings("nls")
-    private void addTaxRefundTransactionEnglish()
-    {
-        DocumentType type = new DocumentType("Dividend Payment");
-        this.addDocumentTyp(type);
-
-        Block block = new Block("Type of dividend: Refund withholding tax");
-        type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>()
-
-            .subject(() -> {
-                AccountTransaction transaction = new AccountTransaction();
-                transaction.setType(AccountTransaction.Type.TAX_REFUND);
-                return transaction;
-            })
-
-            .section("shares", "name", "isin", "currency")
-            .match("(?<shares>[\\d+,.]*) Qty (?<name>.*)$")
-            .match("ISIN: (?<isin>\\S*)") //
-            .match("Dividend payment: (?<currency>\\w{3}+) .*")
-            .assign((t, v) -> {
-                t.setSecurity(getOrCreateSecurity(v));
-                t.setShares(asShares(v.get("shares")));
-            })
-
-            .section("date", "amount", "currency")
-            .match("Amount credited: Value date (?<date>\\d+.\\d+.\\d{4}+) (?<currency>\\w{3}+) (?<amount>-?[\\d+',.]*)")
-            .assign((t, v) -> {
-                t.setDateTime(asDate(v.get("date")));
-
-                t.setAmount(asAmount(v.get("amount")));
-                t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
-                {
-                    t.setNote(t.getSecurity().getName());
-                    t.setSecurity(null);
-                    t.setShares(0L);
-                }
-            })
-
-            .wrap(TransactionItem::new));
-    }
 
     @Override
     protected long asAmount(String value)
     {
-        return PDFExtractorUtils.convertToNumberLong(value, Values.Amount, "de", "CH");  //$NON-NLS-1$ //$NON-NLS-2$
+        return PDFExtractorUtils.convertToNumberLong(value, Values.Amount, "de", "CH"); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     @Override
