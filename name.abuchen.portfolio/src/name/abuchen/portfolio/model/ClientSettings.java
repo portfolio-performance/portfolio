@@ -45,7 +45,7 @@ public class ClientSettings
         if (configurationSets == null)
             configurationSets = new HashMap<>();
         
-        if(settingsSMA == null)
+        if (settingsSMA == null)
             settingsSMA = createDefaultSettingsSMA();
     }
     

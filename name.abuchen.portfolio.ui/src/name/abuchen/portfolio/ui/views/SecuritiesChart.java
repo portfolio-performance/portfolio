@@ -622,7 +622,7 @@ public class SecuritiesChart
         
         IntervalSettings.IntervalSetting[] smaIntervals = ReadOnlyClient.unwrap(client).getSettings().getIntervalSettingsSMA().getAll();
         Arrays.sort(smaIntervals, new SortIntervalSetting());
-        for(IntervalSettings.IntervalSetting it : smaIntervals)
+        for (IntervalSettings.IntervalSetting it : smaIntervals)
         {
             Action action = new SimpleAction(MessageFormat.format(Messages.LabelChartDetailMovingAverage_Xdays, it.getInterval()), a -> {
                 it.setIsActive(!it.getIsActive()); // write back inverted value
@@ -874,9 +874,9 @@ public class SecuritiesChart
 
         IntervalSettings.IntervalSetting[] smaIntervals = ReadOnlyClient.unwrap(client).getSettings().getIntervalSettingsSMA().getAll();
         Arrays.sort(smaIntervals, new SortIntervalSetting());
-        for(IntervalSettings.IntervalSetting it : smaIntervals)
+        for (IntervalSettings.IntervalSetting it : smaIntervals)
         {
-            if(it.getIsActive() && it.getInterval() > 0)
+            if (it.getIsActive() && it.getInterval() > 0)
             {
                 addSMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageSMA, String.valueOf(it.getInterval()),  it.getInterval(), new Color(it.getRGBA()));
             }
