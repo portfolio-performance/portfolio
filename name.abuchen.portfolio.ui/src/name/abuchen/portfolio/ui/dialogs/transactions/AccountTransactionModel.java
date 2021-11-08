@@ -30,7 +30,7 @@ public class AccountTransactionModel extends AbstractModel
 {
     public enum Properties
     {
-        security, account, date, time, shares, fxGrossAmount, dividendAmount, exchangeRate, inverseExchangeRate, grossAmount, // NOSONAR
+        security, account, date, time, exDate, exTime, shares, fxGrossAmount, dividendAmount, exchangeRate, inverseExchangeRate, grossAmount, // NOSONAR
         fxTaxes, taxes, fxFees, fees, total, note, exchangeRateCurrencies, inverseExchangeRateCurrencies, // NOSONAR
         accountCurrencyCode, securityCurrencyCode, fxCurrencyCode, calculationStatus; // NOSONAR
     }
@@ -48,6 +48,9 @@ public class AccountTransactionModel extends AbstractModel
     private LocalDate date = LocalDate.now();
     private LocalTime time = LocalTime.MIDNIGHT;
     private long shares;
+    
+    private LocalDate exDate = LocalDate.now();
+    private LocalTime exTime = LocalTime.MIDNIGHT;
 
     private long fxGrossAmount;
     private BigDecimal dividendAmount = BigDecimal.ZERO;
@@ -131,6 +134,7 @@ public class AccountTransactionModel extends AbstractModel
         }
 
         t.setDateTime(LocalDateTime.of(date, time));
+        t.setExDateTime(LocalDateTime.of(exDate, exTime));
         t.setSecurity(!EMPTY_SECURITY.equals(security) ? security : null);
         t.setShares(supportsShares() ? shares : 0);
         t.setAmount(total);
@@ -241,6 +245,14 @@ public class AccountTransactionModel extends AbstractModel
         LocalDateTime transactionDate = transaction.getDateTime();
         this.date = transactionDate.toLocalDate();
         this.time = transactionDate.toLocalTime();
+        if (transaction.getExDateTime() != null) {
+            this.exDate = transaction.getExDateTime().toLocalDate();
+            this.exTime = transaction.getExDateTime().toLocalTime();
+        } else {
+            this.exDate = LocalDateTime.now().toLocalDate();
+            this.exTime = LocalDateTime.now().toLocalTime();
+        }
+        
         this.shares = transaction.getShares();
         this.total = transaction.getAmount();
 
@@ -402,9 +414,30 @@ public class AccountTransactionModel extends AbstractModel
 
         CurrencyConverter converter = new CurrencyConverterImpl(getExchangeRateProviderFactory(),
                         client.getBaseCurrency());
-        ClientSnapshot snapshot = ClientSnapshot.create(client, converter, date);
+        ClientSnapshot snapshot = ClientSnapshot.create(client, converter, exDate != null && exDate.isBefore(date) ? exDate : date);
         SecurityPosition p = snapshot.getJointPortfolio().getPositionsBySecurity().get(security);
         setShares(p != null ? p.getShares() : 0);
+    }
+    
+    public LocalDate getExDate()
+    {
+        return exDate;
+    }
+    
+    public void setExDate(LocalDate exDate)
+    {
+        firePropertyChange(Properties.exDate.name(), this.exDate, this.exDate = exDate);
+        updateShares();
+        updateExchangeRate();
+    }
+    
+    public LocalTime getExTime()
+    {
+        return exTime;
+    }
+    public void setExTime(LocalTime exTime)
+    {
+        this.exTime = exTime;
     }
 
     public LocalDate getDate()

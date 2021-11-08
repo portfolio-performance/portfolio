@@ -365,6 +365,25 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
         });
         ColumnViewerSorter.create(e -> ((AccountTransaction) e).getSource()).attachTo(column); // $NON-NLS-1$
         transactionsColumns.addColumn(column);
+        
+        column = new Column("exdiv", "Ex-Div-Tag", SWT.None, 120); // $NON-NLS-1$
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                return Values.DateTime.format(((AccountTransaction) e).getExDateTime());
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                return colorFor((AccountTransaction) element);
+            }
+        });
+        ColumnViewerSorter.create(new AccountTransaction.ByDateAmountTypeAndHashCode()).attachTo(column, SWT.DOWN);
+        new DateTimeEditingSupport(AccountTransaction.class, "exDateTime").addListener(this).attachTo(column); //$NON-NLS-1$
+        transactionsColumns.addColumn(column);
 
         transactionsColumns.createColumns();
 

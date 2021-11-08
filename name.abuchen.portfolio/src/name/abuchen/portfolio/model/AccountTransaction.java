@@ -61,7 +61,11 @@ public class AccountTransaction extends Transaction
             int compare = t1.getDateTime().compareTo(t2.getDateTime());
             if (compare != 0)
                 return compare;
-
+            if (t1.getExDateTime() != null && t2.getExDateTime() != null) {
+            compare = t1.getExDateTime().compareTo(t2.getExDateTime());
+            if (compare != 0)
+                return compare;
+            }
             compare = Long.compare(t1.getAmount(), t2.getAmount());
             if (compare != 0)
                 return compare;
@@ -90,6 +94,13 @@ public class AccountTransaction extends Transaction
     {
         super(date, currencyCode, amount, security, 0, null);
         this.type = type;
+        this.setExDateTime(LocalDateTime.now().minusDays(2));
+    }
+    
+    public AccountTransaction(LocalDateTime date, LocalDateTime exDate, String currencyCode, long amount, Security security, Type type)
+    {
+        this(date, currencyCode, amount, security, type);
+        this.setExDateTime(exDate);
     }
 
     public Type getType()

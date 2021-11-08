@@ -35,7 +35,7 @@ public class FixWrongTransfersCheck implements Check
             if (t.getCrossEntry() instanceof BuySellEntry)
             {
                 // create new transaction because crossEntry cannot be removed
-                PortfolioTransaction copy = new PortfolioTransaction(t.getDateTime(), t.getCurrencyCode(),
+                PortfolioTransaction copy = new PortfolioTransaction(t.getDateTime(), t.getExDateTime() ,t.getCurrencyCode(),
                                 t.getAmount(), t.getSecurity(), t.getShares(),
                                 PortfolioTransaction.Type.DELIVERY_INBOUND, t.getUnitSum(Unit.Type.FEE).getAmount(),
                                 t.getUnitSum(Unit.Type.TAX).getAmount());

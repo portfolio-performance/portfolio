@@ -251,6 +251,7 @@ public class TradeCollector
         PortfolioTransaction newTransaction = new PortfolioTransaction();
         newTransaction.setType(transaction.getType());
         newTransaction.setDateTime(transaction.getDateTime());
+        newTransaction.setExDateTime(transaction.getExDateTime());
         newTransaction.setSecurity(transaction.getSecurity());
         newTransaction.setCurrencyCode(transaction.getCurrencyCode());
         newTransaction.setNote(transaction.getNote());

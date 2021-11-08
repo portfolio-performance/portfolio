@@ -150,6 +150,7 @@ public abstract class Transaction implements Annotated, Adaptable
 
     private String uuid;
     private LocalDateTime date;
+    private LocalDateTime exDate;
     private String currencyCode;
     private long amount;
 
@@ -184,11 +185,18 @@ public abstract class Transaction implements Annotated, Adaptable
     {
         this();
         this.date = date;
+        this.exDate = date;
         this.currencyCode = currencyCode;
         this.amount = amount;
         this.security = security;
         this.shares = shares;
         this.note = note;
+    }
+    
+    public Transaction(LocalDateTime date, LocalDateTime exDate, String currencyCode, long amount, Security security, long shares,
+                    String note) {
+        this(date, currencyCode, amount, security, shares, note);
+        this.exDate = exDate;
     }
 
     public String getUUID()
@@ -209,6 +217,15 @@ public abstract class Transaction implements Annotated, Adaptable
     public void setDateTime(LocalDateTime date)
     {
         this.date = date;
+        this.updatedAt = Instant.now();
+    }
+    
+    public LocalDateTime getExDateTime() {
+        return exDate;
+    }
+    
+    public void setExDateTime(LocalDateTime exDate) {
+        this.exDate = exDate;
         this.updatedAt = Instant.now();
     }
 

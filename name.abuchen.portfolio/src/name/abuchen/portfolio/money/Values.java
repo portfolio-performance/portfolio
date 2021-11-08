@@ -303,10 +303,13 @@ public abstract class Values<E>
         @Override
         public String format(LocalDateTime date)
         {
-            if (date.toLocalTime().equals(LocalTime.MIDNIGHT))
-                return Values.Date.format(date.toLocalDate());
+            if (date != null)
+                if (date.toLocalTime().equals(LocalTime.MIDNIGHT))
+                    return Values.Date.format(date.toLocalDate());
+                else
+                    return formatter.format(date);
             else
-                return formatter.format(date);
+                return ""; //$NON-NLS-1$
         }
     };
 

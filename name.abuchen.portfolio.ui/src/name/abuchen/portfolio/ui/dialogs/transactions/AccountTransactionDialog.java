@@ -106,9 +106,15 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         ComboInput accounts = new ComboInput(editArea, Messages.ColumnAccount);
         accounts.value.setInput(including(client.getActiveAccounts(), model().getAccount()));
         accounts.bindValue(Properties.account.name(), Messages.MsgMissingAccount);
-        accounts.bindCurrency(Properties.accountCurrencyCode.name());
-
+        accounts.bindCurrency(Properties.accountCurrencyCode.name());       
+        
         // date & time
+        
+        DateTimeInput exDateTime = new DateTimeInput(editArea, "Ex-Tag"); //$NON-NLS-1$
+        exDateTime.bindDate(Properties.exDate.name());
+        exDateTime.bindTime(Properties.exTime.name());
+        exDateTime.bindButton(() -> model().getExTime(), exTime -> model().setExTime(exTime));
+
 
         DateTimeInput dateTime = new DateTimeInput(editArea, Messages.ColumnDate);
         dateTime.bindDate(Properties.date.name());
@@ -217,7 +223,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         // form layout
         //
 
-        int widest = widest(securities != null ? securities.label : null, accounts.label, dateTime.label, shares.label,
+        int widest = widest(securities != null ? securities.label : null, accounts.label, dateTime.label, exDateTime.label, shares.label,
                         taxes.label, fees.label, total.label, lblNote, fxGrossAmount.label);
 
         FormDataFactory forms;
@@ -237,11 +243,13 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         int currencyWidth = currencyWidth(fxGrossAmount.currency);
 
         // date
-        // shares
+        
         forms = forms.thenBelow(dateTime.date.getControl()).label(dateTime.label);
-
         startingWith(dateTime.date.getControl()).thenRight(dateTime.time).thenRight(dateTime.button, 0);
-
+        
+        forms = forms.thenBelow(exDateTime.date.getControl()).label(exDateTime.label);
+        startingWith(exDateTime.date.getControl()).thenRight(exDateTime.time).thenRight(exDateTime.button,0);
+        
         // shares [- amount per share]
         forms.thenBelow(shares.value).width(amountWidth).label(shares.label).suffix(btnShares) //
                         // fxAmount - exchange rate - amount
@@ -339,6 +347,9 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         WarningMessages warnings = new WarningMessages(this);
         warnings.add(() -> model().getDate().isAfter(LocalDate.now()) ? Messages.MsgDateIsInTheFuture : null);
         model.addPropertyChangeListener(Properties.date.name(), e -> warnings.check());
+        
+        warnings.add(() -> model().getExDate().isAfter(model().getDate()) ? "Ex-Dividenden-Tag liegt nach dem Ausschüttungs-Tag" : null); //$NON-NLS-1$
+        model.addPropertyChangeListener(Properties.exDate.name(), e -> warnings.check());
 
         model.firePropertyChange(Properties.exchangeRateCurrencies.name(), "", model().getExchangeRateCurrencies()); //$NON-NLS-1$
     }

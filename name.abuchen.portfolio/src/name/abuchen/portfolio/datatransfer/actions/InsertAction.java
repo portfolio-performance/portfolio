@@ -71,7 +71,7 @@ public class InsertAction implements ImportAction
 
         if (removeDividends && transaction.getType() == AccountTransaction.Type.DIVIDENDS)
         {
-            AccountTransaction removal = new AccountTransaction(transaction.getDateTime(),
+            AccountTransaction removal = new AccountTransaction(transaction.getDateTime(), transaction.getExDateTime(),
                             transaction.getCurrencyCode(), transaction.getAmount(), null,
                             AccountTransaction.Type.REMOVAL);
             removal.setNote(transaction.getNote());
@@ -120,6 +120,7 @@ public class InsertAction implements ImportAction
                 if (existingTransaction != null)
                 {
                     existingTransaction.setDateTime(t.getDateTime());
+                    existingTransaction.setExDateTime(t.getExDateTime());
                     existingTransaction.setNote(t.getNote());
                     existingTransaction.setSource(t.getSource());
                     existingTransaction.setShares(t.getShares());
@@ -132,6 +133,7 @@ public class InsertAction implements ImportAction
                         Transaction crossTransaction = existingTransaction.getCrossEntry()
                                         .getCrossTransaction(existingTransaction);
                         crossTransaction.setDateTime(t.getDateTime());
+                        crossTransaction.setExDateTime(t.getExDateTime());
                         crossTransaction.setAmount(t.getAmount());
                         crossTransaction.setNote(t.getNote());
                         crossTransaction.setSource(t.getSource());
@@ -150,6 +152,7 @@ public class InsertAction implements ImportAction
                             : PortfolioTransaction.Type.DELIVERY_OUTBOUND);
 
             delivery.setDateTime(t.getDateTime());
+            delivery.setExDateTime(t.getExDateTime());
             delivery.setSecurity(t.getSecurity());
             delivery.setMonetaryAmount(t.getMonetaryAmount());
             delivery.setNote(t.getNote());
