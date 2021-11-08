@@ -3063,8 +3063,12 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
+
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-21T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(10)));
+        assertThat(transaction.getSource(), is("FlatExDividende07.txt"));
+        assertThat(transaction.getNote(), is("Transaktion-Nr.: 1784953069"));
+
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(8.26))));
         assertThat(transaction.getGrossValue(), 
@@ -3107,8 +3111,12 @@ public class FinTechGroupBankPDFExtractorTest
                         .getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
+
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-10-08T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(168.90)));
+        assertThat(transaction.getSource(), is("FlatExDegiroDividende01.txt"));
+        assertThat(transaction.getNote(), is("Transaktion-Nr.: 123456789"));
+
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(15.24))));
         assertThat(transaction.getGrossValue(), 
