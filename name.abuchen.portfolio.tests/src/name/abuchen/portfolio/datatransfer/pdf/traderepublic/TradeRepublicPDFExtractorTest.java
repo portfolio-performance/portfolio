@@ -2,8 +2,8 @@ package name.abuchen.portfolio.datatransfer.pdf.traderepublic;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsEmptyCollection.empty;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -1602,6 +1602,12 @@ public class TradeRepublicPDFExtractorTest
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.30 + 0.02))));
+        assertThat(transaction.getGrossValue(), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.30 + 0.02))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
     }
 
     @Test
