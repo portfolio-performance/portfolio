@@ -2447,7 +2447,7 @@ public class ComdirectPDFExtractorTest
     }
 
     @Test
-    public void testVorabsteuerpauschale()
+    public void testVorabsteuerpauschale01()
     {
         ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
 
@@ -2481,9 +2481,9 @@ public class ComdirectPDFExtractorTest
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.09))));
         assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.09))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
     }

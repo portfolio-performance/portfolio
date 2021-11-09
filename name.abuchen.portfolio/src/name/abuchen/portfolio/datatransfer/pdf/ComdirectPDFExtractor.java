@@ -646,9 +646,6 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                 })
 
                 .wrap(t -> new TransactionItem(t));
-
-        addTaxesSectionsTransaction(pdfTransaction, type);
-        addFeesSectionsTransaction(pdfTransaction, type);
     }
 
     private void addSellWithNegativeAmountTransaction()

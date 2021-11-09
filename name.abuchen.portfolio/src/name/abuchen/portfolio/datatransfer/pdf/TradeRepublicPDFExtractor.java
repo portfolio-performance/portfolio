@@ -968,9 +968,6 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 })
 
                 .wrap(t -> new TransactionItem(t));
-
-        addTaxesSectionsTransaction(pdfTransaction, type);
-        addFeesSectionsTransaction(pdfTransaction, type);
     }
 
     private void addBuySellTaxReturnBlock(DocumentType type)
