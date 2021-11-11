@@ -144,12 +144,11 @@ public final class CoinGeckoQuoteFeed implements QuoteFeed
             // The coin ID may be provided directly as a feed parameter (in case the ticker is ambiguously defined)
             Optional<String> coinGeckoIdProperty = security.getPropertyValue(SecurityProperty.Type.FEED, COINGECKO_COIN_ID);
             
-            if (coinGeckoIdProperty.isPresent()) {
+            if (coinGeckoIdProperty.isPresent())
                 coinGeckoId = coinGeckoIdProperty.get();
-            } else {
+            else
                 // If not specified explicitly, try to map the ticker symbol to a coin ID
                 coinGeckoId = getCoinGeckoIdForTicker(security.getTickerSymbol().toLowerCase());
-            }
                         
             String endpoint = "/api/v3/coins/" + coinGeckoId + "/market_chart"; //$NON-NLS-1$ //$NON-NLS-2$
             long days = ChronoUnit.DAYS.between(start, LocalDate.now()) + 1;
