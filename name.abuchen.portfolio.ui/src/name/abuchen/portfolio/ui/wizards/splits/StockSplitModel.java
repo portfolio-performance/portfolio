@@ -108,7 +108,7 @@ public class StockSplitModel extends BindingHelper.Model
     public long calculateNewQuote(long oldQuote)
     {
         return BigDecimal.valueOf(oldQuote).divide(getStockMultiplier()) // when stock is multiplied, quote must be divided
-        .setScale(0, RoundingMode.HALF_EVEN).longValue();        
+                        .setScale(0, RoundingMode.HALF_EVEN).longValue();        
     }
     
     @Override
