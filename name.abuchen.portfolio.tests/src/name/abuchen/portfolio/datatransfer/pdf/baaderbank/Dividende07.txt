@@ -1,0 +1,65 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Seite 1/2
+München
+17.04.2020
+DonauCapital Wertpapier GmbH
+GRATISBROKER GmbH 
+wg. GRATISBROKER GmbH service@gratisbroker.de
+Passauer Str. 5
+Vorname Nachname
+94161 Ruderting Stamm-Nr.: 1111111    Portfolio: 1
+Depot-Nr.: 1111111111
+Vorgangs-Nr.: 5555555
+Referenz-Nr.: 55555555
+Fondsausschüttung KOPIE
+Ex-Tag: 30.03.2020
+Nominale ISIN: US92936U1097 WKN: A1J5SB Ausschüttung
+STK 14 W.P. Carey Inc. USD 1,04 p.STK
+Zahlungszeitraum: 01.01.2020 - 31.12.2020 
+Zahltag: 15.04.2020
+Umrechnungskurs: EUR/USD 1,08688
+Bruttobetrag USD 14,56
+Bruttobetrag EUR 13,40
+Kapitalertragsteuer EUR 1,34 -
+Solidaritätszuschlag EUR 0,07 -
+US-Quellensteuer EUR 2,01 -
+Zu Gunsten Konto 1162493009 Valuta: 15.04.2020 EUR 9,98
+Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 67 AWV.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+GRATISBROKER GmbH | Geschäftsführer: Malte Rubruck, Stefan Mross, Philipp Röben | HRB 242583 Amtsgericht München | USt-IdNr. DE319411410
+GRATISBROKER GmbH erbringt Anlagevermittlung als vertraglich gebundener Vermittler der DonauCapital Wertpapier GmbH
+Baader Bank Aktiengesellschaft Weihenstephaner Straße 4 85716 Unterschleißheim Deutschland T 00800 00 222 337* F +49 89 5150 2442
+service@baaderbank.de www.baaderbank.de 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft. DCUP-050.041
+Fondsausschüttung KOPIE
+Fortsetzung: Seite 2/2
+Darstellung der steuerlichen Berechnungsgrundlagen:
+Merkposten / Steuertöpfe vorher Erhöhung/Reduktion nachher
+QST-Anrechnung auf allgemeine Gewinne
+angerechnete Quellensteuer EUR 1,39 EUR 2,01 EUR 3,40
+bezahlte Kapitalertragsteuer EUR 0,94 EUR 3,35 EUR 4,29
+bezahlte Kapitalertragsteuer EUR 4,29 EUR 2,01 - EUR 2,28
+Bemessungsgrundlagen Steuerpflicht brutto Steuerpflicht netto
+Ausschüttung brutto Sonst. Fonds EUR 13,40 EUR 13,40
+Ausschüttung netto Sonst. Fonds EUR 13,40 EUR 13,40
+Kapitalertragsteuer auf allgemeine Gewinne EUR 13,40 EUR 13,40
+QST-Anrechnung auf allgemeine Gewinne EUR 8,04 - EUR 8,04 -
+Kapitalertragsteuer auf allgemeine Gewinne
+Kapitalertragsteuer 25,00 % EUR 3,35 - EUR 3,35 -
+Solidaritätszuschlag 5,50 % EUR 0,18 - EUR 0,18 -
+Kapitalertragsteuer 25,00 % EUR 2,01 EUR 2,01
+Solidaritätszuschlag 5,50 % EUR 0,11 EUR 0,11
+US-Quellensteuer 15,00 % EUR 2,01 - EUR 2,01 -
+Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 67 AWV.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+GRATISBROKER GmbH | Geschäftsführer: Malte Rubruck, Stefan Mross, Philipp Röben | HRB 242583 Amtsgericht München | USt-IdNr. DE319411410
+GRATISBROKER GmbH erbringt Anlagevermittlung als vertraglich gebundener Vermittler der DonauCapital Wertpapier GmbH
+Baader Bank Aktiengesellschaft Weihenstephaner Straße 4 85716 Unterschleißheim Deutschland T 00800 00 222 337* F +49 89 5150 2442
+service@baaderbank.de www.baaderbank.de 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft. DCUP-050.041

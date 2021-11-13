@@ -1,0 +1,81 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+T  00800 00 586336*
+F  +49 89 5150 2442
+service@baaderbank.de
+Seite 1/3
+Unterschleißheim
+Herrn
+06.10.2021
+Max Mustermann
+Max Mustermann
+Musterstraße 11
+Stamm-Nr.: 1111111    Portfolio: 1
+12345 Musterhausen Depot-Nr.: 1111111111
+Vorgangs-Nr.: 11111111
+Referenz-Nr.: 111111111
+Wertpapierabrechnung: Verkauf
+Auftragsdatum: 05.10.2021 Ausführungsplatz: TriAct
+Auftragszeit: 16:02:25:55
+Nominale ISIN: CA55378N1078 WKN: 120504 Kurs 
+STK 0,20 MTY Food Group Inc. CAD 64,598697571
+Registered Shares o.N.
+Auftraggeber: ext.Vermögensverw.
+Art der Auftragserteilung: Orderroutingssystem
+Kurswert Umrechnungskurs CAD/EUR: 1,4595 EUR 8,85
+Kapitalertragsteuer EUR 0,23 -
+Kirchensteuer EUR 0,01 -
+Solidaritätszuschlag EUR 0,01 -
+Zu Gunsten Konto 1111111111 Valuta: 07.10.2021 EUR 8,60
+Die Wertpapiere buchen wir zu Lasten Ihres Depots.
+Details zur Ausführung:
+Handelsdatum Handelsuhrzeit
+05.10.2021 16:03:24:00
+Verwahrart: Wertpapierrechnung Zeitzone der Handelsuhrzeit: MEZ/MESZ
+Lagerstelle: 1379 MIC des Ausführungsplatzes: MATN
+Lagerland: Kanada
+Für die Ausführung dieses Auftrags gelten die Usancen des jeweiligen Ausführungsplatzes.
+Bitte prüfen Sie diese Auftragsbestätigung/Abrechnung auf Richtigkeit und Vollständigkeit. Etwaige Einwendungen gegen diese 
+Auftragsbestätigung/Abrechnung müssen nach Zugang unverzüglich bei der Baader Bank AG erhoben werden.
+Dieser Auftrag erfolgte ohne Empfehlung der Bank. Es wurde keine Anlageberatung und keine individuelle Aufklärung durch die Bank erbracht.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Baader Bank Aktiengesellschaft T 00800 00 222 337* Vorstand: Nico Baader (Vorsitzender), Amtsgericht München HRB 121537
+Weihenstephaner Straße 4 F +49 89 5150 2442 Dietmar von Blücher, Sitz der Gesellschaft: Unterschleißheim
+85716 Unterschleißheim service@baaderbank.de Oliver Riedel StNr. 143/107/04009
+Deutschland www.baaderbank.de Vorsitzender des Aufsichtsrates: USt-IdNr. DE114123893
+Dr. Horst Schiessl LEI: 529900JFOPPEDUR61H13
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen. WPABRECHNUNG-012.345
+Wertpapierabrechnung: Verkauf
+Fortsetzung: Seite 2/3
+11111111
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Baader Bank Aktiengesellschaft T 00800 00 222 337* Vorstand: Nico Baader (Vorsitzender), Amtsgericht München HRB 121537
+Weihenstephaner Straße 4 F +49 89 5150 2442 Dietmar von Blücher, Sitz der Gesellschaft: Unterschleißheim
+85716 Unterschleißheim service@baaderbank.de Oliver Riedel StNr. 143/107/04009
+Deutschland www.baaderbank.de Vorsitzender des Aufsichtsrates: USt-IdNr. DE114123893
+Dr. Horst Schiessl LEI: 529900JFOPPEDUR61H13
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen. WPABRECHNUNG-012.345
+Wertpapierabrechnung: Verkauf
+Fortsetzung: Seite 3/3
+Darstellung der steuerlichen Berechnungsgrundlagen:
+Merkposten / Steuertöpfe vorher Erhöhung/Reduktion nachher
+bezahlte Kapitalertragsteuer EUR 40,74 EUR 0,23 EUR 40,97
+Bemessungsgrundlagen Steuerpflicht brutto Steuerpflicht netto
+KESt./AbgSt. Aktiengewinne/Verluste EUR 0,94 EUR 0,94
+Kapitalertragsteuer auf Aktiengewinne bei 9% Kirchensteuer EUR 0,94 EUR 0,94
+Kapitalertragsteuer auf Aktiengewinne bei 9% Kirchensteuer
+Kapitalertragsteuer 24,45 % EUR 0,23 - EUR 0,23 -
+Kirchensteuer 9,00 % EUR 0,01 - EUR 0,01 -
+Solidaritätszuschlag 5,50 % EUR 0,01 - EUR 0,01 -
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäfts-
+Geschäft Nr. Datum Whg./St. Nominal/Stück Anschaff.-kosten ant. Veräußer.-erlös ant. Ergebnis
+WP Kauf 11111111 18.05.2021 STK 0,20 7,91 8,85 0,94
+Baader Bank Aktiengesellschaft T 00800 00 222 337* Vorstand: Nico Baader (Vorsitzender), Amtsgericht München HRB 121537
+Weihenstephaner Straße 4 F +49 89 5150 2442 Dietmar von Blücher, Sitz der Gesellschaft: Unterschleißheim
+85716 Unterschleißheim service@baaderbank.de Oliver Riedel StNr. 143/107/04009
+Deutschland www.baaderbank.de Vorsitzender des Aufsichtsrates: USt-IdNr. DE114123893
+Dr. Horst Schiessl LEI: 529900JFOPPEDUR61H13
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen. WPABRECHNUNG-012.345
