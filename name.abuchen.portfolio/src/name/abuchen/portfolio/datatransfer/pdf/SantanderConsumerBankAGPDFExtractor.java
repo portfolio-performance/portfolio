@@ -213,6 +213,11 @@ public class SantanderConsumerBankAGPDFExtractor extends AbstractPDFExtractor
                 // Provision 7,90- EUR
                 .section("fee", "currency").optional()
                 .match("^Provision (?<fee>[.,\\d]+)\\- (?<currency>[\\w]{3})$")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+
+                // Fremde Abwicklungsgebühr für die Umschreibung von Namensaktien 0,60- EUR
+                .section("fee", "currency").optional()
+                .match("^Fremde Abwicklungsgeb.hr .* (?<fee>[.,\\d]+)\\- (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
