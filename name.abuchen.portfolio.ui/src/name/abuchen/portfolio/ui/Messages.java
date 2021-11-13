@@ -547,6 +547,7 @@ public class Messages extends NLS
     public static String LabelClose;
     public static String FilterOnlyClosedTrades;
     public static String LabelCoinGeckoCoinId;
+    public static String LabelCoinGeckoCoinIdHint;
     public static String LabelCollapseAll;
     public static String LabelColorSchema;
     public static String LabelColumns;

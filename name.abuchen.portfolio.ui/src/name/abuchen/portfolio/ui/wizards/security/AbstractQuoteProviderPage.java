@@ -686,6 +686,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             textCoinGeckoCoinId.addModifyListener(e -> onCoinGeckoCoinIdChanged());
 
             ControlDecoration deco = new ControlDecoration(textCoinGeckoCoinId, SWT.CENTER | SWT.RIGHT);
+            deco.setDescriptionText(Messages.LabelCoinGeckoCoinIdHint);
             deco.setMarginWidth(2);
             deco.show();
         }
