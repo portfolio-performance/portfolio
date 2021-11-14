@@ -30,7 +30,7 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
-public class Direkt1822bankPDFExtractorTest
+public class direkt1822bankPDFExtractorTest
 {
     
     @Test
