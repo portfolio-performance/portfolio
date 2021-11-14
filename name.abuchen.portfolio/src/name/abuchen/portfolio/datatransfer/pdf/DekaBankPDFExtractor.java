@@ -168,7 +168,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
 
                 // Is type --> "Verkauf" change from BUY to SELL
                 .section("type").optional()
-                .match("^(?<type>(Lastschrifteinzug|Verkauf)) .*")
+                .match("^(?<type>(Lastschrifteinzug|Verkauf)) .*$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("Verkauf"))
                     {
@@ -198,9 +198,6 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                 })
 
                 .wrap(t -> {
-                    type.getCurrentContext().remove("name");
-                    type.getCurrentContext().remove("isin");
-                    type.getCurrentContext().remove("currency");
                     if (t.getPortfolioTransaction().getCurrencyCode() != null)
                         return new BuySellEntryItem(t);
                     return null;
@@ -217,7 +214,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
 
                 // Is type --> "Ausbuchung" change from DELIVERY_INBOUND to DELIVERY_OUTBOUND
                 .section("type").optional()
-                .match("^(?<type>(Einbuchung|Ausbuchung)) .*")
+                .match("^(?<type>(Einbuchung|Ausbuchung)) .*$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("Ausbuchung"))
                     {
@@ -254,9 +251,6 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> t.setNote(TextUtil.strip(v.get("note"))))
 
                 .wrap(t -> {
-                    type.getCurrentContext().remove("name");
-                    type.getCurrentContext().remove("isin");
-                    type.getCurrentContext().remove("currency");
                     if (t.getCurrencyCode() != null)
                         return new TransactionItem(t);
                     return null;
