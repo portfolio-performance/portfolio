@@ -265,7 +265,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                 .match("^Ausgabeaufschlag pro Anteil (?<feeFx>[\\.,\\d]+) %$")
                 .assign((t, v) -> {
                     // Fee in percent
-                    double amountFx = Double.parseDouble(v.get("amountFx").replace(',', '.'));
+                    double amountFx = Double.parseDouble(v.get("amountFx").replace(".", "").replace(',', '.'));
                     double feeFy = Double.parseDouble(v.get("feeFy").replace(',', '.'));
                     double feeFx = Double.parseDouble(v.get("feeFx").replace(',', '.'));
                     feeFy = (amountFx / (1 + feeFx / 100)) * (feeFx / 100) * (feeFy / 100);
