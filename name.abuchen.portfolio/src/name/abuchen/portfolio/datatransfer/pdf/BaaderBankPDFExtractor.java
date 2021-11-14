@@ -97,7 +97,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 // STK 2 iShs DL Corp Bond UCITS ETF EUR 104,37
                 .section("shares")
                 .match("^STK (?<shares>[\\.,\\d]+) .*$")
-                .assign((t, v) -> t.setShares((asShares(v.get("shares")))))
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 .oneOf(
                                 // Handelsdatum Handelsuhrzeit
@@ -215,7 +215,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 // STK 57 Publicis Groupe S.A. EUR 2,00 p.STK
                 .section("shares")
                 .match("^STK (?<shares>[\\.,\\d]+) .*$")
-                .assign((t, v) -> t.setShares((asShares(v.get("shares")))))
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 // Zu Gunsten Konto 1111111111 Valuta: 06.07.2021 EUR 68,22
                 .section("date", "currency", "amount").optional()
@@ -315,7 +315,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 // STK 112 SPDR S+P US Con.Sta.Sel.S.UETF
                 .section("shares")
                 .match("^STK (?<shares>[\\.,\\d]+) .*$")
-                .assign((t, v) -> t.setShares((asShares(v.get("shares")))))
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 // Zu Lasten Konto 1247201005 Valuta: 04.01.2021 EUR 0,04
                 .section("date", "currency", "amount")
