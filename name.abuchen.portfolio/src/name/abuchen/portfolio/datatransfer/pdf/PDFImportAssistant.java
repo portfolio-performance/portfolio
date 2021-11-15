@@ -49,12 +49,11 @@ public class PDFImportAssistant
         extractors.add(new Direkt1822BankPDFExtractor(client));
         extractors.add(new DkbPDFExtractor(client));
         extractors.add(new DreiBankenEDVPDFExtractor(client));
-        extractors.add(new DZBankPDFExtractor(client));
+        extractors.add(new DZBankGruppePDFExtractor(client));
         extractors.add(new EbasePDFExtractor(client));
         extractors.add(new ErsteBankPDFExtractor(client));
         extractors.add(new FILFondbankPDFExtractor(client));
         extractors.add(new FinTechGroupBankPDFExtractor(client));
-        extractors.add(new GLSBankengemeinschaftPDFExtractor(client));
         extractors.add(new HelloBankPDFExtractor(client));
         extractors.add(new INGDiBaExtractor(client));
         extractors.add(new JustTradePDFExtractor(client));

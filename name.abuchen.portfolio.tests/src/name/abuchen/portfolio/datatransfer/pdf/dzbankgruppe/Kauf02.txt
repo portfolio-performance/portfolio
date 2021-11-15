@@ -1,4 +1,4 @@
-﻿PDF Author: ''
+PDF Author: ''
 PDFBox Version: 1.8.16
 -----------------------------------------
    
