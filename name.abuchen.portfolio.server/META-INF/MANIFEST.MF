@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: name.abuchen.portfolio.server
 Bundle-SymbolicName: name.abuchen.portfolio.server;singleton:=true
-Bundle-Version: 0.56.0.qualifier
+Bundle-Version: 0.56.1.qualifier
 Automatic-Module-Name: name.abuchen.portfolio.server
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Require-Bundle: name.abuchen.portfolio;bundle-version="0.56.0",

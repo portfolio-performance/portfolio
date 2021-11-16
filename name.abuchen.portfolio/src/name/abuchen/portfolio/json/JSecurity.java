@@ -11,7 +11,7 @@ public class JSecurity
     private String isin;
     private String wkn;
     private String ticker;
-    private String currency;    
+    private String currency;
     private LatestSecurityPrice latest;
 
     public String getName()
@@ -53,7 +53,7 @@ public class JSecurity
     {
         this.ticker = ticker;
     }
-    
+
     public String getCurrency()
     {
         return currency;
@@ -63,7 +63,7 @@ public class JSecurity
     {
         this.currency = currency;
     }
-    
+
     public LatestSecurityPrice getLatest()
     {
         return latest;
