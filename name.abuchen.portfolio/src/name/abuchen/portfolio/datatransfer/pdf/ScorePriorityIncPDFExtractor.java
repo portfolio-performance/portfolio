@@ -104,6 +104,8 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
          * Formatting:
          * Date | Effective Description | CUSIP | Type of Activity | Quantity Market Price | Net Settlement Amount
          * -------------------------------------
+         * Sep 16 Barrick Gold Co             14 067901108 Dividend 1.97
+         * 
          * Sep 17 Barrick Gold Co             14 067901108 Dividend 1.26
          * Sep 17 For Sec Withhold: Div   .25000 067901108 Foreign Withholding (0.31)
          * 
@@ -123,23 +125,40 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                             return entry;
                         })
 
-                        .section("month", "day", "name", "shares", "wkn", "amount", "tax").optional()
-                        .match("^(?<month>.*) (?<day>[\\d]{2}) (?<name>.*) (?<shares>[\\.,\\d]+) (?<wkn>(?!Qualified).{9}) (Qualified )?Dividend (?<amount>[\\.,\\d]+)$")
-                        .match("^[\\w]{3} [\\d]{2} .* [\\w]{9} (NRA Withhold|Foreign Withholding) \\((?<tax>[\\.,\\d]+)\\)$")
-                        .assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
-                            v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
+                        .oneOf(
+                                        section -> section
+                                                .attributes("month", "day", "name", "shares", "wkn", "amount", "tax")
+                                                .match("^(?<month>.*) (?<day>[\\d]{2}) (?<name>.*) (?<shares>[\\.,\\d]+) (?<wkn>(?!Qualified).{9}) (Qualified )?Dividend (?<amount>[\\.,\\d]+)$")
+                                                .match("^[\\w]{3} [\\d]{2} .* [\\w]{9} (NRA Withhold|Foreign Withholding) \\((?<tax>[\\.,\\d]+)\\)$")
+                                                .assign((t, v) -> {
+                                                    Map<String, String> context = type.getCurrentContext();
+                                                    v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
 
-                            t.setDateTime(asDate(v.get("date")));
-                            t.setShares(asShares(v.get("shares")));
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(getClient().getBaseCurrency());
-                            t.setSecurity(getOrCreateSecurity(v));
+                                                    t.setDateTime(asDate(v.get("date")));
+                                                    t.setShares(asShares(v.get("shares")));
+                                                    t.setAmount(asAmount(v.get("amount")));
+                                                    t.setCurrencyCode(getClient().getBaseCurrency());
+                                                    t.setSecurity(getOrCreateSecurity(v));
 
-                            t.addUnit(new Unit(Unit.Type.TAX,
-                                            Money.of(asCurrencyCode(getClient().getBaseCurrency()),
-                                                            asAmount(v.get("tax")))));
-                        })
+                                                    t.addUnit(new Unit(Unit.Type.TAX,
+                                                                    Money.of(asCurrencyCode(getClient().getBaseCurrency()),
+                                                                                    asAmount(v.get("tax")))));
+                                                })
+                                        ,
+                                        section -> section
+                                                .attributes("month", "day", "name", "shares", "wkn", "amount")
+                                                .match("^(?<month>.*) (?<day>[\\d]{2}) (?<name>.*) (?<shares>[\\.,\\d]+) (?<wkn>(?!Qualified).{9}) (Qualified )?Dividend (?<amount>[\\.,\\d]+)$")
+                                                .assign((t, v) -> {
+                                                    Map<String, String> context = type.getCurrentContext();
+                                                    v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
+
+                                                    t.setDateTime(asDate(v.get("date")));
+                                                    t.setShares(asShares(v.get("shares")));
+                                                    t.setAmount(asAmount(v.get("amount")));
+                                                    t.setCurrencyCode(getClient().getBaseCurrency());
+                                                    t.setSecurity(getOrCreateSecurity(v));
+                                                })
+                                )
 
                         .wrap(t -> {
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)

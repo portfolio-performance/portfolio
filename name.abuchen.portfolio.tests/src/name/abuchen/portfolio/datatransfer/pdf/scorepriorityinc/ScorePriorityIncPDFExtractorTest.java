@@ -46,7 +46,7 @@ public class ScorePriorityIncPDFExtractorTest
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AccountStatement01.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(16));
+        assertThat(results.size(), is(17));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
@@ -198,6 +198,24 @@ public class ScorePriorityIncPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-09-16T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(14)));
+        assertThat(transaction.getSource(), is("AccountStatement01.txt"));
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.97))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.97))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).skip(1)
+                        .findFirst().get().getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-09-17T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(14)));
         assertThat(transaction.getSource(), is("AccountStatement01.txt"));
@@ -212,7 +230,7 @@ public class ScorePriorityIncPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 2nd dividend transaction
-        transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).skip(1)
+        transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).skip(2)
                         .findFirst().get().getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -231,7 +249,7 @@ public class ScorePriorityIncPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 3rd dividend transaction
-        transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).skip(2)
+        transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).skip(3)
                         .findFirst().get().getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -250,7 +268,7 @@ public class ScorePriorityIncPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 4th dividend transaction
-        transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).skip(3)
+        transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).skip(4)
                         .findFirst().get().getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
