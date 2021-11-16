@@ -165,6 +165,72 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                                 return new TransactionItem(t);
                             return null;
                         }));
+
+        /***
+         * Formatting:
+         * Date | Effective Description | CUSIP | Type of Activity | Quantity Market Price | Net Settlement Amount
+         * -------------------------------------
+         * Dec 29 Incoming Wire Abccdd Doe Journal 71,000.00
+         */
+        Block blockDeposit = new Block("^[\\w]{3} [\\d]{2} Incoming Wire .* [\\.,\\d]+$");
+        type.addBlock(blockDeposit);
+        blockDeposit.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction entry = new AccountTransaction();
+                            entry.setType(AccountTransaction.Type.DEPOSIT);
+                            return entry;
+                        })
+
+                        .section("month", "day", "amount")
+                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) Incoming Wire .* (?<amount>[\\.,\\d]+)$")
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+                            v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
+
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(getClient().getBaseCurrency());
+                        })
+
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        }));
+
+        /***
+         * Formatting:
+         * Date | Effective Description | CUSIP | Type of Activity | Quantity Market Price | Net Settlement Amount
+         * -------------------------------------
+         * Dec 31 .05000% 3 Days,Bal=   $71000 Credit Interest 0.30
+         */
+        Block blockInterest = new Block("^[\\w]{3} [\\d]{2} .* Credit Interest [\\.,\\d]+$");
+        type.addBlock(blockInterest);
+        blockInterest.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction entry = new AccountTransaction();
+                            entry.setType(AccountTransaction.Type.INTEREST);
+                            return entry;
+                        })
+
+                        .section("month", "day", "amount")
+                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) .* Credit Interest (?<amount>[\\.,\\d]+)$")
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+                            v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
+
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(getClient().getBaseCurrency());
+                        })
+
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        }));
     }
 
     @Override
