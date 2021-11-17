@@ -93,6 +93,24 @@ public class StockSplitModel extends BindingHelper.Model
                         this.changeHistoricalQuotes = changeHistoricalQuotes);
     }
 
+    // stock multiplier = quote divider
+    private BigDecimal getStockMultiplier()
+    {
+        return newShares.divide(oldShares, Values.MC);
+    }
+    
+    public long calculateNewStock(long oldStock)
+    {
+        return BigDecimal.valueOf(oldStock).multiply(getStockMultiplier())
+                        .setScale(0, RoundingMode.HALF_EVEN).longValue();
+    }
+    
+    public long calculateNewQuote(long oldQuote)
+    {
+        return BigDecimal.valueOf(oldQuote).divide(getStockMultiplier()) // when stock is multiplied, quote must be divided
+                        .setScale(0, RoundingMode.HALF_EVEN).longValue();        
+    }
+    
     @Override
     public void applyChanges()
     {
@@ -101,8 +119,6 @@ public class StockSplitModel extends BindingHelper.Model
         SecurityEvent event = new SecurityEvent(exDate, SecurityEvent.Type.STOCK_SPLIT, newShares + ":" + oldShares); //$NON-NLS-1$
         security.addEvent(event);
 
-        BigDecimal multiplier = newShares.divide(oldShares, Values.MC);
-
         if (isChangeTransactions())
         {
             List<TransactionPair<?>> transactions = security.getTransactions(getClient());
@@ -110,8 +126,7 @@ public class StockSplitModel extends BindingHelper.Model
             {
                 Transaction t = pair.getTransaction();
                 if (t.getDateTime().toLocalDate().isBefore(exDate))
-                    t.setShares(BigDecimal.valueOf(t.getShares()).multiply(multiplier)
-                                    .setScale(0, RoundingMode.HALF_EVEN).longValue());
+                    t.setShares(calculateNewStock(t.getShares()));
             }
         }
 
@@ -121,8 +136,7 @@ public class StockSplitModel extends BindingHelper.Model
             for (SecurityPrice p : quotes)
             {
                 if (p.getDate().isBefore(exDate))
-                    p.setValue(BigDecimal.valueOf(p.getValue()).multiply(multiplier).setScale(0, RoundingMode.HALF_EVEN)
-                                    .longValue());
+                    p.setValue(calculateNewQuote(p.getValue()));
             }
         }
 

@@ -455,9 +455,6 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                 })
 
                 .wrap(t -> new TransactionItem(t));
-
-        addTaxesSectionsTransaction(pdfTransaction, type);
-        addFeesSectionsTransaction(pdfTransaction, type);
     }
 
     private void addBuyTransactionFundsSavingsPlan()
