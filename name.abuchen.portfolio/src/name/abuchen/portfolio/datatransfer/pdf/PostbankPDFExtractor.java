@@ -37,7 +37,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("Wertpapier Abrechnung (Kauf|Verkauf|Ausgabe Investmentfonds)");
+        DocumentType type = new DocumentType("Wertpapier Abrechnung (Kauf|Verkauf|Ausgabe Investmentfonds|R.cknahme Investmentfonds)");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -47,15 +47,15 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("Wertpapier Abrechnung (Kauf|Verkauf|Ausgabe Investmentfonds).*");
+        Block firstRelevantLine = new Block("Wertpapier Abrechnung (Kauf|Verkauf|Ausgabe Investmentfonds|R.cknahme Investmentfonds).*");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
 
                         // Is type --> "Verkauf" change from BUY to SELL
-                        .section("type").optional().match("Wertpapier Abrechnung (?<type>Verkauf).*").assign((t, v) -> {
-                            if (v.get("type").equals("Verkauf"))
+                        .section("type").optional().match("Wertpapier Abrechnung (?<type>(Verkauf|R.cknahme Investmentfonds)).*").assign((t, v) -> {
+                            if (v.get("type").equals("Verkauf") || v.get("type").equals("Rücknahme Investmentfonds"))
                             {
                                 t.setType(PortfolioTransaction.Type.SELL);
                             }
@@ -67,13 +67,18 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                         .match("^St.ck (?<shares>[\\d.,]+) (?<name>.*) (?<isin>[\\w]{12}.*) (\\((?<wkn>.*)\\).*)")
                         .match("(?<name1>.*)") //
                         .assign((t, v) -> {
-                            if (!v.get("name1").startsWith("Handels-/Ausf.hrungsplatz"))
+                            if (!v.get("name1").startsWith("Handels-/Ausführungsplatz"))
                                 v.put("name", v.get("name").trim() + " " + v.get("name1"));
 
                             t.setSecurity(getOrCreateSecurity(v));
                             t.setShares(asShares(v.get("shares")));
                         })
 
+                        // For "Wertpapier Abrechnung Verkauf-Festpreisgeschäft" there's not "Schlusstag" but just a "Datum" section. 
+                        .section("date").optional() //
+                        .match("^Datum (?<date>\\d+.\\d+.\\d{4})") //
+                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                        
                         // Schlusstag 05.02.2020
                         .section("date").optional() //
                         .match("^Schlusstag (?<date>\\d+.\\d+.\\d{4})") //
@@ -82,7 +87,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                         // Schlusstag/-Zeit 04.02.2020 08:00:04
                         // Auftragserteilung/ -ort Online-Banking
                         .section("date", "time").optional()
-                        .match("^Schlusstag\\/-Zeit (?<date>\\d+.\\d+.\\d{4}) (?<time>\\d+:\\d+:\\d+) .*")
+                        .match("^Schlusstag\\/-Zeit (?<date>\\d+.\\d+.\\d{4}) (?<time>\\d+:\\d+:\\d+).*")
                         .assign((t, v) -> {
                             if (v.get("time") != null)
                                 t.setDate(asDate(v.get("date"), v.get("time")));
@@ -106,10 +111,10 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("(Dividendengutschrift|Ausschüttung Investmentfonds|Ertragsgutschrift)");
+        DocumentType type = new DocumentType("(Dividendengutschrift|Aussch.ttung Investmentfonds|Gutschrift von Investmentertr.gen|Ertragsgutschrift)");
         this.addDocumentTyp(type);
 
-        Block block = new Block("(Dividendengutschrift|Ausschüttung Investmentfonds|Ertragsgutschrift .*)");
+        Block block = new Block("(Dividendengutschrift|Aussch.ttung Investmentfonds|Gutschrift von Investmentertr.gen|Ertragsgutschrift.*)");
         type.addBlock(block);
         Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>().subject(() -> {
             AccountTransaction entry = new AccountTransaction();
@@ -221,7 +226,28 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                         // EUR
                         .section("quellenstanr", "currency").optional()
                         .match("^Anrechenbare Quellensteuer [.,\\d]+ % .* [.,\\d]+ \\w{3} (?<quellenstanr>[.,\\d]+) (?<currency>\\w{3})$")
-                        .assign((t, v) -> addTax(type, t, v, "quellenstanr"));
+                        .assign((t, v) -> addTax(type, t, v, "quellenstanr"))
+                        
+                        // Anrechenbare Quellensteuer pro Stück 0,0144878 EUR 0,29 EUR
+                        .section("quellenstanr", "currency").optional()
+                        .match("^Anrechenbare Quellensteuer pro St.ck [.,\\d]+ \\w{3} (?<quellenstanr>[.,\\d]+) (?<currency>\\w{3})$")
+                        .assign((t, v) -> addTax(type, t, v, "quellenstanr"))
+
+        
+                        // Kapitalertragsteuer 24,51% auf 0,71 EUR 0,17- EUR
+                        .section("tax", "currency").optional()
+                        .match("^Kapitalertragsteuer [\\d,.]+% auf [.,\\d]+ [\\w]{3} (?<tax>[.,\\d]+)- (?<currency>[\\w]{3})$")
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+        
+                        // Kirchensteuer auf Kapitalertragsteuer EUR -1,23
+                        .section("tax", "currency").optional()
+                        .match("^Kirchensteuer [\\d,.]+% auf [.,\\d]+ [\\w]{3} (?<tax>[.,\\d]+)- (?<currency>[\\w]{3})$")
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // Solidaritätszuschlag auf Kapitalertragsteuer EUR -6,76
+                        .section("tax", "currency").optional()
+                        .match("^Solidarit.tszuschlag [\\d,.]+% auf [.,\\d]+ [\\w]{3} (?<tax>[.,\\d]+)- (?<currency>[\\w]{3})$")
+                        .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
@@ -258,6 +284,8 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                             Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get(taxtype)))));
         }
     }
+    
+    
 
     private boolean checkWithholdingTax(DocumentType type, String taxtype)
     {
@@ -266,6 +294,20 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
         return true;
     }
 
+    private void processTaxEntries(Object t, Map<String, String> v, DocumentType type)
+    {
+        if (t instanceof name.abuchen.portfolio.model.Transaction)
+        {
+            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+            PDFExtractorUtils.checkAndSetTax(tax, (name.abuchen.portfolio.model.Transaction) t, type);
+        }
+        else
+        {
+            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+            PDFExtractorUtils.checkAndSetTax(tax, ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
+        }
+    }
+    
     private void processFeeEntries(Object t, Map<String, String> v, DocumentType type)
     {
         if (t instanceof name.abuchen.portfolio.model.Transaction)
