@@ -1,0 +1,159 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Account Statement Revolut Trading Ltd                               9th Floor 107 Cheapside
+July 01, 2020 - July 31, 2020 London UK EC2V  6DN 
+Account Number: REVO-001-REXC001784 Account Name: Max Mustermann
+Account Executive: F474DD Valuation Summary This Period This Year 
+Beginning Account Value $889.91 0.00
+Deposits $665.00 $1,548.59
+Max Mustermann Dividend & Interest $0.00 $0.00
+Musterstrasse 2835/7
+Musterstadt  15800 CZECH REPUBLIC Withdrawals $0.00 $0.00
+Other Activity ($665.00) ($1,548.59)
+Net Change In Portfolio Value   $800.73 $1,690.64
+Ending Account Value $1,690.64 $1,690.64
+Asset Allocation Summary Value Last Period Value This Period
+Cash & Cash Equivalents $0.00 $0.00
+Equities $889.91 $1,690.64
+Options $0.00 $0.00
+Fixed Income $0.00 $0.00
+Mutual Funds $0.00 $0.00
+Other Assets $0.00 $0.00
+Clearing and Execution provided by DriveWealth, LLC member of FINRA and SIPC. Custodial Services provided Citibank, N.A and Velox Clearing LLC. Page 1 of 7
+Account Statement Revolut Trading Ltd                               9th Floor 107 Cheapside
+July 01, 2020 - July 31, 2020 London UK EC2V  6DN 
+Account Number: REVO-001-REXC001465 Account Name: Max Mustermann
+DISCLOSURES
+General Information and Key Terms:
+All references to DriveWealth in this document refer to the broker-dealer, DriveWealth, LLC. Unless otherwise defined herein, all capitalized terms have the same meanings as in your Customer Account 
+Agreement. If you receive any other communication from any other source other than DriveWealth which purports to represent your holdings you should verify its content with this statement. Securities products 
+and services are not available in all countries and are subject to country specific restrictions. 
+Automatic Investment Plan (AIP) Customers: DriveWealth receives compensation in connection with certain transactions effected through DriveWealth. If you participate in a systematic investment program 
+through DriveWealth, the additional information normally detailed on a trade confirmation will be provided upon request.
+Average Daily Balance: Average daily composite of all cash balances that earn interest and all loans from DriveWealth that are charged interest.
+Cash: Any Free Credit Balance owed by us to you payable upon demand which, although accounted for on our books of record, is not segregated and may be used in the conduct of this firms business. 
+Dividend Reinvestment Customers: Dividend reinvestment transactions were effected by DriveWealth acting as a principal for its own account. Further information on these transactions will be furnished 
+upon written request.
+Estimated Annual Income: Derived from information provided by outside parties. DriveWealth cannot guarantee the accuracy of such information. Since the interest and dividends are subject to change at any 
+time, they should not be relied upon for making investment decisions. 
+Fees and Charges: It is your responsibility, and not DriveWealths, to verify the accuracy of all fees. Margin interest charged to your Account during the statement period is included in this section of the 
+statement.
+Interest: DriveWealth does not currently offer a Bank Sweep Program. DriveWealth, in its discretion, may elect to share dividends earned in your Account in conjunction with DriveWealths Cash Management 
+Program. 
+Latest Price/Price (Investment Detail Section Only): The most recent price evaluation available on the last business day of the statement period, normally the last trade price or bid. Unpriced securities 
+denote that no market evaluation update is currently available. Price evaluations are obtained from outside parties. DriveWealth shall have no responsibility for the accuracy or timeliness of any such valuations. 
+Pricing of assets not held at DriveWealth is for informational purposes only. Some securities, especially thinly traded equities may not report the most current price and are indicated as Stale Priced. The value 
+of a security held in your Account may be different that its purchase price; if applicable, the accurate valuation information may not be available. 
+Margin Account Customers: This is a combined statement of your margin account and special memorandum account maintained for you under Section 220.5 of Regulation T issued by the Board of 
+Governors of the Federal Reserve System. The permanent record of the separate account as required by Regulation T is available for your inspection. 
+Non-Publicly Traded Securities: All assets shown on this statement, other than certain direct investments, which may be held by a third party, are held in your Account. Values of certain Non-Publicly Traded 
+Securities may be furnished by a third party and DriveWealth shall have no responsibility for the accuracy of timeliness of such valuations. The Securities Investor Protection Corporation (SIPC) does not cover 
+many limited partnership investments. 
+DriveWealth Cash Management Program and Account Protection: Free credit balances in your Account may be automatically invested in either the FDIC Bank Sweep Program or the Money Market Sweep 
+Program, subject to Account eligibility requirements. DriveWealth's FDIC Bank Sweep Program deposits are held at one or more banks (Program Banks), and are insured by the FDIC (not covered by SIPC) up 
+Clearing and Execution provided by DriveWealth, LLC member of FINRA and SIPC. Custodial Services provided Citibank, N.A and Velox Clearing LLC. Page 2 of 7
+Account Statement Revolut Trading Ltd                               9th Floor 107 Cheapside
+July 01, 2020 - July 31, 2020 London UK EC2V  6DN 
+Account Number: REVO-001-REXC001432 Account Name: Max Mustermann
+to $250,000, with limits per account ownership category per institution. To learn more about FDIC coverage go to www.fdic.gov. All securities held in your Account, including mutual funds, are not deposits or 
+obligations of, or guaranteed by any Program Bank, are not FDIC-insured, and involve investment risks, including the possible loss of principal. DriveWealth is a member of SIPC, which protects securities 
+customers of its members up to $500,000 (including $250,000 for claims for cash). Additional explanatory information is available upon request.
+Investments in the Money Market Sweep Program are not insured or guaranteed by the FDIC or any other government agency. Although certain money market funds may seek to preserve their value of $1 per 
+share, it is possible to lose money by investing in such a fund. Mutual fund purchases may be subject to eligibility and other restrictions, as well as charges and expenses. Certain money market funds may 
+impose liquidity fees and redemption gates in certain circumstances. Dividends in the Money Market Sweep Program are declared daily and paid/reinvested monthly. You should read and fully understand the 
+prospectus for such fund prior to investing. Non-deposit investments held by DriveWealth are NOT FDIC INSURED/ NOT BANK GUARANTEED/ MAY LOSE VALUE.
+The balance of your cash held at a Program Bank or shares of your money market fund can be liquidated on your order and in the ordinary course of business by DriveWealth, and the proceeds returned to 
+your Account or remitted to you. In the event of Account closure interest will be paid through the closing date or your Account may become ineligible to receive dividends for such month.
+Securities Products and Services: Securities products and services are offered by DriveWealth, LLC, Member SIPC. Securities products and services, including unswept intraday funds and net credit 
+balances held in brokerage accounts are not deposits or other obligations of, or guaranteed by, any bank, are not FDIC insured, and are subject to investment risk and may lose value. SIPC does not cover 
+balances held at banks.
+Gain (or Loss): Unrealized Gain or (Loss) and Realized Gain or (Loss) sections (Gain/Loss Section(s)) contain a gain or a loss summary of your Account. This information is not a solicitation or a 
+recommendation to buy or sell. It may, however, be helpful for investment and tax planning strategies. DriveWealth does not provide tax advice and encourages you to consult with your tax professional. 
+Please view the Cost Basis Disclosure Statement for additional information on how gain (or loss) is calculated and how DriveWealth reports adjusted cost basis to the IRS. 
+IN CASE OF ERRORS OR DISCREPANCIES: If you find an error or discrepancy relating to your brokerage activity (other than an electronic fund transfer) you must notify us promptly, but no later 
+than 10 days after this statement is sent or made available to you. If this statement shows that we have mailed or delivered security certificate(s) that you have not received, notify DriveWealth 
+immediately. You may call us Inside the U.S., at (+1)-800-461-2680, and Outside the U.S. at 1.973.559.6750. Any oral communications should be re-confirmed in writing to further protect your 
+rights, including rights under the Securities Investor Protection Act (SIPA). If you do not so notify us, you agree that the statement activity and Account balance are correct for all purposes with 
+respect to those brokerage transactions. 
+COMPLAINT CONTACT INFORMATION: Complaints about DriveWealth statements, products, or services may be directed to (+1)-800-461-2680. Please send any written complaints to Attn: DriveWealth 
+Compliance Dept., 97 Main Street, 2nd Floor, Chatham, NJ 07928, USA.
+Address Changes: It is your obligation to keep DriveWealth informed of any changes in your address, telephone number, or other contact information. If you fail to notify DriveWealth of those changes, you 
+may not receive important notifications about your Account, and trading or other restrictions might be placed on your Account. For assistance, you may contact DriveWealth Inside the U.S. at (+1)-800-461-
+2680 and Outside the U.S. at 1.973.559.6750. 
+Additional Information: We are required by law to report to the Internal Revenue Service adjusted cost basis information (if applicable), certain payments to you and credits to your Account during the calendar 
+year. Retain this statement for income tax purposes. DriveWealth acts as a distributor for the sweep funds. DriveWealth may be compensated by sweep funds for acting in this capacity. Additional information 
+will be provided upon written request. A financial statement for your inspection is available upon written request.
+Any third-party trademarks appearing herein are the property of their respective owners. DriveWealth, LLC is a subsidiary of DriveWealth Holdings, Inc.
+ 
+Clearing and Execution provided by DriveWealth, LLC member of FINRA and SIPC. Custodial Services provided Citibank, N.A and Velox Clearing LLC. Page 3 of 7
+Account Statement Revolut Trading Ltd                               9th Floor 107 Cheapside
+July 01, 2020 - July 31, 2020 London UK EC2V  6DN 
+Account Number: REVO-001-REXC001434 Account Name: Max Mustermann
+BALANCES
+Balance Summary
+Type Trade Date Balance Settlement Date Balance
+Cash Balance 0.00
+Margin Balance 0.00 0.00
+Short Balance 0.00 0.00
+Currency Trade Date Balance Exchange Rate USD Equivalent Settlement Date Balance Exchange Rate USD Equivalent
+Totals
+Clearing and Execution provided by DriveWealth, LLC member of FINRA and SIPC. Custodial Services provided Citibank, N.A and Velox Clearing LLC. Page 4 of 7
+Account Statement Revolut Trading Ltd                               9th Floor 107 Cheapside
+July 01, 2020 - July 31, 2020 London UK EC2V  6DN 
+Account Number: REVO-001-REXC001463 Account Name: Max Mustermann
+HOLDINGS
+Equity
+Description Symbol Quantity Unit Cost Total Cost Market Price Market Value Gain/ (Loss) A/C Type
+ADOBE INC       COM ADBE 0.1 437.60 43.76 444.32 44.43 0.67 M 
+AUTODESK INC       COM ADSK 0.15 248.27 37.24 236.43 35.46 (1.78) M 
+ADVANCED MICRO DEVICES INC  COM AMD 1.9 54.71 103.95 77.43 147.12 43.17 M 
+AMAZON COM INC     COM AMZN 0.035 2,632.86 92.15 3164.68 110.76 18.61 M 
+ACTIVISION BLIZZARD INC  COM ATVI 1.4 73.91 103.48 82.63 115.68 12.20 M 
+BEYOND MEAT INC    COM BYND 0.6 149.70 89.82 125.90 75.54 (14.28) M 
+DISNEY WALT CO     COM DISNEY DIS 0.2 119.40 23.88 116.94 23.39 (0.49) M 
+ELECTRONIC ARTS INC   COM EA 0.6 137.58 82.55 141.62 84.97 2.42 M 
+FIVERR INTL LTD    ORD SHS FVRR 2 71.91 143.81 93.43 186.86 43.05 M 
+ALPHABET INC       CAP STK CL C GOOG 0.025 1,452.40 36.31 1482.96 37.07 0.76 M 
+ALPHABET INC       CAP STK CL A GOOGL 0.01 1,432.00 14.32 1487.95 14.88 0.56 M 
+MASTERCARD INCORPORATED  CL A MA 0.1 316.60 31.66 308.53 30.85 (0.81) M 
+MICROSOFT CORP     COM MSFT 0.35 198.86 69.60 205.01 71.75 2.15 M 
+CLOUDFLARE INC     CL A COM NET 3 38.71 116.13 41.62 124.86 8.73 M 
+NETFLIX INC     COM NFLX 0.1 544.50 54.45 488.88 48.89 (5.56) M 
+NIO INC      SPON ADS NIO 11.5 11.92 137.03 11.94 137.31 0.28 M 
+NVIDIA CORPORATION    COM NVDA 0.2 380.00 76.00 424.59 84.92 8.92 M 
+SONY CORP       SPONSORED ADR SNE 1 68.89 68.89 77.96 77.96 9.07 M 
+SPOTIFY TECHNOLOGY S A   SHS SPOT 0.35 271.49 95.02 257.82 90.24 (4.78) M 
+TESLA INC       COM TSLA 0.05 1,001.20 50.06 1430.76 71.54 21.48 M 
+VISA INC        COM CL A V 0.4 196.20 78.48 190.40 76.16 (2.32) M 
+Clearing and Execution provided by DriveWealth, LLC member of FINRA and SIPC. Custodial Services provided Citibank, N.A and Velox Clearing LLC. Page 5 of 7
+Account Statement Revolut Trading Ltd                               9th Floor 107 Cheapside
+July 01, 2020 - July 31, 2020 London UK EC2V  6DN 
+Account Number: REVO-001-REXC001083 Account Name: Max Mustermann
+ACTIVITY
+Trade Date Settle Date Currency Activity Type Symbol / Description Quantity Price Amount
+07/06/2020 07/08/2020 USD BUY V - VISA INC    COM CL A - TRD V B 0.4 at 196.19 Principal. 0.4 196.19 (78.48)
+07/06/2020 07/08/2020 USD BUY EA - ELECTRONIC ARTS INC  COM - TRD EA B 0.6 at 135.62 Principal. 0.6 135.62 (82.55)
+07/06/2020 07/08/2020 USD BUY SPOT - SPOTIFY TECHNOLOGY S A  SHS - TRD SPOT B 0.35 at 268.11 Principal. 0.35 268.11 (95.02)
+07/06/2020 07/08/2020 USD BUY BYND - BEYOND MEAT INC  COM - TRD BYND B 0.3 at 142.36 Principal. 0.3 142.36 (43.89)
+07/06/2020 07/08/2020 USD BUY DIS - DISNEY WALT CO   COM DISNEY - TRD DIS B 0.2 at 113.48 Principal. 0.2 113.48 (23.88)
+07/06/2020 07/08/2020 USD BUY NIO - NIO INC   SPON ADS - TRD NIO B 4 at 11.7095 Agency. 4 11.7095 (48.02)
+07/06/2020 07/08/2020 USD BUY NIO - NIO INC   SPON ADS - TRD NIO B 7 at 11.7095 Agency. 7 11.7095 (81.97)
+07/06/2020 07/08/2020 USD BUY NIO - NIO INC   SPON ADS - TRD NIO B 0.5 at 11.71 Principal. 0.5 11.71 (7.04)
+07/08/2020 07/08/2020 USD CDEP Cash Disbursement - Wallet (USD) 460.85
+07/13/2020 07/15/2020 USD BUY NET - CLOUDFLARE INC   CL A COM - TRD NET B 1 at 40.59 Agency. 1 40.59 (41.78)
+07/13/2020 07/15/2020 USD BUY NET - CLOUDFLARE INC   CL A COM - TRD NET B 2 at 36.5799 Agency. 2 36.5799 (74.35)
+07/13/2020 07/15/2020 USD BUY NFLX - NETFLIX INC   COM - TRD NFLX B 0.1 at 532.64 Principal. 0.1 532.64 (54.45)
+07/13/2020 07/15/2020 USD BUY FVRR - FIVERR INTL LTD  ORD SHS - TRD FVRR B 0.4 at 80.96 Principal. 0.4 80.96 (33.57)
+07/15/2020 07/15/2020 USD CDEP Cash Disbursement - Wallet (USD) 204.15
+SWEEP ACTIVITY
+Trade Date Settle Date Currency Activity Type Symbol / Description Quantity Price Amount
+Clearing and Execution provided by DriveWealth, LLC member of FINRA and SIPC. Custodial Services provided Citibank, N.A and Velox Clearing LLC. Page 6 of 7
+Account Statement Revolut Trading Ltd                               9th Floor 107 Cheapside
+July 01, 2020 - July 31, 2020 London UK EC2V  6DN 
+Account Number: REVO-001-REXC001793 Account Name: Max Mustermann
+IMPORTANT INFORMATION
+Your Default Tax Lot Disposition Method is: First-In, First-Out
+Information from your Introducing Broker:
+End of Statement
+Clearing and Execution provided by DriveWealth, LLC member of FINRA and SIPC. Custodial Services provided Citibank, N.A and Velox Clearing LLC. Page 7 of 7
