@@ -30,7 +30,7 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
-public class WeberbankExtractorTest
+public class WeberbankPDFExtractorTest
 {
     @Test
     public void testWertpapierKauf01()
@@ -62,6 +62,8 @@ public class WeberbankExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-03-26T15:14:29")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4440)));
+        assertThat(entry.getSource(), is("WeberbankKauf01.txt"));
+        assertThat(entry.getNote(), is("Limit billigst"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9657.00))));
@@ -103,6 +105,8 @@ public class WeberbankExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-03-26T15:12:58")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(193)));
+        assertThat(entry.getSource(), is("WeberbankVerkauf01.txt"));
+        assertThat(entry.getNote(), is("Limit bestens"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2335.30))));
@@ -140,7 +144,7 @@ public class WeberbankExtractorTest
         assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(t.getShares(), is(Values.Share.factorize(107)));
-        assertThat(t.getDateTime(), is(LocalDateTime.parse("2020-08-07T00:00")));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2020-08-13T00:00")));
         assertThat(t.getSource(), is("WeberbankDividend01.txt"));
         assertThat(t.getNote(), is("Quartalsdividende"));
 
