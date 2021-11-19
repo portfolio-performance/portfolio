@@ -45,14 +45,14 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("(Kauf|Achat|Vente|Verkauf) .*");
+        Block firstRelevantLine = new Block("^(Kauf|Achat|Vente|Verkauf) .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
                 // Is type --> "Verkauf" change from BUY to SELL
                 .section("type").optional()
-                .match("(?<type>(Verkauf|Vente)) .*")
+                .match("(?<type>(Kauf|Achat|Vente|Verkauf)) .*")
                 .assign((t, v) -> {
                     if (v.get("type").equals("Verkauf") || v.get("type").equals("Vente"))
                     {
@@ -65,7 +65,7 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                 // Vente 310 VERBIO VER.BIOENERGIE ON (DE000A0JL9W6) à 33,95 EUR
                 // Verkauf 22 SARTORIUS AG O.N. (DE0007165607) für 247 EUR
                 .section("isin", "name", "shares", "currency")
-                .match("^(Kauf|Achat|Verkauf|Vente) (?<shares>[\\d.,]+) (?<name>.*) \\((?<isin>[\\w]{12})\\) .* (?<currency>[\\w]{3})$")
+                .match("^(Kauf|Achat|Verkauf|Vente) (?<shares>[\\.,\\d]+) (?<name>.*) \\((?<isin>[\\w]{12})\\) .* (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     t.setShares(asShares(v.get("shares")));
                     t.setSecurity(getOrCreateSecurity(v));
@@ -74,20 +74,15 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                 // Ausführungsdatum und -zeit : 15/03/2021 12:31:50 CET
                 // Ordre créé à : 10/02/2021 15:23:42 CET
                 .section("date", "time")
-                .match("^(Ausführungsdatum und -zeit|Ordre créé à) : (?<date>\\d+/\\d+/\\d{4}) (?<time>\\d+:\\d+:\\d+) .*$")
-                .assign((t, v) -> {
-                    if (v.get("time") != null)
-                        t.setDate(asDate(v.get("date").replaceAll("/", "."), v.get("time")));
-                    else
-                        t.setDate(asDate(v.get("date").replaceAll("/", ".")));
-                })
+                .match("^(Ausf.hrungsdatum und \\-zeit|Ordre cr.. .) : (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) .*$")
+                .assign((t, v) -> t.setDate(asDate(v.get("date").replaceAll("/", "."), v.get("time"))))
 
                 // Lastschrift 1.994,39 EUR Valutadatum 17/03/2021
                 // Gutschrift 5.409,05 EUR Valutadatum 03/07/2020
                 // Crédit 10.499,55 EUR Date valeur 12/02/2021
                 // Débit 4.963,99 EUR Date valeur 21/10/2020
                 .section("amount", "currency")
-                .match("^(Gutschrift|Crédit|Lastschrift|Débit) (?<amount>[.,\\d]+) (?<currency>[\\w]{3}) .*$")
+                .match("^(Gutschrift|Cr.dit|Lastschrift|D.bit) (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}) .*$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(v.get("currency"));
@@ -96,8 +91,8 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                 // Wechselkurs EUR/USD 1.123000 849,47 EUR
                 // Lastschrift 953,95 USD Valutadatum 21/06/2016
                 .section("amount", "currency", "exchangeRate", "forexCurrency", "forexAmount").optional()
-                .match("^(Wechselkurs) [\\w]{3}\\/[\\w]{3} (?<exchangeRate>[.,\\d]+) (?<forexAmount>[.,\\d]+) (?<forexCurrency>[\\w]{3})$")
-                .match("^(Gutschrift|Crédit|Lastschrift|Débit) (?<amount>[.,\\d]+) (?<currency>[\\w]{3}) .*$")
+                .match("^Wechselkurs [\\w]{3}\\/[\\w]{3} (?<exchangeRate>[\\.,\\d]+) (?<forexAmount>[\\.,\\d]+) (?<forexCurrency>[\\w]{3})$")
+                .match("^(Gutschrift|Cr.dit|Lastschrift|D.bit) (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}) .*$")
                 .assign((t, v) -> {
                      Money forex = Money.of(asCurrencyCode(v.get("forexCurrency")), asAmount(v.get("forexAmount")));
                      BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
@@ -131,7 +126,7 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("(Einkommensart|Nature des revenus)");
         this.addDocumentTyp(type);
 
-        Block block = new Block("(Einkommensart|Nature des revenus): .*");
+        Block block = new Block("^(Einkommensart|Nature des revenus): .*$");
         type.addBlock(block);
         Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>()
             .subject(() -> {
@@ -145,7 +140,7 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                 // Wertschriftenkonto:4/260745 Wertpapier:79010788/DE0007165607 Belegnr.: CPN / 555091
                 // Compte-titres:4/260745 Titre:79137418/DE000A0JL9W6 Nr. Quit.: CPN / 583554
                 .section("shares", "name", "isin", "currency")
-                .match("^(?<shares>[.,\\d]+) (?<name>.*) NR .* [.,\\d]+ (?<currency>[\\w]{3})$")
+                .match("^(?<shares>[\\.,\\d]+) (?<name>.*) NR .* [\\.,\\d]+ (?<currency>[\\w]{3})$")
                 .match("^(Wertschriftenkonto|Compte-titres):.* (Wertpapier|Titre):[\\d]+\\/(?<isin>[\\w]{12}) .*$")
                 .assign((t, v) -> {
                     t.setShares(asShares(v.get("shares")));
@@ -155,12 +150,12 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                 // Guthaben Kupons Ex-Kupon 29/06/2020
                 // CREDIT COUPONS Ex-coupon 01/02/2021
                 .section("date")
-                .match("^.* (Ex-Kupon|Ex-coupon|Kupons)(.*)? (?<date>\\d+/\\d+/\\d{4})$")
+                .match("^.* (Ex-Kupon|Ex-coupon|Kupons)(.*)? (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4})$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date").replaceAll("/", "."))))
 
                 // Nettoguthaben 5,67 EUR Datum  01/07/2020
                 .section("amount", "currency").optional()
-                .match("^(Nettoguthaben|Net CREDIT) (?<amount>[.,\\d]+) (?<currency>[\\w]{3}) .*$")
+                .match("^(Nettoguthaben|Net CREDIT) (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}) .*$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(v.get("currency"));
@@ -169,8 +164,8 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                 // Bruttobetrag 1,25 USD
                 // Wechselkurs 1,05 1,01 EUR
                 .section("exchangeRate", "fxAmount", "fxCurrency", "amount", "currency").optional()
-                .match("^(Wechselkurs) (?<exchangeRate>[.,\\d]+) (?<fxAmount>[.,\\d]+) (?<fxCurrency>[\\w]{3})$")
-                .match("^(Nettoguthaben|Net CREDIT) (?<amount>[.,\\d]+) (?<currency>[\\w]{3}) .*$")
+                .match("^Wechselkurs (?<exchangeRate>[\\.,\\d]+) (?<fxAmount>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
+                .match("^(Nettoguthaben|Net CREDIT) (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}) .*$")
                 .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                     if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
@@ -218,7 +213,7 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                 // Verrechnungssteuer 26,38 % 2,03 EUR
                 // Impôt à la source 26,38 % 16,35 EUR
                 .section("tax", "currency").optional()
-                .match("^(Verrechnungssteuer|Impôt à la source) [.,\\d]+ % (?<tax>[.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^(Verrechnungssteuer|Imp.t . la source) [\\.,\\d]+ % (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
@@ -227,7 +222,7 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
         transaction
                 // Transaktionskosten 14,95 EUR
                 .section("fee", "currency").optional()
-                .match("^(Transaktionskosten|Frais de transaction) (?<fee>[.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^(Transaktionskosten|Frais de transaction) (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
