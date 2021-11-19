@@ -162,19 +162,19 @@ public class AttributeListTab implements AbstractTabbedView.Tab, ModificationLis
         tableViewer.setInput(client.getSettings().getAttributeTypes().filter(t -> t.getTarget() == mode.getType())
                         .toArray());
 
-        tableViewer.addSelectionChangedListener(
-                        event -> {
-                            Object selectedElement = event.getStructuredSelection().getFirstElement();
-                            view.setInformationPaneInput(selectedElement);
-                            // when selected element provides additional information (settings) in information pane: display it automatically
-                            if (selectedElement instanceof AttributeType
-                                && ((AttributeType)selectedElement).getType() == LimitPrice.class
-                                && view.isPaneHidden())
-                            {
-                                view.flipPane();
-                            }
-                            
-                        });
+        tableViewer.addSelectionChangedListener(event ->
+        {
+            Object selectedElement = event.getStructuredSelection().getFirstElement();
+            view.setInformationPaneInput(selectedElement);
+            // when selected element provides additional information (e.g. settings)
+            // in information pane: display it automatically
+            if (selectedElement instanceof AttributeType
+                && ((AttributeType)selectedElement).getType() == LimitPrice.class
+                && view.isPaneHidden())
+            {
+                view.flipPane();
+            }                            
+        });
 
         new ContextMenu(tableViewer.getTable(), this::fillContextMenu).hook();
 
