@@ -1,0 +1,38 @@
+`PDF Autor: ''
+PDFBox Version: 1.8.16
+
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=Nummer
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Wertpapierabrechnung ADRESSZEILE1=Herr
+ADRESSZEILE2=Name Vorname
+Kauf Limitauftrag ADRESSZEILE3=Straße Nummer
+Kommissionsgeschäft ADRESSZEILE4=PLZ ORT
+Herr ADRESSZEILE5=
+Name Vorname ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+Straße Nummer BELEGNUMMER=27332
+PLZ Ort Nummer 1Nummer2/ 15.10.2018 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Name Nachname
+Frankfurt am Main, 15.10.2018
+Wir haben für Sie gekauft
+Gattungsbezeichnung ISIN
+Synchrony Financial Registered Shares DL -,001 US87165B1035
+Nominal Kurs
+STK 3,000 USD 30,1699
+Handelstag 12.10.2018 Kurswert USD 90,51-
+Handelszeit 16:04 Orderprovision USD 11,54-
+Handelsplatz Börse New York/NAY Handelsplatzgebühr USD 2,88-
+Verwahrart Wertpapierrechnung Ausmachender Betrag USD 104,93-
+Lagerland USA
+Wert Konto-Nr. Devisenkurs Betrag zu Ihren Lasten
+16.10.2018 290261041 EUR/USD 1,1536 EUR 90,96
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+3.18/ABREABHNHANDKFDI/GAAASAFG/027332/161018/011407

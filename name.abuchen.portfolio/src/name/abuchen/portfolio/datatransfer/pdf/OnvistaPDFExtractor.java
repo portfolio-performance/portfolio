@@ -29,6 +29,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("Frankfurt am Main"); //$NON-NLS-1$
 
         addBuySellTransaction();
+        addReinvestTransaction();
         addDividendeTransaction();
         addAdvanceTaxTransaction();
         addDeliveryInOutBoundTransaction();
@@ -45,7 +46,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("(Kauf|Verkauf|Gesamtfälligkeit|Reinvestierung|Zwangsabfindung|Dividende)");
+        DocumentType type = new DocumentType("(Kauf|Verkauf|Gesamtfälligkeit|Zwangsabfindung|Dividende)");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -63,7 +64,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^(Spitze )?(Kauf|Verkauf|Gesamtf.lligkeit|Reinvestierung|Ausbuchung:).*$");
+        Block firstRelevantLine = new Block("^(Spitze )?(Kauf|Verkauf|Gesamtf.lligkeit|Ausbuchung:)( .*)?$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -147,12 +148,10 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 // STK 65,000 EUR 39,4400
                 // Nominal Kurs
                 // STK 0,7445 EUR 200,1500
-                // Nominal Reinvestierungspreis
-                // STK 25,000 EUR 0,700000
                 // Nominal Ex-Tag
                 // STK 25,000 22.09.2015
                 .section("notation", "shares")
-                .find("Nominal (Kurs|Einl.sung zu:|Reinvestierungspreis|Ex-Tag)")
+                .find("Nominal (Kurs|Einl.sung zu:|Ex-Tag)")
                 .match("^(?<notation>[\\w]{3}) (?<shares>[\\.,\\d]+) ([\\w]{3} [\\.,\\d]+|[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
                 .assign((t, v) -> {
                     // Workaround for bonds
@@ -196,9 +195,6 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                         .match("^[\\w]{3} [\\.,\\d]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2,4})$")
                                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
                                 ,
-                                /***
-                                 * This is for the reinvestment of dividends
-                                 */
                                 // STK 25,000 17.05.2013 17.05.2013 EUR 0,700000
                                 section -> section
                                         .attributes("date")
@@ -209,17 +205,6 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 // 19.08.2019 123450042 EUR 150,01
                 .section("amount", "currency").optional()
                 .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
-                .assign((t, v) -> {
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(v.get("currency"));
-                })
-
-                /***
-                 * This is for the reinvestment of dividends
-                 */
-                // Leistungen aus dem steuerlichen Einlagenkonto (§27 KStG) EUR 17,50
-                .section("amount", "currency").optional()
-                .match("^Leistungen aus dem steuerlichen Einlagenkonto .* (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(v.get("currency"));
@@ -275,6 +260,137 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
         addTaxReturnBlock(type);
+    }
+
+    private void addReinvestTransaction()
+    {
+        DocumentType type = new DocumentType("(Reinvestierung|Ertragsthesaurierung)");
+        this.addDocumentTyp(type);
+
+        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        pdfTransaction.subject(() -> {
+            BuySellEntry entry = new BuySellEntry();
+            entry.setType(PortfolioTransaction.Type.BUY);
+
+            /***
+             * If we have multiple entries in the document,
+             * with taxes and tax refunds,
+             * then the "negative" flag must be removed.
+             */
+            type.getCurrentContext().remove("negative");
+
+            return entry;
+        });
+
+        Block firstRelevantLine = new Block("^(Reinvestierung|Ertragsthesaurierung) .*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction
+                // Gattungsbezeichnung ISIN
+                // iS.EO Go.B.C.2.5-5.5y.U.ETF DE Inhaber-Anteile DE000A0H08A8
+                // Nominal Ex-Tag Zahltag Ausschüttungsbetrag pro Stück
+                // STK 0,4512 06.10.2017 20.10.2017 EUR 0,169895
+                .section("name", "isin", "name1", "date", "currency").optional()
+                .find("Gattungsbezeichnung ISIN")
+                .match("^(?<name>.*) (?<isin>[\\w]{12})$")
+                .match("^(?<name1>.*)$")
+                .match("^[\\w]{3} [\\.,\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<currency>[\\w]{3}) [\\.,\\d]+$")
+                .assign((t, v) -> {
+                    if (!v.get("name1").startsWith("Nominal"))
+                        v.put("name", v.get("name") + " " + v.get("name1"));
+
+                    t.setDate(asDate(v.get("date")));
+                    t.setSecurity(getOrCreateSecurity(v));
+                })
+
+                /***
+                 * If we have a reinvest
+                 * we pick the second
+                 */
+                // Gattungsbezeichnung ISIN
+                // Deutsche Telekom AG Namens-Aktien o.N. DE0005557508
+                // Die Dividende wurde wie folgt in neue Aktien reinvestiert:
+                // Gattungsbezeichnung ISIN
+                // Deutsche Telekom AG Dividend in Kind-Cash Line DE000A1TNRX5
+                .section("name", "isin", "name1", "currency").optional()
+                .find("Gattungsbezeichnung ISIN")
+                .find("Gattungsbezeichnung ISIN")
+                .match("^(?<name>.*) (?<isin>[\\w]{12})$")
+                .match("^(?<name1>.*)")
+                .match("^[\\w]{3} [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+$")
+                .assign((t, v) -> {
+                    if (!v.get("name1").startsWith("Nominal"))
+                        v.put("name", v.get("name") + " " + v.get("name1"));
+
+                    t.setSecurity(getOrCreateSecurity(v));
+                })
+
+                // Gattungsbezeichnung ISIN
+                // Deutsche Telekom AG Namens-Aktien o.N. DE0005557508
+                // Gattungsbezeichnung ISIN
+                // Deutsche Telekom AG Dividend in Kind-Cash Line DE000A1TNRX5
+                .section("isin").optional()
+                .find("Gattungsbezeichnung .*").optional()
+                .match("^.* (?<isin>[\\w]{12})$")
+                .assign((t, v) -> {
+                    // if we have a new isin for reinvest, we grab the old for note
+                    Map<String, String> context = type.getCurrentContext();
+                    context.put("isin", v.get("isin"));
+                })
+
+                // Nominal Reinvestierungspreis
+                // STK 25,000 EUR 0,700000
+                // Nominal Ex-Tag Zahltag Ausschüttungsbetrag pro Stück
+                // STK 0,4512 06.10.2017 20.10.2017 EUR 0,169895
+                .section("notation", "shares")
+                .find("Nominal (Ex-Tag|Reinvestierungspreis)( .*)")
+                .match("^(?<notation>[\\w]{3}) (?<shares>[\\.,\\d]+) ([\\w]{3} [\\.,\\d]+"
+                                + "|[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\w]{3} [\\.,\\d]+)$")
+                .assign((t, v) -> {
+                    // Workaround for bonds
+                    if (v.get("notation") != null && !v.get("notation").equalsIgnoreCase("STK"))
+                        t.setShares((asShares(v.get("shares")) / 100));
+                    else
+                        t.setShares(asShares(v.get("shares")));
+                })
+
+                // Zahlungstag 17.05.2013
+                .section("date").optional()
+                .match("^Zahlungstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
+                .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+
+                // Leistungen aus dem steuerlichen Einlagenkonto (§27 KStG) EUR 17,50
+                .section("amount", "currency").optional()
+                .match("^Leistungen aus dem steuerlichen Einlagenkonto .* (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
+                .assign((t, v) -> {
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(v.get("currency"));
+                })
+
+                // Steuerliquidität EUR 0,02
+                // zu versteuern EUR 0,08
+                .section("tax", "amount", "currency").optional()
+                .match("Ertragsthesaurierung .*")
+                .match("Steuerliquidität [\\w]{3} (?<tax>[\\.,\\d]+)")
+                .match("^zu versteuern (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
+                .assign((t, v) -> {
+                    t.setAmount(asAmount(v.get("amount")) - asAmount(v.get("tax")));
+                    t.setCurrencyCode(v.get("currency"));
+                })
+
+                .section("note").optional()
+                .match("^(?<note>Reinvestierung) .*$")
+                .assign((t, v) -> {
+                    Map<String, String> context = type.getCurrentContext();
+                    t.setNote(v.get("note") + ": " + context.get("isin"));
+                })
+
+                .section("note").optional()
+                .match("^(?<note>Ertragsthesaurierung) .*$")
+                .assign((t, v) -> t.setNote(v.get("note")))
+
+                .wrap(BuySellEntryItem::new);
     }
 
     private void addDividendeTransaction()
@@ -345,6 +461,21 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                     t.setSecurity(getOrCreateSecurity(v));
                 })
 
+                /***
+                 * This is for the reinvestment of dividends
+                 */
+                // Gattungsbezeichnung ISIN
+                // Gattungsbezeichnung ISIN
+                .section("isin").optional()
+                .find("Gattungsbezeichnung .*")
+                .find("Gattungsbezeichnung .*")
+                .match("^.* (?<isin>[\\w]{12})$")
+                .assign((t, v) -> {
+                    // if we have a new isin for reinvest, we grab it
+                    Map<String, String> context = type.getCurrentContext();
+                    context.put("isin", v.get("isin"));
+                })
+
                 .oneOf(
                             // STK 50,000 21.04.2016 21.04.2016 EUR 0,200000
                             // STK 1,000 17.11.2010 EUR 1,548250
@@ -400,6 +531,20 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                     t.setCurrencyCode(v.get("currency"));
                 })
 
+                /***
+                 * This is for the "Ertragsthesaurierung"
+                 */
+                // Steuerliquidität EUR 0,02
+                // zu versteuern EUR 0,08
+                .section("tax", "amount", "currency").optional()
+                .match("Ertragsthesaurierung .*")
+                .match("Steuerliquidität [\\w]{3} (?<tax>[\\.,\\d]+)")
+                .match("^zu versteuern (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
+                .assign((t, v) -> {
+                    t.setAmount(asAmount(v.get("amount")) - asAmount(v.get("tax")));
+                    t.setCurrencyCode(v.get("currency"));
+                })
+
                 // 15.07.2019 123456789 EUR/USD 1,1327 EUR 13,47
                 .section("amount", "currency", "fxCurrency", "exchangeRate").optional()
                 .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\w]{3}\\/(?<fxCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+) (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
@@ -419,6 +564,14 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
                     if (unit.getForex().getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
                         t.addUnit(unit);
+                })
+
+                // Die Dividende wurde wie folgt in neue Aktien reinvestiert:
+                .section("note").optional()
+                .match("^.* (?<note>neue Aktien reinvestiert:)$")
+                .assign((t, v) -> {
+                    Map<String, String> context = type.getCurrentContext();
+                    t.setNote(v.get("note") + " " + context.get("isin"));
                 })
 
                 .wrap(TransactionItem::new);
@@ -981,6 +1134,11 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         t.addUnit(new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate));
                     }
                 })
+
+                // Steuerausgleich nach § 43a EStG:
+                .section("note").optional()
+                .match("^(?<note>Steuerausgleich) .*$")
+                .assign((t, v) -> t.setNote(v.get("note")))
 
                 .wrap(t -> {
                     if (t.getCurrencyCode() != null && t.getAmount() != 0)
