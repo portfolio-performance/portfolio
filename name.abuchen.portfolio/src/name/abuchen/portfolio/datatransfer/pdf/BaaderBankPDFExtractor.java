@@ -376,7 +376,8 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
     private void addDepotStatementTransaction()
     {
         final DocumentType type = new DocumentType("(Perioden-Kontoauszug|Tageskontoauszug)", (context, lines) -> {
-            Pattern pCurrency = Pattern.compile("(Perioden-Kontoauszug|Tageskontoauszug): (?<currency>[\\w]{3})-Konto(.*)?");
+            Pattern pCurrency = Pattern
+                            .compile("(Perioden-Kontoauszug|Tageskontoauszug): (?<currency>[\\w]{3})-Konto(.*)");
             // read the current context here
             for (String line : lines)
             {
