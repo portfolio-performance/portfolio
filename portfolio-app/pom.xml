@@ -17,7 +17,7 @@
 		<applesigner.skip>true</applesigner.skip>
 		<installer.skip>true</installer.skip>
 		<sonar.skippedModules>name.abuchen.portfolio.feature</sonar.skippedModules>
-		<sonar.exclusions>**/Messages.java,**/name/abuchen/portfolio/model/protos/**</sonar.exclusions>
+		<sonar.exclusions>**/Messages.java,**/name/abuchen/portfolio/model/proto/**</sonar.exclusions>
 		<sonar.organization>buchen-github</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
