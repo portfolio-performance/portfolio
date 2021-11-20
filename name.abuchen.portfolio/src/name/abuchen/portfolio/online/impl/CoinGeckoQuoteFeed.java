@@ -25,6 +25,7 @@ import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.model.SecurityProperty;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.QuoteFeedData;
 import name.abuchen.portfolio.util.WebAccess;
@@ -32,6 +33,7 @@ import name.abuchen.portfolio.util.WebAccess;
 public final class CoinGeckoQuoteFeed implements QuoteFeed
 {
     public static final String ID = "COINGECKO"; //$NON-NLS-1$
+    public static final String COINGECKO_COIN_ID = "COINGECKOCOINID"; //$NON-NLS-1$
 
     private Map<String, String> tickerIdMap;
 
@@ -129,6 +131,8 @@ public final class CoinGeckoQuoteFeed implements QuoteFeed
 
     private QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse, LocalDate start)
     {
+        String coinGeckoId;
+        
         if (security.getTickerSymbol() == null)
             return QuoteFeedData.withError(
                             new IOException(MessageFormat.format(Messages.MsgMissingTickerSymbol, security.getName())));
@@ -137,7 +141,15 @@ public final class CoinGeckoQuoteFeed implements QuoteFeed
 
         try
         {
-            String coinGeckoId = getCoinGeckoIdForTicker(security.getTickerSymbol().toLowerCase());
+            // The coin ID may be provided directly as a feed parameter (in case the ticker is ambiguously defined)
+            Optional<String> coinGeckoIdProperty = security.getPropertyValue(SecurityProperty.Type.FEED, COINGECKO_COIN_ID);
+            
+            if (coinGeckoIdProperty.isPresent())
+                coinGeckoId = coinGeckoIdProperty.get();
+            else
+                // If not specified explicitly, try to map the ticker symbol to a coin ID
+                coinGeckoId = getCoinGeckoIdForTicker(security.getTickerSymbol().toLowerCase());
+                        
             String endpoint = "/api/v3/coins/" + coinGeckoId + "/market_chart"; //$NON-NLS-1$ //$NON-NLS-2$
             long days = ChronoUnit.DAYS.between(start, LocalDate.now()) + 1;
 
