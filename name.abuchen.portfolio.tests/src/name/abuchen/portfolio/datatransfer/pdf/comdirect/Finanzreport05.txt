@@ -1,0 +1,178 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+comdirect bank AG, 25449 Quickborn 978 56 010
+Frau Erika Musterfrau Telefon: 04106 - 708 25 00
+Herrn Max Mustermann Telefax: 04106 - 708 25 85
+Musterstr. 123 E-Mail: www.comdirect.de/kontakt
+12345 Musterhausen (E-Mail über Kontaktformular)
+Kundennummer: 123 4567890
+Finanzreport Nr. 2 per 03.07.2017
+Sehr geehrte Frau Musterfrau,
+sehr geehrter Herr Mustermann,
+
+in Ihrem aktuellen Finanzreport finden Sie alle Informationen rund um Ihre Konten und Ihr Depot.
+Für Fragen zum Finanzreport oder unseren Leistungen stehen Ihnen unsere Kundenbetreuer
+telefonisch unter 04106 - 708 25 00 rund um die Uhr gerne zur Verfügung.
+Mit freundlichen Grüßen
+comdirect bank AG
+Aktuelle Informationen:
+Einfach. Überall. Handeln. Die kostenlose comdirect trading App für Android ist da – die perfekte
+Ergänzung zu Ihrem comdirect Depot. Beobachten Sie die Börse in Echtzeit. Stellen Sie automatische
+Kursalarme ein und kaufen oder verkaufen Sie Wertpapiere ganz intuitiv mit wenigen Klicks.
+Weitere Informationen unter www.comdirect.de/tradingapp
+In unserem Top-Preis Fonds Angebot erhalten Sie auf die Fonds unseres renommierten Partners
+Pioneer Investments 100 % Discount auf den regulären Ausgabeaufschlag. Nutzen Sie jetzt unsere
+Sonderkonditionen und bauen Sie schon mit einem Anlagebetrag ab 500 Euro in der Einmalanlage
+oder 25 Euro im Sparplan Vermögen auf. Jetzt abschließen unter www.comdirect.de/pioneer
+comdirect bank AG USt-ID: DE 812 279 461
+25449 Quickborn
+Finanzreport Nr. 7 per 01.08.2016 - Seite 2
+Kundennummer 123 4567890
+Kontoübersicht
+Ihre aktuellen Salden IBAN Saldo in
+EUR
+Girokonto DE33 2004 1155 1234 5678 00 +1.415,21
+Tagesgeld PLUS-Konto DE92 2004 1155 1234 5678 05 +4.673,08
+Depot +1.133,67
+Visa-Karte 1111 +0,00
+Gesamtsaldo 01.08.2016 +7.221,96
+Girokonto Dispositionskredit girocard Tages-/WochenlimitEUR 0 EUR 1.000/EUR 2.000
+Buchungstag Vorgang Auftraggeber/Empfänger Buchungstext Ausgang
+Valuta Referenz IBAN/BIC Eingang
+Alter Saldo 01.07.2016 +2.309,51
+01.08.2016 Lastschrift/Belast. comdirect VISA-KARTE NR. -894,30
+01.08.2016 AA11111111111111/111111 Visa-Monatsabrechnung 11111111XXXX1111
+SUMME MONATSABRECHNUNG
+VISA MAX
+MUSTERMANN
+Neuer Saldo 01.08.2016 +1.415,21
+Tagesgeld PLUS-Konto
+Buchungstag Vorgang Auftraggeber/Empfänger Buchungstext Ausgang
+Valuta Referenz IBAN/BIC Eingang
+Alter Saldo 01.07.2016 +3.670,11
+11.07.2016 Übertrag/Überweisung Max Mustermann Sparen +1.000,00
+11.07.2016 AA11111111111111/11111 End-to-End-Ref.:
+nicht angegeben
+01.08.2016 Übertrag/Überweisung COMDIRECT BANK AG GUTSCHR. WECHSELGELD-SPAREN +2,97
+01.08.2016 AA11111111111111/111111 1111111 111
+End-to-End-Ref.:
+nicht angegeben
+Neuer Saldo 01.08.2016 +4.673,08
+Visa-Karte 1111 Visa Limit Verfügungslimit am GeldautomatEUR 1.000/Monat EUR 600/Tag
+Buchungstag Vorgang Auftraggeber/Empfänger Buchungstext Ausgang
+Valuta Referenz IBAN/BIC Eingang
+Alter Saldo 01.07.2016 +0,00
+05.07.2016 Wechselgeld-Sparen WECHSELGELD-SPARBETRAG -0,42
+04.07.2016 111111111111111
+05.07.2016 Barauszahlung MERCADO SPAR PORT -188,58
+04.07.2016 111111111111111 ELIZABE388 Betrag: -3000,00 ZAR
+Kurs: 15,9087
+comdirect bank AG USt-ID: DE 812 279 461
+25449 Quickborn
+Finanzreport Nr. 7 per 01.08.2016 - Seite 3
+Kundennummer 123 4567890
+Buchungstag Vorgang Auftraggeber/Empfänger Buchungstext Ausgang
+Valuta Referenz IBAN/BIC Eingang
+11.07.2016 Wechselgeld-Sparen WECHSELGELD-SPARBETRAG -0,36
+08.07.2016 111111111111111
+11.07.2016 Barauszahlung U P E PORT -124,64
+08.07.2016 111111111111111 ELIZABE388 Betrag: -2000,00 ZAR
+Kurs: 16,0468
+13.07.2016 Wechselgeld-Sparen WECHSELGELD-SPARBETRAG -0,30
+13.07.2016 111111111111111
+13.07.2016 Wechselgeld-Sparen WECHSELGELD-SPARBETRAG -0,30
+12.07.2016 111111111111111
+13.07.2016 Barauszahlung U P E PORT -191,70
+13.07.2016 111111111111111 ELIZABE388 Betrag: -3000,00 ZAR
+Kurs: 15,6493
+13.07.2016 Korrektur Barauszahlung Cnr Strandfontein An La Port +191,70
+12.07.2016 111111111111111 Elizabe388 Betrag: 3000,00 ZAR
+Kurs: 15,6493
+13.07.2016 Barauszahlung Cnr Strandfontein An La Port -191,70
+12.07.2016 111111111111111 Elizabe388 Betrag: -3000,00 ZAR
+Kurs: 15,6493
+25.07.2016 Wechselgeld-Sparen WECHSELGELD-SPARBETRAG -0,89
+22.07.2016 111111111111111
+25.07.2016 Barauszahlung SUPERSPAR SUMMER PORT -129,11
+22.07.2016 111111111111111 ELIZABE388 Betrag: -2000,00 ZAR
+Kurs: 15,4904
+29.07.2016 Wechselgeld-Sparen WECHSELGELD-SPARBETRAG -0,70
+28.07.2016 111111111111111
+29.07.2016 Visa-Kartenabrechnung SUMME MONATSABRECHNUNG +894,30
+29.07.2016 111111111111111 VISA
+29.07.2016 Barauszahlung SUPERSPAR SUMMER PORT -257,30
+28.07.2016 111111111111111 ELIZABE388 Betrag: -4000,00 ZAR
+Kurs: 15,5460
+Neuer Saldo 01.08.2016 +0,00
+Depot
+Depotbestand EUR EUR EUR
+Bezeichnung Anzahl/Nominal letzter Kurs Währung Kurswert Kaufwert Gewinn/Verlust
+Stückzinsen
+A1ANQ2 2.500,000 48,300 USD 1.081,60 885,98 +195,62
+VENEZUELA 09/19 REGS +52,07
+Gesamtkurswert 1.081,60 885,98 +195,62
+Stückzinsen gesamt +52,07
+Gesamtwert 1.133,67
+Die Kaufwerte und damit die Gesamtbewertung in der Depotübersicht stellt lediglich eine vereinfachte Gewinn/Verlust-Rechnung
+dar. Steuerliche Gesichtspunkte werden bei dieser Darstellung nicht berücksichtigt.
+comdirect bank AG USt-ID: DE 812 279 461
+25449 Quickborn
+Finanzreport Nr. 7 per 01.08.2016 - Seite 4
+Kundennummer 123 4567890
+Steuerübersicht1
+Steuerliche Daten EUR
+Gewinne/Verluste aus Aktien (Verrechnungssaldo) -189,14
+Gewinne/Verluste Sonstige (Verrechnungssaldo) +86,70
+Eingereichter Freibetrag 800,00
+In Anspruch genommener Freibetrag 86,70
+Verbleibender Freibetrag 713,30
+Anrechenbare ausländische Quellensteuer 0,00
+Abgeführte Kapitalertragsteuer 0,00
+Abgeführter Solidaritätszuschlag 0,00
+Abgeführte Kirchensteuer 0,00
+Angerechnete ausländische Quellensteuer 0,00
+1 Dies ist keine Steuerbescheinigung.
+Zinsübersicht
+Girokonto
+Zinssatz für die Inanspruchnahme des Dispositionskredites: 8,95 % p. a. (gültig ab: 23.09.2014)
+Zinssatz für geduldete Überziehungen: 13,45 % p. a. (gültig ab: 23.09.2014)
+Verrechnungskonto / Tagesgeld PLUS-Konto / O&F-Konto
+Zinssatz für geduldete Überziehungen: 13,45 % p. a. (gültig ab: 23.09.2014)
+Zinsgleitklausel für variable Sollzinssätze:
+Die Bank wird variable Sollzinssätze entsprechend den Änderungen des Hauptrefinanzierungszinssatzes der Europäischen Zentralbank (nachfolgend
+EZB-Zinssatz) nach folgender Maßgabe anpassen: Sofern am letzten Bankarbeitstag vor dem 15. eines Kalendermonats von der Bank eine Erhöhung des
+EZB-Zinssatzes um mindestens 0,25 Prozentpunkte gegenüber dem EZB-Zinssatz im Monat der letzten Zinsanpassung festgestellt wird, erhöht die Bank den
+variablen Sollzinssatz entsprechend. Die Bank verpflichtet sich dagegen zur Senkung des variablen Sollzinssatzes um die Veränderung des EZB-Zinssatzes,
+wenn der EZB-Zinssatz um mindestens 0,25 Prozentpunkte gesunken ist. Die Zinsanpassungen werden 5 Bankarbeitstage nach dem 15. eines Kalendermonats ohne
+gesonderte Erklärung gegenüber dem Kontoinhaber bei der comdirect bank AG wirksam. Die comdirect bank AG wird den Kontoinhaber in regelmäßigen
+Zeitabständen im Finanzreport unterrichten. Der Kontoinhaber kann die Höhe des EZB-Zinssatzes jederzeit auf der Webseite der comdirect bank AG bzw. in anderen
+öffentlich zugänglichen Medien (insbesondere www.bundesbank.de) einsehen.
+Wichtige Hinweise:
+1. Ihre individuellen Vergünstigungen
+Vergünstigungen Gültigkeit
+Kostenlose Depotführung (5,85 EUR pro Quartal gespart) 01.07.2016 bis 30.09.2016
+Details zu Ihren persönlichen Vergünstigungen können Sie bei www.comdirect.de im Persönlichen Bereich unter Verwaltung >
+Depot & Trading > Vergünstigungen einsehen. Es gilt das aktuelle Preis- und Leistungsverzeichnis.
+2. Einwendungen zu Konto- und Depotbuchungen
+Sollten Sie Fragen oder Einwendungen zu den Konto- und Depotbuchungen haben, bitten wir Sie, uns dies innerhalb sechs
+Wochen nach Erhalt des Finanzreportes unter Angabe Ihrer Kundennummer mitzuteilen. Ihre schriftliche Einwendung richten Sie
+bitte an die comdirect bank AG, Innenrevision, 25449 Quickborn.
+3. Ihre Kontodisposition
+Der Kontostand berücksichtigt nicht die Valuta (Wertstellung) der einzelnen Buchungen. Das bedeutet, dass der angezeigte
+Kontostand nicht dem tatsächlichen Kontoguthaben entsprechen muss und bei Verfügungen möglicherweise Zinsen für die
+Inanspruchnahme einer eingeräumten oder geduldeten Kontoüberziehung anfallen können. Bitte berücksichtigen Sie bei Ihrer
+Disposition daher ggf. die Wertstellungen der Kontoumsätze der letzten Tage.
+4. Hinweis zur Einlagensicherung
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen können
+dem „Informationsbogen für den Einleger“ entnommen werden. Diesen finden Sie unter www.comdirect.de/infobogen
+comdirect bank AG USt-ID: DE 812 279 461
+25449 Quickborn
+Finanzreport Nr. 7 per 01.08.2016 - Seite 5
+Kundennummer 123 4567890
+5. Übersicht Ihrer Kontodaten
+- Girokonto: DE33 2004 1155 1234 5678 00
+- Tagesgeld PLUS-Konto: DE92 2004 1155 1234 5678 05
+BIC: COBADEHD001
+comdirect bank AG USt-ID: DE 812 279 461
+25449 Quickborn

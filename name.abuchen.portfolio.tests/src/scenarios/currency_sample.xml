@@ -3304,10 +3304,8 @@
     <taxonomy>
       <id>30314ba9-949f-4bf4-944e-6a30802f5190</id>
       <name>Asset Classes</name>
-      <dimensions class="java.util.Arrays$ArrayList">
-        <a class="string-array">
-          <string>Asset Class</string>
-        </a>
+      <dimensions>
+        <string>Asset Class</string>
       </dimensions>
       <root>
         <id>29987670-6afc-4f90-962b-1ed7fe361064</id>

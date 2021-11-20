@@ -19,15 +19,15 @@
 		<unit id="org.bouncycastle.bcprov" version="1.64.0.v20191109-0815"/>
 		<unit id="org.bouncycastle.bcprov.source" version="1.64.0.v20191109-0815"/>
 		<unit id="org.hamcrest" version="1.1.0.v20090501071000"/>
-		<unit id="org.hamcrest.core" version="1.1.0.v20090501071000"/>
 		<unit id="org.hamcrest.core" version="1.3.0.v20180420-1519"/>
-		<unit id="org.hamcrest.core.source" version="1.1.0.v20090501071000"/>
+		<unit id="org.hamcrest.core" version="1.3.0.v20180420-1519"/>
+		<unit id="org.hamcrest.core.source" version="1.3.0.v20180420-1519"/>
 		<unit id="org.hamcrest.core.source" version="1.3.0.v20180420-1519"/>
 		<unit id="org.hamcrest.integration" version="1.3.0.v201305210900"/>
 		<unit id="org.hamcrest.integration.source" version="1.3.0.v201305210900"/>
 		<unit id="org.hamcrest.library" version="1.3.0.v20180524-2246"/>
-		<unit id="org.junit" version="4.12.0.v201504281640"/>
-		<unit id="org.junit.source" version="4.12.0.v201504281640"/>
+		<unit id="org.junit" version="4.13.0.v20200204-1500"/>
+		<unit id="org.junit.source" version="4.13.0.v20200204-1500"/>
 		<unit id="org.mockito" version="2.23.0.v20190527-1420"/>
 		<unit id="org.mockito.source" version="2.23.0.v20190527-1420"/>
 		<unit id="net.bytebuddy.byte-buddy-agent.source" version="1.9.0.v20181106-1534"/>
@@ -39,10 +39,6 @@
 		<unit id="org.eclipse.nebula.widgets.cdatetime.feature.feature.group" version="1.4.0.201912241810"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<repository location="https://buchen.github.io/portfolio-deps/1.3.2"/>
-		<unit id="name.abuchen.portfolio.dependencies.feature.feature.group" version="1.3.2"/>
-	</location>
-	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<repository location="http://download.eclipse.org/technology/babel/update-site/R0.17.0/photon/"/>
 		<unit id="org.eclipse.babel.nls_eclipse_es.feature.group" version="4.8.0.v20190713101254"/>
 		<unit id="org.eclipse.babel.nls_eclipse_nl.feature.group" version="4.8.0.v20190713101254"/>
@@ -50,6 +46,12 @@
 		<unit id="org.eclipse.babel.nls_eclipse_pt.feature.group" version="4.8.0.v20190713101254"/>
 		<unit id="org.eclipse.babel.nls_eclipse_fr.feature.group" version="4.8.0.v20190713101254"/>
 		<unit id="org.eclipse.babel.nls_eclipse_it.feature.group" version="4.8.0.v20190713101254"/>
+		<unit id="org.eclipse.babel.nls_eclipse_cs.feature.group" version="4.8.0.v20190713101254"/>
+		<unit id="org.eclipse.babel.nls_eclipse_ru.feature.group" version="4.8.0.v20190713101254"/>
+	</location>
+	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+		<repository location="file:/Users/asbn/Code/portfolio-deps/update-site/target/repository/"/>
+		<unit id="name.abuchen.portfolio.dependencies.feature.feature.group" version="1.3.3"/>
 	</location>
 </locations>
 </target>

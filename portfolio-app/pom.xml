@@ -16,7 +16,7 @@
 		<gpgsigner.skip>true</gpgsigner.skip>
 		<applesigner.skip>true</applesigner.skip>
 		<sonar.skippedModules>name.abuchen.portfolio.feature</sonar.skippedModules>
-		<sonar.exclusions>**/Messages.java</sonar.exclusions>
+		<sonar.exclusions>**/Messages.java,**/name/abuchen/portfolio/model/protos/**</sonar.exclusions>
 		<sonar.organization>buchen-github</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
@@ -219,7 +219,6 @@
 					<artifactId>tycho-surefire-plugin</artifactId>
 					<version>${tycho-version}</version>
 					<configuration>
-						<argLine>-Duser.country=US -Duser.language=en</argLine>
 						<trimStackTrace>false</trimStackTrace>
 					</configuration>
 				</plugin>
@@ -312,6 +311,7 @@
 								<consoleOutput>true</consoleOutput>
 								<failsOnError>true</failsOnError>
 								<linkXRef>false</linkXRef>
+								<excludes>**/name/abuchen/portfolio/model/proto/v1/*</excludes>
 							</configuration>
 							<goals>
 								<goal>check</goal>
@@ -327,7 +327,7 @@
 				<plugin>
 					<groupId>name.abuchen</groupId>
 					<artifactId>fix-info-plist-maven-plugin</artifactId>
-					<version>1.6</version>
+					<version>1.7</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
@@ -337,8 +337,13 @@
 				<plugin>
 					<groupId>org.jacoco</groupId>
 					<artifactId>jacoco-maven-plugin</artifactId>
-					<version>0.8.5</version>
+					<version>0.8.7</version>
 				</plugin>
+	            <plugin>
+	                <groupId>com.github.os72</groupId>
+	                <artifactId>protoc-jar-maven-plugin</artifactId>
+	                <version>3.11.4</version>
+	            </plugin>
 			</plugins>
 		</pluginManagement>
 	</build>

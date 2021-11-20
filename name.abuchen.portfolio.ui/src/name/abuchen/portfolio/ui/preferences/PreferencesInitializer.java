@@ -26,6 +26,7 @@ public class PreferencesInitializer extends AbstractPreferenceInitializer
         store.setDefault(UIConstants.Preferences.AUTO_SAVE_FILE, 0);
         store.setDefault(UIConstants.Preferences.STORE_SETTINGS_NEXT_TO_FILE, false);
         store.setDefault(UIConstants.Preferences.ENABLE_EXPERIMENTAL_FEATURES, false);
+        store.setDefault(UIConstants.Preferences.ENABLE_SWTCHART_PIECHARTS, false);
         store.setDefault(UIConstants.Preferences.ALPHAVANTAGE_CALL_FREQUENCY_LIMIT, 5);
         store.setDefault(UIConstants.Preferences.CALENDAR, "default"); //$NON-NLS-1$
         store.setDefault(UIConstants.Preferences.PORTFOLIO_REPORT_API_URL, "https://api.portfolio-report.net"); //$NON-NLS-1$

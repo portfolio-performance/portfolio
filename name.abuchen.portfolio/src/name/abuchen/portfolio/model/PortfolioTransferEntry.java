@@ -11,18 +11,25 @@ public class PortfolioTransferEntry implements CrossEntry, Annotated
 
     public PortfolioTransferEntry()
     {
-        this.transactionFrom = new PortfolioTransaction();
-        this.transactionFrom.setType(PortfolioTransaction.Type.TRANSFER_OUT);
-        this.transactionFrom.setCrossEntry(this);
-
-        this.transactionTo = new PortfolioTransaction();
-        this.transactionTo.setType(PortfolioTransaction.Type.TRANSFER_IN);
-        this.transactionTo.setCrossEntry(this);
+        this(null, new PortfolioTransaction(), null, new PortfolioTransaction());
     }
 
     public PortfolioTransferEntry(Portfolio portfolioFrom, Portfolio portfolioTo)
     {
-        this();
+        this(portfolioFrom, new PortfolioTransaction(), portfolioTo, new PortfolioTransaction());
+    }
+
+    /* protobuf only */ PortfolioTransferEntry(Portfolio portfolioFrom, PortfolioTransaction txFrom,
+                    Portfolio portfolioTo, PortfolioTransaction txTo)
+    {
+        this.transactionFrom = txFrom;
+        this.transactionFrom.setType(PortfolioTransaction.Type.TRANSFER_OUT);
+        this.transactionFrom.setCrossEntry(this);
+
+        this.transactionTo = txTo;
+        this.transactionTo.setType(PortfolioTransaction.Type.TRANSFER_IN);
+        this.transactionTo.setCrossEntry(this);
+
         this.portfolioFrom = portfolioFrom;
         this.portfolioTo = portfolioTo;
     }
@@ -108,6 +115,19 @@ public class PortfolioTransferEntry implements CrossEntry, Annotated
     {
         this.transactionFrom.setNote(note);
         this.transactionTo.setNote(note);
+    }
+
+    @Override
+    public String getSource()
+    {
+        return this.transactionFrom.getSource();
+    }
+
+    @Override
+    public void setSource(String source)
+    {
+        this.transactionFrom.setSource(source);
+        this.transactionTo.setSource(source);
     }
 
     @Override

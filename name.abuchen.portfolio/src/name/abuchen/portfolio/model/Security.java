@@ -103,6 +103,11 @@ public final class Security implements Attributable, InvestmentVehicle
         this.feed = feed;
     }
 
+    /* package */ Security(String uuid)
+    {
+        this.uuid = uuid;
+    }
+
     @Override
     public String getUUID()
     {
@@ -591,6 +596,13 @@ public final class Security implements Attributable, InvestmentVehicle
         if (this.events == null)
             this.events = new ArrayList<>();
         this.events.remove(event);
+    }
+
+    public boolean removeAllEvents()
+    {
+        boolean removed = this.events != null && !this.events.isEmpty();
+        this.events = null;
+        return removed;
     }
 
     public boolean removeEventIf(Predicate<SecurityEvent> filter)

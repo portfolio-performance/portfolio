@@ -33,6 +33,12 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
         addKontoauszugGiro();
     }
 
+    @Override
+    public String getLabel()
+    {
+        return "Commerzbank"; //$NON-NLS-1$
+    }
+
     private void addBuySellTransaction()
     {
         DocumentType type = new DocumentType("W e r t p a p i e r (k a u f|v e r k a u f)");
@@ -217,10 +223,22 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(stripBlanks(v.get("amount"))));
                         })
 
+                        // USD 7 ,219127 D i v i d e n d e p r o S t ü c k f ü r G e s c h ä f t s j a h r 0 1 . 0 1 . 2 0 b i s 3 1 . 1 2 . 2 0
+                        // z a h l b a r ab 2 6 . 0 5 . 2 0 2 0 Z w i s c h e n d i v i d e n d e
                         .section("note1", "note2", "note3").optional()
-                        .match("^\\w{3} [\\d\\s,.]* .* (?<note2>[\\d\\s]+.[\\d\\s]+.[\\d\\s]+) .* (?<note3>[\\d\\s]+.[\\d\\s]+.[\\d\\s]+)$")
-                        .match(".*")
+                        .match("^[\\w]{3} [\\d\\s,.]* [\\D]+ (?<note2>[\\d\\s]+\\.[\\d\\s]+\\.[\\d\\s]+) [\\D]+ (?<note3>[\\d\\s]+\\.[\\d\\s]+\\.[\\d\\s]+)$")
                         .match("Abrechnung (?<note1>.*)")
+                        .assign((t, v) -> 
+                        {
+                            String note = stripBlanks(v.get("note1")) + " " + stripBlanks(v.get("note2")) + " - " + stripBlanks(v.get("note3"));
+                            t.setNote(note);
+                        })
+
+                        // USD 7 ,219127 D i v i d e n d e p r o S t ü c k f ü r G e s c h ä f t s j a h r 0 1 . 0 1 . 2 0 b i s 3 1 . 1 2 . 2 0
+                        // z a h l b a r ab 2 6 . 0 5 . 2 0 2 0 Z w i s c h e n d i v i d e n d e
+                        .section("note1", "note2", "note3").optional()
+                        .match("^[\\w]{3} [\\d\\s,.]* [\\D]+ (?<note2>[\\d\\s]+\\.[\\d\\s]+\\.[\\d\\s]+) [\\D]+ (?<note3>[\\d\\s]+\\.[\\d\\s]+\\.[\\d\\s]+)$")
+                        .match("^.* [\\d\\s]+\\.[\\d\\s]+\\.[\\d\\s]+ (?<note1>[\\D]+)$")
                         .assign((t, v) -> 
                         {
                             String note = stripBlanks(v.get("note1")) + " " + stripBlanks(v.get("note2")) + " - " + stripBlanks(v.get("note3"));
@@ -485,11 +503,5 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
     private String stripBlanks(String input)
     {
         return input.replaceAll(" ", ""); //$NON-NLS-1$ //$NON-NLS-2$
-    }
-
-    @Override
-    public String getLabel()
-    {
-        return "Commerzbank"; //$NON-NLS-1$
     }
 }

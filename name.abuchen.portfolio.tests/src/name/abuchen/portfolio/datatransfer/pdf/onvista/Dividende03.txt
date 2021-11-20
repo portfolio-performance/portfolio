@@ -1,0 +1,55 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=<mydepot>
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Erträgnisgutschrift aus Wertpapieren ADRESSZEILE1=Herr
+ADRESSZEILE2=<myname>
+ADRESSZEILE3=<myaddress1>
+ADRESSZEILE4=<myddress2>
+Dividende für
+Herr ADRESSZEILE5=01.01.2019 - 31.12.2019
+<myname> ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+<myaddress1> BELEGNUMMER=4632
+<myddress2> <mdepot> <verrechnugsnummer> / 15.07.2019 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+<myname>
+Frankfurt am Main, 15.07.2019
+Dividendengutschrift
+Gattungsbezeichnung ISIN
+Main Street Capital Corp. Registered Shares DL -,01 US56035L1044
+Nominal Ex-Tag Zahltag Dividenden-Betrag pro Stück
+STK 100,000 27.06.2019 15.07.2019 USD 0,205000
+Wert Konto-Nr. Devisenkurs Betrag zu Ihren Gunsten
+15.07.2019 123456789 EUR/USD 1,1327 EUR 13,47
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+ausländische Dividende EUR 18,10
+US-Quellensteuer 15% USD 3,08
+davon anrechenbare US-Quellensteuer 15% EUR 2,72
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern EUR 7,22
+einbehaltene Kapitalertragsteuer EUR 1,81
+einbehaltener Solidaritätszuschlag EUR 0,10
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 1.306,08
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 71,83
+Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer nach gemeldetem Kirchensteuersatz verrechnet mit dem
+Finanzamt Itzehoe, Steuernummer 18/297/13562.
+Steuerlicher Stichtag: 15.07.2019
+Jahressteuerbescheinigung folgt
+Verwahrart: Wertpapierrechnung Lagerland: USA
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+onvista bank Wildunger Straße 6a 60487 Frankfurt am Main T: +49 (0)69-7107-0 F: +49 (0)69-7107-100 info@onvista-bank.de www.onvista-bank.de
+onvista bank ist eine Marke der comdirect bank AG
+Sitz der comdirect bank AG: Pascalkehre 15 25451 Quickborn (AG Pinneberg HRB 4889) T: +49 (0)4106-704-0 F: +49 (0)4106-708-258-5 www.comdirect.de
+Vorstand: Arno Walter (Vorsitzender), Dietmar von Blücher, Matthias Hach, Frauke Hegemann Vorsitzender des Aufsichtsrates: Michael Mandel
+3.20/ABREEREIERTR/GDBERTRG/004632/160719/011850

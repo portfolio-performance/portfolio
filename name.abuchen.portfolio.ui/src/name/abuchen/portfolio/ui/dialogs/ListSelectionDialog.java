@@ -145,6 +145,7 @@ public class ListSelectionDialog extends Dialog
             input.addFocusListener(FocusListener.focusGainedAdapter(e -> input.selectAll()));
             input.addModifyListener(e -> property = input.getText());
             GridDataFactory.fillDefaults().grab(true, false).applyTo(input);
+            input.setFocus(); // when text input visible, set focus
         }
 
         Label label = new Label(container, SWT.None);
@@ -153,7 +154,8 @@ public class ListSelectionDialog extends Dialog
 
         searchText = new Text(container, SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL);
         GridDataFactory.fillDefaults().span(2, 1).grab(true, false).applyTo(searchText);
-        searchText.setFocus();
+        if (propertyLabel == null)
+            searchText.setFocus(); // only set focus if text input invisible
 
         Composite tableArea = new Composite(container, SWT.NONE);
         GridDataFactory.fillDefaults().span(2, 1).grab(false, true).applyTo(tableArea);

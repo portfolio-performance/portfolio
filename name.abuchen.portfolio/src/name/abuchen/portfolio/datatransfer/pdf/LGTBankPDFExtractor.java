@@ -29,12 +29,6 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
     }
 
     @Override
-    public String getPDFAuthor()
-    {
-        return "LGT Bank AG"; //$NON-NLS-1$
-    }
-
-    @Override
     public String getLabel()
     {
         return "LGT Bank AG"; //$NON-NLS-1$

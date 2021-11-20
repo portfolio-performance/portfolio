@@ -1,0 +1,36 @@
+PDF author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Dhr. <My first names>
+<My last name>
+<My address 1>
+<My address 2>
+Gebruikersnaam: *******<username>
+(<account nr>)
+Rekeningoverzicht van 01-01-2010 t/m 25-08-2021
+Datum Tijd Valutadatum Product ISIN Omschrijving FX Mutatie Saldo
+25-08-2021 09:55 25-08-2021 Reservation iDEAL / Sofort Deposit EUR 123,00 EUR 123,29
+25-08-2021 08:42 24-08-2021 iDEAL Deposit EUR 123,00 EUR 123,29
+25-08-2021 08:42 24-08-2021 Reservation iDEAL / Sofort Deposit EUR -123,00 EUR 123,29
+25-08-2021 08:41 24-08-2021 iDEAL Deposit EUR 1.123,00 EUR 123,29
+25-08-2021 08:41 24-08-2021 Reservation iDEAL / Sofort Deposit EUR -1.123,00 EUR -123,71
+24-08-2021 13:43 24-08-2021 Reservation iDEAL / Sofort Deposit EUR 123,00 EUR 123,29
+24-08-2021 09:57 24-08-2021 VANGUARD FTSE AW IE00B3RBWM25 Koop 123 @ 123,96 EUR EUR -123,76 EUR 123,29
+24-08-2021 01:26 24-08-2021 Reservation iDEAL / Sofort Deposit EUR 123,00 EUR 123,05
+28-07-2021 11:16 27-07-2021 Overboeking van uw geldrekening bij flatexDEGIRO Bank EUR 123,05
+123,08 EUR
+28-07-2021 11:16 27-07-2021 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 123,08 EUR 123,13
+27-07-2021 12:46 26-07-2021 Overboeking van uw geldrekening bij flatexDEGIRO Bank EUR 123,05
+98,87 EUR
+27-07-2021 12:46 26-07-2021 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 123,87 EUR 123,92
+27-07-2021 09:29 27-07-2021 VANGUARD FTSE AW IE00B3RBWM25 Koop 123 @ 123,52 EUR EUR -123,08 EUR 123,05
+27-07-2021 08:43 26-07-2021 iDEAL Deposit EUR 123,00 EUR 123,13
+27-07-2021 08:43 26-07-2021 Reservation iDEAL / Sofort Deposit EUR -123,00 EUR 123,13
+26-07-2021 12:41 26-07-2021 Reservation iDEAL / Sofort Deposit EUR 123,00 EUR 123,13
+26-07-2021 12:16 23-07-2021 Overboeking van uw geldrekening bij flatexDEGIRO Bank EUR 123,13
+123,23 EUR
+flatex DEGIRO Bank flatex DEGIRO Bank Dutch Branch,
+Dutch Branch E klanten@degiro.nl handelend onder de naam DEGIRO, is
+Amstelplein 1 I www.degiro.nl de Nederlandse vestiging van Pagina 1 / 15
+1096 HA Amsterdam flatexDEGIRO Bank AG. flatexDEGIRO Rekeningoverzicht 2021-08-25
+Bank AG staat primair

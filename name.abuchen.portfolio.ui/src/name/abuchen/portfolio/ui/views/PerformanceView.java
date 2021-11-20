@@ -204,6 +204,7 @@ public class PerformanceView extends AbstractHistoricView
         CTabItem item = new CTabItem(folder, SWT.NONE);
         item.setText(title);
         item.setControl(control);
+        item.setImage(Images.VIEW_TABLE.image());
 
         return viewer;
     }
@@ -378,6 +379,7 @@ public class PerformanceView extends AbstractHistoricView
         CTabItem item = new CTabItem(folder, SWT.NONE);
         item.setText(title);
         item.setControl(container);
+        item.setImage(Images.VIEW_TABLE.image());
 
         hookContextMenu(calculation.getTree(), this::fillContextMenu);
     }
@@ -466,6 +468,19 @@ public class PerformanceView extends AbstractHistoricView
         column.setEditingSupport(null);
         support.addColumn(column);
 
+        column = new Column(Messages.ColumnSource, SWT.LEFT, 200);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return ((TransactionPair<?>) element).getTransaction().getSource();
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getSource()));
+        column.setVisible(false);
+        support.addColumn(column);
+
         support.createColumns();
 
         transactionViewer.getTable().setHeaderVisible(true);
@@ -479,6 +494,7 @@ public class PerformanceView extends AbstractHistoricView
         CTabItem item = new CTabItem(folder, SWT.NONE);
         item.setText(title);
         item.setControl(container);
+        item.setImage(Images.VIEW_TABLE.image());
 
         return transactionViewer;
     }
@@ -766,6 +782,7 @@ public class PerformanceView extends AbstractHistoricView
         CTabItem item = new CTabItem(folder, SWT.NONE);
         item.setText(title);
         item.setControl(container);
+        item.setImage(Images.VIEW_TABLE.image());
     }
 
     @Override

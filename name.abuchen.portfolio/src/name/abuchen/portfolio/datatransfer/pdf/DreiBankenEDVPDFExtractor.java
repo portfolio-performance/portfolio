@@ -28,12 +28,6 @@ public class DreiBankenEDVPDFExtractor extends AbstractPDFExtractor
     }
 
     @Override
-    public String getPDFAuthor()
-    {
-        return "3BankenEDV"; //$NON-NLS-1$
-    }
-
-    @Override
     public String getLabel()
     {
         return "3BankenEDV"; //$NON-NLS-1$

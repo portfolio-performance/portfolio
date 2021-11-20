@@ -37,12 +37,6 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 
     }
 
-    @Override
-    public String getPDFAuthor()
-    {
-        return "Scalable Capital Vermögensverwaltung GmbH"; //$NON-NLS-1$
-    }
-
     @SuppressWarnings("nls")
     private void addBuyTransaction()
     {

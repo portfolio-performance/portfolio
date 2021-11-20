@@ -23,12 +23,6 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
     }
 
     @Override
-    public String getPDFAuthor()
-    {
-        return "MLP Banking AG"; //$NON-NLS-1$
-    }
-
-    @Override
     public String getLabel()
     {
         return "MLP Banking AG"; //$NON-NLS-1$
@@ -36,7 +30,7 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType(".*Abrechnung Kauf.*");
+        DocumentType type = new DocumentType("Abrechnung Kauf");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -46,38 +40,39 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block(".*Abrechnung Kauf.*");
+        Block firstRelevantLine = new Block("^Wertpapier Abrechnung Kauf$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
-                        // Stück 4,929 SAUREN GLOBAL BALANCED LU0106280836
-                        // (930920)
-                        // INHABER-ANTEILE A O.N
-                        .section("isin", "wkn", "name", "shares", "nameContinued")
-                        .match("^(Stück) (?<shares>[\\d.,]+) (?<name>.*) (?<isin>[\\w]{12}.*) (\\((?<wkn>.*)\\).*)")
-                        .match("(?<nameContinued>.*)") //
-                        .assign((t, v) -> {
-                            t.setSecurity(getOrCreateSecurity(v));
-                            t.setShares(asShares(v.get("shares")));
-                        })
+                // Stück 4,929 SAUREN GLOBAL BALANCED LU0106280836 (930920)
+                // INHABER-ANTEILE A O.N
+                // Ausführungskurs 20,29 EUR
+                .section("shares", "name", "isin", "wkn", "nameContinued", "currency")
+                .match("St.ck (?<shares>[\\.,\\d]+) (?<name>.*) (?<isin>[\\w]{12}) (\\((?<wkn>.*)\\).*)")
+                .match("^(?<nameContinued>.*)$")
+                .match("^Ausführungskurs [\\.,\\d]+ (?<currency>[\\w]{3})")
+                .assign((t, v) -> {
+                    t.setShares(asShares(v.get("shares")));
+                    t.setSecurity(getOrCreateSecurity(v));
+                })
 
-                        // Schlusstag 14.01.2021
-                        .section("date") //
-                        .match("^(Schlusstag) (?<date>\\d+.\\d+.\\d{4}+).*") //
-                        .assign((t, v) -> {
-                            t.setDate(asDate(v.get("date")));
-                        })
+                // Schlusstag 14.01.2021
+                .section("date")
+                .match("^Schlusstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*")
+                .assign((t, v) -> {
+                    t.setDate(asDate(v.get("date")));
+                })
 
-                        // Ausmachender Betrag 100,01- EUR
-                        .section("currency", "amount")
-                        .match("^(Ausmachender Betrag) (?<amount>[\\d.]+,\\d+)[?(-|\\+)] (?<currency>\\w{3}+)")
-                        .assign((t, v) -> {
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(v.get("currency"));
-                        })
+                // Ausmachender Betrag 100,01- EUR
+                .section("amount", "currency")
+                .match("^(Ausmachender Betrag) (?<amount>[\\.,\\d]+)- (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(v.get("currency"));
+                })
 
-                        .wrap(BuySellEntryItem::new);
+                .wrap(BuySellEntryItem::new);
 
         addFeesSectionsTransaction(pdfTransaction, type);
     }
@@ -87,7 +82,7 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
         transaction
                         // Ihr Ausgabeaufschlag betraegt:
                         // 0,00 EUR (0,000 Prozent)
-                        .section("fee", "currency")
+                        .section("fee", "currency").optional()
                         .match("^(?<fee>[.,\\d]+) (?<currency>[\\w]{3}) \\([.,\\d]+ \\w+\\)$")
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }

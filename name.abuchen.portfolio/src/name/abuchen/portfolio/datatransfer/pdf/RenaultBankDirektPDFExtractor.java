@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
+import name.abuchen.portfolio.datatransfer.pdf.PDFParser.ParsedData;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
@@ -34,6 +35,12 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
         
         addTransactionWith2019Format();
         addTransactionWith2021Format();
+    }
+
+    @Override
+    public String getLabel()
+    {
+        return "Renault Bank direkt"; //$NON-NLS-1$
     }
 
     private void addTransactionWith2019Format()
@@ -108,7 +115,7 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
                         .wrap(TransactionItem::new);
     }
 
-    private BiConsumer<AccountTransaction, Map<String, String>> assignmentsProvider(DocumentType type)
+    private BiConsumer<AccountTransaction, ParsedData> assignmentsProvider(DocumentType type)
     {
         return (transaction, matcherMap) -> {
             Map<String, String> context = type.getCurrentContext();
@@ -159,17 +166,5 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
                 context.put(CONTEXT_KEY_CURRENCY, currencyMatcher.group("currency"));
             }
         }
-    }
-
-    @Override
-    public String getLabel()
-    {
-        return "Renault Bank direkt"; //$NON-NLS-1$
-    }
-    
-    @Override
-    public String getPDFAuthor()
-    {
-        return ""; //$NON-NLS-1$
     }
 }

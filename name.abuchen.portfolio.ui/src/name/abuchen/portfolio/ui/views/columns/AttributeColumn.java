@@ -25,6 +25,7 @@ import name.abuchen.portfolio.model.Bookmark;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ImageManager;
 import name.abuchen.portfolio.model.LimitPrice;
+import name.abuchen.portfolio.model.LimitPriceSettings;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.ui.Images;
@@ -155,10 +156,12 @@ public class AttributeColumn extends Column
     private static final class LimitPriceLabelProvider extends ColumnLabelProvider
     {
         private final AttributeType attribute;
+        private final LimitPriceSettings settings;
 
         private LimitPriceLabelProvider(AttributeType attribute)
         {
             this.attribute = attribute;
+            this.settings = new LimitPriceSettings(attribute.getProperties());
         }
 
         @Override
@@ -172,8 +175,20 @@ public class AttributeColumn extends Column
             if (attributes == null)
                 return null;
 
-            Object value = attributes.get(attribute);
-            return attribute.getConverter().toString(value);
+            LimitPrice limit = (LimitPrice) attributes.get(attribute);
+            if (limit == null)
+                return null;
+
+            // add relative/absolute difference to latest price if configured
+            if (settings.getShowAbsoluteDiff() || settings.getShowRelativeDiff())
+            {
+                SecurityPrice latestSecurityPrice = security.getSecurityPrice(LocalDate.now());
+                return settings.getFullLabel(limit, latestSecurityPrice);
+            }
+            else
+            {
+                return limit.toString();
+            }
         }
 
         @Override
@@ -192,19 +207,35 @@ public class AttributeColumn extends Column
             if (latestSecurityPrice == null)
                 return null;
 
+            return getColor(limit, latestSecurityPrice);
+        }
+
+        private Color getColor(LimitPrice limit, SecurityPrice latestSecurityPrice)
+        {
+            if (!limit.isExceeded(latestSecurityPrice))
+                return null;
+
             switch (limit.getRelationalOperator())
             {
                 case GREATER_OR_EQUAL:
-                    return latestSecurityPrice.getValue() >= limit.getValue() ? Colors.GREEN : null;
-                case SMALLER_OR_EQUAL:
-                    return latestSecurityPrice.getValue() <= limit.getValue() ? Colors.RED : null;
                 case GREATER:
-                    return latestSecurityPrice.getValue() > limit.getValue() ? Colors.GREEN : null;
+                    return settings.getLimitExceededPositivelyColor(Colors.GREEN);
+                case SMALLER_OR_EQUAL:
                 case SMALLER:
-                    return latestSecurityPrice.getValue() < limit.getValue() ? Colors.RED : null;
+                    return settings.getLimitExceededNegativelyColor(Colors.RED);
                 default:
                     return null;
             }
+        }
+
+        @Override
+        public Color getForeground(Object element)
+        {
+            Color background = getBackground(element);
+            if (background == null)
+                return null;
+
+            return Colors.getTextColor(background);
         }
     }
 

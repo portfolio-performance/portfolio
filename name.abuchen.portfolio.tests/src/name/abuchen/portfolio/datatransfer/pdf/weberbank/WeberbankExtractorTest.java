@@ -17,8 +17,8 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
-import name.abuchen.portfolio.datatransfer.pdf.WeberbankPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
+import name.abuchen.portfolio.datatransfer.pdf.WeberbankPDFExtractor;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -60,9 +60,13 @@ public class WeberbankExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(9657.00)));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-03-26T15:14:29")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4440)));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9657.00))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9657.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
@@ -97,9 +101,13 @@ public class WeberbankExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(2335.30)));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-03-26T15:12:58")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(193)));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2335.30))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2335.30))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
@@ -130,12 +138,19 @@ public class WeberbankExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSubject();
         
         assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(55.14))));
+
         assertThat(t.getShares(), is(Values.Share.factorize(107)));
         assertThat(t.getDateTime(), is(LocalDateTime.parse("2020-08-07T00:00")));
+        assertThat(t.getSource(), is("WeberbankDividend01.txt"));
+        assertThat(t.getNote(), is("Quartalsdividende"));
 
-        assertThat(t.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(74.05))));
+        assertThat(t.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(55.14))));
+        assertThat(t.getGrossValue(), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(74.05))));
         assertThat(t.getUnitSum(Unit.Type.TAX), 
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(11.11 + 7.40 + 0.40))));
+        assertThat(t.getUnitSum(Unit.Type.FEE), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
     }
 }

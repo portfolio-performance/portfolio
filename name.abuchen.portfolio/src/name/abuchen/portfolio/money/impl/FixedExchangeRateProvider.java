@@ -23,7 +23,7 @@ public class FixedExchangeRateProvider implements ExchangeRateProvider
     public List<ExchangeRateTimeSeries> getAvailableTimeSeries(Client client)
     {
         LocalDate date01011999 = LocalDate.of(1999, 1, 1); // date rate was fixed against EUR for most currencies
-        List<ExchangeRateTimeSeries> series = new ArrayList<ExchangeRateTimeSeries>();
+        List<ExchangeRateTimeSeries> series = new ArrayList<>();
         
         series.add(new FixedExchangeRateTimeSeries(this, 2, BigDecimal.valueOf(13.7603), CurrencyUnit.EUR, "ATS", date01011999)); //$NON-NLS-1$
         series.add(new FixedExchangeRateTimeSeries(this, 2, BigDecimal.valueOf(40.3399), CurrencyUnit.EUR, "BEF", date01011999)); //$NON-NLS-1$

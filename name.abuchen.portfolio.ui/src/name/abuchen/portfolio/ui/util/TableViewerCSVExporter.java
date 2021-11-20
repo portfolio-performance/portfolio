@@ -19,10 +19,17 @@ import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 public class TableViewerCSVExporter extends AbstractCSVExporter
 {
     private final TableViewer viewer;
+    private final boolean selectionOnly;
 
     public TableViewerCSVExporter(TableViewer viewer)
     {
+        this(viewer, false);
+    }
+
+    public TableViewerCSVExporter(TableViewer viewer, boolean selectionOnly)
+    {
         this.viewer = viewer;
+        this.selectionOnly = selectionOnly;
     }
 
     @Override
@@ -54,7 +61,8 @@ public class TableViewerCSVExporter extends AbstractCSVExporter
             }
 
             // write body
-            for (TableItem item : viewer.getTable().getItems())
+            TableItem[] items = selectionOnly ? viewer.getTable().getSelection() : viewer.getTable().getItems();
+            for (TableItem item : items)
             {
                 for (int ii = 0; ii < columnCount; ii++)
                 {

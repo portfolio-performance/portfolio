@@ -14,6 +14,9 @@ import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import javax.inject.Inject;
+
+import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.InputDialog;
@@ -26,6 +29,7 @@ import name.abuchen.portfolio.model.TaxonomyTemplate;
 import name.abuchen.portfolio.model.Watchlist;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.ConfirmAction;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
@@ -183,6 +187,9 @@ public final class Navigation
     private List<Item> roots = new ArrayList<>();
     private List<Listener> listeners = new ArrayList<>();
 
+    private boolean useSWTCharts = false;
+
+    @Inject
     /* protected */ Navigation(Client client)
     {
         createGeneralDataSection(client);
@@ -190,6 +197,12 @@ public final class Navigation
         createPerformanceSection();
         createTaxonomyDataSection(client);
         createMiscSection();
+    }
+
+    @Inject
+    public void setUseSWTCharts(@Preference(UIConstants.Preferences.ENABLE_SWTCHART_PIECHARTS) boolean useSWTCharts)
+    {
+        this.useSWTCharts = useSWTCharts;
     }
 
     public Stream<Item> getRoots()
@@ -597,7 +610,7 @@ public final class Navigation
         roots.add(section);
 
         section.add(new Item(Messages.LabelCurrencies, CurrencyView.class, true));
-        section.add(new Item(Messages.LabelSettings, SettingsView.class, true));
+        section.add(new Item(Messages.LabelSettings, SettingsView.class));
 
         if ("yes".equals(System.getProperty("name.abuchen.portfolio.debug"))) //$NON-NLS-1$ //$NON-NLS-2$
             section.add(new Item("Browser Test", BrowserTestView.class)); //$NON-NLS-1$

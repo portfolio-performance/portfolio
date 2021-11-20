@@ -28,12 +28,6 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
     }
 
     @Override
-    public String getPDFAuthor()
-    {
-        return ""; //$NON-NLS-1$
-    }
-
-    @Override
     public String getLabel()
     {
         return "Raiffeisenbank Bankgruppe"; //$NON-NLS-1$
@@ -147,9 +141,9 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                 .match("^(?<shares>[.,\\d]+) Stk(.*)?$")
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                // Extag: 28.04.2021
+                // Valuta 30.04.2021
                 .section("date")
-                .match("^Extag: (?<date>\\d+.\\d+.\\d{4})$")
+                .match("^Valuta (?<date>\\d+.\\d+.\\d{4})$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                 // Zu Gunsten IBAN AT99 9999 9000 0011 1111 110,02 EUR 
@@ -172,7 +166,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
     {
         DocumentType type1 = new DocumentType("Kontokorrent", (context, lines) -> {
             Pattern pCurrency = Pattern.compile("^([\\w]{3})(-Konto Kontonummer)(.*)$");
-            Pattern pYear = Pattern.compile("^[\\d]+ .* Kontoauszug Nr. ([\\s]+)?(?<nr>[\\d]+)\\/(?<year>[\\d]{4})");
+            Pattern pYear = Pattern.compile("^.* Kontoauszug Nr. ([\\s]+)?(?<nr>[\\d]+)\\/(?<year>[\\d]{4})");
 
             for (String line : lines)
             {
@@ -220,7 +214,15 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                 })
 
                 .section("day", "month", "amount", "note").optional()
-                .match("^\\d{2}\\.\\d{2}\\. (?<day>\\d{2})\\.(?<month>\\d{2})\\. (?<note>Einnahmen|BASISLASTSCHRIFT|DAUERAUFTRAG|EURO-UEBERWEISUNG|GUTSCHRIFT) .* (?<amount>[.,\\d]+) [S|H]$")
+                .match("^\\d{2}\\.\\d{2}\\. (?<day>\\d{2})\\.(?<month>\\d{2})\\. "
+                                + "(?<note>Einnahmen"
+                                + "|BASISLASTSCHRIFT"
+                                + "|DAUERAUFTRAG"
+                                + "|EURO-UEBERWEISUNG"
+                                + "|GUTSCHRIFT"
+                                + "|Kartenzahlung"
+                                + "|Auszahlung"
+                                + "|LOHN/GEHALT) .* (?<amount>[.,\\d]+) [S|H]$")
                 .match("^(?![\\s]+ [Dividende]).*$")
                 .match("^(?![\\s]+ [Dividende]).*$")
                 .assign((t, v) -> {
@@ -270,6 +272,9 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                     }
                 })
 
+                // 30.12. 31.12. Abschluss PN:905                                                      1,95 S
+                //          9,60000% einger. Kontoüberziehung    3112       1,00S
+                //          14,60000% einger. Kontoüberziehung    3112       1,00S
                 .section("day", "month", "amount1", "amount2", "note").optional()
                 .match("^\\d{2}\\.\\d{2}\\. (?<day>\\d{2}).(?<month>\\d{2}). (Abschluss) .* [.,\\d]+ [S|H]$")
                 .match("^[\\s]+ [.,\\d]+% einger. Konto.berziehung .* (?<amount1>[.,\\d]+)[S|H]$")
@@ -321,6 +326,14 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                     }
                 })
 
+                // 30.12. 31.12. Abschluss PN:905                                                      1,95 S
+                // 9,60000% einger. Kontoüberziehung    3112       1,00S
+                // 14,60000% einger. Kontoüberziehung    3112       1,00S
+                //Entgelte vom 01.12.2020 - 31.12.2020
+                //          Buchungen Online   St.    4 3112       0,00H
+                //          Buchungen automatisch    12 3112       0,00H
+                //          Kontoführungsentgelt        3112       1,95S
+                // Abschluss vom 01.10.2020 bis 31.12.2020
                 .section("day", "month", "amount1", "amount2", "amount3", "note").optional()
                 .match("^\\d{2}\\.\\d{2}\\. (?<day>\\d{2}).(?<month>\\d{2}). (Abschluss) .* [.,\\d]+ [S|H]$")
                 .match("^[\\s]+ Buchungen Online .* (?<amount1>[.,\\d]+)[S|H]$")
@@ -341,6 +354,32 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                     }
                     t.setCurrencyCode(context.get("currency"));
                     t.setAmount(asAmount(v.get("amount1")) + asAmount(v.get("amount2")) + asAmount(v.get("amount3")));
+                    t.setNote(v.get("note"));
+                })
+
+                // 31.08. 31.08. Abschluss PN:905                                                      1,95 S
+                //          Buchungen automatisch    23 2345       0,00H
+                //          Kontoführungsentgelt        2345       1,95S
+                // Abschluss vom 30.07.2021 bis 31.08.2021
+                .section("day", "month", "amount1", "amount2", "note").optional()
+                .match("^\\d{2}\\.\\d{2}\\. (?<day>\\d{2}).(?<month>\\d{2}). (Abschluss) .* [.,\\d]+ [S|H]$")
+                .match("^[\\s]+ Buchungen automatisch .* (?<amount1>[.,\\d]+)[S|H]$")
+                .match("^[\\s]+ Kontof.hrungsentgelt .* (?<amount2>[.,\\d]+)[S|H]$")
+                .match("^[\\s]+ (?<note>Abschluss vom \\d{2}\\.\\d{2}\\.\\d{4} .* \\d{2}\\.\\d{2}\\.\\d{4})$")
+                .assign((t, v) -> {
+                    Map<String, String> context = type1.getCurrentContext();
+
+                    if (context.get("nr").compareTo("01") == 0  && Integer.parseInt(v.get("month")) < 3)
+                    {
+                        Integer year = Integer.parseInt(context.get("year")) + 1;
+                        t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + year.toString()));
+                    }
+                    else
+                    {
+                        t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + context.get("year")));
+                    }
+                    t.setCurrencyCode(context.get("currency"));
+                    t.setAmount(asAmount(v.get("amount1")) + asAmount(v.get("amount2")));
                     t.setNote(v.get("note"));
                 })
 

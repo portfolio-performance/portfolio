@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
@@ -148,6 +149,7 @@ public class StyledLabel extends Canvas // NOSONAR
 
     private TextLayout textLayout;
     private SAXParserFactory spf;
+    private Consumer<String> openLinkHandler;
 
     private LocalResourceManager resourceManager = new LocalResourceManager(JFaceResources.getResources());
 
@@ -231,6 +233,11 @@ public class StyledLabel extends Canvas // NOSONAR
         redraw();
     }
 
+    public void setOpenLinkHandler(Consumer<String> openLinkHandler)
+    {
+        this.openLinkHandler = openLinkHandler;
+    }
+
     @Override
     public Point computeSize(int wHint, int hHint, boolean changed)
     {
@@ -259,7 +266,12 @@ public class StyledLabel extends Canvas // NOSONAR
 
         TextStyle style = this.textLayout.getStyle(offset);
         if (style != null && style.data != null)
-            DesktopAPI.browse(String.valueOf(style.data));
+        {
+            if (openLinkHandler != null)
+                openLinkHandler.accept(String.valueOf(style.data));
+            else
+                DesktopAPI.browse(String.valueOf(style.data));
+        }
     }
 
 }

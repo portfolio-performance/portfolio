@@ -23,7 +23,7 @@ public class NoteColumn extends Column
 
     public NoteColumn(String id)
     {
-        super(id, Messages.ColumnNote, SWT.LEFT, 22);
+        super(id, Messages.ColumnNote, SWT.LEFT, 200);
 
         setLabelProvider(new ColumnLabelProvider()
         {

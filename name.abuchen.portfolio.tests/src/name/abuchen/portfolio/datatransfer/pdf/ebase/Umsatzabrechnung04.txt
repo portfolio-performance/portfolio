@@ -1,0 +1,16 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+European Bank for Financial Services GmbH, 80218 München
+Umsatzabrechnung-Nr. 19
+Depot-Nr. 1234567890
+Seite 1 von 12
+Fondsertrag (Ausschüttung) mit Bestandsdatum 11.12.2019 in Depotposition 1234567890.31
+Vanguard FTSE All-World U.ETF Registered Shares USD Dis.oN
+Ref. Nr. XXXXXXXX/XXXXXXXX, Buchungsdatum 02.01.2020
+ISIN Anteilsbestand Betrag je Anteil Betrag
+IE00B3RBWM25 7,332986 0,297309 USD 2,18 USD
+Kapitalertragsteuer Solidaritätszuschlag Kirchensteuer Devisenkurs abzgl. Steuern
+0,34 EUR 0,01 EUR 0,00 EUR 1,117800 0,39 USD
+Zahlungsbetrag 1,79 USD
+Wiederanlage des Zahlungsbetrags erfolgt in Depotposition 1234567890.31 mit Ref. Nr. XXXXXXXX/XXXXXXXX

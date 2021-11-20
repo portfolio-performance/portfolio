@@ -38,12 +38,6 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
     }
 
     @Override
-    public String getPDFAuthor()
-    {
-        return ""; //$NON-NLS-1$
-    }
-
-    @Override
     public String getLabel()
     {
         return "DADAT / Bankhaus Schelhammer & Schattera AG"; //$NON-NLS-1$
@@ -61,7 +55,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^Geschäftsart: Kauf");
+        Block firstRelevantLine = new Block("^Geschäftsart: Kauf$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -70,7 +64,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                 // Reg. Shares Class A DL -,01      
                 .section("isin", "name", "name1")
                 .match("^Titel: (?<isin>[\\w]{12}) [\\s+]?(?<name>.*)$")
-                .match("(?<name1>.*)")
+                .match("^(?<name1>.*)$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Kurs:"))
                         v.put("name", v.get("name").trim() + " " + v.get("name1"));
@@ -89,12 +83,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                 // Handelszeit: 17.2.2021 um 20:49:54 Uhr
                 .section("date", "time")
                 .match("^Handelszeit: (?<date>\\d+.\\d+.\\d{4}+) .* (?<time>\\d+:\\d+:\\d+).*$")
-                .assign((t, v) -> {
-                    if (v.get("time") != null)
-                        t.setDate(asDate(v.get("date"), v.get("time")));
-                    else
-                        t.setDate(asDate(v.get("date")));
-                })
+                .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
 
                 // Zu Lasten IBAN IBAN-NR -1.800,-- EUR 
                 .section("currency", "amount")
@@ -503,15 +492,15 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                 // 31.03 Abschluss 31.03 7,26-
                 // Sollzinsen
                 // AB 2021-01-01          3,9000%               4,76-
-                .section("date", "year", "note", "amount")
-                .match("^(?<date>\\d+.\\d+) Abschluss [\\d]+.[\\d]+ [.,\\d]+([-])?$")
+                .section("date", "year", "note", "amount").optional()
+                .match("^(?<date>\\d+.\\d+) Abschluss [\\d]+.[\\d]+ [.,\\d]+-$")
                 .find("^(?<note>Sollzinsen)$")
-                .match("^AB (?<year>[\\d]{4})-[\\d]+-[\\d]+ ([\\s]+)?[.,\\d]+% ([\\s]+)?(?<amount>[.,\\d]+)([-])?$")
+                .match("^AB (?<year>[\\d]{4})-[\\d]+-[\\d]+ ([\\s]+)?[.,\\d]+% ([\\s]+)?(?<amount>[.,\\d]+)-$")
                 .assign((t, v) -> {
                     t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
-                    t.setNote(v.get("note"));
                     t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
+                    t.setNote(v.get("note"));
                 })
 
                 .wrap(t -> {
@@ -525,6 +514,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
     {
         final DocumentType type = new DocumentType("KONTOAUSZUG", (context, lines) -> {
             Pattern pCurrency = Pattern.compile("^.* (?<currency>[\\w]{3}) [.,\\d]+([-])?$");
+            Pattern pYear = Pattern.compile("^Alter Saldo per \\d+.\\d+.(?<year>\\d{4}) .*$");
 
             for (String line : lines)
             {
@@ -532,6 +522,12 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                 if (m.matches())
                 {
                     context.put("currency", m.group("currency"));
+                }
+
+                m = pYear.matcher(line);
+                if (m.matches())
+                {
+                    context.put("year", m.group("year"));
                 }
             }
         });
@@ -551,30 +547,38 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                 })
 
                 // 31.03 Abschluss 31.03 7,26-
-                // Sollzinsen
-                // AB 2021-01-01          3,9000%               4,76-
                 // Kontoführungsgebühr                          2,50-
-                .section("date", "year", "note", "amount").optional()
-                .match("^(?<date>\\d+.\\d+) Abschluss [\\d]+.[\\d]+ [.,\\d]+([-])?$")
-                .find("^Sollzinsen$")
-                .match("^AB (?<year>[\\d]{4})-[\\d]+-[\\d]+ .*$")
-                .match("^(?<note>Kontof.hrungsgeb.hr) ([\\s]+)?(?<amount>[.,\\d]+)([-])?$")
+                .section("date", "note", "amount").optional()
+                .match("^(?<date>\\d+.\\d+) Abschluss [\\d]+.[\\d]+ [.,\\d]+-$")
+                .match("^(?<note>Kontof.hrungsgeb.hr) ([\\s]+)?(?<amount>[.,\\d]+)-$")
                 .assign((t, v) -> {
-                    t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
-                    t.setNote(v.get("note"));
+                    t.setDateTime(asDate(v.get("date") + "." + type.getCurrentContext().get("year")));
                     t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
+                    t.setNote(v.get("note"));
+                })
+
+                // 30.06 Abschluss 30.06 2,53-
+                // Spesen                                       2,53-
+                .section("date", "note", "amount").optional()
+                .match("^(?<date>\\d+.\\d+) Abschluss [\\d]+.[\\d]+ [.,\\d]+-$")
+                .match("^(?<note>Spesen) ([\\s]+)?(?<amount>[.,\\d]+)-$")
+                .assign((t, v) -> {
+                    t.setDateTime(asDate(v.get("date") + "." + type.getCurrentContext().get("year")));
+                    t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("currency")));
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setNote(v.get("note"));
                 })
 
                 // 07.01 Depotgebührenabrechnung per 31.12.2020  20210106  12345678 31.12 63,68-
                 // DPNR.:  0123456789             53,07 ZUZüGL.             10,61 UST
                 .section("date", "note", "year", "amount").optional()
-                .match("^(?<date>\\d+.\\d+) (?<note>Depotgeb.hrenabrechnung per \\d+.\\d+.\\d{4}) ([\\s]+)?(?<year>[\\d]{4})[\\d]+ ([\\s]+)?[\\d]+ \\d+.\\d+ (?<amount>[.,\\d]+)([-])?$")
+                .match("^(?<date>\\d+.\\d+) (?<note>Depotgeb.hrenabrechnung per \\d+.\\d+.\\d{4}) ([\\s]+)?(?<year>[\\d]{4})[\\d]+ ([\\s]+)?[\\d]+ \\d+.\\d+ (?<amount>[.,\\d]+)-$")
                 .assign((t, v) -> {
                     t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
-                    t.setNote(v.get("note"));
                     t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
+                    t.setNote(v.get("note"));
                 })
 
                 .wrap(t -> {
@@ -589,7 +593,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
         final DocumentType type = new DocumentType("KONTOAUSZUG", (context, lines) -> {
             Pattern pCurrency = Pattern.compile("^.* (?<currency>[\\w]{3}) [.,\\d]+([-])?$");
             Pattern pYear = Pattern.compile("^Alter Saldo per \\d+.\\d+.(?<year>\\d{4}) .*$");
-            
+
             for (String line : lines)
             {
                 Matcher m = pCurrency.matcher(line);
@@ -622,19 +626,30 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
 
                 // 18.06 Max Muster 19.06 100,00
                 // IBAN: DE17 1234 1234 1234 1234 12
-                .section("date", "amount").optional()
-                .match("^(?<date>\\d+.\\d+) .* \\d+.\\d+ (?<amount>[.,\\d]+)$")
+                .section("date", "note", "amount").optional()
+                .match("^(?<date>\\d+.\\d+) (?<note>(?!(Sollzins ab|Information gem.ß)).*) \\d+.\\d+ (?<amount>[.,\\d]+)$")
                 .match("^IBAN: .*$")
                 .assign((t, v) -> {
                     t.setDateTime(asDate(v.get("date") + "." + type.getCurrentContext().get("year")));
                     t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
+                    t.setNote(v.get("note"));
+                })
+
+                // 31.10 Werbebonus 31.10 75,00
+                .section("date", "note", "amount").optional()
+                .match("^(?<date>\\d+.\\d+) (?<note>Werbebonus) \\d+.\\d+ (?<amount>[.,\\d]+)$")
+                .assign((t, v) -> {
+                    t.setDateTime(asDate(v.get("date") + "." + type.getCurrentContext().get("year")));
+                    t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("currency")));
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setNote(v.get("note"));
                 })
 
                 // 18.06 Max Muster 19.06 100,00-
                 // IBAN: DE17 1234 1234 1234 1234 12
-                .section("date", "amount").optional()
-                .match("^(?<date>\\d+.\\d+) .* \\d+.\\d+ (?<amount>[.,\\d]+)-$")
+                .section("date", "note", "amount").optional()
+                .match("^(?<date>\\d+.\\d+) (?<note>(?!(Sollzins ab|Information gem.ß)).*) \\d+.\\d+ (?<amount>[.,\\d]+)-$")
                 .match("^IBAN: .*$")
                 .assign((t, v) -> {
                     // change from DEPOSIT to REMOVAL
@@ -643,6 +658,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                     t.setDateTime(asDate(v.get("date") + "." + type.getCurrentContext().get("year")));
                     t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
+                    t.setNote(v.get("note"));
                 })
 
                 .wrap(t -> {

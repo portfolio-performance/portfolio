@@ -17,6 +17,16 @@ public class Messages extends NLS
     public static String AccountMenuImportCSV;
     public static String AccountMenuImportPDF;
     public static String AccountMenuTransfer;
+    public static String AttributeSettings;
+    public static String AttributeSettings_NoSettingAvailable;
+    public static String AttributeSettings_LimitPrice_ColorSettings;
+    public static String AttributeSettings_LimitPrice_ColorSettings_LimitExceededPositively;
+    public static String AttributeSettings_LimitPrice_ColorSettings_LimitExceededNegatively;
+    public static String AttributeSettings_LimitPrice_ColorSettings_ResetColors;
+    public static String AttributeSettings_LimitPrice_ColorSettings_SwapColors;
+    public static String AttributeSettings_LimitPrice_ColumnSettings;
+    public static String AttributeSettings_LimitPrice_ColumnSettings_ShowAbsoluteDiff;
+    public static String AttributeSettings_LimitPrice_ColumnSettings_ShowRelativeDiff;
     public static String Balance;
     public static String BaseCurrencyCue;
     public static String BaseCurrencyMigrationPage_Description;
@@ -468,9 +478,11 @@ public class Messages extends NLS
     public static String LabelAccumulatedInterest;
     public static String LabelAccumulatedInterestCharge;
     public static String LabelAccumulatedTaxes;
+    public static String LabelAdhocFilter;
     public static String LabelAfterTaxAndFees;
     public static String LabelAggregation;
     public static String LabelAggregationDaily;
+    public static String LabelAllAttributes;
     public static String LabelAllCurrencies;
     public static String LabelAllFiles;
     public static String LabelAllSecurities;
@@ -646,6 +658,7 @@ public class Messages extends NLS
     public static String LabelQuoteFeedProvider;
     public static String LabelRefresh;
     public static String LabelRemoveDividends;
+    public static String LabelRemoveLogo;
     public static String LabelReportingAddPeriod;
     public static String LabelReportingDialogDays;
     public static String LabelReportingDialogFrom;
@@ -825,6 +838,8 @@ public class Messages extends NLS
     public static String MenuRenameDashboard;
     public static String MenuRenameLabel;
     public static String MenuReportingPeriodDelete;
+    public static String MenuReportingPeriodDeleteConfirm;
+    public static String MenuReportingPeriodInsert;
     public static String MenuReportingPeriodManage;
     public static String MenuResetChartSeries;
     public static String MenuResetColumns;
@@ -885,6 +900,7 @@ public class Messages extends NLS
     public static String MsgErrorSavingIniFile;
     public static String MsgErrorTradeCollectionWithErrors;
     public static String MsgErrorUpdating;
+    public static String MsgHintNoAttributesConfigured;
     public static String MsgIncorrectConvertedSubTotal;
     public static String MsgIncorrectSubTotal;
     public static String MsgIncorrectTotal;
@@ -939,7 +955,6 @@ public class Messages extends NLS
     public static String PDFImportWizardAssistant;
     public static String PDFImportWizardErroneousFiles;
     public static String PDFImportWizardExtractor;
-    public static String PDFImportDebugAuthor;
     public static String PDFImportErrorParsingDocument;
     public static String PerformanceChartLabelEntirePortfolio;
     public static String PerformanceChartLabelCPI;
@@ -967,10 +982,12 @@ public class Messages extends NLS
     public static String PrefAutoSaveFrequency;
     public static String PrefDescriptionAlphaVantage;
     public static String PrefDescriptionDivvyDiary;
+    public static String PrefDescriptionEODHistoricalData;
     public static String PrefDescriptionFinnhub;
     public static String PrefDescriptionProxy;
     public static String PrefDescriptionQuandl;
     public static String PrefDivvyDiaryAPIKey;
+    public static String PrefEODHistoricalDataAPIKey;
     public static String PrefFinnhubAPIKey;
     public static String PrefLabelEnableExperimentalFeatures;
     public static String PrefLabelNote;
@@ -1004,7 +1021,9 @@ public class Messages extends NLS
     public static String SecurityFilterSharesHeldEqualZero;
     public static String SecurityFilterSharesHeldNotZero;
     public static String SecurityListFilter;
+    public static String SecurityListFilterDateReached;
     public static String SecurityListFilterHideInactive;
+    public static String SecurityListFilterLimitPriceExceeded;
     public static String SecurityListFilterOnlyExchangeRates;
     public static String SecurityListFilterOnlySecurities;
     public static String SecurityMenuAddNewSecurity;
@@ -1131,6 +1150,8 @@ public class Messages extends NLS
     public static String HelpURL;
     public static String HoldingsWarningAssetsWithNegativeValuation;
     public static String HoldingsWarningAssetsWithNegativeValuationDetails;
+    public static String OptionDateIsInTheFuture;
+    public static String OptionDateIsInThePast;
     public static String YearlyPerformanceHeatmapToolTip;
     static
     {

@@ -35,10 +35,13 @@ public class DetectDuplicatesActionTest
     {
         DetectDuplicatesAction action = new DetectDuplicatesAction(new Client());
 
-        new PropertyChecker<AccountTransaction>(AccountTransaction.class, "note", "forex", "monetaryAmount", "updatedAt").before(
-                        (name, o, c) -> assertThat(name, action.process(o, account(c)).getCode(), is(Code.WARNING)))
-                        .after((name, o, c) -> assertThat(name, action.process(o, account(c)).getCode(), is(Code.OK)))
-                        .run();
+        new PropertyChecker<AccountTransaction>(
+                        AccountTransaction.class, "note", "source", "forex", "monetaryAmount", "updatedAt")
+                                        .before((name, o, c) -> assertThat(name,
+                                                        action.process(o, account(c)).getCode(), is(Code.WARNING)))
+                                        .after((name, o, c) -> assertThat(name, action.process(o, account(c)).getCode(),
+                                                        is(Code.OK)))
+                                        .run();
     }
 
     @SuppressWarnings("nls")
@@ -48,8 +51,8 @@ public class DetectDuplicatesActionTest
     {
         DetectDuplicatesAction action = new DetectDuplicatesAction(new Client());
 
-        new PropertyChecker<PortfolioTransaction>(PortfolioTransaction.class, "fees", "taxes", "note", "forex",
-                        "monetaryAmount", "updatedAt") //
+        new PropertyChecker<PortfolioTransaction>(PortfolioTransaction.class, "fees", "taxes", "note", "source",
+                        "forex", "monetaryAmount", "updatedAt") //
                                         .before((name, o, c) -> assertThat(name,
                                                         action.process(o, portfolio(c)).getCode(), is(Code.WARNING)))
                                         .after((name, o, c) -> assertThat(name,
@@ -64,8 +67,8 @@ public class DetectDuplicatesActionTest
     {
         DetectDuplicatesAction action = new DetectDuplicatesAction(new Client());
 
-        new PropertyChecker<PortfolioTransaction>(PortfolioTransaction.class, "type", "fees", "taxes", "note", "forex",
-                        "monetaryAmount", "updatedAt") //
+        new PropertyChecker<PortfolioTransaction>(PortfolioTransaction.class, "type", "fees", "taxes", "note", "source",
+                        "forex", "monetaryAmount", "updatedAt") //
                                         .before((name, o, c) -> {
                                             o.setType(PortfolioTransaction.Type.BUY);
                                             c.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
@@ -76,8 +79,8 @@ public class DetectDuplicatesActionTest
                                                         action.process(o, portfolio(c)).getCode(), is(Code.OK)))
                                         .run();
 
-        new PropertyChecker<PortfolioTransaction>(PortfolioTransaction.class, "type", "fees", "taxes", "note", "forex",
-                        "monetaryAmount", "updatedAt") //
+        new PropertyChecker<PortfolioTransaction>(PortfolioTransaction.class, "type", "fees", "taxes", "note", "source",
+                        "forex", "monetaryAmount", "updatedAt") //
                                         .before((name, o, c) -> {
                                             o.setType(PortfolioTransaction.Type.SELL);
                                             c.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);

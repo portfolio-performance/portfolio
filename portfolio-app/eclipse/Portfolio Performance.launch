@@ -34,6 +34,7 @@
         <setEntry value="com.google.gson@default:default"/>
         <setEntry value="com.google.guava.failureaccess@default:default"/>
         <setEntry value="com.google.guava@default:default"/>
+        <setEntry value="com.google.protobuf@default:default"/>
         <setEntry value="com.googlecode.json-simple@default:default"/>
         <setEntry value="com.ibm.icu@default:default"/>
         <setEntry value="com.jayway.jsonpath.json-path@default:default"/>

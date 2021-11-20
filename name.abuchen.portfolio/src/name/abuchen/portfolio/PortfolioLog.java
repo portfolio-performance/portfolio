@@ -69,7 +69,7 @@ public class PortfolioLog
     }
 
     /**
-     * Logs the given warning status to the application log.
+     * Logs the given warning message to the application log.
      * 
      * @param message
      *            warning message
@@ -77,6 +77,17 @@ public class PortfolioLog
     public static void warning(String message)
     {
         log(new Status(IStatus.WARNING, PLUGIN_ID, message));
+    }
+
+    /**
+     * Logs an informational message to the application log.
+     * 
+     * @param message
+     *            warning message
+     */
+    public static void info(String message)
+    {
+        log(new Status(IStatus.INFO, PLUGIN_ID, message));
     }
 
 }

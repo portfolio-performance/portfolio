@@ -84,7 +84,7 @@ public interface UIConstants
     {
         String PART = "name.abuchen.portfolio.ui.param.part"; //$NON-NLS-1$
         String FILE = "name.abuchen.portfolio.ui.param.file"; //$NON-NLS-1$
-        String EXTENSION = "name.abuchen.portfolio.ui.param.extension"; //$NON-NLS-1$
+        String FILE_TYPE = "name.abuchen.portfolio.ui.param.file-type"; //$NON-NLS-1$
         String ENCRYPTION_METHOD = "name.abuchen.portfolio.ui.param.encryptionmethod"; //$NON-NLS-1$
         String SAMPLE_FILE = "name.abuchen.portfolio.ui.param.samplefile"; //$NON-NLS-1$
         String NAME = "name.abuchen.portfolio.ui.param.name"; //$NON-NLS-1$
@@ -149,6 +149,8 @@ public interface UIConstants
 
         String ENABLE_EXPERIMENTAL_FEATURES = "ENABLE_EXPERIMENTAL_FEATURES"; //$NON-NLS-1$
 
+        String ENABLE_SWTCHART_PIECHARTS = "ENABLE_SWTCHART_PIECHARTS"; //$NON-NLS-1$
+
         String ALPHAVANTAGE_API_KEY = "ALPHAVANTAGE_API_KEY"; //$NON-NLS-1$
         String ALPHAVANTAGE_CALL_FREQUENCY_LIMIT = "ALPHAVANTAGE_CALL_FREQUENCY_LIMIT"; //$NON-NLS-1$
 
@@ -157,6 +159,8 @@ public interface UIConstants
         String FINNHUB_API_KEY = "FINNHUB_API_KEY"; //$NON-NLS-1$
 
         String DIVVYDIARY_API_KEY = "DIVVYDIARY_API_KEY"; //$NON-NLS-1$
+
+        String EOD_HISTORICAL_DATA_API_KEY = "EOD_HISTORICAL_DATA_API_KEY"; //$NON-NLS-1$
 
         String PORTFOLIO_REPORT_API_KEY = "PORTFOLIO_REPORT_API_KEY"; //$NON-NLS-1$
         String PORTFOLIO_REPORT_API_URL = "PORTFOLIO_REPORT_API_URL"; //$NON-NLS-1$

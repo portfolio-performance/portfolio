@@ -1,0 +1,157 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+finvesto, 80218 München
+Depotauszug-Nr. 7
+Depot-Nr. xxx
+Seite 1 von 2
+Herrn
+xxx
+xxx
+xxx
+04.01.2021
+Depotauszug für Ihr finvesto Depot bei ebase
+für den Zeitraum vom 03.10.2020 bis 31.12.2020
+Kauf 40,00 EUR mit Kursdatum 16.10.2020 in Depotposition xxx.01
+iShsIII-Core MSCI World U.ETF Registered Shs USD (Acc) o.N.
+Ref. Nr. xxx/16102020, Buchungsdatum 19.10.2020
+ISIN Anteile Abrechnungskurs Devisenkurs Betrag
+IE00B4L5Y983 0,703198 66,630000 USD 1,173700 39,92 EUR
+vermögenswirksame Leistungen
+Entgelte zzgl. Entgelte
+ETF-Transaktionsentgelt 0,08 EUR
+Zahlungsbetrag aus Überweisung 40,00 EUR
+Kauf 40,00 EUR mit Kursdatum 16.11.2020 in Depotposition xxx.01
+iShsIII-Core MSCI World U.ETF Registered Shs USD (Acc) o.N.
+Ref. Nr. xxx/16112020, Buchungsdatum 17.11.2020
+ISIN Anteile Abrechnungskurs Devisenkurs Betrag
+IE00B4L5Y983 0,678808 69,676900 USD 1,184800 39,92 EUR
+Entgelte zzgl. Entgelte
+ETF-Transaktionsentgelt 0,08 EUR
+Zahlungsbetrag aus Überweisung 40,00 EUR
+Kauf 40,00 EUR mit Kursdatum 16.12.2020 in Depotposition xxx.01
+iShsIII-Core MSCI World U.ETF Registered Shs USD (Acc) o.N.
+Ref. Nr. xxx/16122020, Buchungsdatum 17.12.2020
+ISIN Anteile Abrechnungskurs Devisenkurs Betrag
+IE00B4L5Y983 0,674710 72,230000 USD 1,220800 39,92 EUR
+Entgelte zzgl. Entgelte
+ETF-Transaktionsentgelt 0,08 EUR
+Zahlungsbetrag aus Überweisung 40,00 EUR
+Gerne beantworten wir Ihre Fragen unter der Info-Line +49 89 45460-380.
+Das Team der finvesto Anlageberatung erreichen Sie unter +49 89 45460-389.
+Diese Mitteilung wird nicht unterschrieben.
+finvesto - Amtsgericht München HRB 141 740 Geschäftsführung: Telefon: +49 89 45460-380
+eine Marke der European Bank for USt-ID Nr. DE 813330104 Kai Friedrich, Jürgen Keller Telefax: +49 89 45460-161
+Financial Services GmbH (ebase®) Gläubiger-ID: Aufsichtsratsvorsitzender: E-Mail: info@finvesto.de
+80218 München DE68ZZZ00000025032 Frank Strauß Web: www.finvesto.de
+Depotauszug-Nr. 7
+Depot-Nr. xxx
+Seite 2 von 2
+Entgelt Verkauf mit Kursdatum 21.12.2020 aus Depotposition xxx.01
+iShsIII-Core MSCI World U.ETF Registered Shs USD (Acc) o.N.
+Ref. Nr. xxx/11122020, Buchungsdatum 23.12.2020
+ISIN Anteile Abrechnungskurs Devisenkurs Betrag
+IE00B4L5Y983 -0,167976 71,243400 USD 1,227400 9,75 EUR
+Entgelte abzgl. Entgelte
+VL-Vertragsentgelt inkl. 16 % USt 9,75 EUR
+Zahlungsbetrag 0,00 EUR
+Bestand Depotpositionen
+Pos. Fonds Anteile Bewertungskurs zum Datum Devisenkurs Bestand
+01 IE00B4L5Y983 12,240769 73,026800 USD 29.12.2020 1,224800 729,84 EUR
+iShsIII-Core MSCI World U.ETF Registered Shs USD (Acc) o.N.
+Verwahrart: Wertpapierrechnung, Lagerland: Irland
+vermögenswirksame Leistungen
+Bis 01.01.2026 sind 11,055227 Anteile gemäß Vermögensbildungsgesetz gesperrt.
+4Ihr Freistellungsauftrag in Höhe von xxx EUR ist vorgemerkt.
+4Sie haben einen verbleibenden Freistellungsbetrag in Höhe von xxx EUR.
+Bitte beachten Sie folgende Hinweise:
+Einwendungen
+Wir bitten Sie, diesen Depotauszug auf seine Richtigkeit und Vollständigkeit zu überprüfen. Einwendungen wegen Unrichtigkeit
+oder Unvollständigkeit dieses Depotauszugs erheben Sie bitte innerhalb von sechs Wochen nach Erhalt dieses Depotauszugs
+gegenüber der internen Revision der ebase unter Nennung der Depotnummer und des Datums des Depotauszugs. Sofern Sie die
+Einwendungen schriftlich/in Textform erheben, genügt das Absenden innerhalb der Sechs-Wochen-Frist. Das Unterlassen der
+rechtzeitigen Einwendung(en) gilt als Genehmigung der Abrechnung(en)/des Depotauszugs, gemäß Punkt "Mitwirkungspflichten
+und Obliegenheiten des Kunden/ Prüfung und Einwendungen bei Mitteilungen der ebase" der Allgemeinen Geschäftsbedingungen
+der European Bank for Financial Services GmbH für Privatanleger.
+Bitte denken Sie daran, uns frühzeitig über Änderungen Ihrer persönlichen Daten zu informieren.
+Diese Mitteilung wird nicht unterschrieben.
+finvesto - Amtsgericht München HRB 141 740 Geschäftsführung: Telefon: +49 89 45460-380
+eine Marke der European Bank for USt-ID Nr. DE 813330104 Kai Friedrich, Jürgen Keller Telefax: +49 89 45460-161
+Financial Services GmbH (ebase®) Gläubiger-ID: Aufsichtsratsvorsitzender: E-Mail: info@finvesto.de
+80218 München DE68ZZZ00000025032 Frank Strauß Web: www.finvesto.de
+Sehr geehrte Kundin, sehr geehrter Kunde,
+mit dem folgenden "Informationsbogen für den Einleger" unterrichten wir Sie gemäß § 23 a Abs. 1 Satz 3 des
+Kreditwesengesetzes über die gesetzliche Einlagensicherung. Außerdem sind Ihre Einlagen durch den
+Einlagensicherungsfonds des Bundesverbandes deutscher Banken geschützt. Nähere Informationen dazu
+finden Sie auf www.bankenverband.de/einlagensicherung.
+Informationsbogen für den Einleger
+Einlagen bei der European Bank for Entschädigungseinrichtung deutscher Banken GmbH (1)
+Financial Services GmbH (ebase®)
+sind geschützt durch:
+Sicherungsobergrenze 100.000 Euro pro Einleger pro Kreditinstitut (2)
+Die folgenden Marken sind Teil der European Bank for Financial Services
+GmbH (ebase®): finvesto, fintego
+Falls Sie mehrere Einlagen bei Alle Ihre Einlagen bei demselben Kreditinstitut werden "aufaddiert", und
+demselben Kreditinstitut haben die Gesamtsumme unterliegt der Obergrenze von 100.000 Euro (2)
+Falls Sie ein Gemeinschaftskonto mit Die Obergrenze von 100.000 Euro gilt für jeden einzelnen Einleger (3)
+einer oder mehreren anderen
+Personen haben
+Erstattungsfrist bei Ausfall eines 7 Arbeitstage (4)
+Kreditinstitutes
+Währung der Erstattung Euro
+Kontaktdaten Entschädigungseinrichtung deutscher Banken GmbH
+Burgstraße 28
+10178 Berlin
+Deutschland
+Postanschrift:
+Postfach 11 04 48
+10834 Berlin
+Telefon: +49 30 59 00 11 96 - 0
+E-Mail: info@edb-banken.de
+Weitere Informationen: www.edb-banken.de
+Empfangsbestätigung durch den/die Ihre Unterschrift(en) ist/sind nicht erforderlich. Sie haben den Empfang
+Einleger: dieser Informationen bereits im Rahmen der Depot- / Kontoeröffnung
+bestätigt.
+Bitte beachten Sie die Fußnoten - Erläuterungen auf der Folgeseite!
+European Bank 80218 München E-Mail: service@ebase.com
+for Financial Services GmbH (ebase®) DEUTSCHLAND
+Zusätzliche Informationen
+(1) Ihre Einlage wird von einem gesetzlichen Einlagensicherungssystem und einem vertraglichen Einlagensicherungs-
+system gedeckt. Im Falle einer Insolvenz Ihres Kreditinstituts werden Ihre Einlagen in jedem Fall bis zu 100.000 Euro
+erstattet.
+(2) Sollte eine Einlage nicht verfügbar sein, weil ein Kreditinstitut seinen finanziellen Verpflichtungen nicht nachkommen
+kann, so werden die Einleger von dem Einlagensicherungssystem entschädigt. Die betreffende Deckungssumme
+beträgt maximal 100.000 Euro pro Kreditinstitut. Das heißt, dass bei der Ermittlung dieser Summe alle bei demselben
+Kreditinstitut gehaltenen Einlagen addiert werden. Hält ein Einleger beispielsweise 90.000 Euro auf einem Sparkonto
+und 20.000 Euro auf einem Girokonto, so werden ihm lediglich 100.000 Euro erstattet.
+Diese Methode wird auch angewandt, wenn ein Kreditinstitut unter unterschiedlichen Marken auftritt. Die European
+Bank for Financial Services GmbH (ebase®) ist auch unter dem Namen finvesto und fintego tätig. Das heißt, dass die
+Gesamtsumme aller Einlagen bei einem oder mehreren dieser Marken in Höhe von bis zu 100.000 Euro gedeckt ist.
+(3) Bei Gemeinschaftskonten gilt die Obergrenze von 100.000 Euro für jeden Einleger.
+Einlagen auf einem Konto, über das zwei oder mehrere Personen als Mitglieder einer Personengesellschaft oder
+Sozietät, einer Vereinigung oder eines ähnlichen Zusammenschlusses ohne Rechtspersönlichkeit verfügen können,
+werden bei der Berechnung der Obergrenze von 100.000 Euro allerdings zusammengefasst und als Einlage eines
+einzigen Einlegers behandelt.
+In den Fällen des § 8 Absätze 2 bis 4 des Einlagensicherungsgesetzes sind Einlagen über 100.000 Euro hinaus
+gesichert. Weitere Informationen sind erhältlich über die Webseite der Entschädigungseinrichtung deutscher Banken
+GmbH unter www.edb-banken.de.
+(4) Das zuständige Einlagensicherungssystem ist die
+Entschädigungseinrichtung deutscher Banken GmbH
+Burgstraße 28
+10178 Berlin
+Deutschland
+Postanschrift
+Postfach 11 04 48
+10834 Berlin
+Telefon: +49 30 59 00 11 96 - 0
+E-Mail: info@edb-banken.de.
+Es wird Ihnen Ihre Einlagen (bis zu 100.000 Euro) spätestens innerhalb von 7 Arbeitstagen erstatten.
+Haben Sie die Erstattung innerhalb dieser Fristen nicht erhalten, sollten Sie mit dem Einlagensicherungssystem
+Kontakt aufnehmen, da der Gültigkeitszeitraum für Erstattungsforderungen nach einer bestimmten Frist abgelaufen
+sein kann. Weitere Informationen sind erhältlich über die Website der Entschädigungseinrichtung deutscher Banken
+GmbH unter www.edb-banken.de.
+Weitere wichtige Informationen
+Einlagen von Privatkunden und Unternehmen sind im Allgemeinen durch Einlagensicherungssysteme gedeckt. Für
+bestimmte Einlagen geltende Ausnahmen werden auf der Website des zuständigen Einlagensicherungssystems
+mitgeteilt. Ihr Kreditinstitut wird Sie auf Anfrage auch darüber informieren, ob bestimmte Produkte gedeckt sind oder
+nicht. Wenn Einlagen gedeckt sind, wird das Kreditinstitut dies auch auf dem Kontoauszug bestätigen.

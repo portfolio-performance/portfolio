@@ -157,10 +157,16 @@ public abstract class Transaction implements Annotated, Adaptable
     private CrossEntry crossEntry;
     private long shares;
     private String note;
+    private String source;
 
     private List<Unit> units;
 
     private Instant updatedAt;
+
+    /* protobuf only */ Transaction(String uuid)
+    {
+        this.uuid = uuid;
+    }
 
     public Transaction()
     {
@@ -288,6 +294,17 @@ public abstract class Transaction implements Annotated, Adaptable
     public void setNote(String note)
     {
         this.note = note;
+        this.updatedAt = Instant.now();
+    }
+
+    public String getSource()
+    {
+        return source;
+    }
+
+    public void setSource(String source)
+    {
+        this.source = source;
         this.updatedAt = Instant.now();
     }
 

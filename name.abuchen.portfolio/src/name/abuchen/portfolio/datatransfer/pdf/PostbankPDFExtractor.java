@@ -30,12 +30,6 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
     }
 
     @Override
-    public String getPDFAuthor()
-    {
-        return "Deutsche Postbank AG"; //$NON-NLS-1$
-    }
-
-    @Override
     public String getLabel()
     {
         return "Postbank"; //$NON-NLS-1$

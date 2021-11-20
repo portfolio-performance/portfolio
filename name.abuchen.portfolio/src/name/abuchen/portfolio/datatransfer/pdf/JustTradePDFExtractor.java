@@ -42,12 +42,6 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
     }
 
     @Override
-    public String getPDFAuthor()
-    {
-        return ""; //$NON-NLS-1$
-    }
-
-    @Override
     public String getLabel()
     {
         return "Sutor Bank / justTRADE"; //$NON-NLS-1$
@@ -90,6 +84,9 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
                 .match("^Internationale Wertpapierkennnummer \\(ISIN\\): (?<isin>[\\w]{12})$")
                 .match("^W.hrung: (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
+                    if (v.get("name").endsWith(":"))
+                        v.put("name", v.get("name").substring(0, v.get("name").length()-1));
+
                     t.setSecurity(getOrCreateSecurity(v));
                     type.getCurrentContext().put("currency", v.get("currency"));
                 })
@@ -112,10 +109,13 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
                 // Internationale Wertpapierkennnummer DE000VP63TQ3
                 // Rückzahlungskurs EUR 230,000000
                 .section("name", "isin", "currency").optional()
-                .match("^Produktbezeichnung - (?<name>.*):$")
+                .match("^Produktbezeichnung - (?<name>.*)$")
                 .match("^Internationale Wertpapierkennnummer (?<isin>[\\w]{12})$")
                 .match("^R.ckzahlungskurs (?<currency>[\\w]{3}) [.,\\d]+$")
                 .assign((t, v) -> {
+                    if (v.get("name").endsWith(":"))
+                        v.put("name", v.get("name").substring(0, v.get("name").length()-1));
+                    
                     t.setSecurity(getOrCreateSecurity(v));
                 })
 
@@ -133,22 +133,13 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
                     // Formate the date from 05. Oktober 2009 to 05.10.2009
                     // Work-around DateTimeFormatter in Local.GERMAN looks like "Mär" not "Mrz" and in Local.ENGLISH like "Mar".
                     v.put("date", DateTimeFormatter.ofPattern("dd.MM.yyyy").format(LocalDate.parse(v.get("date").replace("Mrz", "Mär"), DateTimeFormatter.ofPattern("d LLL yyyy", Locale.GERMANY))));
-
-                    if (v.get("time") != null)
-                        t.setDate(asDate(v.get("date"), v.get("time")));
-                    else
-                        t.setDate(asDate(v.get("date")));
+                    t.setDate(asDate(v.get("date"), v.get("time")));
                 })
 
                 // Schlusstag/-Zeit 02.01.2020 10:49:34 Auftragserteilung/ -ort sonstige
                 .section("date", "time").optional()
                 .match("^Schlusstag\\/\\-Zeit (?<date>\\d+.\\d+.\\d{4}) (?<time>\\d+:\\d+:\\d+) .*$")
-                .assign((t, v) -> {
-                    if (v.get("time") != null)
-                        t.setDate(asDate(v.get("date"), v.get("time")));
-                    else
-                        t.setDate(asDate(v.get("date")));
-                })
+                .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
 
                 // Valutadatum 25. Juni 2021
                 .section("date").optional()
@@ -208,9 +199,12 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
                 // Produktbezeichnung - Kellogg Co.:
                 // Internationale Wertpapierkennnummer US4878361082
                 .section("name", "isin")
-                .match("^Produktbezeichnung - (?<name>.*):")
+                .match("^Produktbezeichnung - (?<name>.*)")
                 .match("^Internationale Wertpapierkennnummer (?<isin>.*)")
                 .assign((t, v) -> {
+                    if (v.get("name").endsWith(":"))
+                        v.put("name", v.get("name").substring(0, v.get("name").length()-1));
+                    
                     t.setSecurity(getOrCreateSecurity(v));
                 })
 
@@ -221,9 +215,9 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
                     t.setShares(asShares(v.get("shares")));
                 })
 
-                // Ex Datum - Tag 01. März 2021
+                // Valutadatum 15. März 2021
                 .section("date")
-                .match("^Ex Datum - Tag (?<date>\\d+. .* \\d{4})")
+                .match("^Valutadatum (?<date>\\d+. .* \\d{4})")
                 .assign((t, v) -> {
                     // Formate the date from 01. März 2021 to 01.03.2021
                     v.put("date", DateTimeFormatter.ofPattern("dd.MM.yyyy").format(LocalDate.parse(v.get("date"), DateTimeFormatter.ofPattern("d. MMMM yyyy", Locale.GERMANY))));
@@ -237,6 +231,12 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(v.get("currency"));
                 })
+
+                // Dividende - Vierteljährlich
+                // Dividende - Interim
+                .section("note").optional()
+                .match("^Dividende - (?<note>(Vierteljährlich|Jährlich|Monatlich|Interim))$")
+                .assign((t, v) -> t.setNote(v.get("note")))
 
                 .wrap(TransactionItem::new);
 

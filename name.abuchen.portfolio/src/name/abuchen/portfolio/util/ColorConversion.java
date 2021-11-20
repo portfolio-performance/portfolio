@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.util;
 
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.graphics.RGBA;
 
 public class ColorConversion
 {
@@ -8,24 +9,26 @@ public class ColorConversion
     {
     }
 
-    public static int[] toRGB(String hex)
+    public static RGB hex2RGB(String hex)
+    {
+        return hex2RGBA(hex).rgb;
+    }
+
+    public static RGBA hex2RGBA(String hex)
     {
         try
         {
-            Integer intval = Integer.decode(hex);
-            int i = intval.intValue();
-            return new int[] { (i >> 16) & 0xFF, (i >> 8) & 0xFF, i & 0xFF };
+            long i = Long.decode(hex).longValue();
+            return new RGBA((int) ((i >> 16) & 0xFF), // R
+                            (int) ((i >> 8) & 0xFF), // G
+                            (int) (i & 0xFF), // B
+                            (int) ((i >> 24) & 0xFF) // A
+            );
         }
         catch (NumberFormatException ignore)
         {
-            return new int[] { 0, 0, 0 };
+            return new RGBA(0, 0, 0, 0);
         }
-    }
-
-    public static RGB hex2RGB(String hex)
-    {
-        int[] rgb = toRGB(hex);
-        return new RGB(rgb[0], rgb[1], rgb[2]);
     }
 
     public static float[] toHSB(String hex)
@@ -38,9 +41,19 @@ public class ColorConversion
         return toHex(rgb.red, rgb.green, rgb.blue);
     }
 
+    public static String toHex(RGBA rgba)
+    {
+        return toHex(rgba.alpha, rgba.rgb.red, rgba.rgb.green, rgba.rgb.blue);
+    }
+
     public static String toHex(int red, int green, int blue)
     {
         return String.format("#%02x%02x%02x", red, green, blue); //$NON-NLS-1$
+    }
+
+    public static String toHex(int alpha, int red, int green, int blue)
+    {
+        return String.format("#%02x%02x%02x%02x", alpha, red, green, blue); //$NON-NLS-1$
     }
 
     public static String toHex(float hue, float saturation, float brightness)

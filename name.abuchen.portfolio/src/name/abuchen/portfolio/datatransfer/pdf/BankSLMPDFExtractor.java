@@ -34,11 +34,6 @@ public class BankSLMPDFExtractor extends AbstractPDFExtractor
     {
         return "Bank SLM AG"; //$NON-NLS-1$
     }
-    @Override
-    public String getPDFAuthor()
-    {
-        return ""; //$NON-NLS-1$
-    }
 
     private void addBuySellTransaction()
     {

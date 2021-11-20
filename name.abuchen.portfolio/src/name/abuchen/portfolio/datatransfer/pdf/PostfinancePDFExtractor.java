@@ -41,12 +41,6 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
     }
 
     @Override
-    public String getPDFAuthor()
-    {
-        return ""; //$NON-NLS-1$
-    }
-
-    @Override
     public String getLabel()
     {
         return "PostFinance AG"; //$NON-NLS-1$
@@ -397,7 +391,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
         });
         this.addDocumentTyp(type);
 
-        String removalPattern = "^(\\d{2}.\\d{2}.\\d{2}\\s)?(E-FINANCE|AUFTRAG.+IRECT|ESR|GIRO.+OST|GIRO.+ANK|ÜBERTRAG AUF KONTO|ÜBERTRAG A UF K ONTO|AUFTRAG.+ASISLASTSCHRIFT|KAUF.+IENSTLEISTUNG(.+\\.\\d{4}){0,1}|KAUF.+HOPPING(.+\\.\\d{4}){0,1}|GIRO INTERNATIONAL \\(SEPA\\)|BARGELDBEZUG(.+\\.\\d{4})?|ONLINE-SHOPPING|TWINT.+(ENDEN|DIENSTLEISTUNG)){1}.*?\\s(?<amount>[\\d+',.\\s]+)\\s(?<date>\\d{2}.\\d{2}.\\d{2}+)\\s?([\\d+',.\\s]+)?$"; 
+        String removalPattern = "^(\\d{2}.\\d{2}.\\d{2}\\s)?(E-FINANCE|AUFTRAG.+IRECT|ESR|GIRO.+OST|GIRO.+ANK|ÜBERTRAG AUF KONTO|ÜBERTRAG A UF K ONTO|AUFTRAG.+ASISLASTSCHRIFT|LASTSCHRIFT|KAUF.+IENSTLEISTUNG(.+\\.\\d{4}){0,1}|KAUF.+HOPPING(.+\\.\\d{4}){0,1}|GIRO INTERNATIONAL \\(SEPA\\)|BARGELDBEZUG(.+\\.\\d{4})?|ONLINE-SHOPPING|TWINT.+(ENDEN|DIENSTLEISTUNG)){1}.*?\\s(?<amount>[\\d+',.\\s]+)\\s(?<date>\\d{2}.\\d{2}.\\d{2}+)\\s?([\\d+',.\\s]+)?$"; 
         Block removalBlock = new Block(removalPattern);
         type.addBlock(removalBlock);
         removalBlock.set(new Transaction<AccountTransaction>()
@@ -419,7 +413,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
 
-        String depositPattern = "^(\\d{2}.\\d{2}.\\d{2}\\s)?(GIRO AUSLAND|GIRO AUS ONLINE-SIC \\d{3,4}|GIRO.+ONTO|ÜBERTRAG AUS KONTO|ÜBERTRAG A US K ONTO|GUTSCHRIFT.+HOPPING|GUTSCHRIFT.+REMDBANK \\d{3,4}|GUTSCHRIFT.+REMDBANK|. EINZAHLUNGSSCHEIN\\/QR-ZAHLTEIL){1}.*?\\s(?<amount>[\\d+',.\\s]+)\\s(?<date>\\d{2}.\\d{2}.\\d{2}+)(\\s)?([\\d+',.\\s]+)?$";
+        String depositPattern = "^(\\d{2}.\\d{2}.\\d{2}\\s)?(GIRO AUSLAND|GIRO AUS ONLINE-SIC \\d{3,4}|GIRO.+ONTO|ÜBERTRAG AUS KONTO|ÜBERTRAG A US K ONTO|GUTSCHRIFT.+HOPPING|GUTSCHRIFT.+REMDBANK \\d{3,4}|GUTSCHRIFT.+REMDBANK|GUTSCHRIFT|. EINZAHLUNGSSCHEIN\\/QR-ZAHLTEIL|TWINT.+EMPFANGEN){1}.*?\\s(?<amount>[\\d+',.\\s]+)\\s(?<date>\\d{2}.\\d{2}.\\d{2}+)(\\s)?([\\d+',.\\s]+)?$";
         Block depositBlock = new Block(depositPattern);
         type.addBlock(depositBlock);
         depositBlock.set(new Transaction<AccountTransaction>()
@@ -468,7 +462,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
 
-        String feePattern = "^(\\d{2}.\\d{2}.\\d{2}\\s)?(FÜR DIE KONTOFÜHRUNG|PREIS.+ONTOFÜHRUNG|PREIS.*SCHALTER|JAHRESPREIS LOGIN|FÜR KONTOAUSZUG PAPIER|FÜR GIRO INTERNATIONAL \\(SEPA\\)){1}.*?\\s+(?<amount>[\\d+',.\\s]+)\\s(?<date>\\d{2}.\\d{2}.\\d{2}+)(\\s)?([\\d+',.\\s]+)?$";
+        String feePattern = "^(\\d{2}.\\d{2}.\\d{2}\\s)?(FÜR DIE KONTOFÜHRUNG|PREIS.+ONTOFÜHRUNG|PREIS.*SCHALTER|PREIS.FÜR|GUTHABENGEBÜHR.FÜR.\\d{2}.\\d{4}|JAHRESPREIS LOGIN|FÜR KONTOAUSZUG PAPIER|FÜR GIRO INTERNATIONAL \\(SEPA\\)){1}.*?\\s+(?<amount>[\\d+',.\\s]+)\\s(?<date>\\d{2}.\\d{2}.\\d{2}+)(\\s)?([\\d+',.\\s]+)?$";
         Block feeBlock = new Block(feePattern);
         type.addBlock(feeBlock);
         feeBlock.set(new Transaction<AccountTransaction>()

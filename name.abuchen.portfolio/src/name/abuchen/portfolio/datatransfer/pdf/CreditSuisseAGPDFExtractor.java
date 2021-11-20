@@ -27,12 +27,6 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
     }
 
     @Override
-    public String getPDFAuthor()
-    {
-        return ""; //$NON-NLS-1$
-    }
-
-    @Override
     public String getLabel()
     {
         return "Credit Suisse AG"; //$NON-NLS-1$

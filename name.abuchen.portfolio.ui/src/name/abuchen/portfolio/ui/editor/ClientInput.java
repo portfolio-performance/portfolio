@@ -10,6 +10,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -41,6 +42,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
+import name.abuchen.portfolio.model.SaveFlag;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
@@ -185,7 +187,7 @@ public class ClientInput
     {
         if (clientFile == null)
         {
-            doSaveAs(shell, null, null);
+            doSaveAs(shell, null, EnumSet.of(SaveFlag.XML));
             return;
         }
 
@@ -195,7 +197,7 @@ public class ClientInput
                 if (preferences.getBoolean(UIConstants.Preferences.CREATE_BACKUP_BEFORE_SAVING, true))
                     createBackup(clientFile, "backup"); //$NON-NLS-1$
 
-                ClientFactory.save(client, clientFile, null, null);
+                ClientFactory.save(client, clientFile);
                 storePreferences(false);
 
                 broker.post(UIConstants.Event.File.SAVED, clientFile.getAbsolutePath());
@@ -210,7 +212,7 @@ public class ClientInput
         });
     }
 
-    public void doSaveAs(Shell shell, String extension, String encryptionMethod) // NOSONAR
+    public void doSaveAs(Shell shell, String extension, Set<SaveFlag> flags) // NOSONAR
     {
         FileDialog dialog = new FileDialog(shell, SWT.SAVE);
         dialog.setOverwrite(true);
@@ -249,7 +251,7 @@ public class ClientInput
         File localFile = new File(path);
         char[] password = null;
 
-        if (ClientFactory.isEncrypted(localFile))
+        if (flags.contains(SaveFlag.ENCRYPTED))
         {
             PasswordDialog pwdDialog = new PasswordDialog(shell);
             if (pwdDialog.open() != Window.OK)
@@ -264,7 +266,7 @@ public class ClientInput
         BusyIndicator.showWhile(shell.getDisplay(), () -> {
             try
             {
-                ClientFactory.save(client, clientFile, encryptionMethod, pwd);
+                ClientFactory.saveAs(client, clientFile, pwd, flags);
                 storePreferences(true);
 
                 broker.post(UIConstants.Event.File.SAVED, clientFile.getAbsolutePath());
@@ -297,7 +299,7 @@ public class ClientInput
 
             try
             {
-                ClientFactory.save(client, autosaveFile, null, null);
+                ClientFactory.save(client, autosaveFile);
             }
             catch (IOException e)
             {
@@ -555,7 +557,7 @@ public class ClientInput
         this.exchangeRateProviderFacory = ContextInjectionFactory //
                         .make(ExchangeRateProviderFactory.class, this.context, c2);
 
-        this.navigation = new Navigation(client);
+        this.navigation = ContextInjectionFactory.make(Navigation.class, this.context, c2);
 
         client.addPropertyChangeListener(event -> {
 

@@ -1,13 +1,15 @@
 package name.abuchen.portfolio.money.impl;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,9 +21,13 @@ import com.thoughtworks.xstream.XStream;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.proto.v1.PECBData;
+import name.abuchen.portfolio.model.proto.v1.PExchangeRate;
+import name.abuchen.portfolio.model.proto.v1.PExchangeRateTimeSeries;
 import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.ExchangeRateProvider;
 import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
+import name.abuchen.portfolio.util.ProtobufUtil;
 import name.abuchen.portfolio.util.XStreamLocalDateConverter;
 
 /**
@@ -40,8 +46,9 @@ public class ECBExchangeRateProvider implements ExchangeRateProvider
 {
     public static final String EUR = "EUR"; //$NON-NLS-1$
 
-    private static final String FILE_STORAGE = "ecb_exchange_rates.xml"; //$NON-NLS-1$
-    private static final String FILE_SUMMARY = "ecb_exchange_rates_summary.xml"; //$NON-NLS-1$
+    private static final String FILE_STORAGE_PB = "ecb_exchange_rates.pb"; //$NON-NLS-1$
+    private static final String FILE_STORAGE_XML = "ecb_exchange_rates.xml"; //$NON-NLS-1$
+    private static final String FILE_SUMMARY_XML = "ecb_exchange_rates_summary.xml"; //$NON-NLS-1$
 
     private volatile XStream xstream; // NOSONAR
     private ECBData data = new ECBData();
@@ -67,33 +74,68 @@ public class ECBExchangeRateProvider implements ExchangeRateProvider
     {
         monitor.beginTask(MessageFormat.format(Messages.MsgLoadingExchangeRates, getName()), 2);
 
-        // read summary first (contains only latest rates, but is fast)
-        File file = getStorageFile(FILE_SUMMARY);
+        File file = getStorageFile(FILE_STORAGE_PB);
         if (file.exists())
         {
-            @SuppressWarnings("unchecked")
-            Map<String, ExchangeRate> loaded = (Map<String, ExchangeRate>) xstream().fromXML(file);
-
-            ECBData summary = new ECBData();
-            for (Map.Entry<String, ExchangeRate> entry : loaded.entrySet())
+            PECBData binary = read(file);
+            data = convert(binary);
+            monitor.worked(2);
+        }
+        else
+        {
+            // for the time being, fall back to reading the XML file
+            file = getStorageFile(FILE_SUMMARY_XML);
+            if (file.exists())
             {
-                ExchangeRateTimeSeriesImpl s = new ExchangeRateTimeSeriesImpl(this, EUR, entry.getKey());
-                s.addRate(entry.getValue());
-                summary.addSeries(s);
-            }
-            data = summary;
-        }
-        monitor.worked(1);
+                @SuppressWarnings("unchecked")
+                Map<String, ExchangeRate> loaded = (Map<String, ExchangeRate>) xstream().fromXML(file);
 
-        // read all historic exchange rates
-        file = getStorageFile(FILE_STORAGE);
-        if (file.exists())
-        {
-            ECBData loaded = (ECBData) xstream().fromXML(file);
-            loaded.doPostLoadProcessing(this);
-            data = loaded;
+                ECBData summary = new ECBData();
+                for (Map.Entry<String, ExchangeRate> entry : loaded.entrySet())
+                {
+                    ExchangeRateTimeSeriesImpl s = new ExchangeRateTimeSeriesImpl(this, EUR, entry.getKey());
+                    s.addRate(entry.getValue());
+                    summary.addSeries(s);
+                }
+                data = summary;
+            }
+            monitor.worked(1);
+
+            file = getStorageFile(FILE_STORAGE_XML);
+            if (file.exists())
+            {
+                ECBData loaded = (ECBData) xstream().fromXML(file);
+                loaded.doPostLoadProcessing(this);
+                data = loaded;
+            }
+            monitor.worked(1);
         }
-        monitor.worked(1);
+    }
+
+    private ECBData convert(PECBData binary)
+    {
+        ECBData loaded = new ECBData();
+
+        loaded.setLastModified(binary.getLastModified());
+
+        for (PExchangeRateTimeSeries series : binary.getSeriesList())
+        {
+            ExchangeRateTimeSeriesImpl s = new ExchangeRateTimeSeriesImpl(this, series.getBaseCurrency(),
+                            series.getTermCurrency());
+
+            List<ExchangeRate> rates = new ArrayList<>();
+            for (PExchangeRate rate : series.getExchangeRatesList())
+            {
+                rates.add(new ExchangeRate(LocalDate.ofEpochDay(rate.getDate()),
+                                ProtobufUtil.fromDecimalValue(rate.getValue())));
+            }
+
+            s.replaceAll(rates);
+
+            loaded.addSeries(s);
+        }
+
+        return loaded;
     }
 
     @Override
@@ -110,18 +152,27 @@ public class ECBExchangeRateProvider implements ExchangeRateProvider
         if (!data.isDirty())
             return;
 
-        // store latest exchange rate separately -> faster to load upon startup
-        // of the application
-        File file = getStorageFile(FILE_SUMMARY);
+        File file = getStorageFile(FILE_STORAGE_PB);
 
-        Map<String, ExchangeRate> summary = new HashMap<>();
+        PECBData.Builder binary = PECBData.newBuilder();
+
+        binary.setLastModified(data.getLastModified());
         for (ExchangeRateTimeSeriesImpl s : data.getSeries())
-            s.getLatest().ifPresent(rate -> summary.put(s.getTermCurrency(), rate));
-        write(summary, file);
+        {
+            PExchangeRateTimeSeries.Builder series = PExchangeRateTimeSeries.newBuilder();
+            series.setBaseCurrency(s.getBaseCurrency());
+            series.setTermCurrency(s.getTermCurrency());
 
-        // write the full history data
-        file = getStorageFile(FILE_STORAGE);
-        write(data, file);
+            for (ExchangeRate r : s.getRates())
+            {
+                series.addExchangeRates(PExchangeRate.newBuilder().setDate(r.getTime().toEpochDay())
+                                .setValue(ProtobufUtil.asDecimalValue(r.getValue())));
+            }
+
+            binary.addSeries(series);
+        }
+
+        write(binary.build(), file);
     }
 
     @Override
@@ -136,11 +187,19 @@ public class ECBExchangeRateProvider implements ExchangeRateProvider
         return bundle.getDataFile(name);
     }
 
-    private void write(Object object, File file) throws IOException
+    private void write(PECBData ecbdata, File file) throws IOException
     {
         try (FileOutputStream out = new FileOutputStream(file))
         {
-            xstream().toXML(object, out);
+            ecbdata.writeTo(out);
+        }
+    }
+
+    private PECBData read(File file) throws IOException
+    {
+        try (InputStream in = new BufferedInputStream(new FileInputStream(file), 65536))
+        {
+            return PECBData.parseFrom(in);
         }
     }
 
@@ -215,6 +274,8 @@ public class ECBExchangeRateProvider implements ExchangeRateProvider
                 {
                     XStream xstream = new XStream();
 
+                    xstream.allowTypesByWildcard(new String[] { "name.abuchen.portfolio.money.**" });
+
                     xstream.setClassLoader(ECBExchangeRateProvider.class.getClassLoader());
 
                     xstream.registerConverter(new XStreamLocalDateConverter());
@@ -227,12 +288,12 @@ public class ECBExchangeRateProvider implements ExchangeRateProvider
                     xstream.aliasField("t", ExchangeRate.class, "time");
                     xstream.useAttributeFor(ExchangeRate.class, "value");
                     xstream.aliasField("v", ExchangeRate.class, "value");
-                    
+
                     this.xstream = xstream;
                 }
             }
         }
         return xstream;
     }
-    
+
 }

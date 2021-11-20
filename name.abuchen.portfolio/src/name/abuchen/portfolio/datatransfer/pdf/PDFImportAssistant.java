@@ -44,11 +44,13 @@ public class PDFImportAssistant
         extractors.add(new DABPDFExtractor(client));
         extractors.add(new DADATBankenhausPDFExtractor(client));
         extractors.add(new DegiroPDFExtractor(client));
+        extractors.add(new DekaBankPDFExtractor(client));
         extractors.add(new DeutscheBankPDFExtractor(client));
         extractors.add(new Direkt1822BankPDFExtractor(client));
         extractors.add(new DkbPDFExtractor(client));
         extractors.add(new DreiBankenEDVPDFExtractor(client));
         extractors.add(new DZBankPDFExtractor(client));
+        extractors.add(new EbasePDFExtractor(client));
         extractors.add(new ErsteBankPDFExtractor(client));
         extractors.add(new FILFondbankPDFExtractor(client));
         extractors.add(new FinTechGroupBankPDFExtractor(client));
@@ -74,8 +76,6 @@ public class PDFImportAssistant
         extractors.add(new VBankAGPDFExtractor(client));
         extractors.add(new ViacPDFExtractor(client));
         extractors.add(new WeberbankPDFExtractor(client));
-
-        extractors.add(new JSONPDFExtractor(client, "ebase.json")); //$NON-NLS-1$
     }
 
     public Map<Extractor, List<Item>> run(IProgressMonitor monitor, Map<File, List<Exception>> errors)

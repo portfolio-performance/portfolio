@@ -10,7 +10,11 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
+import com.google.protobuf.NullValue;
+
 import name.abuchen.portfolio.model.Taxonomy.Visitor;
+import name.abuchen.portfolio.model.proto.v1.PAnyValue;
+import name.abuchen.portfolio.model.proto.v1.PKeyValue;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.ColorConversion;
 
@@ -78,6 +82,16 @@ public class Classification implements Named
                 return null;
 
             return data.get(key);
+        }
+
+        /* protobuf only */ List<PKeyValue> getData()
+        {
+            return toProtobuf(data);
+        }
+
+        /* protobuf only */ void setData(List<PKeyValue> list)
+        {
+            this.data = fromProtobuf(list);
         }
     }
 
@@ -262,6 +276,16 @@ public class Classification implements Named
             return null;
 
         return data.get(key);
+    }
+
+    /* protobuf only */ List<PKeyValue> getData()
+    {
+        return toProtobuf(data);
+    }
+
+    /* protobuf only */ void setData(List<PKeyValue> list)
+    {
+        this.data = fromProtobuf(list);
     }
 
     public String getPathName(boolean includeParent, int limit)
@@ -497,4 +521,62 @@ public class Classification implements Named
 
         return copy;
     }
+
+    private static List<PKeyValue> toProtobuf(Map<String, Object> data)
+    {
+        if (data == null || data.isEmpty())
+            return Collections.emptyList();
+
+        List<PKeyValue> answer = new ArrayList<>();
+
+        data.entrySet().stream().forEach(entry -> {
+            PKeyValue.Builder newEntry = PKeyValue.newBuilder();
+            newEntry.setKey(entry.getKey());
+
+            Object value = entry.getValue();
+            if (value == null)
+                newEntry.setValue(PAnyValue.newBuilder().setNullValue(NullValue.NULL_VALUE_VALUE).build());
+            else if (value instanceof String)
+                newEntry.setValue(PAnyValue.newBuilder().setString((String) value));
+            else if (value instanceof Boolean)
+                newEntry.setValue(PAnyValue.newBuilder().setBool((Boolean) value));
+            else if (value instanceof Integer)
+                newEntry.setValue(PAnyValue.newBuilder().setInt32((Integer) value));
+            else
+                throw new UnsupportedOperationException(value.getClass().getName());
+
+            answer.add(newEntry.build());
+        });
+
+        return answer;
+    }
+
+    private static Map<String, Object> fromProtobuf(List<PKeyValue> list)
+    {
+        if (list.isEmpty())
+            return null;
+
+        Map<String, Object> data = new HashMap<>();
+
+        list.forEach(entry -> {
+
+            String key = entry.getKey();
+
+            Object value = null;
+
+            if (entry.getValue().hasString())
+                value = entry.getValue().getString();
+            else if (entry.getValue().hasBool())
+                value = entry.getValue().getBool();
+            else if (entry.getValue().hasInt32())
+                value = entry.getValue().getInt32();
+
+            // ignore unknown types upon reading
+
+            data.put(key, value);
+        });
+
+        return data;
+    }
+
 }

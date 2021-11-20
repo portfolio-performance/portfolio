@@ -162,10 +162,8 @@
     <taxonomy>
       <id>assetclasses</id>
       <name>Anlagekategorien</name>
-      <dimensions class="java.util.Arrays$ArrayList">
-        <a class="string-array">
-          <string>Anlagekategorie</string>
-        </a>
+      <dimensions>
+        <string>Anlagekategorie</string>
       </dimensions>
       <root>
         <id>assetclasses</id>
