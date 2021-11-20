@@ -40,7 +40,7 @@ public class direkt1822bankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "WertpapierKauf01.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -66,6 +66,7 @@ public class direkt1822bankPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-12-01T10:30:52")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(13)));
+        assertThat(entry.getPortfolioTransaction().getSource(), is("Kauf01.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(539.48))));
@@ -84,7 +85,7 @@ public class direkt1822bankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "WertpapierKauf02.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -110,6 +111,7 @@ public class direkt1822bankPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-12-05T00:15:28")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.9619)));
+        assertThat(entry.getPortfolioTransaction().getSource(), is("Kauf02.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50.00))));
@@ -128,7 +130,7 @@ public class direkt1822bankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "WertpapierKauf03.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -151,6 +153,7 @@ public class direkt1822bankPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-02-27T01:22:40")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.6646)));
+        assertThat(entry.getPortfolioTransaction().getSource(), is("Kauf03.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50.00))));
@@ -169,7 +172,7 @@ public class direkt1822bankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "WertpapierKauf04.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -192,6 +195,7 @@ public class direkt1822bankPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-07-09T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
+        assertThat(entry.getPortfolioTransaction().getSource(), is("Kauf04.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4020.00))));
@@ -233,11 +237,12 @@ public class direkt1822bankPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-01-01T11:11:11")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1)));
+        assertThat(entry.getPortfolioTransaction().getSource(), is("Verkauf01.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(111.10))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(111.11))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(114.53))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(114.54))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
@@ -271,8 +276,10 @@ public class direkt1822bankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-12-14T00:00")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-01-03T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(920)));
+        assertThat(transaction.getSource(), is("Dividende01.txt"));
+
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(68.87))));
@@ -313,6 +320,7 @@ public class direkt1822bankPDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-10T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(118.901)));
+        assertThat(transaction.getSource(), is("Dividende02.txt"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7.13))));
@@ -351,8 +359,9 @@ public class direkt1822bankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-09T00:00")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-12T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(6)));
+        assertThat(transaction.getSource(), is("Dividende03.txt"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.72))));
