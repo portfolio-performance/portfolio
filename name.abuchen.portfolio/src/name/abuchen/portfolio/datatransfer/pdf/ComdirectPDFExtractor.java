@@ -991,7 +991,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
         });
         this.addDocumentTyp(type);
 
-        Block removalblock = new Block("(^|^A)[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Konto.bertrag|.bertrag|Lastschrift|Visa-Umsatz|Auszahlung|Barauszahlung|Kartenverf.gun|Guthaben.bertr|Wechselgeld-Sparen).* [-]([\\.,\\d]+)$");
+        Block removalblock = new Block("(^|^A)[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Konto.bertrag|.bertrag|Lastschrift|Visa-Umsatz|Auszahlung|Barauszahlung|Kartenverf.gun|Guthaben.bertr|Wechselgeld-Sp).* [-]([\\.,\\d]+)$");
         type.addBlock(removalblock);
         removalblock.setMaxSize(3);
         removalblock.set(new Transaction<AccountTransaction>()
@@ -1003,7 +1003,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date", "amount", "note")
-                        .match("(^|^A)[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<note>Konto.bertrag|.bertrag|Lastschrift|Visa-Umsatz|Auszahlung|Barauszahlung|Kartenverf.gun|Guthaben.bertr|Wechselgeld-Sparen).* [-](?<amount>[\\.,\\d]+)$")
+                        .match("(^|^A)[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<note>Konto.bertrag|.bertrag|Lastschrift|Visa-Umsatz|Auszahlung|Barauszahlung|Kartenverf.gun|Guthaben.bertr|Wechselgeld-Sp).* [-](?<amount>[\\.,\\d]+)$")
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
