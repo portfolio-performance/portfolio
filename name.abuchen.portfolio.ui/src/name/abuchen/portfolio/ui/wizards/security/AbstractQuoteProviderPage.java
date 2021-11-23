@@ -889,15 +889,15 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
             String lowPath = model.getFeedProperty(getJSONLowPathPropertyName());
             if (lowPath != null)
-                textJsonDateFormat.setText(lowPath);
+                textJsonPathLow.setText(lowPath);
 
             String highPath = model.getFeedProperty(getJSONHighPathPropertyName());
             if (highPath != null)
-                textJsonDateFormat.setText(highPath);
+                textJsonPathHigh.setText(highPath);
 
             String volumePath = model.getFeedProperty(getJSONVolumePathPropertyName());
             if (volumePath != null)
-                textJsonDateFormat.setText(volumePath);
+                textJsonPathVolume.setText(volumePath);
         }
         
         if (textCoinGeckoCoinId != null)
