@@ -233,7 +233,7 @@ public final class ClientFilterMenu implements IMenuListener
         if (isCustomItemSelected)
         {
             // previously selected custom filter was deleted in dialog --> select default filter item
-            if(!customItems.contains(selectedItem))
+            if (!customItems.contains(selectedItem))
                 selectedItem = defaultItems.get(0);
 
             // always update listeners (when custom filter selected) because filter may have been changed in edit filter dialog
