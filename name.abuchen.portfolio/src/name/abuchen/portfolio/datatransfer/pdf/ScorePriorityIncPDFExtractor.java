@@ -48,7 +48,11 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
          * so we assume that the currency is the base currency.
          * 
          * CUSIP Number:
-         * The CUSIP number is the WKN number. 
+         * The CUSIP number is the WKN number.
+         * 
+         * Dividend transactions:
+         * The amount of dividends is reported in gross.
+         *  
          */
 
         final DocumentType type = new DocumentType("ACCOUNT STATEMENT", (context, lines) -> {
@@ -88,6 +92,12 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                         .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) (?<name>.*) (?<wkn>[\\w]{9}) (?<type>(Buy|Sell)) (?<shares>[\\.,\\d]+) [\\.,\\d]+ (\\()?(?<amount>[\\.,\\d]+)(\\))?$")
                         .match("(?<nameContinued>.*)")
                         .assign((t, v) -> {
+                            // Is type --> "Sell" change from BUY to SELL
+                            if (v.get("type").equals("Sell"))
+                            {
+                                t.setType(PortfolioTransaction.Type.SELL);
+                            }
+
                             Map<String, String> context = type.getCurrentContext();
                             v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
 
@@ -136,7 +146,7 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
 
                                                     t.setDateTime(asDate(v.get("date")));
                                                     t.setShares(asShares(v.get("shares")));
-                                                    t.setAmount(asAmount(v.get("amount")));
+                                                    t.setAmount(asAmount(v.get("amount")) - asAmount(v.get("tax")));
                                                     t.setCurrencyCode(getClient().getBaseCurrency());
                                                     t.setSecurity(getOrCreateSecurity(v));
 
@@ -159,6 +169,43 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                                                     t.setSecurity(getOrCreateSecurity(v));
                                                 })
                                 )
+
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        }));
+
+        /***
+         * Formatting:
+         * Date | Effective Description | CUSIP | Type of Activity | Quantity Market Price | Net Settlement Amount
+         * -------------------------------------
+         * Jun 23 Cil Allocation 58933Y105 Journal 29.98
+         * Merck & Co Inc New
+         */
+        Block blockCashAllocation = new Block("^.* [\\d]{2} .* Allocation .* Journal [\\.,\\d]+$");
+        type.addBlock(blockCashAllocation);
+        blockCashAllocation.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction entry = new AccountTransaction();
+                            entry.setType(AccountTransaction.Type.DIVIDENDS);
+                            return entry;
+                        })
+
+                        .section("month", "day", "name", "wkn", "amount")
+                        .match("^(?<month>.*) (?<day>[\\d]{2}) .* Allocation (?<wkn>[\\w]{9}) Journal (?<amount>[\\.,\\d]+)$")
+                        .match("^(?<name>.*)$")
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+                            v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
+
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setShares(0L);
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(getClient().getBaseCurrency());
+                            t.setSecurity(getOrCreateSecurity(v));
+                        })
 
                         .wrap(t -> {
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)
