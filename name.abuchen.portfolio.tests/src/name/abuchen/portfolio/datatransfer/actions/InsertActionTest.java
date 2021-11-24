@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.actions;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsCollectionContaining.hasItem;
+import static org.junit.Assert.assertNull;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -34,6 +35,7 @@ public class InsertActionTest
     private BuySellEntry entry;
 
     private LocalDateTime transactionDate = LocalDateTime.now().withSecond(0).withNano(0);
+    private LocalDateTime exDate = transactionDate.minusDays(2);
 
     @Before
     public void prepare()
@@ -97,6 +99,7 @@ public class InsertActionTest
         assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 9_99)));
         assertThat(t.getNote(), is("note"));
         assertThat(t.getDateTime(), is(transactionDate));
+        assertNull(t.getExDateTime());
         assertThat(t.getShares(), is(99L));
 
         assertThat(t.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, 1_99)));
@@ -121,11 +124,12 @@ public class InsertActionTest
         assertThat(properties, hasItem("amount"));
         assertThat(properties, hasItem("shares"));
         assertThat(properties, hasItem("dateTime"));
+        assertThat(properties, hasItem("exDateTime"));
         assertThat(properties, hasItem("type"));
         assertThat(properties, hasItem("note"));
         assertThat(properties, hasItem("source"));
         assertThat(properties, hasItem("updatedAt"));
 
-        assertThat(properties.size(), is(10));
+        assertThat(properties.size(), is(11));
     }
 }
