@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -67,6 +68,7 @@ public class ComdirectPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2000-01-01T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -108,6 +110,7 @@ public class ComdirectPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2011-01-01T09:04")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(42)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -149,6 +152,7 @@ public class ComdirectPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-06-27T17:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(12)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -190,6 +194,7 @@ public class ComdirectPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-11-22T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(20)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -231,6 +236,7 @@ public class ComdirectPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-07-18T17:02")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(160)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -272,6 +278,7 @@ public class ComdirectPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2013-03-14T12:09")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1437)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -313,6 +320,7 @@ public class ComdirectPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2008-10-16T09:54")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -354,6 +362,7 @@ public class ComdirectPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-11-08T11:51")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(25)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -395,6 +404,7 @@ public class ComdirectPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-04-03T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.805)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -436,6 +446,7 @@ public class ComdirectPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-02-21T15:43")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(34)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -477,6 +488,7 @@ public class ComdirectPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-04-16T18:33")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -518,6 +530,7 @@ public class ComdirectPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-28T16:50")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(150)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -559,6 +572,7 @@ public class ComdirectPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-10-05T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1303)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -600,6 +614,7 @@ public class ComdirectPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2010-01-01T10:57")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -641,6 +656,7 @@ public class ComdirectPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-12-08T17:03")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1140)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -682,6 +698,7 @@ public class ComdirectPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-02-25T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(570)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -735,6 +752,7 @@ public class ComdirectPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-25T14:34")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -788,6 +806,7 @@ public class ComdirectPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-15T20:37")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(25)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -841,6 +860,7 @@ public class ComdirectPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2008-06-11T18:54")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2000)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -882,6 +902,7 @@ public class ComdirectPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2003-12-08T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(550)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -923,6 +944,7 @@ public class ComdirectPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2004-03-10T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(300)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -964,6 +986,7 @@ public class ComdirectPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-25T14:34")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -984,6 +1007,7 @@ public class ComdirectPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-08-25T14:34")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getMonetaryAmount(), 
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(13.15))));
     }
@@ -1016,6 +1040,7 @@ public class ComdirectPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-12-15T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(1900)));
         assertThat(transaction.getNote(), is("Zwischendividende"));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
@@ -1058,6 +1083,7 @@ public class ComdirectPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2009-04-27T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(3000)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -1098,6 +1124,7 @@ public class ComdirectPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-11-07T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(32)));
         assertThat(transaction.getNote(), is("Quartalsdividende"));
         assertThat(transaction.getSource(), is("Dividende03.txt"));
@@ -1140,6 +1167,7 @@ public class ComdirectPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-11-07T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(32)));
         assertThat(transaction.getNote(), is("Quartalsdividende"));
         assertThat(transaction.getSource(), is("Dividende03.txt"));
@@ -1188,6 +1216,7 @@ public class ComdirectPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-03-23T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(88)));
         assertThat(transaction.getNote(), is("Quartalsdividende"));
         assertThat(transaction.getSource(), is("Dividende04.txt"));
@@ -1230,6 +1259,7 @@ public class ComdirectPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2011-01-08T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(14)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -1270,6 +1300,7 @@ public class ComdirectPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2011-01-09T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(40)));
         assertThat(transaction.getNote(), is("Quartalsdividende"));
         assertThat(transaction.getSource(), is("Dividende06.txt"));
@@ -1312,6 +1343,7 @@ public class ComdirectPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-10-23T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(175)));
         assertThat(transaction.getNote(), is("monatl. Dividende"));
         assertThat(transaction.getSource(), is("Dividende07.txt"));
@@ -1354,6 +1386,7 @@ public class ComdirectPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-10-31T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(42)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -1394,6 +1427,7 @@ public class ComdirectPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-11-20T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(9.914)));
         assertThat(transaction.getNote(), is("Quartalsdividende"));
         assertThat(transaction.getSource(), is("Dividende09.txt"));
@@ -1436,6 +1470,7 @@ public class ComdirectPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-04T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(50)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -1476,6 +1511,7 @@ public class ComdirectPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-04T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(50)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -1516,6 +1552,7 @@ public class ComdirectPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-05-14T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(16)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -1556,6 +1593,7 @@ public class ComdirectPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-04T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(32)));
         assertThat(transaction.getNote(), is("Quartalsdividende"));
         assertThat(transaction.getSource(), is("Dividende13.txt"));
@@ -1598,6 +1636,7 @@ public class ComdirectPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-07T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(34)));
         assertThat(transaction.getNote(), is("Quartalsdividende"));
         assertThat(transaction.getSource(), is("Dividende14.txt"));
@@ -1640,6 +1679,7 @@ public class ComdirectPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-26T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(54.394)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -1680,6 +1720,7 @@ public class ComdirectPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-09-13T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(6.30)));
         assertThat(transaction.getNote(), is("Quartalsdividende"));
         assertThat(transaction.getSource(), is("Dividende16.txt"));
@@ -1722,6 +1763,7 @@ public class ComdirectPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-20T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(518)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -1762,6 +1804,7 @@ public class ComdirectPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-14T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(130)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -1802,6 +1845,7 @@ public class ComdirectPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-11-07T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(32)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -1842,6 +1886,7 @@ public class ComdirectPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-03-03T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(50)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -1882,6 +1927,7 @@ public class ComdirectPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-11T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(220)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -1922,6 +1968,7 @@ public class ComdirectPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-16T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(13)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -1962,6 +2009,7 @@ public class ComdirectPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-11T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(78.416)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -2002,6 +2050,7 @@ public class ComdirectPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-04T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(5000)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -2042,6 +2091,7 @@ public class ComdirectPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-05-14T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(16)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -2082,6 +2132,7 @@ public class ComdirectPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-04T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(32)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -2122,6 +2173,7 @@ public class ComdirectPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-07T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(34)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -2162,6 +2214,7 @@ public class ComdirectPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-07-01T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(404)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -2208,6 +2261,7 @@ public class ComdirectPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-05-11T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.541)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -2248,6 +2302,7 @@ public class ComdirectPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-27T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(15.558)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -2288,6 +2343,7 @@ public class ComdirectPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-10-31T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.088)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -2335,6 +2391,7 @@ public class ComdirectPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-05-14T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(16)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -2383,6 +2440,7 @@ public class ComdirectPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-04T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(32)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -2432,6 +2490,7 @@ public class ComdirectPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-07T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(34)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -2476,6 +2535,7 @@ public class ComdirectPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-14T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(11.486)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -2516,6 +2576,7 @@ public class ComdirectPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-06T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -2556,6 +2617,7 @@ public class ComdirectPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-05-06T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -2593,6 +2655,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-09-04T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(1500)));
         }
 
@@ -2605,6 +2668,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-09-05T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(300)));
         }
 
@@ -2617,6 +2681,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-10-30T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(50)));
         }
 
@@ -2629,6 +2694,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-03-26T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(9)));
         }
 
@@ -2641,6 +2707,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-09-17T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(68.88)));
         }
         
@@ -2654,6 +2721,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-09-14T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(10000)));
         }
 
@@ -2666,6 +2734,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-03-26T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(100)));
         }
 
@@ -2678,6 +2747,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-09-17T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(2.18)));
         }
 
@@ -2690,6 +2760,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-09-28T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(3.94)));
         }
 
@@ -2702,6 +2773,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-10-24T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(19.21)));
         }
 
@@ -2714,6 +2786,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-09-14T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(10000)));
         }
 
@@ -2726,6 +2799,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-09-21T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(20)));
         }
 
@@ -2738,6 +2812,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-07-30T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(2000)));
         }
 
@@ -2750,6 +2825,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-09-05T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(300)));
         }
 
@@ -2762,6 +2838,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-07-22T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(71.93)));
         }
 
@@ -2774,6 +2851,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-01T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(5432.1)));
         }
 
@@ -2786,6 +2864,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2014-09-29T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(5.9)));
         }
 
@@ -2798,6 +2877,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-09-05T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(5.9)));
         }
 
@@ -2810,6 +2890,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-10-22T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(5.9)));
         }
 
@@ -2822,6 +2903,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-07-27T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.45)));
         }
 
@@ -2834,6 +2916,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-03-31T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.7)));
         }
 
@@ -2846,6 +2929,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-09-30T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.14)));
             assertThat(transaction.getGrossValue().getAmount(), is(Values.Amount.factorize(0.20)));
         }
@@ -2859,6 +2943,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-09-30T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.14)));
             assertThat(transaction.getGrossValue().getAmount(), is(Values.Amount.factorize(0.19)));
         }
@@ -2872,6 +2957,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST_CHARGE));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-12-31T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.07)));
         }
     }
@@ -2902,6 +2988,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2013-11-18T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(20)));
         }
 
@@ -2914,6 +3001,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2013-11-28T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(20)));
         }
 
@@ -2926,6 +3014,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2013-12-02T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(500)));
         }
 
@@ -2938,6 +3027,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2013-11-30T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(12.31)));
         }
 
@@ -2950,6 +3040,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2013-11-05T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(30)));
         }
 
@@ -2962,6 +3053,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2013-11-26T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(810)));
         }
 
@@ -2974,6 +3066,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2013-11-27T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(200)));
         }
 
@@ -2986,6 +3079,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2013-11-18T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(20)));
         }
 
@@ -2998,6 +3092,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2013-11-28T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(20)));
         }
 
@@ -3010,6 +3105,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2013-12-02T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(500)));
         }
 
@@ -3022,6 +3118,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2013-12-08T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(5.9)));
         }
     }
@@ -3052,6 +3149,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-06-05T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(49.66)));
         }
 
@@ -3064,6 +3162,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-06-27T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(22.89)));
         }
 
@@ -3076,6 +3175,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-06-28T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(264.99)));
         }
 
@@ -3088,6 +3188,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-06-29T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(199.00)));
         }
 
@@ -3100,6 +3201,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-07-03T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(29.90)));
         }
 
@@ -3112,6 +3214,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-07-03T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(9.14)));
         }
 
@@ -3124,6 +3227,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-07-03T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(8.65)));
         }
 
@@ -3136,6 +3240,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-06-21T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(8.98)));
         }
 
@@ -3148,6 +3253,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-06-28T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(816.00)));
         }
 
@@ -3160,6 +3266,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-06-28T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(816.00)));
         }
 
@@ -3172,6 +3279,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-06-28T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(250.00)));
         }
 
@@ -3184,6 +3292,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-06-30T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(9.14)));
         }
 
@@ -3196,6 +3305,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-06-22T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.16)));
         }
     }
@@ -3226,6 +3336,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-06-14T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(501.00)));
         }
 
@@ -3238,6 +3349,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-06-13T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(2450.87)));
         }
 
@@ -3250,6 +3362,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-06-13T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(2450.87)));
         }
 
@@ -3262,6 +3375,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-06-13T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(9.07)));
         }
 
@@ -3274,6 +3388,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-06-09T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(1200)));
         }
 
@@ -3286,6 +3401,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.USD));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-06-14T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(554.83)));
         }
 
@@ -3298,6 +3414,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-06-30T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.02)));
         }
     }
@@ -3328,6 +3445,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-08-01T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(894.30)));
         }
 
@@ -3340,6 +3458,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-07-04T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.42)));
         }
 
@@ -3352,6 +3471,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-07-04T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(188.58)));
         }
 
@@ -3364,6 +3484,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-07-08T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.36)));
         }
 
@@ -3376,6 +3497,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-07-08T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(124.64)));
         }
 
@@ -3388,6 +3510,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-07-13T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.30)));
         }
 
@@ -3400,6 +3523,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-07-12T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.30)));
         }
 
@@ -3412,6 +3536,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-07-13T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(191.70)));
         }
 
@@ -3424,6 +3549,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-07-12T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(191.70)));
         }
 
@@ -3436,6 +3562,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-07-22T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.89)));
         }
 
@@ -3448,6 +3575,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-07-22T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(129.11)));
         }
 
@@ -3460,6 +3588,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-07-28T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.70)));
         }
 
@@ -3472,6 +3601,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-07-28T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(257.30)));
         }
 
@@ -3484,6 +3614,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-07-11T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(1000)));
         }
 
@@ -3496,6 +3627,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-08-01T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(2.97)));
         }
 
@@ -3508,6 +3640,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-07-12T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(191.70)));
         }
 
@@ -3520,6 +3653,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-07-29T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(894.30)));
         }
     }

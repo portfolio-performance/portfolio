@@ -267,6 +267,11 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                 .match("^(?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
                 .match("^Ertrag pro St. [\\.,\\d]+ (?<currency>[\\w]{3})$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                
+                // Ex-Dividenden-Tag 29.11.2016
+                .section("exDate").optional()
+                .match("^Ex-Tag (?<exDate>\\d+.\\d+.\\d{4}).*")                
+                .assign((t,v) -> t.setExDateTime(asDate(v.get("exDate"))))
 
                 // EUR 10.000,00 PCC SE DE000A1R1AN5 (A1R1AN)
                 .section("notation", "shares")
@@ -444,6 +449,11 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                 .section("date")
                 .match("^Den Betrag buchen wir mit Wertstellung (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                
+             // Ex-Dividenden-Tag 29.11.2016
+                .section("exDate").optional()
+                .match("^Ex-Tag (?<exDate>\\d+.\\d+.\\d{4}).*")
+                .assign((t,v) -> t.setExDateTime(asDate(v.get("exDate"))))
 
                 // Ausmachender Betrag 0,08- EUR
                 .section("amount", "currency").optional()

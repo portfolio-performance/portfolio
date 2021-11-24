@@ -132,12 +132,17 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                             t.setSecurity(getOrCreateSecurity(v));
                             t.setShares(asShares(v.get("shares")));
                         })
+                        
+                        // Zahlbarkeitstag 09.03.2021
+                        .section("date")
+                        .match("^Zahlbarkeitstag (?<date>\\d+.\\d+.\\d{4}).*")
+                        .assign((t,v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // Ex-Tag 22.02.2021 Art der Dividende Quartalsdividende
-                        .section("date") //
-                        .match("^Ex-Tag (?<date>\\d+.\\d+.\\d{4}).*") //
+                        .section("exDate") //
+                        .match("^Ex-Tag (?<exDate>\\d+.\\d+.\\d{4}).*") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setExDateTime(asDate(v.get("exDate")));
                         })
 
                         // Ex-Tag 22.02.2021 Art der Dividende Quartalsdividende

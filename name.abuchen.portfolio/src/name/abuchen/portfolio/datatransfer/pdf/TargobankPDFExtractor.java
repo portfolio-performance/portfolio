@@ -244,6 +244,11 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                         .section("date") //
                         .match("(Ertragsgutschrift|Dividendengutschrift) (?<date>\\d+.\\d+.\\d{4})$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        
+                        //Ex-Tag 11.06.2020
+                        .section("exDate") //
+                        .match("Ex-Tag (?<exDate>\\d+.\\d+.\\d{4}).*") //
+                        .assign((t, v) -> t.setExDateTime(asDate(v.get("exDate"))))
 
                         // store real date in attribute
                         .section("date") //
@@ -310,6 +315,11 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                             t.setSecurity(getOrCreateSecurity(v));
                             t.setShares(asShares(v.get("shares")));
                         })
+                        
+                        //Ex-Tag 11.06.2020
+                        .section("exDate") //
+                        .match("Ex-Tag (?<exDate>\\d+.\\d+.\\d{4}).*") //
+                        .assign((t, v) -> t.setExDateTime(asDate(v.get("exDate"))))
 
                         .section("amount", "currency") //
                         .match("Ertr.ge/Verluste (?<amount>[\\d.\\s]*,[\\d\\s]+) (?<currency>[A-Z\\s]*)$") //

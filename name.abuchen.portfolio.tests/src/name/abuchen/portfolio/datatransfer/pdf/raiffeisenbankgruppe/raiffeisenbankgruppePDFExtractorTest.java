@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.pdf.raiffeisenbankgruppe;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -61,6 +62,7 @@ public class raiffeisenbankgruppePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-03T13:45:18")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -101,6 +103,7 @@ public class raiffeisenbankgruppePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-07T11:17:43")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4500)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -138,6 +141,7 @@ public class raiffeisenbankgruppePDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-04-30T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2021-04-28T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(90)));
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(110.02))));
@@ -175,6 +179,7 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-01T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(42.13)));
         }
 
@@ -187,6 +192,7 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-01T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(10.01)));
         }
 
@@ -199,6 +205,7 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-01T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(79.58)));
         }
 
@@ -223,6 +230,7 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-02T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(60.00)));
         }
 
@@ -235,6 +243,7 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-03T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(500.00)));
         }
 
@@ -247,6 +256,7 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-04T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(15.00)));
         }
 
@@ -259,6 +269,7 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-04T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(119.06)));
         }
 
@@ -271,6 +282,7 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-04T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(123.34)));
         }
 
@@ -283,6 +295,7 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-07T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(35.00)));
         }
 
@@ -295,6 +308,7 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-18T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(250.00)));
         }
 
@@ -307,6 +321,7 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-23T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(85.65)));
         }
 
@@ -319,6 +334,7 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-28T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(70.00)));
         }
 
@@ -331,6 +347,7 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-28T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(34.62)));
         }
 
@@ -343,6 +360,7 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-29T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(1097.00)));
         }
 
@@ -355,6 +373,7 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST_CHARGE));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-31T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(1.00 + 1.00)));
         }
 
@@ -367,6 +386,7 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-31T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(1.95)));
         }
     }
@@ -397,6 +417,7 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-02T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(10.00)));
         }
 
@@ -409,6 +430,7 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-02T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(20.00)));
         }
 
@@ -421,6 +443,7 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-02T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(10.00)));
         }
 
@@ -433,6 +456,7 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-02T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(100.00)));
         }
 
@@ -445,6 +469,7 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-02T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(20.00)));
         }
 
@@ -457,6 +482,7 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-02T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(30.00)));
         }
 
@@ -469,6 +495,7 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-02T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(60.00)));
         }
 
@@ -481,6 +508,7 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-03T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(50.00)));
         }
 
@@ -493,6 +521,7 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-03T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(50.00)));
         }
 
@@ -505,6 +534,7 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-04T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(40.94)));
         }
 
@@ -517,6 +547,7 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-09T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(30.20)));
         }
 
@@ -529,6 +560,7 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-09T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(10.70)));
         }
 
@@ -541,6 +573,7 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-12T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(15.16)));
         }
 
@@ -553,6 +586,7 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-16T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(25.00)));
         }
 
@@ -565,6 +599,7 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-16T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(80.00)));
         }
 
@@ -577,6 +612,7 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-17T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(3.58)));
         }
 
@@ -589,6 +625,7 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-18T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(10.00)));
         }
 
@@ -601,6 +638,7 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-18T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(10.00)));
         }
 
@@ -613,6 +651,7 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-19T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(50.60)));
         }
 
@@ -625,6 +664,7 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-19T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(10.00)));
         }
 
@@ -637,6 +677,7 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-19T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(10.00)));
         }
 
@@ -649,6 +690,7 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-19T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(10.00)));
         }
 
@@ -661,6 +703,7 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-19T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(20.00)));
         }
 
@@ -673,6 +716,7 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-23T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(7.01)));
         }
 
@@ -685,6 +729,7 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-23T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(11.68)));
         }
 
@@ -697,6 +742,7 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-26T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(14.99)));
         }
 
@@ -709,6 +755,7 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-27T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(20.08)));
         }
 
@@ -721,6 +768,7 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-27T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(14.00)));
         }
 
@@ -733,6 +781,7 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-27T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(20.00)));
         }
 
@@ -745,6 +794,7 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-30T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(1200.00)));
         }
 
@@ -757,6 +807,7 @@ public class raiffeisenbankgruppePDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-31T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(1.95)));
         }
     }

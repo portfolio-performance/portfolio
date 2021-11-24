@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -62,6 +63,7 @@ public class DADATBankenhausPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-02-17T20:49:54")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -103,6 +105,7 @@ public class DADATBankenhausPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-12-16T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.22)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -122,6 +125,7 @@ public class DADATBankenhausPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-12-16T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.68)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -163,6 +167,7 @@ public class DADATBankenhausPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-02-22T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(25)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -204,6 +209,7 @@ public class DADATBankenhausPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-30T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(7)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -245,6 +251,7 @@ public class DADATBankenhausPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-09-03T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(7)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -284,6 +291,7 @@ public class DADATBankenhausPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-07-31T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(45)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -323,6 +331,7 @@ public class DADATBankenhausPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-03T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(200)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -341,6 +350,7 @@ public class DADATBankenhausPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-03T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(40)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -379,6 +389,7 @@ public class DADATBankenhausPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
 
         assertThat(transaction.getDateTime(),is(LocalDateTime.parse("2020-01-08T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(1.22)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -417,6 +428,7 @@ public class DADATBankenhausPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-09-18T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(6.05)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -448,6 +460,7 @@ public class DADATBankenhausPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-31T00:00")));
+        assertNull(transaction.getExDateTime());
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.76))));
@@ -494,6 +507,7 @@ public class DADATBankenhausPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-07T00:00")));
+        assertNull(transaction.getExDateTime());
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(63.68))));
@@ -524,6 +538,7 @@ public class DADATBankenhausPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-06-18T00:00")));
+        assertNull(transaction.getExDateTime());
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100.00))));
@@ -566,6 +581,7 @@ public class DADATBankenhausPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-03-10T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(43)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -585,6 +601,7 @@ public class DADATBankenhausPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-03-10T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(19)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -604,6 +621,7 @@ public class DADATBankenhausPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-03-10T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(30)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -642,6 +660,7 @@ public class DADATBankenhausPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-13T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(134)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -660,6 +679,7 @@ public class DADATBankenhausPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-13T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(184)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -678,6 +698,7 @@ public class DADATBankenhausPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-13T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(45)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -697,6 +718,7 @@ public class DADATBankenhausPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-01-13T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(30)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -729,6 +751,7 @@ public class DADATBankenhausPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-12-31T00:00")));
+        assertNull(transaction.getExDateTime());
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.50))));
@@ -760,6 +783,7 @@ public class DADATBankenhausPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-31T00:00")));
+        assertNull(transaction.getExDateTime());
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.50))));
@@ -791,6 +815,7 @@ public class DADATBankenhausPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-06-30T00:00")));
+        assertNull(transaction.getExDateTime());
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.53))));
@@ -822,6 +847,7 @@ public class DADATBankenhausPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-10-31T00:00")));
+        assertNull(transaction.getExDateTime());
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(75.00))));
@@ -853,6 +879,7 @@ public class DADATBankenhausPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-06-18T00:00")));
+        assertNull(transaction.getExDateTime());
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100.00))));
@@ -884,6 +911,7 @@ public class DADATBankenhausPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-03-18T00:00")));
+        assertNull(transaction.getExDateTime());
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100.00))));
@@ -921,6 +949,7 @@ public class DADATBankenhausPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-04T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2021-03-04T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(3)));
 
         assertThat(transaction.getMonetaryAmount(),

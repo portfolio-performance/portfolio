@@ -92,9 +92,9 @@ public class JustTradePDFExtractorTest
 
         assertThat(entries.size(), is(3));
 
-        validateTransaction(entries, 0, 8_35L, "2019-07-04T00:00", 0.3308);
-        validateTransaction(entries, 1, 242_09L, "2019-07-03T00:00", 1.5264);
-        validateTransaction(entries, 2, 75_22L, "2019-07-02T00:00", 6.2631);
+        validateTransaction(entries, 0, 8_35L, "2019-07-04T00:00", null, 0.3308);
+        validateTransaction(entries, 1, 242_09L, "2019-07-03T00:00", null, 1.5264);
+        validateTransaction(entries, 2, 75_22L, "2019-07-02T00:00", null, 6.2631);
     }
 
     @Test
@@ -104,8 +104,8 @@ public class JustTradePDFExtractorTest
 
         assertThat(entries.size(), is(2));
 
-        validateTransaction(entries, 0, 98L, "2019-07-05T00:00", 0.0387);
-        validateTransaction(entries, 1, 4_78L, "2019-07-06T00:00", 0.0299);
+        validateTransaction(entries, 0, 98L, "2019-07-05T00:00", null, 0.0387);
+        validateTransaction(entries, 1, 4_78L, "2019-07-06T00:00", null, 0.0299);
     }
 
     private List<BuySellEntry> getTransactionEntries(String type)
@@ -120,11 +120,15 @@ public class JustTradePDFExtractorTest
 
     }
 
-    private void validateTransaction(List<BuySellEntry> entries, int index, long amount, String dateTime, double shares)
+    private void validateTransaction(List<BuySellEntry> entries, int index, long amount, String dateTime, String exDatetime, double shares)
     {
         assertThat(entries.get(index).getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, amount)));
         assertThat(entries.get(index).getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse(dateTime)));
+        if (exDatetime == null)
+            assertNull(entries.get(index).getPortfolioTransaction().getExDateTime());
+        else
+            assertThat(entries.get(index).getPortfolioTransaction().getExDateTime(), is(LocalDateTime.parse(exDatetime)));
         assertThat(entries.get(index).getPortfolioTransaction().getShares(), is(Values.Share.factorize(shares)));
     }
 
@@ -171,6 +175,7 @@ public class JustTradePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(719.05))));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-01T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(26.7524)));
 
         // check 2nd transaction
@@ -181,6 +186,7 @@ public class JustTradePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(145.32))));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-01T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.4517)));
 
         // check 3rd transaction
@@ -191,6 +197,7 @@ public class JustTradePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(48.44))));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-01T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.9784)));
 
         // check 4th transaction
@@ -201,6 +208,7 @@ public class JustTradePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000.97))));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-01T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(34.7017)));
 
         // check 5th transaction
@@ -211,6 +219,7 @@ public class JustTradePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(683.50))));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-02T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(25.3618)));
 
         // check account transactions (fees, deposits, etc.)
@@ -220,7 +229,8 @@ public class JustTradePDFExtractorTest
         assertThat(t.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(175.00))));
         assertThat(t.getDateTime(), is(LocalDateTime.parse("2020-03-02T00:00")));
-
+        assertNull(t.getExDateTime());
+        
         // check 2nd transaction
         t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).collect(Collectors.toList())
                         .get(1).getSubject();
@@ -228,6 +238,7 @@ public class JustTradePDFExtractorTest
         assertThat(t.getType(), is(AccountTransaction.Type.FEES));
         assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(18.00))));
         assertThat(t.getDateTime(), is(LocalDateTime.parse("2020-06-11T00:00")));
+        assertNull(t.getExDateTime());
 
         // check 3rd transaction
         t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).collect(Collectors.toList())
@@ -236,6 +247,7 @@ public class JustTradePDFExtractorTest
         assertThat(t.getType(), is(AccountTransaction.Type.FEES));
         assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.92))));
         assertThat(t.getDateTime(), is(LocalDateTime.parse("2020-01-08T00:00")));
+        assertNull(t.getExDateTime());
     }
 
     @Test
@@ -266,6 +278,7 @@ public class JustTradePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.83))));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-10-01T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0405)));
     }
 
@@ -307,6 +320,7 @@ public class JustTradePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(52.00))));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-01T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.947)));
 
         // check 3rd transaction
@@ -317,6 +331,7 @@ public class JustTradePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(52.00))));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-01T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(7.1448)));
 
         // check 4th transaction
@@ -327,6 +342,7 @@ public class JustTradePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.54))));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-12T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0994)));
 
         // check 5th transaction
@@ -337,6 +353,7 @@ public class JustTradePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(41.46))));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-12T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5.865)));
 
         // check 6th transaction
@@ -347,6 +364,7 @@ public class JustTradePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(47.00))));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-12T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.7870)));
 
         // check 7th transaction
@@ -357,6 +375,7 @@ public class JustTradePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(21.04))));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-10T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.7947)));
 
         // check 8th transaction
@@ -367,6 +386,7 @@ public class JustTradePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7.48))));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-10T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.0382)));
 
         // check 9th transaction
@@ -377,6 +397,7 @@ public class JustTradePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(28.52))));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-10T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.5025)));
 
         // check 10th transaction
@@ -387,6 +408,7 @@ public class JustTradePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(11.82))));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-13T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.4634)));
 
         // check 11th transaction
@@ -397,6 +419,7 @@ public class JustTradePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(21.39))));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-13T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.3840)));
 
         // check 12th transaction
@@ -407,6 +430,7 @@ public class JustTradePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(12.11))));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-13T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.7624)));
 
         // check 13th transaction
@@ -420,6 +444,7 @@ public class JustTradePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-01T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(241)));
 
         // check 14th transaction
@@ -433,6 +458,7 @@ public class JustTradePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-01T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(37)));
 
         // check 15th transaction
@@ -446,6 +472,7 @@ public class JustTradePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-01T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(295)));
 
         // check account transactions (fees, deposits, etc.)
@@ -455,6 +482,7 @@ public class JustTradePDFExtractorTest
         assertThat(t.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(260.00))));
         assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-04-01T00:00")));
+        assertNull(t.getExDateTime());
 
         // check 2nd account transactions (fees, deposits, etc.)
         t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).collect(Collectors.toList())
@@ -463,6 +491,7 @@ public class JustTradePDFExtractorTest
         assertThat(t.getType(), is(AccountTransaction.Type.FEES));
         assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(6.55))));
         assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-05-17T00:00")));
+        assertNull(t.getExDateTime());
 
         // check 3rd account transactions (fees, deposits, etc.)
         t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).collect(Collectors.toList())
@@ -471,6 +500,7 @@ public class JustTradePDFExtractorTest
         assertThat(t.getType(), is(AccountTransaction.Type.FEES));
         assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(15.00))));
         assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-05-17T00:00")));
+        assertNull(t.getExDateTime());
 
         // check 4th account transactions (fees, deposits, etc.)
         t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).collect(Collectors.toList())
@@ -479,6 +509,7 @@ public class JustTradePDFExtractorTest
         assertThat(t.getType(), is(AccountTransaction.Type.FEES));
         assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(23.77))));
         assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-06-15T00:00")));
+        assertNull(t.getExDateTime());
     }
 
     @Test
@@ -510,6 +541,7 @@ public class JustTradePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-01-02T10:49:34")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(53)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -550,6 +582,7 @@ public class JustTradePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-06-03T09:27:01")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(29)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -590,6 +623,7 @@ public class JustTradePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-03-01T18:23:36")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(30)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -630,6 +664,7 @@ public class JustTradePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-31T21:00:15")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(58)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -670,6 +705,7 @@ public class JustTradePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-25T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(9)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -711,6 +747,7 @@ public class JustTradePDFExtractorTest
         assertThat(tx.getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(tx.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1228.00))));
         assertThat(tx.getDateTime(), is(LocalDateTime.parse("2020-08-10T14:31:04")));
+        assertNull(tx.getExDateTime());
         assertThat(tx.getShares(), is(Values.Share.factorize(100)));
         assertThat(tx.getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0))));
         assertThat(tx.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0))));
@@ -723,6 +760,7 @@ public class JustTradePDFExtractorTest
         assertThat(tx.getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(tx.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1575.00))));
         assertThat(tx.getDateTime(), is(LocalDateTime.parse("2020-08-10T15:48:16")));
+        assertNull(tx.getExDateTime());
         assertThat(tx.getShares(), is(Values.Share.factorize(125)));
 
         // check fifth second transaction
@@ -733,6 +771,7 @@ public class JustTradePDFExtractorTest
         assertThat(tx.getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(tx.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1262.00))));
         assertThat(tx.getDateTime(), is(LocalDateTime.parse("2020-08-10T15:33:52")));
+        assertNull(tx.getExDateTime());
         assertThat(tx.getShares(), is(Values.Share.factorize(100)));
         
         // check sixth second transaction
@@ -743,6 +782,7 @@ public class JustTradePDFExtractorTest
         assertThat(tx.getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(tx.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1576.25))));
         assertThat(tx.getDateTime(), is(LocalDateTime.parse("2020-08-10T15:50:52")));
+        assertNull(tx.getExDateTime());
         assertThat(tx.getShares(), is(Values.Share.factorize(125)));
         
     }
@@ -775,6 +815,7 @@ public class JustTradePDFExtractorTest
         assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-03-15T00:00")));
+        assertThat(t.getExDateTime(), is(LocalDateTime.parse("2021-03-01T00:00")));
         assertThat(t.getShares(), is(Values.Share.factorize(30)));
 
         assertThat(t.getMonetaryAmount(),
@@ -814,6 +855,7 @@ public class JustTradePDFExtractorTest
         assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-04-15T00:00")));
+        assertThat(t.getExDateTime(), is(LocalDateTime.parse("2021-03-30T00:00")));
         assertThat(t.getShares(), is(Values.Share.factorize(20)));
 
         assertThat(t.getMonetaryAmount(),
@@ -853,6 +895,7 @@ public class JustTradePDFExtractorTest
         assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-09-23T00:00")));
+        assertThat(t.getExDateTime(), is(LocalDateTime.parse("2021-08-12T00:00")));
         assertThat(t.getShares(), is(Values.Share.factorize(30)));
 
         assertThat(t.getMonetaryAmount(),
@@ -892,6 +935,7 @@ public class JustTradePDFExtractorTest
         assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-09-23T00:00")));
+        assertThat(t.getExDateTime(), is(LocalDateTime.parse("2021-09-08T00:00")));
         assertThat(t.getShares(), is(Values.Share.factorize(40)));
 
         assertThat(t.getMonetaryAmount(),

@@ -2,8 +2,10 @@ package name.abuchen.portfolio.datatransfer.pdf.swissquote;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,6 +65,7 @@ public class SwissquotePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-08-07T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(15)));
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(2900.60))));
@@ -105,6 +108,7 @@ public class SwissquotePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-05-15T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3)));
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(2747.40))));
@@ -147,6 +151,7 @@ public class SwissquotePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-07-14T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(61)));
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(5650.15))));
@@ -190,6 +195,7 @@ public class SwissquotePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-02-07T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(322)));
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(8198.70))));
@@ -233,6 +239,7 @@ public class SwissquotePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-03-08T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(61)));
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(5267.80))));
@@ -270,7 +277,8 @@ public class SwissquotePDFExtractorTest
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-06-19T00:00")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-06-27T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2019-06-19T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(350)));
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(19.60))));
@@ -308,7 +316,8 @@ public class SwissquotePDFExtractorTest
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-09-18T00:00")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-09-20T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2019-09-18T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(250)));
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(118.62))));
@@ -346,7 +355,8 @@ public class SwissquotePDFExtractorTest
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-18T00:00")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-31T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2021-03-18T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(40)));
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(13.52))));
@@ -382,7 +392,8 @@ public class SwissquotePDFExtractorTest
 
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-18T00:00")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-31T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2021-03-18T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(40)));
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(13.52))));
@@ -422,13 +433,15 @@ public class SwissquotePDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(107.10))));
         assertThat(transaction.getShares(), is(Values.Share.factorize(34)));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-06-27T00:00")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-07-01T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2019-06-27T00:00")));
 
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0))));
         assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(107.10))));
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-06-27T00:00")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-07-01T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2019-06-27T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(34)));
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(107.10))));
@@ -461,5 +474,6 @@ public class SwissquotePDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(28.55))));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-09-30T00:00")));
+        assertNull(transaction.getExDateTime());
     }
 }

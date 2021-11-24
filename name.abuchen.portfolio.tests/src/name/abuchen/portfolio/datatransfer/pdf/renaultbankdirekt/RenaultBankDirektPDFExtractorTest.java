@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.pdf.renaultbankdirekt;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -57,6 +58,7 @@ public class RenaultBankDirektPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-18T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(4480)));
 
         item = iter.next();
@@ -64,6 +66,7 @@ public class RenaultBankDirektPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-18T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(351.50)));
 
         item = iter.next();
@@ -71,6 +74,7 @@ public class RenaultBankDirektPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-18T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(10000)));
 
         item = iter.next();
@@ -78,6 +82,7 @@ public class RenaultBankDirektPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-21T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(210)));
 
         item = iter.next();
@@ -85,6 +90,7 @@ public class RenaultBankDirektPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-29T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(300)));
 
         item = iter.next();
@@ -92,6 +98,7 @@ public class RenaultBankDirektPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-29T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(2.44)));
 
     }
@@ -128,6 +135,7 @@ public class RenaultBankDirektPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-17T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(210)));
 
         item = iter.next();
@@ -136,6 +144,7 @@ public class RenaultBankDirektPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-28T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(3.41)));
 
     }
@@ -172,6 +181,7 @@ public class RenaultBankDirektPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-30T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.21)));
     }
 
@@ -207,6 +217,7 @@ public class RenaultBankDirektPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-17T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(150)));
 
         item = iter.next();
@@ -214,6 +225,7 @@ public class RenaultBankDirektPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-22T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(7547.85)));
 
         item = iter.next();
@@ -221,6 +233,7 @@ public class RenaultBankDirektPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-26T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.52)));
     }
 
@@ -256,6 +269,7 @@ public class RenaultBankDirektPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-04-19T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(10)));
 
         item = iter.next();
@@ -263,6 +277,7 @@ public class RenaultBankDirektPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-04-19T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(10)));
 
         item = iter.next();
@@ -270,6 +285,7 @@ public class RenaultBankDirektPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-04-30T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.73)));
     }
 

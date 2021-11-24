@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.pdf.baaderbank;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -69,6 +70,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(208.95)));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-03-20T15:31")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.21))));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2)));
@@ -110,6 +112,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(1551.00)));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-03-20T14:59")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.55))));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(70)));
@@ -150,6 +153,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(87.3)));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-11-22T16:14")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3)));
     }
 
@@ -188,6 +192,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(28.18)));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-12-10T12:58")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2)));
     }
 
@@ -226,6 +231,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(1030.25)));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-12-21T12:45")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(24)));
     }
 
@@ -264,6 +270,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(985.12)));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-02-24T14:49")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(70)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of("EUR", Values.Amount.factorize(1.97))));
@@ -304,6 +311,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(519.03)));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-01-12T18:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(13)));
     }
 
@@ -342,6 +350,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(513.6)));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-01-29T15:49")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(12)));
     }
 
@@ -379,6 +388,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(75.92)));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-05-10T14:10")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.08))));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2)));
@@ -419,6 +429,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(1161.60)));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-07-19T11:13")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(11)));
     }
 
@@ -457,6 +468,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(226.68)));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-12-21T13:06")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0))));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(6)));
@@ -497,6 +509,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(809)));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-01-13T14:56")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(10)));
     }
 
@@ -535,6 +548,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(1454.56)));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-10-30T16:34")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(20)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of("EUR", Values.Amount.factorize(127.73 + 11.49 + 7.02))));
@@ -566,6 +580,7 @@ public class BaaderBankPDFExtractorTest
         
         assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-03-16T00:00")));
+        assertThat(t.getExDateTime(), is(LocalDateTime.parse("2021-03-12T00:00")));
         assertThat(t.getShares(), is(Values.Share.factorize(35)));
         assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(14.00))));
         assertThat(t.getUnitSum(Unit.Type.TAX), 
@@ -595,6 +610,7 @@ public class BaaderBankPDFExtractorTest
         // assert transaction
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-06-22T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(9.01)));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
     }
@@ -620,6 +636,7 @@ public class BaaderBankPDFExtractorTest
         // assert transaction
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-26T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(29.06)));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
     }
@@ -647,6 +664,7 @@ public class BaaderBankPDFExtractorTest
         // assert transaction
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-05-04T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(100.00)));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
     }
@@ -674,6 +692,7 @@ public class BaaderBankPDFExtractorTest
         // assert transaction
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-11T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(20.00)));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
     }
@@ -701,6 +720,7 @@ public class BaaderBankPDFExtractorTest
         // assert transaction
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-08-02T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(6.48)));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
     }
@@ -738,6 +758,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-06-30T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2017-06-15T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.08))));
         assertThat(transaction.getShares(), is(Values.Share.factorize(8)));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
@@ -777,6 +798,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-05-12T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2017-05-02T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.24))));
         assertThat(transaction.getShares(), is(Values.Share.factorize(11)));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
@@ -816,6 +838,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-05-08T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2020-04-08T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.84))));
         assertThat(transaction.getShares(), is(Values.Share.factorize(3)));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
@@ -855,6 +878,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-05-15T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2020-04-17T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.23))));
         assertThat(transaction.getShares(), is(Values.Share.factorize(23)));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
@@ -894,6 +918,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-24T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2020-06-22T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(46.20))));
         assertThat(transaction.getShares(), is(Values.Share.factorize(77)));
     }
@@ -926,6 +951,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-07-06T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2021-06-15T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(57)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -991,6 +1017,7 @@ public class BaaderBankPDFExtractorTest
             assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
             assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(418.00)));
             assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-04-13T00:00")));
+            assertNull(entry.getPortfolioTransaction().getExDateTime());
             assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2)));
         }
         if (iter.hasNext())
@@ -1003,6 +1030,7 @@ public class BaaderBankPDFExtractorTest
             assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
             assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(238.20)));
             assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-04-13T00:00")));
+            assertNull(entry.getPortfolioTransaction().getExDateTime());
             assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2)));
         }
 
@@ -1016,6 +1044,7 @@ public class BaaderBankPDFExtractorTest
         // assert transaction
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-12T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(10000.00)));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1096,6 +1125,7 @@ public class BaaderBankPDFExtractorTest
             assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
             assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(642.40)));
             assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-07-25T00:00")));
+            assertNull(entry.getPortfolioTransaction().getExDateTime());
             assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4)));
         }
         if (iter.hasNext())
@@ -1108,6 +1138,7 @@ public class BaaderBankPDFExtractorTest
             assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
             assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(304.92)));
             assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-07-25T00:00")));
+            assertNull(entry.getPortfolioTransaction().getExDateTime());
             assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2)));
         }
         if (iter.hasNext())
@@ -1120,6 +1151,7 @@ public class BaaderBankPDFExtractorTest
             assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
             assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(488.72)));
             assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-07-25T00:00")));
+            assertNull(entry.getPortfolioTransaction().getExDateTime());
             assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4)));
         }
         if (iter.hasNext())
@@ -1132,6 +1164,7 @@ public class BaaderBankPDFExtractorTest
             assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
             assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(515.61)));
             assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-07-25T00:00")));
+            assertNull(entry.getPortfolioTransaction().getExDateTime());
             assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4)));
         }
         
@@ -1146,6 +1179,7 @@ public class BaaderBankPDFExtractorTest
         // assert transaction
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-08-22T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(2000.0)));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1184,6 +1218,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-04T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2021-01-04T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.04))));
         assertThat(transaction.getShares(), is(Values.Share.factorize(112)));
     }

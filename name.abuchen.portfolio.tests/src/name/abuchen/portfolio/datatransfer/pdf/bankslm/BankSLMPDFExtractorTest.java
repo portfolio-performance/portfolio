@@ -2,6 +2,7 @@ package name.abuchen.portfolio.datatransfer.pdf.bankslm;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.time.LocalDateTime;
@@ -59,6 +60,7 @@ public class BankSLMPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2013-09-03T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(17000)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -99,6 +101,7 @@ public class BankSLMPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-06-21T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -139,6 +142,7 @@ public class BankSLMPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-02-10T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3000)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -179,6 +183,7 @@ public class BankSLMPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2013-08-22T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(7798)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -219,6 +224,7 @@ public class BankSLMPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2013-01-24T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(11500)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -259,6 +265,7 @@ public class BankSLMPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-05-02T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2016-05-02T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -299,6 +306,7 @@ public class BankSLMPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-07-05T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2016-06-17T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(17000)));
 
         assertThat(transaction.getMonetaryAmount(),

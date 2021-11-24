@@ -82,6 +82,14 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                     v.put("date", DateTimeFormatter.ofPattern("dd-MM-yyyy").format(LocalDate.parse(v.get("date"), DateTimeFormatter.ofPattern("yyyy-MM-dd"))) + " 00:00");
                     t.setDateTime(asDate(v.get("date")));
                 })
+                
+                // Ex date: 2020-05-14
+                .section("exDate").optional()
+                .match("^Ex date: (?<exDate>[\\d]{4}-[\\d]{2}-[\\d]{2})$")
+                .assign((t,v) -> {
+                    v.put("exDate", DateTimeFormatter.ofPattern("dd-MM-yyyy").format(LocalDate.parse(v.get("exDate"), DateTimeFormatter.ofPattern("yyyy-MM-dd"))) + " 00:00");
+                    t.setExDateTime(asDate(v.get("exDate")));
+                })
 
                 // Number of shares Amount of dividend Gross amount of Amount of tax Net amount ofper share dividend withheld dividend Wäh.
                 // 20 0,142 2,84 -0,43 2,41 EUR

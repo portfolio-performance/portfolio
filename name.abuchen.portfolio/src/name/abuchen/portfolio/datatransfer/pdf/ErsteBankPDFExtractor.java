@@ -274,21 +274,37 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                 .match("^WP-Bestand : (?<shares>[.,\\d]+)(.*)?$")
                 .assign((t, v) -> {
                     t.setShares(asShares(v.get("shares")));
-                })
+                })               
 
                 // Ex-Tag : 27.08.2015
                 .section("date").optional()
-                .match("^Ex-Tag : (?<date>\\d+.\\d+.\\d{4})$")
+                .match("^Zahltag : (?<date>\\d+.\\d+.\\d{4})$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                 // Ex-Tag : 29. April 2010 Zahlungsprovision : EUR 0,50
                 // Ex-Tag : 15. Juni 2011
                 .section("date").optional()
-                .match("^Ex-Tag : (?<date>\\d+\\. .* \\d{4})(.*)?")
+                .match("^Zahltag : (?<date>\\d+\\. .* \\d{4})(.*)?")
                 .assign((t, v) -> {
                     // Formate the date from 29. April 2010 to 29.05.2010
                     v.put("date", DateTimeFormatter.ofPattern("dd.MM.yyyy").format(LocalDate.parse(v.get("date"), DateTimeFormatter.ofPattern("d. MMMM yyyy", Locale.GERMANY))));
                     t.setDateTime(asDate(v.get("date")));
+                })
+                
+                
+                // Ex-Tag : 27.08.2015
+                .section("exDate").optional()
+                .match("^Ex-Tag : (?<exDate>\\d+.\\d+.\\d{4})$")
+                .assign((t, v) -> t.setExDateTime(asDate(v.get("exDate"))))
+
+                // Ex-Tag : 29. April 2010 Zahlungsprovision : EUR 0,50
+                // Ex-Tag : 15. Juni 2011
+                .section("exDate").optional()
+                .match("^Ex-Tag : (?<exDate>\\d+\\. .* \\d{4})(.*)?")
+                .assign((t, v) -> {
+                    // Formate the date from 29. April 2010 to 29.05.2010
+                    v.put("exDate", DateTimeFormatter.ofPattern("dd.MM.yyyy").format(LocalDate.parse(v.get("exDate"), DateTimeFormatter.ofPattern("d. MMMM yyyy", Locale.GERMANY))));
+                    t.setExDateTime(asDate(v.get("exDate")));
                 })
 
                 // Gesamtbetrag (in : EUR 0.4

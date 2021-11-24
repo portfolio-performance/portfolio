@@ -293,6 +293,14 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                     t.setShares(asShares(v.get("shares")));
                     t.setSecurity(getOrCreateSecurity(v));
                 })
+                
+                // Ex-Dividenden-Tag 08.05.2015
+                .section("exDate").optional()
+                .match("^([\\s]+)?EX-TAG([\\s]+){1,2}(?<exDate>\\d+.\\d+.\\d{4})([\\s]+)?$")   
+//                .match("^EX-TAG (?<exDate>\\d+.\\d+.\\d{4})$")
+                .assign((t,v) -> t.setExDateTime(asDate(v.get("exDate"))) )
+                
+             
 
                 // OMNICOM GROUP INC. Registered Shares DL -,15 871706 US6819191064
                 // 25 Stück

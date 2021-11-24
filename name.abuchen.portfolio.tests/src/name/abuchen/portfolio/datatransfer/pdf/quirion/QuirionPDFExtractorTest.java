@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.pdf.quirion;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -161,6 +162,7 @@ public class QuirionPDFExtractorTest
             assertThat(entry.getPortfolioTransaction().getGrossValue().getAmount(),
                             is(Values.Amount.factorize(428.06)));
             assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-14T00:00")));
+            assertNull(entry.getPortfolioTransaction().getExDateTime());
             assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(16.091)));
         }
         if (iter.hasNext())
@@ -176,6 +178,7 @@ public class QuirionPDFExtractorTest
             assertThat(entry.getPortfolioTransaction().getGrossValue().getAmount(),
                             is(Values.Amount.factorize(408.26)));
             assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-06-05T00:00")));
+            assertNull(entry.getPortfolioTransaction().getExDateTime());
             assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(102.054)));
         }
         if (iter.hasNext())
@@ -191,6 +194,7 @@ public class QuirionPDFExtractorTest
             assertThat(entry.getPortfolioTransaction().getGrossValue().getAmount(),
                             is(Values.Amount.factorize(235.86)));
             assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-05-10T00:00")));
+            assertNull(entry.getPortfolioTransaction().getExDateTime());
             assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3.648)));
         }
         if (iter.hasNext())
@@ -206,6 +210,7 @@ public class QuirionPDFExtractorTest
             assertThat(entry.getPortfolioTransaction().getGrossValue().getAmount(),
                             is(Values.Amount.factorize(110.86)));
             assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-01-07T00:00")));
+            assertNull(entry.getPortfolioTransaction().getExDateTime());
             assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(10.763)));
         }
 
@@ -223,6 +228,7 @@ public class QuirionPDFExtractorTest
 
             assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-05-28T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(3000.00)));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         }
@@ -234,6 +240,7 @@ public class QuirionPDFExtractorTest
 
             assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-19T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(5000.00)));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         }
@@ -245,6 +252,7 @@ public class QuirionPDFExtractorTest
 
             assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-31T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(2.84)));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         }
@@ -256,6 +264,7 @@ public class QuirionPDFExtractorTest
 
             assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-27T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(2000.00)));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         }
@@ -267,6 +276,7 @@ public class QuirionPDFExtractorTest
 
             assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-12T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(36.82)));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         }
@@ -278,6 +288,7 @@ public class QuirionPDFExtractorTest
 
             assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-03T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.4)));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         }
@@ -289,6 +300,7 @@ public class QuirionPDFExtractorTest
 
             assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-19T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(5002.84)));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         }
@@ -300,6 +312,7 @@ public class QuirionPDFExtractorTest
 
             assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-08-31T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(5.75)));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getGrossValue().getAmount(), is(Values.Amount.factorize(5.75)));
@@ -313,6 +326,7 @@ public class QuirionPDFExtractorTest
 
             assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-09-30T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(6.98)));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getGrossValue().getAmount(), is(Values.Amount.factorize(6.98)));
@@ -327,6 +341,7 @@ public class QuirionPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
             assertThat(transaction.getSecurity().getIsin(), is("IE00BCBJG560"));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-02T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.4)));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         }
@@ -339,6 +354,7 @@ public class QuirionPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
             assertThat(transaction.getSecurity().getIsin(), is("LU1681045370"));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-03T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.49)));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         }
@@ -351,6 +367,7 @@ public class QuirionPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
             assertThat(transaction.getSecurity().getIsin(), is("LU1931974692"));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-27T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(156.33)));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getGrossValue().getAmount(), is(Values.Amount.factorize(158.23)));
@@ -365,6 +382,7 @@ public class QuirionPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
             assertThat(transaction.getSecurity().getIsin(), is("LU1931975079"));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-28T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(54.86)));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getGrossValue().getAmount(), is(Values.Amount.factorize(54.87)));
@@ -379,6 +397,7 @@ public class QuirionPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
             assertThat(transaction.getSecurity().getIsin(), is("IE00BYML9W36"));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-06-27T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(11.54)));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getGrossValue().getAmount(), is(Values.Amount.factorize(11.54)));
@@ -393,6 +412,7 @@ public class QuirionPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
             assertThat(transaction.getSecurity().getIsin(), is("IE00B95PGT31"));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-04-08T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.94)));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getGrossValue().getAmount(), is(Values.Amount.factorize(0.94)));
@@ -407,6 +427,7 @@ public class QuirionPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
             assertThat(transaction.getSecurity().getIsin(), is("IE00B4L60045"));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-29T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(5.35)));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getGrossValue().getAmount(), is(Values.Amount.factorize(7.25)));
@@ -552,6 +573,7 @@ public class QuirionPDFExtractorTest
             assertThat(entry.getPortfolioTransaction().getGrossValue().getAmount(),
                             is(Values.Amount.factorize(96.46)));
             assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-12-04T00:00")));
+            assertNull(entry.getPortfolioTransaction().getExDateTime());
             assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4.466)));
         }
         if (iter.hasNext())
@@ -567,6 +589,7 @@ public class QuirionPDFExtractorTest
             assertThat(entry.getPortfolioTransaction().getGrossValue().getAmount(),
                             is(Values.Amount.factorize(65.63)));
             assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-12-04T00:00")));
+            assertNull(entry.getPortfolioTransaction().getExDateTime());
             assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.526)));
         }
         if (iter.hasNext())
@@ -582,6 +605,7 @@ public class QuirionPDFExtractorTest
             assertThat(entry.getPortfolioTransaction().getGrossValue().getAmount(),
                             is(Values.Amount.factorize(63.23)));
             assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-12-04T00:00")));
+            assertNull(entry.getPortfolioTransaction().getExDateTime());
             assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(11.802)));
         }
         if (iter.hasNext())
@@ -597,6 +621,7 @@ public class QuirionPDFExtractorTest
             assertThat(entry.getPortfolioTransaction().getGrossValue().getAmount(),
                             is(Values.Amount.factorize(61.07)));
             assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-12-04T00:00")));
+            assertNull(entry.getPortfolioTransaction().getExDateTime());
             assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.079)));
         }
         if (iter.hasNext())
@@ -612,6 +637,7 @@ public class QuirionPDFExtractorTest
             assertThat(entry.getPortfolioTransaction().getGrossValue().getAmount(),
                             is(Values.Amount.factorize(49.88)));
             assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-12-04T00:00")));
+            assertNull(entry.getPortfolioTransaction().getExDateTime());
             assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.338)));
         }
         if (iter.hasNext())
@@ -627,6 +653,7 @@ public class QuirionPDFExtractorTest
             assertThat(entry.getPortfolioTransaction().getGrossValue().getAmount(),
                             is(Values.Amount.factorize(47.53)));
             assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-12-04T00:00")));
+            assertNull(entry.getPortfolioTransaction().getExDateTime());
             assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.946)));
         }
         if (iter.hasNext())
@@ -642,6 +669,7 @@ public class QuirionPDFExtractorTest
             assertThat(entry.getPortfolioTransaction().getGrossValue().getAmount(),
                             is(Values.Amount.factorize(45.93)));
             assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-12-04T00:00")));
+            assertNull(entry.getPortfolioTransaction().getExDateTime());
             assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.181)));
         }
         if (iter.hasNext())
@@ -657,6 +685,7 @@ public class QuirionPDFExtractorTest
             assertThat(entry.getPortfolioTransaction().getGrossValue().getAmount(),
                             is(Values.Amount.factorize(45.65)));
             assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-12-04T00:00")));
+            assertNull(entry.getPortfolioTransaction().getExDateTime());
             assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.186)));
         }
         if (iter.hasNext())
@@ -672,6 +701,7 @@ public class QuirionPDFExtractorTest
             assertThat(entry.getPortfolioTransaction().getGrossValue().getAmount(),
                             is(Values.Amount.factorize(34.89)));
             assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-12-04T00:00")));
+            assertNull(entry.getPortfolioTransaction().getExDateTime());
             assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.245)));
         }
         if (iter.hasNext())
@@ -687,6 +717,7 @@ public class QuirionPDFExtractorTest
             assertThat(entry.getPortfolioTransaction().getGrossValue().getAmount(),
                             is(Values.Amount.factorize(28.83)));
             assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-12-04T00:00")));
+            assertNull(entry.getPortfolioTransaction().getExDateTime());
             assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.651)));
         }
 
@@ -704,6 +735,7 @@ public class QuirionPDFExtractorTest
 
             assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-31T00:00")));
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(1.7)));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         }

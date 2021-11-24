@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -59,6 +60,7 @@ public class LGTBankPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(82452.21)));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-04-14T09:00:02")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(12)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), 
                         is(Money.of("DKK", Values.Amount.factorize(1534.90 + 12.12))));
@@ -94,6 +96,7 @@ public class LGTBankPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(72811.75)));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-04-14T09:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(180)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), 
                         is(Money.of("DKK", Values.Amount.factorize(1414.16 + 10.69))));
@@ -126,7 +129,8 @@ public class LGTBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(198.36))));
         assertThat(transaction.getShares(), is(Values.Share.factorize(551)));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-05-12T00:00")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-05-14T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2020-05-12T00:00")));
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(77.14))));
     }
 }

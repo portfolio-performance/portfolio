@@ -384,14 +384,15 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                 // Fondsname iShs S&P SmallCap 600 UCITS ET Datum der Ausschüttung 25.07.2018
                 // WKN / ISIN A0Q1YY / IE00B2QWCY14 Turnus halbjährlich
                 // Ausschüttung               0,289000000 USD 0,03 EUR
-                .section("name", "wkn", "isin", "shares", "currency")
+                .section("name", "wkn", "isin", "shares", "currency","exDate")
                 .match("^Fondsname (?<name>.*) Datum der Aussch.ttung \\d+.\\d+.\\d{4}$")
                 .match("^WKN \\/ ISIN (?<wkn>.*) \\/ (?<isin>[\\w]{12}) .*$")
-                .match("^Fondsgesellschaft .* Anteilsbestand per \\d{2}.\\d{2}.\\d{4} (?<shares>[\\d.,]+) St.$")
+                .match("^Fondsgesellschaft .* Anteilsbestand per (?<exDate>\\d{2}.\\d{2}.\\d{4}) (?<shares>[\\d.,]+) St.$")
                 .match("^Aussch.ttung( vor Teilfreistellung)? ([\\s]+)?[.,\\d]+ [\\w]{3} [.,\\d]+ (?<currency>[\\w]{3})")
                 .assign((t, v) -> {
                     t.setShares(asShares(v.get("shares")));
                     t.setSecurity(getOrCreateSecurity(v));
+                    t.setExDateTime(asDate(v.get("exDate")));
                 })
 
                 // Fondsname iShs S&P SmallCap 600 UCITS ET Datum der Ausschüttung 25.07.2018

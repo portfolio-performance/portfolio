@@ -145,15 +145,15 @@ public class BankSLMPDFExtractor extends AbstractPDFExtractor
                 // Valor: 135186
                 // ISIN: CH0001351862
                 // Brutto (1 * CHF 28.00) CHF 28.00
-                .section("name1", "name", "wkn", "isin", "shares", "currency")
-                .match("^(?<name1>.*) Ex Datum: \\d+.\\d+.[\\d]{4}$")
+                .section("name1", "name", "wkn", "isin", "shares", "currency", "exDate")
+                .match("^(?<name1>.*) Ex Datum: (?<exDate>\\d+.\\d+.\\d{4})$")
                 .match("^(?<name>.*)$")
                 .match("^Valor: (?<wkn>.*)$")
                 .match("^ISIN: (?<isin>.*)$")
                 .match("^Brutto \\((?<shares>[.,'\\d]+) \\* [\\w]{3} [.,'\\d]+\\) (?<currency>[\\w]{3}) [.,'\\d]+$")
                 .assign((t, v) -> {
                     v.put("name", v.get("name") + " " + v.get("name1"));
-
+                    t.setExDateTime(asDate(v.get("exDate")));
                     t.setShares(asShares(v.get("shares")));
                     t.setSecurity(getOrCreateSecurity(v));
                 })
@@ -162,7 +162,7 @@ public class BankSLMPDFExtractor extends AbstractPDFExtractor
                 .section("date")
                 .match("^Am (?<date>\\d+.\\d+.[\\d]{4}) wurde folgende Dividende gutgeschrieben:$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
-
+                
                 // Netto CHF 18.20
                 .section("amount", "currency")
                 .match("^Netto (?<currency>[\\w]{3}) (?<amount>[.,'\\d]+)$")

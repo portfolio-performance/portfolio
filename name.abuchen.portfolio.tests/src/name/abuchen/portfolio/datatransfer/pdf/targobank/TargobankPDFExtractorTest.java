@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -37,7 +38,7 @@ public class TargobankPDFExtractorTest
 {
     public void runWertpapierOrderTest(String testCaseFilename, int numberOfMatchingFiles, String actualShareName,
                     String actualWkn, String actualIsin, Object actualPortfolioTransactionType,
-                    Object actualAccoutTransactionType, String actualDateTime, double actualAmount,
+                    Object actualAccoutTransactionType, String actualDateTime, String actualExDateTime, double actualAmount,
                     String actualCurrency, double actualShares, double actualFees)
     {
         TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
@@ -72,6 +73,10 @@ public class TargobankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(actualAccoutTransactionType));
         // ... has the correct values
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse(actualDateTime)));
+        if (actualExDateTime == null)
+            assertNull(entry.getPortfolioTransaction().getExDateTime());
+        else
+            assertThat(entry.getPortfolioTransaction().getExDateTime(), is(LocalDateTime.parse(actualExDateTime)));
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(actualAmount)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(actualCurrency, Values.Amount.factorize(actualFees))));
@@ -94,7 +99,7 @@ public class TargobankPDFExtractorTest
         double actualShares = 987.654;
         double actualFees = 8.9;
         runWertpapierOrderTest(testCaseFilename, numberOfMatchingFiles, actualShareName, actualWkn, actualIsin,
-                        actualPortfolioTransactionType, actualAccountTransactionType, actualDateTime, actualAmount,
+                        actualPortfolioTransactionType, actualAccountTransactionType, actualDateTime, null, actualAmount,
                         actualCurrency, actualShares, actualFees);
     }
 
@@ -114,7 +119,7 @@ public class TargobankPDFExtractorTest
         double actualShares = 1710;
         double actualFees = 0.0;
         runWertpapierOrderTest(testCaseFilename, numberOfMatchingFiles, actualShareName, actualWkn, actualIsin,
-                        actualPortfolioTransactionType, actualAccountTransactionType, actualDateTime, actualAmount,
+                        actualPortfolioTransactionType, actualAccountTransactionType, actualDateTime, null, actualAmount,
                         actualCurrency, actualShares, actualFees);
     }
 
@@ -134,7 +139,7 @@ public class TargobankPDFExtractorTest
         double actualShares = 10;
         double actualFees = 0;
         runWertpapierOrderTest(testCaseFilename, numberOfMatchingFiles, actualShareName, actualWkn, actualIsin,
-                        actualPortfolioTransactionType, actualAccountTransactionType, actualDateTime, actualAmount,
+                        actualPortfolioTransactionType, actualAccountTransactionType, actualDateTime, null, actualAmount,
                         actualCurrency, actualShares, actualFees);
     }
 
@@ -172,6 +177,7 @@ public class TargobankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
         // ... has the correct values
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-05-26T20:32")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(6615.59)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(18.65))));
@@ -219,6 +225,7 @@ public class TargobankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
         // ... has the correct values
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-05-26T20:32")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(7439.35)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(18.65))));
@@ -271,6 +278,7 @@ public class TargobankPDFExtractorTest
         assertThat(s, is(Status.OK_STATUS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-24T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2020-06-11T00:00")));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(15.59)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(81)));
@@ -323,6 +331,7 @@ public class TargobankPDFExtractorTest
         assertThat(s, is(Status.OK_STATUS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-24T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2020-06-11T00:00")));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(15.59)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(81)));
@@ -369,6 +378,7 @@ public class TargobankPDFExtractorTest
         assertThat(s, is(Status.OK_STATUS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-24T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2020-06-11T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(15.59)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(81)));
 
@@ -415,6 +425,7 @@ public class TargobankPDFExtractorTest
         assertThat(s, is(Status.OK_STATUS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-24T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2020-06-11T00:00")));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(15.29)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(61)));
@@ -461,6 +472,7 @@ public class TargobankPDFExtractorTest
         assertThat(s, is(Status.OK_STATUS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-24T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2020-06-11T00:00")));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(15.29)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(61)));
@@ -509,6 +521,7 @@ public class TargobankPDFExtractorTest
         // expect the "wrong" document date here, because tax is 0.00 and
         // nothing is booked
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-26T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2020-06-11T00:00")));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(15.29)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(61)));
@@ -556,6 +569,7 @@ public class TargobankPDFExtractorTest
         assertThat(s, is(Status.OK_STATUS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-04-27T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2020-04-22T00:00")));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(228.01)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1700)));
@@ -608,6 +622,7 @@ public class TargobankPDFExtractorTest
         assertThat(s, is(Status.OK_STATUS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-07-10T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2020-07-08T00:00")));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(17.90)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1790)));
@@ -653,6 +668,7 @@ public class TargobankPDFExtractorTest
         assertThat(s, is(Status.OK_STATUS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-08-31T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2020-08-21T00:00")));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(20.82)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(235)));
@@ -699,6 +715,7 @@ public class TargobankPDFExtractorTest
         assertThat(s, is(Status.OK_STATUS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-08-31T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2020-08-21T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(20.82)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(235)));
 
@@ -746,6 +763,7 @@ public class TargobankPDFExtractorTest
         assertThat(s, is(Status.OK_STATUS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-08-31T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2020-08-21T00:00")));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(20.82)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(235)));
@@ -794,6 +812,7 @@ public class TargobankPDFExtractorTest
         // expect the "wrong" document date here, because tax is 0.00 and
         // nothing is booked
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-09-01T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2020-08-21T00:00")));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(20.82)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(235)));

@@ -4,6 +4,8 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -66,6 +68,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-01-15T08:13:35")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(132.80212)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -108,6 +111,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-09-21T12:45:38")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(250)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -150,6 +154,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-10-16T15:24:22")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.95126)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -192,6 +197,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-01-15T12:00:56")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(210)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -234,6 +240,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-02-03T08:02:51")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.01514)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -276,6 +283,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-05-11T15:52:34")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(30)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -318,6 +326,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2001-09-18T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(50)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -360,6 +369,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2005-10-17T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(15.75243)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -402,6 +412,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2008-01-15T00:01:11")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(11.87891)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -444,6 +455,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-07T13:57:45")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(197)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -486,6 +498,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-07T14:09:07")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4974)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -528,6 +541,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-15T09:30:34")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.12804)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -570,6 +584,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-06-15T11:07:25")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(6.43915)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -612,6 +627,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-07-20T17:09:36")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1000)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -654,6 +670,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-03-29T15:31:01")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -696,6 +713,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-01-06T15:46:08")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(500)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -738,6 +756,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-06-06T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(66)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -780,6 +799,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-02-18T12:10:30")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(140)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -822,6 +842,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-03-02T14:51:46")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -864,6 +885,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2001-11-19T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(200)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -906,6 +928,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2005-03-24T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(52.77908)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -948,6 +971,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2008-05-16T16:04:03")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(334)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -990,6 +1014,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-10-20T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.46370)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -1032,6 +1057,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-07T19:18:29")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(20)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -1074,6 +1100,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-08-05T08:00:04")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(25)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -1116,6 +1143,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-08-25T09:25:18")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(23)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -1158,6 +1186,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-20T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1000)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -1197,6 +1226,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-02T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(106)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -1231,6 +1261,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-05-08T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2015-05-08T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1370)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -1271,6 +1302,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-05-08T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2015-05-08T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(370)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -1311,6 +1343,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-11-02T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2015-09-28T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(300)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -1351,6 +1384,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-07-02T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2015-05-13T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1.00020)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -1391,6 +1425,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-06-29T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2015-06-12T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.27072)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -1431,6 +1466,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-01-11T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2015-12-22T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(650)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -1471,6 +1507,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2014-04-22T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2014-03-06T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(80)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -1511,6 +1548,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-05-20T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2016-05-06T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(50)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -1551,6 +1589,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-01-09T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(25)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -1591,6 +1630,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-08-23T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(43)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -1631,6 +1671,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-27T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(3)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -1671,6 +1712,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-01T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(20)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -1709,6 +1751,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-01T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(20)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -1749,6 +1792,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-01T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(20)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -1795,6 +1839,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-07-28T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(125)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -1835,6 +1880,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-05-31T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(18)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -1875,6 +1921,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-02-16T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2017-02-09T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(50)));
 
         assertThat(transaction.getMonetaryAmount(),

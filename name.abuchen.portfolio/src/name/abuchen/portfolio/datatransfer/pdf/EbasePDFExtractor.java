@@ -2,6 +2,7 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
@@ -351,6 +352,10 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                 .match(".* Buchungsdatum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
+                .section("exDate").optional()
+                .match("^Fondsertrag \\(Aussch.ttung\\) mit Bestandsdatum (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*")
+                .assign((t,v) -> t.setExDateTime(asDate(v.get("exDate")).plusDays(1)))
+                
                 .oneOf(
                                 // IE00BJZ2DC62 12,729132 26,002300 USD 1,105500 299,40 EUR
                                 section -> section

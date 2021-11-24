@@ -223,6 +223,14 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
                     v.put("date", DateTimeFormatter.ofPattern("dd.MM.yyyy").format(LocalDate.parse(v.get("date"), DateTimeFormatter.ofPattern("d. MMMM yyyy", Locale.GERMANY))));
                     t.setDateTime(asDate(v.get("date")));
                 })
+                
+                // Ex Datum - Tag 01. März 2021
+                .section("exDate")
+                .match("Ex Datum - Tag (?<exDate>\\d+. .* \\d{4})")
+                .assign((t,v) -> {
+                    v.put("exDate", DateTimeFormatter.ofPattern("dd.MM.yyyy").format(LocalDate.parse(v.get("exDate"), DateTimeFormatter.ofPattern("d. MMMM yyyy", Locale.GERMANY))));
+                    t.setExDateTime(asDate(v.get("exDate")));
+                })
 
                 // Ausmachender Betrag EUR 12,15
                 .section("currency", "amount")

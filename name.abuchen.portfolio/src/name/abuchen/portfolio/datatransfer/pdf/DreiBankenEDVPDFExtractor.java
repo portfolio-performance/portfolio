@@ -119,17 +119,18 @@ public class DreiBankenEDVPDFExtractor extends AbstractPDFExtractor
                 })
 
                 // Wertpapierrechnung Wert 23.12.2020 EUR 0,30
-                .section("currency", "amount")
-                .match("^(Wertpapierrechn.* Wert) (\\d+.\\d+.\\d{4}+) (?<currency>[\\w]{3}) *(?<amount>[\\d.-]+,\\d+).*")
+                .section("currency", "amount", "date")
+                .match("^(Wertpapierrechn.* Wert) (?<date>\\d+.\\d+.\\d{4}+) (?<currency>[\\w]{3}) *(?<amount>[\\d.-]+,\\d+).*")
                 .assign((t, v) -> {
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
+                    t.setDateTime(asDate(v.get("date")));
                 })
-
-                // Extag 10.12.2020
-                .section("date") //
-                .match("^Extag (?<date>\\d+.\\d+.\\d{4}+).*")
-                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                
+                // Ex-Dividenden-Tag 10.12.2020
+                .section("exDate").optional()
+                .match("^Extag (?<exDate>\\d+.\\d+.\\d{4})$")
+                .assign((t,v) -> t.setExDateTime(asDate(v.get("exDate"))))
 
                 // Ertrag 0,68 USD Kurswert USD 2,04Quellensteuer USD
                 // -0,31

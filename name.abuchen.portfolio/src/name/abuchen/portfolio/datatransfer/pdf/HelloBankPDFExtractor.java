@@ -169,6 +169,11 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
                 .section("date")
                 .match("Valuta (?<date>\\d+.\\d+.\\d{4}+)")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                
+                // Ex-Tag: 1.9.2017
+                .section("exDate")
+                .match("Extag: (?<exDate>\\d+.\\d+.\\d{4}+)")
+                .assign((t, v) -> t.setExDateTime(asDate(v.get("exDate"))))
 
                 // Zu Gunsten IBAN AT44 1925 0654 0668 9002 48,71 EUR 
                 .section("amount", "currency").optional()

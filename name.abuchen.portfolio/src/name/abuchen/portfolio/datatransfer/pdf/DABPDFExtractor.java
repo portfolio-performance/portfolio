@@ -232,13 +232,14 @@ public class DABPDFExtractor extends AbstractPDFExtractor
         pdfTransaction
                 // Paychex Inc. Registered Shares DL -,01 US7043261079
                 // STK 10,000 31.07.2020 27.08.2020 USD 0,620000
-                .section("isin", "name", "shares", "currency").optional()
+                .section("isin", "name", "shares", "currency", "exDate").optional()
                 .find("Gattungsbezeichnung ISIN")
                 .match("^(?<name>.*) (?<isin>[\\w]{12})$")
-                .match("^STK (?<shares>[.,\\d]+) \\d+.\\d+.\\d{4} \\d+.\\d+.\\d{4} (?<currency>[\\w]{3}) [.,\\d]+$")
+                .match("^STK (?<shares>.*) (?<exDate>\\d+.\\d+.\\d{4}.*) \\d+.\\d+.\\d{4} (?<currency>[\\w]{3}) [.,\\d]+$")
                 .assign((t, v) -> {
                     t.setShares(asShares(v.get("shares")));
                     t.setSecurity(getOrCreateSecurity(v));
+                    t.setExDateTime(asDate(v.get("exDate")));
                 })
 
                 // Wertpapierbezeichnung WKN ISIN

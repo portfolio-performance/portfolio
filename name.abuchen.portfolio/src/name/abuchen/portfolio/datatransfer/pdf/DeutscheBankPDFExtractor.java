@@ -136,6 +136,11 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                     t.setShares(asShares(v.get("shares")));
                     t.setSecurity(getOrCreateSecurity(v));
                 })
+                
+                // Ex-Dividenden-Tag 04.12.2014
+                .section("exDate").optional()
+                .match("^(Ursprungsland) ([\\w]*)? Ex-Tag (?<exDate>\\d+.\\d+.\\d{4})$")
+                .assign((t,v) -> t.setExDateTime(asDate(v.get("exDate"))))
 
                 // Gutschrift mit Wert 15.12.2014 64,88 EUR
                 .section("date").optional()

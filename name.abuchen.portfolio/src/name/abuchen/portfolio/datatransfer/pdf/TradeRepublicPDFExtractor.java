@@ -381,6 +381,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         });
 
         pdfTransaction
+        
+                // Ausschüttung mit dem Ex-Tag 12.09.2019.
+                // Dividende mit dem Ex-Tag 01.04.2020.
+                .section("exDate").optional()
+                .match("^(Aussch.ttung|Dividende) mit dem Ex-Tag (?<exDate>\\d+.\\d+.\\d{4}).$")
+                .assign((t,v) -> t.setExDateTime(asDate(v.get("exDate"))))
+        
                 // iShsV-EM Dividend UCITS ETF 10 Stk. 0,563 USD 5,63 USD
                 // Registered Shares USD o.N.
                 // IE00B652H904

@@ -125,10 +125,17 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
                 })
     
                 // Ex-Datum 12. Mai 2020
-                .section("date")
-                .match("^(Ex-Datum) (?<date>\\d+. \\w+ \\d{4})$")
+                .section("exDate")
+                .match("^(Ex-Datum) (?<exDate>\\d+. \\w+ \\d{4})$")
                 .assign((t, v) -> {
                     // Formate the date from 14. Mai 2020 to 14.05.2020
+                    v.put("exDate", DateTimeFormatter.ofPattern("dd.MM.yyyy").format(LocalDate.parse(v.get("exDate"), DateTimeFormatter.ofPattern("d. MMMM yyyy", Locale.GERMANY))));
+                    t.setExDateTime(asDate(v.get("exDate")));
+                })
+                
+                .section("date")
+                .match("^(Valuta) (?<date>\\d+. \\w+ \\d{4})$")
+                .assign((t, v) -> {
                     v.put("date", DateTimeFormatter.ofPattern("dd.MM.yyyy").format(LocalDate.parse(v.get("date"), DateTimeFormatter.ofPattern("d. MMMM yyyy", Locale.GERMANY))));
                     t.setDateTime(asDate(v.get("date")));
                 })

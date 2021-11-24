@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.pdf.glsbankengemeinschaft;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -60,6 +61,7 @@ public class glsbankengemeinschaftPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-02-17T09:04:10")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2700)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -97,7 +99,8 @@ public class glsbankengemeinschaftPDFExtractorTest
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-05-31T00:00")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-06-08T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2021-05-31T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(17)));
         assertThat(transaction.getMonetaryAmount(), 
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(13.28))));

@@ -74,6 +74,8 @@ public interface Extractor
         public abstract String getTypeInformation();
 
         public abstract LocalDateTime getDate();
+        
+        public abstract LocalDateTime getExDate();
 
         public Money getAmount()
         {
@@ -207,6 +209,13 @@ public interface Extractor
         {
             return note;
         }
+
+        @Override
+        public LocalDateTime getExDate()
+        {
+            // TODO Auto-generated method stub
+            return null;
+        }
     }
 
     static class TransactionItem extends Item
@@ -298,6 +307,12 @@ public interface Extractor
                 throw new UnsupportedOperationException();
             }
         }
+
+        @Override
+        public LocalDateTime getExDate()
+        {
+            return transaction.getExDateTime();
+        }
     }
 
     static class BuySellEntryItem extends Item
@@ -365,6 +380,12 @@ public interface Extractor
             }
             return status;
         }
+
+        @Override
+        public LocalDateTime getExDate()
+        {
+            return entry.getAccountTransaction().getExDateTime();
+        }
     }
 
     static class AccountTransferItem extends Item
@@ -424,6 +445,12 @@ public interface Extractor
                 return action.process(entry, account, accountSecondary);
             else
                 return action.process(entry, accountSecondary, account);
+        }
+
+        @Override
+        public LocalDateTime getExDate()
+        {
+            return entry.getSourceTransaction().getExDateTime();
         }
     }
 
@@ -485,6 +512,12 @@ public interface Extractor
 
             return action.process(entry, portfolio, portfolioSecondary);
         }
+
+        @Override
+        public LocalDateTime getExDate()
+        {
+            return entry.getSourceTransaction().getExDateTime();
+        }
     }
 
     static class SecurityItem extends Item
@@ -524,6 +557,12 @@ public interface Extractor
         public Status apply(ImportAction action, Context context)
         {
             return action.process(security);
+        }
+
+        @Override
+        public LocalDateTime getExDate()
+        {
+            return null;
         }
     }
 
@@ -572,6 +611,12 @@ public interface Extractor
         public Status apply(ImportAction action, Context context)
         {
             return action.process(security, price);
+        }
+
+        @Override
+        public LocalDateTime getExDate()
+        {
+            return null;
         }
     }
 

@@ -156,10 +156,15 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                     t.setCurrencyCode(v.get("currency"));
                 })
 
-                // Ex-Tag 14.12.2017 Herkunftsland Irland
+                // Zahlbarkeitstag 29.12.2017 Ertrag pro St. 0,123000000 USD
                 .section("date")
-                .match("^Ex-Tag (?<date>\\d+.\\d+.\\d{4}).*")
+                .match("^Zahlbarkeitstag (?<date>\\d+.\\d+.\\d{4}).*")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                
+                // Ex-Tag 29.11.2016
+                .section("exDate").optional()
+                .match("^Ex-Tag (?<exDate>\\d+.\\d+.\\d{4}).*")
+                .assign((t,v) -> t.setExDateTime(asDate(v.get("exDate"))))
 
                 // Devisenkurs EUR / USD 1,2095
                 // Devisenkursdatum 02.01.2018

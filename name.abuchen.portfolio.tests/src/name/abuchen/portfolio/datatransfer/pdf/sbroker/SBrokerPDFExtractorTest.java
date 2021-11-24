@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.pdf.sbroker;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.time.LocalDateTime;
@@ -60,6 +61,7 @@ public class SBrokerPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2014-09-29T20:35")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(16)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -99,6 +101,7 @@ public class SBrokerPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2011-11-11T09:02")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(18)));
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1249.30))));
@@ -141,6 +144,7 @@ public class SBrokerPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(500.00))));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-02-27T01:31:42")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(7.1535)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
@@ -176,6 +180,7 @@ public class SBrokerPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-05T09:04")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(19.916)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -216,6 +221,7 @@ public class SBrokerPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-12T10:06")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(66)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -253,6 +259,7 @@ public class SBrokerPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-06-02T08:05")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(47)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -273,6 +280,7 @@ public class SBrokerPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-06-03T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getMonetaryAmount(), 
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(11.48))));
     }
@@ -304,6 +312,7 @@ public class SBrokerPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-26T14:10")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.836)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -341,6 +350,7 @@ public class SBrokerPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-11T18:08")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(200)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -361,6 +371,7 @@ public class SBrokerPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-05-11T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getMonetaryAmount(), 
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(74.02))));
     }
@@ -389,6 +400,7 @@ public class SBrokerPDFExtractorTest
 
         assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(t.getDateTime(), is(LocalDateTime.parse("2014-11-17T00:00")));
+        assertThat(t.getExDateTime(), is(LocalDateTime.parse("2014-11-17T00:00")));
         assertThat(t.getShares(), is(Values.Share.factorize(16)));
         assertThat(t.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(12.70))));
@@ -423,7 +435,8 @@ public class SBrokerPDFExtractorTest
                         .findFirst().get().getSubject();
 
         assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(t.getDateTime(), is(LocalDateTime.parse("2014-11-26T00:00")));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2014-12-15T00:00")));
+        assertThat(t.getExDateTime(), is(LocalDateTime.parse("2014-11-26T00:00")));
         assertThat(t.getShares(), is(Values.Share.factorize(103)));
         assertThat(t.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(70.32))));
@@ -458,7 +471,8 @@ public class SBrokerPDFExtractorTest
                         .findFirst().get().getSubject();
 
         assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-04-22T00:00")));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-05-17T00:00")));
+        assertThat(t.getExDateTime(), is(LocalDateTime.parse("2021-04-22T00:00")));
         assertThat(t.getShares(), is(Values.Share.factorize(25)));
         assertThat(t.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(17.99))));

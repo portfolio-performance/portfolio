@@ -166,15 +166,17 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                 .match("^(?<name>.*) (?<isin>[\\w]{12})$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
+                // Nominal Ex-Tag Zahltag Dividenden-Betrag pro Stück
                 // STK 16,000 17.11.2014 17.11.2014 EUR 0,793806
-                .section("shares", "date")
-                .match("^STK (?<shares>\\d+,\\d+) (?<date>\\d+.\\d+.\\d{4}) .*$")
+                .section("shares", "exDate", "date")
+                .match("^STK (?<shares>\\d+,\\d+) (?<exDate>\\d+.\\d+.\\d{4}) (?<date>\\d+.\\d+.\\d{4}).*$")
                 .assign((t, v) -> {
                     t.setShares(asShares(v.get("shares")));
                     if (v.get("time") != null)
                         t.setDateTime(asDate(v.get("date"), v.get("time")));
                     else
                         t.setDateTime(asDate(v.get("date")));
+                    t.setExDateTime(asDate(v.get("exDate")));
                 })
 
                 .section("amount", "currency").optional()

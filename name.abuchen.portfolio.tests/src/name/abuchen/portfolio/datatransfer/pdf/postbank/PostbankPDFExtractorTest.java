@@ -2,8 +2,9 @@ package name.abuchen.portfolio.datatransfer.pdf.postbank;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -61,6 +62,7 @@ public class PostbankPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(9978.18)));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-02-04T08:00:04")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(158)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(39.95 + 0.04 + 11.82 + 0.65))));
@@ -74,6 +76,7 @@ public class PostbankPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(6062.19)));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-02-04T08:00:04")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(140)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(39.95 + 0.04 + 7.15 + 0.65))));
@@ -110,6 +113,7 @@ public class PostbankPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(250.90)));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-02-05T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(36.7701)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0.90))));
@@ -146,6 +150,7 @@ public class PostbankPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(1000.90)));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-01-01T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(12.4085)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0.90))));
@@ -182,6 +187,7 @@ public class PostbankPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(3141.58)));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-03-11T16:34:51")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(137)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), 
                         is(Money.of("EUR", Values.Amount.factorize(29.97))));
@@ -215,7 +221,8 @@ public class PostbankPDFExtractorTest
         assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(t.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(8.64))));
         assertThat(t.getShares(), is(Values.Share.factorize(12)));
-        assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-02-22T00:00")));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-03-09T00:00")));
+        assertThat(t.getExDateTime(), is(LocalDateTime.parse("2021-02-22T00:00")));
 
         assertThat(t.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(10.17))));
         assertThat(t.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(1.53))));
@@ -248,7 +255,8 @@ public class PostbankPDFExtractorTest
         assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(t.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(4.40))));
         assertThat(t.getShares(), is(Values.Share.factorize(20)));
-        assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-02-26T00:00")));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-03-02T00:00")));
+        assertThat(t.getExDateTime(), is(LocalDateTime.parse("2021-02-26T00:00")));
 
         assertThat(t.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(4.40))));
         assertThat(t.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
@@ -281,7 +289,8 @@ public class PostbankPDFExtractorTest
         assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(t.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(68.40))));
         assertThat(t.getShares(), is(Values.Share.factorize(114)));
-        assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-04-06T00:00")));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-04-08T00:00")));
+        assertThat(t.getExDateTime(), is(LocalDateTime.parse("2021-04-06T00:00")));
 
         assertThat(t.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(68.40))));
         assertThat(t.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
@@ -314,7 +323,8 @@ public class PostbankPDFExtractorTest
         assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(t.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(9.65))));
         assertThat(t.getShares(), is(Values.Share.factorize(81)));
-        assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-02-11T00:00")));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-02-24T00:00")));
+        assertThat(t.getExDateTime(), is(LocalDateTime.parse("2021-02-11T00:00")));
 
         assertThat(t.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(9.65))));
         assertThat(t.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));

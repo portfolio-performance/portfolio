@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.pdf.creditsuisseag;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.time.LocalDateTime;
@@ -83,6 +84,7 @@ public class creditsuisseAGExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-08T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(41.81))));
     }
@@ -118,6 +120,7 @@ public class creditsuisseAGExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-09-16T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2000)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -169,6 +172,7 @@ public class creditsuisseAGExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-04-30T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1000)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -212,6 +216,7 @@ public class creditsuisseAGExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-02-22T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1000)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -262,6 +267,7 @@ public class creditsuisseAGExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-04-10T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(2000)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -301,6 +307,7 @@ public class creditsuisseAGExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-06T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2020-12-14T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(900)));
 
         assertThat(transaction.getMonetaryAmount(),

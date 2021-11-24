@@ -170,9 +170,14 @@ public class VBankAGPDFExtractor extends AbstractPDFExtractor
                 })
 
                 // Ex-Tag 06.12.2019
+                .section("exDate")
+                .match("^Ex-Tag (?<exDate>\\d+.\\d+.\\d{4})")
+                .assign((t, v) -> t.setExDateTime(asDate(v.get("exDate"))))
+                
+                //Zahlungstag 11.12.2019
                 .section("date")
-                .match("^Ex-Tag (?<date>\\d+.\\d+.\\d{4})")
-                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                .match("^Zahlungstag (?<date>\\d+.\\d+.\\d{4})$")
+                .assign((t,v) -> t.setDateTime(asDate(v.get("date"))))
 
                 // Ausmachender Betrag EUR 48,54
                 .section("currency", "amount")

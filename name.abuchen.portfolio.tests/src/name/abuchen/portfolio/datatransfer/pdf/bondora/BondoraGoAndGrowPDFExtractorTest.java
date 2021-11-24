@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -49,6 +50,7 @@ public class BondoraGoAndGrowPDFExtractorTest
         AccountTransaction depositTransaction = (AccountTransaction) deposit.get().getSubject();
         assertThat(depositTransaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(depositTransaction.getDateTime(), is(LocalDateTime.parse("2020-01-15T00:00")));
+        assertNull(depositTransaction.getExDateTime());
         assertThat(depositTransaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 100_00L)));
 
         // check removal
@@ -59,6 +61,7 @@ public class BondoraGoAndGrowPDFExtractorTest
         AccountTransaction removalTransaction = (AccountTransaction) removal.get().getSubject();
         assertThat(removalTransaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(removalTransaction.getDateTime(), is(LocalDateTime.parse("2020-08-07T00:00")));
+        assertNull(removalTransaction.getExDateTime());
         assertThat(removalTransaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 203_00L)));
 
         // check interest
@@ -69,6 +72,7 @@ public class BondoraGoAndGrowPDFExtractorTest
         AccountTransaction interestTransaction = (AccountTransaction) interest.get().getSubject();
         assertThat(interestTransaction.getType(), is(AccountTransaction.Type.INTEREST));
         assertThat(interestTransaction.getDateTime(), is(LocalDateTime.parse("2020-08-06T00:00")));
+        assertNull(interestTransaction.getExDateTime());
     }
 
     @Test
@@ -92,6 +96,7 @@ public class BondoraGoAndGrowPDFExtractorTest
         AccountTransaction depositTransaction = (AccountTransaction) item.get().getSubject();
         assertThat(depositTransaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(depositTransaction.getDateTime(), is(LocalDateTime.parse("2020-09-04T00:00")));
+        assertNull(depositTransaction.getExDateTime());
         assertThat(depositTransaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 200_00L)));
 
         // check interest
@@ -100,6 +105,7 @@ public class BondoraGoAndGrowPDFExtractorTest
         assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
         AccountTransaction interestTransaction = (AccountTransaction) item.get().getSubject();
         assertThat(interestTransaction.getType(), is(AccountTransaction.Type.INTEREST));
+        assertNull(interestTransaction.getExDateTime());
         assertThat(interestTransaction.getDateTime(), is(LocalDateTime.parse("2020-09-05T00:00")));
         assertThat(interestTransaction.getMonetaryAmount(), is(Money.of("EUR", 0_04)));
 
@@ -110,6 +116,7 @@ public class BondoraGoAndGrowPDFExtractorTest
         interestTransaction = (AccountTransaction) item.get().getSubject();
         assertThat(interestTransaction.getType(), is(AccountTransaction.Type.INTEREST));
         assertThat(interestTransaction.getDateTime(), is(LocalDateTime.parse("2020-09-06T00:00")));
+        assertNull(interestTransaction.getExDateTime());
         assertThat(interestTransaction.getMonetaryAmount(), is(Money.of("EUR", 0_03)));
 
     }
@@ -135,6 +142,7 @@ public class BondoraGoAndGrowPDFExtractorTest
         AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-10-25T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 1_00L)));
     
         // check interest
@@ -144,6 +152,7 @@ public class BondoraGoAndGrowPDFExtractorTest
         transaction = (AccountTransaction) item.get().getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-10-26T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 1_01L)));
     
         // check deposit
@@ -153,6 +162,7 @@ public class BondoraGoAndGrowPDFExtractorTest
         transaction = (AccountTransaction) item.get().getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-02T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 300_00L)));
     
     }
@@ -178,6 +188,7 @@ public class BondoraGoAndGrowPDFExtractorTest
         AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-18T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.31))));
     
         // check interest
@@ -187,6 +198,7 @@ public class BondoraGoAndGrowPDFExtractorTest
         transaction = (AccountTransaction) item.get().getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-19T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.3))));
     
         // check removal
@@ -196,6 +208,7 @@ public class BondoraGoAndGrowPDFExtractorTest
         transaction = (AccountTransaction) item.get().getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-20T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1))));
     
     }
@@ -221,6 +234,7 @@ public class BondoraGoAndGrowPDFExtractorTest
         AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-09-07T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1500))));
     
         // check interest
@@ -230,6 +244,7 @@ public class BondoraGoAndGrowPDFExtractorTest
         transaction = (AccountTransaction) item.get().getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-09-08T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.27))));
     }
 
@@ -254,6 +269,7 @@ public class BondoraGoAndGrowPDFExtractorTest
         AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-10-05T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(25))));
 
         // check deposit #2
@@ -263,6 +279,7 @@ public class BondoraGoAndGrowPDFExtractorTest
         transaction = (AccountTransaction) item.get().getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-10-06T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.91))));
     
         // check interest #1
@@ -272,6 +289,7 @@ public class BondoraGoAndGrowPDFExtractorTest
         transaction = (AccountTransaction) item.get().getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-10-06T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.02))));
     
         // check interest #1
@@ -281,6 +299,7 @@ public class BondoraGoAndGrowPDFExtractorTest
         transaction = (AccountTransaction) item.get().getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-10-31T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.06))));
     }
 

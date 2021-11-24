@@ -3,8 +3,10 @@ package name.abuchen.portfolio.datatransfer.pdf.hellobank;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,6 +62,7 @@ public class HelloBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-09-06T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2017-09-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(200)));
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(48.71))));
@@ -99,6 +102,7 @@ public class HelloBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-09-06T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2017-09-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(200)));
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(48.71))));
@@ -138,6 +142,7 @@ public class HelloBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-05-15T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2017-04-18T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(110)));
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(12.34))));
@@ -177,6 +182,7 @@ public class HelloBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-06-26T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2017-06-26T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(140)));
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(41.43))));
@@ -216,6 +222,7 @@ public class HelloBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-08-21T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2017-07-19T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(800)));
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(116.91))));
@@ -256,6 +263,7 @@ public class HelloBankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-06-30T09:00:10")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(74)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -296,6 +304,7 @@ public class HelloBankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-06-30T09:00:10")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(74)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -337,6 +346,7 @@ public class HelloBankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-04-27T16:36:18")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(55)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -378,6 +388,7 @@ public class HelloBankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-11T09:04:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(9.65)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -419,6 +430,7 @@ public class HelloBankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-11T00:00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(7.97)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -460,6 +472,7 @@ public class HelloBankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-10-12T07:30:01")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1000)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -500,6 +513,7 @@ public class HelloBankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-10-12T07:30:01")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1000)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -542,6 +556,7 @@ public class HelloBankPDFExtractorTest
         assertThat(tx.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
         assertThat(tx.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3225.37))));
+        assertNull(tx.getExDateTime());
         assertThat(tx.getDateTime(), is(LocalDateTime.parse("2017-03-29T00:00")));
         assertThat(tx.getShares(), is(Values.Share.factorize(80)));
     }
@@ -577,6 +592,7 @@ public class HelloBankPDFExtractorTest
 
         assertThat(tx.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3021.70))));
         assertThat(tx.getDateTime(), is(LocalDateTime.parse("2017-03-31T00:00")));
+        assertNull(tx.getExDateTime());
         assertThat(tx.getShares(), is(Values.Share.factorize(110)));
     }
 }

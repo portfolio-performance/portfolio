@@ -2,8 +2,9 @@ package name.abuchen.portfolio.datatransfer.pdf.dzbank;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -63,6 +64,7 @@ public class DZBankPDFExtractorTest
         BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
         
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-01-13T11:42:59")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
@@ -101,6 +103,7 @@ public class DZBankPDFExtractorTest
         BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-06-04T18:09:18")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
@@ -139,6 +142,7 @@ public class DZBankPDFExtractorTest
         BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-05-14T15:40:55")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
@@ -177,6 +181,7 @@ public class DZBankPDFExtractorTest
         BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
     
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-01-27T16:18:02")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
     
@@ -215,6 +220,7 @@ public class DZBankPDFExtractorTest
         BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-07-01T18:27:57")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
@@ -257,6 +263,7 @@ public class DZBankPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(10531.25)));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-03-17T15:37:21")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(50)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX).getAmount(),
                         is(Values.Amount.factorize(0.00)));
@@ -297,6 +304,7 @@ public class DZBankPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(8790.91)));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-03-17T15:09:38")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(350)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX).getAmount(),
                         is(Values.Amount.factorize(0.00)));
@@ -333,6 +341,7 @@ public class DZBankPDFExtractorTest
         BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
         
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-08-13T15:16:51")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
@@ -350,6 +359,7 @@ public class DZBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(29.57))));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-08-13T00:00")));
+        assertNull(transaction.getExDateTime());
     }
     
     @Test
@@ -381,6 +391,7 @@ public class DZBankPDFExtractorTest
         BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
         
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-09-26T09:04:37")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
@@ -421,6 +432,7 @@ public class DZBankPDFExtractorTest
         BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-02-09T19:48:50")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
@@ -462,6 +474,7 @@ public class DZBankPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(805.45)));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-01-27T15:52:15")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), 
                         is(Money.of("EUR", Values.Amount.factorize(9.95 + 0.10))));
@@ -475,6 +488,7 @@ public class DZBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(26.23))));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-27T00:00")));
+        assertNull(transaction.getExDateTime());
     }
     
     @Test
@@ -501,7 +515,8 @@ public class DZBankPDFExtractorTest
 
         assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(t.getShares(), is(Values.Share.factorize(100)));
-        assertThat(t.getDateTime(), is(LocalDateTime.parse("2019-12-12T00:00")));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2019-12-27T00:00")));
+        assertThat(t.getExDateTime(), is(LocalDateTime.parse("2019-12-12T00:00")));
         assertThat(t.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(24.03))));
 
         assertThat(t.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(26.48))));
@@ -535,7 +550,8 @@ public class DZBankPDFExtractorTest
 
         assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(t.getShares(), is(Values.Share.factorize(205)));
-        assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-02-26T00:00")));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-03-15T00:00")));
+        assertThat(t.getExDateTime(), is(LocalDateTime.parse("2021-02-26T00:00")));
         assertThat(t.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(9.92))));
 
         assertThat(t.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(15.39))));
@@ -574,6 +590,7 @@ public class DZBankPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(33.00)));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-10-05T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.159)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(1.57 + 0.00))));
@@ -633,7 +650,8 @@ public class DZBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-04T00:00")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-08T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2021-02-04T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(160)));
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(560.00))));
@@ -669,7 +687,8 @@ public class DZBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-18T00:00")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-22T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2021-03-18T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(350)));
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(61.58))));
@@ -705,7 +724,8 @@ public class DZBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-06-21T00:00")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-06-23T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2021-06-21T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(250)));
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(412.50))));

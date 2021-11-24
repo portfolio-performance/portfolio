@@ -200,12 +200,17 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                         t.setShares(asShares(v.get("shares")));
                     }
                 })
+                
+                // Ex-Dividenden-Tag 29.11.2016
+                .section("exDate").optional()
+                .match("^Ex-Tag (?<exDate>\\d+.\\d+.\\d{4})$")
+                .assign((t,v) -> t.setExDateTime(asDate(v.get("exDate"))))
 
                 // Valuta 15.12.2016
                 .section("date")
                 .match("^Valuta (?<date>\\d+.\\d+.\\d{4})$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
-
+                  
                 // Gesamtbetrag zu Ihren Gunsten EUR 44,01
                 .section("amount", "currency").optional()
                 .match("^Gesamtbetrag zu Ihren Gunsten (?<currency>[\\w]{3}) (?<amount>[.,\\d]+)$")
@@ -300,11 +305,16 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                 .section("shares")
                 .match("^Nominale (?<shares>[\\d.]+(,\\d+)?) .*")
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
-
+                
                 // Ex-Tag 04.01.2021
                 .section("date")
                 .match("^Ex-Tag (?<date>\\d+.\\d+.\\d{4})")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                // Ex-Dividenden-Tag 04.01.2021
+                .section("exDate")
+                .match("^Ex-Tag (?<exDate>\\d+.\\d+.\\d{4})$")
+                .assign((t,v) -> t.setExDateTime(asDate(v.get("exDate"))))
 
                 // Gesamtbetrag zu Ihren Lasten EUR - 0,16
                 .section("currency", "tax", "sign").optional()

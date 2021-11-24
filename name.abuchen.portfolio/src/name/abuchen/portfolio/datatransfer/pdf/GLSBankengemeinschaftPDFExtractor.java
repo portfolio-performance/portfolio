@@ -133,10 +133,14 @@ public class GLSBankengemeinschaftPDFExtractor extends AbstractPDFExtractor
                     t.setShares(asShares(v.get("shares")));
                     t.setSecurity(getOrCreateSecurity(v));
                 })
+                
+                // Zahlbarkeitstag 08.06.2021 Dividende pro Stück 5,00 PLN
+                .section("date").match("^Zahlbarkeitstag (?<date>\\d+.\\d+.\\d{4}).*")
+                .assign((t,v) -> t.setDateTime(asDate(v.get("date"))))
 
                 // Ex-Tag 31.05.2021
-                .section("date").match("^Ex-Tag (?<date>\\d+.\\d+.\\d{4})$")
-                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                .section("exDate").match("^Ex-Tag (?<exDate>\\d+.\\d+.\\d{4})$")
+                .assign((t, v) -> t.setExDateTime(asDate(v.get("exDate"))))
 
                 // Ausmachender Betrag 13,28+ EUR
                 .section("amount", "currency").optional()

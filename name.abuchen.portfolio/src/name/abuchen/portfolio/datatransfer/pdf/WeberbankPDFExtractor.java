@@ -129,12 +129,17 @@ public class WeberbankPDFExtractor extends AbstractPDFExtractor
                             t.setShares(asShares(v.get("shares")));
                             t.setSecurity(getOrCreateSecurity(v));
                         })
+                        
+                        // Zahlbarkeitstag 13.08.2020
+                        .section("date")
+                        .match("^Zahlbarkeitstag (?<date>\\d+.\\d+.\\d{4}).*")
+                        .assign((t,v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // Ex-Tag 07.08.2020 Art der Dividende Quartalsdividende
-                        .section("date") //
-                        .match("^Ex-Tag (?<date>\\d+.\\d+.\\d{4}).*") //
+                        .section("exDate") //
+                        .match("^Ex-Tag (?<exDate>\\d+.\\d+.\\d{4}).*") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setExDateTime(asDate(v.get("exDate")));
                         })
 
                         // Ex-Tag 07.08.2020 Art der Dividende Quartalsdividende

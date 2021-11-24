@@ -92,7 +92,7 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                 .section("date")
                 .match("^Datum (?<date>\\d+.\\d+.\\d{4})$")
                 .assign((t, v) -> t.setDate(asDate(v.get("date"))))
-
+                
                 // Belastung USD 27,734.70
                 // Gutschrift EUR 28,744.30
                 .section("currency", "amount")
@@ -173,7 +173,13 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                 // Coupon-Verfall 10.04.2021
                 .section("date")
                 .match("^Coupon-Verfall (?<date>\\d+.\\d+.\\d{4})$")
-                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))                
+
+                // Ex-Dividenden-Tag 29.11.2016
+                .section("exDate").optional()
+                .match("^Ex-Datum (?<exDate>\\d+.\\d+.\\d{4})$")
+                .assign((t,v) -> t.setExDateTime(asDate(v.get("exDate"))))
+
 
                 // Bruttoertrag USD 6,250.00
                 .section("currency", "amount")

@@ -2,6 +2,7 @@ package name.abuchen.portfolio.datatransfer.pdf.deutschebank;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.time.LocalDateTime;
@@ -63,6 +64,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2014-12-15T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2014-12-04T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(380)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -103,6 +105,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2014-12-15T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2014-12-04T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(380)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -149,6 +152,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2014-12-15T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(123)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -189,6 +193,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-03-24T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(123)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -229,6 +234,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-03-24T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(123)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -275,6 +281,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-05-31T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(1014)));
 
         assertThat(transaction.getMonetaryAmount(),

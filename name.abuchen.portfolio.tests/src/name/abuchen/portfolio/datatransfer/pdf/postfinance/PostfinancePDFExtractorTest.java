@@ -1,8 +1,9 @@
 package name.abuchen.portfolio.datatransfer.pdf.postfinance;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -64,6 +65,7 @@ public class PostfinancePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-09-27T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("EUR", Values.Amount.factorize(2850.24))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
@@ -103,6 +105,7 @@ public class PostfinancePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-10-29T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(2998.95))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
@@ -142,6 +145,7 @@ public class PostfinancePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-03-29T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(2968.50))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
@@ -184,6 +188,7 @@ public class PostfinancePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-09-24T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(7467.50))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
@@ -219,6 +224,7 @@ public class PostfinancePDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(20.93))));
         assertThat(transaction.getShares(), is(Values.Share.factorize(60)));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-05-02T00:00")));
+        assertNull(transaction.getExDateTime());
 
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(3.69))));
         assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(24.62))));
@@ -251,6 +257,7 @@ public class PostfinancePDFExtractorTest
                         is(Money.of("CHF", Values.Amount.factorize(36.69))));
         assertThat(transaction.getShares(), is(Values.Share.factorize(34)));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-09-06T00:00")));
+        assertNull(transaction.getExDateTime());
 
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(19.75))));
         assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(56.44))));
@@ -283,6 +290,7 @@ public class PostfinancePDFExtractorTest
                         is(Money.of("CHF", Values.Amount.factorize(26.60))));
         assertThat(transaction.getShares(), is(Values.Share.factorize(19)));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-07-03T00:00")));
+        assertNull(transaction.getExDateTime());
     }
     
     @Test
@@ -308,6 +316,7 @@ public class PostfinancePDFExtractorTest
                         is(Money.of("CHF", Values.Amount.factorize(90.00))));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-01-03T00:00")));
+        assertNull(transaction.getExDateTime());
     }
     
     @Test
@@ -332,6 +341,7 @@ public class PostfinancePDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(4.59))));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-31T00:00")));
+        assertNull(transaction.getExDateTime());
     }
     
     @Test
@@ -357,6 +367,7 @@ public class PostfinancePDFExtractorTest
         assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(116.66))));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(75.83))));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-31T00:00")));
+        assertNull(transaction.getExDateTime());
         
         Optional<Unit> unit = transaction.getUnit(Unit.Type.TAX);
         assertThat("Expect tax unit", unit.isPresent());
@@ -386,6 +397,7 @@ public class PostfinancePDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(1.00))));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-12-31T00:00")));
+        assertNull(transaction.getExDateTime());
     }
     
     @Test
@@ -412,6 +424,7 @@ public class PostfinancePDFExtractorTest
         assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(400.00))));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(260.00))));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-12-31T00:00")));
+        assertNull(transaction.getExDateTime());
 
         Optional<Unit> unit = transaction.getUnit(Unit.Type.TAX);
         assertThat("Expect tax unit", unit.isPresent());
@@ -740,5 +753,6 @@ public class PostfinancePDFExtractorTest
         assertThat(itemDescription, transaction.getType(), is(transactionType));
         assertThat(itemDescription, transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(value))));
         assertThat(itemDescription, transaction.getDateTime(), is(LocalDateTime.parse(dateTime)));
+        assertNull(transaction.getExDateTime());
     }
 }

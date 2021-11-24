@@ -189,9 +189,14 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                 })
 
                 // Ausführungsdatum 19.06.2019
+                .section("exDate")
+                .match("^Ausf.hrungsdatum (?<exDate>\\d+.\\d+.\\d{4})")
+                .assign((t, v) -> t.setExDateTime(asDate(v.get("exDate"))))
+                
+                // Valutadatum 01.07.2019
                 .section("date")
-                .match("^Ausf.hrungsdatum (?<date>\\d+.\\d+.\\d{4})")
-                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                .match("Valutadatum (?<date>\\d+.\\d+.\\d{4})$")
+                .assign((t,v) -> t.setDateTime(asDate(v.get("date"))))
 
                 // Total USD 19.60
                 .section("currency", "amount").optional()

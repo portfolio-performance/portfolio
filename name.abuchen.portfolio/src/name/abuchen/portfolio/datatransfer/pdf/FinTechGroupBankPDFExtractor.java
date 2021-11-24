@@ -413,9 +413,13 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 .match("^(St\\.|St\\.\\/Nominale) ([\\s]+)?: ([\\s]+)?(?<shares>[.,\\d]+).*$")
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                .section("date")
+                .section("exDate","date")
+                .match("Extag ([\\s]+)?: ([\\s]+)?(?<exDate>\\d+.\\d+.[\\d]{4}).*$")
                 .match("Valuta ([\\s]+)?: ([\\s]+)?(?<date>\\d+.\\d+.[\\d]{4}).*$")
-                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                .assign((t, v) -> {
+                    t.setDateTime(asDate(v.get("date")));
+                    t.setExDateTime(asDate(v.get("exDate")));
+                })
 
                 //                                        Endbetrag       :       795,15 EUR
                 .section("amount", "currency").optional()

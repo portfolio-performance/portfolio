@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -60,6 +61,7 @@ public class KeytradeBankExtractorTest
         assertThat(t.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(t.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-03-15T12:31:50")));
+        assertNull(t.getPortfolioTransaction().getExDateTime());
         assertThat(t.getPortfolioTransaction().getShares(), is(Values.Share.factorize(168)));
         assertThat(t.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(1994.39)));
         assertThat(t.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
@@ -93,6 +95,7 @@ public class KeytradeBankExtractorTest
         assertThat(t.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(t.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-10-19T11:53:02")));
+        assertNull(t.getPortfolioTransaction().getExDateTime());
         assertThat(t.getPortfolioTransaction().getShares(), is(Values.Share.factorize(310)));
         assertThat(t.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(4963.99)));
         assertThat(t.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
@@ -126,6 +129,7 @@ public class KeytradeBankExtractorTest
         assertThat(t.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(t.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-10-19T11:53:03")));
+        assertNull(t.getPortfolioTransaction().getExDateTime());
         assertThat(t.getPortfolioTransaction().getShares(), is(Values.Share.factorize(310)));
         assertThat(t.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(4963.99)));
         assertThat(t.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
@@ -159,6 +163,7 @@ public class KeytradeBankExtractorTest
         assertThat(t.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(t.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-05-13T09:56:05")));
+        assertNull(t.getPortfolioTransaction().getExDateTime());
         assertThat(t.getPortfolioTransaction().getShares(), is(Values.Share.factorize(22)));
         assertThat(t.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(6118.95)));
         assertThat(t.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
@@ -190,6 +195,7 @@ public class KeytradeBankExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-06-16T09:45:18")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(25)));
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(953.95))));
@@ -233,6 +239,7 @@ public class KeytradeBankExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-02-10T15:23:42")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(310)));
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10499.55))));
@@ -269,6 +276,7 @@ public class KeytradeBankExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-01T12:34:24")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(22)));
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5409.05))));
@@ -305,6 +313,7 @@ public class KeytradeBankExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-09-11T11:09:35")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(25)));
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(938.83))));
@@ -337,7 +346,8 @@ public class KeytradeBankExtractorTest
         assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.67))));
         assertThat(t.getShares(), is(Values.Share.factorize(22)));
-        assertThat(t.getDateTime(), is(LocalDateTime.parse("2020-06-29T00:00")));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2020-07-01T00:00")));
+        assertThat(t.getExDateTime(), is(LocalDateTime.parse("2020-06-29T00:00")));
 
         assertThat(t.getGrossValue(), 
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7.70))));
@@ -372,7 +382,8 @@ public class KeytradeBankExtractorTest
         assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(45.65))));
         assertThat(t.getShares(), is(Values.Share.factorize(310)));
-        assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-02-01T00:00")));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-02-03T00:00")));
+        assertThat(t.getExDateTime(), is(LocalDateTime.parse("2021-02-01T00:00")));
 
         assertThat(t.getGrossValue(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(62.00))));
@@ -405,7 +416,8 @@ public class KeytradeBankExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSubject();
         
         assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(t.getDateTime(), is(LocalDateTime.parse("2016-12-08T00:00")));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2016-12-29T00:00")));
+        assertThat(t.getExDateTime(), is(LocalDateTime.parse("2016-12-08T00:00")));
         assertThat(t.getShares(), is(Values.Share.factorize(25)));
         assertThat(t.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1.06))));

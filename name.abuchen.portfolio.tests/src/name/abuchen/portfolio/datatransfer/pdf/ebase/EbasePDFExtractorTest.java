@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.pdf.ebase;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -71,6 +72,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-11-21T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(12.729132)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -90,6 +92,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-01-13T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(199.500000)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -108,6 +111,7 @@ public class EbasePDFExtractorTest
         assertThat(entry2.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
         assertThat(entry2.getDateTime(), is(LocalDateTime.parse("2019-09-30T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry2.getShares(), is(Values.Share.factorize(10)));
 
         assertThat(entry2.getMonetaryAmount(),
@@ -160,6 +164,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-01-02T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.705860)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -179,6 +184,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-01-20T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.005395)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -197,6 +203,7 @@ public class EbasePDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-24T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -249,6 +256,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-01-27T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.001162)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -268,6 +276,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-10-22T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.705860)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -286,6 +295,7 @@ public class EbasePDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-10-16T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(1)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -325,6 +335,7 @@ public class EbasePDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-02T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2019-12-12T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(7.332986)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -365,6 +376,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-05-03T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.122649)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -384,6 +396,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-12-22T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.100548)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -402,6 +415,7 @@ public class EbasePDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-12-22T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.100548)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -442,6 +456,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-06-04T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(60)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -481,6 +496,7 @@ public class EbasePDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-07-30T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2020-07-16T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(37.327232)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -500,6 +516,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-03T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.278245)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -540,6 +557,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-10-29T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.551798)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -559,6 +577,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-27T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.409391)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -578,6 +597,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-23T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.414447)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -597,6 +617,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-23T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.382295)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -654,6 +675,7 @@ public class EbasePDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-28T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2019-11-14T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(12)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -673,6 +695,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-12-02T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.200653)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -713,6 +736,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-10-19T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.703198)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -732,6 +756,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-17T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.678808)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -751,6 +776,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-17T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.674710)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -770,6 +796,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-23T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.167976)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -788,6 +815,8 @@ public class EbasePDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-23T00:00")));
+        assertNull(transaction.getExDateTime());
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.167976)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -828,6 +857,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-06T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(9.999999)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -846,6 +876,7 @@ public class EbasePDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-04-06T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(9.999999)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -878,6 +909,7 @@ public class EbasePDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-04-01T00:00")));
+        assertNull(transaction.getExDateTime());
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.00))));
@@ -917,6 +949,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-07-05T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.024859)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -935,6 +968,7 @@ public class EbasePDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-07-05T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.024859)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -975,6 +1009,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-07-02T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1234.1234)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -993,6 +1028,7 @@ public class EbasePDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-07-02T00:00")));
+        assertNull(transaction.getExDateTime());
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.00))));
@@ -1074,6 +1110,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-06T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.138927)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -1093,6 +1130,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-06T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.879612)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -1112,6 +1150,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-06T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.510346)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -1131,6 +1170,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-06T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.221967)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -1150,6 +1190,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-03T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.048774)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -1169,6 +1210,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-03T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.483285)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -1188,6 +1230,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-04T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.869440)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -1207,6 +1250,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-04T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.142698)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -1226,6 +1270,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-04T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.865179)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -1245,6 +1290,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-04T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.529988)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -1264,6 +1310,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-04T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.223201)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -1283,6 +1330,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-01T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.047562)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -1302,6 +1350,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-01T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.475691)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -1321,6 +1370,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-01T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.576541)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -1340,6 +1390,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-02T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.939015)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -1359,6 +1410,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-02T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.146836)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -1378,6 +1430,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-02T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.881525)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -1397,6 +1450,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-02T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.229964)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -1415,6 +1469,7 @@ public class EbasePDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-06-14T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.049184)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -1491,6 +1546,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-01-25T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.002155)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -1510,6 +1566,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-01-26T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.002987)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -1529,6 +1586,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-01-26T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.000110)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -1548,6 +1606,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-01-26T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.000268)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -1567,6 +1626,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-01-25T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.000143)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -1586,6 +1646,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-02-01T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.525761)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -1605,6 +1666,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-02-01T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3.084040)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -1624,6 +1686,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-02-02T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.054216)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -1643,6 +1706,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-02-02T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.142943)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -1662,6 +1726,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-02-02T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.494992)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -1681,6 +1746,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-02-02T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.224522)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -1700,6 +1766,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-02-02T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.175007)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -1719,6 +1786,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-03-01T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.053239)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -1738,6 +1806,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-03-01T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.520901)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -1757,6 +1826,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-03-01T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3.037206)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -1776,6 +1846,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-03-01T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.473622)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -1795,6 +1866,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-03-02T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.137031)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -1814,6 +1886,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-03-02T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.211233)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -1833,6 +1906,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-03-02T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.117828)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -1852,6 +1926,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-01T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.049875)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -1871,6 +1946,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-01T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.488794)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -1890,6 +1966,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-01T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.947679)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -1908,6 +1985,7 @@ public class EbasePDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-22T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(0L)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -1926,6 +2004,7 @@ public class EbasePDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-22T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(0L)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -1944,6 +2023,7 @@ public class EbasePDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-22T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(0L)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -1962,6 +2042,7 @@ public class EbasePDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-22T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(0L)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -1980,6 +2061,7 @@ public class EbasePDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-22T00:00")));
+        assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(0L)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -2079,6 +2161,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-27T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.793716)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -2098,6 +2181,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-27T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(9.887676)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -2117,6 +2201,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-27T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4.954360)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -2136,6 +2221,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-01T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.033610)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -2155,6 +2241,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-01T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.325715)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -2174,6 +2261,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-01T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3.202562)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -2193,6 +2281,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-03T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.384890)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -2212,6 +2301,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-01T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.414731)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -2231,6 +2321,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-02T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.038637)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -2250,6 +2341,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-02T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.373877)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -2269,6 +2361,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-02T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.137606)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -2285,8 +2378,10 @@ public class EbasePDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getSecurity().getIsin(), is("GB00B0MY6T00"));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-01T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2020-10-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(300.991871)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -2327,6 +2422,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-10-15T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(20.422296)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -2373,6 +2469,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-28T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(7.101511)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -2392,6 +2489,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-28T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(18.568667)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -2432,6 +2530,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-07-05T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.095371)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -2472,6 +2571,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-01-18T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.082378)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -2536,6 +2636,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-10-30T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.502194)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -2555,6 +2656,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-10-30T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3.760425)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -2574,6 +2676,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-10-30T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.428056)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -2593,6 +2696,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-10-30T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.298277)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -2612,6 +2716,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-10-30T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5.883736)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -2631,6 +2736,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-10-30T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3.635976)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -2650,6 +2756,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-10-30T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.579236)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -2669,6 +2776,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-10-30T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.492048)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -2709,6 +2817,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-08-03T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.276295)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -2728,6 +2837,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-08-09T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.025198)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -2747,6 +2857,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-09-02T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.222628)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),

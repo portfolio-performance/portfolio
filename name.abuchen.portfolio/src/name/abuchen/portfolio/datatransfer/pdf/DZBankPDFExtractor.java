@@ -140,12 +140,19 @@ public class DZBankPDFExtractor extends AbstractPDFExtractor
                     t.setSecurity(getOrCreateSecurity(v));
                     t.setShares(asShares(v.get("shares")));
                 })
-
+                
                 // Ex-Tag 12.12.2019 fonds) 0,208116300 USD
                 .section("date")
-                .match("^Ex-Tag (?<date>\\d+.\\d+.\\d{4}+).*")
+                .match("^Zahlbarkeitstag (?<date>\\d+.\\d+.\\d{4}+).*")
                 .assign((t, v) -> {
                     t.setDateTime(asDate(v.get("date")));
+                })
+
+                // Ex-Tag 12.12.2019 fonds) 0,208116300 USD
+                .section("exDate").optional()
+                .match("^Ex-Tag (?<exDate>\\d+.\\d+.\\d{4}+).*")
+                .assign((t, v) -> {
+                    t.setExDateTime(asDate(v.get("exDate")));
                 })
                 
                 // Ausmachender Betrag 9,92+ EUR

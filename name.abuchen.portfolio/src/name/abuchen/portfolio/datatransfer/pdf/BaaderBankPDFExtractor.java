@@ -264,6 +264,11 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                         })
+                        
+                        // Ex-Dividenden-Tag
+                        .section("exDate")
+                        .match("^Ex-Tag: (?<exDate>\\d+.\\d+.\\d{4})$")
+                        .assign((t,v) -> t.setExDateTime(asDate(v.get("exDate"))))
 
                         .section("tax", "currency").optional()
                         .match("Kapitalertragsteuer (?<currency>\\w{3}) (?<tax>[\\d.]+,\\d{2}) -")
@@ -358,6 +363,11 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                             t.setDateTime(asDate(v.get("date")));
                         })
+                        
+                        // Ex-Dividenden-Tag
+                        .section("exDate")
+                        .match("^Ex-Tag: (?<exDate>\\d+.\\d+.\\d{4})$")
+                        .assign((t,v) -> t.setExDateTime(asDate(v.get("exDate"))))
 
                         .wrap(t -> new TransactionItem(t)));
     }

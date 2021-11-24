@@ -298,6 +298,11 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                     type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
                 })
+                
+                // Ex-Dividenden-Tag 4.3.2021
+                .section("exDate")
+                .match("^Extag: (?<exDate>\\d+.\\d+.\\d{4})$")
+                .assign((t,v) -> t.setExDateTime(asDate(v.get("exDate"))))
 
                 .wrap(TransactionItem::new);
 

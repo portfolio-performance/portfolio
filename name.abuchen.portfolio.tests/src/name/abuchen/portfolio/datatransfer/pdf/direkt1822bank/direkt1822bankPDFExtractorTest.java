@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.pdf.direkt1822bank;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -65,6 +66,7 @@ public class direkt1822bankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-12-01T10:30:52")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(13)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -109,6 +111,7 @@ public class direkt1822bankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-12-05T00:15:28")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.9619)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -150,6 +153,7 @@ public class direkt1822bankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-02-27T01:22:40")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.6646)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -191,6 +195,7 @@ public class direkt1822bankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-07-09T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -232,6 +237,7 @@ public class direkt1822bankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-01-01T11:11:11")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -271,7 +277,8 @@ public class direkt1822bankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-12-14T00:00")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-12-29T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2017-12-14T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(920)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -312,6 +319,7 @@ public class direkt1822bankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-10T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2021-03-10T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(118.901)));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -351,7 +359,8 @@ public class direkt1822bankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-09T00:00")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-10T00:00")));
+        assertThat(transaction.getExDateTime(), is(LocalDateTime.parse("2021-02-09T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(6)));
 
         assertThat(transaction.getMonetaryAmount(),

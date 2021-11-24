@@ -368,11 +368,27 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
                 .oneOf(
                             // STK 50,000 21.04.2016 21.04.2016 EUR 0,200000
+                            
+                            section -> section
+                                    .attributes("date","exDate")
+                                    .match("^STK [\\.,\\d]+ (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})? (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\w]{3} [\\.,\\d]+$")
+                                    .assign((t, v) -> {
+                                        t.setDateTime(asDate(v.get("date")));
+                                        t.setExDateTime(asDate(v.get("exDate")));
+                                    })
+                            ,
                             // STK 1,000 17.11.2010 EUR 1,548250
                             section -> section
-                                    .attributes("date")
-                                    .match("^STK [\\.,\\d]+( [\\d]{2}\\.[\\d]{2}\\.[\\d]{4})? (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\w]{3} [\\.,\\d]+$")
-                                    .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                            .attributes("date")
+                            .match("^STK [\\.,\\d]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\w]{3} [\\.,\\d]+$")
+                            .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                            ,
+                            
+                            //STK 33,000 06.06.2021
+                            section -> section
+                                       .attributes("date")
+                                       .match("^STK [\\.,\\d]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) $")
+                                       .assign((t,v) -> t.setDateTime(asDate(v.get("date"))))
                             ,
                             // EUR 5.000,000 14.02.2020 5,875000 %
                             section -> section
@@ -472,9 +488,13 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 // STK 0,4298 02.01.2020 02.01.2020 EUR 0,3477
-                .section("date")
-                .match("^STK [\\.,\\d]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\w]{3} [\\.,\\d]+$")
-                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                .section("date", "exDate")
+                .match("^STK [\\.,\\d]+ (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\w]{3} [\\.,\\d]+$")
+                .assign((t, v) -> {
+                    t.setDateTime(asDate(v.get("date")));
+                    t.setExDateTime(asDate(v.get("exDate")));
+                }
+                )
 
                 // 10.01.2020 123456789 EUR 0,02
                 .section("amount", "currency").optional()
@@ -578,7 +598,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                     if (!v.get("name1").startsWith("Nominal"))
                         v.put("name", v.get("name") + " " + v.get("name1"));
 
-                    t.setDateTime(asDate(context.get("date")));
+                    t.setDateTime(asDate(context.get("date")));           
                     t.setShares(asShares(v.get("shares")));
                     t.setSecurity(getOrCreateSecurity(v));
                     t.setCurrencyCode(asCurrencyCode(t.getSecurity().getCurrencyCode()));

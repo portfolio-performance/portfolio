@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.pdf.viac;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -65,6 +66,7 @@ public class ViacPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(360.43))));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-07-05T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.369)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of("CHF", Values.Amount.factorize(0.46))));
@@ -108,6 +110,7 @@ public class ViacPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(104.78))));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-07-04T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.051)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of("CHF", 0L)));
@@ -146,6 +149,7 @@ public class ViacPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(1001.08))));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-01-07T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.924)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of("CHF", Values.Amount.factorize(1.68))));
@@ -189,6 +193,7 @@ public class ViacPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(1886.94))));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-01-07T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.766)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of("CHF", 0L)));
@@ -227,6 +232,7 @@ public class ViacPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(719.24))));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-01-07T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.024)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of("CHF", 0L)));
@@ -270,6 +276,7 @@ public class ViacPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(11.30))));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-03T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.114)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of("CHF", Values.Amount.factorize(0.01))));
@@ -303,6 +310,7 @@ public class ViacPDFExtractorTest
                         is(Money.of("CHF", Values.Amount.factorize(0.04))));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-03-31T00:00")));
+        assertNull(transaction.getExDateTime());
     }
 
     @Test
@@ -328,6 +336,7 @@ public class ViacPDFExtractorTest
                         is(Money.of("CHF", Values.Amount.factorize(0.05))));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-30T00:00")));
+        assertNull(transaction.getExDateTime());
     }
 
     @Test
@@ -353,6 +362,7 @@ public class ViacPDFExtractorTest
                         is(Money.of("CHF", Values.Amount.factorize(0.19))));
     
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-31T00:00")));
+        assertNull(transaction.getExDateTime());
     }
 
     @Test
@@ -378,6 +388,7 @@ public class ViacPDFExtractorTest
                         is(Money.of("CHF", Values.Amount.factorize(1.11))));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-01-31T00:00")));
+        assertNull(transaction.getExDateTime());
     }
 
     @Test
@@ -403,6 +414,7 @@ public class ViacPDFExtractorTest
                         is(Money.of("CHF", Values.Amount.factorize(4.23))));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-30T00:00")));
+        assertNull(transaction.getExDateTime());
     }
 
     @Test
@@ -428,6 +440,7 @@ public class ViacPDFExtractorTest
                         is(Money.of("CHF", Values.Amount.factorize(2150.00))));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-01-15T00:00")));
+        assertNull(transaction.getExDateTime());
     }
 
     @Test
@@ -453,6 +466,7 @@ public class ViacPDFExtractorTest
                         is(Money.of("CHF", Values.Amount.factorize(150.00))));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-15T00:00")));
+        assertNull(transaction.getExDateTime());
     }
 
     @Test
@@ -478,6 +492,7 @@ public class ViacPDFExtractorTest
                         is(Money.of("CHF", Values.Amount.factorize(1000.00))));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-17T00:00")));
+        assertNull(transaction.getExDateTime());
     }
 
     @Test
@@ -507,6 +522,7 @@ public class ViacPDFExtractorTest
                         is(Money.of("CHF", Values.Amount.factorize(0.04))));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.242)));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-05-21T00:00")));
+        assertNull(transaction.getExDateTime());
 
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0))));
         assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(0.04))));
@@ -539,6 +555,7 @@ public class ViacPDFExtractorTest
                         is(Money.of("CHF", Values.Amount.factorize(0.15))));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.176)));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-05-21T00:00")));
+        assertNull(transaction.getExDateTime());
 
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0))));
         assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(0.15))));
@@ -573,6 +590,7 @@ public class ViacPDFExtractorTest
                         is(Money.of("CHF", Values.Amount.factorize(5.73))));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.353)));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-27T00:00")));
+        assertNull(transaction.getExDateTime());
 
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0))));
         assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(5.73))));
@@ -609,6 +627,7 @@ public class ViacPDFExtractorTest
         assertThat(transaction.getSource(), is("ViacDividend03.txt"));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-27T00:00")));
+        assertNull(transaction.getExDateTime());
 
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0))));
         assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(5.73))));
@@ -641,6 +660,7 @@ public class ViacPDFExtractorTest
                         is(Money.of("CHF", Values.Amount.factorize(1.36))));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.154)));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-27T00:00")));
+        assertNull(transaction.getExDateTime());
 
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0))));
         assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(1.36))));
@@ -674,6 +694,7 @@ public class ViacPDFExtractorTest
                         is(Money.of("CHF", Values.Amount.factorize(0.52))));
         assertThat(transaction.getShares(), is(Values.Share.factorize(2.142)));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-27T00:00")));
+        assertNull(transaction.getExDateTime());
 
         Unit gross = transaction.getUnit(Unit.Type.GROSS_VALUE)
                         .orElseThrow(IllegalArgumentException::new);
@@ -708,6 +729,7 @@ public class ViacPDFExtractorTest
                         is(Money.of("CHF", Values.Amount.factorize(17.28))));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1.841)));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-25T00:00")));
+        assertNull(transaction.getExDateTime());
 
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0))));
         assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(17.28))));
@@ -746,6 +768,7 @@ public class ViacPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(45.66))));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-12-05T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.03)));
 
         Unit gross = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
@@ -786,6 +809,7 @@ public class ViacPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(48.24))));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-02-05T00:00")));
+        assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.035)));
     }
 }

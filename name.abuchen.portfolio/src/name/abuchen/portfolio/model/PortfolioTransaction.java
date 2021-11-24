@@ -86,11 +86,19 @@ public class PortfolioTransaction extends Transaction
     {
         super(date, currencyCode, amount, security, shares, null);
         this.type = type;
-
+        setExDateTime(null);
+        
         if (fees != 0)
             addUnit(new Unit(Unit.Type.FEE, Money.of(currencyCode, fees)));
         if (taxes != 0)
             addUnit(new Unit(Unit.Type.TAX, Money.of(currencyCode, taxes)));
+    }
+    
+    public PortfolioTransaction(LocalDateTime date, LocalDateTime exDate, String currencyCode, long amount, Security security, long shares,
+                    Type type, long fees, long taxes)
+    {
+        this(date, currencyCode,amount,security, shares, type, fees, taxes);
+        setExDateTime(exDate);
     }
 
     public Type getType()

@@ -154,16 +154,18 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
 
                 // Guthaben Kupons Ex-Kupon 29/06/2020
                 // CREDIT COUPONS Ex-coupon 01/02/2021
-                .section("date")
-                .match("^.* (Ex-Kupon|Ex-coupon|Kupons)(.*)? (?<date>\\d+/\\d+/\\d{4})$")
-                .assign((t, v) -> t.setDateTime(asDate(v.get("date").replaceAll("/", "."))))
+                .section("exDate")
+                .match("^.* (Ex-Kupon|Ex-coupon|Kupons)(.*)? (?<exDate>\\d+/\\d+/\\d{4})$")
+                .assign((t, v) -> t.setExDateTime(asDate(v.get("exDate").replaceAll("/", "."))))
+                
 
                 // Nettoguthaben 5,67 EUR Datum  01/07/2020
-                .section("amount", "currency").optional()
-                .match("^(Nettoguthaben|Net CREDIT) (?<amount>[.,\\d]+) (?<currency>[\\w]{3}) .*$")
+                .section("amount", "currency", "date").optional()
+                .match("^(Nettoguthaben|Net CREDIT) (?<amount>[.,\\d]+) (?<currency>[\\w]{3}) (Datum|Date)  (?<date>\\d+/\\d+/\\d{4})$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(v.get("currency"));
+                    t.setDateTime(asDate(v.get("date").replaceAll("/", ".")));
                 })
                 
                 // Bruttobetrag 1,25 USD
