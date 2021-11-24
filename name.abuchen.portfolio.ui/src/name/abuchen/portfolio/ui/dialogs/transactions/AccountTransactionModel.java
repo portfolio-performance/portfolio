@@ -245,10 +245,13 @@ public class AccountTransactionModel extends AbstractModel
         LocalDateTime transactionDate = transaction.getDateTime();
         this.date = transactionDate.toLocalDate();
         this.time = transactionDate.toLocalTime();
-        if (transaction.getExDateTime() != null) {
+        if (transaction.getExDateTime() != null) 
+        {
             this.exDate = transaction.getExDateTime().toLocalDate();
             this.exTime = transaction.getExDateTime().toLocalTime();
-        } else {
+        } 
+        else 
+        {
             this.exDate = LocalDateTime.now().toLocalDate();
             this.exTime = LocalDateTime.now().toLocalTime();
         }
