@@ -61,10 +61,11 @@ public class AccountTransaction extends Transaction
             int compare = t1.getDateTime().compareTo(t2.getDateTime());
             if (compare != 0)
                 return compare;
-            if (t1.getExDateTime() != null && t2.getExDateTime() != null) {
-            compare = t1.getExDateTime().compareTo(t2.getExDateTime());
-            if (compare != 0)
-                return compare;
+            if (t1.getExDateTime() != null && t2.getExDateTime() != null) 
+            {
+                compare = t1.getExDateTime().compareTo(t2.getExDateTime());
+                if (compare != 0)
+                    return compare;
             }
             compare = Long.compare(t1.getAmount(), t2.getAmount());
             if (compare != 0)

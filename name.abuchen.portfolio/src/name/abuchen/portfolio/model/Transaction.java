@@ -194,7 +194,8 @@ public abstract class Transaction implements Annotated, Adaptable
     }
     
     public Transaction(LocalDateTime date, LocalDateTime exDate, String currencyCode, long amount, Security security, long shares,
-                    String note) {
+                    String note) 
+    {
         this(date, currencyCode, amount, security, shares, note);
         this.exDate = exDate;
     }
@@ -220,11 +221,13 @@ public abstract class Transaction implements Annotated, Adaptable
         this.updatedAt = Instant.now();
     }
     
-    public LocalDateTime getExDateTime() {
+    public LocalDateTime getExDateTime() 
+    {
         return exDate;
     }
     
-    public void setExDateTime(LocalDateTime exDate) {
+    public void setExDateTime(LocalDateTime exDate) 
+    {
         this.exDate = exDate;
         this.updatedAt = Instant.now();
     }
