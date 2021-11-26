@@ -252,8 +252,8 @@ public class AccountTransactionModel extends AbstractModel
         } 
         else 
         {
-            this.exDate = LocalDateTime.now().toLocalDate();
-            this.exTime = LocalDateTime.now().toLocalTime();
+            this.exDate = null;
+            this.exTime = null;
         }
         
         this.shares = transaction.getShares();
