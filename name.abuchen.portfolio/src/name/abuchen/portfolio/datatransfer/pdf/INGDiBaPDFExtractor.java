@@ -143,10 +143,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 .section("currency", "amount", "fxcurrency", "fxamount", "exchangeRate").optional()
                 .match("^Kurswert (?<fxcurrency>[\\w]{3}) (?<fxamount>[\\.,\\d]+)$")
                 .match("^.* Devisenkurs (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+) \\([\\w]{3} = (?<exchangeRate>[.,\\d]+)\\)$")
-                .assign((t, v) -> {
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(v.get("currency"));
-                    
+                .assign((t, v) -> {                   
                     // read the forex currency, exchange rate and gross
                     // amount in forex currency
                     String forex = asCurrencyCode(v.get("fxcurrency"));
