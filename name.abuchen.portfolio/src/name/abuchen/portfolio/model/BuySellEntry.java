@@ -108,11 +108,13 @@ public class BuySellEntry implements CrossEntry, Annotated
         this.accountTransaction.setNote(note);
     }
 
+    @Override
     public String getSource()
     {
         return this.portfolioTransaction.getSource();
     }
 
+    @Override
     public void setSource(String source)
     {
         this.portfolioTransaction.setSource(source);

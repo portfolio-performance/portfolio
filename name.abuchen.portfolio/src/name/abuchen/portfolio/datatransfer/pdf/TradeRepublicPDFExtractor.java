@@ -650,7 +650,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 }
 
                 m = pTransactionPosition.matcher(line);
-                if (m.matches() && context.get("skipTransaction") == "true")
+                if (m.matches() && Boolean.parseBoolean(context.get("skipTransaction")))
                 {
                     context.put("transactionPosition", m.group("transactionPosition"));
                 }
@@ -726,11 +726,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                  * We skip this transaction.
                  */
                 .wrap(t -> {
-                    Map<String, String> context = type.getCurrentContext();
-                    if ((context.get("skipTransaction") == "true" && !context.get("transactionPosition").equals(context.get("position")))
-                                    || (context.get("skipTransaction") == "false"))
-                        return new TransactionItem(t);
-                    return null;
+                            Map<String, String> context = type.getCurrentContext();
+                            boolean skipTransactions = Boolean.parseBoolean(context.get("skipTransaction"));
+
+                            if (skipTransactions && context.get("transactionPosition").equals(context.get("position")))
+                                return null;
+                            else
+                                return new TransactionItem(t);
                 });
 
         /***
@@ -975,9 +977,6 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 })
 
                 .wrap(t -> new TransactionItem(t));
-
-        addTaxesSectionsTransaction(pdfTransaction, type);
-        addFeesSectionsTransaction(pdfTransaction, type);
     }
 
     private void addBuySellTaxReturnBlock(DocumentType type)

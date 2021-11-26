@@ -118,6 +118,19 @@ public class PortfolioTransferEntry implements CrossEntry, Annotated
     }
 
     @Override
+    public String getSource()
+    {
+        return this.transactionFrom.getSource();
+    }
+
+    @Override
+    public void setSource(String source)
+    {
+        this.transactionFrom.setSource(source);
+        this.transactionTo.setSource(source);
+    }
+
+    @Override
     public void insert()
     {
         portfolioFrom.addTransaction(transactionFrom);

@@ -205,6 +205,8 @@ public class EbasePDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-24T00:00")));
         assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
+        assertThat(transaction.getSource(), is("Umsatzabrechnung02.txt"));
+        assertThat(transaction.getNote(), is("Vorabpauschale zum Stichtag 31.12.2019"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.14))));
@@ -258,6 +260,8 @@ public class EbasePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-01-27T00:00")));
         assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.001162)));
+        assertThat(entry.getPortfolioTransaction().getSource(), is("Umsatzabrechnung03.txt"));
+        assertThat(entry.getPortfolioTransaction().getNote(), is("Verkauf wegen Vorabpauschale"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.13))));
@@ -417,6 +421,8 @@ public class EbasePDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-12-22T00:00")));
         assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.100548)));
+        assertThat(transaction.getSource(), is("Umsatzabrechnung05.txt"));
+        assertThat(transaction.getNote(), is("Depotführungsentgelt"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(12.00))));
@@ -637,6 +643,8 @@ public class EbasePDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-23T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.414447)));
+        assertThat(transaction.getSource(), is("Umsatzabrechnung08.txt"));
+        assertThat(transaction.getNote(), is("Depotführungsentgelt"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(11.70))));
@@ -878,6 +886,8 @@ public class EbasePDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-04-06T00:00")));
         assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(9.999999)));
+        assertThat(transaction.getSource(), is("Umsatzabrechnung11.txt"));
+        assertThat(transaction.getNote(), is("Depotführungsentgelt"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.00))));
@@ -910,6 +920,8 @@ public class EbasePDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-04-01T00:00")));
         assertNull(transaction.getExDateTime());
+        assertThat(transaction.getSource(), is("Umsatzabrechnung12.txt"));
+        assertThat(transaction.getNote(), is("Depotführungsentgelt"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.00))));
@@ -970,6 +982,8 @@ public class EbasePDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-07-05T00:00")));
         assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.024859)));
+        assertThat(transaction.getSource(), is("Umsatzabrechnung13.txt"));
+        assertThat(transaction.getNote(), is("Depotführungsentgelt"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.00))));
@@ -1029,6 +1043,8 @@ public class EbasePDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-07-02T00:00")));
         assertNull(transaction.getExDateTime());
+        assertThat(transaction.getSource(), is("Umsatzabrechnung14.txt"));
+        assertThat(transaction.getNote(), is("Depotführungsentgelt"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.00))));
@@ -1987,6 +2003,8 @@ public class EbasePDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-22T00:00")));
         assertNull(transaction.getExDateTime());
         assertThat(transaction.getShares(), is(Values.Share.factorize(0L)));
+        assertThat(transaction.getSource(), is("Umsatzabrechnung16.txt"));
+        assertThat(transaction.getNote(), is("Vorabpauschale zum Stichtag 31.12.2020"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.94))));

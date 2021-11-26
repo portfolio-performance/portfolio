@@ -16,6 +16,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.util.TextUtil;
 
 @SuppressWarnings("nls")
 public class DkbPDFExtractor extends AbstractPDFExtractor
@@ -464,9 +465,6 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                 })
 
                 .wrap(t -> new TransactionItem(t));
-
-        addTaxesSectionsTransaction(pdfTransaction, type);
-        addFeesSectionsTransaction(pdfTransaction, type);
     }
 
     private void addBuyTransactionFundsSavingsPlan()
@@ -779,16 +777,71 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                     return entry;
                 })
 
-                .section("date", "note", "amount")
-                .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2})(?<note>(?! Habenzins).*) (?<amount>[\\.,\\d]+)\\+$")
-                .assign((t, v) -> {
-                    Map<String, String> context = type.getCurrentContext();
-                    t.setDateTime(asDate(v.get("date").substring(0, 6) + context.get("century")
-                                    + v.get("date").substring(6, 8)));
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(context.get("currency"));
-                    t.setNote(v.get("note"));
-                })
+                .oneOf(
+                                section -> section
+                                        .attributes("date", "note", "amount")
+                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) (?<note>Ausgleich Kreditkarte gem\\. Abrechnung) v\\. (?<amount>[\\.,\\d]+)\\+$")
+                                        .assign((t, v) -> {
+                                            Map<String, String> context = type.getCurrentContext();
+                                            v.put("note", v.get("note"));
+        
+                                            t.setDateTime(asDate(v.get("date").substring(0, 6) + context.get("century")
+                                                            + v.get("date").substring(6, 8)));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                            t.setCurrencyCode(context.get("currency"));
+                                            t.setNote(TextUtil.strip(v.get("note")));
+                                        })
+                                ,
+                                section -> section
+                                        .attributes("date", "note", "amount")
+                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2})(?<note>(?! Habenzins).*) [\\w]{3} [\\.,\\d]+ [\\.,\\d]+ (?<amount>[\\.,\\d]+)\\+$")
+                                        .assign((t, v) -> {
+                                            Map<String, String> context = type.getCurrentContext();
+                                            v.put("note", TextUtil.strip(v.get("note")));
+
+                                            t.setDateTime(asDate(v.get("date").substring(0, 6) + context.get("century")
+                                                            + v.get("date").substring(6, 8)));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                            t.setCurrencyCode(context.get("currency"));
+
+                                            /***
+                                             * Deletes characters that occur during 
+                                             * withdrawals from foreign banks
+                                             */
+                                            if ("*".equals(v.get("note").substring(0, 1)))
+                                                v.put("note", v.get("note").substring(1));
+                                            
+                                            if (">".equals(v.get("note").substring(v.get("note").length() - 1)))
+                                                v.put("note", v.get("note").substring(0, v.get("note").length() - 1));
+
+                                            t.setNote(TextUtil.strip(v.get("note")));
+                                        })
+                                ,
+                                section -> section
+                                        .attributes("date", "note", "amount")
+                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2})(?<note>(?! Habenzins).*) (?<amount>[\\.,\\d]+)\\+$")
+                                        .assign((t, v) -> {
+                                            Map<String, String> context = type.getCurrentContext();
+                                            v.put("note", TextUtil.strip(v.get("note")));
+
+                                            t.setDateTime(asDate(v.get("date").substring(0, 6) + context.get("century")
+                                                            + v.get("date").substring(6, 8)));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                            t.setCurrencyCode(context.get("currency"));
+
+                                            /***
+                                             * Deletes characters that occur during 
+                                             * withdrawals from foreign banks
+                                             */
+                                            if ("*".equals(v.get("note").substring(0, 1)))
+                                                v.put("note", v.get("note").substring(1));
+                                            
+                                            if (">".equals(v.get("note").substring(v.get("note").length() - 1)))
+                                                v.put("note", v.get("note").substring(0, v.get("note").length() - 1));
+
+                                            t.setNote(TextUtil.strip(v.get("note")));
+                                        })
+                            )
 
                 .wrap(TransactionItem::new));
 
@@ -810,7 +863,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                     + v.get("date").substring(6, 8)));
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(context.get("currency"));
-                    t.setNote(v.get("note"));
+                    t.setNote(TextUtil.strip(v.get("note")));
                 })
 
                 .wrap(TransactionItem::new));
@@ -833,7 +886,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                     + v.get("date").substring(6, 8)));
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(context.get("currency"));
-                    t.setNote(v.get("note"));
+                    t.setNote(TextUtil.strip(v.get("note")));
                 })
 
                 .wrap(TransactionItem::new));
@@ -848,29 +901,58 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                     return entry;
                 })
 
-                .section("date", "note", "amount")
-                .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2})(?<note>(?! Abgeltungsteuer).*) (?<amount>[\\.,\\d]+) \\-$")
-                .assign((t, v) -> {
-                    Map<String, String> context = type.getCurrentContext();
-                    v.put("note", v.get("note").trim());
+                .oneOf(
 
-                    t.setDateTime(asDate(v.get("date").substring(0, 6) + context.get("century")
-                                    + v.get("date").substring(6, 8)));
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(context.get("currency"));
+                                section -> section
+                                        .attributes("date", "note", "amount")
+                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2})(?<note>(?! Abgeltungsteuer).*) [\\w]{3} [\\.,\\d]+ [\\.,\\d]+ (?<amount>[\\.,\\d]+) \\-$")
+                                        .assign((t, v) -> {
+                                            Map<String, String> context = type.getCurrentContext();
+                                            v.put("note", TextUtil.strip(v.get("note")));
 
-                    /***
-                     * Deletes characters that occur during 
-                     * withdrawals from foreign banks
-                     */
-                    if ("*".equals(v.get("note").substring(0, 1)))
-                        v.put("note", v.get("note").substring(1));
-                    
-                    if (">".equals(v.get("note").substring(v.get("note").length() - 1)))
-                        v.put("note", v.get("note").substring(0, v.get("note").length() - 1));
+                                            t.setDateTime(asDate(v.get("date").substring(0, 6) + context.get("century")
+                                                            + v.get("date").substring(6, 8)));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                            t.setCurrencyCode(context.get("currency"));
 
-                    t.setNote(v.get("note"));
-                })
+                                            /***
+                                             * Deletes characters that occur during 
+                                             * withdrawals from foreign banks
+                                             */
+                                            if ("*".equals(v.get("note").substring(0, 1)))
+                                                v.put("note", v.get("note").substring(1));
+                                            
+                                            if (">".equals(v.get("note").substring(v.get("note").length() - 1)))
+                                                v.put("note", v.get("note").substring(0, v.get("note").length() - 1));
+
+                                            t.setNote(TextUtil.strip(v.get("note")));
+                                        })
+                                ,
+                                section -> section
+                                        .attributes("date", "note", "amount")
+                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2})(?<note>(?! Abgeltungsteuer).*) (?<amount>[\\.,\\d]+) \\-$")
+                                        .assign((t, v) -> {
+                                            Map<String, String> context = type.getCurrentContext();
+                                            v.put("note", TextUtil.strip(v.get("note")));
+
+                                            t.setDateTime(asDate(v.get("date").substring(0, 6) + context.get("century")
+                                                            + v.get("date").substring(6, 8)));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                            t.setCurrencyCode(context.get("currency"));
+
+                                            /***
+                                             * Deletes characters that occur during 
+                                             * withdrawals from foreign banks
+                                             */
+                                            if ("*".equals(v.get("note").substring(0, 1)))
+                                                v.put("note", v.get("note").substring(1));
+                                            
+                                            if (">".equals(v.get("note").substring(v.get("note").length() - 1)))
+                                                v.put("note", v.get("note").substring(0, v.get("note").length() - 1));
+
+                                            t.setNote(TextUtil.strip(v.get("note")));
+                                        })
+                            )
 
                 .wrap(TransactionItem::new));
     }

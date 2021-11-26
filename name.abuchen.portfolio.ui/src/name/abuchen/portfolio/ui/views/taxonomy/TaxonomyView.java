@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ControlContribution;
 import org.eclipse.jface.action.IAction;
@@ -30,6 +31,7 @@ import org.eclipse.swt.widgets.Text;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Taxonomy;
+import name.abuchen.portfolio.online.TaxonomySource;
 import name.abuchen.portfolio.snapshot.filter.ClientFilter;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
@@ -169,6 +171,10 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
     private Composite container;
     private List<Action> viewActions = new ArrayList<>();
 
+    @Inject
+    @Preference(UIConstants.Preferences.ENABLE_EXPERIMENTAL_FEATURES)
+    boolean enableExperimentalFeatures;
+
     @Override
     protected String getDefaultTitle()
     {
@@ -298,6 +304,28 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
 
     private void addConfigButton(ToolBarManager toolBar)
     {
+        if (enableExperimentalFeatures)
+        {
+            toolBar.add(new DropDown("Sync", Images.CLOUD, SWT.NONE, manager -> {
+
+                String source = taxonomy.getSource();
+
+                for (TaxonomySource ts : TaxonomySource.values())
+                {
+                    Action action = new SimpleAction(ts.getLabel(), a -> {
+                        if (ts.getIdentifier().equals(source))
+                            taxonomy.setSource(null);
+                        else
+                            taxonomy.setSource(ts.getIdentifier());
+
+                        model.getClient().touch();
+                    });
+                    action.setChecked(ts.getIdentifier().equals(source));
+                    manager.add(action);
+                }
+            }));
+        }
+
         toolBar.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE,
                         manager -> getCurrentPage().ifPresent(p -> p.configMenuAboutToShow(manager))));
     }

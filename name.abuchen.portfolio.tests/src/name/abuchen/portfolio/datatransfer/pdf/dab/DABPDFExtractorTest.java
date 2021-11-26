@@ -46,12 +46,12 @@ public class DABPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierKauf()
+    public void testWertpapierKauf01()
     {
         DABPDFExtractor extractor = new DABPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABKauf.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -87,12 +87,12 @@ public class DABPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierKauf2()
+    public void testWertpapierKauf02()
     {
         DABPDFExtractor extractor = new DABPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABKauf2.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -128,12 +128,12 @@ public class DABPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierKauf3()
+    public void testWertpapierKauf03()
     {
         DABPDFExtractor extractor = new DABPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABKauf3.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -166,12 +166,12 @@ public class DABPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierKauf4()
+    public void testWertpapierKauf04()
     {
         DABPDFExtractor extractor = new DABPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABKauf4.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -205,12 +205,12 @@ public class DABPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierKauf5()
+    public void testWertpapierKauf05()
     {
         DABPDFExtractor extractor = new DABPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABKauf5.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf05.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -244,12 +244,12 @@ public class DABPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierKauf6()
+    public void testWertpapierKauf06()
     {
         DABPDFExtractor extractor = new DABPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABKauf6.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf06.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -283,12 +283,12 @@ public class DABPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierKauf7()
+    public void testWertpapierKauf07()
     {
         DABPDFExtractor extractor = new DABPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABKauf7.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf07.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -322,12 +322,12 @@ public class DABPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierKauf8()
+    public void testWertpapierKauf08()
     {
         DABPDFExtractor extractor = new DABPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABKauf8.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf08.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -361,12 +361,12 @@ public class DABPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierKauf9()
+    public void testWertpapierKauf09()
     {
         DABPDFExtractor extractor = new DABPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABKauf9.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf09.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(3));
@@ -416,7 +416,7 @@ public class DABPDFExtractorTest
         DABPDFExtractor extractor = new DABPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABKauf10.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf10.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -450,12 +450,50 @@ public class DABPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierVerkauf1()
+    public void testWertpapierKauf11()
     {
         DABPDFExtractor extractor = new DABPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABVerkauf.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf11.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = getSecurity(results);
+        assertThat(security.getIsin(), is("IE00BLRPRL42"));
+        assertThat(security.getName(), is("WisdomTree Multi Ass.Iss.PLC Gas 3x Sh. ETP Secs 12(12/62)"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check buy sell transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-11-02T09:26")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1)));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(111.11))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(110.11))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.00))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf01()
+    {
+        DABPDFExtractor extractor = new DABPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -491,12 +529,12 @@ public class DABPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierVerkauf2()
+    public void testWertpapierVerkauf02()
     {
         DABPDFExtractor extractor = new DABPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABVerkauf2.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(3));
@@ -543,12 +581,12 @@ public class DABPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierVerkauf3()
+    public void testWertpapierVerkauf03()
     {
         DABPDFExtractor extractor = new DABPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABVerkauf3.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(3));
@@ -595,12 +633,12 @@ public class DABPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierVerkauf4()
+    public void testWertpapierVerkauf04()
     {
         DABPDFExtractor extractor = new DABPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABVerkauf4.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(3));
@@ -647,12 +685,12 @@ public class DABPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierVerkauf5()
+    public void testWertpapierVerkauf05()
     {
         DABPDFExtractor extractor = new DABPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABVerkauf5.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf05.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -688,12 +726,12 @@ public class DABPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierVerkauf6()
+    public void testWertpapierVerkauf06()
     {
         DABPDFExtractor extractor = new DABPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABVerkauf6.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf06.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(3));
@@ -740,12 +778,12 @@ public class DABPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierVerkauf7()
+    public void testWertpapierVerkauf07()
     {
         DABPDFExtractor extractor = new DABPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABVerkauf7.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf07.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(3));
@@ -792,12 +830,12 @@ public class DABPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierVerkauf8()
+    public void testWertpapierVerkauf08()
     {
         DABPDFExtractor extractor = new DABPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABVerkauf8.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf08.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -833,12 +871,12 @@ public class DABPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierVerkauf9()
+    public void testWertpapierVerkauf09()
     {
         DABPDFExtractor extractor = new DABPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABVerkauf9.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf09.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(4));
@@ -908,12 +946,12 @@ public class DABPDFExtractorTest
     }
 
     @Test
-    public void testMultipleWertpapierKaufVerkauf1()
+    public void testMultipleWertpapierKaufVerkauf01()
     {
         DABPDFExtractor extractor = new DABPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABMultipleKaufVerkauf1.txt"),
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "MultipleKaufVerkauf01.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -1086,12 +1124,12 @@ public class DABPDFExtractorTest
     }
 
     @Test
-    public void testDividend()
+    public void testDividende01()
     {
         DABPDFExtractor extractor = new DABPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABDividend.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -1125,12 +1163,12 @@ public class DABPDFExtractorTest
     }
 
     @Test
-    public void testDividendForeignCurrency()
+    public void testDividende02()
     {
         DABPDFExtractor extractor = new DABPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABDividendForeignCurrency.txt"),
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -1165,7 +1203,7 @@ public class DABPDFExtractorTest
     }
 
     @Test
-    public void testDividendInForeignCurrencyButSecurityListedInEuro()
+    public void testDividende02WithSecurityInEUR()
     {
         Client client = new Client();
 
@@ -1178,7 +1216,7 @@ public class DABPDFExtractorTest
         DABPDFExtractor extractor = new DABPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABDividendForeignCurrency.txt"),
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -1207,12 +1245,12 @@ public class DABPDFExtractorTest
     }
 
     @Test
-    public void testDividend3()
+    public void testDividende03()
     {
         DABPDFExtractor extractor = new DABPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABDividend3.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -1246,12 +1284,12 @@ public class DABPDFExtractorTest
     }
 
     @Test
-    public void testDividend4()
+    public void testDividende04()
     {
         DABPDFExtractor extractor = new DABPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABDividend4.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -1285,12 +1323,12 @@ public class DABPDFExtractorTest
     }
 
     @Test
-    public void testDividend5()
+    public void testDividende05()
     {
         DABPDFExtractor extractor = new DABPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABDividend5.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende05.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -1324,12 +1362,12 @@ public class DABPDFExtractorTest
     }
 
     @Test
-    public void testDividend6()
+    public void testDividende06()
     {
         DABPDFExtractor extractor = new DABPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABDividend6.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende06.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -1363,7 +1401,7 @@ public class DABPDFExtractorTest
     }
 
     @Test
-    public void testDividend7withUSDAccount()
+    public void testDividende07WithAccountInUSD()
     {
         Client client = new Client();
         DABPDFExtractor extractor = new DABPDFExtractor(client);
@@ -1376,7 +1414,7 @@ public class DABPDFExtractorTest
         client.addSecurity(existingSecurity);
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABDividend7.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende07.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
@@ -1415,13 +1453,13 @@ public class DABPDFExtractorTest
     }
 
     @Test
-    public void testDividend8()
+    public void testDividende08()
     {
         Client client = new Client();
         DABPDFExtractor extractor = new DABPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABDividend8.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende08.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -1455,7 +1493,7 @@ public class DABPDFExtractorTest
     }
 
     @Test
-    public void testDividend8withSecurityinEUR()
+    public void testDividende08WithSecurityinEUR()
     {
         Client client = new Client();
         DABPDFExtractor extractor = new DABPDFExtractor(client);
@@ -1468,7 +1506,7 @@ public class DABPDFExtractorTest
         client.addSecurity(existingSecurity);
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABDividend8.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende08.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
@@ -1495,13 +1533,13 @@ public class DABPDFExtractorTest
     }
 
     @Test
-    public void testDividend9()
+    public void testDividende09()
     {
         Client client = new Client();
         DABPDFExtractor extractor = new DABPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABDividend9.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende09.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -1536,7 +1574,7 @@ public class DABPDFExtractorTest
     }
 
     @Test
-    public void testDividend9withSecurityinEUR()
+    public void testDividende09WithSecurityinEUR()
     {
         Client client = new Client();
         DABPDFExtractor extractor = new DABPDFExtractor(client);
@@ -1550,7 +1588,7 @@ public class DABPDFExtractorTest
         client.addSecurity(existingSecurity);
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABDividend9.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende09.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
@@ -1577,12 +1615,12 @@ public class DABPDFExtractorTest
     }
 
     @Test
-    public void testDividend10()
+    public void testDividende10()
     {
         DABPDFExtractor extractor = new DABPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABDividend10.txt"),
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende10.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -1617,7 +1655,7 @@ public class DABPDFExtractorTest
     }
 
     @Test
-    public void testDividend10WithAccountAndSecurityInUSD()
+    public void testDividende10WithAccountAndSecurityInUSD()
     {
         Security security = new Security("iShs V-MSCI W.C.St.Sec.U.ETF Reg. Shs USD Dis. oN", CurrencyUnit.USD);
         security.setIsin("IE00BJ5JP329");
@@ -1629,7 +1667,7 @@ public class DABPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABDividend10.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende10.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
@@ -1661,12 +1699,12 @@ public class DABPDFExtractorTest
     }
 
     @Test
-    public void testProceeds1()
+    public void testDividende11()
     {
         DABPDFExtractor extractor = new DABPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABProceeds1.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende11.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -1700,12 +1738,12 @@ public class DABPDFExtractorTest
     }
 
     @Test
-    public void testProceeds2()
+    public void testDividende12()
     {
         DABPDFExtractor extractor = new DABPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABProceeds2.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende12.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -1745,7 +1783,7 @@ public class DABPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABEinbuchung01.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Einbuchung01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -1787,7 +1825,7 @@ public class DABPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABEinbuchung02.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Einbuchung02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));

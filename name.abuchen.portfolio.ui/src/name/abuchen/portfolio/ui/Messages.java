@@ -546,6 +546,8 @@ public class Messages extends NLS
     public static String LabelClientFilterNoCustomFilterExisting;
     public static String LabelClose;
     public static String FilterOnlyClosedTrades;
+    public static String LabelCoinGeckoCoinId;
+    public static String LabelCoinGeckoCoinIdHint;
     public static String LabelCollapseAll;
     public static String LabelColorSchema;
     public static String LabelColumns;
@@ -838,6 +840,8 @@ public class Messages extends NLS
     public static String MenuRenameDashboard;
     public static String MenuRenameLabel;
     public static String MenuReportingPeriodDelete;
+    public static String MenuReportingPeriodDeleteConfirm;
+    public static String MenuReportingPeriodInsert;
     public static String MenuReportingPeriodManage;
     public static String MenuResetChartSeries;
     public static String MenuResetColumns;

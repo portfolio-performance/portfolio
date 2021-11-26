@@ -1,0 +1,259 @@
+package name.abuchen.portfolio.datatransfer.pdf;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
+import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
+import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
+import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.BuySellEntry;
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
+
+@SuppressWarnings("nls")
+public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
+{
+    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd LLL yyyy", Locale.US); //$NON-NLS-1$
+
+    public ScorePriorityIncPDFExtractor(Client client)
+    {
+        super(client);
+
+        addBankIdentifier("Score Priority"); //$NON-NLS-1$
+
+        addAccountStatementTransaction();
+    }
+
+    @Override
+    public String getLabel()
+    {
+        return "Score Priority Corp. / Just2Trade US"; //$NON-NLS-1$
+    }
+
+    private void addAccountStatementTransaction()
+    {
+        /***
+         * Information:
+         * In the documents we do not find any currency with three letters, 
+         * so we assume that the currency is the base currency.
+         * 
+         * CUSIP Number:
+         * The CUSIP number is the WKN number. 
+         */
+
+        final DocumentType type = new DocumentType("ACCOUNT STATEMENT", (context, lines) -> {
+            Pattern pYear = Pattern.compile("^.* STATEMENT PERIOD: .*, (?<year>[\\d]{4})$");
+            // read the current context here
+            for (String line : lines)
+            {
+                Matcher m = pYear.matcher(line);
+                if (m.matches())
+                {
+                    context.put("year", m.group("year"));
+                }
+            }
+        });
+        this.addDocumentTyp(type);
+
+        /***
+         * Formatting:
+         * Date | Effective Description | CUSIP | Type of Activity | Quantity Market Price | Net Settlement Amount
+         * -------------------------------------
+         * Sep 15 Vanguard Index Fds 922908363 Buy 4 409.61 (1,638.44)
+         * S P 500 Etf Shs
+         * Sep 02 Netflix Inc 64110L106 Sell 2 566.20 1,132.39
+         * Com
+         */
+        Block blockBuySell = new Block("^[\\w]{3} [\\d]{2} .* (Buy|Sell) [\\.,\\d]+ [\\.,\\d]+ (\\()?[\\.,\\d]+(\\)?)$");
+        type.addBlock(blockBuySell);
+        blockBuySell.set(new Transaction<BuySellEntry>()
+
+                        .subject(() -> {
+                            BuySellEntry entry = new BuySellEntry();
+                            entry.setType(PortfolioTransaction.Type.BUY);
+                            return entry;
+                        })
+
+                        .section("month", "day", "name", "wkn", "type", "shares", "amount", "nameContinued")
+                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) (?<name>.*) (?<wkn>[\\w]{9}) (?<type>(Buy|Sell)) (?<shares>[\\.,\\d]+) [\\.,\\d]+ (\\()?(?<amount>[\\.,\\d]+)(\\))?$")
+                        .match("(?<nameContinued>.*)")
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+                            v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
+
+                            t.setDate(asDate(v.get("date")));
+                            t.setShares(asShares(v.get("shares")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(getClient().getBaseCurrency());
+                            t.setSecurity(getOrCreateSecurity(v));
+                        })
+
+                        .wrap(BuySellEntryItem::new));
+
+        /***
+         * Formatting:
+         * Date | Effective Description | CUSIP | Type of Activity | Quantity Market Price | Net Settlement Amount
+         * -------------------------------------
+         * Sep 16 Barrick Gold Co             14 067901108 Dividend 1.97
+         * 
+         * Sep 17 Barrick Gold Co             14 067901108 Dividend 1.26
+         * Sep 17 For Sec Withhold: Div   .25000 067901108 Foreign Withholding (0.31)
+         * 
+         * Sep 15 Realty Income C             22 756109104 Dividend 5.18
+         * Sep 15 Nra Withhold: Dividend 756109104 NRA Withhold (1.55)
+         * 
+         * Sep 15 Tyson Foods Inc              6 902494103 Qualified Dividend 2.67
+         * Sep 15 Nra Withhold: Dividend 902494103 NRA Withhold (0.80)
+         */
+        Block blockDividende = new Block("^.* [\\d]{2} .* Dividend [\\.,\\d]+$");
+        type.addBlock(blockDividende);
+        blockDividende.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction entry = new AccountTransaction();
+                            entry.setType(AccountTransaction.Type.DIVIDENDS);
+                            return entry;
+                        })
+
+                        .oneOf(
+                                        section -> section
+                                                .attributes("month", "day", "name", "shares", "wkn", "amount", "tax")
+                                                .match("^(?<month>.*) (?<day>[\\d]{2}) (?<name>.*) (?<shares>[\\.,\\d]+) (?<wkn>(?!Qualified).{9}) (Qualified )?Dividend (?<amount>[\\.,\\d]+)$")
+                                                .match("^[\\w]{3} [\\d]{2} .* [\\w]{9} (NRA Withhold|Foreign Withholding) \\((?<tax>[\\.,\\d]+)\\)$")
+                                                .assign((t, v) -> {
+                                                    Map<String, String> context = type.getCurrentContext();
+                                                    v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
+
+                                                    t.setDateTime(asDate(v.get("date")));
+                                                    t.setShares(asShares(v.get("shares")));
+                                                    t.setAmount(asAmount(v.get("amount")));
+                                                    t.setCurrencyCode(getClient().getBaseCurrency());
+                                                    t.setSecurity(getOrCreateSecurity(v));
+
+                                                    t.addUnit(new Unit(Unit.Type.TAX,
+                                                                    Money.of(asCurrencyCode(getClient().getBaseCurrency()),
+                                                                                    asAmount(v.get("tax")))));
+                                                })
+                                        ,
+                                        section -> section
+                                                .attributes("month", "day", "name", "shares", "wkn", "amount")
+                                                .match("^(?<month>.*) (?<day>[\\d]{2}) (?<name>.*) (?<shares>[\\.,\\d]+) (?<wkn>(?!Qualified).{9}) (Qualified )?Dividend (?<amount>[\\.,\\d]+)$")
+                                                .assign((t, v) -> {
+                                                    Map<String, String> context = type.getCurrentContext();
+                                                    v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
+
+                                                    t.setDateTime(asDate(v.get("date")));
+                                                    t.setShares(asShares(v.get("shares")));
+                                                    t.setAmount(asAmount(v.get("amount")));
+                                                    t.setCurrencyCode(getClient().getBaseCurrency());
+                                                    t.setSecurity(getOrCreateSecurity(v));
+                                                })
+                                )
+
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        }));
+
+        /***
+         * Formatting:
+         * Date | Effective Description | CUSIP | Type of Activity | Quantity Market Price | Net Settlement Amount
+         * -------------------------------------
+         * Dec 29 Incoming Wire Abccdd Doe Journal 71,000.00
+         */
+        Block blockDeposit = new Block("^[\\w]{3} [\\d]{2} Incoming Wire .* [\\.,\\d]+$");
+        type.addBlock(blockDeposit);
+        blockDeposit.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction entry = new AccountTransaction();
+                            entry.setType(AccountTransaction.Type.DEPOSIT);
+                            return entry;
+                        })
+
+                        .section("month", "day", "amount")
+                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) Incoming Wire .* (?<amount>[\\.,\\d]+)$")
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+                            v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
+
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(getClient().getBaseCurrency());
+                        })
+
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        }));
+
+        /***
+         * Formatting:
+         * Date | Effective Description | CUSIP | Type of Activity | Quantity Market Price | Net Settlement Amount
+         * -------------------------------------
+         * Dec 31 .05000% 3 Days,Bal=   $71000 Credit Interest 0.30
+         */
+        Block blockInterest = new Block("^[\\w]{3} [\\d]{2} .* Credit Interest [\\.,\\d]+$");
+        type.addBlock(blockInterest);
+        blockInterest.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction entry = new AccountTransaction();
+                            entry.setType(AccountTransaction.Type.INTEREST);
+                            return entry;
+                        })
+
+                        .section("month", "day", "amount")
+                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) .* Credit Interest (?<amount>[\\.,\\d]+)$")
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+                            v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
+
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(getClient().getBaseCurrency());
+                        })
+
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        }));
+    }
+
+    @Override
+    protected long asAmount(String value)
+    {
+        return PDFExtractorUtils.convertToNumberLong(value, Values.Amount, "en", "US");
+    }
+
+    @Override
+    protected long asShares(String value)
+    {
+        return PDFExtractorUtils.convertToNumberLong(value, Values.Share, "en", "US");
+    }
+
+    @Override
+    protected BigDecimal asExchangeRate(String value)
+    {
+        return PDFExtractorUtils.convertToNumberBigDecimal(value, Values.Share, "en", "US");
+    }
+
+    @Override
+    protected LocalDateTime asDate(String date)
+    {
+        return LocalDate.parse(date, DATE_FORMAT).atStartOfDay();
+    }
+}

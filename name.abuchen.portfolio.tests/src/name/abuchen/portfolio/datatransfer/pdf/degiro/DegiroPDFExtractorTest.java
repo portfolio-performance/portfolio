@@ -62,6 +62,8 @@ public class DegiroPDFExtractorTest
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-08-02T00:00")));
             assertNull(transaction.getExDateTime());
+            assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
+            assertThat(transaction.getNote(), is("Einzahlung"));
             assertThat(transaction.getMonetaryAmount(),
                             is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(350.00))));
         }
@@ -107,6 +109,7 @@ public class DegiroPDFExtractorTest
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-02-07T11:53")));
             assertNull(transaction.getExDateTime());
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getMonetaryAmount(),
                             is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000.00))));
         }
@@ -121,6 +124,7 @@ public class DegiroPDFExtractorTest
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-02-01T11:44")));
             assertNull(transaction.getExDateTime());
+            assertNull(transaction.getExDateTime());
             assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.01))));
         }
 
@@ -134,6 +138,8 @@ public class DegiroPDFExtractorTest
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-03-01T13:21")));
             assertNull(transaction.getExDateTime());
+            assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+            assertThat(transaction.getNote(), is("Gebühr für Ausübung/Zuteilung"));
             assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.00))));
         }
 
@@ -160,6 +166,8 @@ public class DegiroPDFExtractorTest
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-03-05T15:37")));
             assertNull(transaction.getExDateTime());
+            assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+            assertThat(transaction.getNote(), is("Gutschrift für die Neukundenaktion"));
             assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(18.00))));
         }
     }
@@ -250,12 +258,16 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-07-31T00:00")));
         assertNull(transaction.getExDateTime());
+        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
+        assertThat(transaction.getNote(), is("Zinsen"));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.07))));
 
         transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
                         .collect(Collectors.toList()).get(11).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
+        assertThat(transaction.getNote(), is("Einrichtung von Handelsmodalitäten 2017"));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-06-30T00:00")));
         assertNull(transaction.getExDateTime());
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.50))));
@@ -280,6 +292,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-08-31T00:00")));
         assertNull(transaction.getExDateTime());
+        assertThat(transaction.getSource(), is("Kontoauszug04.txt"));
+        assertThat(transaction.getNote(), is("Einrichtung von Handelsmodalitäten 2017"));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.89))));
 
     }
@@ -311,6 +325,9 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-02-22T18:40")));
         assertNull(transaction.getExDateTime());
+        assertThat(transaction.getSource(), is("Kontoauszug05.txt"));
+        assertThat(transaction.getNote(), is("SOFORT Einzahlung"));
+
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(27.00))));
 
         transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
@@ -319,6 +336,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-02-22T18:40")));
         assertNull(transaction.getExDateTime());
+        assertThat(transaction.getSource(), is("Kontoauszug05.txt"));
+        assertThat(transaction.getNote(), is("SOFORT Zahlungsgebühr"));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.00))));
 
         transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
@@ -398,6 +417,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-07-25T13:06")));
         assertNull(transaction.getExDateTime());
+        assertThat(transaction.getSource(), is("Kontoauszug06.txt"));
+        assertThat(transaction.getNote(), is("Einzahlung"));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000.00))));
 
         transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
@@ -406,6 +427,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-08-05T00:09")));
         assertNull(transaction.getExDateTime());
+        assertThat(transaction.getSource(), is("Kontoauszug06.txt"));
+        assertThat(transaction.getNote(), is("Auszahlung"));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000.00))));
 
         transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
@@ -989,6 +1012,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-26T08:41")));
         assertNull(transaction.getExDateTime());
+        assertThat(transaction.getSource(), is("Rekeningoverzicht02.txt"));
+        assertThat(transaction.getNote(), is("iDEAL Deposit"));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(20.00))));
 
         transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
@@ -1013,6 +1038,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-27T10:16")));
         assertNull(transaction.getExDateTime());
+        assertThat(transaction.getSource(), is("Rekeningoverzicht02.txt"));
+        assertThat(transaction.getNote(), is("Overboeking"));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(15.41))));
 
         transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
@@ -1143,6 +1170,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST_CHARGE));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-01T18:47")));
         assertNull(transaction.getExDateTime());
+        assertThat(transaction.getSource(), is("AccountStatement01.txt"));
+        assertThat(transaction.getNote(), is("Interest"));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.88))));
     }
 

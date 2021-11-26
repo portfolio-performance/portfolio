@@ -1,12 +1,14 @@
 <translations>
 	<defaultLanguage>en</defaultLanguage>
 	<languages>
+		<string>cs</string>
 		<string>de</string>
 		<string>es</string>
 		<string>nl</string>
 		<string>pt</string>
 		<string>fr</string>
 		<string>it</string>
+		<string>ru</string>
 	</languages>
 	<artifacts>
 		<artifact>

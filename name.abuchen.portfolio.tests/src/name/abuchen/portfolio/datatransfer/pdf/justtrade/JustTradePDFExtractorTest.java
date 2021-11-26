@@ -1,9 +1,9 @@
 package name.abuchen.portfolio.datatransfer.pdf.justtrade;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertNull;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -18,8 +18,8 @@ import org.junit.Test;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
-import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
+import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.JustTradePDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -817,6 +817,8 @@ public class JustTradePDFExtractorTest
         assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-03-15T00:00")));
         assertThat(t.getExDateTime(), is(LocalDateTime.parse("2021-03-01T00:00")));
         assertThat(t.getShares(), is(Values.Share.factorize(30)));
+        assertThat(t.getSource(), is("Dividende01.txt"));
+        assertThat(t.getNote(), is("Vierteljährlich"));
 
         assertThat(t.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(12.15))));
@@ -937,6 +939,8 @@ public class JustTradePDFExtractorTest
         assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-09-23T00:00")));
         assertThat(t.getExDateTime(), is(LocalDateTime.parse("2021-09-08T00:00")));
         assertThat(t.getShares(), is(Values.Share.factorize(40)));
+        assertThat(t.getSource(), is("Dividende04.txt"));
+        assertThat(t.getNote(), is("Vierteljährlich"));
 
         assertThat(t.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(15.90))));

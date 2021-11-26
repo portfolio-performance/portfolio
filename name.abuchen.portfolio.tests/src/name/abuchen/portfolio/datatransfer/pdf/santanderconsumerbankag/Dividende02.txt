@@ -1,0 +1,35 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Santander Consumer Bank AG · Santander-Platz 1 · 41061 Mönchengladbach    
+Depotnummer
+  0000 0000000000
+ Kundennummer 000000000
+VORNAME NACHNAME
+ Abrechnungsnr. 0000000000
+ANREDE Datum 07.05.2021
+VORNAME NACHNAME Ihr Berater Santander Expertenberatung
+STRAßE HAUSNUMMER Telefon 02161/9060187       
+PLZ STADT
+                                                        
+                                                        
+                                                         
+Dividendengutschrift
+bei NV-Bescheinigung nach § 44a Abs. 1 S. 4 und Abs. 2 Nr. 2 EStG gültig bis 00.00.0000
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 2 ALLIANZ SE DE0008404005 (840400)
+VINK.NAMENS-AKTIEN O.N.
+Zahlbarkeitstag 10.05.2021 Dividende pro Stück 9,60 EUR
+Bestandsstichtag 05.05.2021
+Ex-Tag 06.05.2021
+Geschäftsjahr 01.01.2020 - 31.12.2020
+Dividendengutschrift 19,20+ EUR
+Kapitalertragsteuerpflichtige Dividende 19,20 EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 0,00 EUR
+Ausmachender Betrag 19,20+ EUR
+Lagerstelle Clearstream Banking FFM (849000 / 40030000)
+Den Betrag buchen wir mit Wertstellung 10.05.2021 zu Gunsten des Kontos 0000000000 (IBAN XX00 0000 0000 0000
+0000 00), BLZ 310 108 33 (BIC SCFBDE33XXX). 
+Keine Steuerbescheinigung. 
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Bitte ggf. Rückseite beachten.
+0000.00000000.0000000XX00

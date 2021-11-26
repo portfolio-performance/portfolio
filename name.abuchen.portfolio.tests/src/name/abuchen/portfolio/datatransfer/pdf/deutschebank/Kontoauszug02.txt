@@ -1,0 +1,355 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Deutsche Bank AG
+V 710/686 Filiale
+Frau Stadt-Löbtau
+Max Mustermann Kesselsdorfer Straße 22
+Muehlen Str. 18 B 01159 Stadt
+01111 Stadt Betreuergruppe DVAG
+Telefon (0351) 42411-0
+24h-Kundenservice (069) 910-10000
+31. Dezember 2020
+Kontoauszug vom 01.12.2020 bis 31.12.2020
+Kontoinhaber: Max Mustermann
+ZINSKONTO PLUS
+Auszug Seite IBAN BIC (SWIFT) Alter Saldo per 30.11.2020
+12 1/8 DE11 1111 1111 1111 1111 11 DEUTDEDBCHE EUR + 4.444,44
+Buchung Valuta Vorgang Soll Haben
+01.12. 01.12. SEPA Überweisung von + 293,00
+Landeshauptstadt Stadt Stadtverwaltung
+Verwendungszweck/ Kundenreferenz
+Kostenausgleichszahlung 12.20 Mustermann, Max
+111111111111111111111111
+ABWA Landeshauptstadt Stadt
+01.12. 01.12. SEPA Dauerauftrag an - 40,00
+Mustermann, Max
+IBAN DE1111110000111111
+BIC OSDDDE81XXX
+Verwendungszweck/ Kundenreferenz
+Taschengeld
+RINP Dauerauftrag
+01.12. 01.12. SEPA Lastschrifteinzug von - 29,24
+AMAZON EU S.A R.L., NIEDERLASSUNG
+DEUTSCHLAND
+Verwendungszweck/ Kundenreferenz
+111-1111111-1111111Amazon.deHPRN32D3Z0JB1742
+HPRN32D3Z0JB1742
+Gläubiger-ID DE1111110000111111
+Mand-ID LOTM52)QPMTQX,YH,AKONPDHMADH)X
+RCUR Wiederholungslastschrift
+01.12. 01.12. SEPA Lastschrifteinzug von - 39,99
+AMAZON PAYMENTS EUROPE S.C.A.
+Verwendungszweck/ Kundenreferenz
+111-1111111-1111111 AMZN Mktp DE 5RV8CEYG60
+MLP16U
+5RV8CEYG60MLP16U
+Gläubiger-ID DE1111100000111111
+Mand-ID LOTM52)QPMTQX,YH,AKONPDHMADH)X
+RCUR Wiederholungslastschrift
+0000000003 / 06500900 / 20210102
+Auszug Seite IBAN BIC (SWIFT)
+12 2/8 DE11 1111 1111 1111 1111 11 DEUTDEDBCHE
+Buchung Valuta Vorgang Soll Haben
+02.12. 02.12. SEPA Dauerauftrag an - 1.000,00
+Mustermann, Max
+IBAN DE1111110000111111
+BIC BYLADEM1001
+Verwendungszweck/ Kundenreferenz
+Fixkosten
+RINP Dauerauftrag
+03.12. 03.12. SEPA Dauerauftrag an - 50,00
+Mustermann, Max
+IBAN DE11 1111 1111 1111 1111 11
+BIC INGDDEFFXXX
+RINP Dauerauftrag
+03.12. 03.12. Kartenzahlung - 0,57
+Verwendungszweck/ Kundenreferenz
+NETTOMARKEN-DISCOU//Stadt/DE 02-12-2020
+T10:54:30 Folgenr. 09 Verfalld. 1224
+03.12. 03.12. Kartenzahlung - 34,82
+Verwendungszweck/ Kundenreferenz
+Kaufland Stadt-Nausslitz//Stadt/DE 02-12-2020
+T15:42:48 Folgenr. 09 Verfalld. 1224
+03.12. 03.12. Bargeldauszahlung GAA - 50,00
+Verwendungszweck/ Kundenreferenz
+Postbank//Stadt/DE 02-12-2020T10:58:10 Folgenr.
+009 Verfalld. 1224
+04.12. 04.12. SEPA Überweisung von + 344,00
+Max Mustermann
+Verwendungszweck/ Kundenreferenz
+110100111111111111111111
+CASH CashMgmt Transaktion
+04.12. 04.12. SEPA Lastschrifteinzug von - 39,99
+AMAZON PAYMENTS EUROPE S.C.A.
+Verwendungszweck/ Kundenreferenz
+111-1111111-1111111 AMZN Mktp DE 6R9K95APBZ
+UVBK6I
+6R9K95APBZUVBK6I
+Gläubiger-ID DE1111100000111111
+Mand-ID LOTM52)QPMTQX,YH,AKONPDHMADH)X
+RCUR Wiederholungslastschrift
+07.12. 07.12. SEPA Überweisung von + 562,00
+Unser Sparverein
+Verwendungszweck/ Kundenreferenz
+1111111111111111 1220 INKL. SONDERZAHLUNG
+154EU 11111111111/1000001111111
+11111111111
+0000000003 / 06500900 / 20210102
+Auszug Seite IBAN BIC (SWIFT)
+12 3/8 DE11 1111 1111 1111 1111 11 DEUTDEDBCHE
+Buchung Valuta Vorgang Soll Haben
+07.12. 07.12. SEPA Lastschrifteinzug von - 150,12
+AMAZON EU S.A R.L., NIEDERLASSUNG
+DEUTSCHLAND
+Verwendungszweck/ Kundenreferenz
+111-1111111-1111111 Amazon.de J3INKIIZ0CXTU0HD
+J3INKIIZ0CXTU0HD
+Gläubiger-ID DE1111110000111111
+Mand-ID LOTM52)QPMTQX,YH,AKONPDHMADH)X
+RCUR Wiederholungslastschrift
+07.12. 07.12. Kartenzahlung - 14,44
+Verwendungszweck/ Kundenreferenz
+Kaufland Stadt//Stadt/DE 05-12-2020T17:26:29
+Folgenr. 09 Verfalld. 1224
+07.12. 07.12. Kartenzahlung - 50,01
+Verwendungszweck/ Kundenreferenz
+JET DANKT FUER IHREN KAUF//Stadt/DE
+04-12-2020T11:22:28 Folgenr. 09 Verfalld. 1224
+08.12. 08.12. Kartenzahlung - 45,26
+Verwendungszweck/ Kundenreferenz
+ERNSTING'S FAMILY G//Stadt/DE 07-12-2020
+T16:53:28 Folgenr. 09 Verfalld. 1224
+09.12. 09.12. Kartenzahlung - 16,87
+Verwendungszweck/ Kundenreferenz
+AESCULAP-APOTHEKEE//Stadt/DE 08-12-2020
+T15:25:28 Folgenr. 009 Verfalld. 1224
+09.12. 09.12. SEPA Lastschrifteinzug von - 38,78
+H+M 382 SAGT VIELEN DANK
+Verwendungszweck/ Kundenreferenz
+ELV66021481 07.12 17.04 ME9
+66021481224704071220170412
+Gläubiger-ID DE1111110001111111
+Mand-ID 6602148179022012071704
+CGDD SEPA Lastschrift ELV
+OOFF Einmallastschrift
+10.12. 10.12. Kartenzahlung - 34,95
+Verwendungszweck/ Kundenreferenz
+THALIA-BUCHHDLG GONDROM//KAISERSLAUT
+ERN/DE 09-12-2020T11:38:18 Folgenr. 09 Verfalld.
+1224
+10.12. 10.12. Kartenzahlung - 37,40
+Verwendungszweck/ Kundenreferenz
+Kaufland Stadt//Stadt/DE 09-12-2020T12:07:06
+Folgenr. 09 Verfalld. 1224
+0000000003 / 06500900 / 20210102
+Auszug Seite IBAN BIC (SWIFT)
+12 4/8 DE11 1111 1111 1111 1111 11 DEUTDEDBCHE
+Buchung Valuta Vorgang Soll Haben
+14.12. 14.12. SEPA Überweisung von + 150,12
+AMAZON EU S.A R.L., NIEDERLASSUNG
+DEUTSCHLAND
+Verwendungszweck/ Kundenreferenz
+111-1111111-1111111 AMZ Amazon.de 3TU4SG7T9S
+63HVV0
+3TU4SG7T9S63HVV0
+14.12. 14.12. Kartenzahlung - 36,28
+Verwendungszweck/ Kundenreferenz
+Tierarzt//Stadt/DE 09-12-2020T16:36:04 Folgenr.
+009 Verfalld. 1224
+15.12. 15.12. SEPA Lastschrifteinzug von - 6,36
+AMAZON PAYMENTS EUROPE S.C.A.
+Verwendungszweck/ Kundenreferenz
+111-1111111-1111111 AMZN Mktp DE TKS30YDFIL
+8KCM8S
+TKS30YDFIL8KCM8S
+Gläubiger-ID DE1111100000111111
+Mand-ID LOTM52)QPMTQX,YH,AKONPDHMADH)X
+RCUR Wiederholungslastschrift
+15.12. 15.12. SEPA Lastschrifteinzug von - 14,99
+AMAZON EU S.A R.L., NIEDERLASSUNG
+DEUTSCHLAND
+Verwendungszweck/ Kundenreferenz
+111-1111111-1111111Amazon.de 5SZXF96EQ1I207Q6
+5SZXF96EQ1I207Q6
+Gläubiger-ID DE1111110000111111
+Mand-ID LOTM52)QPMTQX,YH,AKONPDHMADH)X
+RCUR Wiederholungslastschrift
+15.12. 15.12. SEPA Lastschrifteinzug von - 15,14
+PayPal (Europe) S.a.r.l. et Cie., S.C.A.
+Verwendungszweck/ Kundenreferenz
+PP.1111.PP . TAKEAWAYCOM, Ihr Einkauf bei
+TAKEAWAYCOM
+1111111111111 PP.1111.PP PAYPAL
+Gläubiger-ID LU96ZZZ0000000000000000058
+Mand-ID 4WH2224N7HE64
+RCUR Wiederholungslastschrift
+15.12. 15.12. SEPA Lastschrifteinzug von - 43,47
+PayPal (Europe) S.a.r.l. et Cie., S.C.A.
+Verwendungszweck/ Kundenreferenz
+. BLUME2000DE, Ihr Einkauf bei BLUME2000DE
+1111111111111 PAYPAL
+Gläubiger-ID LU96ZZZ0000000000000000058
+Mand-ID 4WH2224N7HE64
+RCUR Wiederholungslastschrift
+0000000003 / 06500900 / 20210102
+Auszug Seite IBAN BIC (SWIFT)
+12 5/8 DE11 1111 1111 1111 1111 11 DEUTDEDBCHE
+Buchung Valuta Vorgang Soll Haben
+15.12. 15.12. Kartenzahlung - 21,94
+Verwendungszweck/ Kundenreferenz
+DANKE, IHR LIDL//Stadt/DE 14-12-2020T11:23:04
+Folgenr. 09 Verfalld. 1224
+15.12. 15.12. Kartenzahlung - 41,50
+Verwendungszweck/ Kundenreferenz
+VILLA BAUMGARTEN GMBH//Stadt/DE
+14-12-2020T18:14:54 Folgenr. 09 Verfalld. 1224
+17.12. 17.12. SEPA Lastschrifteinzug von - 21,99
+AMAZON PAYMENTS EUROPE S.C.A.
+Verwendungszweck/ Kundenreferenz
+111-1111111-1111111 AMZN Mktp DE ND8UBYA9DV
+9VAJUM
+ND8UBYA9DV9VAJUM
+Gläubiger-ID DE1111100000111111
+Mand-ID LOTM52)QPMTQX,YH,AKONPDHMADH)X
+RCUR Wiederholungslastschrift
+18.12. 18.12. SEPA Lastschrifteinzug von - 10,99
+AMAZON PAYMENTS EUROPE S.C.A.
+Verwendungszweck/ Kundenreferenz
+111-1111111-1111111 AMZN Mktp DE 5U121DNLWJ
+C4Y5B1
+5U121DNLWJC4Y5B1
+Gläubiger-ID DE1111100000111111
+Mand-ID LOTM52)QPMTQX,YH,AKONPDHMADH)X
+RCUR Wiederholungslastschrift
+18.12. 18.12. SEPA Lastschrifteinzug von - 15,99
+AMAZON PAYMENTS EUROPE S.C.A.
+Verwendungszweck/ Kundenreferenz
+111-1111111-1111111 AMZN Mktp DE 28RLRGYIRE
+H55PFE
+28RLRGYIREH55PFE
+Gläubiger-ID DE1111100000111111
+Mand-ID LOTM52)QPMTQX,YH,AKONPDHMADH)X
+RCUR Wiederholungslastschrift
+21.12. 21.12. SEPA Überweisung von + 5,00
+PayPal (Europe) S.a.r.l. et Cie., S.C.A.
+Verwendungszweck/ Kundenreferenz
+. BLUME2000DE, Ihr Einkauf bei BLUME2000DE
+YYW1011587937099 PAYPAL
+21.12. 21.12. SEPA Überweisung von + 2.222,22
+Die Firma GmbH
+Verwendungszweck/ Kundenreferenz
+Lohn-Gehalt Abrechnung 12/2020
+1111111111-0011111
+SALA Lohn/Gehalt
+0000000003 / 06500900 / 20210102
+Auszug Seite IBAN BIC (SWIFT)
+12 6/8 DE11 1111 1111 1111 1111 11 DEUTDEDBCHE
+Buchung Valuta Vorgang Soll Haben
+21.12. 21.12. Kartenzahlung - 13,85
+Verwendungszweck/ Kundenreferenz
+DANKE, IHR LIDL//Stadt/DE 19-12-2020T13:58:04
+Folgenr. 09 Verfalld. 1224
+21.12. 21.12. SEPA Überweisung an - 23,50
+Max Mustermann
+IBAN DE1111110000111111
+BIC SALADE51NKS
+Verwendungszweck/ Kundenreferenz
+Pretty Little liars dvd 1-6, steffi-thomas-max
+21.12. 21.12. Kartenzahlung - 26,10
+Verwendungszweck/ Kundenreferenz
+5076 E-CENTER SCHELLER DD//Stadt/DE
+19-12-2020T13:43:43 Folgenr. 009 Verfalld. 1224
+21.12. 21.12. Kartenzahlung - 56,14
+Verwendungszweck/ Kundenreferenz
+Kaufland Stadt//Stadt/DE 19-12-2020T14:37:28
+Folgenr. 09 Verfalld. 1224
+22.12. 22.12. Kartenzahlung - 14,29
+Verwendungszweck/ Kundenreferenz
+NETTOMARKEN-DISCOU//Stadt/DE 21-12-2020
+T07:05:17 Folgenr. 09 Verfalld. 1224
+22.12. 22.12. SEPA Lastschrifteinzug von - 10,11
+ROSSMANN VIELEN DANK
+Verwendungszweck/ Kundenreferenz
+111111111111111111111111111 ELV65376696 19.12
+14.18 ME9
+11111111111111111111111111165376696
+Gläubiger-ID DE1111100000011111
+Mand-ID 6537669698272012191418
+CGDD SEPA Lastschrift ELV
+OOFF Einmallastschrift
+23.12. 23.12. Kartenzahlung - 47,86
+Verwendungszweck/ Kundenreferenz
+Kaufland Stadt//Stadt/DE 22-12-2020T11:37:40
+Folgenr. 09 Verfalld. 1224
+24.12. 24.12. SEPA Lastschrifteinzug von - 8,45
+AMAZON EU S.A R.L., NIEDERLASSUNG
+DEUTSCHLAND
+Verwendungszweck/ Kundenreferenz
+111-1111111-1111111 Amazon.de 1V4ALM9KXF
+1PPE67
+1V4ALM9KXF1PPE67
+Gläubiger-ID DE1111110000111111
+Mand-ID LOTM52)QPMTQX,YH,AKONPDHMADH)X
+RCUR Wiederholungslastschrift
+0000000003 / 06500900 / 20210102
+Auszug Seite IBAN BIC (SWIFT)
+12 7/8 DE11 1111 1111 1111 1111 11 DEUTDEDBCHE
+Buchung Valuta Vorgang Soll Haben
+28.12. 28.12. SEPA Überweisung an - 31,79
+Max Mustermann
+IBAN DE1111110000111111
+BIC PBNKDEFFXXX
+Verwendungszweck/ Kundenreferenz
+Tasche Fritzi aus Preußen, steffi-thomas-max
+29.12. 29.12. Verwendungszweck/ Kundenreferenz - 500,00
+GA NR07107830 BLZ870700240929.12/14.07UHR
+DD-LOEBTAU
+29.12. 29.12. SEPA Lastschrifteinzug von - 8,74
+PayPal (Europe) S.a.r.l. et Cie., S.C.A.
+Verwendungszweck/ Kundenreferenz
+PP.1111.PP . TAKEAWAYCOM, Ihr Einkauf bei
+TAKEAWAYCOM
+11111111111 PP.1111.PP PAYPAL
+Gläubiger-ID LU96ZZZ0000000000000000058
+Mand-ID 4WH2224N7HE64
+RCUR Wiederholungslastschrift
+29.12. 29.12. SEPA Lastschrifteinzug von - 31,19
+AMAZON PAYMENTS EUROPE S.C.A.
+Verwendungszweck/ Kundenreferenz
+111-1111111-1111111 AMZN Mktp DE 45UTHVVJ8B
+2CWWOG
+45UTHVVJ8B2CWWOG
+Gläubiger-ID DE1111100000111111
+Mand-ID LOTM52)QPMTQX,YH,AKONPDHMADH)X
+RCUR Wiederholungslastschrift
+29.12. 29.12. Kartenzahlung - 27,96
+Verwendungszweck/ Kundenreferenz
+Kaufland Stadt//Stadt/DE 28-12-2020T15:56:00
+Folgenr. 09 Verfalld. 1224
+30.12. 30.12. SEPA Überweisung von + 309,00
+Landeshauptstadt Stadt Stadtverwaltung
+Verwendungszweck/ Kundenreferenz
+Kostenausgleichszahlung 01.21 Mustermann, Max
+P11111111111011111111111
+ABWA Landeshauptstadt Stadt
+0000000003 / 011111 / 2111112
+Auszug Seite IBAN BIC (SWIFT)
+12 8/8 DE11 1111 1111 1111 1111 11 DEUTDEDBCHE
+Buchung Valuta Vorgang Soll Haben
+31.12. 31.12. Verwendungszweck/ Kundenreferenz - 13,47
+Saldo der Abschlussposten
+Filialnummer Kontonummer Neuer Saldo
+710 1111111 05 EUR + 8.888,88
+Bankleitzahl Ihre eingeräumte Kontoüberziehung
+111 111 11 EUR 500,00
+Sollzinssatz 10,9 % p.a.
+Wichtige Hinweise
+Bitte erheben Sie Einwendungen gegen einzelne Buchungen unverzüglich. Schecks, Wechsel und sonstige Lastschriften schreiben wir unter dem Vorbehalt
+des Eingangs gut. Der angegebene Kontostand berücksichtigt nicht die Wertstellung der Buchungen (siehe oben unter "Valuta").
+Somit können bei Verfügungen1) möglicherweise Zinsen für die Inanspruchnahme einer eingeräumten oder geduldeten Kontoüberziehung anfallen.
+Die abgerechneten Leistungen sind als Bank- oder Finanzdienstleistungen von der Umsatzsteuer befreit, sofern Umsatzsteuer nicht gesondert
+ausgewiesen ist. Umsatzsteuer ID Nr.: Deutsche Bank AG, 60262 Frankfurt DE114103379
+Guthaben sind als Einlagen nachMaßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen können dem "Informationsbogen
+für den Einleger" entnommen werden.
+1) Der Begriff umfasst unter anderem die relevanten Zahlungskontendienste "Bargeldauszahlung" und "Überweisung".
+0000000003 / 06500900 / 20210102

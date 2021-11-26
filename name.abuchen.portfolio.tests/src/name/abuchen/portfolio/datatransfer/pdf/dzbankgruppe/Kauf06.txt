@@ -1,0 +1,41 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+   
+VR-Bank Erding eG · Zollnerstraße 4 · 85435 Erding
+Depotnummer
+ 77417333
+ Kundennummer 741734444
+Max Mustermann
+ Auftragsnummer 733388/85.00
+Max Mustermann Datum 17.03.2021
+Georg-Pauli-Strasse 10 Ihr Berater Herr Musterfrau
+28200 Bremen Telefon 08122 200000
+Telefax 08122 200-50
+Rechnungsnummer W06352-0000004444/21
+Umsatzsteuer-ID DE128965692   
+ 
+Wertpapier Abrechnung Kauf 
+Auftrag vom 16.03.2021 17:16:23 Uhr
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 50 ALLIANZ SE                         DE0008404005 (840400)
+VINK.NAMENS-AKTIEN O.N.            
+Handels-/Ausführungsplatz Tradegate (gemäß Weisung)
+Börsensegment XGAT
+Limit-Order
+Limit 210,00 EUR 
+Schlusstag/-Zeit 17.03.2021 15:37:21 Auftraggeber Max Mustermann
+Ausführungskurs 210,00 EUR Auftragserteilung/ -ort Online-Banking
+Girosammelverwahrung - Sammel-Urkunden in Namensaktien
+Kurswert 10.500,00- EUR
+Provision 31,15- EUR
+Übertragungs-/Liefergebühr 0,10- EUR
+Ausmachender Betrag 10.531,25- EUR
+ 
+Den Gegenwert buchen wir mit Valuta 19.03.2021 zu Lasten des Kontos 7414444 (IBAN DE37 7016 9605 0007 4444 00),
+BLZ 70169605 (BIC GENODEF1ISE).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+6352.03171745.0000027OR07

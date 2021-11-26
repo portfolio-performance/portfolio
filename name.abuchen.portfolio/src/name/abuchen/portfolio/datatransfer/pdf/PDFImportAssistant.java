@@ -49,17 +49,17 @@ public class PDFImportAssistant
         extractors.add(new Direkt1822BankPDFExtractor(client));
         extractors.add(new DkbPDFExtractor(client));
         extractors.add(new DreiBankenEDVPDFExtractor(client));
-        extractors.add(new DZBankPDFExtractor(client));
+        extractors.add(new DZBankGruppePDFExtractor(client));
         extractors.add(new EbasePDFExtractor(client));
         extractors.add(new ErsteBankPDFExtractor(client));
         extractors.add(new FILFondbankPDFExtractor(client));
         extractors.add(new FinTechGroupBankPDFExtractor(client));
-        extractors.add(new GLSBankengemeinschaftPDFExtractor(client));
         extractors.add(new HelloBankPDFExtractor(client));
-        extractors.add(new INGDiBaExtractor(client));
+        extractors.add(new INGDiBaPDFExtractor(client));
         extractors.add(new JustTradePDFExtractor(client));
         extractors.add(new KeytradeBankPDFExtractor(client));
         extractors.add(new MLPBankingAGPDFExtractor(client));
+        extractors.add(new NIBCBankPDFExtractor(client));
         extractors.add(new LGTBankPDFExtractor(client));
         extractors.add(new OnvistaPDFExtractor(client));
         extractors.add(new PostbankPDFExtractor(client));
@@ -67,14 +67,17 @@ public class PDFImportAssistant
         extractors.add(new QuirionPDFExtractor(client));
         extractors.add(new RaiffeisenBankgruppePDFExtractor(client));
         extractors.add(new RenaultBankDirektPDFExtractor(client));
+        extractors.add(new RevolutLtdPDFExtractor(client));
+        extractors.add(new SantanderConsumerBankAGPDFExtractor(client));
         extractors.add(new SBrokerPDFExtractor(client));
+        extractors.add(new ScorePriorityIncPDFExtractor(client));
         extractors.add(new SelfWealthPDFExtractor(client));
         extractors.add(new SwissquotePDFExtractor(client));
         extractors.add(new TargobankPDFExtractor(client));
         extractors.add(new TradeRepublicPDFExtractor(client));
         extractors.add(new UnicreditPDFExtractor(client));
         extractors.add(new VBankAGPDFExtractor(client));
-        extractors.add(new ViacPDFExtractor(client));
+        extractors.add(new WirBankPDFExtractor(client));
         extractors.add(new WeberbankPDFExtractor(client));
     }
 

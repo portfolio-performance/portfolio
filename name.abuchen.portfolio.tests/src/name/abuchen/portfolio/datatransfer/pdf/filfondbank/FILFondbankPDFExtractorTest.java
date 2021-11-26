@@ -2,9 +2,9 @@ package name.abuchen.portfolio.datatransfer.pdf.filfondbank;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertNull;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -65,6 +65,8 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-04-16T00:00")));
         assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.045)));
+        assertThat(entry.getPortfolioTransaction().getSource(), is("Fondabrechnung01.txt"));
+        assertThat(entry.getPortfolioTransaction().getNote(), is("Splitkauf"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.77))));
@@ -1309,6 +1311,8 @@ public class FILFondbankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-01-02T00:00")));
         assertNull(transaction.getExDateTime());
+        assertThat(transaction.getSource(), is("Fondabrechnung12.txt"));
+        assertThat(transaction.getNote(), is("Depotführungsentgelt 2018"));
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(25.00))));
     }
@@ -1444,6 +1448,8 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-01-04T00:00")));
         assertNull(entry.getPortfolioTransaction().getExDateTime());
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.634)));
+        assertThat(entry.getSource(), is("Fondabrechnung13.txt"));
+        assertThat(entry.getNote(), is("Entgeltbelastung"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(25.00))));
@@ -1465,6 +1471,8 @@ public class FILFondbankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-01-04T00:00")));
         assertNull(transaction.getExDateTime());
+        assertThat(transaction.getSource(), is("Fondabrechnung13.txt"));
+        assertThat(transaction.getNote(), is("Depotführungsentgelt"));
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(25.00))));
     }

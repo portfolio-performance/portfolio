@@ -1,0 +1,170 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Gern berät Sie:
+Vereinigte VR Bank
+Kur- und Rheinpfalz eG
+Union Investment - Kundenservice
+Telefon: 069 58998-6000
+Telefax: 069 58998-9000
+Herrn E-Mail: service@union-investment.de
+Max Maximus Mustermann
+Musterstrasse 42 UnionDepot: 88888888
+55555 Musterstadt Depotinhaber:
+Max Maximus Mustermann
+4. Juni 2021
+Abrechnung Nr. 1
+Unterdepot-Nr.: 8888888801
+Fonds: Franklin U.S. Opportunities Fund A ISIN: LU0260869739 Verwaltungsvergütung: 1,50 % p. a.
+Buchungs-/ Umsatzart Betrag/EUR Ausgabe- Preis/EUR Anteile
+Preisdatum aufschlag %
+Vortrag 0,000
+04.06.2021
+02.06.2021 Kauf 700,00
+Anlage 700,00 4,25 24,64 28,405
+Der Kaufpreis wird regelmäßig mit Ablauf des Bewertungstages fällig und nach Fälligkeit, monatlich, jeweils zum 01., von der hinterlegten Kontoverbindung per SE-
+PA-Basis-Lastschrift eingezogen. Die Mandatsreferenz lautet 0123456789.
+Bestand am 04.06.2021 28,405
+Steuerübersicht per 04.06.2021
+Es liegt kein Freistellungsauftrag vor.
+Depotübersicht zum 04.06.2021
+Unterdepot- Fondsname/Produktname Anteil- Rücknahme- Depotwert/
+Nr. ISIN/Ertragsverwendung bestand preis/Währung Währung
+Verwahrart/Lagerland
+8888888801 Franklin U.S. Opportunities Fund A 28,405 23,53 EUR 668,37 EUR
+LU0260869739/thesaurierend
+Wertpapierrechnung/CBL - Luxemburg
+Es liegt eine Verpfändung vor. Das Unterdepot ist deshalb gesperrt.
+8888888802 Franklin U.S. Opportunities Fund A 0,000 23,53 EUR 0,00 EUR
+LU0260869739/thesaurierend
+Wertpapierrechnung/CBL - Luxemburg
+Es liegt eine Verpfändung vor. Das Unterdepot ist deshalb gesperrt.
+Gesamt-Depotwert 668,37 EUR
+Fortsetzung auf Seite 2
+Union Investment Service Bank AG · 60621 Frankfurt am Main
+Tel.: 069 58998-0, Fax: 069 58998-9000 · E-Mail: service@union-investment.de · Internet: www.union-investment.de · Registergericht: Amtsgericht Frankfurt am Main HRB 54979
+Vorstand: Rainer Kobusch, Barbara Resch · Aufsichtsratsvorsitzender: Alexander Lichtenberg · Gläubiger-ID: DE81USB00000002100  
+Einzahlungen: DZ BANK AG Deutsche Zentral-Genossenschaftsbank, Frankfurt am Main, IBAN: DE34 5006 0400 0000 0006 86 (BIC: GENODEFFXXX)
+Seite 2 von 2 Datenschutzfeld
+zum Schreiben vom 4. Juni 2021 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+UnionDepot: 88888888 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+Depotinhaber: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+Max Maximus Mustermann XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+Die Bewertung der Fonds erfolgt zum jeweils letzten verfügbaren Rücknahmepreis. In der Depotübersicht sind alle Fondsanteile enthalten, die
+am Tag der Erstellung dieser Abrechnung in Ihrem Depotbestand sind.
+In manchen Fällen weichen die Werte der Depotübersicht von der Abrechnungsübersicht ab. Das kann dann vorkommen, wenn zum Beispiel
+Fonds betroffen sind, die nicht taggleich abgerechnet werden. Das ist bei den meisten Drittfonds oder Finanzportfolioverwaltungen der Fall.
+Hier können Transaktionen zwar bereits für einen der betroffenen Fonds gebucht und abgerechnet sein, für den anderen betroffenen Fonds
+aber noch nicht. In Ihrer nächsten Depotübersicht ist die ausstehende Buchung berücksichtigt.
+Bitte überprüfen Sie, ob wir Ihre Aufträge weisungsgemäß ausgeführt haben. Bei Differenzen informieren Sie uns bitte schriftlich unverzüglich 
+unter Angabe Ihrer jeweiligen 10-stelligen Unterdepot-Nummer und der Abrechnungsnummer, die Sie auf der ersten Seite der Abrechnung 
+finden. Die Verkaufsunterlagen nach § 297 Abs. 5  KAGB und aktuelle Fondsinformationen erhalten Sie kostenlos bei Ihrer Bank oder im 
+Internet unter www.union-investment.de.
+B ei Fragen sind wir gern für Sie da. Rufen Sie uns einfach an! Sie erreichen uns montags bis freitags zwischen 08:00 und 18:00 Uhr.
+Erläuterungen zu Abrechnungen im UnionDepot
+Sämtliche Umsätze in Ihrem UnionDepot dokumentieren wir für Sie in Form von Abrechnungen. Folgende Erläuterungen helfen Ihnen beim Prüfen
+der Abrechungen - bitte bewahren Sie sie sorgfältig auf.
+Wann erhalten Sie eine Abrechnung?
+Für jeden Umsatz erstellen wir eine Abrechnung. Finden an einem Abrechnungstag mehrere Umsätze in Ihrem UnionDepot statt, bündeln wir diese
+auf einer Abrechnung.
+Bei folgenden Transaktionen weisen wir Ihnen die Abrechnungsdaten zunächst im Verwendungszweck auf dem Kontoauszug des Verrechnungs-
+kontos aus. Diese Umsätze werden für die Abrechnung gesammelt:
+regelmäßiger Kauf per Lastschrifteinzug mit periodischem Einzugsrhythmus
+regelmäßiger Verkauf per Auszahlplan aus dem UnionDepot mit periodischem Auszahlungsrhythmus
+einmaliger Verkauf
+Die Abrechnung über die gesammelten Umsätze senden wir Ihnen spätestens mit Ihren Unterlagen zum Jahresende zu. Wenn zwischenzeitlich an-
+dere Transaktionen in Ihrem UnionDepot erfolgen, erhalten Sie sofort eine Abrechnung über alle bis dahin gesammelten Umsätze.
+Gut zu wissen: Alle Abrechnungen sind durchgehend nummeriert. So können Sie diese chronologisch abheften.
+Beispielhafte Abrechnung mit Erklärungen
+Die Abrechnung ist in drei Informationsbereiche gegliedert: die Umsatzaufstellung, die Steuerübersicht und die Depotübersicht.
+Die Umsatzaufstellung weist alle durchgeführten Transaktionen in Ihrem UnionDepot seit Ihrer letzten Abrechnung aus. Dabei werden die Umsätze
+nach Unterdepots sortiert aufgeführt. Es werden nur die Unterdepots ausgewiesen, für die ein Umsatz in dem Zeitraum der Abrechnung stattfand.
+Unterdepot-Nr.: 1234567803
+1
+Fonds: MusterFonds                                                                                             ISIN: DE0000000000                                       Verwaltungsvergütung: 1,25 % p.a
+Buchungs-/ Umsatzart Betrag/EUR Ausgabe- Preis/EUR Anteile
+Preisdatum 4 5 aufschlag % 7 8
+3 6
+2 Vortrag    0,000
+TT.MM.JJJJ
+TT.MM.JJJJ Umschichtung 8.000,00
+jährliche Anpassung der Fondsgewichtung
+Anlage 8.000,00 5,00                                              21,7500                 367,816
+9 Bestand am TT.MM.JJJJ 367,816
+ 1    Kopfzeile
+In der Kopfzeile finden Sie die Nummer des Unterdepots, den Fondsnamen, die zum Drucktermin der Abrechnung aktuelle Verwaltungsvergütung
+und die ISIN-Nummer des Fonds sowie besondere Hinweise. Die ISIN-Nummer (International Securities Identification Number) entspricht der inter-
+nationalen Standardnummerierung von Wertpapieren. Zusätzlich informiert Sie die Kopfzeile über Art und Ort der Fondsanteilverwahrung. Die Ver-
+waltungsvergütung wird regelmäßig direkt aus dem Fondsvermögen entnommen und spiegelt sich somit zeitanteilig im Fondspreis wieder. Eine
+separate Berechnung und somit eine Minderung Ihres Anteilbestands erfolgt nicht.
+Hinweis: Bitte geben Sie bei allen Fragen und Transaktionen zu Ihrem UnionDepot immer Ihre 10-stellige Unterdepot-Nummer an.
+ 2    Vortrag
+Dort finden Sie die Anzahl der Anteile vor der Umsatzabrechnung. Der Vortrag entspricht dem Bestand an Anteilen auf der letzten Abrechnung.
+Bei einer erstmaligen Abrechnung zum jeweiligen Unterdepot beträgt die Anteilsanzahl 0,000.
+ 3    Buchungs-/Preisdatum
+Hier wird der Tag der Buchung im UnionDepot und der preisrelevante Abrechnungstag ausgewiesen.
+ 4    Umsatzart
+Die Umsatzart beschreibt, was für eine Transaktion in Ihrem Unterdepot ausgeführt wurde. 
+ 5    Betrag
+Der Betrag wird in Euro ausgewiesen, sofern in der Spaltenüberschrift keine andere Währung angezeigt wird. Bei einer Ein- oder Auslieferung
+effektiver Stücke oder einem Übertrag von Fondsanteilen bleibt die Spalte leer.
+ 6    Ausgabeaufschlag
+Dies ist der im Ausgabepreis enthaltene prozentuale Aufschlag auf den Anteilwert. Beim Produkt UniProfiRente Select wird ein Ausgabeaufschlag 
+auf Depotebene erhoben, dessen Höhe abhängig von der Restlaufzeit des Vertrages ist.
+ 7    Preis
+In dieser Spalte wird der Preis pro Anteil in der jeweiligen Währung des Wertpapiers ausgewiesen. Beim Kauf eines Fonds finden Sie hier also den
+Preis inklusive des unter Punkt  6   separat ausgewiesenen Ausgabeaufschlags (= Ausgabepreis). Bei einem Verkauf weisen wir Ihnen den Rücknahme-
+preis aus, zu dem der Verkauf abgerechnet wurde. Bitte beachten Sie: Bei einem Fonds ohne Ausgabeaufschlag sind Ausgabe- und Rücknahmepreis
+identisch. 
+ 8    Anteile
+Hier sehen Sie die Anzahl der Anteile und Anteilbruchstücke, die bei dem Umsatz in das Unterdepot ein- oder ausgebucht wurden.
+ 9    Bestand
+Dies ist der neue Anteilbestand im Unterdepot nach allen aufgeführten Umsätzen.
+Die Steuerübersicht informiert Privatanleger über den Steuerstatus im UnionDepot zum Abrechnungstag.
+Steuerübersicht per TT.MM.JJJJ
+1 Freistellungsauftrag gültig bis auf weiteres
+Erteilter Freistellungsauftrag in EUR: 1.000,00
+Verbleibender Freistellungsauftrag in EUR:  856,40
+2 Verlustverrechnungstopf für Kapitalerträge in EUR: 0,00
+3 Gezahlte Kapitalertragsteuer in EUR: 0,00
+Gezahlte Kirchensteuer in EUR: 0,00
+Gezahlter Solidaritätszuschlag in EUR: 0,00
+ 1    Freistellungsauftrag / Nichtveranlagungsbescheinigung / Freistellungsbescheid
+Haben Sie einen Freistellungsauftrag erteilt, eine NV-Bescheinigung oder einen Freistellungsbescheid eingereicht? Hier sehen Sie die Gültigkeitsdauer
+Ihres Auftrages. Bitte denken Sie daran uns rechtzeitig vor Ablauf einer Bescheinigung einen Folgeauftrag einzureichen. So vermeiden Sie einen Steu-
+erabzug in Ihrem UnionDepot. Bis zur Höhe des verbleibenden Freistellungsauftrags können Sie im laufenden Kalenderjahr noch Kapitaleinkünfte er-
+zielen, ohne dass Kapitalertragsteuer anfällt.
+ 2    Verlustverrechnungstopf für Kapitalerträge
+Positive und negative Kapitaleinkünfte werden direkt in Ihrem UnionDepot verrechnet. Dabei wird eventuell anfallende Kapitalertragsteuer und ggf.
+Kirchensteuer ermittelt und an die Finanzbehörden abgeführt. Der Verlustverrechnungstopf für Kapitalerträge speichert alle negativen Kapitaleinkünfte
+(z. B. Veräußerungsverluste aus dem Verkauf von Fondsanteilen), die noch nicht mit positiven Kapitaleinkünften (z. B. Erträgen aus Ausschüttungen
+oder Veräußerungsgewinnen) verrechnet werden konnten. Bis zu dieser Höhe können Sie noch Kapitaleinkünfte erzielen, ohne dass Kapitalertragsteuer
+anfällt. Ein nicht verbrauchter Verlustverrechnungstopf wird automatisch in das nächste Kalenderjahr vorgetragen und so weiter genutzt. Auf Wunsch 
+bestätigen wir Ihnen auch einen nicht verbrauchten Verlust für Ihre Steuererklärung. Der Verlustverrechnungstopf beginnt dann ab dem kommenden
+Kalenderjahr bei "Null".
+ 3     Gezahlte Kapitalertragsteuer / Kirchensteuer / Solidaritätszuschlag
+Haben Sie keinen Freistellungsauftrag erteilt oder ist er aufgebraucht, kann es bei einem Verkauf von Fondsanteilen oder bei einer Ausschüttung /
+Thesaurierung eines Fonds zum Abzug von Kapitalertragsteuer und Solidaritätszuschlag kommen. Die Höhe der abgeführten Steuern zum Abrech-
+nungstag erkennen Sie hier.
+Wenn Sie zur Abgabe von Kirchensteuer verpflichtet sind und uns vom Bundeszentralamt für Steuern ein Kirchensteuerabzugsmerkmal für Sie übermittelt 
+wurde, weisen wir Ihnen hier die Höhe der abgeführten Steuer aus.
+Die Depotübersicht informiert Sie über den aktuellen Anteilbestand aller Unterdepots in Ihrem UnionDepot. Der Wert eines Unterdepots wird auf
+Basis des letzten verfügbaren Rücknahmepreises des jeweiligen Fonds berechnet. Bei Fremdwährungsfonds wird der Depotwert jeweils in Fremd-
+währung und in Euro ausgewiesen. Die Umrechnung in Euro erfolgt zum letzten verfügbaren Devisenmittelkurs der EuroFX.
