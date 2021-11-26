@@ -443,7 +443,7 @@ public final class TransactionsViewer implements ModificationListener
         ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getSource()).attachTo(column); // $NON-NLS-1$
         support.addColumn(column);
         
-        column = new Column("exdiv", "Ex-Div-Tag", SWT.None, 200); // $NON-NLS-1$
+        column = new Column("exdiv", Messages.ColumnExDate, SWT.None, 200); // $NON-NLS-1$
         column.setLabelProvider(new TransactionLabelProvider(t -> Values.DateTime.format(t.getExDateTime())));
         ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getExDateTime()).attachTo(column,
                         SWT.UP);

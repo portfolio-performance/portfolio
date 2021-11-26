@@ -110,7 +110,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         
         // date & time
         
-        DateTimeInput exDateTime = new DateTimeInput(editArea, "Ex-Tag"); //$NON-NLS-1$
+        DateTimeInput exDateTime = new DateTimeInput(editArea, Messages.ColumnExDate);
         exDateTime.bindDate(Properties.exDate.name());
         exDateTime.bindTime(Properties.exTime.name());
         exDateTime.bindButton(() -> model().getExTime(), exTime -> model().setExTime(exTime));

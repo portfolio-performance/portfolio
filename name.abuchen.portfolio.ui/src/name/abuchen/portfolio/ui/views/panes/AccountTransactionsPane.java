@@ -366,7 +366,7 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
         ColumnViewerSorter.create(e -> ((AccountTransaction) e).getSource()).attachTo(column); // $NON-NLS-1$
         transactionsColumns.addColumn(column);
         
-        column = new Column("exdiv", "Ex-Div-Tag", SWT.None, 120); // $NON-NLS-1$
+        column = new Column("exdiv", Messages.ColumnExDate, SWT.None, 120); // $NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
