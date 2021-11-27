@@ -452,6 +452,10 @@
             "label": "Asset Name"
         },
         {
+            "field": "isin",
+            "label": "ISIN"
+        },
+        {
             "field": "shares",
             "format": "0,000.00",
             "label": "Number of Shares"
