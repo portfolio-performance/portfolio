@@ -444,7 +444,7 @@
         },
         {
             "field": "type",
-            "format": "DEPOSIT=Deposit;FEES=Flat-rate administrative fee;BUY=Buy;SELL=Sell",
+            "format": "DEPOSIT=Deposit;FEES=Flat-rate administrative fee;BUY=Buy;SELL=Sell;DIVIDENDS=Dividend",
             "label": "Category"
         },
         {
