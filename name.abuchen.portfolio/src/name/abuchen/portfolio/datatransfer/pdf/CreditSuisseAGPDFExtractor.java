@@ -180,7 +180,6 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                 .match("^Ex-Datum (?<exDate>\\d+.\\d+.\\d{4})$")
                 .assign((t,v) -> t.setExDateTime(asDate(v.get("exDate"))))
 
-
                 // Bruttoertrag USD 6,250.00
                 .section("currency", "amount")
                 .match("^Gutschrift (?<currency>[\\w]{3}) (?<amount>[.,\\d]+)$")

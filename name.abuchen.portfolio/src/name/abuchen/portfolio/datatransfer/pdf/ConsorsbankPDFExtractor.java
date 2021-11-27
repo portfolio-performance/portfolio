@@ -297,7 +297,6 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 // Ex-Dividenden-Tag 08.05.2015
                 .section("exDate").optional()
                 .match("^([\\s]+)?EX-TAG([\\s]+){1,2}(?<exDate>\\d+.\\d+.\\d{4})([\\s]+)?$")   
-//                .match("^EX-TAG (?<exDate>\\d+.\\d+.\\d{4})$")
                 .assign((t,v) -> t.setExDateTime(asDate(v.get("exDate"))) )
                 
              
