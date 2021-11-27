@@ -371,6 +371,11 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                 .match("^Kirchensteuer auf Kapitalertragsteuer (?<currency>[\\w]{3}) \\-(?<tax>[\\.,\\d]+)$")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
+                // Kirchensteuer auf KESt - 5,28 EUR
+                .section("tax", "currency").optional()
+                .match("^Kirchensteuer auf KESt ([\\s]+)?\\- (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> processTaxEntries(t, v, type))
+
                 // Anrechenbare ausländische Quellensteuer 13,07 EUR
                 .section("tax", "currency").optional()
                 .match("^Anrechenbare ausl.ndische Quellensteuer (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
