@@ -22,7 +22,9 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
@@ -66,6 +68,7 @@ import name.abuchen.portfolio.snapshot.security.SecurityPerformanceIndicator;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.dialogs.EditSmaIntervalsDialog;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
@@ -619,9 +622,9 @@ public class SecuritiesChart
     private MenuManager createSubMenuSMA()
     {
         MenuManager menu = new MenuManager(Messages.LabelChartDetailMovingAverageSMA, null);
-        
-        IntervalSettings.IntervalSetting[] smaIntervals = ReadOnlyClient.unwrap(client).getSettings().getIntervalSettingsSMA().getAll();
-        Arrays.sort(smaIntervals, new SortIntervalSetting());
+        IntervalSettings smaSettings = ReadOnlyClient.unwrap(client).getSettings().getIntervalSettingsSMA();
+        IntervalSettings.IntervalSetting[] smaIntervals = smaSettings.getAll();
+        Arrays.sort(smaIntervals, new IntervalSettings.SortIntervalSetting());
         for (IntervalSettings.IntervalSetting it : smaIntervals)
         {
             Action action = new SimpleAction(MessageFormat.format(Messages.LabelChartDetailMovingAverage_Xdays, it.getInterval()), a -> {
@@ -633,6 +636,26 @@ public class SecuritiesChart
             menu.add(action);
         }
 
+        if(smaSettings.getAll().length > 0)
+            menu.add(new Separator());
+        
+        // Edit SMA intervals button
+        Action action = new SimpleAction("Verwalten...", a -> { //$NON-NLS-1$
+            // TODO: open dialog for configure SMA intervals (add/remove, change color)
+            EditSmaIntervalsDialog dlg = new EditSmaIntervalsDialog(Display.getDefault().getActiveShell(), smaSettings);
+            if(dlg.open() == Window.OK)
+            {
+                // update settings
+                smaSettings.clear();
+                for(IntervalSettings.IntervalSetting i : dlg.getIntervals())                    
+                    smaSettings.add(i.getInterval(), i.getRGB(), i.getIsActive());
+                
+                ReadOnlyClient.unwrap(client).touch();
+                updateChart();
+            }
+        });
+        menu.add(action);
+        
         return menu;
     }
     
@@ -856,29 +879,19 @@ public class SecuritiesChart
             chart.redraw();
         }
     }
-
-    class SortIntervalSetting implements Comparator<IntervalSettings.IntervalSetting> 
-    {
-        
-        @Override
-        public int compare(IntervalSettings.IntervalSetting a, IntervalSettings.IntervalSetting b)
-        {
-            return a.getInterval() - b.getInterval();
-        }
-    }
-    
+   
     private void addChartMarkerBackground(ChartInterval chartInterval, ChartRange range)
     {
         if (chartConfig.contains(ChartDetails.BOLLINGERBANDS))
             addBollingerBandsMarkerLines(chartInterval, 20, 2);
 
         IntervalSettings.IntervalSetting[] smaIntervals = ReadOnlyClient.unwrap(client).getSettings().getIntervalSettingsSMA().getAll();
-        Arrays.sort(smaIntervals, new SortIntervalSetting());
+        Arrays.sort(smaIntervals, new IntervalSettings.SortIntervalSetting());
         for (IntervalSettings.IntervalSetting it : smaIntervals)
         {
             if (it.getIsActive() && it.getInterval() > 0)
             {
-                addSMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageSMA, String.valueOf(it.getInterval()),  it.getInterval(), new Color(it.getRGBA()));
+                addSMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageSMA, String.valueOf(it.getInterval()),  it.getInterval(), new Color(it.getRGB()));
             }
         }
 

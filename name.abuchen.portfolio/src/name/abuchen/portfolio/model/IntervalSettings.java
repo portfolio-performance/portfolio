@@ -1,19 +1,32 @@
 package name.abuchen.portfolio.model;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.eclipse.swt.graphics.RGBA;
+import org.eclipse.swt.graphics.RGB;
 
 import name.abuchen.portfolio.util.ColorConversion;
 
 public class IntervalSettings
 {
     
+    public static class SortIntervalSetting implements Comparator<IntervalSettings.IntervalSetting> 
+    {
+        
+        @Override
+        public int compare(IntervalSettings.IntervalSetting a, IntervalSettings.IntervalSetting b)
+        {
+            return a.getInterval() - b.getInterval();
+        }
+    }
+    
     public class IntervalSetting
     {
+        
+        
         private Entry<Integer, TypedMap> setting; 
                 
         public IntervalSetting(Entry<Integer, TypedMap> entry)
@@ -26,12 +39,12 @@ public class IntervalSettings
             return setting.getKey();
         }
         
-        public RGBA getRGBA()
+        public RGB getRGB()
         {
-            return ColorConversion.hex2RGBA(setting.getValue().getString(IntervalSettings.C_COLOR));
+            return ColorConversion.hex2RGB(setting.getValue().getString(IntervalSettings.C_COLOR));
         }
         
-        public void setRGBA(RGBA color)
+        public void setRGB(RGB color)
         {
             setting.getValue().putString(IntervalSettings.C_COLOR, ColorConversion.toHex(color));
         }
@@ -53,6 +66,11 @@ public class IntervalSettings
   
     private Map<Integer, TypedMap> settings = new HashMap<>();
   
+    public IntervalSettings()
+    {
+        this(new HashMap<>());
+    }
+    
     public IntervalSettings(Map<Integer, TypedMap> settings)
     {
         this.settings = settings;
@@ -63,7 +81,7 @@ public class IntervalSettings
         settings.clear();           
     }
     
-    public void add(int interval, RGBA color, boolean isActive)
+    public void add(int interval, RGB color, boolean isActive)
     {
         TypedMap typedMap = new TypedMap();
         typedMap.putBoolean(C_ISACTIVE, isActive);
