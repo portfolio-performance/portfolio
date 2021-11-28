@@ -21,6 +21,7 @@ import org.swtchart.Range;
 
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.util.chart.PlainChart;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart.ThousandsNumberFormat;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
 
@@ -66,7 +67,7 @@ public abstract class AbstractChartTab implements PaymentsTab
     {
         resources = new LocalResourceManager(JFaceResources.getResources(), parent);
 
-        chart = new Chart(parent, SWT.NONE);
+        chart = new PlainChart(parent, SWT.NONE);
 
         chart.setData(UIConstants.CSS.CLASS_NAME, "chart"); //$NON-NLS-1$
 

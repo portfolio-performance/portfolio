@@ -41,6 +41,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.CacheKey;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.chart.PlainChart;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
 import name.abuchen.portfolio.util.Interval;
 import name.abuchen.portfolio.util.Pair;
@@ -179,7 +180,7 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
         title.setText(TextUtil.tooltip(getWidget().getLabel()));
         GridDataFactory.fillDefaults().grab(true, false).applyTo(title);
 
-        chart = new Chart(container, SWT.NONE);
+        chart = new PlainChart(container, SWT.NONE);
         chart.setData(UIConstants.CSS.CLASS_NAME, "chart"); //$NON-NLS-1$
         getDashboardData().getStylingEngine().style(chart);
 

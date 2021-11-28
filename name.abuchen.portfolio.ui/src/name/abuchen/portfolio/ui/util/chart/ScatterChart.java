@@ -116,4 +116,10 @@ public class ScatterChart extends Chart // NOSONAR
     {
         ChartUtil.save(this, filename, format);
     }
+
+    @Override
+    public boolean setFocus()
+    {
+        return getPlotArea().setFocus();
+    }
 }
