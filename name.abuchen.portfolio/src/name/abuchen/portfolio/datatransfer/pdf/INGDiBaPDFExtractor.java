@@ -138,6 +138,42 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                     t.setAmount(asAmount(v.get("amount")));
                 })
 
+                // Kurswert USD 1.503,75
+                // umger. zum Devisenkurs EUR 1.311,99 (USD = 1,146163)
+                .section("currency", "amount", "fxcurrency", "fxamount", "exchangeRate").optional()
+                .match("^Kurswert (?<fxcurrency>[\\w]{3}) (?<fxamount>[\\.,\\d]+)$")
+                .match("^.* Devisenkurs (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+) \\([\\w]{3} = (?<exchangeRate>[.,\\d]+)\\)$")
+                .assign((t, v) -> {                   
+                    // read the forex currency, exchange rate and gross
+                    // amount in forex currency
+                    String forex = asCurrencyCode(v.get("fxcurrency"));
+                    if (t.getPortfolioTransaction().getSecurity().getCurrencyCode().equals(forex))
+                    {
+                        BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                        BigDecimal reverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
+                                        RoundingMode.HALF_DOWN);
+
+                        // gross given in forex currency
+                        long fxAmount = asAmount(v.get("fxamount"));
+                        long amount = reverseRate.multiply(BigDecimal.valueOf(fxAmount))
+                                        .setScale(0, RoundingMode.HALF_DOWN).longValue();
+
+                        Unit grossValue = new Unit(Unit.Type.GROSS_VALUE,
+                                        Money.of(t.getPortfolioTransaction().getCurrencyCode(), amount),
+                                        Money.of(forex, fxAmount), reverseRate);
+
+                        t.getPortfolioTransaction().addUnit(grossValue);
+                    }
+                })
+
+                // umger. zum Devisenkurs EUR 1.311,99 (USD = 1,146163)
+                .section("exchangeRate").optional()
+                .match("^.* Devisenkurs [\\w]{3} [\\.,\\d]+ \\([\\w]{3} = (?<exchangeRate>[.,\\d]+)\\)$")
+                .assign((t, v) -> {
+                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
+                })
+
                 // Diese Order wurde mit folgendem Limit / -typ erteilt: 38,10 EUR
                 // Diese Order wurde mit folgendem Limit / -typ erteilt: 57,00 EUR / Dynamisches Stop / Abstand 6,661 EUR
                 .section("note1", "note2").optional()

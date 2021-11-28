@@ -1,0 +1,35 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+ING-DiBa AG · 60628 Frankfurt am Main
+Depotinhaber: Max Mustermann
+Max Mustermann
+Hans Mustermann
+und Max Mustermann Direkt-Depot Nr.: 8154711815
+Turmstr. 1 Datum: 10.11.2021
+10123 Berlin Seite: 1 von 1
+Wertpapierabrechnung Kauf
+Ordernummer 815471111.001
+ISIN (WKN) US76954A1034 (A3C47B)
+Wertpapierbezeichnung Rivian Automotive Inc.
+Reg.Shares Cl.A  DL -,0001
+Nominale Stück 15,00
+Kurs USD 100,25
+Handelsplatz USA
+Ausführungstag / -zeit 10.11.2021 um 20:25:34 Uhr
+Kurswert USD 1.503,75
+Zwischensumme USD 1.503,75
+umger. zum Devisenkurs EUR 1.311,99 (USD = 1,146163)
+Handelsplatzgebühr EUR 14,90
+Provision EUR 8,18
+Endbetrag zu Ihren Lasten EUR 1.335,07
+Abrechnungs-IBAN DE34 4711 0815 1111 3434 10
+Valuta 15.11.2021
+Wertpapiere zugunsten Wertpapierrechnung USA.
+Die Abrechnung erfolgt unter dem Vorbehalt der Lieferbarkeit der Wertpapiere.
+Auftraggeber war Max Mustermann.
+Bei Fragen besuchen Sie uns einfach unter www.ing.de/wertpapierwissen - da gibt es viele schnelle
+Antworten. Oder senden Sie uns eine E-Mail an info@ing.de .
+ING-DiBa AG · Theodor-Heuss-Allee 2 · 60486 Frankfurt am Main · Vorsitzende des Aufsichtsrates: Susanne Klöß-Braekler · Vorstand: Nick Jue (Vorsitzender),
+Dr. Joachim von Schorlemer (stellv. Vorsitzender), Zeljko Kaurin, Sigrid Kozmiensky, Daniel Llano Manibardo, Norman Tambach · Sitz: Frankfurt am Main · AG Frankfurt am Main
+HRB 7727, Steuernummer: 047 220 2800 4 · USt-IdNr.: DE 114 103 475 · Internet: www.ing.de · E-Mail: info@ing.de · BIC: INGDDEFFXXX · Mitglied im Einlagensicherungsfonds
+34AAAB8154711815_T
