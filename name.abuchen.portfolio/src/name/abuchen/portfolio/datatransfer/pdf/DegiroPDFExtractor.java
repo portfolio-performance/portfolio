@@ -120,14 +120,20 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
              * 
              * 23-03-2021 08:17 22-03-2021 FX Debit EUR 9.12 EUR -2,681.14
              * 23-03-2021 08:17 22-03-2021 FX Debit 1.4958 CAD -13.65 CAD 0.00
+             * 
+             * 17-11-2021 07:38 16-11-2021 Währungswechsel (Einbuchung) CHF 2.02 CHF 1'185.08
+             * 17-11-2021 07:38 16-11-2021 Währungswechsel (Ausbuchung) 1.0760 USD -2.18 USD 0.00
+             * 
+             * 13-11-2021 07:45 12-11-2021 Währungswechsel (Einbuchung) CHF 1.54 CHF 1'183.06
+             * 13-11-2021 07:45 12-11-2021 Währungswechsel (Ausbuchung) 1.0866 USD -1.68 USD 0.00
              */
-            Pattern pCurrencyFx = Pattern.compile("(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4}) [\\d]{2}:[\\d]{2} "
+            Pattern pCurrencyFx = Pattern.compile("^(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4}) [\\d]{2}:[\\d]{2} "
                             + "(?<valuta>[\\d]{2}-[\\d]{2}-[\\d]{4} )?"
                             + "(W.hrungswechsel|FX Debit).* "
-                            + "(?<fxRate>[\\.,\\d]+) "
+                            + "(?<fxRate>[\\.,'\\d]+) "
                             + "(?<currency>[\\w]{3}) "
-                            + "([-])?(?<amount>[\\.,\\d]+) "
-                            + "[\\w]{3}.*");
+                            + "([-])?(?<amount>[\\.,'\\d]+) "
+                            + "[\\w]{3}.*$");
 
             /***
              * Formatting:
@@ -146,12 +152,12 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
              * 16-03-2021 09:24 15-03-2021 FX Debit EUR 31.66 EUR -1,542.30
              * 16-03-2021 09:24 15-03-2021 FX Debit 1.1942 USD -37.82 USD -0.00
              */
-            Pattern pCurrencyBase = Pattern.compile("([\\d]{2}-[\\d]{2}-[\\d]{4}) [\\d]{2}:[\\d]{2} "
+            Pattern pCurrencyBase = Pattern.compile("^([\\d]{2}-[\\d]{2}-[\\d]{4}) [\\d]{2}:[\\d]{2} "
                             + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
                             + "(W.hrungswechsel|FX Debit).* "
                             + "(?<currency>[\\w]{3}) "
-                            + "([-])?(?<amount>[\\.,\\d]+) "
-                            + "[\\w]{3}.*");
+                            + "([-])?(?<amount>[\\.,'\\d]+) "
+                            + "[\\w]{3}.*$");
 
             for (int i = 0; i < lines.length; i++)
             {
@@ -223,8 +229,12 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
          * 26-10-2020 15:00 26-10-2020 flatex Einzahlung EUR 500,00 EUR 512,88
          * 25-08-2021 08:41 24-08-2021 iDEAL Deposit EUR 1.123,00 EUR 123,29
          * 27-07-2021 08:43 26-07-2021 iDEAL Deposit EUR 123,00 EUR 123,13
+         * 26-11-2021 09:01 25-11-2021 Einzahlung CHF 569.00 CHF 1'754.08
+         * 18-11-2021 10:33 17-11-2021 Überweisung auf Ihr Geldkonto bei der flatex Bank: 2.02 CHF CHF 1'185.08
+         * 30-11-2020 12:00 30-11-2020 Überweisung auf Ihr Geldkonto bei der flatex Bank: 114,83 EUR 114,83
+         * EUR
          */
-        Block blockDeposit = new Block("^.*([\\d]{2}:[\\d]{2}|[\\d]{4}) (SOFORT |iDEAL |flatex )?(Einzahlung|Deposit) .*$");
+        Block blockDeposit = new Block("^.*([\\d]{2}:[\\d]{2}|[\\d]{4}) (SOFORT |iDEAL |flatex )?(Einzahlung|Deposit|.berweisung) .*$");
         type.addBlock(blockDeposit);
         blockDeposit.set(new Transaction<AccountTransaction>()
 
@@ -234,20 +244,54 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             return t;
                         })
 
-                        .section("date", "note", "currency", "amount")
-                        .match("^(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2}) "
-                                        + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
-                                        + "(?<note>(SOFORT |iDEAL |flatex )?(Einzahlung|Deposit)) "
-                                        + "(?<currency>[\\w]{3}) "
-                                        + "(?<amount>[\\.,\\d]+) "
-                                        + "[\\w]{3} "
-                                        + "[\\.,\\d]+$")
-                        .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setNote(v.get("note"));
-                        })
+                        .oneOf(
+                                        section -> section
+                                            .attributes("date", "note", "currency", "amount")
+                                            .match("^(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2}) "
+                                                            + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
+                                                            + "(?<note>(SOFORT |iDEAL |flatex )?(Einzahlung|Deposit)) "
+                                                            + "(?<currency>[\\w]{3}) "
+                                                            + "(?<amount>[\\.,'\\d]+) "
+                                                            + "[\\w]{3} "
+                                                            + "[\\.,'\\d]+$")
+                                            .assign((t, v) -> {
+                                                t.setDateTime(asDate(v.get("date")));
+                                                t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                t.setAmount(asAmount(v.get("amount")));
+                                                t.setNote(v.get("note"));
+                                            }),
+
+                                        section -> section
+                                            .attributes("date", "note", "currency", "amount")
+                                            .match("^(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2}) "
+                                                            + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
+                                                            + "(?<note>Überweisung) auf .*: "
+                                                            + "(?<amount>[\\.,'\\d]+) "
+                                                            + "(?<currency>[\\w]{3}) "
+                                                            + "[\\w]{3} "
+                                                            + "[\\.,'\\d]+$")
+                                            .assign((t, v) -> {
+                                                t.setDateTime(asDate(v.get("date")));
+                                                t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                t.setAmount(asAmount(v.get("amount")));
+                                                t.setNote(v.get("note"));
+                                            }),
+
+                                            section -> section
+                                            .attributes("date", "note", "currency", "amount")
+                                            .match("^(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2}) "
+                                                            + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
+                                                            + "(?<note>Überweisung) auf .*: "
+                                                            + "(?<amount>[\\.,'\\d]+) "
+                                                            + "(?<currency>[\\w]{3}) "
+                                                            + ".*$")
+                                            .assign((t, v) -> {
+                                                t.setDateTime(asDate(v.get("date")));
+                                                t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                t.setAmount(asAmount(v.get("amount")));
+                                                t.setNote(v.get("note"));
+                                            })
+                                )
 
                         .wrap(t -> new TransactionItem(t)));
 
@@ -271,6 +315,8 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
          * 
          * 26-08-2021 12:16 25-08-2021 Overboeking van uw geldrekening bij flatexDEGIRO Bank EUR 15,41
          * 1.210 EUR
+         * 
+         * 07-10-2021 10:16 06-10-2021 Auszahlung von Ihrem Geldkonto bei der flatex Bank: 291.07 CHF 612.52
          */
         Block blockRemoval = new Block("^(?!.* Abgelehnte).* (Auszahlung|Overboeking) .*$");
         type.addBlock(blockRemoval);
@@ -289,9 +335,9 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
                                                 + "(?<note>Auszahlung) "
                                                 + "(?<currency>[\\w]{3}) "
-                                                + "([-])?(?<amount>[\\.,\\d]+) "
+                                                + "([-])?(?<amount>[\\.,'\\d]+) "
                                                 + "[\\w]{3} "
-                                                + "[\\.,\\d]+$")
+                                                + "[\\.,'\\d]+$")
                                 .assign((t, v) -> {
                                     t.setDateTime(asDate(v.get("date")));
                                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -305,7 +351,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
                                                 + "(?<note>Auszahlung|Overboeking) (von|van) .*: "
                                                 + "(?<currency>[\\w]{3}) "
-                                                + "([-])?(?<amount>[\\.,\\d]+)$")
+                                                + "([-])?(?<amount>[\\.,'\\d]+)$")
                                 .assign((t, v) -> {
                                     t.setDateTime(asDate(v.get("date")));
                                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -318,7 +364,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                 .match("(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2}) "
                                                 + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
                                                 + "(?<note>Auszahlung|Overboeking) (von|van) .*: "
-                                                + "([-])?(?<amount>[\\.,\\d]+) "
+                                                + "([-])?(?<amount>[\\.,'\\d]+) "
                                                 + "(?<currency>[\\w]{3}) "
                                                 + ".*$")
                                 .assign((t, v) -> {
@@ -334,7 +380,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
                                                 + "(?<note>Auszahlung|Overboeking) (von|van) .* "
                                                 + "(?<currency>[\\w]{3}) "
-                                                + "([-])?(?<amount>[\\.,\\d]+)$")
+                                                + "([-])?(?<amount>[\\.,'\\d]+)$")
                                 .assign((t, v) -> {
                                     t.setDateTime(asDate(v.get("date")));
                                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -347,7 +393,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                 .match("(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2}) "
                                                 + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
                                                 + "(?<note>Auszahlung|Overboeking) (von|van) .* "
-                                                + "([-])?(?<amount>[\\.,\\d]+) "
+                                                + "([-])?(?<amount>[\\.,'\\d]+) "
                                                 + "(?<currency>[\\w]{3}) "
                                                 + ".*$")
                                 .assign((t, v) -> {
@@ -445,9 +491,9 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         + "(?<isin>[\\w]{12}) "
                                         + "(Dividende|Dividend|Fondsaussch.ttung) "
                                         + "(?<currency>[\\w]{3}) "
-                                        + "([-])?(?<amount>[\\.,\\d]+) "
+                                        + "([-])?(?<amount>[\\.,'\\d]+) "
                                         + "[\\w]{3} "
-                                        + "([-])?[\\.,\\d]+$")
+                                        + "([-])?[\\.,'\\d]+$")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
                             t.setDateTime(asDate(v.get("date")));
@@ -494,9 +540,9 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         + "(?<isin>[\\w]{12}) .*"
                                         + "(Dividendensteuer|Dividend Tax) "
                                         + "(?<currencyTax>[\\w]{3}) "
-                                        + "([-])?(?<tax>[\\.,\\d]+) "
+                                        + "([-])?(?<tax>[\\.,'\\d]+) "
                                         + "[\\w]{3} "
-                                        + "([-])?[\\.,\\d]+$")
+                                        + "([-])?[\\.,'\\d]+$")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
                             if (!v.get("currencyTax").equalsIgnoreCase(getClient().getBaseCurrency())
@@ -533,9 +579,9 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         + "(?<isin>[\\w]{12}) "
                                         + "ADR/GDR Weitergabegeb.hr "
                                         + "(?<currencyFee>[\\w]{3}) "
-                                        + "([-])?(?<feeFx>[\\.,\\d]+) "
+                                        + "([-])?(?<feeFx>[\\.,'\\d]+) "
                                         + "[\\w]{3} "
-                                        + "([-])?[\\.,\\d]+$")
+                                        + "([-])?[\\.,'\\d]+$")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
                             if (!v.get("currencyFee").equalsIgnoreCase(getClient().getBaseCurrency())
@@ -644,9 +690,9 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
                                         + "(?<note>(Flatex )?(Zinsen|Interest)( für Leerverkauf)?) "
                                         + "(?<currency>[\\w]{3}) "
-                                        + "([-])?(?<amount>[\\.,\\d]+) "
+                                        + "([-])?(?<amount>[\\.,'\\d]+) "
                                         + "[\\w]{3} "
-                                        + "([-])?[\\.,\\d]+$")
+                                        + "([-])?[\\.,'\\d]+$")
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -684,9 +730,9 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
                                         + "(?<note>SOFORT Zahlungsgeb.*hr) "
                                         + "(?<currency>[\\w]{3}) "
-                                        + "([-])?(?<amount>[\\.,\\d]+) "
+                                        + "([-])?(?<amount>[\\.,'\\d]+) "
                                         + "[\\w]{3} "
-                                        + "([-])?[\\.,\\d]+$")
+                                        + "([-])?[\\.,'\\d]+$")
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -737,9 +783,10 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
                                                 + "(?<note1>Einrichtung von) "
                                                 + "(?<currency>[\\w]{3})"
-                                                + "(?<type>\\s([-])?)(?<amount>[\\.,\\d]+) "
+                                                + "(?<type>\\s([-])?)"
+                                                + "(?<amount>[\\.,'\\d]+) "
                                                 + "[\\w]{3} "
-                                                + "([-])?[\\.,\\d]+$")
+                                                + "([-])?[\\.,'\\d]+$")
                                 .match("^(?<note2>Handelsmodalit.ten)$")
                                 .match("^(?<note3>[\\d]{4})$")
                                 .assign((t, v) -> {
@@ -761,8 +808,8 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 + "(?<note>(Einrichtung von Handelsmodalit.ten|DEGIRO Aansluitingskosten)( [\\d]{4})?) .* "
                                                 + "(?<currency>[\\w]{3})"
                                                 + "(?<type>\\s([-])?)"
-                                                + "(?<amount>[\\.,\\d]+) "
-                                                + "[\\w]{3} ([-])?[\\.,\\d]+$") 
+                                                + "(?<amount>[\\.,'\\d]+) "
+                                                + "[\\w]{3} ([-])?[\\.,'\\d]+$") 
                                 .assign((t, v) -> {
                                     t.setDateTime(asDate(v.get("date")));
                                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -810,9 +857,9 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         + "(?<isin>[\\w]{12}) "
                                         + "(?<note>Geb.hr für Aus.bung\\/Zuteilung) "
                                         + "(?<currency>[\\w]{3}) "
-                                        + "-(?<amount>[\\.,\\d]+) "
+                                        + "-(?<amount>[\\.,'\\d]+) "
                                         + "[\\w]{3} "
-                                        + "[\\.,\\d]+$")
+                                        + "[\\.,'\\d]+$")
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setSecurity(getOrCreateSecurity(v));
@@ -851,9 +898,9 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
                                         + "(?<note>(Rabatt|Gutschrift) .*) "
                                         + "(?<currency>[\\w]{3}) "
-                                        + "(?<amount>[\\.,\\d]+) "
+                                        + "(?<amount>[\\.,'\\d]+) "
                                         + "[\\w]{3} "
-                                        + "[\\.,\\d]+$")
+                                        + "[\\.,'\\d]+$")
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -873,7 +920,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
          * Please do not delete these examples!
          */
 
-        DocumentType type = new DocumentType("(Transaktionsübersicht"
+        DocumentType type = new DocumentType("(Transaktions.bersicht"
                         + "|Transacciones"
                         + "|Transacties"
                         + "|Transactions"
@@ -1589,13 +1636,14 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                              * with exchange rate
                              * without fee
                              * with stock exchange place
-                             * Money        --> \d.\d   OR  \d,\d.\d
+                             * Money        --> \d.\d   OR  \d',\d.\d
                              * exchangeRage --> \d.\d
                              * -------------------------------------
                              * Formatting:
                              * DateTime | Name | ISIN | Stock Exchange + Place | Shares | Quote | Amount in exchange rate | Local Market value | Exchange rate | Total amount
                              * -------------------------------------
                              * 03-08-2020 09:30 VANGUARD FTSE AW IE00B3RBWM25 EAM XAMS 15 77.09 EUR -1,156.35 EUR -1,248.40 CHF 0.9253 -1,248.40 CHF
+                             * 19-08-2021 09:05 HSBC SP 500 ETF  IE00B5KQNG97 EPA XPAR 36 37.686 EUR -1'356.70 EUR -1'453.29 CHF 0.9326 -1'453.29 CHF
                              */
                             section -> section
                                 .attributes("date", "name", "isin", "shares", "currency", "amountFx", "exchangeRate", "currencyAccount", "amount")
@@ -1604,11 +1652,11 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 + "(?<isin>[\\w]{12}) "
                                                 + "[\\w]{3} [\\w]{4} "
                                                 + "(?<shares>([-])?[\\.\\d]+[.\\d]*) "
-                                                + "([-])?([\\d]+,[\\d]{3}.\\d+|\\d+.\\d+) [\\w]{3}.* "
-                                                + "([-])?(?<amountFx>([\\d]+,[\\d]{3}.\\d+|\\d+.\\d+)) (?<currency>[\\w]{3}).* "
-                                                + "([-])?([\\d]+,[\\d]{3}.\\d+|\\d+.\\d+) [\\w]{3} "
-                                                + "(?<exchangeRate>[\\.\\d]+[.\\d]*) "
-                                                + "([-])?(?<amount>([\\d]+,[\\d]{3}.\\d+|\\d+.\\d+)) (?<currencyAccount>[\\w]{3})$")
+                                                + "([-])?([,'\\d]+)([\\.\\d]+) [\\w]{3}.* "
+                                                + "([-])?(?<amountFx>([,'\\d]+)([\\.\\d]+)) (?<currency>[\\w]{3}).* "
+                                                + "([-])?([,'\\d]+)([\\.\\d]+) [\\w]{3} "
+                                                + "(?<exchangeRate>[,'\\d]+[\\.\\d]*) "
+                                                + "([-])?(?<amount>([,'\\d]+)([\\.\\d]+)) (?<currencyAccount>[\\w]{3})$")
                                 .assign((t, v) -> {
                                     t.setSecurity(getOrCreateSecurity(v));
                                     t.setDate(asDate(v.get("date")));
