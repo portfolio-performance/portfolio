@@ -102,7 +102,10 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransactions()
     {
-        final DocumentType type = new DocumentType("(Kontoauszug|Account statement|Rekeningoverzicht)", (context, lines) -> {
+        final DocumentType type = new DocumentType("(Kontoauszug"
+                        + "|Account statement"
+                        + "|Rekeningoverzicht"
+                        + "||Estratto conto)", (context, lines) -> {
 
             /***
              * Formatting:
@@ -221,6 +224,8 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
          * DateTime | Value date | Product | ISIN | Description | FX Change | Balance
          * or
          * DatumTijd | Valutadatum | Product | ISIN | Omschrijving | FX Mutatie | Saldo
+         * or
+         * Data Ora | Data Valore | Prodotto | ISIN | Descrizione  | Borsa Variazioni | Saldo
          * -------------------------------------
          * 07-02-2019 11:53 07-02-2019 Einzahlung EUR 1.000,00 EUR 1.000,01
          * 01-02-2019 11:44 01-02-2019 Einzahlung EUR 0,01 EUR 0,01
@@ -233,8 +238,16 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
          * 18-11-2021 10:33 17-11-2021 Überweisung auf Ihr Geldkonto bei der flatex Bank: 2.02 CHF CHF 1'185.08
          * 30-11-2020 12:00 30-11-2020 Überweisung auf Ihr Geldkonto bei der flatex Bank: 114,83 EUR 114,83
          * EUR
+         * 28-10-2021 08:50 28-10-2021 Deposito flatex EUR 200,00 EUR 215,77
+         * 01-09-2021 02:44 31-08-2021 Deposito EUR 0,01 EUR 0,01
+         * 02-09-2021 11:46 01-09-2021 Trasferisci sul tuo conto deposito presso flatexDEGIRO EUR 0,01
+         * Bank: 0,01 EUR
          */
-        Block blockDeposit = new Block("^.*([\\d]{2}:[\\d]{2}|[\\d]{4}) (SOFORT |iDEAL |flatex )?(Einzahlung|Deposit|.berweisung) .*$");
+        Block blockDeposit = new Block("^.*([\\d]{2}:[\\d]{2}|[\\d]{4}) "
+                        + "(SOFORT |iDEAL |flatex )?"
+                        + "(Einzahlung|Deposit|.berweisung auf|Deposito|Trasferisci sul)"
+                        + "( flatex)? "
+                        + ".*$");
         type.addBlock(blockDeposit);
         blockDeposit.set(new Transaction<AccountTransaction>()
 
@@ -249,7 +262,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                             .attributes("date", "note", "currency", "amount")
                                             .match("^(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2}) "
                                                             + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
-                                                            + "(?<note>(SOFORT |iDEAL |flatex )?(Einzahlung|Deposit)) "
+                                                            + "(?<note>(SOFORT |iDEAL |flatex )?(Einzahlung|Deposit|Deposito))( flatex)? "
                                                             + "(?<currency>[\\w]{3}) "
                                                             + "(?<amount>[\\.,'\\d]+) "
                                                             + "[\\w]{3} "
@@ -277,7 +290,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 t.setNote(v.get("note"));
                                             }),
 
-                                            section -> section
+                                        section -> section
                                             .attributes("date", "note", "currency", "amount")
                                             .match("^(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2}) "
                                                             + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
@@ -285,6 +298,20 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                             + "(?<amount>[\\.,'\\d]+) "
                                                             + "(?<currency>[\\w]{3}) "
                                                             + ".*$")
+                                            .assign((t, v) -> {
+                                                t.setDateTime(asDate(v.get("date")));
+                                                t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                t.setAmount(asAmount(v.get("amount")));
+                                                t.setNote(v.get("note"));
+                                            }),
+                                            
+                                        section -> section
+                                            .attributes("date", "note", "currency", "amount")
+                                            .match("^(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2}) "
+                                                            + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
+                                                            + "(?<note>Trasferisci) sul .* "
+                                                            + "(?<currency>[\\w]{3}) "
+                                                            + "(?<amount>[\\.,\\d]+)$")
                                             .assign((t, v) -> {
                                                 t.setDateTime(asDate(v.get("date")));
                                                 t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -304,6 +331,8 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
          * DateTime | Value date | Product | ISIN | Description | FX Change | Balance
          * or
          * DatumTijd | Valutadatum | Product | ISIN | Omschrijving | FX Mutatie | Saldo
+         * or
+         * Data Ora | Data Valore | Prodotto | ISIN | Descrizione  | Borsa Variazioni | Saldo
          * -------------------------------------
          * 05-08-2019 00:09 05-08-2019 Auszahlung EUR -1.000,00 EUR 1.445,06
          * 
@@ -317,8 +346,13 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
          * 1.210 EUR
          * 
          * 07-10-2021 10:16 06-10-2021 Auszahlung von Ihrem Geldkonto bei der flatex Bank: 291.07 CHF 612.52
+         * 
+         * 02-11-2021 12:34 01-11-2021 Trasferisci dal tuo conto deposito presso flatexDEGIRO EUR 215,21
+         * Bank: 0,56 EUR
          */
-        Block blockRemoval = new Block("^(?!.* Abgelehnte).* (Auszahlung|Overboeking) .*$");
+        Block blockRemoval = new Block("^(?!.* Abgelehnte).* "
+                        + "(Auszahlung|Overboeking|.berweisung von|Trasferisci dal) "
+                        + ".*$");
         type.addBlock(blockRemoval);
         blockRemoval.set(new Transaction<AccountTransaction>()
 
@@ -388,7 +422,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                     t.setNote(v.get("note"));
                                 }),
 
-                                section -> section
+                            section -> section
                                 .attributes("date", "note", "currency", "amount")
                                 .match("(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2}) "
                                                 + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
@@ -396,6 +430,51 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 + "([-])?(?<amount>[\\.,'\\d]+) "
                                                 + "(?<currency>[\\w]{3}) "
                                                 + ".*$")
+                                .assign((t, v) -> {
+                                    t.setDateTime(asDate(v.get("date")));
+                                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                    t.setAmount(asAmount(v.get("amount")));
+                                    t.setNote(v.get("note"));
+                                }),
+
+                                section -> section
+                                .attributes("date", "note", "currency", "amount")
+                                .match("^(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2}) "
+                                                + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
+                                                + "(?<note>Überweisung) von .*: "
+                                                + "(?<amount>[\\.,'\\d]+) "
+                                                + "(?<currency>[\\w]{3}) "
+                                                + "[\\w]{3} "
+                                                + "[\\.,'\\d]+$")
+                                .assign((t, v) -> {
+                                    t.setDateTime(asDate(v.get("date")));
+                                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                    t.setAmount(asAmount(v.get("amount")));
+                                    t.setNote(v.get("note"));
+                                }),
+
+                            section -> section
+                                .attributes("date", "note", "currency", "amount")
+                                .match("^(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2}) "
+                                                + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
+                                                + "(?<note>Überweisung) von .*: "
+                                                + "(?<amount>[\\.,'\\d]+) "
+                                                + "(?<currency>[\\w]{3}) "
+                                                + ".*$")
+                                .assign((t, v) -> {
+                                    t.setDateTime(asDate(v.get("date")));
+                                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                    t.setAmount(asAmount(v.get("amount")));
+                                    t.setNote(v.get("note"));
+                                }),
+
+                            section -> section
+                                .attributes("date", "note", "currency", "amount")
+                                .match("^(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2}) "
+                                                + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
+                                                + "(?<note>Trasferisci) dal .* "
+                                                + "(?<currency>[\\w]{3}) "
+                                                + "(?<amount>[\\.,\\d]+)$")
                                 .assign((t, v) -> {
                                     t.setDateTime(asDate(v.get("date")));
                                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -415,6 +494,8 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
          * DateTime | Value date | Product | ISIN | Description | FX Change | Balance
          * or
          * DatumTijd | Valutadatum | Product | ISIN | Omschrijving | FX Mutatie | Saldo
+         * or
+         * Data Ora | Data Valore | Prodotto | ISIN | Descrizione  | Borsa Variazioni | Saldo
          * -------------------------------------
          * 15-06-2019 06:44 14-06-2019 Währungswechsel (Einbuchung) EUR 0,30 EUR 23,09
          * 15-06-2019 06:44 14-06-2019 Währungswechsel (Ausbuchung) 1,1219 USD -0,34 USD 0,00
@@ -471,7 +552,9 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
          * ExchangeRage: 0,8851124093 --> 0,89
          * Gross amount in EUR: (1,74 * 0,89) + (0,52 * 0,89) + (0,08 * 0,89) = 2,0826 EUR
          */
-        Block blockDividends = new Block("^[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2} ([\\d]{2}-[\\d]{2}-[\\d]{4} )?.*(Dividende|Dividend(?! Tax)|Fondsaussch.ttung) .*$");
+        Block blockDividends = new Block("^[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2} ([\\d]{2}-[\\d]{2}-[\\d]{4} )?.*"
+                        + "(Dividende|Dividend(?! Tax)|Fondsaussch.ttung) "
+                        + ".*$");
         type.addBlock(blockDividends);
         blockDividends.set(new Transaction<AccountTransaction>()
 
@@ -669,13 +752,18 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
          * DateTime | Value date | Product | ISIN | Description | FX Change | Balance
          * or
          * DatumTijd | Valutadatum | Product | ISIN | Omschrijving | FX Mutatie | Saldo
+         * or
+         * Data Ora | Data Valore | Prodotto | ISIN | Descrizione  | Borsa Variazioni | Saldo
          * -------------------------------------
          * 31-07-2017 00:00 Zinsen EUR -0,07 EUR -84,16
          * 05-12-2018 16:07 30-11-2018 Zinsen für Leerverkauf EUR -0,04 EUR 220,63
          * 01-03-2021 18:47 28-02-2021 Interest EUR -0.88 EUR -1,644.64
          * 01-04-2021 21:00 31-03-2021 Flatex Interest EUR -0,15 EUR 117,98
+         * 02-07-2021 07:41 30-06-2021 Flatex Interest Income EUR 0,00 EUR 0,00
          */
-        Block blockInterest = new Block("^[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2} ([\\d]{2}-[\\d]{2}-[\\d]{4} )?.*(Zinsen|Interest) .*");
+        Block blockInterest = new Block("^[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2} ([\\d]{2}-[\\d]{2}-[\\d]{4} )?.*"
+                        + "(Zinsen|Interest) "
+                        + ".*");
         type.addBlock(blockInterest);
         blockInterest.set(new Transaction<AccountTransaction>()
 
@@ -685,12 +773,13 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             return t;
                         })
 
-                        .section("date", "note", "currency", "amount")
+                        .section("date", "note", "currency", "type", "amount")
                         .match("^(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2}) "
                                         + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
-                                        + "(?<note>(Flatex )?(Zinsen|Interest)( für Leerverkauf)?) "
-                                        + "(?<currency>[\\w]{3}) "
-                                        + "([-])?(?<amount>[\\.,'\\d]+) "
+                                        + "(?<note>(Flatex )?(Zinsen|Interest)( (für Leerverkauf|Income))?) "
+                                        + "(?<currency>[\\w]{3})"
+                                        + "(?<type>\\s([-])?)"
+                                        + "(?<amount>[\\.,'\\d]+) "
                                         + "[\\w]{3} "
                                         + "([-])?[\\.,'\\d]+$")
                         .assign((t, v) -> {
@@ -698,6 +787,11 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(v.get("note"));
+
+                            if (" ".equalsIgnoreCase(v.get("type")))
+                            {
+                                t.setType(AccountTransaction.Type.INTEREST);
+                            }
                         })
 
                         .wrap(t -> new TransactionItem(t)));
@@ -711,11 +805,15 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
          * DateTime | Value date | Product | ISIN | Description | FX Change | Balance
          * or
          * DatumTijd | Valutadatum | Product | ISIN | Omschrijving | FX Mutatie | Saldo
+         * or
+         * Data Ora | Data Valore | Prodotto | ISIN | Descrizione  | Borsa Variazioni | Saldo
          * -------------------------------------
          * 04-01-2019 20:14 04-01-2019 SOFORT Zahlungsgebühr EUR -1,00 EUR 150,00
          * 29-06-2018 15:25 29-06-2018 SOFORT Zahlungsgebühr EUR -2,00 EUR 1.683,05
          */
-        Block blockDepositFee = new Block("^[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2} ([\\d]{2}-[\\d]{2}-[\\d]{4} )?SOFORT Zahlungsgeb.*hr.*$");
+        Block blockDepositFee = new Block("^[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2} ([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
+                        + "SOFORT Zahlungsgeb.*hr"
+                        + ".*$");
         type.addBlock(blockDepositFee);
         blockDepositFee.set(new Transaction<AccountTransaction>()
 
@@ -751,6 +849,8 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
          * DateTime | Value date | Product | ISIN | Description | FX Change | Balance
          * or
          * DatumTijd | Valutadatum | Product | ISIN | Omschrijving | FX Mutatie | Saldo
+         * or
+         * Data Ora | Data Valore | Prodotto | ISIN | Descrizione  | Borsa Variazioni | Saldo
          * -------------------------------------
          * 03-07-2019 11:47 30-06-2019 Einrichtung von Handelsmodalitäten 2019 (New York Stock EUR -0,54 EUR 22,16
          * 01-02-2019 16:31 31-01-2019 Einrichtung von Handelsmodalitäten 2019 (NASDAQ - NDQ) EUR 2,50 EUR 108,21
@@ -765,8 +865,12 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
          * 
          * 02-09-2021 21:29 31-08-2021 DEGIRO Aansluitingskosten 2021 (Borsa Italiana S.p.A. - EUR -2,50 EUR 12,91
          * MIL)
+         * 
+         * 02-10-2021 10:46 30-09-2021 DEGIRO Costi di connessione 2021 (Xetra - XET) EUR -1,24 EUR 206,99
          */
-        Block blockTrademodalities = new Block("^[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2} ([\\d]{2}-[\\d]{2}-[\\d]{4} )?.*Einrichtung von .*$");
+        Block blockTrademodalities = new Block("^[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2} ([\\d]{2}-[\\d]{2}-[\\d]{4} )?.*"
+                        + "(Einrichtung von|DEGIRO Aansluitingskosten|DEGIRO Costi di connessione) "
+                        + ".*$");
         type.addBlock(blockTrademodalities);
         blockTrademodalities.set(new Transaction<AccountTransaction>()
 
@@ -805,7 +909,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                 .attributes("date", "note", "currency", "type", "amount")
                                 .match("^(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2}) "
                                                 + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
-                                                + "(?<note>(Einrichtung von Handelsmodalit.ten|DEGIRO Aansluitingskosten)( [\\d]{4})?) .* "
+                                                + "(?<note>(Einrichtung von Handelsmodalit.ten|DEGIRO Aansluitingskosten|DEGIRO Costi di connessione)( [\\d]{4})?) .* "
                                                 + "(?<currency>[\\w]{3})"
                                                 + "(?<type>\\s([-])?)"
                                                 + "(?<amount>[\\.,'\\d]+) "
@@ -834,13 +938,17 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
          * DateTime | Value date | Product | ISIN | Description | FX Change | Balance
          * or
          * DatumTijd | Valutadatum | Product | ISIN | Omschrijving | FX Mutatie | Saldo
+         * or
+         * Data Ora | Data Valore | Prodotto | ISIN | Descrizione  | Borsa Variazioni | Saldo
          * -------------------------------------
          * 01-03-2019 13:21 01-03-2019 ODX1 C11500.00 01MAR19 DE000C27U079 Gebühr für Ausübung/Zuteilung EUR -1,00 EUR 1.942,75
          * 22-03-2019 14:10 22-03-2019 ODX4 P11550.00 22MAR19 DE000C2ZNL25 Gebühr für Ausübung/Zuteilung EUR -1,00 EUR 2.204,26
          * 26-07-2019 13:52 26-07-2019 ODX4 P12400.00 26JUL19 DE000C3727R2 Gebühr für Ausübung/Zuteilung EUR -2,00 EUR 1.225,59
          * 01-03-2019 13:21 01-03-2019 ODX1 C11500.00 01MAR19 DE000C27U079 Gebühr für Ausübung/Zuteilung EUR -1,00 EUR 1.942,75
          */
-        Block blockFeeStrike = new Block("^[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2} ([\\d]{2}-[\\d]{2}-[\\d]{4} )?.* Geb.hr für Aus.bung\\/Zuteilung .*$");
+        Block blockFeeStrike = new Block("^[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2} ([\\d]{2}-[\\d]{2}-[\\d]{4} )?.* "
+                        + "Geb.hr für Aus.bung\\/Zuteilung "
+                        + ".*$");
         type.addBlock(blockFeeStrike);
         blockFeeStrike.set(new Transaction<AccountTransaction>()
 
@@ -879,11 +987,15 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
          * DateTime | Value date | Product | ISIN | Description | FX Change | Balance
          * or
          * DatumTijd | Valutadatum | Product | ISIN | Omschrijving | FX Mutatie | Saldo
+         * or
+         * Data Ora | Data Valore | Prodotto | ISIN | Descrizione  | Borsa Variazioni | Saldo
          * -------------------------------------
          * 05-03-2019 15:37 28-02-2019 Gutschrift für die Neukundenaktion EUR 18,00 EUR 1.960,69
          * 05-03-2019 15:37 28-02-2019 Rabatt für 500 Euro Aktion EUR 18,00 EUR 1.960,64
          */
-        Block blockFeeReturn = new Block("^[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2}( [\\d]{2}-[\\d]{2}-[\\d]{4} )?(Rabatt|Gutschrift) .*$");
+        Block blockFeeReturn = new Block("^[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2}( [\\d]{2}-[\\d]{2}-[\\d]{4} )?"
+                        + "(Rabatt|Gutschrift) "
+                        + ".*$");
         type.addBlock(blockFeeReturn);
         blockFeeReturn.set(new Transaction<AccountTransaction>()
 
@@ -907,6 +1019,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(v.get("note"));
                         })
+
                         .wrap(t -> new TransactionItem(t)));
     }
 
@@ -924,7 +1037,8 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                         + "|Transacciones"
                         + "|Transacties"
                         + "|Transactions"
-                        + "|Transakcje)");
+                        + "|Transakcje"
+                        + "|Operazioni)");
         this.addDocumentTyp(type);
 
         Block blockBuy = new Block("^[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2} .* [\\w]{12} .* ([\\w]{3}|[\\w]{3} [\\w]{4}) .*([\\.\\d]+,[\\d]{2}|[\\w]{3})$");
