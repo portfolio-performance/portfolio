@@ -1,0 +1,23 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Signor NAME SURNAME
+ADDRESS
+ZIP CITY
+Italy
+Nome Utente: *********rri
+(ACCOUNT NUMBER)
+Operazioni da 01-01-2021 a 29-11-2021
+Data Ora Prodotto ISIN Borsa di Borsa Quantità Quotazione Valore locale Valore
+Tasso Commission
+di e Totale
+04-10-2021 09:04 VANGUARD FTSE ALL- IE00BK5BQT80 XET XETA 2 95,61 EUR -191,22 EUR -191,22 EUR -191,22 EUR
+WORLD UCITS ETF - (USD)
+ACCUMULATING
+24-09-2021 09:04 VANGUARD FTSE ALL- IE00BK5BQT80 XET XETA 3 97,25 EUR -291,75 EUR -291,75 EUR -291,75 EUR
+WORLD UCITS ETF - (USD)
+ACCUMULATING
+flatex DEGIRO Bank flatex DEGIRO Bank Dutch Branch,
+Dutch Branch E clienti@degiro.it che opera come DEGIRO, e' la branca
+Amstelplein 1 I www.degiro.it olandese della flatexDEGIRO Bank Pagina 1 / 1
+1096 HA Amsterdam AG. flatexDEGIRO Bank AG opera Estratto conto 2021-11-29
+innanzi tutto sotto la supervisione
