@@ -135,7 +135,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             + "(W.hrungswechsel|FX Debit).* "
                             + "(?<fxRate>[\\.,'\\d]+) "
                             + "(?<currency>[\\w]{3}) "
-                            + "([-])?(?<amount>[\\.,'\\d]+) "
+                            + "(\\-)?(?<amount>[\\.,'\\d]+) "
                             + "[\\w]{3}.*$");
 
             /***
@@ -159,7 +159,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
                             + "(W.hrungswechsel|FX Debit).* "
                             + "(?<currency>[\\w]{3}) "
-                            + "([-])?(?<amount>[\\.,'\\d]+) "
+                            + "(\\-)?(?<amount>[\\.,'\\d]+) "
                             + "[\\w]{3}.*$");
 
             for (int i = 0; i < lines.length; i++)
@@ -235,17 +235,12 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
          * 25-08-2021 08:41 24-08-2021 iDEAL Deposit EUR 1.123,00 EUR 123,29
          * 27-07-2021 08:43 26-07-2021 iDEAL Deposit EUR 123,00 EUR 123,13
          * 26-11-2021 09:01 25-11-2021 Einzahlung CHF 569.00 CHF 1'754.08
-         * 18-11-2021 10:33 17-11-2021 Überweisung auf Ihr Geldkonto bei der flatex Bank: 2.02 CHF CHF 1'185.08
-         * 30-11-2020 12:00 30-11-2020 Überweisung auf Ihr Geldkonto bei der flatex Bank: 114,83 EUR 114,83
-         * EUR
          * 28-10-2021 08:50 28-10-2021 Deposito flatex EUR 200,00 EUR 215,77
          * 01-09-2021 02:44 31-08-2021 Deposito EUR 0,01 EUR 0,01
-         * 02-09-2021 11:46 01-09-2021 Trasferisci sul tuo conto deposito presso flatexDEGIRO EUR 0,01
-         * Bank: 0,01 EUR
          */
         Block blockDeposit = new Block("^.*([\\d]{2}:[\\d]{2}|[\\d]{4}) "
                         + "(SOFORT |iDEAL |flatex )?"
-                        + "(Einzahlung|Deposit|.berweisung auf|Deposito|Trasferisci sul)"
+                        + "(Einzahlung|Deposit|Deposito)"
                         + "( flatex)? "
                         + ".*$");
         type.addBlock(blockDeposit);
@@ -257,68 +252,20 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             return t;
                         })
 
-                        .oneOf(
-                                        section -> section
-                                            .attributes("date", "note", "currency", "amount")
-                                            .match("^(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2}) "
-                                                            + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
-                                                            + "(?<note>(SOFORT |iDEAL |flatex )?(Einzahlung|Deposit|Deposito))( flatex)? "
-                                                            + "(?<currency>[\\w]{3}) "
-                                                            + "(?<amount>[\\.,'\\d]+) "
-                                                            + "[\\w]{3} "
-                                                            + "[\\.,'\\d]+$")
-                                            .assign((t, v) -> {
-                                                t.setDateTime(asDate(v.get("date")));
-                                                t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                                t.setAmount(asAmount(v.get("amount")));
-                                                t.setNote(v.get("note"));
-                                            }),
-
-                                        section -> section
-                                            .attributes("date", "note", "currency", "amount")
-                                            .match("^(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2}) "
-                                                            + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
-                                                            + "(?<note>Überweisung) auf .*: "
-                                                            + "(?<amount>[\\.,'\\d]+) "
-                                                            + "(?<currency>[\\w]{3}) "
-                                                            + "[\\w]{3} "
-                                                            + "[\\.,'\\d]+$")
-                                            .assign((t, v) -> {
-                                                t.setDateTime(asDate(v.get("date")));
-                                                t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                                t.setAmount(asAmount(v.get("amount")));
-                                                t.setNote(v.get("note"));
-                                            }),
-
-                                        section -> section
-                                            .attributes("date", "note", "currency", "amount")
-                                            .match("^(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2}) "
-                                                            + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
-                                                            + "(?<note>Überweisung) auf .*: "
-                                                            + "(?<amount>[\\.,'\\d]+) "
-                                                            + "(?<currency>[\\w]{3}) "
-                                                            + ".*$")
-                                            .assign((t, v) -> {
-                                                t.setDateTime(asDate(v.get("date")));
-                                                t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                                t.setAmount(asAmount(v.get("amount")));
-                                                t.setNote(v.get("note"));
-                                            }),
-                                            
-                                        section -> section
-                                            .attributes("date", "note", "currency", "amount")
-                                            .match("^(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2}) "
-                                                            + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
-                                                            + "(?<note>Trasferisci) sul .* "
-                                                            + "(?<currency>[\\w]{3}) "
-                                                            + "(?<amount>[\\.,\\d]+)$")
-                                            .assign((t, v) -> {
-                                                t.setDateTime(asDate(v.get("date")));
-                                                t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                                t.setAmount(asAmount(v.get("amount")));
-                                                t.setNote(v.get("note"));
-                                            })
-                                )
+                        .section("date", "note", "currency", "amount")
+                        .match("^(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2}) "
+                                        + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
+                                        + "(?<note>(SOFORT |iDEAL |flatex )?(Einzahlung|Deposit|Deposito))( flatex)? "
+                                        + "(?<currency>[\\w]{3}) "
+                                        + "(?<amount>[\\.,'\\d]+) "
+                                        + "[\\w]{3} "
+                                        + "(\\-)?[\\.,'\\d]+$")
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setNote(v.get("note"));
+                        })
 
                         .wrap(t -> new TransactionItem(t)));
 
@@ -335,24 +282,8 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
          * Data Ora | Data Valore | Prodotto | ISIN | Descrizione  | Borsa Variazioni | Saldo
          * -------------------------------------
          * 05-08-2019 00:09 05-08-2019 Auszahlung EUR -1.000,00 EUR 1.445,06
-         * 
-         * 02-06-2021 11:45 01-06-2021 Auszahlung von Ihrem Geldkonto bei der flatex Bank: EUR -312,64
-         * 2.574,06 EUR
-         * 
-         * 31-05-2021 11:15 28-05-2021 Auszahlung von Ihrem Geldkonto bei der flatex Bank: 542,8 EUR 2.574,06
-         * EUR
-         * 
-         * 26-08-2021 12:16 25-08-2021 Overboeking van uw geldrekening bij flatexDEGIRO Bank EUR 15,41
-         * 1.210 EUR
-         * 
-         * 07-10-2021 10:16 06-10-2021 Auszahlung von Ihrem Geldkonto bei der flatex Bank: 291.07 CHF 612.52
-         * 
-         * 02-11-2021 12:34 01-11-2021 Trasferisci dal tuo conto deposito presso flatexDEGIRO EUR 215,21
-         * Bank: 0,56 EUR
          */
-        Block blockRemoval = new Block("^(?!.* Abgelehnte).* "
-                        + "(Auszahlung|Overboeking|.berweisung von|Trasferisci dal) "
-                        + ".*$");
+        Block blockRemoval = new Block("^.*([\\d]{2}:[\\d]{2}|[\\d]{4}) Auszahlung [\\w]{3} \\-[\\.,'\\d]+ [\\w]{3} [\\.,'\\d]+$");
         type.addBlock(blockRemoval);
         blockRemoval.set(new Transaction<AccountTransaction>()
 
@@ -362,126 +293,20 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             return t;
                         })
 
-                        .oneOf(
-                            section -> section
-                                .attributes("date", "note", "currency", "amount")
-                                .match("(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2}) "
-                                                + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
-                                                + "(?<note>Auszahlung) "
-                                                + "(?<currency>[\\w]{3}) "
-                                                + "([-])?(?<amount>[\\.,'\\d]+) "
-                                                + "[\\w]{3} "
-                                                + "[\\.,'\\d]+$")
-                                .assign((t, v) -> {
-                                    t.setDateTime(asDate(v.get("date")));
-                                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                    t.setAmount(asAmount(v.get("amount")));
-                                    t.setNote(v.get("note"));
-                                }),
-
-                            section -> section
-                                .attributes("date", "note", "currency", "amount")
-                                .match("(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2}) "
-                                                + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
-                                                + "(?<note>Auszahlung|Overboeking) (von|van) .*: "
-                                                + "(?<currency>[\\w]{3}) "
-                                                + "([-])?(?<amount>[\\.,'\\d]+)$")
-                                .assign((t, v) -> {
-                                    t.setDateTime(asDate(v.get("date")));
-                                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                    t.setAmount(asAmount(v.get("amount")));
-                                    t.setNote(v.get("note"));
-                                }),
-
-                            section -> section
-                                .attributes("date", "note", "currency", "amount")
-                                .match("(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2}) "
-                                                + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
-                                                + "(?<note>Auszahlung|Overboeking) (von|van) .*: "
-                                                + "([-])?(?<amount>[\\.,'\\d]+) "
-                                                + "(?<currency>[\\w]{3}) "
-                                                + ".*$")
-                                .assign((t, v) -> {
-                                    t.setDateTime(asDate(v.get("date")));
-                                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                    t.setAmount(asAmount(v.get("amount")));
-                                    t.setNote(v.get("note"));
-                                }),
-
-                            section -> section
-                                .attributes("date", "note", "currency", "amount")
-                                .match("(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2}) "
-                                                + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
-                                                + "(?<note>Auszahlung|Overboeking) (von|van) .* "
-                                                + "(?<currency>[\\w]{3}) "
-                                                + "([-])?(?<amount>[\\.,'\\d]+)$")
-                                .assign((t, v) -> {
-                                    t.setDateTime(asDate(v.get("date")));
-                                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                    t.setAmount(asAmount(v.get("amount")));
-                                    t.setNote(v.get("note"));
-                                }),
-
-                            section -> section
-                                .attributes("date", "note", "currency", "amount")
-                                .match("(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2}) "
-                                                + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
-                                                + "(?<note>Auszahlung|Overboeking) (von|van) .* "
-                                                + "([-])?(?<amount>[\\.,'\\d]+) "
-                                                + "(?<currency>[\\w]{3}) "
-                                                + ".*$")
-                                .assign((t, v) -> {
-                                    t.setDateTime(asDate(v.get("date")));
-                                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                    t.setAmount(asAmount(v.get("amount")));
-                                    t.setNote(v.get("note"));
-                                }),
-
-                                section -> section
-                                .attributes("date", "note", "currency", "amount")
-                                .match("^(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2}) "
-                                                + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
-                                                + "(?<note>Überweisung) von .*: "
-                                                + "(?<amount>[\\.,'\\d]+) "
-                                                + "(?<currency>[\\w]{3}) "
-                                                + "[\\w]{3} "
-                                                + "[\\.,'\\d]+$")
-                                .assign((t, v) -> {
-                                    t.setDateTime(asDate(v.get("date")));
-                                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                    t.setAmount(asAmount(v.get("amount")));
-                                    t.setNote(v.get("note"));
-                                }),
-
-                            section -> section
-                                .attributes("date", "note", "currency", "amount")
-                                .match("^(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2}) "
-                                                + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
-                                                + "(?<note>Überweisung) von .*: "
-                                                + "(?<amount>[\\.,'\\d]+) "
-                                                + "(?<currency>[\\w]{3}) "
-                                                + ".*$")
-                                .assign((t, v) -> {
-                                    t.setDateTime(asDate(v.get("date")));
-                                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                    t.setAmount(asAmount(v.get("amount")));
-                                    t.setNote(v.get("note"));
-                                }),
-
-                            section -> section
-                                .attributes("date", "note", "currency", "amount")
-                                .match("^(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2}) "
-                                                + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
-                                                + "(?<note>Trasferisci) dal .* "
-                                                + "(?<currency>[\\w]{3}) "
-                                                + "(?<amount>[\\.,\\d]+)$")
-                                .assign((t, v) -> {
-                                    t.setDateTime(asDate(v.get("date")));
-                                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                    t.setAmount(asAmount(v.get("amount")));
-                                    t.setNote(v.get("note"));
-                                })
-                        )
+                        .section("date", "note", "currency", "amount")
+                        .match("(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2}) "
+                                        + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
+                                        + "(?<note>Auszahlung) "
+                                        + "(?<currency>[\\w]{3}) "
+                                        + "\\-(?<amount>[\\.,'\\d]+) "
+                                        + "[\\w]{3} "
+                                        + "(\\-)?[\\.,'\\d]+$")
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setNote(v.get("note"));
+                        })
 
                         .wrap(t -> new TransactionItem(t)));
 
@@ -567,16 +392,16 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                         // 14-06-2019 07:55 14-06-2019 THE KRAFT HEINZ COMPAN US5007541064 Dividende USD 0,40 USD 0,34
                         // 05-08-2019 14:12 31-07-2019 MORGAN STANLEY USD LIQUIDITY FUND LU0904783114 Fondsausschüttung USD 1,64 USD 6.383,23
                         // 22-03-2021 07:39 19-03-2021 MANULIFE FINANCIAL COR CA56501R1064 Dividend CAD 18.20 CAD 13.65
-                        .section("date", "name", "isin", "currency", "amount")
+                        .section("date", "name", "isin", "currency", "amount").optional()
                         .match("^(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2}) "
                                         + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
                                         + "(?<name>.*) "
                                         + "(?<isin>[\\w]{12}) "
                                         + "(Dividende|Dividend|Fondsaussch.ttung) "
                                         + "(?<currency>[\\w]{3}) "
-                                        + "([-])?(?<amount>[\\.,'\\d]+) "
+                                        + "(?<amount>[\\.,'\\d]+) "
                                         + "[\\w]{3} "
-                                        + "([-])?[\\.,'\\d]+$")
+                                        + "(\\-)?[\\.,'\\d]+$")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
                             t.setDateTime(asDate(v.get("date")));
@@ -623,9 +448,9 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         + "(?<isin>[\\w]{12}) .*"
                                         + "(Dividendensteuer|Dividend Tax) "
                                         + "(?<currencyTax>[\\w]{3}) "
-                                        + "([-])?(?<tax>[\\.,'\\d]+) "
+                                        + "\\-(?<tax>[\\.,'\\d]+) "
                                         + "[\\w]{3} "
-                                        + "([-])?[\\.,'\\d]+$")
+                                        + "(\\-)?[\\.,'\\d]+$")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
                             if (!v.get("currencyTax").equalsIgnoreCase(getClient().getBaseCurrency())
@@ -662,9 +487,9 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         + "(?<isin>[\\w]{12}) "
                                         + "ADR/GDR Weitergabegeb.hr "
                                         + "(?<currencyFee>[\\w]{3}) "
-                                        + "([-])?(?<feeFx>[\\.,'\\d]+) "
+                                        + "\\-(?<feeFx>[\\.,'\\d]+) "
                                         + "[\\w]{3} "
-                                        + "([-])?[\\.,'\\d]+$")
+                                        + "(\\-)?[\\.,'\\d]+$")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
                             if (!v.get("currencyFee").equalsIgnoreCase(getClient().getBaseCurrency())
@@ -781,7 +606,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         + "(?<type>\\s([-])?)"
                                         + "(?<amount>[\\.,'\\d]+) "
                                         + "[\\w]{3} "
-                                        + "([-])?[\\.,'\\d]+$")
+                                        + "(\\-)?[\\.,'\\d]+$")
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -830,7 +655,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         + "(?<currency>[\\w]{3}) "
                                         + "([-])?(?<amount>[\\.,'\\d]+) "
                                         + "[\\w]{3} "
-                                        + "([-])?[\\.,'\\d]+$")
+                                        + "(\\-)?[\\.,'\\d]+$")
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -887,10 +712,10 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
                                                 + "(?<note1>Einrichtung von) "
                                                 + "(?<currency>[\\w]{3})"
-                                                + "(?<type>\\s([-])?)"
+                                                + "(?<type>\\s(\\-)?)"
                                                 + "(?<amount>[\\.,'\\d]+) "
                                                 + "[\\w]{3} "
-                                                + "([-])?[\\.,'\\d]+$")
+                                                + "(\\-)?[\\.,'\\d]+$")
                                 .match("^(?<note2>Handelsmodalit.ten)$")
                                 .match("^(?<note3>[\\d]{4})$")
                                 .assign((t, v) -> {
@@ -911,9 +736,10 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
                                                 + "(?<note>(Einrichtung von Handelsmodalit.ten|DEGIRO Aansluitingskosten|DEGIRO Costi di connessione)( [\\d]{4})?) .* "
                                                 + "(?<currency>[\\w]{3})"
-                                                + "(?<type>\\s([-])?)"
+                                                + "(?<type>\\s(\\-)?)"
                                                 + "(?<amount>[\\.,'\\d]+) "
-                                                + "[\\w]{3} ([-])?[\\.,'\\d]+$") 
+                                                + "[\\w]{3} "
+                                                + "(\\-)?[\\.,'\\d]+$") 
                                 .assign((t, v) -> {
                                     t.setDateTime(asDate(v.get("date")));
                                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -965,9 +791,9 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         + "(?<isin>[\\w]{12}) "
                                         + "(?<note>Geb.hr für Aus.bung\\/Zuteilung) "
                                         + "(?<currency>[\\w]{3}) "
-                                        + "-(?<amount>[\\.,'\\d]+) "
+                                        + "\\-(?<amount>[\\.,'\\d]+) "
                                         + "[\\w]{3} "
-                                        + "[\\.,'\\d]+$")
+                                        + "(\\-)?[\\.,'\\d]+$")
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setSecurity(getOrCreateSecurity(v));
@@ -1012,7 +838,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         + "(?<currency>[\\w]{3}) "
                                         + "(?<amount>[\\.,'\\d]+) "
                                         + "[\\w]{3} "
-                                        + "[\\.,'\\d]+$")
+                                        + "(\\-)?[\\.,'\\d]+$")
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
