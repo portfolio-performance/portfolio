@@ -655,7 +655,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                     return null;
                 }));
 
-        Block removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. (.berweisung|Dauerauftrag|Basislastschrift|Kartenzahlung|Kreditkartenabr.) [\\.,\\d]+$");
+        Block removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. (.berweisung|Dauerauftrag|Basislastschrift|Lastschrift|Kartenzahlung|Kreditkartenabr.) [\\.,\\d]+$");
         type.addBlock(removalBlock);
         removalBlock.set(new Transaction<AccountTransaction>()
 
@@ -666,7 +666,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                 })
 
                 .section("month1", "day", "month2", "note", "amount")
-                .match("^[\\d]{2}\\.(?<month1>[\\d]{2})\\. (?<day>[\\d]{2})\\.(?<month2>[\\d]{2})\\. (?<note>.berweisung|Dauerauftrag|Basislastschrift|Kartenzahlung|Kreditkartenabr.) (?<amount>[\\.,\\d]+)$")
+                .match("^[\\d]{2}\\.(?<month1>[\\d]{2})\\. (?<day>[\\d]{2})\\.(?<month2>[\\d]{2})\\. (?<note>.berweisung|Dauerauftrag|Basislastschrift|Lastschrift|Kartenzahlung|Kreditkartenabr.) (?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
                     // since year is not within the date correction
