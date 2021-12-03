@@ -603,7 +603,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
                                         + "(?<note>(Flatex )?(Zinsen|Interest)( (für Leerverkauf|Income))?) "
                                         + "(?<currency>[\\w]{3})"
-                                        + "(?<type>\\s([-])?)"
+                                        + "(?<type>\\s(\\-)?)"
                                         + "(?<amount>[\\.,'\\d]+) "
                                         + "[\\w]{3} "
                                         + "(\\-)?[\\.,'\\d]+$")
@@ -653,7 +653,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
                                         + "(?<note>SOFORT Zahlungsgeb.*hr) "
                                         + "(?<currency>[\\w]{3}) "
-                                        + "([-])?(?<amount>[\\.,'\\d]+) "
+                                        + "(\\-)?(?<amount>[\\.,'\\d]+) "
                                         + "[\\w]{3} "
                                         + "(\\-)?[\\.,'\\d]+$")
                         .assign((t, v) -> {
@@ -898,11 +898,11 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 + "(?<name>.*) "
                                                 + "(?<isin>[\\w]{12}) "
                                                 + "[\\w]{3} "
-                                                + "(?<shares>([-])?[\\.,\\d]+) "
-                                                + "[\\w]{3} ([-])?[\\.,\\d]+ " 
-                                                + "[\\w]{3} ([-])?[\\.,\\d]+ " 
-                                                + "[\\w]{3} ([-])?[\\.,\\d]+ " 
-                                                + "(?<currency>[\\w]{3}) ([-])?(?<amount>[\\.,\\d]+)$")
+                                                + "(?<shares>(\\-)?[\\.,\\d]+) "
+                                                + "[\\w]{3} (\\-)?[\\.,\\d]+ " 
+                                                + "[\\w]{3} (\\-)?[\\.,\\d]+ " 
+                                                + "[\\w]{3} (\\-)?[\\.,\\d]+ " 
+                                                + "(?<currency>[\\w]{3}) (\\-)?(?<amount>[\\.,\\d]+)$")
                                 .assign((t, v) -> {
                                     t.setSecurity(getOrCreateSecurity(v));
                                     t.setDate(asDate(v.get("date")));
@@ -938,11 +938,11 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 + "(?<name>.*) "
                                                 + "(?<isin>[\\w]{12}) "
                                                 + "[\\w]{3} "
-                                                + "(?<shares>([-])?[\\.,\\d]+) "
-                                                + "([-])?[\\.,\\d\\s]+ [\\w]{3} "
-                                                + "([-])?[\\.,\\d\\s]+ [\\w]{3} "
-                                                + "([-])?[\\.,\\d\\s]+ [\\w]{3} "
-                                                + "([-])?(?<amount>[\\.\\d\\s]+,[\\d]{2}) (?<currency>[\\w]{3})$")
+                                                + "(?<shares>(\\-)?[\\.,\\d]+) "
+                                                + "(\\-)?[\\.,\\d\\s]+ [\\w]{3} "
+                                                + "(\\-)?[\\.,\\d\\s]+ [\\w]{3} "
+                                                + "(\\-)?[\\.,\\d\\s]+ [\\w]{3} "
+                                                + "(\\-)?(?<amount>[\\.\\d\\s]+,[\\d]{2}) (?<currency>[\\w]{3})$")
                                 .assign((t, v) -> {
                                     t.setSecurity(getOrCreateSecurity(v));
                                     t.setDate(asDate(v.get("date")));
@@ -979,12 +979,12 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 + "(?<name>.*) "
                                                 + "(?<isin>[\\w]{12}) "
                                                 + "[\\w]{3} "
-                                                + "(?<shares>([-])?[\\.,\\d]+) "
-                                                + "[\\w]{3} ([-])?[\\.,\\d]+ "
-                                                + "[\\w]{3} ([-])?[\\.,\\d]+ "
-                                                + "[\\w]{3} ([-])?[\\.,\\d]+ "
-                                                + "(?<currencyFee>[\\w]{3}) ([-])?(?<fee>[\\.,\\d]+) "
-                                                + "(?<currency>[\\w]{3}) ([-])?(?<amount>[\\.,\\d]+)$")
+                                                + "(?<shares>(\\-)?[\\.,\\d]+) "
+                                                + "[\\w]{3} (\\-)?[\\.,\\d]+ "
+                                                + "[\\w]{3} (\\-)?[\\.,\\d]+ "
+                                                + "[\\w]{3} (\\-)?[\\.,\\d]+ "
+                                                + "(?<currencyFee>[\\w]{3}) (\\-)?(?<fee>[\\.,\\d]+) "
+                                                + "(?<currency>[\\w]{3}) (\\-)?(?<amount>[\\.,\\d]+)$")
                                 .assign((t, v) -> {
                                     t.setSecurity(getOrCreateSecurity(v));
                                     t.setDate(asDate(v.get("date")));
@@ -1015,6 +1015,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                              * DateTime | Name | ISIN | Stock Exchange | Shares | Quote | Market value | Local market value | Fee | Total amount
                              * -------------------------------------
                              * 06-10-2020 12:47 ALMIRALL ES0157097017 MAD 128 10,45 EUR -1 337,60 EUR -1 337,60 EUR -4,67 EUR -1 342,27 EUR
+                             * 04-09-2020 09:01 ETF ISHARES S&P 500 CHF IE00B88DZ566 SWX 10 58.31 CHF -583.10 CHF -583.10 CHF -2.33 CHF -585.43 CHF
                              */
                             section -> section
                                 .attributes("date", "name", "isin", "shares", "currencyFee", "fee", "currency", "amount")
@@ -1022,12 +1023,12 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 + "(?<name>.*) "
                                                 + "(?<isin>[\\w]{12}) "
                                                 + "[\\w]{3} "
-                                                + "(?<shares>([-])?[\\.,\\d]+) "
-                                                + "([-])?[\\.,\\d\\s]+ [\\w]{3} "
-                                                + "([-])?[\\.,\\d\\s]+ [\\w]{3} "
-                                                + "([-])?[\\.,\\d\\s]+ [\\w]{3} "
-                                                + "([-])?(?<fee>[\\.,\\d\\s]+) (?<currencyFee>[\\w]{3}) "
-                                                + "([-])?(?<amount>[\\.,\\d\\s]+,[\\d]{2}) (?<currency>[\\w]{3})$")
+                                                + "(?<shares>(\\-)?[\\.,\\d]+) "
+                                                + "(\\-)?[\\.,'\\d\\s]+ [\\w]{3} "
+                                                + "(\\-)?[\\.,'\\d\\s]+ [\\w]{3} "
+                                                + "(\\-)?[\\.,'\\d\\s]+ [\\w]{3} "
+                                                + "(\\-)?(?<fee>[\\.,'\\d\\s]+) (?<currencyFee>[\\w]{3}) "
+                                                + "(\\-)?(?<amount>[\\.,'\\d\\s]+) (?<currency>[\\w]{3})$")
                                 .assign((t, v) -> {
                                     t.setSecurity(getOrCreateSecurity(v));
                                     t.setDate(asDate(v.get("date")));
@@ -1069,13 +1070,13 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 + "(?<name>.*) "
                                                 + "(?<isin>[\\w]{12}) "
                                                 + "[\\w]{3} "
-                                                + "(?<shares>([-])?[\\.,\\d]+) "
-                                                + "[\\w]{3} ([-])?[\\.\\d]+,[\\d]{2,4} " 
-                                                + "(?<currency>[\\w]{3}) ([-])?(?<amountFx>[\\.\\d]+,[\\d]{2}) "
-                                                + "[\\w]{3} ([-])?[\\.\\d]+,[\\d]{2} "
+                                                + "(?<shares>(\\-)?[\\.,\\d]+) "
+                                                + "[\\w]{3} (\\-)?[\\.\\d]+,[\\d]{2,4} " 
+                                                + "(?<currency>[\\w]{3}) (\\-)?(?<amountFx>[\\.\\d]+,[\\d]{2}) "
+                                                + "[\\w]{3} (\\-)?[\\.\\d]+,[\\d]{2} "
                                                 + "(?<exchangeRate>[\\.\\d]+,[\\d]{1,6}) "
-                                                + "(?<currencyFee>[\\w]{3}) (?<fee>([-])?[\\.\\d]+,[\\d]{2}) "
-                                                + "(?<currencyAccount>[\\w]{3}) ([-])?(?<amount>[\\.\\d]+,[\\d]{2})$")
+                                                + "(?<currencyFee>[\\w]{3}) (?<fee>(\\-)?[\\.\\d]+,[\\d]{2}) "
+                                                + "(?<currencyAccount>[\\w]{3}) (\\-)?(?<amount>[\\.\\d]+,[\\d]{2})$")
                                 .assign((t, v) -> {
                                     t.setSecurity(getOrCreateSecurity(v));
                                     t.setDate(asDate(v.get("date")));
@@ -1137,13 +1138,13 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 + "(?<name>.*) "
                                                 + "(?<isin>[\\w]{12}) "
                                                 + "[\\w]{3} "
-                                                + "(?<shares>([-])?[\\.',\\d]+) "
-                                                + "([-])?[\\.',\\d\\s]+(\\.|,)[\\d]{2,4} [\\w]{3} "
-                                                + "([-])?(?<amountFx>[\\.',\\d\\s]+(\\.|,)[\\d]{2}) (?<currency>[\\w]{3}).* "
-                                                + "([-])?[\\.',\\d]+(\\.|,)[\\d]{2} [\\w]{3} "
+                                                + "(?<shares>(\\-)?[\\.',\\d]+) "
+                                                + "(\\-)?[\\.',\\d\\s]+(\\.|,)[\\d]{2,4} [\\w]{3} "
+                                                + "(\\-)?(?<amountFx>[\\.',\\d\\s]+(\\.|,)[\\d]{2}) (?<currency>[\\w]{3}).* "
+                                                + "(\\-)?[\\.',\\d]+(\\.|,)[\\d]{2} [\\w]{3} "
                                                 + "(?<exchangeRate>[\\.',\\d]+(\\.|,)[\\d]{1,6}) "
-                                                + "(?<fee>([-])?[\\.',\\d\\s]+(\\.|,)[\\d]{2}) (?<currencyFee>[\\w]{3}) "
-                                                + "([-])?(?<amount>[\\.',\\d\\s]+(\\.|,)[\\d]{2}) (?<currencyAccount>[\\w]{3})$")
+                                                + "(?<fee>(\\-)?[\\.',\\d\\s]+(\\.|,)[\\d]{2}) (?<currencyFee>[\\w]{3}) "
+                                                + "(\\-)?(?<amount>[\\.',\\d\\s]+(\\.|,)[\\d]{2}) (?<currencyAccount>[\\w]{3})$")
                                 .assign((t, v) -> {
                                     t.setSecurity(getOrCreateSecurity(v));
                                     t.setDate(asDate(v.get("date")));
@@ -1202,12 +1203,12 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 + "(?<name>.*) "
                                                 + "(?<isin>[\\w]{12}) "
                                                 + "[\\w]{3} "
-                                                + "(?<shares>([-])?[\\.,\\d]+) "
-                                                + "[\\w]{3} ([-])?[\\.\\d]+,[\\d]{2,4} "
-                                                + "(?<currency>[\\w]{3}) ([-])?(?<amountFx>[\\.\\d]+,[\\d]{2}) "
-                                                + "[\\w]{3} ([-])?[\\.\\d]+,[\\d]{2} "
+                                                + "(?<shares>(\\-)?[\\.,\\d]+) "
+                                                + "[\\w]{3} (\\-)?[\\.\\d]+,[\\d]{2,4} "
+                                                + "(?<currency>[\\w]{3}) (\\-)?(?<amountFx>[\\.\\d]+,[\\d]{2}) "
+                                                + "[\\w]{3} (\\-)?[\\.\\d]+,[\\d]{2} "
                                                 + "(?<exchangeRate>[\\.\\d]+,[\\d]{1,6}) "
-                                                + "(?<currencyAccount>[\\w]{3}) ([-])?(?<amount>[\\.\\d]+,[\\d]{2})$")
+                                                + "(?<currencyAccount>[\\w]{3}) (\\-)?(?<amount>[\\.\\d]+,[\\d]{2})$")
                                 .assign((t, v) -> {
                                     t.setSecurity(getOrCreateSecurity(v));
                                     t.setDate(asDate(v.get("date")));
@@ -1257,12 +1258,12 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 + "(?<name>.*) "
                                                 + "(?<isin>[\\w]{12}) "
                                                 + "[\\w]{3} "
-                                                + "(?<shares>([-])?[\\.,\\d]+) "
-                                                + "([-])?[\\.\\d\\s]+,[\\d]{2,4} [\\w]{3} "
-                                                + "([-])?(?<amountFx>[\\.\\d\\s]+,[\\d]{2}) (?<currency>[\\w]{3}) "
-                                                + "([-])?[\\.\\d\\s]+,[\\d]{2} [\\w]{3} "
+                                                + "(?<shares>(\\-)?[\\.,\\d]+) "
+                                                + "(\\-)?[\\.\\d\\s]+,[\\d]{2,4} [\\w]{3} "
+                                                + "(\\-)?(?<amountFx>[\\.\\d\\s]+,[\\d]{2}) (?<currency>[\\w]{3}) "
+                                                + "(\\-)?[\\.\\d\\s]+,[\\d]{2} [\\w]{3} "
                                                 + "(?<exchangeRate>[\\.\\d]+,[\\d]{1,6}) "
-                                                + "([-])?(?<amount>[\\.\\d\\s]+,[\\d]{2}) (?<currencyAccount>[\\w]{3})$")
+                                                + "(\\-)?(?<amount>[\\.\\d\\s]+,[\\d]{2}) (?<currencyAccount>[\\w]{3})$")
                                 .assign((t, v) -> {
                                     t.setSecurity(getOrCreateSecurity(v));
                                     t.setDate(asDate(v.get("date")));
@@ -1313,13 +1314,13 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 + "(?<name>.*) "
                                                 + "(?<isin>[\\w]{12}) "
                                                 + "[\\w]{3} [\\w]{4} "
-                                                + "(?<shares>([-])?[\\.',\\d]+) "
-                                                + "([-])?[\\.',\\d\\s]+(\\.|,)[\\d]{2,4} [\\w]{3} "
-                                                + "([-])?(?<amountFx>([\\.',\\d\\s]+(\\.|,)[\\d]{2,4})) (?<currency>[\\w]{3}) "
-                                                + "([-])?[\\.'\\d\\s]+(\\.|,)[\\d]{2,4} [\\w]{3} "
+                                                + "(?<shares>(\\-)?[\\.',\\d]+) "
+                                                + "(\\-)?[\\.',\\d\\s]+(\\.|,)[\\d]{2,4} [\\w]{3} "
+                                                + "(\\-)?(?<amountFx>([\\.',\\d\\s]+(\\.|,)[\\d]{2,4})) (?<currency>[\\w]{3}) "
+                                                + "(\\-)?[\\.'\\d\\s]+(\\.|,)[\\d]{2,4} [\\w]{3} "
                                                 + "(?<exchangeRate>[\\.',\\d]+) "
-                                                + "(?<fee>([-])?[\\.'\\d\\s]+(\\.|,)[\\d]{2,4}) (?<currencyFee>[\\w]{3}) "
-                                                + "(?<amount>([-])?[\\.'\\d\\s]+(\\.|,)[\\d]{2,4}) (?<currencyAccount>[\\w]{3})$")
+                                                + "(?<fee>(\\-)?[\\.'\\d\\s]+(\\.|,)[\\d]{2,4}) (?<currencyFee>[\\w]{3}) "
+                                                + "(?<amount>(\\-)?[\\.'\\d\\s]+(\\.|,)[\\d]{2,4}) (?<currencyAccount>[\\w]{3})$")
                                 .assign((t, v) -> {
                                     t.setSecurity(getOrCreateSecurity(v));
                                     t.setDate(asDate(v.get("date")));
@@ -1379,15 +1380,15 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 + "(?<name>.*) "
                                                 + "(?<isin>[\\w]{12}) "
                                                 + "[\\w]{3} [\\w]{4} "
-                                                + "(?<shares>([-])?[\\.\\d]+[.\\d]*) "
-                                                + "([-])?([\\d]+,[\\d]{3}.\\d+|\\d+.\\d+) [\\w]{3} "
-                                                + "(?<amountFx>([-])?([\\d]+,[\\d]{3}.\\d+|\\d+.\\d+)) "
+                                                + "(?<shares>(\\-)?[\\.\\d]+[.\\d]*) "
+                                                + "(\\-)?([\\d]+,[\\d]{3}.\\d+|\\d+.\\d+) [\\w]{3} "
+                                                + "(?<amountFx>(\\-)?([\\d]+,[\\d]{3}.\\d+|\\d+.\\d+)) "
                                                 + "(?<currency>[\\w]{3}) "
-                                                + "([-])?([\\d]+,[\\d]{3}.\\d+|\\d+.\\d+) [\\w]{3} "
+                                                + "(\\-)?([\\d]+,[\\d]{3}.\\d+|\\d+.\\d+) [\\w]{3} "
                                                 + "(?<exchangeRate>[\\.\\d]+[.\\d]*) "
-                                                + "(?<fee>([-])?([\\d]+,[\\d]{3}.\\d+|\\d+.\\d+)) "
+                                                + "(?<fee>(\\-)?([\\d]+,[\\d]{3}.\\d+|\\d+.\\d+)) "
                                                 + "(?<currencyFee>[\\w]{3}) "
-                                                + "(?<amount>([-])?([\\d]+,[\\d]{3}.\\d+|\\d+.\\d+)) "
+                                                + "(?<amount>(\\-)?([\\d]+,[\\d]{3}.\\d+|\\d+.\\d+)) "
                                                 + "(?<currencyAccount>[\\w]{3})$")
                                 .assign((t, v) -> {
                                     t.setSecurity(getOrCreateSecurity(v));
@@ -1449,12 +1450,12 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 + "(?<name>.*) "
                                                 + "(?<isin>[\\w]{12}) "
                                                 + "[\\w]{3} [\\w]{4} "
-                                                + "(?<shares>([-])?[\\.,\\d]+) "  
-                                                + "([-])?[\\.,\\d\\s]+ [\\w]{3} " 
-                                                + "([-])?[\\.,\\d\\s]+ [\\w]{3} " 
-                                                + "([-])?[\\.,\\d\\s]+ [\\w]{3} " 
-                                                + "([-])?(?<fee>[\\.\\d\\s]+,[\\d]{2}) (?<currencyFee>[\\w]{3}) "
-                                                + "([-])?(?<amount>[\\.\\d\\s]+,[\\d]{2}) (?<currency>[\\w]{3})$")
+                                                + "(?<shares>(\\-)?[\\.,\\d]+) "  
+                                                + "(\\-)?[\\.,\\d\\s]+ [\\w]{3} " 
+                                                + "(\\-)?[\\.,\\d\\s]+ [\\w]{3} " 
+                                                + "(\\-)?[\\.,\\d\\s]+ [\\w]{3} " 
+                                                + "(\\-)?(?<fee>[\\.\\d\\s]+,[\\d]{2}) (?<currencyFee>[\\w]{3}) "
+                                                + "(\\-)?(?<amount>[\\.\\d\\s]+,[\\d]{2}) (?<currency>[\\w]{3})$")
                                 .assign((t, v) -> {
                                     t.setSecurity(getOrCreateSecurity(v));
                                     t.setDate(asDate(v.get("date")));
@@ -1485,6 +1486,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                              * DateTime | Name | ISIN | Stock Exchange + Place | Shares | Quote | Market value | Local Market value | Fee | Total amount
                              * -------------------------------------
                              * 07-01-2021 09:00 K&S AG DE000KSAG888 XET XETA 25 9.748 EUR -1,082.50 EUR -972.53 EUR -0.63 EUR -973.16 EUR
+                             * 26-10-2020 09:26 ETF ISHARES S&P 500 CHF IE00B88DZ566 SWX XSWX 20 57.99 CHF -1'159.80 CHF -1'159.80 CHF -2.49 CHF -1'162.29 CHF
                              */
                             section -> section
                                 .attributes("date", "name", "isin", "shares", "currencyFee", "fee", "currency", "amount")
@@ -1492,12 +1494,12 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 + "(?<name>.*) "
                                                 + "(?<isin>[\\w]{12}) "
                                                 + "[\\w]{3} [\\w]{4} "
-                                                + "(?<shares>([-])?[\\.,\\d]+) "
-                                                + "([-])?[\\.,\\d]+ [\\w]{3} "
-                                                + "([-])?[\\.,\\d]+ [\\w]{3} "
-                                                + "([-])?[\\.,\\d]+ [\\w]{3} "
-                                                + "([-])?(?<fee>([\\d]+,[\\d]{3}.\\d+|\\d+.\\d+)*) (?<currencyFee>[\\w]{3}) "
-                                                + "([-])?(?<amount>([\\d]+,[\\d]{3}.\\d+|\\d+.\\d+)*) (?<currency>[\\w]{3})$")
+                                                + "(?<shares>(\\-)?[\\.,\\d]+) "
+                                                + "(\\-)?[\\.,'\\d]+ [\\w]{3} "
+                                                + "(\\-)?[\\.,'\\d]+ [\\w]{3} "
+                                                + "(\\-)?[\\.,'\\d]+ [\\w]{3} "
+                                                + "(\\-)?(?<fee>[\\.,'\\d]+) (?<currencyFee>[\\w]{3}) "
+                                                + "(\\-)?(?<amount>[\\.,'\\d]+) (?<currency>[\\w]{3})$")
                                 .assign((t, v) -> {
                                     t.setSecurity(getOrCreateSecurity(v));
                                     t.setDate(asDate(v.get("date")));
@@ -1536,12 +1538,12 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 + "(?<name>.*) "
                                                 + "(?<isin>[\\w]{12}) "
                                                 + "[\\w]{3} [\\w]{4} "
-                                                + "(?<shares>([-])?[\\.,\\d]+) "
-                                                + "([-])?[\\.\\d]+,[\\d]{2,4} [\\w]{3}.* "
-                                                + "([-])?(?<amountFx>[\\.\\d]+,[\\d]{2}) (?<currency>[\\w]{3}).* "
-                                                + "([-])?[\\.\\d]+,[\\d]{2} [\\w]{3} "
+                                                + "(?<shares>(\\-)?[\\.,\\d]+) "
+                                                + "(\\-)?[\\.\\d]+,[\\d]{2,4} [\\w]{3}.* "
+                                                + "(\\-)?(?<amountFx>[\\.\\d]+,[\\d]{2}) (?<currency>[\\w]{3}).* "
+                                                + "(\\-)?[\\.\\d]+,[\\d]{2} [\\w]{3} "
                                                 + "(?<exchangeRate>[\\.\\d]+,[\\d]{1,6}) "
-                                                + "([-])?(?<amount>[\\.\\d]+,[\\d]{2}) (?<currencyAccount>[\\w]{3})$")
+                                                + "(\\-)?(?<amount>[\\.\\d]+,[\\d]{2}) (?<currencyAccount>[\\w]{3})$")
                                 .assign((t, v) -> {
                                     t.setSecurity(getOrCreateSecurity(v));
                                     t.setDate(asDate(v.get("date")));
@@ -1591,12 +1593,12 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 + "(?<name>.*) "
                                                 + "(?<isin>[\\w]{12}) "
                                                 + "[\\w]{3} [\\w]{4} "
-                                                + "(?<shares>([-])?[\\.\\d]+[.\\d]*) "
-                                                + "([-])?([,'\\d]+)([\\.\\d]+) [\\w]{3}.* "
-                                                + "([-])?(?<amountFx>([,'\\d]+)([\\.\\d]+)) (?<currency>[\\w]{3}).* "
-                                                + "([-])?([,'\\d]+)([\\.\\d]+) [\\w]{3} "
+                                                + "(?<shares>(\\-)?[\\.\\d]+[.\\d]*) "
+                                                + "(\\-)?([,'\\d]+)([\\.\\d]+) [\\w]{3}.* "
+                                                + "(\\-)?(?<amountFx>([,'\\d]+)([\\.\\d]+)) (?<currency>[\\w]{3}).* "
+                                                + "(\\-)?([,'\\d]+)([\\.\\d]+) [\\w]{3} "
                                                 + "(?<exchangeRate>[,'\\d]+[\\.\\d]*) "
-                                                + "([-])?(?<amount>([,'\\d]+)([\\.\\d]+)) (?<currencyAccount>[\\w]{3})$")
+                                                + "(\\-)?(?<amount>([,'\\d]+)([\\.\\d]+)) (?<currencyAccount>[\\w]{3})$")
                                 .assign((t, v) -> {
                                     t.setSecurity(getOrCreateSecurity(v));
                                     t.setDate(asDate(v.get("date")));
@@ -1642,11 +1644,11 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                 .match("^(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2}) "
                                                 + "(?<name>.*) (?<isin>[\\w]{12}) "
                                                 + "[\\w]{3} [\\w]{4} "
-                                                + "(?<shares>([-])?[\\.\\d\\s]+[,\\d]*) "
-                                                + "([-])?[\\.,\\d\\s]+ [\\w]{3} "
-                                                + "([-])?[\\.,\\d\\s]+ [\\w]{3} "
-                                                + "([-])?[\\.,\\d\\s]+ [\\w]{3} "
-                                                + "([-])?(?<amount>[\\.,\\d\\s]+) (?<currency>[\\w]{3})$")
+                                                + "(?<shares>(\\-)?[\\.\\d\\s]+[,\\d]*) "
+                                                + "(\\-)?[\\.,\\d\\s]+ [\\w]{3} "
+                                                + "(\\-)?[\\.,\\d\\s]+ [\\w]{3} "
+                                                + "(\\-)?[\\.,\\d\\s]+ [\\w]{3} "
+                                                + "(\\-)?(?<amount>[\\.,\\d\\s]+) (?<currency>[\\w]{3})$")
                                 .assign((t, v) -> {
                                     t.setSecurity(getOrCreateSecurity(v));
                                     t.setDate(asDate(v.get("date")));
