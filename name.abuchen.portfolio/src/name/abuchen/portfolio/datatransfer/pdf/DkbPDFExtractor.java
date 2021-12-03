@@ -534,6 +534,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         final DocumentType type = new DocumentType("Kontoauszug Nummer", (context, lines) -> {
             Pattern pCurrency = Pattern.compile("^Bu.Tag Wert Wir haben f.r Sie gebucht Belastung in (?<currency>[\\w]{3}).*$");
             Pattern pYear = Pattern.compile("^Kontoauszug Nummer (?<nr>[\\d]{3}) / (?<year>[\\d]{4}) vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$");
+            Pattern pAccountingBillDate = Pattern.compile("^Abrechnung (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$");
             // read the current context here
             for (String line : lines)
             {
@@ -550,13 +551,19 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                     // Read year
                     context.put("year", m.group("year"));
                 }
+
+                m = pAccountingBillDate.matcher(line);
+                if (m.matches())
+                {
+                    context.put("accountingBillDate", m.group("date"));
+                }
             }
         });
         this.addDocumentTyp(type);
 
-        Block interestchargeblock = new Block("[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. Abrechnung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+");
-        type.addBlock(interestchargeblock);
-        interestchargeblock.set(new Transaction<AccountTransaction>()
+        Block interestChargeBlock = new Block("^Abrechnungszeitraum vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$");
+        type.addBlock(interestChargeBlock);
+        interestChargeBlock.set(new Transaction<AccountTransaction>()
 
                 .subject(() -> {
                     AccountTransaction entry = new AccountTransaction();
@@ -564,38 +571,21 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                     return entry;
                 })
 
-                .section("month1", "day", "month2", "amount")
-                .match("[\\d]{2}\\.(?<month1>[\\d]{2})\\. (?<day>[\\d]{2})\\.(?<month2>[\\d]{2})\\. Abrechnung ([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d]+)")
+                .section("note", "amount", "type").optional()
+                .match("^(?<note>Abrechnungszeitraum vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
+                .match("^(Zinsen für Guthaben|Zinsen f.r einger.umte Konto.berziehung) ([\\s]+)?(?<amount>[\\.,\\d]+)(?<type>(\\+|\\-))$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
-                    // since year is not within the date correction
-                    // necessary in first receipt of year
-                    if (context.get("nr").compareTo("001") == 0 && Integer.parseInt(v.get("month1")) != Integer.parseInt(v.get("month2")))
+                    if (v.get("type").equals("-"))
                     {
-                        Integer year = Integer.parseInt(context.get("year")) - 1;
-                        t.setDateTime(asDate(v.get("day") + "." + v.get("month2") + "." + year.toString()));
+                        t.setType(AccountTransaction.Type.INTEREST_CHARGE);
                     }
-                    else
-                    {
-                        t.setDateTime(asDate(v.get("day") + "." + v.get("month2") + "." + context.get("year")));
-                    }
+
+                    t.setDateTime(asDate(context.get("accountingBillDate")));
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(context.get("currency"));
                     t.setNote(v.get("note"));
                 })
-
-                .section("note").optional()
-                .match("^(?<note>Abrechnungszeitraum vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
-                .match("^Zinsen f.r einger.umte Konto.berziehung ([\\s]+)?[\\.,\\d]+[-]$")
-                .assign((t, v) -> {
-                    t.setType(AccountTransaction.Type.INTEREST_CHARGE);
-                    t.setNote(v.get("note"));
-                })
-
-                .section("note").optional()
-                .match("^(?<note>Abrechnungszeitraum vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
-                .match("^Zinsen für Guthaben ([\\s]+)?[\\.,\\d]+[+]$")
-                .assign((t, v) -> t.setNote(v.get("note")))
 
                 .wrap(t -> {
                     if (t.getCurrencyCode() != null && t.getAmount() != 0)
@@ -603,9 +593,71 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                     return null;
                 }));
 
-        Block removalblock = new Block("[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. (.berweisung|Dauerauftrag|Basislastschrift|Kartenzahlung|Kreditkartenabr.) [\\.,\\d]+");
-        type.addBlock(removalblock);
-        removalblock.set(new Transaction<AccountTransaction>()
+        Block interestChargeCreditBlock = new Block("^Zinsen für Dispositionskredit ([\\s]+)?[\\.,\\d]+[\\-|\\-]$");
+        type.addBlock(interestChargeCreditBlock);
+        interestChargeCreditBlock.set(new Transaction<AccountTransaction>()
+
+                .subject(() -> {
+                    AccountTransaction entry = new AccountTransaction();
+                    entry.setType(AccountTransaction.Type.INTEREST);
+                    return entry;
+                })
+
+                .section("note", "amount", "type")
+                .match("^(?<note>Zinsen für Dispositionskredit) ([\\s]+)?(?<amount>[\\.,\\d]+)(?<type>(\\+|\\-))$")
+                .assign((t, v) -> {
+                    Map<String, String> context = type.getCurrentContext();
+                    if (v.get("type").equals("-"))
+                    {
+                        t.setType(AccountTransaction.Type.INTEREST_CHARGE);
+                    }
+
+                    t.setDateTime(asDate(context.get("accountingBillDate")));
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(context.get("currency"));
+                    t.setNote(v.get("note"));
+                })
+
+                .wrap(t -> {
+                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                        return new TransactionItem(t);
+                    return null;
+                }));
+
+        Block taxesBlock = new Block("^Kapitalertragsteuer ([\\s]+)?[\\.,\\d]+[\\-|\\-]$");
+        type.addBlock(taxesBlock);
+        taxesBlock.set(new Transaction<AccountTransaction>()
+
+                .subject(() -> {
+                    AccountTransaction entry = new AccountTransaction();
+                    entry.setType(AccountTransaction.Type.TAXES);
+                    return entry;
+                })
+
+                .section("note", "amount", "type")
+                .match("^(?<note>Kapitalertragsteuer) ([\\s]+)?(?<amount>[\\.,\\d]+)(?<type>(\\+|\\-))$")
+                .assign((t, v) -> {
+                    Map<String, String> context = type.getCurrentContext();
+                    if (v.get("type").equals("+"))
+                    {
+                        t.setType(AccountTransaction.Type.TAX_REFUND);
+                    }
+
+                    t.setDateTime(asDate(context.get("accountingBillDate")));
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(context.get("currency"));
+                    t.setNote(v.get("note"));
+                })
+
+                .wrap(t -> {
+                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                        return new TransactionItem(t);
+                    return null;
+                }));
+
+        Block removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. (.berweisung|Dauerauftrag|Basislastschrift|Kartenzahlung|Kreditkartenabr.) [\\.,\\d]+$");
+        type.addBlock(removalBlock);
+        removalBlock.set(new Transaction<AccountTransaction>()
 
                 .subject(() -> {
                     AccountTransaction entry = new AccountTransaction();
@@ -614,7 +666,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                 })
 
                 .section("month1", "day", "month2", "note", "amount")
-                .match("[\\d]{2}\\.(?<month1>[\\d]{2})\\. (?<day>[\\d]{2})\\.(?<month2>[\\d]{2})\\. (?<note>.berweisung|Dauerauftrag|Basislastschrift|Kartenzahlung|Kreditkartenabr.) (?<amount>[\\.,\\d]+)")
+                .match("^[\\d]{2}\\.(?<month1>[\\d]{2})\\. (?<day>[\\d]{2})\\.(?<month2>[\\d]{2})\\. (?<note>.berweisung|Dauerauftrag|Basislastschrift|Kartenzahlung|Kreditkartenabr.) (?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
                     // since year is not within the date correction
@@ -635,9 +687,9 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                 .wrap(TransactionItem::new));
 
-        Block depositblock = new Block("[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. (Lohn, Gehalt, Rente|Zahlungseingang|Bareinzahlung am GA|sonstige Buchung|Eingang Echtzeit.berw) [\\.,\\d]+");
-        type.addBlock(depositblock);
-        depositblock.set(new Transaction<AccountTransaction>()
+        Block depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. (Lohn, Gehalt, Rente|Zahlungseingang|Bareinzahlung am GA|sonstige Buchung|Eingang Echtzeit.berw) [\\.,\\d]+$");
+        type.addBlock(depositBlock);
+        depositBlock.set(new Transaction<AccountTransaction>()
 
                 .subject(() -> {
                     AccountTransaction entry = new AccountTransaction();
@@ -646,7 +698,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                 })
 
                 .section("month1", "day", "month2", "note", "amount")
-                .match("[\\d]{2}\\.(?<month1>[\\d]{2})\\. (?<day>[\\d]{2})\\.(?<month2>[\\d]{2})\\. (?<note>Lohn, Gehalt, Rente|Zahlungseingang|Bareinzahlung am GA|sonstige Buchung|Eingang Echtzeit.berw) (?<amount>[\\.,\\d]+)")
+                .match("^[\\d]{2}\\.(?<month1>[\\d]{2})\\. (?<day>[\\d]{2})\\.(?<month2>[\\d]{2})\\. (?<note>Lohn, Gehalt, Rente|Zahlungseingang|Bareinzahlung am GA|sonstige Buchung|Eingang Echtzeit.berw) (?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
                     // since year is not within the date correction
@@ -667,9 +719,9 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                 .wrap(TransactionItem::new));
 
-        Block taxreturnblock = new Block("[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. [\\d]+ Steuerausgleich [\\.,\\d]+");
-        type.addBlock(taxreturnblock);
-        taxreturnblock.set(new Transaction<AccountTransaction>()
+        Block taxreturnBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. [\\d]+ Steuerausgleich [\\.,\\d]+$");
+        type.addBlock(taxreturnBlock);
+        taxreturnBlock.set(new Transaction<AccountTransaction>()
 
                 .subject(() -> {
                     AccountTransaction entry = new AccountTransaction();
@@ -678,7 +730,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                 })
 
                 .section("month1", "day", "month2", "note", "amount")
-                .match("[\\d]{2}\\.(?<month1>[\\d]{2})\\. (?<day>[\\d]{2})\\.(?<month2>[\\d]{2})\\. [\\d]+ (?<note>Steuerausgleich) (?<amount>[\\.,\\d]+)")
+                .match("^[\\d]{2}\\.(?<month1>[\\d]{2})\\. (?<day>[\\d]{2})\\.(?<month2>[\\d]{2})\\. [\\d]+ (?<note>Steuerausgleich) (?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
                     // since year is not within the date correction
@@ -699,9 +751,9 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                 .wrap(TransactionItem::new));
 
-        Block feesblock = new Block("[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. Rechnung [\\.,\\d]+");
-        type.addBlock(feesblock);
-        feesblock.set(new Transaction<AccountTransaction>()
+        Block feesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. Rechnung [\\.,\\d]+$");
+        type.addBlock(feesBlock);
+        feesBlock.set(new Transaction<AccountTransaction>()
 
                 .subject(() -> {
                     AccountTransaction entry = new AccountTransaction();
@@ -710,7 +762,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                 })
 
                 .section("month1", "day", "month2", "note", "amount")
-                .match("[\\d]{2}\\.(?<month1>[\\d]{2})\\. (?<day>[\\d]{2})\\.(?<month2>[\\d]{2})\\. (?<note>Rechnung) (?<amount>[\\.,\\d]+)")
+                .match("^[\\d]{2}\\.(?<month1>[\\d]{2})\\. (?<day>[\\d]{2})\\.(?<month2>[\\d]{2})\\. (?<note>Rechnung) (?<amount>[\\.,\\d]+)$")
                 .match("^.* Bargeldeinzahlung .*$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
@@ -757,9 +809,9 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         });
         this.addDocumentTyp(type);
 
-        Block depositblock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{2}(?! Habenzins).* [\\.,\\d]+\\+$");
-        type.addBlock(depositblock);
-        depositblock.set(new Transaction<AccountTransaction>()
+        Block depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{2}(?! Habenzins).* [\\.,\\d]+\\+$");
+        type.addBlock(depositBlock);
+        depositBlock.set(new Transaction<AccountTransaction>()
 
                 .subject(() -> {
                     AccountTransaction entry = new AccountTransaction();
@@ -835,9 +887,9 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                 .wrap(TransactionItem::new));
 
-        Block interestblock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{2} Habenzins auf [\\d]+ Tage [\\.,\\d]+\\+$");
-        type.addBlock(interestblock);
-        interestblock.set(new Transaction<AccountTransaction>()
+        Block interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{2} Habenzins auf [\\d]+ Tage [\\.,\\d]+\\+$");
+        type.addBlock(interestBlock);
+        interestBlock.set(new Transaction<AccountTransaction>()
 
                 .subject(() -> {
                     AccountTransaction entry = new AccountTransaction();
@@ -858,9 +910,9 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                 .wrap(TransactionItem::new));
 
-        Block taxblock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) Abgeltungsteuer [\\.,\\d]+ \\-$");
-        type.addBlock(taxblock);
-        taxblock.set(new Transaction<AccountTransaction>()
+        Block taxesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) Abgeltungsteuer [\\.,\\d]+ \\-$");
+        type.addBlock(taxesBlock);
+        taxesBlock.set(new Transaction<AccountTransaction>()
 
                 .subject(() -> {
                     AccountTransaction entry = new AccountTransaction();
@@ -881,9 +933,9 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                 .wrap(TransactionItem::new));
 
-        Block removalblock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{2}(?! Abgeltungsteuer).* [\\.,\\d]+ \\-$");
-        type.addBlock(removalblock);
-        removalblock.set(new Transaction<AccountTransaction>()
+        Block removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{2}(?! Abgeltungsteuer).* [\\.,\\d]+ \\-$");
+        type.addBlock(removalBlock);
+        removalBlock.set(new Transaction<AccountTransaction>()
 
                 .subject(() -> {
                     AccountTransaction entry = new AccountTransaction();
