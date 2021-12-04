@@ -943,6 +943,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
             Pattern pForeignCurrencyAccount = Pattern.compile("^(W.hrungsanlagekonto) \\(([\\w]{3})\\) .*$");
             Pattern pStartForeignCurrency = Pattern.compile("^(W.hrungsanlagekonto) \\(([\\w]{3})\\)$");
             Pattern pEndForeignCurrency = Pattern.compile("^Neuer Saldo .*$");
+            Pattern pAccountingBillDate = Pattern.compile("(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Kontoabschluss .*");
 
             Boolean ForeignCurrencyAccount = false;
 
@@ -987,14 +988,20 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                     context.put("endInForeignCurrency", Integer.toString(i));
                     ForeignCurrencyAccount = false;
                 }
+
+                m = pAccountingBillDate.matcher(lines[i]);
+                if (m.matches())
+                {
+                    context.put("accountingBillDate", m.group("date"));
+                }
             }
         });
         this.addDocumentTyp(type);
 
-        Block removalblock = new Block("(^|^A)[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Konto.bertrag|.bertrag|Lastschrift|Visa-Umsatz|Auszahlung|Barauszahlung|Kartenverf.gun|Guthaben.bertr|Wechselgeld-).* [-]([\\.,\\d]+)$");
-        type.addBlock(removalblock);
-        removalblock.setMaxSize(3);
-        removalblock.set(new Transaction<AccountTransaction>()
+        Block removalBlock = new Block("(^|^A)[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Konto.bertrag|.bertrag|Lastschrift|Visa-Umsatz|Auszahlung|Barauszahlung|Kartenverf.gun|Guthaben.bertr|Wechselgeld-).* \\-[\\.,\\d]+$");
+        type.addBlock(removalBlock);
+        removalBlock.setMaxSize(3);
+        removalBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
                             AccountTransaction entry = new AccountTransaction();
@@ -1002,8 +1009,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                             return entry;
                         })
 
-                        .section("date", "amount", "note")
-                        .match("(^|^A)[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<note>Konto.bertrag|.bertrag|Lastschrift|Visa-Umsatz|Auszahlung|Barauszahlung|Kartenverf.gun|Guthaben.bertr|Wechselgeld-).* [-](?<amount>[\\.,\\d]+)$")
+                        .section("note1", "note2", "amount", "date")
+                        .match("(^|^A)[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<note1>Konto.bertrag|.bertrag|Lastschrift|Visa-Umsatz|Auszahlung|Barauszahlung|Kartenverf.gun|Guthaben.bertr|Wechselgeld-)(?<note2>.*) \\-(?<amount>[\\.,\\d]+)$")
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
@@ -1025,16 +1032,30 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                             {
                                     t.setCurrencyCode(context.get("foreignCurrency"));
                             }
+                            
+                            // Formatting some notes
+                            if (v.get("note1").startsWith("Kartenverfügun"))
+                                v.put("note", "Kartenzahlung");
+                            else if (v.get("note2").matches("(?i)(.* )?Wechselgeld\\-.*"))
+                                v.put("note", "Wechselgeld-Sparen");
+                            else if (v.get("note2").matches("(?i)(.* )?Uebertrag auf Girokonto"))
+                                v.put("note", "Übertrag auf Girokonto");
+                            else if (v.get("note2").matches("(?i)(.* )?Uebertrag auf Tagesgeld PLUS-Konto"))
+                                v.put("note", "Übertrag auf Tagesgeld PLUS-Konto");
+                            else if (v.get("note2").matches("(?i)(.* )?Uebertrag auf Visa-Karte"))
+                                v.put("note", "Übertrag auf auf Visa-Karte");
+                            else
+                                v.put("note", v.get("note1"));
 
                             t.setNote(v.get("note"));
                         })
 
                         .wrap(TransactionItem::new));
         
-        Block depositblock = new Block("(^|^A)[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Konto.bertrag|.bertrag|Guthaben.bertr|Gutschrift|Bar|Visa-Kartenabre|Korrektur Barauszahlung).* [+]([\\.,\\d]+)$");
-        type.addBlock(depositblock);
-        depositblock.setMaxSize(3);
-        depositblock.set(new Transaction<AccountTransaction>()
+        Block depositBlock = new Block("(^|^A)[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Konto.bertrag|.bertrag|Guthaben.bertr|Gutschrift|Bar|Visa-Kartenabre|Korrektur Barauszahlung).* \\+[\\.,\\d]+$");
+        type.addBlock(depositBlock);
+        depositBlock.setMaxSize(3);
+        depositBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
                             AccountTransaction entry = new AccountTransaction();
@@ -1042,8 +1063,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                             return entry;
                         })
 
-                        .section("date", "amount", "note")
-                        .match("(^|^A)[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<note>Konto.bertrag|.bertrag|Guthaben.bertr|Gutschrift|Bar|Visa-Kartenabre|Korrektur Barauszahlung).* [+](?<amount>[\\.,\\d]+)$")
+                        .section("note1", "note2", "amount", "date")
+                        .match("(^|^A)[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<note1>Konto.bertrag|.bertrag|Guthaben.bertr|Gutschrift|Bar|Visa-Kartenabre|Korrektur Barauszahlung)(?<note2>.*) \\+(?<amount>[\\.,\\d]+)$")
                         .match("(^|^A)(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
@@ -1066,14 +1087,32 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                     t.setCurrencyCode(context.get("foreignCurrency"));
                             }
 
+                            // Formatting some notes
+                            if (v.get("note2").matches("(?i)(.* )?Uebertrag auf Girokonto"))
+                                v.put("note", "Übertrag auf Girokonto");
+                            else if (v.get("note2").matches("(?i)(.* )?Uebertrag auf Tagesgeld PLUS-Konto"))
+                                v.put("note", "Übertrag auf Tagesgeld PLUS-Konto");
+                            else if (v.get("note2").matches("(?i)(.* )?Uebertrag auf Visa-Karte"))
+                                v.put("note", "Übertrag auf Visa-Karte");
+                            else if (v.get("note2").matches("(?i)(.* )?Bargeldeinzahlung Karte .*"))
+                                v.put("note", "Bargeldeinzahlung Karte");
+                            else if (v.get("note2").matches("(?i)(.* )?Gutschrift aus Bonus-Sparen"))
+                                v.put("note", "Gutschrift aus Bonus-Sparen");
+                            else if (v.get("note2").matches("(?i)(.* )?Gutschr\\. Wechselgeld-Sparen"))
+                                v.put("note", "Gutschrift Wechselgeld-Sparen");
+                            else if (v.get("note1").matches("(?i)Visa-Kartenabre.*"))
+                                v.put("note", "Visa-Kartenabrechnung");
+                            else
+                                v.put("note", v.get("note1"));
+
                             t.setNote(v.get("note"));
                         })
 
                         .wrap(TransactionItem::new));
         
-        Block feeblock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Kontoabschluss Kontof.hrung|Geb.hren\\/Spesen|Geb.hr Barauszahlung|Entgelte|Auslandsentgelt).* [-]([\\.,\\d]+)$");
-        type.addBlock(feeblock);
-        feeblock.set(new Transaction<AccountTransaction>()
+        Block feesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Geb.hren\\/Spesen|Geb.hr Barauszahlung|Entgelte|Auslandsentgelt).* \\-[\\.,\\d]+$");
+        type.addBlock(feesBlock);
+        feesBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
                             AccountTransaction entry = new AccountTransaction();
@@ -1082,7 +1121,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date", "amount", "note")
-                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<note>Kontoabschluss Kontof.hrung|Geb.hren\\/Spesen|Geb.hr Barauszahlung|Entgelte|Auslandsentgelt).* [-](?<amount>[\\.,\\d]+)$")
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<note>Geb.hren\\/Spesen|Geb.hr Barauszahlung|Entgelte|Auslandsentgelt).* \\-(?<amount>[\\.,\\d]+)$")
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
@@ -1093,10 +1132,32 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(TransactionItem::new));
+
+        Block accountingBillFeeBlock = new Block("^Versandpauschale [\\.,\\d]+\\- [\\w]{3}$");
+        type.addBlock(accountingBillFeeBlock);
+        accountingBillFeeBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction entry = new AccountTransaction();
+                            entry.setType(AccountTransaction.Type.FEES);
+                            return entry;
+                        })
+
+                        .section("note", "amount", "currency")
+                        .match("^(?<note>Versandpauschale) (?<amount>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+                            t.setDateTime(asDate(context.get("accountingBillDate")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setNote(v.get("note"));
+                        })
+
+                        .wrap(TransactionItem::new));
         
-        Block interestblock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Kontoabschluss Abschluss Zinsen).* [+]([\\.,\\d]+)$");
-        type.addBlock(interestblock);
-        interestblock.set(new Transaction<AccountTransaction>()
+        Block interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Kontoabschluss Abschluss Zinsen.* (\\+|\\-)[\\.,\\d]+$");
+        type.addBlock(interestBlock);
+        interestBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
                             AccountTransaction entry = new AccountTransaction();
@@ -1104,57 +1165,52 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                             return entry;
                         })
 
-                        .section("date", "amount", "note")
-                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<note>Kontoabschluss Abschluss Zinsen).* [+](?<amount>[\\.,\\d]+)$")
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
+                        .section("note", "type", "amount", "date")
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<note>Kontoabschluss Abschluss Zinsen).* (?<type>(\\+|\\-))(?<amount>[\\.,\\d]+)$")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
+                            // Is sign --> "-" change from INTEREST to INTEREST_CHARGE
+                            if (v.get("type").equals("-"))
+                            {
+                                t.setType(AccountTransaction.Type.INTEREST_CHARGE);
+                            }
+
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(context.get("currency"));
                             t.setNote(v.get("note"));
                         })
 
-                        .section("kest", "soli", "kestcur", "solicur", "note1", "note2").optional()
-                        .match("^(?<note1>Kapitalertragsteuer) (?<kest>[\\.,\\d]+)- (?<kestcur>[\\w]{3})$")
-                        .match("^(?<note2>Solidarit.tszuschlag) (?<soli>[\\.,\\d]+)([-])? (?<solicur>[\\w]{3})$")
-                        .assign((t, v) -> {
-                            Money kest = Money.of(asCurrencyCode(v.get("kestcur")), asAmount(v.get("kest")));
-                            if (kest.getCurrencyCode().equals(t.getCurrencyCode()))
-                                t.addUnit(new Unit(Unit.Type.TAX, kest));
-
-                            Money soli = Money.of(asCurrencyCode(v.get("solicur")), asAmount(v.get("soli")));
-                            if (soli.getCurrencyCode().equals(t.getCurrencyCode()))
-                                t.addUnit(new Unit(Unit.Type.TAX, soli));
-
-                            t.setNote(v.get("note1") + "/" + v.get("note2"));
-                        })
-
                         .wrap(TransactionItem::new));
-        
-        Block interestchargeblock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Kontoabschluss Abschluss Zinsen).* [-]([\\.,\\d]+)$");
-        type.addBlock(interestchargeblock);
-        interestchargeblock.set(new Transaction<AccountTransaction>()
+
+        Block taxesBlock = new Block("^(Kapitalertragsteuer|Solidarit.tszuschlag|Kirchensteuer) [\\.,\\d]+(\\+|\\-) [\\w]{3}$");
+        type.addBlock(taxesBlock);
+        taxesBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
                             AccountTransaction entry = new AccountTransaction();
-                            entry.setType(AccountTransaction.Type.INTEREST_CHARGE);
+                            entry.setType(AccountTransaction.Type.TAX_REFUND);
                             return entry;
                         })
 
-                        .section("date", "amount", "note")
-                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<note>Kontoabschluss Abschluss Zinsen).* [-](?<amount>[\\.,\\d]+)$")
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
+                        .section("note", "amount", "type", "currency")
+                        .match("^(?<note>(Kapitalertragsteuer|Solidarit.tszuschlag|Kirchensteuer)) (?<amount>[\\.,\\d]+)(?<type>(\\+|\\-)) (?<currency>[\\w]{3})$")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
-                            t.setDateTime(asDate(v.get("date")));
+                            // Is sign --> "-" change from TAXES to TAX_REFUND
+                            if (v.get("type").equals("-"))
+                            {
+                                t.setType(AccountTransaction.Type.TAXES);
+                            }
+
+                            t.setDateTime(asDate(context.get("accountingBillDate")));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(context.get("currency"));
+                            t.setCurrencyCode(v.get("currency"));
                             t.setNote(v.get("note"));
                         })
 
                         .wrap(TransactionItem::new));
-    }
+}
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
