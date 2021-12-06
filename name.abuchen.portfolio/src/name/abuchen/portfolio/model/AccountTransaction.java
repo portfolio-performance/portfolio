@@ -2,6 +2,7 @@ package name.abuchen.portfolio.model;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.ResourceBundle;
@@ -73,8 +74,12 @@ public class AccountTransaction extends Transaction
             return Integer.compare(t1.hashCode(), t2.hashCode());
         }
     }
-
+    
     private Type type;
+    
+    private boolean useExDate = false;
+    
+    private LocalDate exDate;
 
     public AccountTransaction()
     {
@@ -90,6 +95,14 @@ public class AccountTransaction extends Transaction
     {
         super(date, currencyCode, amount, security, 0, null);
         this.type = type;
+        this.useExDate = false;
+        this.exDate = null;
+    }
+    
+    public AccountTransaction(LocalDateTime date, boolean useExDate, LocalDate exDate, String currencyCode, long amount, Security security, Type type)
+    {
+        this(date, currencyCode, amount, security, type);
+        this.setExDate(exDate);
     }
 
     public Type getType()
@@ -121,12 +134,37 @@ public class AccountTransaction extends Transaction
     {
         return Money.of(getCurrencyCode(), getGrossValueAmount());
     }
+    
+    /**
+     * 
+     * @return the date for a dividend-transaction where a stock is traded at prices with less the dividend amout
+     */
+    public LocalDate getExDate()
+    {
+        return exDate;
+    }
+    
+    public void setExDate(LocalDate exDate)
+    {
+        this.exDate = exDate;
+    }
+    
+    public boolean isUseExDate()
+    {
+        return useExDate;
+    }
+    
+    public void setUseExDate(boolean useExDate)
+    {
+        this.useExDate = useExDate;
+    }
 
     @Override
     public String toString()
     {
-        return String.format("%s %-17s %s %9s %s %s", //$NON-NLS-1$
+        return String.format("%s %s %-17s %s %9s %s %s", //$NON-NLS-1$
                         Values.Date.format(getDateTime().toLocalDate()), //
+                        exDate != null ? Values.Date.format(getExDate())  : "<no exDate>", // //$NON-NLS-1$
                         type.name(), //
                         getCurrencyCode(), //
                         Values.Amount.format(getAmount()), //

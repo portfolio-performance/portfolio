@@ -177,21 +177,47 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
             context.bindValue(targetObservable, modelObservable);
         }
     }
-
-    public class DateTimeInput
+    
+    public class DateInput
     {
         public final Label label;
-        public final DatePicker date;
-        public final CDateTime time;
-        public final ImageHyperlink button;
+        public final DatePicker date;        
 
-        public DateTimeInput(Composite editArea, String text)
+        public DateInput(Composite editArea, String text)
         {
             label = new Label(editArea, SWT.RIGHT);
             label.setText(text);
 
             date = new DatePicker(editArea);
+            date.getControl().setVisible(true);
+        }
 
+        public DateInput(Composite editArea, String text, boolean visible)
+        {
+            this(editArea, text);
+            date.getControl().setVisible(visible);
+        }
+
+        public void bindDate(String property)
+        {
+            IObservableValue<?> targetObservable = new SimpleDateTimeDateSelectionProperty().observe(date.getControl());
+            IObservableValue<?> modelObservable = BeanProperties.value(property).observe(model);
+            context.bindValue(targetObservable, modelObservable);
+        }
+        
+        public void setVisible(boolean visible) {  
+            date.getControl().setVisible(visible);            
+        }
+    }
+
+    public class DateTimeInput extends DateInput
+    {       
+        public final CDateTime time;
+        public final ImageHyperlink button;
+
+        public DateTimeInput(Composite editArea, String text)
+        {
+            super(editArea, text);
             time = new CDateTime(editArea, CDT.BORDER | CDT.CLOCK_24_HOUR) // NOSONAR
             {
                 @Override
@@ -206,13 +232,6 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
 
             button = new ImageHyperlink(editArea, SWT.NONE);
             button.setImage(Images.CLOCK.image());
-        }
-
-        public void bindDate(String property)
-        {
-            IObservableValue<?> targetObservable = new SimpleDateTimeDateSelectionProperty().observe(date.getControl());
-            IObservableValue<?> modelObservable = BeanProperties.value(property).observe(model);
-            context.bindValue(targetObservable, modelObservable);
         }
 
         public void bindTime(String property)

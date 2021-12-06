@@ -48,9 +48,11 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionModel.Properties;
+import name.abuchen.portfolio.ui.util.BindingHelper;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SWTHelper;
+import name.abuchen.portfolio.ui.util.SimpleDateTimeDateSelectionProperty;
 
 public class AccountTransactionDialog extends AbstractTransactionDialog // NOSONAR
 {
@@ -114,9 +116,24 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         dateTime.bindDate(Properties.date.name());
         dateTime.bindTime(Properties.time.name());
         dateTime.bindButton(() -> model().getTime(), time -> model().setTime(time));
-
+        
+        // exDate & btnUseExDate
+        DateInput exDate = new DateInput(editArea, Messages.ColumnExDate, model().isUseExDate());
+        exDate.bindDate(Properties.exDate.name());   
+                
+        Button useExDateBtn = new Button(editArea, SWT.CHECK);
+        useExDateBtn.setSelection(model().isUseExDate());
+        useExDateBtn.addSelectionListener(new SelectionAdapter()
+        {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                model().setUseExDate(useExDateBtn.getSelection());
+                exDate.setVisible(model().supportsShares() && useExDateBtn.getSelection());
+            };
+        });
+        useExDateBtn.setVisible(model().supportsShares());
+        
         // shares
-
         Input shares = new Input(editArea, Messages.ColumnShares);
         shares.bindValue(Properties.shares.name(), Messages.ColumnShares, Values.Share, false);
         shares.setVisible(model().supportsShares());
@@ -132,7 +149,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         });
         btnShares.setVisible(model().supportsShares());
         editArea.addDisposeListener(e -> AccountTransactionDialog.this.widgetDisposed());
-
+        
         Input dividendAmount = new Input(editArea, Messages.LabelDividendPerShare);
         dividendAmount.bindBigDecimal(Properties.dividendAmount.name(), "#,##0.0000"); //$NON-NLS-1$
         dividendAmount.bindCurrency(Properties.fxCurrencyCode.name());
@@ -217,7 +234,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         // form layout
         //
 
-        int widest = widest(securities != null ? securities.label : null, accounts.label, dateTime.label, shares.label,
+        int widest = widest(securities != null ? securities.label : null, accounts.label, dateTime.label, exDate.label, shares.label,
                         taxes.label, fees.label, total.label, lblNote, fxGrossAmount.label);
 
         FormDataFactory forms;
@@ -239,9 +256,15 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         // date
         // shares
         forms = forms.thenBelow(dateTime.date.getControl()).label(dateTime.label);
-
         startingWith(dateTime.date.getControl()).thenRight(dateTime.time).thenRight(dateTime.button, 0);
 
+        if (model().supportsShares())
+        {
+            // useExDate-Button [exDate]
+            forms = forms.thenBelow(useExDateBtn).label(exDate.label);
+            startingWith(useExDateBtn).width(50).thenRight(exDate.date.getControl());
+        }
+        
         // shares [- amount per share]
         forms.thenBelow(shares.value).width(amountWidth).label(shares.label).suffix(btnShares) //
                         // fxAmount - exchange rate - amount
@@ -339,6 +362,9 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         WarningMessages warnings = new WarningMessages(this);
         warnings.add(() -> model().getDate().isAfter(LocalDate.now()) ? Messages.MsgDateIsInTheFuture : null);
         model.addPropertyChangeListener(Properties.date.name(), e -> warnings.check());
+        
+        warnings.add(() -> model().isUseExDate() && model().getExDate() != null && model().getExDate().isAfter(model().getDate()) ? Messages.MsgExDateAfterPaymentDate : null); 
+        model.addPropertyChangeListener(Properties.exDate.name(), e -> warnings.check());        
 
         model.firePropertyChange(Properties.exchangeRateCurrencies.name(), "", model().getExchangeRateCurrencies()); //$NON-NLS-1$
     }
@@ -381,11 +407,13 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
     private void sharesMenuAboutToShow(IMenuManager manager) // NOSONAR
     {
         manager.add(new LabelOnly(Messages.DividendsDialogTitleShares));
+        
+        //TODO Redundanz zwischen Datum und Ex-Datum in dieser Methode auflösen
 
         CurrencyConverter converter = new CurrencyConverterImpl(model.getExchangeRateProviderFactory(),
                         client.getBaseCurrency());
         ClientSnapshot snapshot = ClientSnapshot.create(client, converter, model().getDate());
-
+        
         if (snapshot != null && model().getSecurity() != null)
         {
             PortfolioSnapshot jointPortfolio = snapshot.getJointPortfolio();
@@ -398,6 +426,23 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
                     addAction(manager, ps, ps.getPortfolio().getName());
             }
         }
+        
+        if (model().isUseExDate() && model().getExDate().isBefore(model().getDate())) 
+        {
+            ClientSnapshot exDateSnapshot = ClientSnapshot.create(client, converter, model().getExDate());
+            
+            if (exDateSnapshot != null && model().getSecurity() != null) {
+                PortfolioSnapshot jointPortfolio = exDateSnapshot.getJointPortfolio();
+                addAction(manager, jointPortfolio, Messages.ColumnSharesOwned + " " + Messages.ColumnExDate);
+
+                List<PortfolioSnapshot> list = exDateSnapshot.getPortfolios();
+                if (list.size() > 1)
+                {
+                    for (PortfolioSnapshot ps : list)
+                        addAction(manager, ps, ps.getPortfolio().getName() + " " + Messages.ColumnExDate);
+                }
+            }
+        }        
 
         manager.add(new Action(Messages.DividendsDialogLabelSpecialDistribution)
         {
