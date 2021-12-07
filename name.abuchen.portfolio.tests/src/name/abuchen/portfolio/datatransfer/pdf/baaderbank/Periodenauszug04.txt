@@ -1,0 +1,71 @@
+﻿PDFBox Version: 1.8.16
+-----------------------------------------
+Scalable Capital GmbH
+Seitzstraße 8e
+80538 München 
+service@scalable.capital
+Seite 1/31
+Herrn München
+01.12.2021
+onir 
+
+Stamm-Nr.: -    Portfolio: -
+Konto-Nr.: -
+IBAN: -
+BLZ: -
+BIC: -
+Vorgangs-Nr.: 92719099
+Referenz-Nr.: 176117177
+Perioden-Kontoauszug: EUR-Konto
+Periodenauszugs-Nr. 021005
+Buchungstag Erläuterungen Valuta Belastung Gutschrift
+in EUR in EUR
+Kontostand in EUR am 29.10.2021 668,60
+01.11.2021 Verkauf 03.11.2021 701,12
+INVESCOM3 EUROSTX HDL A
+ISIN IE00BZ4BMM98
+STK              28    -
+Vorgangs-Nr.: WWUM 60922037
+Übertrag: 4.452,26
+Scalable Capital GmbH • Geschäftsführung: Erik Podzuweit, Florian Prucker, Martin Krebs, Peter Gaubatz • HRB 217778, Amtsgericht München • USt-IdNr. DE300434774 • 
+www.scalable.capital
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Dietmar von Blücher, Oliver Riedel • Vorsitzender des Aufsichtsrates: Dr. Horst Schiessl • Amtsgericht München HRB 121537 • Sitz der 
+Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13
+T 00800 00 586336* • service@baaderbank.de
+KKTKK801-040.038
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+Perioden-Kontoauszug: EUR-Konto
+Periodenauszugs-Nr. 021005
+Fortsetzung: Seite 2/31
+Konto-Nr.: 1784607002   BLZ: 700 331 00   IBAN: DE70 7003 3100 1784 6070 02   BIC: BDWBDEMM
+Buchungstag Erläuterungen Valuta Belastung Gutschrift
+in EUR in EUR
+Übertrag: 4.452,26
+01.11.2021 Verkauf 03.11.2021 702,02
+ISHS-UK DIVIDEND LS D
+ISIN IE00B0M63060
+STK              81    -
+Vorgangs-Nr.: WWUM 60922509
+Übertrag: 4.663,44
+Scalable Capital GmbH • Geschäftsführung: Erik Podzuweit, Florian Prucker, Martin Krebs, Peter Gaubatz • HRB 217778, Amtsgericht München • USt-IdNr. DE300434774 • 
+www.scalable.capital
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Dietmar von Blücher, Oliver Riedel • Vorsitzender des Aufsichtsrates: Dr. Horst Schiessl • Amtsgericht München HRB 121537 • Sitz der 
+Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13
+T 00800 00 586336* • service@baaderbank.de
+KKTKK801-040.038
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+Perioden-Kontoauszug: EUR-Konto
+Periodenauszugs-Nr. 021005
+Fortsetzung: Seite 3/31
+Konto-Nr.: -   BLZ: 700 331 00   IBAN: DE70 7003 3100 1784 6070 02   BIC: BDWBDEMM
+Buchungstag Erläuterungen Valuta Belastung Gutschrift
+in EUR in EUR
+Übertrag: 4.663,44
+01.11.2021 Kauf 03.11.2021 302,64 -
+ISV-M.W.C.ST.S. DLD
+ISIN IE00BJ5JP329
+STK              60
