@@ -78,7 +78,7 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
          * Sep 02 Netflix Inc 64110L106 Sell 2 566.20 1,132.39
          * Com
          */
-        Block blockBuySell = new Block("^[\\w]{3} [\\d]{2} .* (Buy|Sell) [\\.,\\d]+ [\\.,\\d]+ (\\()?[\\.,\\d]+(\\)?)$");
+        Block blockBuySell = new Block("^[\\w]{3} [\\d]{2} .* [\\w]{9} (Buy|Sell) [\\.,\\d]+ [\\.,\\d]+ (\\()?[\\.,\\d]+(\\)?)$");
         type.addBlock(blockBuySell);
         blockBuySell.set(new Transaction<BuySellEntry>()
 
@@ -125,7 +125,7 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
          * Sep 15 Tyson Foods Inc              6 902494103 Qualified Dividend 2.67
          * Sep 15 Nra Withhold: Dividend 902494103 NRA Withhold (0.80)
          */
-        Block blockDividende = new Block("^.* [\\d]{2} .* Dividend [\\.,\\d]+$");
+        Block blockDividende = new Block("^[\\w]{3} [\\d]{2} .* (?!Qualified).{9} (Qualified )?Dividend [\\.,\\d]+$");
         type.addBlock(blockDividende);
         blockDividende.set(new Transaction<AccountTransaction>()
 
@@ -138,7 +138,7 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                         .oneOf(
                                         section -> section
                                                 .attributes("month", "day", "name", "shares", "wkn", "amount", "tax")
-                                                .match("^(?<month>.*) (?<day>[\\d]{2}) (?<name>.*) (?<shares>[\\.,\\d]+) (?<wkn>(?!Qualified).{9}) (Qualified )?Dividend (?<amount>[\\.,\\d]+)$")
+                                                .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) (?<name>.*) (?<shares>[\\.,\\d]+) (?<wkn>(?!Qualified).{9}) (Qualified )?Dividend (?<amount>[\\.,\\d]+)$")
                                                 .match("^[\\w]{3} [\\d]{2} .* [\\w]{9} (NRA Withhold|Foreign Withholding) \\((?<tax>[\\.,\\d]+)\\)$")
                                                 .assign((t, v) -> {
                                                     Map<String, String> context = type.getCurrentContext();
@@ -180,10 +180,50 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
          * Formatting:
          * Date | Effective Description | CUSIP | Type of Activity | Quantity Market Price | Net Settlement Amount
          * -------------------------------------
+         * Nov 05 Ca Fee_spinoff_blue Tsvt 09609 Journal (30.00) <-- CUSIP is incorrect (length = 9)
+         * Nov 15 Ca Fee_spinoff_o Onl 756109104 Journal (30.00)
+         */
+        Block blockFees = new Block("^[\\w]{3} [\\d]{2} Ca Fee_spinoff.* Journal \\([\\.,\\d]+\\)$");
+        type.addBlock(blockFees);
+        blockFees.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction entry = new AccountTransaction();
+                            entry.setType(AccountTransaction.Type.FEES);
+                            return entry;
+                        })
+
+                        .section("month", "day", "name", "wkn", "amount")
+                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) Ca Fee_spinoff.* (?<name>.*) (?<wkn>.*) Journal \\((?<amount>[\\.,\\d]+)\\)$")
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+                            v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
+
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(getClient().getBaseCurrency());
+                            t.setSecurity(getOrCreateSecurity(v));
+
+                            // if CUSIP lenght != 9
+                            if (v.get("wkn").length() < 9)
+                                t.setAmount(0L);
+                        })
+
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return new NonImportableItem("CUSIP is maybe incorrect. " + " " + t.getDateTime() + " " + t.getSecurity());
+                        }));
+
+
+        /***
+         * Formatting:
+         * Date | Effective Description | CUSIP | Type of Activity | Quantity Market Price | Net Settlement Amount
+         * -------------------------------------
          * Jun 23 Cil Allocation 58933Y105 Journal 29.98
          * Merck & Co Inc New
          */
-        Block blockCashAllocation = new Block("^.* [\\d]{2} .* Allocation .* Journal [\\.,\\d]+$");
+        Block blockCashAllocation = new Block("^[\\w]{3} [\\d]{2} .* Allocation [\\w]{9} Journal [\\.,\\d]+$");
         type.addBlock(blockCashAllocation);
         blockCashAllocation.set(new Transaction<AccountTransaction>()
 
@@ -194,7 +234,7 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("month", "day", "name", "wkn", "amount")
-                        .match("^(?<month>.*) (?<day>[\\d]{2}) .* Allocation (?<wkn>[\\w]{9}) Journal (?<amount>[\\.,\\d]+)$")
+                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) .* Allocation (?<wkn>[\\w]{9}) Journal (?<amount>[\\.,\\d]+)$")
                         .match("^(?<name>.*)$")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
