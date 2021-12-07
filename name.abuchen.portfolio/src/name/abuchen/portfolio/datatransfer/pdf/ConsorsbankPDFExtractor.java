@@ -1048,6 +1048,11 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 .match("^(abzgl\\. )?Eig\\. Spesen (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
+                // Eig. Spesen 1,95 EUR
+                .section("fee", "currency").optional()
+                .match("^(abzgl\\. )?Eig\\. Spesen (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+
                 // FREMDE SPESEN                                 USD                  1,91 
                 .section("fee", "currency").optional()
                 .match("^(abzgl\\. )?FREMDE SPESEN [\\s]+(?<currency>[\\w]{3}) [\\s]+(?<fee>[\\.,\\d]+)(.*)?$")
