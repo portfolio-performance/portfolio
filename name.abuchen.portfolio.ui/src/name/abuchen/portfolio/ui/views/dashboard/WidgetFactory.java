@@ -13,9 +13,11 @@ import name.abuchen.portfolio.math.Risk.Volatility;
 import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.views.dashboard.heatmap.EarningsHeatmapWidget;
+import name.abuchen.portfolio.ui.views.dashboard.heatmap.InvestmentHeatmapWidget;
 import name.abuchen.portfolio.ui.views.dashboard.heatmap.PerformanceHeatmapWidget;
 import name.abuchen.portfolio.ui.views.dashboard.heatmap.YearlyPerformanceHeatmapWidget;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
@@ -35,12 +37,20 @@ public enum WidgetFactory
                                     .withBenchmarkDataSeries(false) //
                                     .build()),
 
-    TTWROR(Messages.LabelTTWROR, Messages.ClientEditorLabelPerformance, //
+    TTWROR(Messages.LabelTTWROR, Messages.ClientEditorLabelPerformance, // cumulative
                     (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
                                     .with(Values.Percent2) //
                                     .with((ds, period) -> {
                                         PerformanceIndex index = data.calculate(ds, period);
                                         return index.getFinalAccumulatedPercentage();
+                                    }).build()),
+
+    TTWROR_ANNUALIZED(Messages.LabelTTWROR_Annualized, Messages.ClientEditorLabelPerformance, //
+                    (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
+                                    .with(Values.Percent2) //
+                                    .with((ds, period) -> {
+                                        PerformanceIndex index = data.calculate(ds, period);
+                                        return index.getFinalAccumulatedAnnualizedPercentage();
                                     }).build()),
 
     IRR(Messages.LabelIRR, Messages.ClientEditorLabelPerformance, //
@@ -61,8 +71,7 @@ public enum WidgetFactory
                                     .withBenchmarkDataSeries(false) //
                                     .build()),
 
-    DELTA(Messages.LabelDelta,
-                    Messages.LabelStatementOfAssets, //
+    DELTA(Messages.LabelDelta, Messages.LabelStatementOfAssets, //
                     (widget, data) -> IndicatorWidget.<Long>create(widget, data) //
                                     .with(Values.Amount) //
                                     .with((ds, period) -> {
@@ -82,6 +91,17 @@ public enum WidgetFactory
                                     .withBenchmarkDataSeries(false) //
                                     .build()),
 
+    SAVINGS(Messages.LabelPNTransfers, Messages.LabelStatementOfAssets, //
+                    (widget, data) -> IndicatorWidget.<Long>create(widget, data) //
+                                    .with(Values.Amount) //
+                                    .with((ds, period) -> {
+                                        long[] d = data.calculate(ds, period).getTransferals();
+                                        return d.length > 1 ? LongStream.of(d).skip(1).sum() : 0L;
+                                            // skip d[0] because it refers to the day before start
+                                    }) //
+                                    .withBenchmarkDataSeries(false) //
+                                    .build()),
+
     INVESTED_CAPITAL(Messages.LabelInvestedCapital, Messages.LabelStatementOfAssets, //
                     (widget, data) -> IndicatorWidget.<Long>create(widget, data) //
                                     .with(Values.Amount) //
@@ -92,8 +112,7 @@ public enum WidgetFactory
                                     .withBenchmarkDataSeries(false) //
                                     .build()),
 
-    ABSOLUTE_INVESTED_CAPITAL(Messages.LabelAbsoluteInvestedCapital,
-                    Messages.LabelStatementOfAssets, //
+    ABSOLUTE_INVESTED_CAPITAL(Messages.LabelAbsoluteInvestedCapital, Messages.LabelStatementOfAssets, //
                     (widget, data) -> IndicatorWidget.<Long>create(widget, data) //
                                     .with(Values.Amount) //
                                     .with((ds, period) -> {
@@ -177,7 +196,8 @@ public enum WidgetFactory
 
     TRADES_PROFIT_LOSS(Messages.LabelTradesProfitLoss, Messages.LabelTrades, TradesProfitLossWidget::new),
 
-    TRADES_AVERAGE_HOLDING_PERIOD(Messages.LabelAverageHoldingPeriod, Messages.LabelTrades, TradesAverageHoldingPeriodWidget::new),
+    TRADES_AVERAGE_HOLDING_PERIOD(Messages.LabelAverageHoldingPeriod, Messages.LabelTrades,
+                    TradesAverageHoldingPeriodWidget::new),
 
     TRADES_TURNOVER_RATIO(Messages.LabelTradesTurnoverRate, Messages.LabelTrades, //
                     (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
@@ -200,12 +220,42 @@ public enum WidgetFactory
                                         return MessageFormat.format(Messages.TooltipTurnoverRate,
                                                         Values.Money.format(Money.of(currency, buy)),
                                                         Values.Money.format(Money.of(currency, sell)),
-                                                        Values.Money.format(Money.of(currency, (long)average.orElse(0))),
-                                                        Values.Percent2.format(average.isPresent() && average.getAsDouble() > 0
-                                                                        ? Long.min(buy, sell) / average.getAsDouble()
-                                                                        : 0));
+                                                        Values.Money.format(
+                                                                        Money.of(currency, (long) average.orElse(0))),
+                                                        Values.Percent2.format(
+                                                                        average.isPresent() && average.getAsDouble() > 0
+                                                                                        ? Long.min(buy, sell) / average
+                                                                                                        .getAsDouble()
+                                                                                        : 0));
                                     }) //
-                                    .withColoredValues(false)
+                                    .withColoredValues(false).build()),
+
+    HEATMAP_INVESTMENTS(Messages.LabelHeatmapInvestments, Messages.LabelTrades, InvestmentHeatmapWidget::new),
+
+    PORTFOLIO_TAX_RATE(Messages.LabelPortfolioTaxRate, Messages.ClientEditorLabelPerformance, //
+                    (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
+                                    .with(Values.Percent2) //
+                                    .with((ds, period) -> {
+                                        PerformanceIndex index = data.calculate(ds, period);
+                                        ClientPerformanceSnapshot snapshot = index.getClientPerformanceSnapshot()
+                                                        .orElseThrow(IllegalArgumentException::new);
+                                        return snapshot.getPortfolioTaxRate();
+                                    }) //
+                                    .withTooltip((ds, period) -> Messages.TooltipPortfolioTaxRate) //
+                                    .withBenchmarkDataSeries(false) //
+                                    .build()),
+
+    PORTFOLIO_FEE_RATE(Messages.LabelPortfolioFeeRate, Messages.ClientEditorLabelPerformance, //
+                    (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
+                                    .with(Values.Percent2) //
+                                    .with((ds, period) -> {
+                                        PerformanceIndex index = data.calculate(ds, period);
+                                        ClientPerformanceSnapshot snapshot = index.getClientPerformanceSnapshot()
+                                                        .orElseThrow(IllegalArgumentException::new);
+                                        return snapshot.getPortfolioFeeRate();
+                                    }) //
+                                    .withTooltip((ds, period) -> Messages.TooltipPortfolioFeeRate) //
+                                    .withBenchmarkDataSeries(false) //
                                     .build()),
 
     CURRENT_DATE(Messages.LabelCurrentDate, Messages.LabelCommon, CurrentDateWidget::new),

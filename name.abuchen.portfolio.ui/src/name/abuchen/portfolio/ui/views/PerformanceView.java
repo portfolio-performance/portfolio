@@ -2,15 +2,18 @@ package name.abuchen.portfolio.ui.views;
 
 import java.text.MessageFormat;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.function.Function;
 
 import javax.inject.Inject;
 
+import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.layout.TreeColumnLayout;
+import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -49,6 +52,7 @@ import name.abuchen.portfolio.snapshot.GroupEarningsByAccount;
 import name.abuchen.portfolio.snapshot.filter.WithoutTaxesFilter;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.selection.SelectionService;
 import name.abuchen.portfolio.ui.util.ClientFilterDropDown;
@@ -58,11 +62,20 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.TreeViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.Column;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.MarkDirtyClientListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.MoneyTrailToolTipSupport;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
+import name.abuchen.portfolio.ui.views.panes.HistoricalPricesPane;
+import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
+import name.abuchen.portfolio.ui.views.panes.SecurityEventsPane;
+import name.abuchen.portfolio.ui.views.panes.SecurityPriceChartPane;
+import name.abuchen.portfolio.ui.views.panes.TradesPane;
+import name.abuchen.portfolio.ui.views.panes.TransactionsPane;
 import name.abuchen.portfolio.util.Interval;
 
 public class PerformanceView extends AbstractHistoricView
@@ -72,6 +85,9 @@ public class PerformanceView extends AbstractHistoricView
 
     @Inject
     private ExchangeRateProviderFactory factory;
+
+    @Inject
+    private IStylingEngine stylingEngine;
 
     private ClientFilterDropDown clientFilter;
 
@@ -124,6 +140,8 @@ public class PerformanceView extends AbstractHistoricView
         if (preTax)
             filteredClient = new WithoutTaxesFilter().filter(filteredClient);
 
+        setToContext(UIConstants.Context.FILTERED_CLIENT, filteredClient);
+
         ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(filteredClient, converter, period);
 
         try
@@ -138,8 +156,10 @@ public class PerformanceView extends AbstractHistoricView
             calculation.getTree().setRedraw(true);
         }
 
-        snapshotStart.setInput(snapshot.getStartClientSnapshot(), clientFilter.getSelectedFilter());
-        snapshotEnd.setInput(snapshot.getEndClientSnapshot(), clientFilter.getSelectedFilter());
+        // FIXME - shouldn't it include the (optional) WithoutTaxesFilter?
+        snapshotStart.setInput(clientFilter.getSelectedFilter(), snapshot.getStartClientSnapshot().getTime(),
+                        converter);
+        snapshotEnd.setInput(clientFilter.getSelectedFilter(), snapshot.getEndClientSnapshot().getTime(), converter);
 
         earnings.setInput(snapshot.getEarnings());
         earningsByAccount.setInput(new GroupEarningsByAccount(snapshot).getItems());
@@ -160,8 +180,15 @@ public class PerformanceView extends AbstractHistoricView
         CTabFolder folder = new CTabFolder(parent, SWT.BORDER);
 
         createCalculationItem(folder, Messages.PerformanceTabCalculation);
+
         snapshotStart = createStatementOfAssetsItem(folder, Messages.PerformanceTabAssetsAtStart);
+        snapshotStart.getTableViewer().addSelectionChangedListener(
+                        e -> setInformationPaneInput(e.getStructuredSelection().getFirstElement()));
+
         snapshotEnd = createStatementOfAssetsItem(folder, Messages.PerformanceTabAssetsAtEnd);
+        snapshotEnd.getTableViewer().addSelectionChangedListener(
+                        e -> setInformationPaneInput(e.getStructuredSelection().getFirstElement()));
+
         earnings = createTransactionViewer(folder, Messages.PerformanceTabEarnings);
         createEarningsByAccountsItem(folder, Messages.PerformanceTabEarningsByAccount);
         taxes = createTransactionViewer(folder, Messages.PerformanceTabTaxes);
@@ -194,9 +221,17 @@ public class PerformanceView extends AbstractHistoricView
 
         calculation = new TreeViewer(container, SWT.FULL_SELECTION);
 
+        ColumnEditingSupport.prepare(calculation);
         MoneyTrailToolTipSupport.enableFor(calculation, ToolTip.NO_RECREATE);
+        CopyPasteSupport.enableFor(calculation);
 
-        final Font boldFont = JFaceResources.getFontRegistry().getBold(container.getFont().getFontData()[0].getName());
+        // make sure to apply the styles (including font information to the
+        // table) before creating the bold font. Otherwise the font does not
+        // match the styles in CSS
+        stylingEngine.style(calculation.getTree());
+
+        final Font boldFont = JFaceResources.getResources()
+                        .createFont(FontDescriptor.createFrom(calculation.getTree().getFont()).setStyle(SWT.BOLD));
 
         ShowHideColumnHelper support = new ShowHideColumnHelper(getClass().getSimpleName() + "-calculation@v2", //$NON-NLS-1$
                         getPreferenceStore(), calculation, layout);
@@ -240,10 +275,8 @@ public class PerformanceView extends AbstractHistoricView
                         boolean hasHoldings = snapshot.getEndClientSnapshot().getPositionsByVehicle()
                                         .get(security) != null;
 
-                        if(hasHoldings) 
-                        {
+                        if (hasHoldings)
                             return LogoManager.instance().getDefaultColumnImage(security, getClient().getSettings());
-                        }
                         return Images.SECURITY_RETIRED.image();
                     }
                     else
@@ -263,9 +296,10 @@ public class PerformanceView extends AbstractHistoricView
                 return null;
             }
         });
+        column.getEditingSupport().addListener(new MarkDirtyClientListener(getClient()));
         support.addColumn(column);
 
-        column = new NameColumn("value", Messages.ColumnValue, SWT.RIGHT, 80, getClient()); //$NON-NLS-1$
+        column = new Column("value", Messages.ColumnValue, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -307,7 +341,7 @@ public class PerformanceView extends AbstractHistoricView
         });
         support.addColumn(column);
 
-        column = new NameColumn("forex", Messages.ColumnThereofForeignCurrencyGains, SWT.RIGHT, 80, getClient()); //$NON-NLS-1$
+        column = new Column("forex", Messages.ColumnThereofForeignCurrencyGains, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -345,6 +379,7 @@ public class PerformanceView extends AbstractHistoricView
 
         calculation.addSelectionChangedListener(event -> {
             Object selection = ((IStructuredSelection) event.getSelection()).getFirstElement();
+            setInformationPaneInput(selection);
             if (selection instanceof ClientPerformanceSnapshot.Position
                             && ((ClientPerformanceSnapshot.Position) selection).getSecurity() != null)
                 selectionService.setSelection(new SecuritySelection(getClient(),
@@ -376,6 +411,7 @@ public class PerformanceView extends AbstractHistoricView
 
         TableViewer transactionViewer = new TableViewer(container, SWT.FULL_SELECTION);
         ColumnViewerToolTipSupport.enableFor(transactionViewer, ToolTip.NO_RECREATE);
+        CopyPasteSupport.enableFor(transactionViewer);
 
         transactionViewer.addSelectionChangedListener(event -> {
             TransactionPair<?> tx = ((TransactionPair<?>) ((IStructuredSelection) event.getSelection())
@@ -447,6 +483,9 @@ public class PerformanceView extends AbstractHistoricView
         transactionViewer.getTable().setLinesVisible(true);
 
         transactionViewer.setContentProvider(ArrayContentProvider.getInstance());
+
+        transactionViewer.addSelectionChangedListener(
+                        e -> setInformationPaneInput(e.getStructuredSelection().getFirstElement()));
 
         CTabItem item = new CTabItem(folder, SWT.NONE);
         item.setText(title);
@@ -537,7 +576,9 @@ public class PerformanceView extends AbstractHistoricView
             public Image getImage(Object element)
             {
                 Security security = ((TransactionPair<?>) element).getTransaction().getSecurity();
-                return security != null ? LogoManager.instance().getDefaultColumnImage(security, getClient().getSettings()) : null;
+                return security != null
+                                ? LogoManager.instance().getDefaultColumnImage(security, getClient().getSettings())
+                                : null;
             }
         });
         column.setSorter(ColumnViewerSorter.create(e -> {
@@ -567,7 +608,9 @@ public class PerformanceView extends AbstractHistoricView
                 Portfolio portfolio = ((TransactionPair<?>) element).getOwner() instanceof Portfolio
                                 ? (Portfolio) ((TransactionPair<?>) element).getOwner()
                                 : null;
-                return portfolio != null ? LogoManager.instance().getDefaultColumnImage(portfolio, getClient().getSettings()) : null;
+                return portfolio != null
+                                ? LogoManager.instance().getDefaultColumnImage(portfolio, getClient().getSettings())
+                                : null;
             }
         });
         column.setSorter(ColumnViewerSorter.create(e -> {
@@ -610,7 +653,9 @@ public class PerformanceView extends AbstractHistoricView
             public Image getImage(Object element)
             {
                 Account account = getAccount.apply(element);
-                return account != null ? LogoManager.instance().getDefaultColumnImage(account, getClient().getSettings()) : null;
+                return account != null
+                                ? LogoManager.instance().getDefaultColumnImage(account, getClient().getSettings())
+                                : null;
             }
         });
         column.setSorter(ColumnViewerSorter.create(e -> {
@@ -628,6 +673,7 @@ public class PerformanceView extends AbstractHistoricView
 
         earningsByAccount = new TableViewer(container, SWT.FULL_SELECTION);
         ColumnViewerToolTipSupport.enableFor(earningsByAccount, ToolTip.NO_RECREATE);
+        CopyPasteSupport.enableFor(earningsByAccount);
 
         ShowHideColumnHelper support = new ShowHideColumnHelper(PerformanceView.class.getSimpleName() + "@byaccounts2", //$NON-NLS-1$
                         getPreferenceStore(), earningsByAccount, layout);
@@ -725,9 +771,23 @@ public class PerformanceView extends AbstractHistoricView
 
         earningsByAccount.setContentProvider(ArrayContentProvider.getInstance());
 
+        earningsByAccount.addSelectionChangedListener(
+                        e -> setInformationPaneInput(e.getStructuredSelection().getFirstElement()));
+
         CTabItem item = new CTabItem(folder, SWT.NONE);
         item.setText(title);
         item.setControl(container);
+    }
+
+    @Override
+    protected void addPanePages(List<InformationPanePage> pages)
+    {
+        super.addPanePages(pages);
+        pages.add(make(SecurityPriceChartPane.class));
+        pages.add(make(HistoricalPricesPane.class));
+        pages.add(make(TransactionsPane.class));
+        pages.add(make(TradesPane.class));
+        pages.add(make(SecurityEventsPane.class));
     }
 
     private static class PerformanceContentProvider implements ITreeContentProvider

@@ -1,8 +1,8 @@
 package name.abuchen.portfolio.snapshot.security;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
 import java.time.LocalDate;
 
@@ -85,15 +85,10 @@ public class SecurityPerformanceSnapshotTest
         assertThat(record.getMovingAverageCostPerSharesHeld(),
                         is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(0.9))));
 
-        SecurityPosition position = ClientSnapshot
-                        .create(client, new TestCurrencyConverter(), reportingPeriod.getEnd())
+        SecurityPosition position = ClientSnapshot.create(client, new TestCurrencyConverter(), reportingPeriod.getEnd())
                         .getPositionsByVehicle().get(security).getPosition();
 
-        assertThat(position.getFIFOPurchaseValue(), is(record.getFifoCost()));
-        assertThat(position.getFIFOPurchasePrice(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.9))));
-
-        assertThat(position.getMovingAveragePurchaseValue(), is(record.getMovingAverageCost()));
-        assertThat(position.getMovingAveragePurchasePrice(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.9))));
+        assertThat(position.getShares(), is(record.getSharesHeld()));
+        assertThat(position.calculateValue(), is(record.getMarketValue()));
     }
 }

@@ -58,6 +58,12 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
         addDividendTransactionFromTaxDocument();
     }
 
+    @Override
+    public String getLabel()
+    {
+        return "Targobank AG"; //$NON-NLS-1$
+    }
+
     @SuppressWarnings("nls")
     private void addBuyTransaction()
     {
@@ -493,11 +499,4 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
         return items;
 
     }
-
-    @Override
-    public String getLabel()
-    {
-        return "TARGO"; //$NON-NLS-1$
-    }
-
 }

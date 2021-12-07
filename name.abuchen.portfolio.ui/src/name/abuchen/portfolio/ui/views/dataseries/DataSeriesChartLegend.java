@@ -14,7 +14,13 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
@@ -43,19 +49,13 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
  * A legend for charts to configure data series, e.g. color, area fill, and line
  * type.
  */
-public class DataSeriesChartLegend extends Composite
+public class DataSeriesChartLegend extends Composite implements ISelectionProvider
 {
     private final DataSeriesConfigurator configurator;
     private final LocalResourceManager resources;
 
-    /**
-     * Constructor.
-     *
-     * @param parent
-     *            the parent composite
-     * @param configurator
-     *            the chart configurator
-     */
+    private final List<ISelectionChangedListener> listeners = new ArrayList<>();
+
     public DataSeriesChartLegend(Composite parent, DataSeriesConfigurator configurator)
     {
         super(parent, SWT.NONE);
@@ -66,7 +66,11 @@ public class DataSeriesChartLegend extends Composite
         setLayout(new RowPlusChevronLayout(this));
 
         for (DataSeries series : configurator.getSelectedDataSeries())
-            new PaintItem(this, series);
+        {
+            PaintItem item = new PaintItem(this, series);
+            item.addMouseListener(MouseListener.mouseUpAdapter(e -> listeners.forEach(l -> l
+                            .selectionChanged(new SelectionChangedEvent(this, new StructuredSelection(series))))));
+        }
 
         this.configurator.addListener(this::onUpdate);
     }
@@ -78,15 +82,44 @@ public class DataSeriesChartLegend extends Composite
                 child.dispose();
 
         for (DataSeries series : configurator.getSelectedDataSeries())
-            new PaintItem(this, series);
+        {
+            PaintItem item = new PaintItem(this, series);
+            item.addMouseListener(MouseListener.mouseUpAdapter(e -> listeners.forEach(l -> l
+                            .selectionChanged(new SelectionChangedEvent(this, new StructuredSelection(series))))));
+        }
 
         layout();
         getParent().layout();
     }
 
+    @Override
+    public void addSelectionChangedListener(ISelectionChangedListener listener)
+    {
+        this.listeners.add(listener);
+    }
+
+    @Override
+    public void removeSelectionChangedListener(ISelectionChangedListener listener)
+    {
+        this.listeners.remove(listener);
+    }
+
+    @Override
+    public ISelection getSelection()
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setSelection(ISelection selection)
+    {
+        throw new UnsupportedOperationException();
+    }
+
     private static final class PaintItem extends Canvas implements Listener // NOSONAR
     {
         private static final ResourceBundle LABELS = ResourceBundle.getBundle("name.abuchen.portfolio.ui.views.labels"); //$NON-NLS-1$
+        private static final int PADDING = 10;
 
         private final DataSeries series;
 
@@ -147,6 +180,9 @@ public class DataSeriesChartLegend extends Composite
             e.gc.setForeground(getForeground());
             e.gc.drawString(text, size.y + 2, 1, true);
 
+            if (!series.isVisible())
+                e.gc.drawLine(size.y + 2, size.y / 2 + 1, size.x - PADDING, size.y / 2 + 1);
+
             e.gc.setForeground(oldForeground);
             e.gc.setBackground(oldBackground);
         }
@@ -160,7 +196,7 @@ public class DataSeriesChartLegend extends Composite
             Point extentText = gc.stringExtent(text);
             gc.dispose();
 
-            return new Point(extentText.x + extentText.y + 12, extentText.y + 2);
+            return new Point(extentText.x + extentText.y + PADDING + 2, extentText.y + 2);
         }
 
         private void seriesMenuAboutToShow(IMenuManager manager) // NOSONAR
@@ -261,6 +297,12 @@ public class DataSeriesChartLegend extends Composite
                     configurator.fireUpdate();
                 }));
             }
+
+            manager.add(new Separator());
+            manager.add(new SimpleAction(series.isVisible() ? Messages.LabelHide : Messages.LabelUnhide, a -> {
+                series.setVisible(!series.isVisible());
+                configurator.fireUpdate();
+            }));
 
             manager.add(new Separator());
             manager.add(new SimpleAction(Messages.ChartSeriesPickerRemove, a -> configurator.doDeleteSeries(series)));

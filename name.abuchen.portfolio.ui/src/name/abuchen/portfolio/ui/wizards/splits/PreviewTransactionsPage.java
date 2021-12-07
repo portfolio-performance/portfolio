@@ -4,9 +4,9 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.databinding.DataBindingContext;
-import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.beans.typed.BeanProperties;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
-import org.eclipse.jface.databinding.swt.WidgetProperties;
+import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -32,6 +32,7 @@ import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 public class PreviewTransactionsPage extends AbstractWizardPage
@@ -127,6 +128,7 @@ public class PreviewTransactionsPage extends AbstractWizardPage
         tableContainer.setLayout(layout);
 
         tableViewer = new TableViewer(tableContainer, SWT.BORDER);
+        CopyPasteSupport.enableFor(tableViewer);
         Table table = tableViewer.getTable();
         table.setHeaderVisible(true);
         table.setLinesVisible(true);
@@ -158,8 +160,7 @@ public class PreviewTransactionsPage extends AbstractWizardPage
 
         DataBindingContext context = new DataBindingContext();
 
-        IObservableValue<?> targetObservable = WidgetProperties.selection().observe(checkbox);
-        @SuppressWarnings("unchecked")
+        IObservableValue<?> targetObservable = WidgetProperties.buttonSelection().observe(checkbox);
         IObservableValue<?> modelObservable = BeanProperties.value("changeTransactions").observe(model); //$NON-NLS-1$
         context.bindValue(targetObservable, modelObservable);
 

@@ -7,6 +7,7 @@ import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.StringJoiner;
 
 import name.abuchen.portfolio.Messages;
@@ -106,7 +107,7 @@ import name.abuchen.portfolio.money.Money;
         Long taxes = getAmount(Messages.CSVColumn_Taxes, rawValues, field2column);
         String note = getText(Messages.CSVColumn_Note, rawValues, field2column);
 
-        Unit grossAmount = extractGrossAmount(rawValues, field2column, amount);
+        Optional<Unit> grossAmount = extractGrossAmount(rawValues, field2column, amount);
 
         Account account = getAccount(getClient(), rawValues, field2column);
         Portfolio portfolio = getPortfolio(getClient(), rawValues, field2column);
@@ -123,7 +124,7 @@ import name.abuchen.portfolio.money.Money;
                 break;
             case TRANSFER_IN:
             case TRANSFER_OUT:
-                item = createTransfer(security, amount, fees, taxes, date, note, shares, grossAmount);
+                item = createTransfer(security, amount, date, note, shares);
                 break;
             case DELIVERY_INBOUND:
             case DELIVERY_OUTBOUND:
@@ -142,8 +143,8 @@ import name.abuchen.portfolio.money.Money;
     }
 
     private Item createBuySell(String[] rawValues, Map<String, Column> field2column, Type type, Security security,
-                    Money amount, Long fees, Long taxes, LocalDateTime date, String note, Long shares, Unit grossAmount)
-                    throws ParseException
+                    Money amount, Long fees, Long taxes, LocalDateTime date, String note, Long shares,
+                    Optional<Unit> grossAmount) throws ParseException
     {
         BuySellEntry entry = new BuySellEntry();
         entry.setType(type);
@@ -154,8 +155,8 @@ import name.abuchen.portfolio.money.Money;
         entry.setShares(shares);
         entry.setNote(note);
 
-        if (grossAmount != null)
-            entry.getPortfolioTransaction().addUnit(grossAmount);
+        if (grossAmount.isPresent())
+            entry.getPortfolioTransaction().addUnit(grossAmount.get());
 
         if (fees != null && fees.longValue() != 0)
             entry.getPortfolioTransaction()
@@ -165,7 +166,7 @@ import name.abuchen.portfolio.money.Money;
             entry.getPortfolioTransaction()
                             .addUnit(new Unit(Unit.Type.TAX, Money.of(amount.getCurrencyCode(), Math.abs(taxes))));
 
-        if (grossAmount == null)
+        if (!grossAmount.isPresent())
             createGrossValueIfNecessary(rawValues, field2column, entry.getPortfolioTransaction());
 
         return new BuySellEntryItem(entry);
@@ -192,8 +193,7 @@ import name.abuchen.portfolio.money.Money;
         }
     }
 
-    private Item createTransfer(Security security, Money amount, Long fees, Long taxes, LocalDateTime date, String note,
-                    Long shares, Unit grossAmount)
+    private Item createTransfer(Security security, Money amount, LocalDateTime date, String note, Long shares)
     {
         PortfolioTransferEntry entry = new PortfolioTransferEntry();
         entry.setSecurity(security);
@@ -207,8 +207,8 @@ import name.abuchen.portfolio.money.Money;
     }
 
     private Item createDelivery(String[] rawValues, Map<String, Column> field2column, Type type, Security security,
-                    Money amount, Long fees, Long taxes, LocalDateTime date, String note, Long shares, Unit grossAmount)
-                    throws ParseException
+                    Money amount, Long fees, Long taxes, LocalDateTime date, String note, Long shares,
+                    Optional<Unit> grossAmount) throws ParseException
     {
         PortfolioTransaction t = new PortfolioTransaction();
 
@@ -220,8 +220,8 @@ import name.abuchen.portfolio.money.Money;
         t.setShares(shares);
         t.setNote(note);
 
-        if (grossAmount != null)
-            t.addUnit(grossAmount);
+        if (grossAmount.isPresent())
+            t.addUnit(grossAmount.get());
 
         if (fees != null && fees.longValue() != 0)
             t.addUnit(new Unit(Unit.Type.FEE, Money.of(amount.getCurrencyCode(), Math.abs(fees))));
@@ -229,7 +229,7 @@ import name.abuchen.portfolio.money.Money;
         if (taxes != null && taxes.longValue() != 0)
             t.addUnit(new Unit(Unit.Type.TAX, Money.of(amount.getCurrencyCode(), Math.abs(taxes))));
 
-        if (grossAmount == null)
+        if (!grossAmount.isPresent())
             createGrossValueIfNecessary(rawValues, field2column, t);
 
         return new TransactionItem(t);
@@ -241,33 +241,5 @@ import name.abuchen.portfolio.money.Money;
         if (type == null)
             type = amount.isNegative() ? Type.BUY : Type.SELL;
         return type;
-    }
-
-    private Unit extractGrossAmount(String[] rawValues, Map<String, Column> field2column, Money amount)
-                    throws ParseException
-    {
-        Long grossAmount = getAmount(Messages.CSVColumn_GrossAmount, rawValues, field2column);
-        String currencyCode = getCurrencyCode(Messages.CSVColumn_CurrencyGrossAmount, rawValues, field2column);
-        BigDecimal exchangeRate = getBigDecimal(Messages.CSVColumn_ExchangeRate, rawValues, field2column);
-
-        // if no currency code is given, let's assume the gross amount is in the
-        // same currency as the transaction itself. Either way, if the gross
-        // amount currency equals the transaction currency, no unit is created
-        if (currencyCode == null || amount.getCurrencyCode().equals(currencyCode))
-            return null;
-
-        // if no gross amount is given at all, no unit
-        if (grossAmount == null || grossAmount.longValue() == 0)
-            return null;
-
-        // if no exchange rate is available, not unit to create
-        if (exchangeRate == null || exchangeRate.compareTo(BigDecimal.ZERO) == 0)
-            return null;
-
-        Money forex = Money.of(currencyCode, Math.abs(grossAmount.longValue()));
-        BigDecimal grossAmountConverted = exchangeRate.multiply(BigDecimal.valueOf(grossAmount));
-        Money converted = Money.of(amount.getCurrencyCode(), Math.round(grossAmountConverted.doubleValue()));
-
-        return new Unit(Unit.Type.GROSS_VALUE, converted, forex, exchangeRate);
     }
 }

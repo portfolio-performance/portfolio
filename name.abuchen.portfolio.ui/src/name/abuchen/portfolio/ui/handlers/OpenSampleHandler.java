@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -54,8 +55,7 @@ public class OpenSampleHandler
                     .getBundle("name.abuchen.portfolio.ui.parts.samplemessages"); //$NON-NLS-1$
 
     @Execute
-    public void execute(
-                    @Named(IServiceConstants.ACTIVE_SHELL) Shell shell, //
+    public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell, //
                     final MApplication app, //
                     final EPartService partService, final EModelService modelService,
                     @Named(UIConstants.Parameter.SAMPLE_FILE) final String sampleFile)
@@ -70,8 +70,9 @@ public class OpenSampleHandler
                     try (InputStream in = this.getClass().getResourceAsStream(sampleFile))
                     {
                         InputStream inputStream = new ProgressMonitorInputStream(in, monitor);
-                        Reader replacingReader = new TokenReplacingReader(new InputStreamReader(inputStream,
-                                        StandardCharsets.UTF_8), buildResourcesTokenResolver());
+                        Reader replacingReader = new TokenReplacingReader(
+                                        new InputStreamReader(inputStream, StandardCharsets.UTF_8),
+                                        buildResourcesTokenResolver());
 
                         final Client client = ClientFactory.load(replacingReader);
 
@@ -108,12 +109,28 @@ public class OpenSampleHandler
 
     protected void fixTaxonomyLabels(Client client)
     {
-        for (Taxonomy taxonomy : client.getTaxonomies())
+        for (Taxonomy taxonomy : new ArrayList<>(client.getTaxonomies()))
         {
             TaxonomyTemplate template = TaxonomyTemplate.byId(taxonomy.getId());
 
             if (template != null)
                 applyTaxonomyLabels(template, taxonomy);
+
+            // classification ids must be unique per file. Usually, the ids are
+            // randomized upon creating a taxonomy from a template. However, in
+            // order to translate the sample file, we keep the original UUIDs.
+            // By copying the taxonomy, we ensure unique ids.
+
+            // but because assetclasses and assetallocation are referenced in
+            // diagrams and dashboards, do not change the ids there. These ids
+            // are manually unique, but the regions and sector taxonomies are
+            // not.
+
+            if (!taxonomy.getId().startsWith("asset")) //$NON-NLS-1$
+            {
+                client.removeTaxonomy(taxonomy);
+                client.addTaxonomy(taxonomy.copy());
+            }
         }
     }
 

@@ -1,0 +1,28 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KASTANIENALLEE 32  10435 BERLIN
+NAME1 NAME2 NAME3 SEITE 1 von 1
+Strasse 123 DATUM 29.01.2021
+20000 Hamburg DEPOT 0xxxxxxxxx
+TILGUNG
+ÜBERSICHT
+NR. BUCHUNG WERTPAPIER BETRAG
+1 Tilgung HSBC Trinkaus & Burkhardt AG 250 Stk.
+TurboP O.End ShopApEu
+DE1234567891
+ABRECHNUNG
+NR. POSITION BETRAG
+1 Kurswert 0,25 EUR
+GESAMT 0,25 EUR
+BUCHUNG
+VERRECHNUNGSKONTO VALUTA BETRAG
+DEIBAN12345675 01.02.2021 0,25 EUR
+HSBC Trinkaus & Burkhardt AG TurboP O.End ShopApEu in Girosammelverwahrung in Deutschland.
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie 
+Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Düsseldorf Geschäftsführer
+Kastanienallee 32 service@traderepublic.com AG Düsseldorf HRB 85864 Andreas Willius
+10435 Berlin USt-ID DE307510626 Karsten Müller
+ABRE / 30.01.2021 / 123456789 / xxxx-xxxx

@@ -1,0 +1,52 @@
+﻿PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+VR-Bank Erding eG · Zollnerstraße 4 · 85435 Erding    Seite 1
+Depotnummer
+ 77414444
+ Kundennummer 741755555
+Max Musterman
+ Abrechnungsnr. 58240391560
+Max Mustermann Datum 23.03.2021
+Georg-Meyer-Strasse 10 Ihr Berater Herr Musterfrau
+28200 Bremen Telefon 08122 30000      
+Telefax 08122 30001             
+Ausschüttung Investmentfonds
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 350 I.M.III-I.FTSE EM H.D.L.V.UETF IE00BYYXBF44 (A2AHZU)
+REG. SHARES DIS O.N.
+Zahlbarkeitstag 22.03.2021 Ausschüttung pro St. 0,209800000 USD
+Bestandsstichtag 17.03.2021 mit Teilfreistellung (Aktien-
+Ex-Tag 18.03.2021 fonds) 0,146860000 USD
+Geschäftsjahr 01.10.2020 - 30.09.2021 Herkunftsland Irland
+Devisenkurs EUR / USD  1,1925
+Devisenkursdatum 23.03.2021
+Ausschüttung 73,43 USD 61,58+ EUR
+davon steuerfreier Anteil wg. Teilfreistellung 22,03 USD
+Kapitalertragsteuerpfl. Ertrag nach Teilfreistellung 51,40 USD
+Umrechnung in EUR 43,10 EUR
+Verrechneter Sparer-Pauschbetrag 43,10 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 0,00 EUR
+Ausmachender Betrag 61,58+ EUR
+Lagerstelle CBFI (601617 / 67268)
+Den Betrag buchen wir mit Wertstellung 24.03.2021 zu Gunsten des Kontos 7417330 (IBAN DE37 7016 9605 0007 4444
+00), BLZ 701 696 05 (BIC GENODEF1ISE). 
+Keine Steuerbescheinigung. 
+Bitte ggf. Rückseite beachten.
+6352.03240101.0000027ER03
+
+Seite 2
+Depotnummer 77414444
+Kundennummer 741755555
+Abrechnungsnr. 58240391560
+Datum 23.03.2021
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2021 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 974,41 0,00 0,00
+Ertrag 0,00 0,00 43,10- 0,00 0,00
+Nachher 0,00 0,00 931,31 0,00 0,00
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+6352.03240101.0000028ER03

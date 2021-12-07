@@ -35,10 +35,8 @@ public class SecurityCache
         this.localMaps.add(client.getSecurities().stream().filter(s -> s.getIsin() != null && !s.getIsin().isEmpty())
                         .collect(Collectors.toMap(Security::getIsin, s -> s, (l, r) -> DUPLICATE_SECURITY_MARKER)));
 
-        this.localMaps.add(client.getSecurities().stream()
-                        .filter(s -> s.getTickerSymbol() != null && !s.getTickerSymbol().isEmpty()) //
-                        .collect(Collectors.toMap(Security::getTickerSymbol, s -> s,
-                                        (l, r) -> DUPLICATE_SECURITY_MARKER)));
+        this.localMaps.add(client.getSecurities().stream().filter(s -> s.getTickerSymbol() != null && !s.getTickerSymbol().isEmpty())
+                        .collect(Collectors.toMap(Security::getTickerSymbolWithoutStockMarket, s -> s, (l, r) -> DUPLICATE_SECURITY_MARKER)));
 
         this.localMaps.add(client.getSecurities().stream().filter(s -> s.getWkn() != null && !s.getWkn().isEmpty())
                         .collect(Collectors.toMap(Security::getWkn, s -> s, (l, r) -> DUPLICATE_SECURITY_MARKER)));
@@ -109,10 +107,24 @@ public class SecurityCache
 
         if (doNotMatchIfGiven(isin, security.getIsin()))
             return null;
+
         if (doNotMatchIfGiven(tickerSymbol, security.getTickerSymbol()))
-            return null;
+        {
+            // In some countries there is no ISIN or WKN, only the ticker symbol. 
+            // However, as soon as the historical prices are pulled from the stock exchange, 
+            // the ticker symbol is expanded.
+            // PDF importers that use this are for example the SelfWeath and the CommSec
+            // Example UMAX --> UMAX.AX
+            if (doNotMatchIfGiven(tickerSymbol, security.getTickerSymbol().substring(0, security.getTickerSymbol().indexOf('.'))))
+            {
+                return null;
+            }
+        return null;
+        }
+
         if (doNotMatchIfGiven(wkn, security.getWkn()))
             return null;
+
         return security;
     }
 

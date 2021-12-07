@@ -104,6 +104,10 @@ var flare = {
 
     node = d;
 
+    if (typeof onItemSelected === 'function') {
+      onItemSelected(d.uuid);
+    }
+
     flare.path.transition()
       .duration(1000)
       .attrTween("d", arcTweenZoom(d));

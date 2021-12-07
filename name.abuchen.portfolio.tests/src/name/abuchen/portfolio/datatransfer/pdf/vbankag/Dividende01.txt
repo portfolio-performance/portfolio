@@ -1,0 +1,73 @@
+PDF Autor: 'Unknown'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Erträgnisabrechnung
+Referenz-Nr 104418109
+Datum 13.12.2019
+Depot 1234567890
+Mustermann, Max
+Herrn
+Max Mustermann
+Musterstrasse 1 Telefon +49 - (0) 69 - 1234567890
+12345 Musterstadt E-Mail max.muller@muller.de
+Seite 1 von 2
+Für aus Ihrem Depot fällig gewordene Erträgnisse erteilen wir nachstehende Abrechnung:
+Wertpapierbezeichnung OptoFlex Inhaber-Ant. P o.N.
+ISIN LU0834815366
+WKN A1J4YZ
+Verwahrart Wertpapierrechnung
+Lagerland Deutschland
+Nominal/Stück 16 ST
+Währung EUR
+Zahlungszeitraum 01.04.2019 - 31.03.2020
+Ausschüttung EUR 4,12 pro Anteil
+Ex-Tag 06.12.2019
+Zahlungstag 11.12.2019
+Betrag EUR 65,92
+Kapitalertragsteuer EUR -16,48
+Solidaritätszuschlag EUR -0,90
+Kirchensteuer EUR 0,00
+Ausmachender Betrag EUR 48,54
+Der Abrechnungsbetrag wird mit Valuta 11.12.2019 über Ihr Konto 1234567890 EUR gebucht.
+Gebietsansässigen Empfängern von Erträgen aus ausländischen Wertpapieren obliegt eine Meldepflicht nach §§ 67 ff. AWV
+(Außenwirtschaftsverordnung), wenn die Gutschrift EUR 12.500,00 übersteigt.
+Keine Steuerbescheinigung!
+Für Rückfragen wenden Sie sich bitte an Ihren Vermögensbetreuer.
+Diese Mitteilung wurde maschinell erstellt und wird von der Bank nicht unterschrieben.
+V-Bank AG Telefon +49 (0)89 740 800-0 Aufsichtsratsvorsitzender: Vorstand:
+Arnulfstr. 58 - 80335 München Telefax +49 (0)89 740 800-222 Lars Hille Jens Hagemann
+Postfach 310340 - 80103 München USt-Id. DE 255554184 Stefan Lettmeier
+Gerichtsstand: München BIC VBANDEMMXXX
+Amtsgericht München HRB 167737 BLZ 700 123 00
+www.V-Bank.com
+MetaType: SECTRX2 / OrderType: DIV CASH / Timestamp: 20191213 09:41:36
+Erträgnisabrechnung
+Referenz-Nr 104418109
+Seite 2 von 2
+Steuerliche Informationen
+Ausschüttungsbetrag: EUR 65,92
+Steuerpflichtiger Betrag nach Teilfreistellung im Privatvermögen: EUR 65,92
+Kapitalertragsteuerpflichtiger Betrag: EUR 65,92
+Stand allg. Verlustverrechnungstopf vor Veränderung: EUR 0,00
+Veränderung allg. Verlustverrechnungstopf: EUR 0,00
+Stand allg. Verlustverrechnungstopf nach Veränderung: EUR 0,00
+Stand Freistellungsauftrag vor Veränderung: EUR 0,00
+Veränderung Freistellungsauftrag: EUR 0,00
+Stand Freistellungsauftrag nach Veränderung: EUR 0,00
+Stand Quellensteuerguthaben vor Veränderung: EUR 0,00
+Veränderung Quellensteuerguthaben: EUR 0,00
+Stand Quellensteuerguthaben nach Veränderung: EUR 0,00
+Bemessungsgrundlage für Kapitalertragsteuer: EUR 65,92
+Kapitalertragsteuer: EUR -16,48
+Solidaritätszuschlag: EUR -0,90
+Kirchensteuer: EUR 0,00
+Steuerliche Information für Veranlagungszwecke
+Steuerpfl. Betrag nach Teilfreistellung im Betriebsvermögen (EStG): EUR 65,92
+Steuerpfl. Betrag nach Teilfreistellung im Betriebsvermögen (KStG): EUR 65,92
+V-Bank AG Telefon +49 (0)89 740 800-0 Aufsichtsratsvorsitzender: Vorstand:
+Arnulfstr. 58 - 80335 München Telefax +49 (0)89 740 800-222 Lars Hille Jens Hagemann
+Postfach 310340 - 80103 München USt-Id. DE 255554184 Stefan Lettmeier
+Gerichtsstand: München BIC VBANDEMMXXX
+Amtsgericht München HRB 167737 BLZ 700 123 00
+www.V-Bank.com
+MetaType: SECTRX2 / OrderType: DIV CASH / Timestamp: 20191213 09:41:36

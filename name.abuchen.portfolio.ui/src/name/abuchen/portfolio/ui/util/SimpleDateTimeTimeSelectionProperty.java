@@ -6,11 +6,12 @@ import java.util.Date;
 import org.eclipse.jface.databinding.swt.WidgetValueProperty;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DateTime;
 
 import com.ibm.icu.util.Calendar;
 
-public class SimpleDateTimeTimeSelectionProperty extends WidgetValueProperty
+public class SimpleDateTimeTimeSelectionProperty extends WidgetValueProperty<Control, LocalTime>
 {
     public SimpleDateTimeTimeSelectionProperty()
     {
@@ -24,7 +25,7 @@ public class SimpleDateTimeTimeSelectionProperty extends WidgetValueProperty
     }
 
     @Override
-    protected Object doGetValue(Object source)
+    protected LocalTime doGetValue(Control source)
     {
         if (source instanceof DateTime)
         {
@@ -38,7 +39,7 @@ public class SimpleDateTimeTimeSelectionProperty extends WidgetValueProperty
             CDateTime dateTime = (CDateTime) source;
 
             Date date = dateTime.getSelection();
-            
+
             if (date == null)
             {
                 doSetValue(source, LocalTime.MIDNIGHT);
@@ -58,10 +59,8 @@ public class SimpleDateTimeTimeSelectionProperty extends WidgetValueProperty
     }
 
     @Override
-    protected void doSetValue(Object source, Object value)
+    protected void doSetValue(Control source, LocalTime date)
     {
-        LocalTime date = (LocalTime) value;
-
         if (source instanceof DateTime)
         {
             DateTime dateTime = (DateTime) source;
@@ -73,7 +72,7 @@ public class SimpleDateTimeTimeSelectionProperty extends WidgetValueProperty
             calendar.set(Calendar.HOUR_OF_DAY, date.getHour());
             calendar.set(Calendar.MINUTE, date.getMinute());
             calendar.set(Calendar.SECOND, 0);
-            
+
             CDateTime dateTime = (CDateTime) source;
             dateTime.setSelection(calendar.getTime());
         }

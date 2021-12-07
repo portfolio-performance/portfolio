@@ -4,7 +4,7 @@ import static name.abuchen.portfolio.datatransfer.csv.CSVExtractorTestUtil.build
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.text.ParseException;
 import java.time.LocalDateTime;
@@ -49,6 +49,39 @@ public class CSVAccountTransactionExtractorTest
         List<Item> results = extractor.extract(0,
                         Arrays.<String[]>asList(new String[] { "2013-01-01", "", "DE0007164600", "SAP.DE", "", "100",
                                         "EUR", "DIVIDENDS", "SAP SE", "10", "Notiz" }),
+                        buildField2Column(extractor), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findAny().get().getSecurity();
+        assertThat(security.getName(), is("SAP SE"));
+        assertThat(security.getIsin(), is("DE0007164600"));
+        assertThat(security.getWkn(), is(nullValue()));
+        assertThat(security.getTickerSymbol(), is("SAP.DE"));
+
+        AccountTransaction t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).findAny()
+                        .get().getSubject();
+        assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 100_00)));
+        assertThat(t.getNote(), is("Notiz"));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2013-01-01T00:00")));
+        assertThat(t.getShares(), is(Values.Share.factorize(10)));
+        assertThat(t.getSecurity(), is(security));
+    }
+    
+    @Test
+    public void testValuesAreTrimmed() throws ParseException
+    {
+        Client client = new Client();
+
+        CSVExtractor extractor = new CSVAccountTransactionExtractor(client);
+
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(0,
+                        Arrays.<String[]>asList(new String[] { " 2013-01-01 ", "", " DE0007164600 ", " SAP.DE ", "", " 100 ",
+                                        " EUR ", " DIVIDENDS ", " SAP SE ", " 10 ", " Notiz " }),
                         buildField2Column(extractor), errors);
 
         assertThat(errors, empty());

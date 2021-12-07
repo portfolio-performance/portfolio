@@ -14,15 +14,18 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.eclipse.e4.core.contexts.ContextFunction;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -86,6 +89,9 @@ public class PortfolioPart implements ClientInputListener
     @Inject
     ClientInputFactory clientInputFactory;
 
+    @Inject
+    private IStylingEngine stylingEngine;
+
     @PostConstruct
     public void createComposite(Composite parent)
     {
@@ -141,6 +147,7 @@ public class PortfolioPart implements ClientInputListener
 
         Composite sash = new Composite(container, SWT.NONE);
         SashLayout sashLayout = new SashLayout(sash, SWT.HORIZONTAL | SWT.BEGINNING);
+        sashLayout.setTag(UIConstants.Tag.SIDEBAR);
         sash.setLayout(sashLayout);
 
         Composite navigationBar = new Composite(sash, SWT.NONE);
@@ -271,7 +278,8 @@ public class PortfolioPart implements ClientInputListener
 
         Label label = new Label(container, SWT.CENTER | SWT.WRAP);
         label.setBackground(container.getBackground());
-        label.setText(message);
+        if (message != null)
+            label.setText(message);
 
         data = new FormData();
         data.top = new FormAttachment(image, 40);
@@ -369,7 +377,14 @@ public class PortfolioPart implements ClientInputListener
     public void onRecalculationNeeded()
     {
         if (view != null && view.getControl() != null && !view.getControl().isDisposed())
-            view.notifyModelUpdated();
+            view.onRecalculationNeeded();
+    }
+
+    @Inject
+    public void setQuotePrecision(
+                    @Preference(value = UIConstants.Preferences.FORMAT_CALCULATED_QUOTE_DIGITS) int quotePrecision)
+    {
+        onRecalculationNeeded();
     }
 
     @Focus
@@ -492,7 +507,7 @@ public class PortfolioPart implements ClientInputListener
 
         try
         {
-            createView(item.getViewClass(), parameter);
+            createView(item.getViewClass(), parameter, item.hideInformationPane());
 
             this.selectedItem = item;
 
@@ -501,11 +516,11 @@ public class PortfolioPart implements ClientInputListener
         catch (Exception e)
         {
             PortfolioPlugin.log(e);
-            createView(ExceptionView.class, e);
+            createView(ExceptionView.class, e, true);
         }
     }
 
-    private void createView(Class<? extends AbstractFinanceView> clazz, Object parameter)
+    private void createView(Class<? extends AbstractFinanceView> clazz, Object parameter, boolean hideInformationPane)
     {
         IEclipseContext viewContext = this.context.createChild(clazz.getName());
         viewContext.set(Client.class, this.clientInput.getClient());
@@ -513,6 +528,20 @@ public class PortfolioPart implements ClientInputListener
         viewContext.set(PortfolioPart.class, this);
         viewContext.set(ExchangeRateProviderFactory.class, this.clientInput.getExchangeRateProviderFacory());
         viewContext.set(PartPersistedState.class, new PartPersistedState(part.getPersistedState()));
+
+        ContextFunction lookup = new ContextFunction()
+        {
+            @Override
+            public Object compute(IEclipseContext context, String contextKey)
+            {
+                Object filteredClient = context.get(UIConstants.Context.FILTERED_CLIENT);
+                if (filteredClient != null)
+                    return filteredClient;
+                else
+                    return context.get(Client.class);
+            }
+        };
+        viewContext.set(UIConstants.Context.ACTIVE_CLIENT, lookup);
 
         if (parameter != null)
             viewContext.set(UIConstants.Parameter.VIEW_PARAMETER, parameter);
@@ -522,7 +551,11 @@ public class PortfolioPart implements ClientInputListener
         AbstractFinanceView underConstruction = ContextInjectionFactory.make(clazz, viewContext);
         viewContext.set(AbstractFinanceView.class, underConstruction);
 
-        underConstruction.createViewControl(book);
+        underConstruction.createViewControl(book, hideInformationPane);
+
+        // explicitly style control after creation because on Windows the styles
+        // are not always applied immediately
+        stylingEngine.style(underConstruction.getControl());
 
         view = underConstruction;
         book.showPage(view.getControl());

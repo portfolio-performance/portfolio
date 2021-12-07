@@ -2,7 +2,7 @@ package name.abuchen.portfolio.datatransfer.pdf.viac;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -331,6 +331,31 @@ public class ViacPDFExtractorTest
     }
 
     @Test
+    public void testInterest03()
+    {
+        Client client = new Client();
+    
+        ViacPDFExtractor extractor = new ViacPDFExtractor(client);
+    
+        List<Exception> errors = new ArrayList<>();
+    
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ViacZins03.txt"), errors);
+    
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+    
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+    
+        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of("CHF", Values.Amount.factorize(0.19))));
+    
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-31T00:00")));
+    }
+
+    @Test
     public void testFees01()
     {
         Client client = new Client();
@@ -652,6 +677,38 @@ public class ViacPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new);
         assertThat(gross.getAmount(), is(Money.of("CHF", Values.Amount.factorize(0.52))));
         assertThat(gross.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.54))));
+    }
+
+    @Test
+    public void testDividend06()
+    {
+        Client client = new Client();
+
+        ViacPDFExtractor extractor = new ViacPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ViacDividend06_English.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
+        assertThat(security.getIsin(), is("CH0037606552"));
+        assertThat(security.getName(), is("CSIF Europe ex CH"));
+
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of("CHF", Values.Amount.factorize(17.28))));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(1.841)));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-25T00:00")));
+
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0))));
+        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(17.28))));
     }
 
     @Test

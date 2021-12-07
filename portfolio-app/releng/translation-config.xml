@@ -6,6 +6,7 @@
 		<string>nl</string>
 		<string>pt</string>
 		<string>fr</string>
+		<string>it</string>
 	</languages>
 	<artifacts>
 		<artifact>
@@ -81,6 +82,9 @@
 				<string>.*color</string>
 				<string>.*children</string>
 				<string>.*weight</string>
+				<string>comment</string>
+				<string>source</string>
+				<string>.*data</string>
 			</excludes>
 		</artifact>
 		<artifact>
@@ -92,6 +96,9 @@
 				<string>.*color</string>
 				<string>.*children</string>
 				<string>.*weight</string>
+				<string>comment</string>
+				<string>source</string>
+				<string>.*data</string>
 			</excludes>
 		</artifact>
 		<artifact>
@@ -103,6 +110,9 @@
 				<string>.*color</string>
 				<string>.*children</string>
 				<string>.*weight</string>
+				<string>comment</string>
+				<string>source</string>
+				<string>.*data</string>
 			</excludes>
 		</artifact>
 		<artifact>
@@ -114,6 +124,9 @@
 				<string>.*color</string>
 				<string>.*children</string>
 				<string>.*weight</string>
+				<string>comment</string>
+				<string>source</string>
+				<string>.*data</string>
 			</excludes>
 		</artifact>
 		<artifact>
@@ -126,6 +139,8 @@
 				<string>.*children</string>
 				<string>.*weight</string>
 				<string>comment</string>
+				<string>source</string>
+				<string>.*data</string>
 			</excludes>
 		</artifact>
 	</artifacts>

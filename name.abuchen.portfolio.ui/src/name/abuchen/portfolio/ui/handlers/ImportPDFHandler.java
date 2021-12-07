@@ -1,11 +1,19 @@
 package name.abuchen.portfolio.ui.handlers;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import javax.inject.Named;
 
@@ -58,12 +66,32 @@ public class ImportPDFHandler
                         .ifPresent(client -> runImport((PortfolioPart) part.getObject(), shell, client, null, null));
     }
 
+    private static List<File> unzipFileToTempDir(File zipfile, File tempDir) throws IOException
+    {
+        List<File> extractedFiles = new ArrayList<>();
+        try (FileInputStream zipfs = new FileInputStream(zipfile); ZipInputStream zipin = new ZipInputStream(zipfs))
+        {
+            ZipEntry entry;
+            while ((entry = zipin.getNextEntry()) != null)
+            {
+                if (entry.isDirectory() || entry.getName() == null || !entry.getName().endsWith(".pdf")) //$NON-NLS-1$
+                    continue;
+
+                Path tempFile = Paths.get(tempDir.getAbsolutePath(), entry.getName());
+                Files.createDirectories(tempFile);
+                Files.copy(zipin, tempFile, StandardCopyOption.REPLACE_EXISTING);
+                extractedFiles.add(tempFile.toFile());
+            }
+        }
+        return extractedFiles;
+    }
+
     public static void runImport(PortfolioPart part, Shell shell, Client client, Account account, Portfolio portfolio)
     {
         FileDialog fileDialog = new FileDialog(shell, SWT.OPEN | SWT.MULTI);
         fileDialog.setText(Messages.PDFImportWizardAssistant);
         fileDialog.setFilterNames(new String[] { Messages.PDFImportFilterName });
-        fileDialog.setFilterExtensions(new String[] { "*.pdf" }); //$NON-NLS-1$
+        fileDialog.setFilterExtensions(new String[] { "*.pdf;*.zip" }); //$NON-NLS-1$
         fileDialog.open();
 
         String[] filenames = fileDialog.getFileNames();
@@ -72,10 +100,44 @@ public class ImportPDFHandler
             return;
 
         List<File> files = new ArrayList<>();
-        for (String filename : filenames)
-            files.add(new File(fileDialog.getFilterPath(), filename));
+        List<File> filesToDelete = new ArrayList<>();
+        try
+        {
+            for (String filename : filenames)
+            {
+                File file = new File(fileDialog.getFilterPath(), filename);
+                if (filename.endsWith(".zip")) //$NON-NLS-1$
+                {
+                    File tempDir = Files.createTempDirectory("portfolio_import_").toFile(); //$NON-NLS-1$
+                    filesToDelete.add(tempDir);
+                    List<File> extractedFiles = unzipFileToTempDir(file, tempDir);
+                    // Place files in front of tempDir in deletion list
+                    filesToDelete.addAll(filesToDelete.size() - 1, extractedFiles);
+                    files.addAll(extractedFiles);
+                }
+                else
+                {
+                    files.add(file);
+                }
+            }
 
-        runImportWithFiles(part, shell, client, account, portfolio, files);
+            runImportWithFiles(part, shell, client, account, portfolio, files);
+        }
+        catch (IOException e)
+        {
+            PortfolioPlugin.log(e);
+            String message = e.getCause() != null ? e.getCause().getMessage() : e.getMessage();
+            MessageDialog.openError(shell, Messages.LabelError, message);
+        }
+        finally
+        {
+            for (File f : filesToDelete)
+            {
+                boolean deleted = f.delete();
+                if (!deleted)
+                    f.deleteOnExit();
+            }
+        }
     }
 
     public static void runImportWithFiles(PortfolioPart part, Shell shell, Client client, Account account,

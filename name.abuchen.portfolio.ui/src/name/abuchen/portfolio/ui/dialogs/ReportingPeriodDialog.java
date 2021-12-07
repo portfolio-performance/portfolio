@@ -51,9 +51,15 @@ public class ReportingPeriodDialog extends Dialog
     private Button radioYearX;
     private Spinner year;
 
+    private Button radioCurrentWeek;
     private Button radioCurrentMonth;
-
+    private Button radioCurrentQuarter;
     private Button radioYTD;
+
+    private Button radioPreviousWeek;
+    private Button radioPreviousMonth;
+    private Button radioPreviousQuarter;
+    private Button radioPreviousYear;
 
     private List<Button> radioBtnList;
 
@@ -125,11 +131,35 @@ public class ReportingPeriodDialog extends Dialog
         year.setMinimum(Year.MIN_VALUE);
         year.setMaximum(Year.MAX_VALUE);
 
+        Label lblCurrent = new Label(editArea, SWT.NONE);
+        lblCurrent.setText(Messages.LabelReportingDialogGroupCurrent);
+
+        radioCurrentWeek = new Button(editArea, SWT.RADIO);
+        radioCurrentWeek.setText(Messages.LabelReportingDialogWeek);
+
         radioCurrentMonth = new Button(editArea, SWT.RADIO);
-        radioCurrentMonth.setText(Messages.LabelCurrentMonth);
+        radioCurrentMonth.setText(Messages.LabelReportingDialogMonth);
+
+        radioCurrentQuarter = new Button(editArea, SWT.RADIO);
+        radioCurrentQuarter.setText(Messages.LabelReportingDialogQuarter);
 
         radioYTD = new Button(editArea, SWT.RADIO);
-        radioYTD.setText(Messages.LabelYTD);
+        radioYTD.setText(Messages.LabelReportingDialogYearYTD);
+
+        Label lblPrevious = new Label(editArea, SWT.NONE);
+        lblPrevious.setText(Messages.LabelReportingDialogGroupPrevious);
+
+        radioPreviousWeek = new Button(editArea, SWT.RADIO);
+        radioPreviousWeek.setText(Messages.LabelReportingDialogWeek);
+
+        radioPreviousMonth = new Button(editArea, SWT.RADIO);
+        radioPreviousMonth.setText(Messages.LabelReportingDialogMonth);
+
+        radioPreviousQuarter = new Button(editArea, SWT.RADIO);
+        radioPreviousQuarter.setText(Messages.LabelReportingDialogQuarter);
+
+        radioPreviousYear = new Button(editArea, SWT.RADIO);
+        radioPreviousYear.setText(Messages.LabelReportingDialogYear);
 
         //
         // form layout
@@ -168,9 +198,12 @@ public class ReportingPeriodDialog extends Dialog
 
         FormDataFactory.startingWith(radioYearX).top(new FormAttachment(radioSinceX, 20)).thenRight(year);
 
-        FormDataFactory.startingWith(radioCurrentMonth).top(new FormAttachment(radioYearX, 20));
+        FormDataFactory.startingWith(lblCurrent).top(new FormAttachment(radioYearX, 20)).thenBelow(radioCurrentWeek)
+                        .thenRight(radioCurrentMonth).thenRight(radioCurrentQuarter).thenRight(radioYTD);
 
-        FormDataFactory.startingWith(radioYTD).top(new FormAttachment(radioCurrentMonth, 20));
+        FormDataFactory.startingWith(lblPrevious).top(new FormAttachment(radioCurrentWeek, 20))
+                        .thenBelow(radioPreviousWeek).thenRight(radioPreviousMonth).thenRight(radioPreviousQuarter)
+                        .thenRight(radioPreviousYear);
 
         //
         // wiring
@@ -179,7 +212,8 @@ public class ReportingPeriodDialog extends Dialog
         presetFromTemplate();
 
         radioBtnList = Arrays.asList(radioLast, radioLastDays, radioLastTradingDays, radioFromXtoY, radioSinceX,
-                        radioYearX, radioCurrentMonth, radioYTD);
+                        radioYearX, radioCurrentWeek, radioCurrentMonth, radioCurrentQuarter, radioYTD,
+                        radioPreviousWeek, radioPreviousMonth, radioPreviousQuarter, radioPreviousYear);
         activateRadioOnChange(radioLast, years, months);
         activateRadioOnChange(radioLastDays, days);
         activateRadioOnChange(radioLastTradingDays, tradingDays);
@@ -223,10 +257,22 @@ public class ReportingPeriodDialog extends Dialog
             radioSinceX.setSelection(true);
         else if (template instanceof ReportingPeriod.YearX)
             radioYearX.setSelection(true);
+        else if (template instanceof ReportingPeriod.CurrentWeek)
+            radioCurrentWeek.setSelection(true);
         else if (template instanceof ReportingPeriod.CurrentMonth)
             radioCurrentMonth.setSelection(true);
+        else if (template instanceof ReportingPeriod.CurrentQuarter)
+            radioCurrentQuarter.setSelection(true);
         else if (template instanceof ReportingPeriod.YearToDate)
             radioYTD.setSelection(true);
+        else if (template instanceof ReportingPeriod.PreviousWeek)
+            radioPreviousWeek.setSelection(true);
+        else if (template instanceof ReportingPeriod.PreviousMonth)
+            radioPreviousMonth.setSelection(true);
+        else if (template instanceof ReportingPeriod.PreviousQuarter)
+            radioPreviousQuarter.setSelection(true);
+        else if (template instanceof ReportingPeriod.PreviousYear)
+            radioPreviousYear.setSelection(true);
         else
             throw new IllegalArgumentException();
 
@@ -283,13 +329,37 @@ public class ReportingPeriodDialog extends Dialog
         {
             result = new ReportingPeriod.YearX(year.getSelection());
         }
+        else if (radioCurrentWeek.getSelection())
+        {
+            result = new ReportingPeriod.CurrentWeek();
+        }
         else if (radioCurrentMonth.getSelection())
         {
             result = new ReportingPeriod.CurrentMonth();
         }
+        else if (radioCurrentQuarter.getSelection())
+        {
+            result = new ReportingPeriod.CurrentQuarter();
+        }
         else if (radioYTD.getSelection())
         {
             result = new ReportingPeriod.YearToDate();
+        }
+        else if (radioPreviousWeek.getSelection())
+        {
+            result = new ReportingPeriod.PreviousWeek();
+        }
+        else if (radioPreviousMonth.getSelection())
+        {
+            result = new ReportingPeriod.PreviousMonth();
+        }
+        else if (radioPreviousQuarter.getSelection())
+        {
+            result = new ReportingPeriod.PreviousQuarter();
+        }
+        else if (radioPreviousYear.getSelection())
+        {
+            result = new ReportingPeriod.PreviousYear();
         }
         else
         {

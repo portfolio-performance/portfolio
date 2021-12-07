@@ -6,6 +6,7 @@ import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 
@@ -24,6 +25,7 @@ import org.swtchart.ISeries;
 
 import com.google.common.collect.Lists;
 
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.Aggregation;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.ui.Images;
@@ -39,6 +41,12 @@ import name.abuchen.portfolio.ui.views.dataseries.DataSeriesCache;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesChartLegend;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesConfigurator;
 import name.abuchen.portfolio.ui.views.dataseries.PerformanceChartSeriesBuilder;
+import name.abuchen.portfolio.ui.views.panes.HistoricalPricesPane;
+import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
+import name.abuchen.portfolio.ui.views.panes.SecurityEventsPane;
+import name.abuchen.portfolio.ui.views.panes.SecurityPriceChartPane;
+import name.abuchen.portfolio.ui.views.panes.TradesPane;
+import name.abuchen.portfolio.ui.views.panes.TransactionsPane;
 import name.abuchen.portfolio.util.Interval;
 
 public class PerformanceChartView extends AbstractHistoricView
@@ -96,7 +104,7 @@ public class PerformanceChartView extends AbstractHistoricView
         chart.getTitle().setText(getTitle());
         chart.getTitle().setVisible(false);
         chart.getAxisSet().getYAxis(0).getTick().setFormat(new DecimalFormat("0.#%")); //$NON-NLS-1$
-        chart.getToolTip().setValueFormat(new DecimalFormat("0.00%")); //$NON-NLS-1$
+        chart.getToolTip().setDefaultValueFormat(new DecimalFormat(Values.Percent2.pattern()));
         chart.getToolTip().reverseLabels(true);
 
         DataSeriesCache cache = make(DataSeriesCache.class);
@@ -107,6 +115,7 @@ public class PerformanceChartView extends AbstractHistoricView
         picker.setToolBarManager(getViewToolBarManager());
 
         DataSeriesChartLegend legend = new DataSeriesChartLegend(composite, picker);
+        legend.addSelectionChangedListener(e -> setInformationPaneInput(e.getStructuredSelection().getFirstElement()));
 
         updateTitle(Messages.LabelPerformanceChart + " (" + picker.getConfigurationName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
         chart.getTitle().setText(getTitle());
@@ -118,6 +127,17 @@ public class PerformanceChartView extends AbstractHistoricView
         setChartSeries();
 
         return composite;
+    }
+
+    @Override
+    protected void addPanePages(List<InformationPanePage> pages)
+    {
+        super.addPanePages(pages);
+        pages.add(make(SecurityPriceChartPane.class));
+        pages.add(make(HistoricalPricesPane.class));
+        pages.add(make(TransactionsPane.class));
+        pages.add(make(TradesPane.class));
+        pages.add(make(SecurityEventsPane.class));
     }
 
     @Override

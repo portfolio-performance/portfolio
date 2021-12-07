@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.ui.wizards.security;
 
-import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ComboViewer;
@@ -22,6 +21,7 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.DesktopAPI;
 import name.abuchen.portfolio.ui.util.SWTHelper;
+import name.abuchen.portfolio.ui.util.swt.ControlDecoration;
 
 public class SecurityMasterDataPage extends AbstractPage
 {
@@ -79,11 +79,11 @@ public class SecurityMasterDataPage extends AbstractPage
             }));
         }
 
-        ComboViewer currencyCode = bindings.bindCurrencyCodeCombo(container, Messages.ColumnCurrency, "currencyCode", //$NON-NLS-1$
+        Control currencyCode = bindings.bindCurrencyCodeCombo(container, Messages.ColumnCurrency, "currencyCode", //$NON-NLS-1$
                         !isExchangeRate);
         if (model.getSecurity().hasTransactions(model.getClient()))
         {
-            currencyCode.getCombo().setEnabled(false);
+            currencyCode.setEnabled(false);
 
             // empty cell
             new Label(container, SWT.NONE).setText(""); //$NON-NLS-1$
@@ -101,9 +101,9 @@ public class SecurityMasterDataPage extends AbstractPage
 
         if (isExchangeRate)
         {
-            ComboViewer targetCurrencyCode = bindings.bindCurrencyCodeCombo(container, Messages.ColumnTargetCurrency,
+            Control targetCurrencyCode = bindings.bindCurrencyCodeCombo(container, Messages.ColumnTargetCurrency,
                             "targetCurrencyCode", false); //$NON-NLS-1$
-            targetCurrencyCode.getCombo().setToolTipText(Messages.ColumnTargetCurrencyToolTip);
+            targetCurrencyCode.setToolTipText(Messages.ColumnTargetCurrencyToolTip);
         }
 
         if (!isExchangeRate)

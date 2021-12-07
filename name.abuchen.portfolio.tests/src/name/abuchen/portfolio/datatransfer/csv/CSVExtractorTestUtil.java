@@ -1,12 +1,13 @@
 package name.abuchen.portfolio.datatransfer.csv;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Column;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.EnumField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Field;
-import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.datatransfer.csv.CSVImporter.FieldFormat;
 
 final class CSVExtractorTestUtil
 {
@@ -35,7 +36,10 @@ final class CSVExtractorTestUtil
             }
             else
             {
-                column.setFormat(f.guessFormat(new Client(), null));
+                List<FieldFormat> formats = f.getAvailableFieldFormats();
+
+                if (!formats.isEmpty())
+                    column.setFormat(formats.get(0));
             }
 
             field2column.put(f.getName(), column);

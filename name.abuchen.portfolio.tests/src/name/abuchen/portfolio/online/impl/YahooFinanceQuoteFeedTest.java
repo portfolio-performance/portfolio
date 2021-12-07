@@ -1,8 +1,8 @@
 package name.abuchen.portfolio.online.impl;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -10,8 +10,8 @@ import java.time.Month;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
-import java.util.stream.Stream;
 
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -51,9 +51,9 @@ public class YahooFinanceQuoteFeedTest
         LatestSecurityPrice price = feed.getLatestQuote(security).get();
 
         assertThat(price.getDate(), is(LocalDate.of(2020, 4, 20)));
-        assertThat(price.getHigh(), is(2816600L));
-        assertThat(price.getLow(), is(2768500L));
-        assertThat(price.getValue(), is(2769300L));
+        assertThat(price.getHigh(), is(Values.Quote.factorize(281.66)));
+        assertThat(price.getLow(), is(Values.Quote.factorize(276.85)));
+        assertThat(price.getValue(), is(Values.Quote.factorize(276.93)));
         assertThat(price.getVolume(), is(31089201L));
     }
 
@@ -139,27 +139,19 @@ public class YahooFinanceQuoteFeedTest
     }
 
     @Test
-    public void testThatAtLeastTheGivenExchangeIsReturned() throws IOException
+    public void testThatAtLeastTheGivenExchangeIsReturned()
     {
-        YahooFinanceQuoteFeed feed = new YahooFinanceQuoteFeed()
-        {
-            @Override
-            protected Stream<YahooSymbolSearch.Result> searchSymbols(String query) throws IOException
-            {
-                throw new IOException();
-            }
-        };
+        YahooFinanceQuoteFeed feed = new YahooFinanceQuoteFeed();
 
         Security s = new Security();
         s.setTickerSymbol("BAS.DE");
 
-        ArrayList<Exception> errors = new ArrayList<Exception>();
+        ArrayList<Exception> errors = new ArrayList<>();
         List<Exchange> exchanges = feed.getExchanges(s, errors);
 
-        assertThat(exchanges.size(), is(1));
-        assertThat(exchanges.get(0).getId(), is("BAS.DE"));
+        Optional<Exchange> original = exchanges.stream().filter(e -> e.getId().equals("BAS.DE")).findAny();
 
-        assertThat(errors.size(), is(1));
+        assertThat(original.isPresent(), is(true));
     }
 
 }

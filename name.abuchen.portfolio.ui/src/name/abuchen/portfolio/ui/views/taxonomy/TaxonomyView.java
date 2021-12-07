@@ -7,11 +7,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.ControlContribution;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -24,6 +26,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Text;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Taxonomy;
@@ -36,6 +39,12 @@ import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.views.panes.HistoricalPricesPane;
+import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
+import name.abuchen.portfolio.ui.views.panes.SecurityEventsPane;
+import name.abuchen.portfolio.ui.views.panes.SecurityPriceChartPane;
+import name.abuchen.portfolio.ui.views.panes.TradesPane;
+import name.abuchen.portfolio.ui.views.panes.TransactionsPane;
 
 public class TaxonomyView extends AbstractFinanceView implements PropertyChangeListener
 {
@@ -51,6 +60,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
             this.clientFilterMenu = new ClientFilterMenu(getClient(), getPreferenceStore());
 
             Consumer<ClientFilter> listener = filter -> {
+                setInformationPaneInput(null);
                 Client filteredClient = filter.filter(getClient());
                 model.updateClientSnapshot(filteredClient);
             };
@@ -234,9 +244,50 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
 
         toolBar.add(new Separator());
 
+        addSearchButton(toolBar);
+
+        toolBar.add(new Separator());
+
         toolBar.add(new FilterDropDown(getPreferenceStore()));
         addExportButton(toolBar);
         addConfigButton(toolBar);
+    }
+
+    private void addSearchButton(ToolBarManager toolBar)
+    {
+        toolBar.add(new ControlContribution("searchbox") //$NON-NLS-1$
+        {
+            @Override
+            protected Control createControl(Composite parent)
+            {
+                final Text search = new Text(parent, SWT.SEARCH | SWT.ICON_CANCEL);
+                search.setMessage(Messages.LabelSearch);
+                search.setSize(300, SWT.DEFAULT);
+
+                search.addModifyListener(e -> {
+                    String filterText = Pattern.quote(search.getText().trim());
+                    if (filterText.length() == 0)
+                    {
+                        model.setFilterPattern(null);
+                        model.fireTaxonomyModelChange(model.getVirtualRootNode());
+                    }
+                    else
+                    {
+                        Pattern p = Pattern.compile(".*" + filterText + ".*", Pattern.CASE_INSENSITIVE); //$NON-NLS-1$ //$NON-NLS-2$
+                        model.setFilterPattern(p);
+                        model.fireTaxonomyModelChange(model.getVirtualRootNode());
+                    }
+                });
+
+                return search;
+            }
+
+            @Override
+            protected int computeWidth(Control control)
+            {
+                return control.computeSize(100, SWT.DEFAULT, true).x;
+            }
+        });
     }
 
     private void addExportButton(ToolBarManager toolBar)
@@ -261,6 +312,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
     public void notifyModelUpdated()
     {
         Client filteredClient = this.clientFilter.filter(getClient());
+        setToContext(UIConstants.Context.FILTERED_CLIENT, filteredClient);
         model.updateClientSnapshot(filteredClient);
     }
 
@@ -324,5 +376,16 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
 
             getPart().getPreferenceStore().setValue(identifierView, index);
         }
+    }
+
+    @Override
+    protected void addPanePages(List<InformationPanePage> pages)
+    {
+        super.addPanePages(pages);
+        pages.add(make(SecurityPriceChartPane.class));
+        pages.add(make(HistoricalPricesPane.class));
+        pages.add(make(TransactionsPane.class));
+        pages.add(make(TradesPane.class));
+        pages.add(make(SecurityEventsPane.class));
     }
 }

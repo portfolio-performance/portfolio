@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.StringJoiner;
 
 import name.abuchen.portfolio.Messages;
@@ -51,6 +52,10 @@ import name.abuchen.portfolio.money.Money;
         fields.add(new Field("account", Messages.CSVColumn_AccountName).setOptional(true)); //$NON-NLS-1$
         fields.add(new Field("account2nd", Messages.CSVColumn_AccountName2nd).setOptional(true)); //$NON-NLS-1$
         fields.add(new Field("portfolio", Messages.CSVColumn_PortfolioName).setOptional(true)); //$NON-NLS-1$
+
+        fields.add(new AmountField("gross", Messages.CSVColumn_GrossAmount).setOptional(true)); //$NON-NLS-1$
+        fields.add(new Field("currencyGross", Messages.CSVColumn_CurrencyGrossAmount).setOptional(true)); //$NON-NLS-1$
+        fields.add(new AmountField("exchangeRate", Messages.CSVColumn_ExchangeRate).setOptional(true)); //$NON-NLS-1$
     }
 
     @Override
@@ -80,6 +85,8 @@ import name.abuchen.portfolio.money.Money;
         Long shares = getShares(Messages.CSVColumn_Shares, rawValues, field2column);
         Long taxes = getAmount(Messages.CSVColumn_Taxes, rawValues, field2column);
         Long fees = getAmount(Messages.CSVColumn_Fees, rawValues, field2column);
+
+        Optional<Unit> grossAmount = extractGrossAmount(rawValues, field2column, amount);
 
         Account account = getAccount(getClient(), rawValues, field2column);
         Account account2nd = getAccount(getClient(), rawValues, field2column, true);
@@ -165,10 +172,27 @@ import name.abuchen.portfolio.money.Money;
                     t.setSecurity(security);
                 t.setDateTime(date.withHour(0).withMinute(0));
                 t.setNote(note);
-                if (shares != null && type == Type.DIVIDENDS)
-                    t.setShares(Math.abs(shares));
-                if (type == Type.DIVIDENDS && taxes != null && taxes.longValue() != 0)
-                    t.addUnit(new Unit(Unit.Type.TAX, Money.of(t.getCurrencyCode(), Math.abs(taxes))));
+
+                if (type == Type.DIVIDENDS)
+                {
+                    if (shares != null)
+                        t.setShares(Math.abs(shares));
+
+                    if (taxes != null && taxes.longValue() != 0)
+                        t.addUnit(new Unit(Unit.Type.TAX, Money.of(t.getCurrencyCode(), Math.abs(taxes))));
+
+                    if (fees != null && fees.longValue() != 0)
+                        t.addUnit(new Unit(Unit.Type.FEE, Money.of(t.getCurrencyCode(), Math.abs(fees))));
+                }
+
+                if (security != null && grossAmount.isPresent())
+                {
+                    // gross amount can only be relevant if a transaction is
+                    // linked to a security (dividend, taxes, fees, and refunds)
+
+                    t.addUnit(grossAmount.get());
+                }
+
                 item = new TransactionItem(t);
                 break;
             default:

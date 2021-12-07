@@ -56,7 +56,7 @@ import name.abuchen.portfolio.money.Money;
     }
 
     @Override
-    public TrailRecord substract(TrailRecord trail)
+    public TrailRecord subtract(TrailRecord trail)
     {
         throw new UnsupportedOperationException();
     }

@@ -16,6 +16,7 @@ import org.eclipse.swt.widgets.Composite;
 
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 public class ErroneousImportFilesPage extends AbstractWizardPage
@@ -76,6 +77,7 @@ public class ErroneousImportFilesPage extends AbstractWizardPage
         container.setLayout(layout);
 
         TreeViewer treeViewer = new TreeViewer(container, SWT.BORDER | SWT.FULL_SELECTION);
+        CopyPasteSupport.enableFor(treeViewer);
         treeViewer.setContentProvider(new ErrorContentProvider());
         treeViewer.getTree().setHeaderVisible(true);
         treeViewer.getTree().setLinesVisible(true);

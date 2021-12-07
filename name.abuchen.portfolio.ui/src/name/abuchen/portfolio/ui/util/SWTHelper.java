@@ -81,10 +81,10 @@ public final class SWTHelper
      * Returns the width needed to display the sample string. Used when
      * layouting dialogs.
      */
-    public static int stringWidth(Drawable drawable, String sample)
+    public static int stringWidth(Drawable drawable, String text)
     {
         GC gc = new GC(drawable);
-        Point extentText = gc.stringExtent(sample);
+        Point extentText = gc.stringExtent(text);
         gc.dispose();
         return extentText.x;
     }

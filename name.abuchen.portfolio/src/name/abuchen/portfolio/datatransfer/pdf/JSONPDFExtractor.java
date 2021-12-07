@@ -167,7 +167,12 @@ public class JSONPDFExtractor extends AbstractPDFExtractor
     private void setValuesToSecurity(JTransaction t, Map<String, String> v)
     {
         JSecurity security = new JSecurity();
-        security.setName(TextUtil.strip(v.get("name"))); //$NON-NLS-1$
+        
+        if (TextUtil.strip(v.get("nameContinued")) != null) //$NON-NLS-1$
+            security.setName(TextUtil.strip(v.get("name") + " " + TextUtil.strip(v.get("nameContinued")))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        else
+            security.setName(TextUtil.strip(v.get("name"))); //$NON-NLS-1$
+
         security.setIsin(v.get("isin")); //$NON-NLS-1$
         security.setTicker(v.get("ticker")); //$NON-NLS-1$
         security.setWkn(v.get("wkn")); //$NON-NLS-1$
@@ -299,7 +304,12 @@ public class JSONPDFExtractor extends AbstractPDFExtractor
     private Security convertToSecurity(JTransaction t)
     {
         Map<String, String> values = new HashMap<>();
-        values.put("name", t.getSecurity().getName()); //$NON-NLS-1$
+        
+        if (values.get("nameContinued") != null) //$NON-NLS-1$
+            values.put("name", t.getSecurity().getName() + " " + values.get("nameContinued")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        else
+            values.put("name", t.getSecurity().getName()); //$NON-NLS-1$
+        
         values.put("isin", t.getSecurity().getIsin()); //$NON-NLS-1$
         values.put("tickerSymbol", t.getSecurity().getTicker()); //$NON-NLS-1$
         values.put("wkn", t.getSecurity().getWkn()); //$NON-NLS-1$

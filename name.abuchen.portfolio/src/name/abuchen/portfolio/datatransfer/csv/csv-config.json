@@ -428,4 +428,139 @@
             "label": "Orderinfo"
         }
     ]
+},
+{
+    "delimiter": ";",
+    "encoding": "UTF-8",
+    "isFirstLineHeader": true,
+    "label": "Finpension",
+    "skipLines": 0,
+    "target": "account-transaction",
+    "columns": [
+        {
+            "field": "date",
+            "format": "yyyy-MM-dd",
+            "label": "﻿Date"
+        },
+        {
+            "field": "type",
+            "format": "DEPOSIT=Deposit;FEES=Flat-rate administrative fee;BUY=Buy;SELL=Sell",
+            "label": "Category"
+        },
+        {
+            "field": "name",
+            "label": "Asset Name"
+        },
+        {
+            "field": "shares",
+            "format": "0,000.00",
+            "label": "Number of Shares"
+        },
+        {
+            "field": "currency",
+            "label": "Asset Currency"
+        },
+        {
+            "label": "Currency Rate"
+        },
+        {
+            "label": "Asset Price in CHF"
+        },
+        {
+            "field": "value",
+            "format": "0,000.00",
+            "label": "Cash Flow"
+        },
+        {
+            "label": "Balance"
+        }
+    ]
+},
+{
+    "label": "Gratisbroker Orders",
+    "delimiter": ";",
+    "encoding": "UTF-8",
+    "isFirstLineHeader": true,
+    "skipLines": 0,
+    "target": "portfolio-transaction",
+    "columns": [
+        {
+            "field": "name",
+            "label": "Name"
+        },
+        {
+            "field": "isin",
+            "label": "ISIN"
+        },
+        {
+            "field": "wkn",
+            "label": "WKN"
+        },
+        {
+            "label": "Anzahl"
+        },
+        {
+            "label": "Anzahl storniert"
+        },
+        {
+            "label": "Status"
+        },
+        {
+            "label": "Orderart"
+        },
+        {
+            "label": "Limit"
+        },
+        {
+            "label": "Stop"
+        },
+        {
+            "label": "Erstellt Datum"
+        },
+        {
+            "label": "Erstellt Zeit"
+        },
+        {
+            "label": "Gültig bis"
+        },
+        {
+            "field": "type",
+            "format": "BUY=Kauf;SELL=Verkauf",
+            "label": "Richtung"
+        },
+        {
+            "field": "value",
+            "format": "0.000,00",
+            "label": "Wert"
+        },
+        {
+            "label": "Wert storniert"
+        },
+        {
+            "field": "date",
+            "format": "dd.MM.yyyy",
+            "label": "Ausführung Datum"
+        },
+        {
+            "field": "time",
+            "label": "Ausführung Zeit"
+        },
+        {
+            "label": "Ausführung Kurs"
+        },
+        {
+            "field": "shares",
+            "format": "0.000,00",
+            "label": "Anzahl ausgeführt"
+        },
+        {
+            "label": "Anzahl offen"
+        },
+        {
+            "label": "Gestrichen Datum"
+        },
+        {
+            "label": "Gestrichen Zeit"
+        }
+    ]
 }]

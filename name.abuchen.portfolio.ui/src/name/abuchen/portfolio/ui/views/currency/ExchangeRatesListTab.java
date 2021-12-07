@@ -33,6 +33,7 @@ import name.abuchen.portfolio.ui.util.swt.SashLayout;
 import name.abuchen.portfolio.ui.util.swt.SashLayoutData;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.views.AbstractTabbedView;
 
@@ -87,6 +88,7 @@ public class ExchangeRatesListTab implements AbstractTabbedView.Tab
         container.setLayout(layout);
 
         indeces = new TableViewer(container, SWT.FULL_SELECTION);
+        CopyPasteSupport.enableFor(indeces);
 
         ShowHideColumnHelper support = new ShowHideColumnHelper(ExchangeRatesListTab.class.getSimpleName() + "@top2", //$NON-NLS-1$
                         preferences, indeces, layout);
@@ -166,7 +168,7 @@ public class ExchangeRatesListTab implements AbstractTabbedView.Tab
     {
         chart = new TimelineChart(parent);
         stylingEngine.style(chart);
-        chart.getToolTip().setValueFormat(new DecimalFormat("0.0000")); //$NON-NLS-1$
+        chart.getToolTip().setDefaultValueFormat(new DecimalFormat(Values.ExchangeRate.pattern()));
         refreshChart(null);
     }
 

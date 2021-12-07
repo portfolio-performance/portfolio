@@ -1,9 +1,13 @@
 package name.abuchen.portfolio.util;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.nullValue;
 
 import org.junit.Test;
+
+import com.google.common.base.Strings;
 
 @SuppressWarnings("nls")
 public class TextUtilTest
@@ -16,4 +20,39 @@ public class TextUtilTest
         assertThat(TextUtil.stripNonNumberCharacters("abcd"), is(""));
         assertThat(TextUtil.stripNonNumberCharacters(",123"), is(",123"));
     }
+
+    @Test
+    public void testWordwrap()
+    {
+        String text = Strings.repeat("t ", 40) + "(test)";
+        assertThat(TextUtil.wordwrap(text), is(endsWith("\n(test)")));
+    }
+
+    @Test
+    public void testStripCallbacksJsonObjects()
+    {
+        String json = "{\"name\"=\"value\"}";
+
+        assertThat(TextUtil.stripJavaScriptCallback(json), is(json));
+        assertThat(TextUtil.stripJavaScriptCallback("callback(" + json + ");"), is(json));
+        assertThat(TextUtil.stripJavaScriptCallback(null), is(nullValue()));
+        assertThat(TextUtil.stripJavaScriptCallback("something"), is("something"));
+        assertThat(TextUtil.stripJavaScriptCallback("}something{"), is("}something{"));
+
+        json = Strings.repeat("texttext", 100);
+        assertThat(TextUtil.stripJavaScriptCallback(json), is(json));
+    }
+
+    @Test
+    public void testStripCallbacksJsonArrays()
+    {
+        String json = "[{\"name\"=\"value\"}]";
+
+        assertThat(TextUtil.stripJavaScriptCallback(json), is(json));
+        assertThat(TextUtil.stripJavaScriptCallback("callback(" + json + ");"), is(json));
+        assertThat(TextUtil.stripJavaScriptCallback("angular.callbacks._u(" + json + ")"), is(json));
+        assertThat(TextUtil.stripJavaScriptCallback("sd" + json), is("sd" + json));
+        assertThat(TextUtil.stripJavaScriptCallback("]something["), is("]something["));
+    }
+
 }

@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.editor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.inject.Inject;
 
@@ -15,11 +16,9 @@ import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -29,11 +28,17 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.ToolBar;
 
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.swt.SashLayout;
+import name.abuchen.portfolio.ui.util.swt.SashLayoutData;
+import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
 import name.abuchen.portfolio.util.TextUtil;
 
 public abstract class AbstractFinanceView
 {
+    private final String identifier = getClass().getSimpleName() + "-newsash"; //$NON-NLS-1$
+
     @Inject
     private IEclipseContext context;
 
@@ -41,6 +46,7 @@ public abstract class AbstractFinanceView
     private PortfolioPart part;
 
     private Composite top;
+    private InformationPane pane;
 
     /**
      * The unescaped text of the title label.
@@ -83,8 +89,21 @@ public abstract class AbstractFinanceView
         }
     }
 
+    public final void onRecalculationNeeded()
+    {
+        notifyModelUpdated();
+
+        if (pane != null && pane.getControl() != null && !pane.getControl().isDisposed())
+            pane.onRecalculationNeeded();
+    }
+
     /** called when some other view modifies the model */
     public void notifyModelUpdated()
+    {
+    }
+
+    /** called after the views has been fully created */
+    protected void notifyViewCreationCompleted()
     {
     }
 
@@ -108,12 +127,18 @@ public abstract class AbstractFinanceView
         part.markDirty();
     }
 
+    public void setInformationPaneInput(Object input)
+    {
+        if (pane != null)
+            pane.setInput(input);
+    }
+
     public Shell getActiveShell()
     {
         return Display.getDefault().getActiveShell();
     }
 
-    public final void createViewControl(Composite parent)
+    public final void createViewControl(Composite parent, boolean hideInformationPane)
     {
         top = new Composite(parent, SWT.NONE);
         // on windows, add a spacing line as tables
@@ -124,10 +149,36 @@ public abstract class AbstractFinanceView
         Control header = createHeader(top);
         GridDataFactory.fillDefaults().grab(true, false).applyTo(header);
 
-        Control body = createBody(top);
-        GridDataFactory.fillDefaults().grab(true, true).applyTo(body);
+        Composite sash = new Composite(top, SWT.NONE);
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(sash);
+
+        SashLayout sashLayout = new SashLayout(sash, SWT.VERTICAL | SWT.END);
+        sashLayout.setTag(UIConstants.Tag.INFORMATIONPANE);
+        sash.setLayout(sashLayout);
+
+        createBody(sash);
+
+        pane = make(InformationPane.class);
+        pane.createViewControl(sash);
+        pane.setView(this);
+        pane.setLayoutData(new SashLayoutData(-200));
+
+        int size = getPreferenceStore().getInt(identifier);
+        if (size == 0)
+            size = hideInformationPane ? -200 : 200;
+        pane.setLayoutData(new SashLayoutData(size));
+        sash.addDisposeListener(e -> getPreferenceStore().setValue(identifier,
+                        ((SashLayoutData) pane.getLayoutData()).getSize()));
 
         top.addDisposeListener(e -> dispose());
+
+        // delay updating the tool bar as late as possible because otherwise we
+        // see the tool bars flicker on Windows
+
+        viewToolBar.update(false);
+        actionToolBar.update(false);
+
+        notifyViewCreationCompleted();
     }
 
     protected abstract Control createBody(Composite parent);
@@ -137,13 +188,10 @@ public abstract class AbstractFinanceView
         Composite header = new Composite(parent, SWT.NONE);
         header.setBackground(Colors.WHITE);
 
-        Font boldFont = resourceManager.createFont(FontDescriptor
-                        .createFrom(JFaceResources.getFont(JFaceResources.HEADER_FONT)).setStyle(SWT.BOLD));
-
         titleText = getDefaultTitle();
         title = new Label(header, SWT.NONE);
+        title.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING1);
         title.setText(TextUtil.tooltip(titleText));
-        title.setFont(boldFont);
         title.setForeground(Colors.SIDEBAR_TEXT);
         title.setBackground(header.getBackground());
 
@@ -151,17 +199,19 @@ public abstract class AbstractFinanceView
         wrapper.setBackground(header.getBackground());
 
         viewToolBar = new ToolBarManager(SWT.FLAT | SWT.RIGHT);
-        addViewButtons(viewToolBar);
         ToolBar tb1 = viewToolBar.createControl(wrapper);
         tb1.setBackground(header.getBackground());
+        // add buttons only after (!) creation of tool bar to avoid flickering
+        addViewButtons(viewToolBar);
 
         // create layout *after* the toolbar to keep the tab order right
-        wrapper.setLayout(new ToolBarPlusChevronLayout(wrapper));
+        wrapper.setLayout(new ToolBarPlusChevronLayout(wrapper, SWT.RIGHT));
 
         actionToolBar = new ToolBarManager(SWT.FLAT | SWT.RIGHT);
-        addButtons(actionToolBar);
         ToolBar tb2 = actionToolBar.createControl(header);
         tb2.setBackground(header.getBackground());
+        // add buttons only after (!) creation of tool bar to avoid flickering
+        addButtons(actionToolBar);
 
         // layout
         GridLayoutFactory.fillDefaults().numColumns(3).margins(5, 5).applyTo(header);
@@ -188,6 +238,19 @@ public abstract class AbstractFinanceView
     protected ToolBarManager getToolBarManager()
     {
         return this.actionToolBar;
+    }
+
+    protected void addPanePages(List<InformationPanePage> pages)
+    {
+    }
+
+    /**
+     * Returns a given InformationPane page but only if the view control already
+     * has been instantiated, i.e. the page actually has been shown previously.
+     */
+    protected <P extends InformationPanePage> Optional<P> lookup(Class<P> type)
+    {
+        return pane.lookup(type);
     }
 
     protected final void hookContextMenu(Control control, IMenuListener listener)
@@ -264,4 +327,10 @@ public abstract class AbstractFinanceView
     {
         return context.get(clazz);
     }
+
+    public void setToContext(String key, Object value)
+    {
+        context.set(key, value);
+    }
+
 }

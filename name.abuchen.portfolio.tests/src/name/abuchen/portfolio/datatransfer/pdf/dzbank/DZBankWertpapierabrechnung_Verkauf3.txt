@@ -1,0 +1,63 @@
+﻿PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+   
+Volksbank Dresden eG · Postfach 100555 · 01075 Dresden Seite 1 von 2
+Depotnummer
+ 3002278500
+ Kundennummer 81222500
+Max Muster
+ Auftragsnummer 680489/62.00
+Max Muster Datum 09.02.2021
+Straße-Str. 16 Rechnungsnummer W03202-0000002647/21
+012345 Stadt Steuernummer 20253585232   
+Onlinedepot
+ 
+Wertpapier Abrechnung Verkauf 
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 1 NETFLIX INC.                       US64110L1061 (552484)
+REGISTERED SHARES DL -,001         
+Handels-/Ausführungsplatz Tradegate (gemäß Weisung)
+Börsensegment XGAT
+Limit-Order
+Limit 462,00 EUR 
+Schlusstag/-Zeit 09.02.2021 19:48:50 Auftraggeber Max Muster
+Ausführungskurs 462,35 EUR Auftragserteilung/ -ort Online-Banking
+Girosammelverw. mehrere Sammelurkunden - kein Stückeausdruck -
+Kurswert 462,35 EUR
+Provision 9,95- EUR
+Übertragungs-/Liefergebühr 0,10- EUR
+Ermittlung steuerrelevante Erträge
+Veräußerungsgewinn 37,93 EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 37,93 EUR
+ 
+Steuerberechnung
+Kapitalertragsteuer 25,00% auf 37,93 EUR 9,49- EUR
+Solidaritätszuschlag 5,50% auf 9,49 EUR 0,52- EUR
+Ausmachender Betrag 442,29 EUR
+ 
+Den Gegenwert buchen wir mit Valuta 11.02.2021 zu Gunsten des Kontos 5472271080
+(IBAN DE27 8709 0000 7032 2570 00), BLZ 85090000 (BIC GENODEF1DRS).
+Die Wertpapiere entnehmen wir Ihrem Depotkonto.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+7202.02092110.0000031OR07
+Seite 2 von 2
+Depotnummer 5072458900
+Kundennummer 53728539
+Auftragsnummer 682489/62.00
+Datum 09.02.2021
+ 
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verlustverrechnungstöpfe 2021 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 2.465,61
+Verkauf 0,00 0,00 0,00 0,00 37,93
+Nachher 0,00 0,00 0,00 0,00 2.503,54
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäft Auftragsnr. Ausführ.-tag Whr./St. Nennwert/Stück AS-Kosten Erlös ant. Ergebnis
+Kauf 6441497200 19.01.2021 Stück 1,0000 414,37- 452,30 37,93 (D)
+Summe aller Erträge nach Differenzmethode und/oder Ersatzbemessungsgrundlage 37,93
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+7202.02092110.0000032OR07

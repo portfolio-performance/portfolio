@@ -4,7 +4,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -51,10 +51,9 @@ public class SecurityTest
                 skipped++;
         }
 
-        assertThat(skipped, equalTo(11));
+        assertThat(skipped, equalTo(13));
 
         Security target = source.deepCopy();
-
         assertThat(target.getUUID(), not(equalTo(source.getUUID())));
 
         // compare
@@ -66,7 +65,7 @@ public class SecurityTest
             if (p.getPropertyType() != String.class && p.getPropertyType() != boolean.class
                             && p.getPropertyType() != int.class)
                 continue;
-
+            
             Object sourceValue = p.getReadMethod().invoke(source);
             Object targetValue = p.getReadMethod().invoke(target);
 
@@ -206,6 +205,12 @@ public class SecurityTest
         assertEquals(security.getExternalIdentifier(), "865985");
 
         security.setTickerSymbol("AAPL");
+        assertEquals(security.getExternalIdentifier(), "AAPL");
+
+        // In some countries there is no ISIN or WKN, only the ticker symbol. 
+        // If historical prices are retrieved from the stock exchange, 
+        // the ticker symbol is expanded. (UMAX --> UMAX.AX)
+        security.setTickerSymbol("AAPL.BA");
         assertEquals(security.getExternalIdentifier(), "AAPL");
 
         security.setIsin("US0378331005");

@@ -17,6 +17,7 @@ import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
 import name.abuchen.portfolio.online.impl.PortfolioReportNet;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.util.WebAccess.WebAccessException;
 
 public final class SyncOnlineSecuritiesJob extends AbstractClientJob
 {
@@ -34,7 +35,8 @@ public final class SyncOnlineSecuritiesJob extends AbstractClientJob
         if (toBeSynced.isEmpty())
             return Status.OK_STATUS;
 
-        monitor.beginTask(Messages.JobLabelSyncSecuritiesOnline, toBeSynced.size());
+        monitor.beginTask(MessageFormat.format(Messages.JobLabelSyncSecuritiesOnline, "https://portfolio-report.net"), //$NON-NLS-1$
+                        toBeSynced.size());
 
         boolean isDirty = false;
 
@@ -59,9 +61,23 @@ public final class SyncOnlineSecuritiesJob extends AbstractClientJob
                                     security.getName(), security.getOnlineId()));
                 }
             }
+            catch (WebAccessException e)
+            {
+                PortfolioPlugin.log(e.getMessage());
+            }
             catch (IOException e)
             {
                 PortfolioPlugin.log(e);
+            }
+
+            try
+            {
+                // poor man's throttling to help out portfolio-report
+                Thread.sleep(1000);
+            }
+            catch (InterruptedException e)
+            {
+                Thread.currentThread().interrupt();
             }
         }
 

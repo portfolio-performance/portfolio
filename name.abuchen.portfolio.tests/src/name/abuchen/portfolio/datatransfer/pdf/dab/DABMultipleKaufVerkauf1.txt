@@ -1,0 +1,262 @@
+﻿PDF author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=
+Wertpapierabrechnung DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=DRUCK
+ADRESSZEILE1=Herr
+Verkauf  ADRESSZEILE2=
+Kommissionsgeschäft ADRESSZEILE3=
+ADRESSZEILE4=
+Depot-Nr. Abrechnungs-Nr. ADRESSZEILE5=
+  / 30.11.2020 ADRESSZEILE6=
+Herr BELEGNUMMER=6370
+ SEITENNUMMER=1
+ STEUERERSTATTUNG=N
+ Depotinhaber
+
+, 30.11.2020
+Wir haben für Sie verkauft
+Gattungsbezeichnung ISIN
+Alibaba Group Holding Ltd. Reg.Shs (sp.ADRs)/8 DL-,000025 US01609W1027
+Nominal Kurs
+STK 3,000 EUR 226,5000
+Handelstag 30.11.2020 Kurswert EUR 679,50 
+Handelszeit 09:59*
+Börse Gettex/GDM
+Verwahrart Girosammelverwahrung
+Wert Konto-Nr. Betrag zu Ihren Gunsten
+02.12.2020  EUR 679,50
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Veräußerungsverlust Aktien EUR 6,00
+Aktienverlusttopf EUR 0,00 6,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Freistellungsauftrag (eingereicht: EUR 801,00) EUR 801,00 801,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern EUR 0,00
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 0,00
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 0,00
+im laufenden Jahr einbehaltene Kirchensteuer EUR 0,00
+Jahressteuerbescheinigung folgt
+Wir werden in Ihrem Depot wie angegeben buchen.
+* Die angegebene Zeit entspricht den Angaben der Handelspartner gemäß der lokalen Zeit in Deutschland
+Es folgt Seite 2
+BNP Paribas S.A. Niederlassung Deutschland > Standort:  > Landsberger Straße 300 > 80687  > Sitz: Nürnberg HRB Nürnberg 31129 > USt.-Ident-Nr.: DE 
+191528929 > Sitz der Hauptniederlassung der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449 > Président du 
+Conseil d‘Administration: Jean Lemierre, Directeur Général: Jean-Laurent Bonnafé
+3.19/ABREABHNHANDVFDI/GAAASAFG/006370/301120/111245
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+Depot-Nr. Abrechnungs-Nr. Seite-Nr. EMAILVERSAND=N
+  2 DEPOTNUMMER=
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=DRUCK
+ADRESSZEILE1=Herr
+ADRESSZEILE2=
+  (Mitteleuropäische Zeit bzw. Mitteleuropäische Sommerzeit). ADRESSZEILE3=
+ADRESSZEILE4=
+ADRESSZEILE5=
+ADRESSZEILE6=
+BELEGNUMMER=6370
+SEITENNUMMER=2
+STEUERERSTATTUNG=N
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+BNP Paribas S.A. Niederlassung Deutschland > Standort:  > Landsberger Straße 300 > 80687  > Sitz: Nürnberg HRB Nürnberg 31129 > USt.-Ident-Nr.: DE 
+191528929 > Sitz der Hauptniederlassung der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449 > Président du 
+Conseil d‘Administration: Jean Lemierre, Directeur Général: Jean-Laurent Bonnafé
+3.19/ABREABHNHANDVFDI/GAAASAFG/006370/301120/111245
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=
+Wertpapierabrechnung DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=DRUCK
+ADRESSZEILE1=Herr
+Kauf  ADRESSZEILE2=
+Kommissionsgeschäft ADRESSZEILE3=
+ADRESSZEILE4=
+Depot-Nr. Abrechnungs-Nr. ADRESSZEILE5=
+ 15242954 / 27.11.2020 ADRESSZEILE6=
+Herr BELEGNUMMER=6501
+ SEITENNUMMER=1
+ STEUERERSTATTUNG=N
+ Depotinhaber
+
+, 27.11.2020
+Wir haben für Sie gekauft
+Gattungsbezeichnung ISIN
+Fortinet Inc. Registered Shares DL -,001 US34959E1091
+Nominal Kurs
+STK 6,000 EUR 103,3200
+Handelstag 27.11.2020 Kurswert EUR 619,92-
+Handelszeit 16:08*
+Börse Gettex/GDM
+Verwahrart Wertpapierrechnung
+Lagerland USA
+Wert Konto-Nr. Betrag zu Ihren Lasten
+01.12.2020  EUR 619,92
+* Die angegebene Zeit entspricht den Angaben der Handelspartner gemäß der lokalen Zeit in Deutschland
+  (Mitteleuropäische Zeit bzw. Mitteleuropäische Sommerzeit).
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+BNP Paribas S.A. Niederlassung Deutschland > Standort:  > Landsberger Straße 300 > 80687  > Sitz: Nürnberg HRB Nürnberg 31129 > USt.-Ident-Nr.: DE 
+191528929 > Sitz der Hauptniederlassung der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449 > Président du 
+Conseil d‘Administration: Jean Lemierre, Directeur Général: Jean-Laurent Bonnafé
+3.19/ABREABHNHANDKFDI/GAAASAFG/006501/271120/210723
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=
+Wertpapierabrechnung DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=DRUCK
+ADRESSZEILE1=Herr
+Kauf  ADRESSZEILE2=
+Kommissionsgeschäft ADRESSZEILE3=
+ADRESSZEILE4=
+Depot-Nr. Abrechnungs-Nr. ADRESSZEILE5=
+ 13143056 / 24.11.2020 ADRESSZEILE6=
+Herr BELEGNUMMER=8411
+ SEITENNUMMER=1
+ STEUERERSTATTUNG=N
+ Depotinhaber
+
+, 24.11.2020
+Wir haben für Sie gekauft
+Gattungsbezeichnung ISIN
+Blackrock Inc. Reg. Shares Class A DL -,01 US09247X1019
+Nominal Kurs
+STK 1,000 EUR 585,7000
+Handelstag 24.11.2020 Kurswert EUR 585,70-
+Handelszeit 19:25*
+Börse Gettex/GDM
+Verwahrart Girosammelverwahrung
+Wert Konto-Nr. Betrag zu Ihren Lasten
+26.11.2020  EUR 585,70
+Wir werden in Ihrem Depot wie angegeben buchen.
+* Die angegebene Zeit entspricht den Angaben der Handelspartner gemäß der lokalen Zeit in Deutschland
+  (Mitteleuropäische Zeit bzw. Mitteleuropäische Sommerzeit).
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+BNP Paribas S.A. Niederlassung Deutschland > Standort:  > Landsberger Straße 300 > 80687  > Sitz: Nürnberg HRB Nürnberg 31129 > USt.-Ident-Nr.: DE 
+191528929 > Sitz der Hauptniederlassung der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449 > Président du 
+Conseil d‘Administration: Jean Lemierre, Directeur Général: Jean-Laurent Bonnafé
+3.19/ABREABHNHANDKFDI/GAAASAFG/008411/241120/211234
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=
+Wertpapierabrechnung DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=DRUCK
+ADRESSZEILE1=Herr
+Kauf  ADRESSZEILE2=
+Kommissionsgeschäft ADRESSZEILE3=
+ADRESSZEILE4=
+Depot-Nr. Abrechnungs-Nr. ADRESSZEILE5=
+ 95588332 / 24.11.2020 ADRESSZEILE6=
+Herr BELEGNUMMER=6279
+ SEITENNUMMER=1
+ STEUERERSTATTUNG=N
+ Depotinhaber
+
+, 24.11.2020
+Wir haben für Sie gekauft
+Gattungsbezeichnung ISIN
+Southwest Airlines Co. Registered Shares DL 1 US8447411088
+Nominal Kurs
+STK 14,000 EUR 40,9300
+Handelstag 24.11.2020 Kurswert EUR 573,02-
+Handelszeit 14:21*
+Börse Gettex/GDM
+Verwahrart Girosammelverwahrung
+Wert Konto-Nr. Betrag zu Ihren Lasten
+26.11.2020  EUR 573,02
+Wir werden in Ihrem Depot wie angegeben buchen.
+* Die angegebene Zeit entspricht den Angaben der Handelspartner gemäß der lokalen Zeit in Deutschland
+  (Mitteleuropäische Zeit bzw. Mitteleuropäische Sommerzeit).
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+BNP Paribas S.A. Niederlassung Deutschland > Standort:  > Landsberger Straße 300 > 80687  > Sitz: Nürnberg HRB Nürnberg 31129 > USt.-Ident-Nr.: DE 
+191528929 > Sitz der Hauptniederlassung der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449 > Président du 
+Conseil d‘Administration: Jean Lemierre, Directeur Général: Jean-Laurent Bonnafé
+3.19/ABREABHNHANDKFDI/GAAASAFG/006279/241120/154947
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=
+Wertpapierabrechnung DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=DRUCK
+ADRESSZEILE1=Herr
+Kauf  ADRESSZEILE2=
+Kommissionsgeschäft ADRESSZEILE3=
+ADRESSZEILE4=
+Depot-Nr. Abrechnungs-Nr. ADRESSZEILE5=
+ 74216527 / 20.11.2020 ADRESSZEILE6=
+Herr BELEGNUMMER=5120
+ SEITENNUMMER=1
+ STEUERERSTATTUNG=N
+ Depotinhaber
+
+, 20.11.2020
+Wir haben für Sie gekauft
+Gattungsbezeichnung ISIN
+Alibaba Group Holding Ltd. Reg.Shs (sp.ADRs)/8 DL-,000025 US01609W1027
+Nominal Kurs
+STK 3,000 EUR 228,5000
+Handelstag 20.11.2020 Kurswert EUR 685,50-
+Handelszeit 20:41*
+Börse Gettex/GDM
+Verwahrart Girosammelverwahrung
+Wert Konto-Nr. Betrag zu Ihren Lasten
+24.11.2020  EUR 685,50
+Wir werden in Ihrem Depot wie angegeben buchen.
+* Die angegebene Zeit entspricht den Angaben der Handelspartner gemäß der lokalen Zeit in Deutschland
+  (Mitteleuropäische Zeit bzw. Mitteleuropäische Sommerzeit).
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+BNP Paribas S.A. Niederlassung Deutschland > Standort:  > Landsberger Straße 300 > 80687  > Sitz: Nürnberg HRB Nürnberg 31129 > USt.-Ident-Nr.: DE 
+191528929 > Sitz der Hauptniederlassung der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449 > Président du 
+Conseil d‘Administration: Jean Lemierre, Directeur Général: Jean-Laurent Bonnafé
+3.19/ABREABHNHANDKFDI/GAAASAFG/005120/201120/210623
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=
+Wertpapierabrechnung DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=DRUCK
+ADRESSZEILE1=Herr
+Kauf Limitauftrag ADRESSZEILE2=
+Kommissionsgeschäft ADRESSZEILE3=
+ADRESSZEILE4=
+Depot-Nr. Abrechnungs-Nr. ADRESSZEILE5=
+ 70044098 / 20.11.2020 ADRESSZEILE6=
+Herr BELEGNUMMER=5121
+ SEITENNUMMER=1
+ STEUERERSTATTUNG=N
+ Depotinhaber
+
+, 20.11.2020
+Wir haben für Sie gekauft
+Gattungsbezeichnung ISIN
+Sarepta Therapeutics Inc. Registered Shares DL -,0001 US8036071004
+Nominal Kurs
+STK 5,000 EUR 112,8200
+Handelstag 20.11.2020 Kurswert EUR 564,10-
+Handelszeit 15:32* Provision EUR 1,00-
+Börse Sekunden-Handel Aktien L&S
+Verwahrart Wertpapierrechnung
+Lagerland USA
+Wert Konto-Nr. Betrag zu Ihren Lasten
+24.11.2020  EUR 565,10
+* Die angegebene Zeit entspricht den Angaben der Handelspartner gemäß der lokalen Zeit in Deutschland
+  (Mitteleuropäische Zeit bzw. Mitteleuropäische Sommerzeit).
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+BNP Paribas S.A. Niederlassung Deutschland > Standort:  > Landsberger Straße 300 > 80687  > Sitz: Nürnberg HRB Nürnberg 31129 > USt.-Ident-Nr.: DE 
+191528929 > Sitz der Hauptniederlassung der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449 > Président du 
+Conseil d‘Administration: Jean Lemierre, Directeur Général: Jean-Laurent Bonnafé
+3.19/ABREABHNHANDKFDI/GAAASAFG/005121/201120/210623

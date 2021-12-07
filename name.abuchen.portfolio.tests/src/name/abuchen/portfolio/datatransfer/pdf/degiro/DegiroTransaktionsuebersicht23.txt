@@ -1,0 +1,14 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+-
+Transaktionsübersicht von 01-08-2021 bis 05-08-2021
+Datum Uhrzei Produkt ISIN Referen Ausführungso Anzahl Kurs Wert in Wechse Transaktionst zbörse rt Lokalwährung Wert lkurs kosten Gesamt
+02-08-2021 00:00 GENERAL ELECTRIC US3696043013 NSY 2 103,60 USD -207,20 USD -175,97 EUR 1,1774 -175,97 EUR
+COMPANY COMMON STOCK
+02-08-2021 00:00 GENERAL ELECTRIC COMPA US3696041033 NSY -20 12,95 USD 259,00 USD 219,97 EUR 1,1774 219,97 EUR
+flatex DEGIRO Bank flatex DEGIRO Bank Dutch Branch, die
+Dutch Branch E unter dem Namen DEGIRO handelt, ist
+Amstelplein 1 kundenservice@degiro.de die niederländische Niederlassung der Seite 1 / 1
+1096 HA Amsterdam I www.degiro.de flatexDEGIRO Bank AG. Die Konto 2021-08-05
+flatexDEGIRO Bank AG wird primär

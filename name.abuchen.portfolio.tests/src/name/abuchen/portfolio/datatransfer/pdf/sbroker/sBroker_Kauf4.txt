@@ -1,0 +1,50 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+Wertpapierabrechnung
+DEPOTNUMMER=111/2222/002
+DEPOTUNTERBEZEICHNUNG=
+Kauf
+VERSANDARTENSCHLUESSEL=0000
+Kommissionsgeschäft
+ADRESSZEILE1=Herrn
+ADRESSZEILE2=John Doe
+ADRESSZEILE3=Vergessen 1
+Depot-Nr. Abrechnungs-Nr.
+Herrn ADRESSZEILE4=12345 Daheim
+ADRESSZEILE5=
+John Doe Roßkopf
+111/2222/002 65091167
+ADRESSZEILE6=
+Vergessen 1
+BELEGNUMMER=33473
+12345 Daheim
+SEITENNUMMER=1
+STEUERERSTATTUNG=N
+Depotinhaber
+John Doef
+Wiesbaden, 05.05.2021
+Wir haben für Sie gekauft
+Gattungsbezeichnung ISIN
+Deka MSCI World UCITS ETF Inhaber-Anteile DE000ETFL508
+Nominal Kurs
+STK 19,916 EUR 25,0150
+Handelstag 05.05.2021 EUR 498,20-
+Kurswert
+Handelszeit 09:04
+Handelsplatz Xetra
+Verwahrart Girosammelverwahrung
+Wert Konto-Nr. Betrag zu Ihren Lasten
+07.05.2021 11/2222/008 EUR 498,20
+Die Höhe des von der Kapitalverwaltungsgesellschaft (KVG) festgelegten Ausgabeauf- bzw. Rücknahmeabschlages sowie
+die jährlich zu zahlende Verwaltungsvergütung und die Gesamtkostenquote sind dem Verkaufsprospekt bzw. den
+Vertragsbedingungen zu entnehmen.
+Wir werden in Ihrem Depot wie angegeben buchen.
+Mit freundlichen Grüßen
+S Broker AG & Co. KG
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+3.18/ABREABHNHANDKF/ITS/033473/060521/004131

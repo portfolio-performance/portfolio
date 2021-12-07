@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.model.ClientSettings;
 import name.abuchen.portfolio.model.Security;
 
 public interface SecuritySearchProvider
@@ -22,6 +23,11 @@ public interface SecuritySearchProvider
 
         String getExchange();
 
+        default String getExtraAttributes()
+        {
+            return null;
+        }
+
         default String getOnlineId()
         {
             return null;
@@ -32,7 +38,8 @@ public interface SecuritySearchProvider
             return false;
         }
 
-        Security create();
+        Security create(ClientSettings settings);
+
     }
 
     public enum Type

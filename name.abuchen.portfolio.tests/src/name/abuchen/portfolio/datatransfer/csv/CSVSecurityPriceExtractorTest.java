@@ -2,10 +2,9 @@ package name.abuchen.portfolio.datatransfer.csv;
 
 import static name.abuchen.portfolio.datatransfer.csv.CSVExtractorTestUtil.buildField2Column;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.junit.Assert.assertThat;
 
-import java.text.ParseException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,14 +22,13 @@ import name.abuchen.portfolio.money.Values;
 public class CSVSecurityPriceExtractorTest
 {
     @Test
-    public void testSecurityCreation() throws ParseException
+    public void testSecurityCreation()
     {
         CSVExtractor extractor = new CSVSecurityPriceExtractor();
 
-        List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(0,
-                        Arrays.<String[]>asList( //
-                                        new String[] { "2015-01-01", "14,20" }, new String[] { "2015-01-02", "15,20" }),
+        List<Exception> errors = new ArrayList<>();
+        List<Item> results = extractor.extract(0, Arrays.<String[]>asList( //
+                        new String[] { "2015-01-01", "14,20" }, new String[] { "2015-01-02", "15,20" }),
                         buildField2Column(extractor), errors);
 
         assertThat(errors, empty());
@@ -45,11 +43,11 @@ public class CSVSecurityPriceExtractorTest
     }
 
     @Test
-    public void testErrorIfDateIsMissing() throws ParseException
+    public void testErrorIfDateIsMissing()
     {
         CSVExtractor extractor = new CSVSecurityPriceExtractor();
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
         List<Item> results = extractor.extract(0, Arrays.<String[]>asList( //
                         new String[] { "", "14,20" }), buildField2Column(extractor), errors);
 
@@ -58,11 +56,11 @@ public class CSVSecurityPriceExtractorTest
     }
 
     @Test
-    public void testErrorIfAmountIsMissing() throws ParseException
+    public void testErrorIfAmountIsMissing()
     {
         CSVExtractor extractor = new CSVSecurityPriceExtractor();
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
         List<Item> results = extractor.extract(0, Arrays.<String[]>asList( //
                         new String[] { "2015-01-01", "" }), buildField2Column(extractor), errors);
 

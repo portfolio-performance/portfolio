@@ -1,0 +1,23 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Keytrade Bank Luxembourg S.A. T +352 45 04 39
+62, Rue Charles Martel F +352 45 04 49
+L-2134 - Luxembourg info@keytradebank.lu
+Grand Duché de Luxembourg www.keytradebank.lu
+RCS B69935 Skype keytradebank.lu
+Wertschriftenkonto 260745
+Belegnummer 1574460
+Verkauf 25 NEWMONT MINING CORPORATION (US6516391066) für 38,751 USD
+Instrument: Aktien
+Auftragserstellung : 11/09/2017 17:09:34 CET
+Auftragstyp : Limit (38,60 USD)
+Gültigkeit : Day
+Ausführungsdatum und -zeit : 11/09/2017 11:09:35 EST 
+Ausführungsort : OTC/NON SUMO, FINRA
+Bruttobetrag 968,78 USD
+Transaktionskosten 29,95 USD
+938,83 USD
+Wechselkurs EUR/USD 1.201000 781,71 EUR
+Gutschrift 938,83 USD Valutadatum 13/09/2017
+DUPLICATE

@@ -15,7 +15,6 @@ import org.osgi.service.prefs.BackingStoreException;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 
-@SuppressWarnings("restriction")
 public class ForceClearPersistedStateHandler
 {
     @Execute

@@ -24,7 +24,7 @@ public class Client
 {
     /* package */static final int MAJOR_VERSION = 1;
 
-    public static final int CURRENT_VERSION = 47;
+    public static final int CURRENT_VERSION = 52;
     public static final int VERSION_WITH_CURRENCY_SUPPORT = 29;
 
     private transient PropertyChangeSupport propertyChangeSupport; // NOSONAR
@@ -48,7 +48,7 @@ public class Client
 
     // keep typo -> xstream deserialization
     @Deprecated
-    private List<ConsumerPriceIndex> consumerPriceIndeces;
+    /* package */ List<ConsumerPriceIndex> consumerPriceIndeces;
 
     private List<Account> accounts = new ArrayList<>();
     private List<Portfolio> portfolios = new ArrayList<>();
@@ -79,9 +79,6 @@ public class Client
 
         if (watchlists == null)
             watchlists = new ArrayList<>();
-
-        if (consumerPriceIndeces == null)
-            consumerPriceIndeces = new ArrayList<>();
 
         if (properties == null)
             properties = new HashMap<>();
@@ -239,12 +236,6 @@ public class Client
         return watchlists;
     }
 
-    @Deprecated
-    /* package */ List<ConsumerPriceIndex> getConsumerPriceIndices() // NOSONAR
-    {
-        return Collections.unmodifiableList(consumerPriceIndeces); // NOSONAR
-    }
-
     public void addAccount(Account account)
     {
         accounts.add(account);
@@ -387,14 +378,14 @@ public class Client
 
     public void setProperty(String key, String value)
     {
-        String oldValue = properties.put(key, value);
-        propertyChangeSupport.firePropertyChange("properties", oldValue, value); //$NON-NLS-1$
+        properties.put(key, value);
+        touch();
     }
 
     public String removeProperty(String key)
     {
         String oldValue = properties.remove(key);
-        propertyChangeSupport.firePropertyChange("properties", oldValue, null); //$NON-NLS-1$
+        touch();
         return oldValue;
     }
 

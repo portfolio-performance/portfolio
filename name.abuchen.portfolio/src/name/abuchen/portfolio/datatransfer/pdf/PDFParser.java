@@ -107,6 +107,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
     {
         private Pattern startsWith;
         private Pattern endsWith;
+        private int maxSize = -1;
         private Transaction<?> transaction;
 
         public Block(String startsWith)
@@ -120,6 +121,14 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
 
             if (endsWith != null)
                 this.endsWith = Pattern.compile(endsWith);
+        }
+
+        /**
+         * Sets the maximum number of lines matched to this block
+         */
+        public void setMaxSize(int maxSize)
+        {
+            this.maxSize = maxSize;
         }
 
         public void set(Transaction<?> transaction)
@@ -151,6 +160,13 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
                     endLine = findBlockEnd(lines, startLine, endLine);
                     if (endLine == -1)
                         continue;
+                }
+
+                if (maxSize >= 0)
+                {
+                    // the endLine is included in the parsing -> remove one
+                    // number
+                    endLine = Math.min(endLine, startLine + maxSize - 1);
                 }
 
                 transaction.parse(filename, items, lines, startLine, endLine);

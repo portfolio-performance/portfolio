@@ -21,6 +21,7 @@ import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 
 public class QuotesTableViewer
 {
@@ -32,6 +33,7 @@ public class QuotesTableViewer
         container.setLayout(layout);
 
         tableViewer = new TableViewer(container, SWT.BORDER);
+        CopyPasteSupport.enableFor(tableViewer);
         Table table = tableViewer.getTable();
         table.setHeaderVisible(true);
         table.setLinesVisible(true);
@@ -42,8 +44,10 @@ public class QuotesTableViewer
 
         // for sorting purposes: if the element is a string (i.e. an error
         // message) then use the current date
-        ColumnViewerSorter.create(element -> element instanceof String ? LocalDate.now()
-                        : ((LatestSecurityPrice) element).getDate()).attachTo(tableViewer, viewerColumn, SWT.UP);
+        ColumnViewerSorter
+                        .create(element -> element instanceof String ? LocalDate.now()
+                                        : ((LatestSecurityPrice) element).getDate())
+                        .attachTo(tableViewer, viewerColumn, SWT.UP);
 
         TableColumn column = new TableColumn(tableViewer.getTable(), SWT.None);
         column.setText(Messages.ColumnDaysHigh);

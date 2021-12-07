@@ -31,12 +31,12 @@ Nominal Kurs
 STK 18,000 EUR 68,8000
  
  
-Handelstag 11.11.201 1 Kurswert                    EUR 1.238,40-
+Handelstag 11.11.2011 Kurswert                    EUR 1.238,40-
 Handelszeit 09:02 Orderentgelt                EUR 10,90-
 Börse Xetra/EDE
 Verwahrart Girosammelverwahrung
  
-Wert  Konto-Nr. Betrag zu Ihren Lasten  
+Wert Konto-Nr. Betrag zu Ihren Lasten  
 15.11.2011 12/3456/789 EUR 1.249,30
  
  

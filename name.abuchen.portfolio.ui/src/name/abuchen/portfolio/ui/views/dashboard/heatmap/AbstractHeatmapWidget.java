@@ -18,6 +18,7 @@ import org.eclipse.swt.widgets.Label;
 
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.InfoToolTip;
 import name.abuchen.portfolio.ui.util.SWTHelper;
 import name.abuchen.portfolio.ui.util.swt.ColoredLabel;
@@ -87,7 +88,7 @@ public abstract class AbstractHeatmapWidget<N extends Number> extends WidgetDele
                 if (data != null)
                 {
                     ColoredLabel dataLabel = new ColoredLabel(table, SWT.CENTER);
-                    dataLabel.setFont(resources.getSmallFont());
+                    dataLabel.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.DATAPOINT);
                     dataLabel.setText(formatter.format(data));
                     if (coloring != null)
                         dataLabel.setBackdropColor(coloring.apply((double) data));
@@ -154,7 +155,7 @@ public abstract class AbstractHeatmapWidget<N extends Number> extends WidgetDele
     }
 
     protected void addMonthlyHeader(HeatmapModel<?> model, int numDashboardColumns, boolean showSum,
-                    boolean showStandardDeviation)
+                    boolean showStandardDeviation, boolean showAverage)
     {
         TextStyle textStyle;
         if (numDashboardColumns == 1)
@@ -171,6 +172,8 @@ public abstract class AbstractHeatmapWidget<N extends Number> extends WidgetDele
             model.addHeader("\u03A3", HeatmapOrnament.SUM.toString()); //$NON-NLS-1$
         if (showStandardDeviation)
             model.addHeader("s", HeatmapOrnament.STANDARD_DEVIATION.toString()); //$NON-NLS-1$
+        if (showAverage)
+            model.addHeader("\u2300", EarningsHeatmapWidget.Average.AVERAGE.toString()); //$NON-NLS-1$
     }
 
     protected Double geometricMean(List<Double> values)

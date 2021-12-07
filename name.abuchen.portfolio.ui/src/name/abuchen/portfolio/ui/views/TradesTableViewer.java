@@ -25,7 +25,10 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.viewers.Column;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.TouchClientListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.MoneyColorLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.NumberColorLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
@@ -57,7 +60,9 @@ public class TradesTableViewer
 
         trades = new TableViewer(container, SWT.FULL_SELECTION);
 
+        ColumnEditingSupport.prepare(trades);
         ColumnViewerToolTipSupport.enableFor(trades, ToolTip.NO_RECREATE);
+        CopyPasteSupport.enableFor(trades);
 
         support = new ShowHideColumnHelper(
                         SecuritiesPerformanceView.class.getSimpleName() + "@trades@" + viewMode.name(), //$NON-NLS-1$
@@ -75,7 +80,12 @@ public class TradesTableViewer
     private void createTradesColumns(ShowHideColumnHelper support, ViewMode viewMode)
     {
         if (viewMode == ViewMode.MULTIPLE_SECURITES)
-            support.addColumn(new NameColumn(view.getClient()));
+        {
+            NameColumn column = new NameColumn(view.getClient());
+            column.getEditingSupport().addListener(new TouchClientListener(view.getClient()));
+            column.getEditingSupport().addListener((e, n, o) -> trades.refresh(true));
+            support.addColumn(column);
+        }
 
         Column column = new Column("start", Messages.ColumnStartDate, SWT.None, 80); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
@@ -97,13 +107,13 @@ public class TradesTableViewer
             public String getText(Object e)
             {
                 Trade t = (Trade) e;
-                return t.getEnd().isPresent() ? Values.DateTime.format(t.getEnd().get()) : Messages.LabelOpenTrade; // NOSONAR
+                return t.isClosed() ? Values.DateTime.format(t.getEnd().get()) : Messages.LabelOpenTrade; // NOSONAR
             }
 
             @Override
             public Color getBackground(Object e)
             {
-                return ((Trade) e).getEnd().isPresent() ? null : Colors.theme().warningBackground();
+                return ((Trade) e).isClosed() ? null : Colors.theme().warningBackground();
             }
         });
         column.setSorter(ColumnViewerSorter.create(e -> {
@@ -183,6 +193,12 @@ public class TradesTableViewer
         column.setSorter(ColumnViewerSorter.create(e -> ((Trade) e).getProfitLoss()));
         support.addColumn(column);
 
+        column = new Column("gpl", Messages.ColumnGrossProfitLoss, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setLabelProvider(new MoneyColorLabelProvider(element -> ((Trade) element).getGrossProfitLoss(),
+                        view.getClient()));
+        column.setSorter(ColumnViewerSorter.create(e -> ((Trade) e).getGrossProfitLoss()));
+        support.addColumn(column);
+
         column = new Column("holdingperiod", Messages.ColumnHoldingPeriod, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
@@ -194,6 +210,21 @@ public class TradesTableViewer
             }
         });
         column.setSorter(ColumnViewerSorter.create(e -> ((Trade) e).getHoldingPeriod()));
+        support.addColumn(column);
+
+        column = new Column("latesttrade", Messages.ColumnLatestTrade, SWT.None, 80); //$NON-NLS-1$
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                Trade t = (Trade) e;
+                return Values.DateTime.format(t.getLastTransaction().getTransaction().getDateTime());
+            }
+        });
+        column.setSorter(ColumnViewerSorter
+                        .create(e -> ((Trade) e).getLastTransaction().getTransaction().getDateTime()));
+        column.setVisible(false);
         support.addColumn(column);
 
         column = new Column("irr", Messages.ColumnIRR, SWT.RIGHT, 80); //$NON-NLS-1$

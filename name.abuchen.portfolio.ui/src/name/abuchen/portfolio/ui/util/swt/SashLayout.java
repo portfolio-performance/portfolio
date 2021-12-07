@@ -109,6 +109,8 @@ public class SashLayout extends Layout
      */
     private final boolean isBeginning;
 
+    private String tag;
+
     private Composite host;
 
     private Label divider;
@@ -175,8 +177,9 @@ public class SashLayout extends Layout
 
         SashLayoutData data = getLayoutData(children.get(isBeginning ? 0 : 1));
 
-        // if collapsed, drag only if proposed size is bigger than min width. That
-        // excludes many accidental drags when trying to restore via double click.
+        // if collapsed, drag only if proposed size is bigger than min width.
+        // That excludes many accidental drags when trying to restore via double
+        // click.
 
         if (data.size > 0 || (proposedSize > MIN_WIDHT && proposedSize < totalSize - MIN_WIDHT))
         {
@@ -222,13 +225,19 @@ public class SashLayout extends Layout
         divider.setVisible(false);
     }
 
+    public String getTag()
+    {
+        return tag;
+    }
+
+    public void setTag(String tag)
+    {
+        this.tag = tag;
+    }
+
     @Override
     protected void layout(Composite composite, boolean flushCache)
     {
-        List<Control> children = getChildren();
-        if (children.size() != 2)
-            throw new IllegalArgumentException();
-
         Rectangle bounds = composite.getBounds();
         if (composite instanceof Shell)
         {
@@ -238,6 +247,18 @@ public class SashLayout extends Layout
         {
             bounds.x = 0;
             bounds.y = 0;
+        }
+
+        List<Control> children = getChildren();
+        if (children.size() != 2)
+        {
+            // should not happen, but if previous error just create one element,
+            // render this one element fully
+
+            if (children.size() == 1)
+                children.get(0).setBounds(bounds);
+
+            return;
         }
 
         int availableSize = (isHorizontal ? bounds.width : bounds.height) - SASH_WIDTH;

@@ -28,12 +28,10 @@ public class YearToDateTest
     public void testWriteTo() throws IOException
     {
         String code = "X";
-        StringBuilder strb = new StringBuilder();
 
         ReportingPeriod period = ReportingPeriod.from(code);
-        period.writeTo(strb);
 
-        assertEquals(strb.toString(), code);
+        assertEquals(period.getCode(), code);
     }
 
     @Test

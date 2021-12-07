@@ -36,6 +36,7 @@ import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.views.AbstractTabbedView;
@@ -137,11 +138,12 @@ public class AttributeListTab implements AbstractTabbedView.Tab, ModificationLis
         container.setLayout(layout);
 
         tableViewer = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
+        CopyPasteSupport.enableFor(tableViewer);
 
         ColumnEditingSupport.prepare(tableViewer);
 
-        ShowHideColumnHelper support = new ShowHideColumnHelper(AttributeListTab.class.getSimpleName(), preferences,
-                        tableViewer, layout);
+        ShowHideColumnHelper support = new ShowHideColumnHelper(AttributeListTab.class.getSimpleName() + "@v2", //$NON-NLS-1$
+                        preferences, tableViewer, layout);
 
         addColumns(support);
 
@@ -201,6 +203,18 @@ public class AttributeListTab implements AbstractTabbedView.Tab, ModificationLis
             }
         });
         support.addColumn(column);
+
+        column = new Column(Messages.ColumnSource, SWT.None, 100);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return ((AttributeType) element).getSource();
+            }
+        });
+        support.addColumn(column);
+
     }
 
     private void fillContextMenu(IMenuManager manager)

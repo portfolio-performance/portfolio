@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.StringJoiner;
 import java.util.UUID;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
@@ -20,6 +21,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.TreeColumnLayout;
+import org.eclipse.jface.viewers.AbstractTreeViewer;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -40,6 +42,8 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+
+import com.google.common.base.Strings;
 
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Classification.Assignment;
@@ -64,6 +68,7 @@ import name.abuchen.portfolio.ui.util.TreeViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
@@ -73,8 +78,8 @@ import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
+import name.abuchen.portfolio.util.TextUtil;
 
-@SuppressWarnings("restriction")
 /* package */abstract class AbstractNodeTreeViewer extends Page implements ModificationListener
 {
     private static class ItemContentProvider implements ITreeContentProvider
@@ -363,6 +368,7 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 
         ColumnEditingSupport.prepare(nodeViewer);
         ColumnViewerToolTipSupport.enableFor(nodeViewer, ToolTip.NO_RECREATE);
+        CopyPasteSupport.enableFor(nodeViewer);
 
         support = new ShowHideColumnHelper(getClass().getSimpleName() + '-' + getModel().getTaxonomy().getId(),
                         getPreferenceStore(), nodeViewer, layout);
@@ -388,16 +394,46 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
             {
                 TaxonomyNode node = (TaxonomyNode) element;
 
-                for (Predicate<TaxonomyNode> predicate : getModel().getNodeFilters())
-                    if (!predicate.test(node))
-                        return false;
+                if (node.isAssignment())
+                {
+                    // is assignment = leaf node
+                    for (Predicate<TaxonomyNode> predicate : getModel().getNodeFilters())
+                        if (!predicate.test(node))
+                            return false;
 
+                    Pattern filterPattern = getModel().getFilterPattern();
+                    if (filterPattern != null)
+                    {
+                        String label = node.getName();
+                        return filterPattern.matcher(label).matches();
+                    }
+                }
+                else
+                {
+                    // is classification = not a leaf node -> search children
+                    Pattern filterPattern = getModel().getFilterPattern();
+                    if (filterPattern != null)
+                    {
+                        if (filterPattern.matcher(node.getName()).matches())
+                            return true;
+
+                        ITreeContentProvider provider = (ITreeContentProvider) nodeViewer.getContentProvider();
+                        for (Object child : provider.getChildren(element))
+                        {
+                            if (select(viewer, element, child))
+                                return true;
+                        }
+
+                        return false;
+                    }
+                }
                 return true;
             }
         });
 
         nodeViewer.addSelectionChangedListener(event -> {
             TaxonomyNode node = ((TaxonomyNode) ((IStructuredSelection) event.getSelection()).getFirstElement());
+            view.setInformationPaneInput(node);
             if (node != null && node.getBackingSecurity() != null)
                 selectionService.setSelection(new SecuritySelection(getModel().getClient(), node.getBackingSecurity()));
         });
@@ -423,6 +459,21 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
                     return Images.UNASSIGNED_CATEGORY.image();
                 return super.getImage(e);
             }
+
+            @Override
+            public String getToolTipText(Object e)
+            {
+                TaxonomyNode node = (TaxonomyNode) e;
+
+                if (!node.isClassification())
+                    return super.getToolTipText(e);
+
+                String note = node.getClassification().getNote();
+
+                return Strings.isNullOrEmpty(note) ? super.getToolTipText(e)
+                                : TextUtil.wordwrap(node.getName() + "\n\n" + note); //$NON-NLS-1$
+            }
+
         });
         new StringEditingSupport(Named.class, "name") //$NON-NLS-1$
         {
@@ -785,6 +836,12 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
                 manager.add(new SimpleAction(Messages.MenuTaxonomyClassificationDelete,
                                 a -> doDeleteClassification(node)));
             }
+
+            manager.add(new Separator());
+            manager.add(new SimpleAction(Messages.LabelExpandAll,
+                            a -> nodeViewer.expandToLevel(node, AbstractTreeViewer.ALL_LEVELS)));
+            manager.add(new SimpleAction(Messages.LabelCollapseAll,
+                            a -> nodeViewer.collapseToLevel(node, AbstractTreeViewer.ALL_LEVELS)));
         }
         else
         {

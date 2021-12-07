@@ -28,12 +28,10 @@ public class SinceXTest
     public void testWriteTo() throws IOException
     {
         String code = "S2020-04-04";
-        StringBuilder strb = new StringBuilder();
 
         ReportingPeriod period = ReportingPeriod.from(code);
-        period.writeTo(strb);
 
-        assertEquals(strb.toString(), code);
+        assertEquals(period.getCode(), code);
     }
 
     @Test

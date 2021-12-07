@@ -46,17 +46,22 @@ public class IBFlexStatementExtractorTest
 
         Extractor.InputFile tempFile = createTempFile(activityStatement);
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
         List<Item> results = extractor.extract(Collections.singletonList(tempFile), errors);
+
+        if (!errors.isEmpty())
+            errors.forEach(Exception::printStackTrace);
+
+        assertThat(errors.size(), is(0));
 
         results.stream().filter(i -> !(i instanceof SecurityItem))
                         .forEach(i -> assertThat(i.getAmount(), notNullValue()));
 
-        List<Item> securityItems = results.stream().filter( i -> i instanceof SecurityItem).collect(Collectors.toList());
-        List<Item> buySellTransactions = results.stream().filter( i -> i instanceof BuySellEntryItem).collect(Collectors.toList());
-        
-        assertThat(securityItems.size(), is(6)); 
-        
+        List<Item> securityItems = results.stream().filter(i -> i instanceof SecurityItem).collect(Collectors.toList());
+        List<Item> buySellTransactions = results.stream().filter(i -> i instanceof BuySellEntryItem)
+                        .collect(Collectors.toList());
+
+        assertThat(securityItems.size(), is(6));
         // 14 Trade item and one corporate transaction
         assertThat(buySellTransactions.size(), is(16));
         assertThat(results.size(), is(33));
@@ -67,8 +72,7 @@ public class IBFlexStatementExtractorTest
         assertSecondSecurity(results.stream().filter(i -> i instanceof SecurityItem)
                         .reduce((previous, current) -> current).get());
         assertFourthTransaction(results.stream().filter(i -> i instanceof BuySellEntryItem).skip(3).findFirst());
-        
-        
+
         assertOptionBuyTransaction(buySellTransactions.get(13));
         assertCFDBuyTransaction(buySellTransactions.get(14));
 
@@ -101,7 +105,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getMonetaryAmount(), is(Money.of("USD", 2_07L)));
         assertThat(entry.getDateTime(), is(LocalDateTime.parse("2017-09-15T00:00")));
     }
-    
+
     private void assertFee(Optional<Item> item)
     {
         assertThat(item.isPresent(), is(true));
@@ -112,7 +116,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getMonetaryAmount(), is(Money.of("USD", 9_18L)));
         assertThat(entry.getDateTime(), is(LocalDateTime.parse("2017-05-03T00:00")));
     }
-    
+
     private void assertFeeRefund(Optional<Item> item)
     {
         assertThat(item.isPresent(), is(true));
@@ -123,7 +127,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getMonetaryAmount(), is(Money.of("USD", 9_18L)));
         assertThat(entry.getDateTime(), is(LocalDateTime.parse("2017-05-03T00:00")));
     }
-    
+
     private void assertInterestCharge(Optional<Item> item)
     {
         assertThat(item.isPresent(), is(true));
@@ -174,13 +178,13 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("CAD", 1350_00L)));
         assertThat(entry.getPortfolioTransaction().getGrossValueAmount(), is(1350_00L));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2013-04-01T09:34")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(5000_000000L));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5000)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of("CAD", 6_75L)));
         assertThat(entry.getPortfolioTransaction().getGrossPricePerShare(),
                         is(Quote.of("CAD", Values.Quote.factorize(0.27))));
 
     }
-    
+
     private void assertFourthTransaction(Optional<Item> item)
     {
         assertThat(item.isPresent(), is(true));
@@ -193,7 +197,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getSecurity().getName(), is("URANIUM ONE INC."));
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of("CAD", 232_00L)));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2013-01-02T15:12")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(100_000000L));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of("CAD", 1_00L)));
     }
 
@@ -207,7 +211,7 @@ public class IBFlexStatementExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getSecurity().getTickerSymbol(), is("FB180921C00200000"));
     }
-    
+
     private void assertCFDBuyTransaction(Item item)
     {
         assertThat(item.getSubject(), instanceOf(BuySellEntry.class));
@@ -227,11 +231,11 @@ public class IBFlexStatementExtractorTest
     @Test
     public void testThatExceptionIsAddedForNonFlexStatementDocuments() throws IOException
     {
-        InputStream otherFile = getClass().getResourceAsStream("pdf/comdirect/comdirectGutschrift1.txt");
+        InputStream otherFile = getClass().getResourceAsStream("pdf/comdirect/Dividende05.txt");
         Extractor.InputFile tempFile = createTempFile(otherFile);
         Client client = new Client();
         IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(client);
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
         List<Item> results = extractor.extract(Collections.singletonList(tempFile), errors);
 
         assertThat(results.isEmpty(), is(true));

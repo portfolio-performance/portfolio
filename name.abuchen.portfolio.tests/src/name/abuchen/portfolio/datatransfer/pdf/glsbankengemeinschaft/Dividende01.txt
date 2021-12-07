@@ -1,0 +1,59 @@
+PDF Autor: 'User'
+PDFBox Version: 1.8.16
+-----------------------------------------
+GLS Bank · 44774 Bochum    Seite 1
+Depotnummer
+ XXXX
+ Kundennummer XXXX
+XXXX
+ Abrechnungsnr. 66008994320
+XXXX Datum 09.06.2021
+XXXX Ihr Berater Wertpapierservice
+XXXX Telefon +49 234 5797 5100   
+Telefax +49 234 5797 5222        
+ 
+Dividendengutschrift
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 17 CD PROJEKT S.A. PLOPTTC00011 (534356)
+INHABER-AKTIEN C ZY 1
+Zahlbarkeitstag 08.06.2021 Dividende pro Stück 5,00 PLN
+Bestandsstichtag 28.05.2021 Herkunftsland Polen
+Ex-Tag 31.05.2021
+Geschäftsjahr 01.01.2020 - 31.12.2020
+Devisenkurs EUR / PLN  4,5044
+Devisenkursdatum 09.06.2021
+Dividendengutschrift 85,00 PLN 18,87+ EUR
+Umrechnung in EUR 18,87 EUR
+Einbehaltene Quellensteuer 19 % auf 85,00 PLN 3,59- EUR
+Anrechenbare Quellensteuer 15 % auf 18,87 EUR 2,83 EUR
+Kapitalertragsteuerpflichtige Dividende 18,87 EUR
+Verrechnete anrechenbare ausländische Quellensteuer
+(Verhältnis 100/25) auf 2,83 EUR 11,32 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 7,55 EUR
+Kapitalertragsteuer 25 % auf 7,55 EUR 1,89- EUR
+Solidaritätszuschlag 5,5 % auf 1,89 EUR 0,11- EUR
+Ausmachender Betrag 13,28+ EUR
+4 % rückforderbare Quellensteuer 3,40 PLN
+Lagerstelle CBFI (601617 / 67268)
+Den Betrag buchen wir mit Wertstellung 10.06.2021 zu Gunsten des Kontos XXXX (IBAN DE88 4306 0967 1154
+3650 00), BLZ 430 609 67 (BIC GENODEM1GLS). 
+Bitte ggf. Rückseite beachten.
+7657.06100100.0000041ER01
+
+Seite 2
+Depotnummer XXXX
+Kundennummer XXXX
+Abrechnungsnr. 66008994320
+Datum 09.06.2021
+Keine Steuerbescheinigung. 
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2021 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 50,16
+Ertrag 2,83
+0,00 0,00 0,00 2,83- 7,55
+Nachher 0,00 0,00 0,00 0,00 57,71
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+7657.06100100.0000042ER01

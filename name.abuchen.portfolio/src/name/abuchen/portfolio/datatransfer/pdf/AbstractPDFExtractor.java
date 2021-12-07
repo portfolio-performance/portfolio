@@ -28,6 +28,10 @@ import name.abuchen.portfolio.money.Values;
 public abstract class AbstractPDFExtractor implements Extractor
 {
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy", Locale.GERMANY); //$NON-NLS-1$
+    private static final DateTimeFormatter DATE_FORMAT_YEAR_TWO_DIGIT = DateTimeFormatter.ofPattern("d.M.yy", Locale.GERMANY); //$NON-NLS-1$
+    private static final DateTimeFormatter DATE_FORMAT_DASHES = DateTimeFormatter.ofPattern("yyyy-M-d", Locale.GERMANY); //$NON-NLS-1$
+    private static final DateTimeFormatter DATE_FORMAT_DASHES_REVERSE = DateTimeFormatter.ofPattern("d-M-yyyy", //$NON-NLS-1$
+                    Locale.GERMANY);
     private static final DateTimeFormatter DATE_TIME_SECONDS_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy HH:mm", //$NON-NLS-1$
                     Locale.GERMANY);
     private static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy HH:mm:ss", //$NON-NLS-1$
@@ -66,11 +70,6 @@ public abstract class AbstractPDFExtractor implements Extractor
         return bankIdentifier;
     }
 
-    public String getPDFAuthor()
-    {
-        return null;
-    }
-
     @Override
     public List<Item> extract(SecurityCache securityCache, Extractor.InputFile inputFile, List<Exception> errors)
     {
@@ -106,12 +105,12 @@ public abstract class AbstractPDFExtractor implements Extractor
 
             for (Item item : items)
             {
-                if (item.getSubject().getNote() == null)
+                if (item.getSubject().getNote() == null || item.getSubject().getNote().trim().length() == 0)
                     item.getSubject().setNote(filename);
                 else
-                    item.getSubject().setNote(item.getSubject().getNote().concat(" | ").concat(filename)); //$NON-NLS-1$
+                    item.getSubject().setNote(item.getSubject().getNote().trim().concat(" | ").concat(filename)); //$NON-NLS-1$
             }
-            
+
             return items;
         }
         catch (IllegalArgumentException e)
@@ -216,7 +215,7 @@ public abstract class AbstractPDFExtractor implements Extractor
         return unit == null ? client.getBaseCurrency() : unit.getCurrencyCode();
     }
 
-    /* protected */long asAmount(String value)
+    protected long asAmount(String value)
     {
         try
         {
@@ -228,7 +227,7 @@ public abstract class AbstractPDFExtractor implements Extractor
         }
     }
 
-    /* protected */BigDecimal asExchangeRate(String value)
+    protected BigDecimal asExchangeRate(String value)
     {
         try
         {
@@ -240,12 +239,36 @@ public abstract class AbstractPDFExtractor implements Extractor
         }
     }
 
-    /* protected */LocalDateTime asDate(String value)
+    protected LocalDateTime asDate(String value)
     {
-        return value == null ? null : LocalDate.parse(value, DATE_FORMAT).atStartOfDay();
+        LocalDateTime date = null;
+
+        try
+        {
+            date = LocalDate.parse(value, DATE_FORMAT).atStartOfDay();
+        }
+        catch (DateTimeParseException e1)
+        {
+            try
+            {
+                date = LocalDate.parse(value, DATE_FORMAT_DASHES).atStartOfDay();
+            }
+            catch (DateTimeParseException e2)
+            {
+                try 
+                {
+                    date = LocalDate.parse(value, DATE_FORMAT_DASHES_REVERSE).atStartOfDay();
+                }
+                catch(DateTimeParseException e3)
+                {
+                    date = LocalDate.parse(value, DATE_FORMAT_YEAR_TWO_DIGIT).atStartOfDay();
+                }
+            }
+        }
+        return date;
     }
 
-    /* protected */LocalTime asTime(String value)
+    protected LocalTime asTime(String value)
     {
         LocalTime time = null;
 
@@ -261,7 +284,7 @@ public abstract class AbstractPDFExtractor implements Extractor
         return time.withSecond(0);
     }
 
-    /* protected */LocalDateTime asDate(String date, String time)
+    protected LocalDateTime asDate(String date, String time)
     {
         try
         {

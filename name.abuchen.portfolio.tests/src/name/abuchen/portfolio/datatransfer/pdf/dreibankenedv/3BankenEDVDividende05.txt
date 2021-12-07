@@ -1,0 +1,31 @@
+PDF Autor: '3BankenEDV'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Wertpapier-Abrechnu n g                     Ausschüttung
+654153 - 14.12.2020
+Depotnummer Betreuer
+Nachname Vorname 123-456789 123
+Wertpapiernummer Bezeichnung Nominale/Stück
+LU0675401409 Lyxor Emerg Market 2x Lev ETF Stk .               6,00
+Inhaber-Anteile I o.N.
+Ertrag 0,09 USD Kurswert USD                0,54KESt-Neu USD               -0,15
+Zwischensumme USD                0,39
+a 1,214 v. 09.12.2020 EUR                0,32
+0,0204 EUR KESt
+Extag 09.12.2020
+Verrechnung
+Verwahrart, Positionsdaten
+Wertpapierrechnung Wert 11.12.2020 EUR                0,32
+München zu Gunsten Konto AT12 3456 7890 1234 5678
+      Seite 1 von 2
+Rechtsform: Aktiengesellschaft, Sitz: Klagenfurt, Firmenbuch-Nr.: FN 91810s/Klagenfurt, DVR 0063703, UID-Nr. ATU 25231503
+Wertpapier-Abrechnung
+654153 - 14.12.2020
+Depotbezeichnung Depotnummer Betreuer
+Nachname Vorname 123-456789 123
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden                           6,00 STK
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG
+---------------------------------------------------------------------------------------------
+Die KESt wird an das Finanzamt Klagenfurt abgeführt.
+Fondsgesellschaft: Lyxor
+Rechtsform: Aktiengesellschaft, Sitz: Klagenfurt, Firmenbuch-Nr.: FN 91810s/Klagenfurt, DVR 0063703, UID-Nr. ATU 25231503       Seite 2 von 2

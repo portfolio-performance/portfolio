@@ -46,6 +46,7 @@ import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.DateTimeEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
@@ -150,9 +151,12 @@ public final class TransactionsViewer implements ModificationListener
         TableColumnLayout layout = new TableColumnLayout();
         container.setLayout(layout);
 
-        tableViewer = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
+        tableViewer = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI | SWT.VIRTUAL);
         ColumnViewerToolTipSupport.enableFor(tableViewer, ToolTip.NO_RECREATE);
         ColumnEditingSupport.prepare(tableViewer);
+        CopyPasteSupport.enableFor(tableViewer);
+
+        tableViewer.setUseHashlookup(true);
 
         support = new ShowHideColumnHelper(identifier, owner.getPreferenceStore(), tableViewer, layout);
 
@@ -337,8 +341,10 @@ public final class TransactionsViewer implements ModificationListener
         column = new Column("4", Messages.ColumnQuote, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setLabelProvider(new TransactionLabelProvider(t -> {
             if (t instanceof PortfolioTransaction)
-                return t.getShares() != 0 ? Values.Quote.format(((PortfolioTransaction) t).getGrossPricePerShare(),
-                                owner.getClient().getBaseCurrency()) : null;
+                return t.getShares() != 0
+                                ? Values.CalculatedQuote.format(((PortfolioTransaction) t).getGrossPricePerShare(),
+                                                owner.getClient().getBaseCurrency())
+                                : null;
             else
                 return null;
         }));

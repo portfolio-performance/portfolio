@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.util.viewers;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.CellEditor;
@@ -62,8 +63,14 @@ public class ImageAttributeEditingSupport extends AttributeEditingSupport
             {
                 try
                 {
-                    return ImageUtil.loadAndPrepare(filename, ImageConverter.MAXIMUM_SIZE_EMBEDDED_IMAGE,
+                    String image = ImageUtil.loadAndPrepare(filename, ImageConverter.MAXIMUM_SIZE_EMBEDDED_IMAGE,
                                     ImageConverter.MAXIMUM_SIZE_EMBEDDED_IMAGE);
+
+                    if (image == null)
+                        MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.MsgInvalidImage,
+                                        MessageFormat.format(Messages.MsgInvalidImageDetail, filename));
+
+                    return image;
                 }
                 catch (IOException ex)
                 {

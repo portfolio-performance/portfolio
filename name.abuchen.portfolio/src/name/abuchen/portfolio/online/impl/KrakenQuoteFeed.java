@@ -97,33 +97,36 @@ public final class KrakenQuoteFeed implements QuoteFeed
             JSONObject result = (JSONObject) json.get("result"); //$NON-NLS-1$
             JSONArray ohlcItems = (JSONArray) result.get(security.getTickerSymbol());
 
-            ohlcItems.forEach(e -> {
-                JSONArray quoteEntry = (JSONArray) e;
-                Long timestamp = Long.parseLong(quoteEntry.get(0).toString());
+            if (ohlcItems != null)
+            {
+                ohlcItems.forEach(e -> {
+                    JSONArray quoteEntry = (JSONArray) e;
+                    Long timestamp = Long.parseLong(quoteEntry.get(0).toString());
 
-                try
-                {
-                    long high = YahooHelper.asPrice(quoteEntry.get(2).toString());
-                    long low = YahooHelper.asPrice(quoteEntry.get(3).toString());
-                    long close = YahooHelper.asPrice(quoteEntry.get(4).toString());
-                    int volume = YahooHelper.asNumber(quoteEntry.get(6).toString());
+                    try
+                    {
+                        long high = YahooHelper.asPrice(quoteEntry.get(2).toString());
+                        long low = YahooHelper.asPrice(quoteEntry.get(3).toString());
+                        long close = YahooHelper.asPrice(quoteEntry.get(4).toString());
+                        int volume = YahooHelper.asNumber(quoteEntry.get(6).toString());
 
-                    LatestSecurityPrice price = new LatestSecurityPrice();
-                    price.setDate(LocalDate.ofEpochDay(timestamp / SECONDS_PER_DAY));
-                    price.setValue(close);
-                    price.setHigh(high);
-                    price.setLow(low);
-                    price.setVolume(volume);
+                        LatestSecurityPrice price = new LatestSecurityPrice();
+                        price.setDate(LocalDate.ofEpochDay(timestamp / SECONDS_PER_DAY));
+                        price.setValue(close);
+                        price.setHigh(high);
+                        price.setLow(low);
+                        price.setVolume(volume);
 
-                    if (close > 0L)
-                        data.addPrice(price);
+                        if (close > 0L)
+                            data.addPrice(price);
 
-                }
-                catch (ParseException | IllegalArgumentException ex)
-                {
-                    data.addError(ex);
-                }
-            });
+                    }
+                    catch (ParseException | IllegalArgumentException ex)
+                    {
+                        data.addError(ex);
+                    }
+                });
+            }
 
         }
         catch (IOException | URISyntaxException e)

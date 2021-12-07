@@ -12,16 +12,16 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.regex.Pattern;
 
-import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.beans.typed.BeanProperties;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.jface.databinding.swt.WidgetProperties;
-import org.eclipse.jface.fieldassist.ControlDecoration;
+import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -49,11 +49,16 @@ import name.abuchen.portfolio.model.Exchange;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.impl.AlphavantageQuoteFeed;
+import name.abuchen.portfolio.online.impl.BinanceQuoteFeed;
+import name.abuchen.portfolio.online.impl.BitfinexQuoteFeed;
 import name.abuchen.portfolio.online.impl.CSQuoteFeed;
+import name.abuchen.portfolio.online.impl.CoinGeckoQuoteFeed;
+import name.abuchen.portfolio.online.impl.ECBStatisticalDataWarehouseQuoteFeed;
 import name.abuchen.portfolio.online.impl.EurostatHICPQuoteFeed;
 import name.abuchen.portfolio.online.impl.FinnhubQuoteFeed;
 import name.abuchen.portfolio.online.impl.GenericJSONQuoteFeed;
 import name.abuchen.portfolio.online.impl.HTMLTableQuoteFeed;
+import name.abuchen.portfolio.online.impl.KrakenQuoteFeed;
 import name.abuchen.portfolio.online.impl.PortfolioReportQuoteFeed;
 import name.abuchen.portfolio.online.impl.QuandlQuoteFeed;
 import name.abuchen.portfolio.ui.Images;
@@ -62,6 +67,7 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.BindingHelper;
 import name.abuchen.portfolio.ui.util.DesktopAPI;
 import name.abuchen.portfolio.ui.util.SWTHelper;
+import name.abuchen.portfolio.ui.util.swt.ControlDecoration;
 
 public abstract class AbstractQuoteProviderPage extends AbstractPage
 {
@@ -165,6 +171,14 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
     private Text textJsonPathDate;
     private Label labelJsonPathClose;
     private Text textJsonPathClose;
+    private Label labelJsonDateFormat;
+    private Text textJsonDateFormat;
+    private Label labelJsonPathLow;
+    private Text textJsonPathLow;
+    private Label labelJsonPathHigh;
+    private Text textJsonPathHigh;
+    private Label labelJsonPathVolume;
+    private Text textJsonPathVolume;
 
     private PropertyChangeListener tickerSymbolPropertyChangeListener = e -> onTickerSymbolChanged();
 
@@ -194,6 +208,18 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
     protected abstract String getFeedURL();
 
     protected abstract void setFeedURL(String feedURL);
+
+    protected abstract String getJSONDatePropertyName();
+
+    protected abstract String getJSONDateFormatPropertyName();
+
+    protected abstract String getJSONClosePropertyName();
+
+    protected abstract String getJSONLowPathPropertyName();
+
+    protected abstract String getJSONHighPathPropertyName();
+
+    protected abstract String getJSONVolumePathPropertyName();
 
     protected abstract void setStatus(String status);
 
@@ -246,18 +272,46 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             textQuandlCloseColumnName.setText(columnName != null ? columnName : ""); //$NON-NLS-1$
         }
 
-        if (textJsonPathDate != null && !textJsonPathDate.getText()
-                        .equals(model.getFeedProperty(GenericJSONQuoteFeed.DATE_PROPERTY_NAME)))
+        if (textJsonPathDate != null
+                        && !textJsonPathDate.getText().equals(model.getFeedProperty(getJSONDatePropertyName())))
         {
-            String path = model.getFeedProperty(GenericJSONQuoteFeed.DATE_PROPERTY_NAME);
+            String path = model.getFeedProperty(getJSONDatePropertyName());
             textJsonPathDate.setText(path != null ? path : ""); //$NON-NLS-1$
         }
 
-        if (textJsonPathClose != null && !textJsonPathClose.getText()
-                        .equals(model.getFeedProperty(GenericJSONQuoteFeed.CLOSE_PROPERTY_NAME)))
+        if (textJsonPathClose != null
+                        && !textJsonPathClose.getText().equals(model.getFeedProperty(getJSONClosePropertyName())))
         {
-            String path = model.getFeedProperty(GenericJSONQuoteFeed.CLOSE_PROPERTY_NAME);
+            String path = model.getFeedProperty(getJSONClosePropertyName());
             textJsonPathClose.setText(path != null ? path : ""); //$NON-NLS-1$
+        }
+
+        if (textJsonDateFormat != null
+                        && !textJsonDateFormat.getText().equals(model.getFeedProperty(getJSONDateFormatPropertyName())))
+        {
+            String dateFormat = model.getFeedProperty(getJSONDateFormatPropertyName());
+            textJsonDateFormat.setText(dateFormat != null ? dateFormat : ""); //$NON-NLS-1$
+        }
+
+        if (textJsonPathLow != null
+                        && !textJsonPathLow.getText().equals(model.getFeedProperty(getJSONLowPathPropertyName())))
+        {
+            String lowPath = model.getFeedProperty(getJSONLowPathPropertyName());
+            textJsonPathLow.setText(lowPath != null ? lowPath : ""); //$NON-NLS-1$
+        }
+
+        if (textJsonPathHigh != null
+                        && !textJsonPathHigh.getText().equals(model.getFeedProperty(getJSONHighPathPropertyName())))
+        {
+            String highPath = model.getFeedProperty(getJSONHighPathPropertyName());
+            textJsonPathHigh.setText(highPath != null ? highPath : ""); //$NON-NLS-1$
+        }
+
+        if (textJsonPathVolume != null
+                        && !textJsonPathVolume.getText().equals(model.getFeedProperty(getJSONVolumePathPropertyName())))
+        {
+            String volumePath = model.getFeedProperty(getJSONVolumePathPropertyName());
+            textJsonPathVolume.setText(volumePath != null ? volumePath : ""); //$NON-NLS-1$
         }
     }
 
@@ -268,7 +322,8 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         setFeed(feed.getId());
 
         if (comboExchange != null && feed.getId() != null
-                        && (feed.getId().startsWith(YAHOO) || feed.getId().equals(EurostatHICPQuoteFeed.ID)))
+                        && (feed.getId().startsWith(YAHOO) || feed.getId().equals(EurostatHICPQuoteFeed.ID)
+                                        || feed.getId().equals(ECBStatisticalDataWarehouseQuoteFeed.ID)))
         {
             Exchange exchange = (Exchange) ((IStructuredSelection) comboExchange.getSelection()).getFirstElement();
             if (exchange != null)
@@ -340,7 +395,6 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         // create a temporary security and set all attributes
         Security security = new Security();
         model.setAttributes(security);
-        model.getSecurity().getProperties().forEach(security::addProperty);
         return security;
     }
 
@@ -382,8 +436,9 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
                 if (feed != null && feed.getHelpURL().isPresent())
                     url = feed.getHelpURL().get();
 
-                // Use Google translate for non-German users (as the help pages are
-                // currently only available in German). Taking care to encode the #.
+                // Use Google translate for non-German users (as the help pages
+                // are currently only available in German). Taking care to
+                // encode the #.
                 if (!Locale.getDefault().getLanguage().equals(Locale.GERMAN.getLanguage()))
                     url = MessageFormat.format(Messages.HelpURL, URLEncoder.encode(url, StandardCharsets.UTF_8.name()));
 
@@ -405,13 +460,16 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
     {
         boolean dropDown = feed != null && feed.getId() != null
                         && (feed.getId().startsWith(YAHOO) || feed.getId().equals(EurostatHICPQuoteFeed.ID)
+                                        || feed.getId().equals(ECBStatisticalDataWarehouseQuoteFeed.ID)
                                         || feed.getId().equals(PortfolioReportQuoteFeed.ID));
 
         boolean feedURL = feed != null && feed.getId() != null && (feed.getId().equals(HTMLTableQuoteFeed.ID)
                         || feed.getId().equals(CSQuoteFeed.ID) || feed.getId().equals(GenericJSONQuoteFeed.ID));
 
         boolean needsTicker = feed != null && feed.getId() != null
-                        && (feed.getId().equals(AlphavantageQuoteFeed.ID) || feed.getId().equals(FinnhubQuoteFeed.ID));
+                        && Set.of(AlphavantageQuoteFeed.ID, FinnhubQuoteFeed.ID, BinanceQuoteFeed.ID,
+                                        BitfinexQuoteFeed.ID, CoinGeckoQuoteFeed.ID, KrakenQuoteFeed.ID)
+                                        .contains(feed.getId());
 
         boolean needsQuandlCode = feed != null && feed.getId() != null && feed.getId().equals(QuandlQuoteFeed.ID);
 
@@ -437,28 +495,22 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             model.removePropertyChangeListener("tickerSymbol", tickerSymbolPropertyChangeListener); //$NON-NLS-1$
         }
 
-        if (textQuandlCode != null)
-        {
-            textQuandlCode.dispose();
-            textQuandlCode = null;
-        }
-
-        if (labelQuandlCloseColumnName != null)
-        {
-            labelQuandlCloseColumnName.dispose();
-            labelQuandlCloseColumnName = null;
-        }
-
-        if (textQuandlCloseColumnName != null)
-        {
-            textQuandlCloseColumnName.dispose();
-            textQuandlCloseColumnName = null;
-        }
+        textQuandlCode = disposeIf(textQuandlCode);
+        labelQuandlCloseColumnName = disposeIf(labelQuandlCloseColumnName);
+        textQuandlCloseColumnName = disposeIf(textQuandlCloseColumnName);
 
         labelJsonPathDate = disposeIf(labelJsonPathDate);
         textJsonPathDate = disposeIf(textJsonPathDate);
         labelJsonPathClose = disposeIf(labelJsonPathClose);
         textJsonPathClose = disposeIf(textJsonPathClose);
+        labelJsonDateFormat = disposeIf(labelJsonDateFormat);
+        textJsonDateFormat = disposeIf(textJsonDateFormat);
+        labelJsonPathLow = disposeIf(labelJsonPathLow);
+        textJsonPathLow = disposeIf(textJsonPathLow);
+        labelJsonPathHigh = disposeIf(labelJsonPathHigh);
+        textJsonPathHigh = disposeIf(textJsonPathHigh);
+        labelJsonPathVolume = disposeIf(labelJsonPathVolume);
+        textJsonPathVolume = disposeIf(textJsonPathVolume);
 
         if (dropDown)
         {
@@ -472,7 +524,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
                 public String getText(Object element)
                 {
                     Exchange exchange = (Exchange) element;
-                    return MessageFormat.format("{0} ({1})", exchange.getId(), exchange.getName()); //$NON-NLS-1$
+                    return exchange.getDisplayName();
                 }
             });
             GridDataFactory.fillDefaults().span(2, 1).hint(300, SWT.DEFAULT).applyTo(comboExchange.getControl());
@@ -498,7 +550,6 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             GridDataFactory.fillDefaults().span(2, 1).hint(100, SWT.DEFAULT).applyTo(textTicker);
 
             IObservableValue<?> observeText = WidgetProperties.text(SWT.Modify).observe(textTicker);
-            @SuppressWarnings("unchecked")
             IObservableValue<?> observable = BeanProperties.value("tickerSymbol").observe(model); //$NON-NLS-1$
             bindings.getBindingContext().bindValue(observeText, observable);
 
@@ -536,9 +587,22 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             textJsonPathDate = new Text(grpQuoteFeed, SWT.BORDER);
             GridDataFactory.fillDefaults().span(2, 1).hint(100, SWT.DEFAULT).applyTo(textJsonPathDate);
             textJsonPathDate.addModifyListener(e -> onJsonPathDateChanged());
-           
+
             ControlDecoration deco = new ControlDecoration(textJsonPathDate, SWT.CENTER | SWT.RIGHT);
             deco.setDescriptionText(Messages.LabelJSONPathHint);
+            deco.setImage(Images.INFO.image());
+            deco.setMarginWidth(2);
+            deco.show();
+
+            labelJsonDateFormat = new Label(grpQuoteFeed, SWT.NONE);
+            labelJsonDateFormat.setText(Messages.LabelJSONDateFormat);
+
+            textJsonDateFormat = new Text(grpQuoteFeed, SWT.BORDER);
+            GridDataFactory.fillDefaults().span(2, 1).hint(100, SWT.DEFAULT).applyTo(textJsonDateFormat);
+            textJsonDateFormat.addModifyListener(e -> onJsonDateFormatChanged());
+
+            deco = new ControlDecoration(textJsonDateFormat, SWT.CENTER | SWT.RIGHT);
+            deco.setDescriptionText(Messages.LabelJSONDateFormatHint);
             deco.setImage(Images.INFO.image());
             deco.setMarginWidth(2);
             deco.show();
@@ -549,8 +613,47 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             textJsonPathClose = new Text(grpQuoteFeed, SWT.BORDER);
             GridDataFactory.fillDefaults().span(2, 1).hint(100, SWT.DEFAULT).applyTo(textJsonPathClose);
             textJsonPathClose.addModifyListener(e -> onJsonPathCloseChanged());
-            
+
             deco = new ControlDecoration(textJsonPathClose, SWT.CENTER | SWT.RIGHT);
+            deco.setDescriptionText(Messages.LabelJSONPathHint);
+            deco.setImage(Images.INFO.image());
+            deco.setMarginWidth(2);
+            deco.show();
+
+            labelJsonPathLow = new Label(grpQuoteFeed, SWT.NONE);
+            labelJsonPathLow.setText(Messages.LabelJSONPathToLow);
+
+            textJsonPathLow = new Text(grpQuoteFeed, SWT.BORDER);
+            GridDataFactory.fillDefaults().span(2, 1).hint(100, SWT.DEFAULT).applyTo(textJsonPathLow);
+            textJsonPathLow.addModifyListener(e -> onJsonPathLowChanged());
+
+            deco = new ControlDecoration(textJsonPathLow, SWT.CENTER | SWT.RIGHT);
+            deco.setDescriptionText(Messages.LabelJSONPathHint);
+            deco.setImage(Images.INFO.image());
+            deco.setMarginWidth(2);
+            deco.show();
+
+            labelJsonPathHigh = new Label(grpQuoteFeed, SWT.NONE);
+            labelJsonPathHigh.setText(Messages.LabelJSONPathToHigh);
+
+            textJsonPathHigh = new Text(grpQuoteFeed, SWT.BORDER);
+            GridDataFactory.fillDefaults().span(2, 1).hint(100, SWT.DEFAULT).applyTo(textJsonPathHigh);
+            textJsonPathHigh.addModifyListener(e -> onJsonPathHighChanged());
+
+            deco = new ControlDecoration(textJsonPathHigh, SWT.CENTER | SWT.RIGHT);
+            deco.setDescriptionText(Messages.LabelJSONPathHint);
+            deco.setImage(Images.INFO.image());
+            deco.setMarginWidth(2);
+            deco.show();
+
+            labelJsonPathVolume = new Label(grpQuoteFeed, SWT.NONE);
+            labelJsonPathVolume.setText(Messages.LabelJSONPathToVolume);
+
+            textJsonPathVolume = new Text(grpQuoteFeed, SWT.BORDER);
+            GridDataFactory.fillDefaults().span(2, 1).hint(100, SWT.DEFAULT).applyTo(textJsonPathVolume);
+            textJsonPathVolume.addModifyListener(e -> onJsonPathVolumeChanged());
+
+            deco = new ControlDecoration(textJsonPathVolume, SWT.CENTER | SWT.RIGHT);
             deco.setDescriptionText(Messages.LabelJSONPathHint);
             deco.setImage(Images.INFO.image());
             deco.setMarginWidth(2);
@@ -589,7 +692,8 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         createDetailDataWidgets(feed);
 
         if (model.getTickerSymbol() != null && feed != null && feed.getId() != null
-                        && (feed.getId().startsWith(YAHOO) || feed.getId().equals(EurostatHICPQuoteFeed.ID)))
+                        && (feed.getId().startsWith(YAHOO) || feed.getId().equals(EurostatHICPQuoteFeed.ID)
+                                        || feed.getId().equals(ECBStatisticalDataWarehouseQuoteFeed.ID)))
         {
             Exchange exchange = new Exchange(model.getTickerSymbol(), model.getTickerSymbol());
             ArrayList<Exchange> input = new ArrayList<>();
@@ -628,13 +732,29 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
         if (textJsonPathDate != null)
         {
-            String datePath = model.getFeedProperty(GenericJSONQuoteFeed.DATE_PROPERTY_NAME);
+            String datePath = model.getFeedProperty(getJSONDatePropertyName());
             if (datePath != null)
                 textJsonPathDate.setText(datePath);
 
-            String closePath = model.getFeedProperty(GenericJSONQuoteFeed.CLOSE_PROPERTY_NAME);
+            String closePath = model.getFeedProperty(getJSONClosePropertyName());
             if (closePath != null)
                 textJsonPathClose.setText(closePath);
+
+            String dateFormat = model.getFeedProperty(getJSONDateFormatPropertyName());
+            if (dateFormat != null)
+                textJsonDateFormat.setText(dateFormat);
+
+            String lowPath = model.getFeedProperty(getJSONLowPathPropertyName());
+            if (lowPath != null)
+                textJsonPathLow.setText(lowPath);
+
+            String highPath = model.getFeedProperty(getJSONHighPathPropertyName());
+            if (highPath != null)
+                textJsonPathHigh.setText(highPath);
+
+            String volumePath = model.getFeedProperty(getJSONVolumePathPropertyName());
+            if (volumePath != null)
+                textJsonPathVolume.setText(volumePath);
         }
     }
 
@@ -717,13 +837,29 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
         if (textJsonPathDate != null)
         {
-            String datePath = model.getFeedProperty(GenericJSONQuoteFeed.DATE_PROPERTY_NAME);
+            String datePath = model.getFeedProperty(getJSONDatePropertyName());
             if (datePath != null)
                 textJsonPathDate.setText(datePath);
 
-            String closePath = model.getFeedProperty(GenericJSONQuoteFeed.CLOSE_PROPERTY_NAME);
+            String closePath = model.getFeedProperty(getJSONClosePropertyName());
             if (closePath != null)
                 textJsonPathClose.setText(closePath);
+
+            String dateFormat = model.getFeedProperty(getJSONDateFormatPropertyName());
+            if (dateFormat != null)
+                textJsonDateFormat.setText(dateFormat);
+
+            String lowPath = model.getFeedProperty(getJSONLowPathPropertyName());
+            if (lowPath != null)
+                textJsonDateFormat.setText(lowPath);
+
+            String highPath = model.getFeedProperty(getJSONHighPathPropertyName());
+            if (highPath != null)
+                textJsonDateFormat.setText(highPath);
+
+            String volumePath = model.getFeedProperty(getJSONVolumePathPropertyName());
+            if (volumePath != null)
+                textJsonDateFormat.setText(volumePath);
         }
 
         if (comboExchange == null && textFeedURL == null && textQuandlCode == null && textJsonPathDate == null)
@@ -829,7 +965,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
     {
         String datePath = textJsonPathDate.getText();
 
-        model.setFeedProperty(GenericJSONQuoteFeed.DATE_PROPERTY_NAME, datePath.isEmpty() ? null : datePath);
+        model.setFeedProperty(getJSONDatePropertyName(), datePath.isEmpty() ? null : datePath);
 
         QuoteFeed feed = (QuoteFeed) ((IStructuredSelection) comboProvider.getSelection()).getFirstElement();
         showSampleQuotes(feed, null);
@@ -840,7 +976,51 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
     {
         String closePath = textJsonPathClose.getText();
 
-        model.setFeedProperty(GenericJSONQuoteFeed.CLOSE_PROPERTY_NAME, closePath.isEmpty() ? null : closePath);
+        model.setFeedProperty(getJSONClosePropertyName(), closePath.isEmpty() ? null : closePath);
+
+        QuoteFeed feed = (QuoteFeed) ((IStructuredSelection) comboProvider.getSelection()).getFirstElement();
+        showSampleQuotes(feed, null);
+        setStatus(null);
+    }
+
+    private void onJsonDateFormatChanged()
+    {
+        String dateFormat = textJsonDateFormat.getText();
+
+        model.setFeedProperty(getJSONDateFormatPropertyName(), dateFormat.isEmpty() ? null : dateFormat);
+
+        QuoteFeed feed = (QuoteFeed) ((IStructuredSelection) comboProvider.getSelection()).getFirstElement();
+        showSampleQuotes(feed, null);
+        setStatus(null);
+    }
+
+    private void onJsonPathLowChanged()
+    {
+        String lowPath = textJsonPathLow.getText();
+
+        model.setFeedProperty(getJSONLowPathPropertyName(), lowPath.isEmpty() ? null : lowPath);
+
+        QuoteFeed feed = (QuoteFeed) ((IStructuredSelection) comboProvider.getSelection()).getFirstElement();
+        showSampleQuotes(feed, null);
+        setStatus(null);
+    }
+
+    private void onJsonPathHighChanged()
+    {
+        String highPath = textJsonPathHigh.getText();
+
+        model.setFeedProperty(getJSONHighPathPropertyName(), highPath.isEmpty() ? null : highPath);
+
+        QuoteFeed feed = (QuoteFeed) ((IStructuredSelection) comboProvider.getSelection()).getFirstElement();
+        showSampleQuotes(feed, null);
+        setStatus(null);
+    }
+
+    private void onJsonPathVolumeChanged()
+    {
+        String volumePath = textJsonPathVolume.getText();
+
+        model.setFeedProperty(getJSONVolumePathPropertyName(), volumePath.isEmpty() ? null : volumePath);
 
         QuoteFeed feed = (QuoteFeed) ((IStructuredSelection) comboProvider.getSelection()).getFirstElement();
         showSampleQuotes(feed, null);

@@ -8,7 +8,6 @@ import java.time.Period;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAmount;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -17,27 +16,22 @@ import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.layout.RowLayoutFactory;
+import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Layout;
-import org.eclipse.swt.widgets.Menu;
 import org.swtchart.IAxis;
 import org.swtchart.ILegend;
 import org.swtchart.ILineSeries;
@@ -51,7 +45,9 @@ import com.google.common.primitives.Doubles;
 import com.ibm.icu.text.MessageFormat;
 
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.LimitPrice;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityEvent;
@@ -62,16 +58,19 @@ import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.snapshot.AssetPosition;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.filter.ClientSecurityFilter;
 import name.abuchen.portfolio.snapshot.filter.ReadOnlyClient;
+import name.abuchen.portfolio.snapshot.security.SecurityPerformanceIndicator;
+import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
+import name.abuchen.portfolio.util.FormatHelper;
 import name.abuchen.portfolio.util.Interval;
 import name.abuchen.portfolio.util.TradeCalendar;
 import name.abuchen.portfolio.util.TradeCalendarManager;
@@ -121,6 +120,89 @@ public class SecuritiesChart
         }
     }
 
+    public enum IntervalOption
+    {
+        M1(Messages.SecurityTabChart1M, Messages.SecurityTabChart1MToolTip), //
+        M2(Messages.SecurityTabChart2M, Messages.SecurityTabChart2MToolTip), //
+        M6(Messages.SecurityTabChart6M, Messages.SecurityTabChart6MToolTip), //
+        Y1(Messages.SecurityTabChart1Y, Messages.SecurityTabChart1YToolTip), //
+        Y2(Messages.SecurityTabChart2Y, Messages.SecurityTabChart2YToolTip), //
+        Y3(Messages.SecurityTabChart3Y, Messages.SecurityTabChart3YToolTip), //
+        Y5(Messages.SecurityTabChart5Y, Messages.SecurityTabChart5YToolTip), //
+        Y10(Messages.SecurityTabChart10Y, Messages.SecurityTabChart10YToolTip), //
+        YTD(Messages.SecurityTabChartYTD, Messages.SecurityTabChartYTDToolTip), //
+        H(Messages.SecurityTabChartHoldingPeriod, Messages.SecurityTabChartHoldingPeriodToolTip), //
+        ALL(Messages.SecurityTabChartAll, Messages.SecurityTabChartAllToolTip);
+
+        private final String label;
+        private final String tooltip;
+
+        private IntervalOption(String label, String tooltip)
+        {
+            this.label = label;
+            this.tooltip = tooltip;
+        }
+
+        public String getLabel()
+        {
+            return label;
+        }
+
+        public String getTooltip()
+        {
+            return tooltip;
+        }
+
+        public ChartInterval getInverval(Client client, CurrencyConverter converter, Security security)
+        {
+            LocalDate now = LocalDate.now();
+
+            switch (this)
+            {
+                case M1:
+                    return new ChartInterval(now.minus(Period.ofMonths(1)), now);
+                case M2:
+                    return new ChartInterval(now.minus(Period.ofMonths(2)), now);
+                case M6:
+                    return new ChartInterval(now.minus(Period.ofMonths(6)), now);
+                case Y1:
+                    return new ChartInterval(now.minus(Period.ofYears(1)), now);
+                case Y2:
+                    return new ChartInterval(now.minus(Period.ofYears(2)), now);
+                case Y3:
+                    return new ChartInterval(now.minus(Period.ofYears(3)), now);
+                case Y5:
+                    return new ChartInterval(now.minus(Period.ofYears(5)), now);
+                case Y10:
+                    return new ChartInterval(now.minus(Period.ofYears(10)), now);
+                case YTD:
+                    return new ChartInterval(now.minus(Period.ofDays(now.getDayOfYear() - 1)), now);
+                case H:
+                    List<TransactionPair<?>> tx = security.getTransactions(client);
+                    if (tx.isEmpty())
+                        return new ChartInterval(now, now);
+
+                    Collections.sort(tx, new TransactionPair.ByDate());
+                    boolean hasHoldings = ClientSnapshot.create(client, converter, LocalDate.now())
+                                    .getPositionsByVehicle().containsKey(security);
+
+                    return new ChartInterval(tx.get(0).getTransaction().getDateTime().toLocalDate(), hasHoldings
+                                    ? LocalDate.now()
+                                    : tx.get(tx.size() - 1).getTransaction().getDateTime().toLocalDate());
+                case ALL:
+                    List<SecurityPrice> prices = security.getPricesIncludingLatest();
+
+                    if (prices.isEmpty())
+                        return new ChartInterval(now, now);
+                    else
+                        return new ChartInterval(prices.get(0).getDate(), prices.get(prices.size() - 1).getDate());
+
+                default:
+                    throw new IllegalArgumentException();
+            }
+        }
+    }
+
     private enum ChartDetails
     {
         SCALING_LINEAR(Messages.LabelChartDetailChartScalingLinear), //
@@ -152,7 +234,8 @@ public class SecuritiesChart
         EMA_200DAYS(Messages.LabelChartDetailMovingAverage_200days), //
         SHOW_MARKER_LINES(Messages.LabelChartDetailSettingsShowMarkerLines), //
         SHOW_DATA_LABELS(Messages.LabelChartDetailSettingsShowDataLabel), //
-        SHOW_MISSING_TRADING_DAYS(Messages.LabelChartDetailSettingsShowMissingTradingDays);
+        SHOW_MISSING_TRADING_DAYS(Messages.LabelChartDetailSettingsShowMissingTradingDays), //
+        SHOW_LIMITS(Messages.LabelChartDetailSettingsShowLimits);
 
         private final String label;
 
@@ -168,44 +251,20 @@ public class SecuritiesChart
         }
     }
 
-    private static class CustomLayout extends Layout
-    {
-        private final TimelineChart chart;
-        private final Composite buttons;
-
-        public CustomLayout(TimelineChart chart, Composite buttons)
-        {
-            this.chart = chart;
-            this.buttons = buttons;
-        }
-
-        @Override
-        protected Point computeSize(Composite composite, int wHint, int hHint, boolean flushCache)
-        {
-            return new Point(wHint, hHint);
-        }
-
-        @Override
-        protected void layout(Composite composite, boolean flushCache)
-        {
-            Rectangle area = composite.getClientArea();
-
-            Point size = buttons.computeSize(SWT.DEFAULT, area.height);
-
-            buttons.setBounds(area.x + area.width - size.x, area.y, size.x, area.height);
-            chart.setBounds(area.x, area.y, area.width - size.x, area.height);
-        }
-    }
-
     /* testing */ static class ChartRange
     {
         public final int start;
         public final int size;
 
-        public ChartRange(int start, int end)
+        public final LocalDate startDate;
+        public final LocalDate endDate;
+
+        public ChartRange(int start, int end, LocalDate startDate, LocalDate endDate)
         {
             this.start = start;
             this.size = end - start;
+            this.startDate = startDate;
+            this.endDate = endDate;
         }
 
         /**
@@ -235,11 +294,12 @@ public class SecuritiesChart
             if (end <= start)
                 return null;
 
-            return new ChartRange(start, end);
+            return new ChartRange(start, end, prices.get(start).getDate(),
+                            prices.get(Math.min(end, prices.size() - 1)).getDate());
         }
     }
 
-    private static final Color colorQuote = Colors.getColor(52, 70, 235);
+    private Color colorQuote;
 
     private static final Color colorEventPurchase = Colors.getColor(26, 173, 33);
     private static final Color colorEventSale = Colors.getColor(232, 51, 69);
@@ -276,7 +336,7 @@ public class SecuritiesChart
 
     private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("d LLL"); //$NON-NLS-1$
 
-    private Menu contextMenu;
+    private Composite container;
 
     private Client client;
     private CurrencyConverter converter;
@@ -288,7 +348,7 @@ public class SecuritiesChart
      * Calculates dynamically for each security the interval of security prices
      * to be shown.
      */
-    private Function<Security, ChartInterval> chartIntervalFunction;
+    private IntervalOption intervalOption = IntervalOption.Y2;
 
     private EnumSet<ChartDetails> chartConfig = EnumSet.of(ChartDetails.INVESTMENT, ChartDetails.EVENTS,
                     ChartDetails.SCALING_LINEAR);
@@ -306,8 +366,11 @@ public class SecuritiesChart
 
         readChartConfig(client);
 
-        chart = new TimelineChart(parent);
-        chart.getTitle().setText("..."); //$NON-NLS-1$
+        container = new Composite(parent, SWT.NONE);
+        container.setLayout(new FillLayout());
+
+        chart = new TimelineChart(container);
+        chart.getTitle().setVisible(false);
 
         chart.getPlotArea().addPaintListener(event -> customPaintListeners.forEach(l -> l.paintControl(event)));
         chart.getPlotArea().addPaintListener(event -> customBehindPaintListener.forEach(l -> l.paintControl(event)));
@@ -317,60 +380,21 @@ public class SecuritiesChart
         ILegend legend = chart.getLegend();
         legend.setPosition(SWT.BOTTOM);
         legend.setVisible(true);
+    }
 
-        Composite buttons = new Composite(parent, SWT.NONE);
-        buttons.setBackground(Colors.WHITE);
-        RowLayoutFactory.fillDefaults().type(SWT.VERTICAL).spacing(2).margins(2, 2).fill(true).wrap(true)
-                        .applyTo(buttons);
+    public IntervalOption getIntervalOption()
+    {
+        return intervalOption;
+    }
 
-        addConfigButton(buttons);
+    public void setIntervalOption(IntervalOption intervalOption)
+    {
+        this.intervalOption = intervalOption;
+    }
 
-        Function<TemporalAmount, ChartInterval> nowMinus = temporalAmount -> {
-            LocalDate now = LocalDate.now();
-            return new ChartInterval(now.minus(temporalAmount), now);
-        };
-
-        addButton(buttons, Messages.SecurityTabChart1M, Messages.SecurityTabChart1MToolTip,
-                        s -> nowMinus.apply(Period.ofMonths(1)));
-        addButton(buttons, Messages.SecurityTabChart2M, Messages.SecurityTabChart2MToolTip,
-                        s -> nowMinus.apply(Period.ofMonths(2)));
-        addButton(buttons, Messages.SecurityTabChart6M, Messages.SecurityTabChart6MToolTip,
-                        s -> nowMinus.apply(Period.ofMonths(6)));
-        addButton(buttons, Messages.SecurityTabChart1Y, Messages.SecurityTabChart1YToolTip,
-                        s -> nowMinus.apply(Period.ofYears(1)));
-        addButton(buttons, Messages.SecurityTabChart2Y, Messages.SecurityTabChart2YToolTip,
-                        s -> nowMinus.apply(Period.ofYears(2)));
-        addButton(buttons, Messages.SecurityTabChart3Y, Messages.SecurityTabChart3YToolTip,
-                        s -> nowMinus.apply(Period.ofYears(3)));
-        addButton(buttons, Messages.SecurityTabChart5Y, Messages.SecurityTabChart5YToolTip,
-                        s -> nowMinus.apply(Period.ofYears(5)));
-        addButton(buttons, Messages.SecurityTabChart10Y, Messages.SecurityTabChart10YToolTip,
-                        s -> nowMinus.apply(Period.ofYears(10)));
-        addButton(buttons, Messages.SecurityTabChartYTD, Messages.SecurityTabChartYTDToolTip,
-                        s -> nowMinus.apply(Period.ofDays(LocalDate.now().getDayOfYear() - 1)));
-
-        addButton(buttons, Messages.SecurityTabChartHoldingPeriod, Messages.SecurityTabChartHoldingPeriodToolTip, s -> {
-            List<TransactionPair<?>> tx = s.getTransactions(client);
-            if (tx.isEmpty())
-                return null;
-
-            Collections.sort(tx, new TransactionPair.ByDate());
-            boolean hasHoldings = ClientSnapshot.create(client, converter, LocalDate.now()).getPositionsByVehicle()
-                            .containsKey(s);
-
-            return new ChartInterval(tx.get(0).getTransaction().getDateTime().toLocalDate(),
-                            hasHoldings ? LocalDate.now()
-                                            : tx.get(tx.size() - 1).getTransaction().getDateTime().toLocalDate());
-
-        });
-
-        addButton(buttons, Messages.SecurityTabChartAll, Messages.SecurityTabChartAllToolTip, s -> {
-            List<SecurityPrice> prices = s.getPricesIncludingLatest();
-            return prices.isEmpty() ? null
-                            : new ChartInterval(prices.get(0).getDate(), prices.get(prices.size() - 1).getDate());
-        });
-
-        parent.setLayout(new CustomLayout(chart, buttons));
+    public void setQuoteColor(Color color)
+    {
+        this.colorQuote = color;
     }
 
     private void setupTooltip()
@@ -379,7 +403,7 @@ public class SecuritiesChart
 
         toolTip.showToolTipOnlyForDatesInDataSeries(Messages.ColumnQuote);
 
-        toolTip.setValueFormat(new DecimalFormat(Values.Quote.pattern()));
+        toolTip.setDefaultValueFormat(new DecimalFormat(Values.Quote.pattern()));
         toolTip.addSeriesExclude(Messages.LabelChartDetailChartDevelopment + "Positive"); //$NON-NLS-1$
         toolTip.addSeriesExclude(Messages.LabelChartDetailChartDevelopment + "Negative"); //$NON-NLS-1$
         toolTip.addSeriesExclude(Messages.LabelChartDetailChartDevelopment + "Zero"); //$NON-NLS-1$
@@ -393,6 +417,26 @@ public class SecuritiesChart
         toolTip.addSeriesExclude(Messages.LabelChartDetailMarkerDividends + "1"); //$NON-NLS-1$
         toolTip.addSeriesExclude(Messages.LabelChartDetailMarkerDividends + "2"); //$NON-NLS-1$
         toolTip.addSeriesExclude(Messages.LabelChartDetailIndicatorBollingerBands);
+
+        int precision = FormatHelper.getCalculatedQuoteDisplayPrecision();
+        DecimalFormat calculatedFormat = new DecimalFormat(Values.CalculatedQuote.pattern());
+        calculatedFormat.setMinimumFractionDigits(precision);
+        calculatedFormat.setMaximumFractionDigits(precision);
+        for (String period : new String[] { Messages.LabelChartDetailMovingAverage_5days,
+                        Messages.LabelChartDetailMovingAverage_20days, Messages.LabelChartDetailMovingAverage_30days,
+                        Messages.LabelChartDetailMovingAverage_38days, Messages.LabelChartDetailMovingAverage_50days,
+                        Messages.LabelChartDetailMovingAverage_100days,
+                        Messages.LabelChartDetailMovingAverage_200days, })
+        {
+            toolTip.overrideValueFormat(String.format("%s (%s)", Messages.LabelChartDetailMovingAverageEMA, period), //$NON-NLS-1$
+                            calculatedFormat);
+            toolTip.overrideValueFormat(String.format("%s (%s)", Messages.LabelChartDetailMovingAverageSMA, period), //$NON-NLS-1$
+                            calculatedFormat);
+        }
+        toolTip.overrideValueFormat(Messages.LabelChartDetailIndicatorBollingerBandsLower, calculatedFormat);
+        toolTip.overrideValueFormat(Messages.LabelChartDetailIndicatorBollingerBandsUpper, calculatedFormat);
+        toolTip.overrideValueFormat(Messages.LabelChartDetailMarkerPurchaseFIFO, calculatedFormat);
+        toolTip.overrideValueFormat(Messages.LabelChartDetailMarkerPurchaseMovingAverage, calculatedFormat);
 
         toolTip.addExtraInfo((composite, focus) -> {
             if (focus instanceof Date)
@@ -514,30 +558,25 @@ public class SecuritiesChart
         }
     }
 
-    private void addConfigButton(Composite buttons)
+    public void addButtons(ToolBarManager toolBar)
     {
-        Button b = new Button(buttons, SWT.FLAT);
-        b.setImage(Images.CONFIG.image());
-        b.addSelectionListener(new SelectionAdapter()
+        List<Action> viewActions = new ArrayList<>();
+
+        for (IntervalOption option : IntervalOption.values())
         {
-            @Override
-            public void widgetSelected(SelectionEvent e)
-            {
-                if (contextMenu == null)
-                {
-                    MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
-                    menuMgr.setRemoveAllWhenShown(true);
-                    menuMgr.addMenuListener(SecuritiesChart.this::chartConfigAboutToShow);
+            SimpleAction action = new SimpleAction(option.getLabel(), IAction.AS_CHECK_BOX, option.getTooltip(), a -> {
+                this.intervalOption = option;
+                updateChart();
+                for (Action viewAction : viewActions)
+                    viewAction.setChecked(a.equals(viewAction));
+            });
+            if (intervalOption == option)
+                action.setChecked(true);
+            viewActions.add(action);
+            toolBar.add(action);
+        }
 
-                    contextMenu = menuMgr.createContextMenu(buttons.getShell());
-
-                    buttons.addDisposeListener(event -> contextMenu.dispose());
-
-                }
-
-                contextMenu.setVisible(true);
-            }
-        });
+        toolBar.add(new DropDown(Messages.MenuConfigureChart, Images.CONFIG, SWT.NONE, this::chartConfigAboutToShow));
     }
 
     private void chartConfigAboutToShow(IMenuManager manager)
@@ -561,6 +600,7 @@ public class SecuritiesChart
         subMenuChartMarker.add(addMenuAction(ChartDetails.EXTREMES));
         subMenuChartMarker.add(addMenuAction(ChartDetails.FIFOPURCHASE));
         subMenuChartMarker.add(addMenuAction(ChartDetails.FLOATINGAVGPURCHASE));
+        subMenuChartMarker.add(addMenuAction(ChartDetails.SHOW_LIMITS));
         subMenuChartIndicator.add(addMenuAction(ChartDetails.BOLLINGERBANDS));
         subMenuChartMovingAverageSMA.add(addMenuAction(ChartDetails.SMA_5DAYS));
         subMenuChartMovingAverageSMA.add(addMenuAction(ChartDetails.SMA_20DAYS));
@@ -625,6 +665,7 @@ public class SecuritiesChart
                         break;
                 }
             }
+
             if (!chartConfig.contains(ChartDetails.SCALING_LINEAR) && !chartConfig.contains(ChartDetails.SCALING_LOG))
                 chartConfig.add(ChartDetails.SCALING_LINEAR);
 
@@ -636,30 +677,19 @@ public class SecuritiesChart
         });
 
         action.setChecked(chartConfig.contains(detail));
-        return (action);
+        return action;
     }
 
-    private void addButton(Composite buttons, String label, String toolTip, Function<Security, ChartInterval> interval)
-    {
-        Button b = new Button(buttons, SWT.FLAT);
-        b.setText(label);
-        b.setToolTipText(toolTip);
-        b.addSelectionListener(SelectionListener.widgetSelectedAdapter(event -> {
-            chartIntervalFunction = interval;
-            updateChart();
-        }));
-    }
-
-    public void setClient(Client client)
+    public void updateChart(Client client, Security security)
     {
         this.client = client;
+        this.security = security;
         updateChart();
     }
 
-    public void updateChart(Security security)
+    public Control getControl()
     {
-        this.security = security;
-        updateChart();
+        return container;
     }
 
     private void updateChart()
@@ -681,23 +711,16 @@ public class SecuritiesChart
 
             if (security == null || security.getPrices().isEmpty())
             {
-                chart.getTitle().setText(security == null ? "..." : security.getName()); //$NON-NLS-1$
                 chart.redraw();
                 return;
             }
-
-            chart.getTitle().setText(security.getName());
 
             boolean showAreaRelativeToFirstQuote = chartConfig.contains(ChartDetails.CLOSING)
                             || chartConfig.contains(ChartDetails.PURCHASEPRICE);
 
             // determine the interval to be shown in the chart
 
-            ChartInterval chartInterval = null;
-            if (chartIntervalFunction != null)
-                chartInterval = chartIntervalFunction.apply(security);
-            if (chartInterval == null)
-                chartInterval = new ChartInterval(LocalDate.now().minusYears(2), LocalDate.now());
+            ChartInterval chartInterval = intervalOption.getInverval(client, converter, security);
 
             // determine index range for given interval in prices list
 
@@ -740,7 +763,7 @@ public class SecuritiesChart
                     showAreaRelativeToFirstQuote = false;
             }
 
-            addChartMarkerBackground(chartInterval);
+            addChartMarkerBackground(chartInterval, range);
 
             for (int ii = 0; ii < range.size; ii++)
             {
@@ -829,7 +852,7 @@ public class SecuritiesChart
         }
     }
 
-    private void addChartMarkerBackground(ChartInterval chartInterval)
+    private void addChartMarkerBackground(ChartInterval chartInterval, ChartRange range)
     {
         if (chartConfig.contains(ChartDetails.BOLLINGERBANDS))
             addBollingerBandsMarkerLines(chartInterval, 20, 2);
@@ -897,6 +920,9 @@ public class SecuritiesChart
         if (chartConfig.contains(ChartDetails.EMA_200DAYS))
             addEMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageEMA,
                             Messages.LabelChartDetailMovingAverage_200days, 200, colorEMA7);
+
+        if (chartConfig.contains(ChartDetails.SHOW_LIMITS))
+            addLimitLines(chartInterval, range);
     }
 
     private void addChartMarkerForeground(ChartInterval chartInterval)
@@ -918,6 +944,46 @@ public class SecuritiesChart
 
         if (chartConfig.contains(ChartDetails.EXTREMES))
             addExtremesMarkerLines(chartInterval);
+    }
+
+    private void addLimitLines(ChartInterval chartInterval, ChartRange range)
+    {
+        this.security.getAttributes().getMap().forEach((key, val) -> {
+            // null OR not Limit Price --> ignore
+            if (val == null || val.getClass() != LimitPrice.class)
+                return;
+
+            LimitPrice limitAttribute = (LimitPrice) val;
+
+            Optional<AttributeType> attributeName = client.getSettings().getAttributeTypes()
+                            .filter(attr -> attr.getId().equals(key)).findFirst();
+            // could not find name of limit attribute --> don't draw
+            if (attributeName.isEmpty())
+                return;
+
+            String lineID = attributeName.get().getName() + " (" + limitAttribute.toString() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
+
+            // horizontal line: only two points required
+            LocalDate[] dates = new LocalDate[2];
+            dates[0] = range.startDate;
+            dates[1] = range.endDate;
+
+            // both points with same y-value
+            double[] values = new double[2];
+            values[0] = values[1] = limitAttribute.getValue() / Values.Quote.divider();
+
+            ILineSeries lineSeriesLimit = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, lineID);
+            lineSeriesLimit.setXDateSeries(TimelineChart.toJavaUtilDate(dates));
+            lineSeriesLimit.setLineWidth(2);
+            lineSeriesLimit.setLineStyle(LineStyle.DASH);
+            lineSeriesLimit.enableArea(false);
+            lineSeriesLimit.setSymbolType(PlotSymbolType.NONE);
+            lineSeriesLimit.setYSeries(values);
+            lineSeriesLimit.setAntialias(swtAntialias);
+            lineSeriesLimit.setLineColor(Colors.ICON_ORANGE);
+            lineSeriesLimit.setYAxisId(0);
+            lineSeriesLimit.setVisibleInLegend(true);
+        });
     }
 
     private void addSMAMarkerLines(ChartInterval chartInterval, String smaSeries, String smaDaysWording, int smaDays,
@@ -1464,31 +1530,22 @@ public class SecuritiesChart
     private Optional<Double> getPurchasePrice(Client filteredClient, CurrencyConverter currencyConverter,
                     LocalDate date)
     {
-        ClientSnapshot snapshot = ClientSnapshot.create(filteredClient, currencyConverter, date);
-        AssetPosition position = snapshot.getPositionsByVehicle().get(security);
-        if (position == null)
-            return Optional.empty();
-
-        Money purchasePrice = position.getPosition().getFIFOPurchasePrice();
-        if (!purchasePrice.isZero())
-            return Optional.of(purchasePrice.getAmount() / Values.Amount.divider());
-        else
-            return Optional.empty();
+        return SecurityPerformanceSnapshot
+                        .create(filteredClient, currencyConverter, Interval.of(LocalDate.MIN, date),
+                                        SecurityPerformanceIndicator.Costs.class)
+                        .getRecord(security) //
+                        .filter(r -> !r.getFifoCostPerSharesHeld().isZero()) //
+                        .map(r -> r.getFifoCostPerSharesHeld().getAmount() / Values.Quote.divider());
     }
 
     private Optional<Double> getMovingAveragePurchasePrice(Client filteredClient, CurrencyConverter currencyConverter,
                     LocalDate date)
     {
-        ClientSnapshot snapshot = ClientSnapshot.create(filteredClient, currencyConverter, date);
-        AssetPosition position = snapshot.getPositionsByVehicle().get(security);
-        if (position == null)
-            return Optional.empty();
-
-        Money purchasePrice = position.getPosition().getMovingAveragePurchasePrice();
-        if (!purchasePrice.isZero())
-            return Optional.of(purchasePrice.getAmount() / Values.Amount.divider());
-        else
-            return Optional.empty();
+        return SecurityPerformanceSnapshot
+                        .create(filteredClient, currencyConverter, Interval.of(LocalDate.MIN, date),
+                                        SecurityPerformanceIndicator.Costs.class)
+                        .getRecord(security) //
+                        .filter(r -> !r.getFifoCostPerSharesHeld().isZero()) //
+                        .map(r -> r.getMovingAverageCostPerSharesHeld().getAmount() / Values.Quote.divider());
     }
-
 }

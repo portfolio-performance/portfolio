@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.snapshot.filter;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -15,10 +17,11 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy.Visitor;
 import name.abuchen.portfolio.model.Transaction.Unit;
-import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 
 /**
  * Creates a Client that does only contain the securities and accounts included
@@ -35,7 +38,7 @@ public class ClientClassificationFilter implements ClientFilter
 
         private final Set<Account> categorizedAccounts = new HashSet<>();
         private final Set<Security> categorizedSecurities = new HashSet<>();
-        private final Map<InvestmentVehicle, Integer> vehicle2weight = new HashMap<>();
+        private final Map<InvestmentVehicle, BigDecimal> vehicle2weight = new HashMap<>();
 
         public CalculationState(Classification classification)
         {
@@ -45,8 +48,8 @@ public class ClientClassificationFilter implements ClientFilter
                 public void visit(Classification classification, Assignment assignment)
                 {
                     InvestmentVehicle vehicle = assignment.getInvestmentVehicle();
-                    Integer weight = vehicle2weight.computeIfAbsent(vehicle, v -> Integer.valueOf(0));
-                    vehicle2weight.put(vehicle, assignment.getWeight() + weight);
+                    BigDecimal weight = vehicle2weight.computeIfAbsent(vehicle, v -> BigDecimal.ZERO);
+                    vehicle2weight.put(vehicle, weight.add(BigDecimal.valueOf(assignment.getWeight())));
 
                     if (vehicle instanceof Account)
                         categorizedAccounts.add((Account) vehicle);
@@ -66,10 +69,10 @@ public class ClientClassificationFilter implements ClientFilter
             return categorizedAccounts.contains(account);
         }
 
-        public int getWeight(InvestmentVehicle vehicle)
+        public BigDecimal getWeight(InvestmentVehicle vehicle)
         {
-            Integer w = vehicle2weight.get(vehicle);
-            return w == null ? 0 : w;
+            BigDecimal w = vehicle2weight.get(vehicle);
+            return w == null ? BigDecimal.ZERO : w;
         }
 
         public ReadOnlyAccount asReadOnly(Account account)
@@ -170,8 +173,12 @@ public class ClientClassificationFilter implements ClientFilter
                     break;
 
                 case TRANSFER_OUT:
+                    // handled via TRANSFER_IN
+                    break;
                 case TRANSFER_IN:
-                    // nothing to do - transfers must add up within the client
+                    PortfolioTransferEntry entry = (PortfolioTransferEntry) t.getCrossEntry();
+                    ClientFilterHelper.recreateTransfer(entry, state.asReadOnly(entry.getSourcePortfolio()),
+                                    state.asReadOnly(entry.getTargetPortfolio()), state.getWeight(t.getSecurity()));
                     break;
                 default:
                     throw new UnsupportedOperationException();
@@ -181,18 +188,20 @@ public class ClientClassificationFilter implements ClientFilter
 
     private void addBuySellT(CalculationState state, Portfolio portfolio, PortfolioTransaction t)
     {
-        int securityWeight = state.getWeight(t.getSecurity());
+        BigDecimal securityWeight = state.getWeight(t.getSecurity());
 
         long taxes = value(t.getUnitSum(Unit.Type.TAX).getAmount(), securityWeight);
         long securityAmount = value(t.getAmount(), securityWeight);
         securityAmount = t.getType() == PortfolioTransaction.Type.BUY ? securityAmount - taxes : securityAmount + taxes;
 
         Account account = (Account) t.getCrossEntry().getCrossOwner(t);
-        int accountWeight = state.getWeight(account);
+        BigDecimal accountWeight = state.getWeight(account);
         long accountAmount = value(t.getAmount(), accountWeight);
 
         long commonAmount = Math.min(securityAmount, accountAmount);
-        int commonWeight = (int) Math.round(((double) commonAmount / (double) securityAmount) * securityWeight);
+        BigDecimal commonWeight = securityAmount == 0L ? securityWeight
+                        : BigDecimal.valueOf(commonAmount).divide(BigDecimal.valueOf(securityAmount), Values.MC)
+                                        .multiply(securityWeight, Values.MC);
 
         // create a buy/sell transactions with the amount shared by the account
         // assignment and the security assignment
@@ -234,21 +243,21 @@ public class ClientClassificationFilter implements ClientFilter
             tp.setDateTime(t.getDateTime());
             tp.setCurrencyCode(t.getCurrencyCode());
             tp.setSecurity(t.getSecurity());
-            tp.setShares(value(t.getShares(), securityWeight - commonWeight));
+            tp.setShares(value(t.getShares(), securityWeight.subtract(commonWeight)));
             tp.setType(t.getType() == PortfolioTransaction.Type.BUY ? PortfolioTransaction.Type.DELIVERY_INBOUND
                             : PortfolioTransaction.Type.DELIVERY_OUTBOUND);
 
             tp.setAmount(securityAmount - commonAmount);
 
             t.getUnits().filter(u -> u.getType() != Unit.Type.TAX)
-                            .forEach(u -> tp.addUnit(value(u, securityWeight - commonWeight)));
+                            .forEach(u -> tp.addUnit(value(u, securityWeight.subtract(commonWeight))));
 
             state.asReadOnly(portfolio).internalAddTransaction(tp);
         }
     }
 
     private void addDeliveryT(CalculationState state, Portfolio portfolio, PortfolioTransaction t,
-                    PortfolioTransaction.Type targetType, int weight)
+                    PortfolioTransaction.Type targetType, BigDecimal weight)
     {
         PortfolioTransaction copy = new PortfolioTransaction();
         copy.setDateTime(t.getDateTime());
@@ -273,7 +282,7 @@ public class ClientClassificationFilter implements ClientFilter
 
     private void adaptAccountTransactions(CalculationState state, Account account)
     {
-        int accountWeight = state.getWeight(account);
+        BigDecimal accountWeight = state.getWeight(account);
 
         for (AccountTransaction t : account.getTransactions())
         {
@@ -374,14 +383,16 @@ public class ClientClassificationFilter implements ClientFilter
 
     private void addSecurityRelatedAccountT(CalculationState state, Account account, AccountTransaction t)
     {
-        int accountWeight = state.getWeight(account);
-        int securityWeight = state.getWeight(t.getSecurity());
+        BigDecimal accountWeight = state.getWeight(account);
+        BigDecimal securityWeight = state.getWeight(t.getSecurity());
 
         long taxes = value(t.getUnitSum(Unit.Type.TAX).getAmount(), securityWeight);
         long amount = value(t.getAmount(), securityWeight);
 
-        state.asReadOnly(account).internalAddTransaction(new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
-                        amount + taxes, t.getSecurity(), t.getType()));
+        AccountTransaction copy = new AccountTransaction(t.getDateTime(), t.getCurrencyCode(), amount + taxes,
+                        t.getSecurity(), t.getType());
+        t.getUnits().filter(u -> u.getType() != Unit.Type.TAX).forEach(u -> copy.addUnit(value(u, securityWeight)));
+        state.asReadOnly(account).internalAddTransaction(copy);
 
         long accountAmount = value(t.getAmount(), accountWeight);
 
@@ -400,16 +411,16 @@ public class ClientClassificationFilter implements ClientFilter
     {
         Account outboundAccount = (Account) t.getCrossEntry().getCrossOwner(t);
 
-        int inboundWeight = state.getWeight(inboundAccount);
-        int outboundWeight = state.getWeight(outboundAccount);
+        BigDecimal inboundWeight = state.getWeight(inboundAccount);
+        BigDecimal outboundWeight = state.getWeight(outboundAccount);
 
-        if (inboundWeight == outboundWeight && inboundWeight == Classification.ONE_HUNDRED_PERCENT)
+        if (inboundWeight.equals(outboundWeight) && inboundWeight.equals(Classification.ONE_HUNDRED_PERCENT_BD))
         {
             state.asReadOnly(inboundAccount).internalAddTransaction(t);
             state.asReadOnly(outboundAccount)
                             .internalAddTransaction((AccountTransaction) t.getCrossEntry().getCrossTransaction(t));
         }
-        else if (inboundWeight == outboundWeight)
+        else if (inboundWeight.equals(outboundWeight))
         {
             AccountTransferEntry entry = createTransferEntry((AccountTransferEntry) t.getCrossEntry(), inboundWeight);
 
@@ -417,7 +428,7 @@ public class ClientClassificationFilter implements ClientFilter
             state.asReadOnly(inboundAccount).internalAddTransaction(entry.getTargetTransaction());
             state.asReadOnly(outboundAccount).internalAddTransaction(entry.getSourceTransaction());
         }
-        else if (inboundWeight < outboundWeight)
+        else if (inboundWeight.compareTo(outboundWeight) < 0)
         {
             AccountTransferEntry entry = createTransferEntry((AccountTransferEntry) t.getCrossEntry(), inboundWeight);
 
@@ -429,7 +440,7 @@ public class ClientClassificationFilter implements ClientFilter
 
             state.asReadOnly(outboundAccount)
                             .internalAddTransaction(new AccountTransaction(ot.getDateTime(), ot.getCurrencyCode(),
-                                            value(ot.getAmount(), outboundWeight - inboundWeight), null,
+                                            value(ot.getAmount(), outboundWeight.subtract(inboundWeight)), null,
                                             AccountTransaction.Type.REMOVAL));
         }
         else // inboundWeight > outboundWeight
@@ -442,12 +453,12 @@ public class ClientClassificationFilter implements ClientFilter
 
             state.asReadOnly(inboundAccount)
                             .internalAddTransaction(new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
-                                            value(t.getAmount(), inboundWeight - outboundWeight), null,
+                                            value(t.getAmount(), inboundWeight.subtract(outboundWeight)), null,
                                             AccountTransaction.Type.DEPOSIT));
         }
     }
 
-    private AccountTransferEntry createTransferEntry(AccountTransferEntry entry, int weight)
+    private AccountTransferEntry createTransferEntry(AccountTransferEntry entry, BigDecimal weight)
     {
         AccountTransferEntry copy = new AccountTransferEntry();
         copy.setDate(entry.getSourceTransaction().getDateTime());
@@ -470,7 +481,7 @@ public class ClientClassificationFilter implements ClientFilter
             if (t.getSecurity() == null || !state.isCategorized(t.getSecurity()))
                 continue;
 
-            int weight = state.getWeight(t.getSecurity());
+            BigDecimal weight = state.getWeight(t.getSecurity());
 
             switch (t.getType())
             {
@@ -478,8 +489,12 @@ public class ClientClassificationFilter implements ClientFilter
                     long taxes = value(t.getUnitSum(Unit.Type.TAX).getAmount(), weight);
                     long amount = value(t.getAmount(), weight);
 
-                    readOnlyAccount.internalAddTransaction(new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
-                                    amount + taxes, t.getSecurity(), t.getType()));
+                    AccountTransaction copy = new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
+                                    amount + taxes, t.getSecurity(), t.getType());
+
+                    t.getUnits().filter(u -> u.getType() != Unit.Type.TAX).forEach(u -> copy.addUnit(value(u, weight)));
+
+                    readOnlyAccount.internalAddTransaction(copy);
                     readOnlyAccount.internalAddTransaction(new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
                                     amount + taxes, null, AccountTransaction.Type.REMOVAL));
                     break;
@@ -515,20 +530,21 @@ public class ClientClassificationFilter implements ClientFilter
         }
     }
 
-    private static Unit value(Unit unit, int weight)
+    private static Unit value(Unit unit, BigDecimal weight)
     {
-        if (weight == Classification.ONE_HUNDRED_PERCENT)
+        if (weight.equals(Classification.ONE_HUNDRED_PERCENT_BD))
             return unit;
         else
-            return new Unit(unit.getType(),
-                            Money.of(unit.getAmount().getCurrencyCode(), value(unit.getAmount().getAmount(), weight)));
+            return unit.split(weight.divide(Classification.ONE_HUNDRED_PERCENT_BD, Values.MC).doubleValue());
     }
 
-    private static long value(long value, int weight)
+    private static long value(long value, BigDecimal weight)
     {
-        if (weight == Classification.ONE_HUNDRED_PERCENT)
+        if (weight.equals(Classification.ONE_HUNDRED_PERCENT_BD))
             return value;
         else
-            return Math.round(value * weight / (double) Classification.ONE_HUNDRED_PERCENT);
+            return BigDecimal.valueOf(value) //
+                            .multiply(weight, Values.MC).divide(Classification.ONE_HUNDRED_PERCENT_BD, Values.MC)
+                            .setScale(0, RoundingMode.HALF_EVEN).longValue();
     }
 }

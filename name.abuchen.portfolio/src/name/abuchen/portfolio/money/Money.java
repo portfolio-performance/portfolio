@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.money;
 
+import java.text.MessageFormat;
 import java.util.Objects;
 
 public final class Money implements Comparable<Money>
@@ -9,7 +10,8 @@ public final class Money implements Comparable<Money>
 
     private Money(String currencyCode, long amount)
     {
-        Objects.requireNonNull(currencyCode);
+        if (currencyCode == null || currencyCode.isEmpty())
+            throw new NullPointerException();
 
         this.currencyCode = currencyCode;
         this.amount = amount;
@@ -56,7 +58,8 @@ public final class Money implements Comparable<Money>
     public Money add(Money monetaryAmount)
     {
         if (!monetaryAmount.getCurrencyCode().equals(currencyCode))
-            throw new MonetaryException();
+            throw new MonetaryException(MessageFormat.format("Illegal addition: {0} + {1}", //$NON-NLS-1$
+                            Values.Money.format(this), Values.Money.format(monetaryAmount)));
 
         return Money.of(currencyCode, amount + monetaryAmount.getAmount());
     }
@@ -64,7 +67,8 @@ public final class Money implements Comparable<Money>
     public Money subtract(Money monetaryAmount)
     {
         if (!monetaryAmount.getCurrencyCode().equals(currencyCode))
-            throw new MonetaryException();
+            throw new MonetaryException(MessageFormat.format("Illegal subtraction: {0} - {1}", //$NON-NLS-1$
+                            Values.Money.format(this), Values.Money.format(monetaryAmount)));
 
         return Money.of(currencyCode, amount - monetaryAmount.getAmount());
     }
@@ -77,6 +81,11 @@ public final class Money implements Comparable<Money>
     public Money multiply(long multiplicand)
     {
         return Money.of(currencyCode, amount * multiplicand);
+    }
+
+    public Money multiplyAndRound(double multiplicand)
+    {
+        return Money.of(currencyCode, Math.round(amount * multiplicand));
     }
 
     public Money with(MonetaryOperator operator)

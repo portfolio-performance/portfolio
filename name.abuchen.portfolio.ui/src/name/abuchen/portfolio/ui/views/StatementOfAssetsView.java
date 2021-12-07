@@ -2,13 +2,15 @@ package name.abuchen.portfolio.ui.views;
 
 import java.beans.PropertyChangeListener;
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 import javax.inject.Inject;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.swt.SWT;
@@ -21,9 +23,9 @@ import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.DateSelectionDialog;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.ClientFilterDropDown;
@@ -31,6 +33,16 @@ import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
+import name.abuchen.portfolio.ui.views.panes.HistoricalPricesDataQualityPane;
+import name.abuchen.portfolio.ui.views.panes.HistoricalPricesPane;
+import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
+import name.abuchen.portfolio.ui.views.panes.SecurityEventsPane;
+import name.abuchen.portfolio.ui.views.panes.SecurityPriceChartPane;
+import name.abuchen.portfolio.ui.views.panes.TradesPane;
+import name.abuchen.portfolio.ui.views.panes.TransactionsPane;
+import name.abuchen.portfolio.util.Pair;
+import name.abuchen.portfolio.util.TradeCalendar;
+import name.abuchen.portfolio.util.TradeCalendarManager;
 
 public class StatementOfAssetsView extends AbstractFinanceView
 {
@@ -58,46 +70,53 @@ public class StatementOfAssetsView extends AbstractFinanceView
     @Override
     public void notifyModelUpdated()
     {
-        CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
-        Client filteredClient = clientFilter.getSelectedFilter().filter(getClient());
-        ClientSnapshot snapshot = ClientSnapshot.create(filteredClient, converter,
-                        snapshotDate.orElse(LocalDate.now()));
+        StatementOfAssetsViewer.Element selection = (StatementOfAssetsViewer.Element) assetViewer.getTableViewer()
+                        .getStructuredSelection().getFirstElement();
 
-        assetViewer.setInput(snapshot, clientFilter.getSelectedFilter());
+        Client filteredClient = clientFilter.getSelectedFilter().filter(getClient());
+        setToContext(UIConstants.Context.FILTERED_CLIENT, filteredClient);
+
+        CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
+        assetViewer.setInput(clientFilter.getSelectedFilter(), snapshotDate.orElse(LocalDate.now()), converter);
         updateTitle(getDefaultTitle());
+
+        if (selection != null)
+        {
+            assetViewer.selectSubject(selection.getSubject());
+        }
     }
 
     @Override
     protected void addButtons(final ToolBarManager toolBar)
     {
         DropDown dropDown = new DropDown(getClient().getBaseCurrency());
+
+        Function<CurrencyUnit, Action> asAction = unit -> {
+            Action action = new SimpleAction(unit.getLabel(), a -> {
+                dropDown.setLabel(unit.getCurrencyCode());
+                getClient().setBaseCurrency(unit.getCurrencyCode());
+            });
+            action.setChecked(getClient().getBaseCurrency().equals(unit.getCurrencyCode()));
+            return action;
+        };
+
         dropDown.setMenuListener(manager -> {
+
             // put list of favorite units on top
-            List<CurrencyUnit> allUnits = getClient().getUsedCurrencies();
+            getClient().getUsedCurrencies().forEach(unit -> manager.add(asAction.apply(unit)));
+
             // add a separator marker
-            allUnits.add(null);
+            manager.add(new Separator());
+
             // then all available units
-            List<CurrencyUnit> available = CurrencyUnit.getAvailableCurrencyUnits();
-            Collections.sort(available);
-            allUnits.addAll(available);
-            // now show the list
-            for (final CurrencyUnit unit : allUnits)
+            List<Pair<String, List<CurrencyUnit>>> available = CurrencyUnit.getAvailableCurrencyUnitsGrouped();
+
+            for (Pair<String, List<CurrencyUnit>> pair : available)
             {
-                // is this a unit or a separator?
-                if (unit != null)
-                {
-                    Action action = new SimpleAction(unit.getLabel(), a -> {
-                        dropDown.setLabel(unit.getCurrencyCode());
-                        getClient().setBaseCurrency(unit.getCurrencyCode());
-                    });
-                    action.setChecked(getClient().getBaseCurrency().equals(unit.getCurrencyCode()));
-                    manager.add(action);
-                }
-                else
-                {
-                    // add a separator
-                    manager.add(new Separator());
-                }
+                MenuManager submenu = new MenuManager(pair.getLeft());
+                manager.add(submenu);
+
+                pair.getRight().forEach(unit -> submenu.add(asAction.apply(unit)));
             }
         });
 
@@ -128,30 +147,54 @@ public class StatementOfAssetsView extends AbstractFinanceView
             manager.add(new LabelOnly(Values.Date.format(snapshotDate.orElse(LocalDate.now()))));
             manager.add(new Separator());
 
-            SimpleAction action = new SimpleAction(Messages.LabelToday, a -> {
-                snapshotDate = Optional.empty();
-                notifyModelUpdated();
-                dropDown.setImage(Images.CALENDAR_OFF);
-            });
-            action.setEnabled(snapshotDate.isPresent());
-            manager.add(action);
-
-            manager.add(new SimpleAction(Messages.MenuPickOtherDate, a -> {
-                DateSelectionDialog dialog = new DateSelectionDialog(getActiveShell());
-                dialog.setSelection(snapshotDate.orElse(LocalDate.now()));
-                if (dialog.open() != DateSelectionDialog.OK)
-                    return;
-                if (snapshotDate.isPresent() && snapshotDate.get().equals(dialog.getSelection()))
-                    return;
-
-                snapshotDate = LocalDate.now().equals(dialog.getSelection()) ? Optional.empty()
-                                : Optional.of(dialog.getSelection());
-                notifyModelUpdated();
-                dropDown.setImage(!snapshotDate.isPresent() ? Images.CALENDAR_OFF : Images.CALENDAR_ON);
-            }));
+            addTodayAction(dropDown, manager);
+            addPreviousTradingDayAction(dropDown, manager);
+            addDateSelectionAction(dropDown, manager);
         });
 
         toolBar.add(dropDown);
+    }
+
+    private void addTodayAction(DropDown dropDown, IMenuManager manager)
+    {
+        SimpleAction action = new SimpleAction(Messages.LabelToday, a -> {
+            snapshotDate = Optional.empty();
+            notifyModelUpdated();
+            dropDown.setImage(Images.CALENDAR_OFF);
+        });
+        action.setEnabled(snapshotDate.isPresent());
+        manager.add(action);
+    }
+
+    private void addPreviousTradingDayAction(DropDown dropDown, IMenuManager manager)
+    {
+        LocalDate actionDate = findPreviousTradingDay();
+
+        SimpleAction action = new SimpleAction(Messages.LabelPreviousTradingDay, a -> {
+            snapshotDate = Optional.of(actionDate);
+            notifyModelUpdated();
+            dropDown.setImage(Images.CALENDAR_ON);
+        });
+
+        snapshotDate.ifPresent(date -> action.setEnabled(!date.equals(actionDate)));
+        manager.add(action);
+    }
+
+    private void addDateSelectionAction(DropDown dropDown, IMenuManager manager)
+    {
+        manager.add(new SimpleAction(Messages.MenuPickOtherDate, a -> {
+            DateSelectionDialog dialog = new DateSelectionDialog(getActiveShell());
+            dialog.setSelection(snapshotDate.orElse(LocalDate.now()));
+            if (dialog.open() != DateSelectionDialog.OK)
+                return;
+            if (snapshotDate.isPresent() && snapshotDate.get().equals(dialog.getSelection()))
+                return;
+
+            snapshotDate = LocalDate.now().equals(dialog.getSelection()) ? Optional.empty()
+                            : Optional.of(dialog.getSelection());
+            notifyModelUpdated();
+            dropDown.setImage(snapshotDate.isPresent() ? Images.CALENDAR_ON : Images.CALENDAR_OFF);
+        }));
     }
 
     @Override
@@ -166,9 +209,25 @@ public class StatementOfAssetsView extends AbstractFinanceView
 
         hookContextMenu(assetViewer.getTableViewer().getControl(),
                         manager -> assetViewer.hookMenuListener(manager, StatementOfAssetsView.this));
+
+        assetViewer.getTableViewer().addSelectionChangedListener(
+                        e -> setInformationPaneInput(e.getStructuredSelection().getFirstElement()));
+
         notifyModelUpdated();
 
         return control;
+    }
+
+    @Override
+    protected void addPanePages(List<InformationPanePage> pages)
+    {
+        super.addPanePages(pages);
+        pages.add(make(SecurityPriceChartPane.class));
+        pages.add(make(HistoricalPricesPane.class));
+        pages.add(make(TransactionsPane.class));
+        pages.add(make(TradesPane.class));
+        pages.add(make(SecurityEventsPane.class));
+        pages.add(make(HistoricalPricesDataQualityPane.class));
     }
 
     @Override
@@ -176,5 +235,18 @@ public class StatementOfAssetsView extends AbstractFinanceView
     {
         if (currencyChangeListener != null)
             getClient().removePropertyChangeListener("baseCurrency", currencyChangeListener); //$NON-NLS-1$
+    }
+
+    private LocalDate findPreviousTradingDay()
+    {
+        LocalDate date = LocalDate.now().minusDays(1);
+
+        TradeCalendar calendar = TradeCalendarManager.getDefaultInstance();
+        while (calendar.isHoliday(date))
+        {
+            date = date.minusDays(1);
+        }
+
+        return date;
     }
 }

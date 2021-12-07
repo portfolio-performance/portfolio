@@ -1,10 +1,13 @@
 package name.abuchen.portfolio.snapshot.security;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
@@ -19,7 +22,9 @@ import name.abuchen.portfolio.util.Interval;
 
 public class SecurityPerformanceSnapshot
 {
-    public static SecurityPerformanceSnapshot create(Client client, CurrencyConverter converter, Interval interval)
+    @SafeVarargs
+    public static SecurityPerformanceSnapshot create(Client client, CurrencyConverter converter, Interval interval,
+                    Class<? extends SecurityPerformanceIndicator>... indicators)
     {
         Map<Security, SecurityPerformanceRecord.Builder> transactions = initRecords(client);
 
@@ -34,7 +39,7 @@ public class SecurityPerformanceSnapshot
             addPseudoValuationTansactions(portfolio, converter, interval, transactions);
         }
 
-        return doCreateSnapshot(client, converter, transactions, interval);
+        return doCreateSnapshot(client, converter, transactions, interval, indicators);
     }
 
     public static SecurityPerformanceSnapshot create(Client client, CurrencyConverter converter, Portfolio portfolio,
@@ -43,8 +48,10 @@ public class SecurityPerformanceSnapshot
         return create(new PortfolioClientFilter(portfolio).filter(client), converter, interval);
     }
 
+    @SafeVarargs
     public static SecurityPerformanceSnapshot create(Client client, CurrencyConverter converter, Interval interval,
-                    ClientSnapshot valuationAtStart, ClientSnapshot valuationAtEnd)
+                    ClientSnapshot valuationAtStart, ClientSnapshot valuationAtEnd,
+                    Class<? extends SecurityPerformanceIndicator>... indicators)
     {
         Map<Security, SecurityPerformanceRecord.Builder> transactions = initRecords(client);
 
@@ -72,7 +79,7 @@ public class SecurityPerformanceSnapshot
             }
         }
 
-        return doCreateSnapshot(client, converter, transactions, interval);
+        return doCreateSnapshot(client, converter, transactions, interval, indicators);
     }
 
     private static Map<Security, SecurityPerformanceRecord.Builder> initRecords(Client client)
@@ -84,8 +91,10 @@ public class SecurityPerformanceSnapshot
         return records;
     }
 
+    @SafeVarargs
     private static SecurityPerformanceSnapshot doCreateSnapshot(Client client, CurrencyConverter converter,
-                    Map<Security, SecurityPerformanceRecord.Builder> records, Interval interval)
+                    Map<Security, SecurityPerformanceRecord.Builder> records, Interval interval,
+                    Class<? extends SecurityPerformanceIndicator>... indicators)
     {
         List<SecurityPerformanceRecord> list = new ArrayList<>();
 
@@ -94,7 +103,7 @@ public class SecurityPerformanceSnapshot
             if (record.isEmpty())
                 continue;
 
-            list.add(record.build(client, converter, interval));
+            list.add(record.build(client, converter, interval, indicators));
         }
 
         return new SecurityPerformanceSnapshot(list);
@@ -140,7 +149,17 @@ public class SecurityPerformanceSnapshot
     {
         portfolio.getTransactions().stream() //
                         .filter(t -> interval.contains(t.getDateTime())) //
-                        .forEach(t -> records.get(t.getSecurity()).addLineItem(CalculationLineItem.of(portfolio, t)));
+                        .forEach(t -> records.computeIfAbsent(t.getSecurity(), s -> {
+
+                            // must not happen because the records map is filled
+                            // with _all_ securities of the client. However,
+                            // #1836 reports a NPE exception here. Create a
+                            // builder object to collect the transaction anyway.
+
+                            PortfolioLog.warning(MessageFormat.format("Unidentified security ''{0}'' with UUID {1}", //$NON-NLS-1$
+                                            s.getName(), s.getUUID()));
+                            return new SecurityPerformanceRecord.Builder(s);
+                        }).addLineItem(CalculationLineItem.of(portfolio, t)));
     }
 
     private static void addPseudoValuationTansactions(Portfolio portfolio, CurrencyConverter converter,
@@ -171,5 +190,10 @@ public class SecurityPerformanceSnapshot
     public List<SecurityPerformanceRecord> getRecords()
     {
         return records;
+    }
+
+    public Optional<SecurityPerformanceRecord> getRecord(Security security)
+    {
+        return records.stream().filter(r -> security.equals(r.getSecurity())).findAny();
     }
 }

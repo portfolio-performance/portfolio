@@ -1,0 +1,36 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Abcd BIC: ECTRATWW
+Abcd Abcdefghijk Referenz Nr.: 12-12345678
+Nr. 01
+1234  Abcdefghi Kunden Nr.: 12345
+Austria Depot Nr.: 12345-1
+Wien, 23.10.2015
+WERTPAPIERBESTÄTIGUNG
+VERKAUF
+Börse: Vienna Stock Exchange Kurswert: EUR 346,85
+Wertpapier: VOESTALPINE AG AKT. Tradinggebühren: EUR 3,00
+O.N.
+Gesamtbetrag: EUR 343,85
+WP-Kenn-Nr.: AT0000937503
+Stück: 10,00
+Preis: EUR 34,685
+Handelstag: 23.10.2015
+Valutatag: 28.10.2015
+Lagerort: Wien
+Verwahrart: SV
+Bemerkungen:
+Abrechnung:
+Wir erkennen Ihr EUR IBAN AT123450000000012345 mit Valuta 28.10.2015.
+Wir belasten Ihr Wertpapierdepot Nummer 12345-1.
+Ausführung:
+Ausführungsdatum: 23.10.2015 Ausführungszeit: 16:46:47
+Vorbehaltlich Eingang bzw. nachträglicher Storni/Umbuchungen seitens Lagerstelle/Partner.
+Überprüfen Sie bitte die Richtigkeit dieser Bestätigung. Sollten Sie innerhalb von 2 Monaten nach Erhalt dieser Bestätigung
+keine Einwände gegen die Richtigkeit erheben, so gelten die angeführten Erklärungen und Leistungen als genehmigt.
+BROKERJET - der Online Broker der Erste Bank
+Erste Bank der oesterreichischen Sparkassen AG (Erste Bank Oesterreich) | Graben 21 | A-1010 Wien
+Kundenverkehr Brokerjet: Mariahilfer Straße 121b | A-1060 Wien
+E-mail: brokerjet.info@erstebank.at | Fax: +43-1-53689-13550 | www.brokerjet.at
+Sitz Wien | Handelsgericht Wien | FB-Nr. 286283 f | DVR 3002133 | UID ATU63358299

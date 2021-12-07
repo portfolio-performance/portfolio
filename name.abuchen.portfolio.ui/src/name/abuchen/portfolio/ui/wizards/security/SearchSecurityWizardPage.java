@@ -38,6 +38,7 @@ import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 
 public class SearchSecurityWizardPage extends WizardPage
 {
@@ -76,6 +77,7 @@ public class SearchSecurityWizardPage extends WizardPage
         searchButton.setText(Messages.LabelSearch);
 
         final TableViewer resultTable = new TableViewer(container, SWT.FULL_SELECTION);
+        CopyPasteSupport.enableFor(resultTable);
         GridDataFactory.fillDefaults().span(3, 1).grab(true, true).applyTo(resultTable.getControl());
 
         TableColumn column = new TableColumn(resultTable.getTable(), SWT.NONE);

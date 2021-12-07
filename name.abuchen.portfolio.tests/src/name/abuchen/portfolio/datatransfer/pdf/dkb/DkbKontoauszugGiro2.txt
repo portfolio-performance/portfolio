@@ -1,0 +1,37 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Deutsche Kreditbank, Taubenstr. 7-9, 10117 Berlin
+Max Mustermann
+Straße 1 IHR DISPOKREDIT EUR 500,00
+12345 Ort
+DKB-Cash
+Kontoauszug Nummer 001 / 2021 vom 31.12.2020 bis 04.01.2021
+Kontonummer 0000000000 / IBAN DE34 1203 0000 0000 0000 00
+Bu.Tag Wert Wir haben für Sie gebucht Belastung in EUR Gutschrift in EUR
+04.01. 31.12. Überweisung 1.000,00
+Max Mustermann
+KREF+HKCCS27966SVWZ+Aufstockung Trade
+RepublicDATUM 30.12.2020, 21.15 UHR1.TAN 570992
+04.01. 04.01. Dauerauftrag 1.000,00
+Max Mustermann
+SVWZ+Verwendungszweck
+29.01. 29.01. 1234567890 Steuerausgleich 1,23
+1234567890 SteuerausgleichKapitalertragsteuer
+01.02. 01.02. Zahlungseingang 1.234,56
+Max Mustermann
+DEUTSCHE KREDITBANK AG IBAN: DE34120300000000000000 Seite 1 von 2
+TAUBENSTRASSE 7-9 BIC: BYLADEM1001
+10117 BERLIN USt-ID: DE137178746
+Kontoauszug Nummer 001 / 2021 vom 31.12.2020 bis 01.02.2021
+Kontonummer 0000000000 / IBAN DE34 1203 0000 0000 0000 00
+ALTER KONTOSTAND 5.000,67 H EUR
+NEUER KONTOSTAND 4.000,68 H EUR
+Gemäß dem Finanzkonten-Informationsaustauschgesetz (FKAustG) ermittelt die DKB AG die nach diesem Gesetz
+erforderlichen Daten zur steuerlichen Ansässigkeit und meldet diese, soweit aufgrund des Gesetzes
+erforderlich, jährlich an das Bundeszentralamt für Steuern (BZSt), das diese dann ggf. an zuständige
+ausländische Steuerbehörden weiterleitet. Gemeldet werden die erforderlichen Kundendaten, Steuer-
+Identifikationsnummer sowie Konto- und Depotnummern, Kontosalden sowie gutgeschriebene Kapitalerträge.
+DEUTSCHE KREDITBANK AG IBAN: DE34120300000000000000 Seite 1 von 1
+TAUBENSTRASSE 7-9 BIC: BYLADEM1001
+10117 BERLIN USt-ID: DE137178746

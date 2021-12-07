@@ -154,7 +154,7 @@ public class IBFlexStatementExtractorWithAccountDetailsTest
         assertThat(entry.getPortfolioTransaction().getSecurity().getName(), is("ORACLE CORP"));
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of("EUR", 4186_72L)));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-09-15T16:20")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(100_000000L));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of("EUR", 1_67L)));
         // 100 shares at 50 USD per share times 0.83701 is 41.8505 - gross is without fees
         assertThat(entry.getPortfolioTransaction().getGrossPricePerShare(),
@@ -165,7 +165,7 @@ public class IBFlexStatementExtractorWithAccountDetailsTest
     @Test
     public void testThatExceptionIsAddedForNonFlexStatementDocuments() throws IOException
     {
-        InputStream otherFile = getClass().getResourceAsStream("pdf/comdirect/comdirectGutschrift1.txt");
+        InputStream otherFile = getClass().getResourceAsStream("pdf/comdirect/Dividende05.txt");
         Extractor.InputFile tempFile = createTempFile(otherFile);
         Client client = new Client();
         IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(client);

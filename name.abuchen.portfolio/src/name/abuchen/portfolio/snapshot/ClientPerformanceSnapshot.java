@@ -15,6 +15,8 @@ import java.util.stream.Collectors;
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.Adaptable;
+import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -28,6 +30,7 @@ import name.abuchen.portfolio.money.MoneyCollectors;
 import name.abuchen.portfolio.money.MutableMoney;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.security.CapitalGainsRecord;
+import name.abuchen.portfolio.snapshot.security.SecurityPerformanceIndicator;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.trail.Trail;
@@ -37,7 +40,7 @@ import name.abuchen.portfolio.util.Interval;
 
 public class ClientPerformanceSnapshot
 {
-    public static class Position implements TrailProvider
+    public static class Position implements TrailProvider, Adaptable
     {
         public static final String TRAIL_VALUE = "value"; //$NON-NLS-1$
         public static final String TRAIL_FOREX_GAIN = "forexGain"; //$NON-NLS-1$
@@ -109,6 +112,12 @@ public class ClientPerformanceSnapshot
                 default:
                     return Optional.empty();
             }
+        }
+
+        @Override
+        public <T> T adapt(Class<T> type)
+        {
+            return Adaptor.adapt(type, security);
         }
     }
 
@@ -211,6 +220,18 @@ public class ClientPerformanceSnapshot
         return categories.get(categoryType).getValuation();
     }
 
+    public Money getValue(CategoryType categoryType, CategoryType... more)
+    {
+        MutableMoney answer = MutableMoney.of(converter.getTermCurrency());
+
+        answer.add(categories.get(categoryType).getValuation());
+
+        for (CategoryType t : more)
+            answer.add(categories.get(t).getValuation());
+
+        return answer.toMoney();
+    }
+
     public List<TransactionPair<?>> getEarnings()
     {
         return earnings;
@@ -257,6 +278,37 @@ public class ClientPerformanceSnapshot
         return delta.toMoney();
     }
 
+    /**
+     * Returns taxes / (capital gains + realized capital gains + earnings -
+     * fees)
+     */
+    public double getPortfolioTaxRate()
+    {
+        Money numerator = getValue(CategoryType.TAXES);
+        Money denominator = getValue(CategoryType.CAPITAL_GAINS, CategoryType.REALIZED_CAPITAL_GAINS,
+                        CategoryType.EARNINGS).subtract(getValue(CategoryType.FEES));
+
+        if (denominator.isZero())
+            return Double.NaN;
+
+        return numerator.getAmount() / (double) denominator.getAmount();
+    }
+
+    /**
+     * Returns fees / (capital gains + realized capital gains + earnings)
+     */
+    public double getPortfolioFeeRate()
+    {
+        Money numerator = getValue(CategoryType.FEES);
+        Money denominator = getValue(CategoryType.CAPITAL_GAINS, CategoryType.REALIZED_CAPITAL_GAINS,
+                        CategoryType.EARNINGS);
+
+        if (denominator.isZero())
+            return Double.NaN;
+
+        return numerator.getAmount() / (double) denominator.getAmount();
+    }
+
     private void calculate()
     {
         categories.put(CategoryType.INITIAL_VALUE,
@@ -296,7 +348,7 @@ public class ClientPerformanceSnapshot
     private void addCapitalGains()
     {
         SecurityPerformanceSnapshot securityPerformance = SecurityPerformanceSnapshot.create(client, converter, period,
-                        snapshotStart, snapshotEnd);
+                        snapshotStart, snapshotEnd, SecurityPerformanceIndicator.CapitalGains.class);
 
         Category realizedCapitalGains = categories.get(CategoryType.REALIZED_CAPITAL_GAINS);
         addCapitalGains(realizedCapitalGains, securityPerformance, record -> record.getRealizedCapitalGains());
@@ -351,7 +403,8 @@ public class ClientPerformanceSnapshot
                 {
                     case DIVIDENDS:
                     case INTEREST:
-                        addEarningTransaction(account, t, mEarnings, earningsBySecurity, mTaxes, taxesBySecurity);
+                        addEarningTransaction(account, t, mEarnings, earningsBySecurity, mFees, mTaxes, feesBySecurity,
+                                        taxesBySecurity);
                         break;
                     case INTEREST_CHARGE:
                         mEarnings.subtract(value);
@@ -473,14 +526,23 @@ public class ClientPerformanceSnapshot
     }
 
     private void addEarningTransaction(Account account, AccountTransaction transaction, MutableMoney mEarnings,
-                    Map<Security, MutableMoney> earningsBySecurity, MutableMoney mTaxes,
-                    Map<Security, MutableMoney> taxesBySecurity)
+                    Map<Security, MutableMoney> earningsBySecurity, MutableMoney mFees, MutableMoney mTaxes,
+                    Map<Security, MutableMoney> feesBySecurity, Map<Security, MutableMoney> taxesBySecurity)
     {
         Money earned = transaction.getGrossValue().with(converter.at(transaction.getDateTime()));
         mEarnings.add(earned);
         this.earnings.add(new TransactionPair<AccountTransaction>(account, transaction));
         earningsBySecurity.computeIfAbsent(transaction.getSecurity(), k -> MutableMoney.of(converter.getTermCurrency()))
                         .add(earned);
+
+        Money fee = transaction.getUnitSum(Unit.Type.FEE, converter).with(converter.at(transaction.getDateTime()));
+        if (!fee.isZero())
+        {
+            mFees.add(fee);
+            this.fees.add(new TransactionPair<AccountTransaction>(account, transaction));
+            feesBySecurity.computeIfAbsent(transaction.getSecurity(), s -> MutableMoney.of(converter.getTermCurrency()))
+                            .add(fee);
+        }
 
         Money tax = transaction.getUnitSum(Unit.Type.TAX, converter).with(converter.at(transaction.getDateTime()));
         if (!tax.isZero())

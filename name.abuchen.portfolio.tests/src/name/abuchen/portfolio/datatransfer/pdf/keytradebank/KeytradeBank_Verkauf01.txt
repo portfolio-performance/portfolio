@@ -1,0 +1,21 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Keytrade Bank Luxembourg S.A. T +352 45 04 39
+62, Rue Charles Martel F +352 45 04 49
+L-2134 - Luxembourg info@keytradebank.lu
+Grand Duché de Luxembourg www.keytradebank.lu
+RCS B69935 Skype keytradebank.lu
+Compte-titres 260745
+Numéro de Bordereau 1910356
+Vente 310 VERBIO VER.BIOENERGIE ON (DE000A0JL9W6) à 33,95 EUR
+Type d' instrument: Actions
+Ordre créé à : 10/02/2021 15:23:42 CET
+Type d' ordre : Market
+Validité : GTC
+Date et heure d'exécution : 10/02/2021 15:23:42 CET
+Lieu d'exécution : XETRA
+Montant brut 10.524,50 EUR
+Frais de transaction 24,95 EUR
+10.499,55 EUR
+Crédit 10.499,55 EUR Date valeur 12/02/2021

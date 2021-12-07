@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.handlers;
 
 import java.util.LinkedList;
+import java.util.Objects;
 import java.util.Optional;
 
 import javax.inject.Named;
@@ -15,29 +16,34 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Layout;
 
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.swt.SashLayout;
 
 public class ShowHideSidebarHandler
 {
     @CanExecute
-    boolean canExecute(@Named(IServiceConstants.ACTIVE_PART) MPart part, MMenuItem menuItem)
+    boolean canExecute(@Named(IServiceConstants.ACTIVE_PART) MPart part, MMenuItem menuItem,
+                    @Named(UIConstants.Parameter.TAG) String tag)
     {
-        Optional<SashLayout> sash = findChildWithSash(part);
+        Optional<SashLayout> sash = findChildWithSash(part, tag);
         if (!sash.isPresent())
             return false;
 
-        menuItem.setLabel(sash.get().isHidden() ? Messages.MenuShowSidebar : Messages.MenuHideSidebar);
+        if (UIConstants.Tag.INFORMATIONPANE.equals(tag))
+            menuItem.setLabel(sash.get().isHidden() ? Messages.MenuShowInformationPane : Messages.MenuHideInformationPane);
+        else
+            menuItem.setLabel(sash.get().isHidden() ? Messages.MenuShowSidebar : Messages.MenuHideSidebar);
 
         return true;
     }
 
     @Execute
-    public void execute(@Named(IServiceConstants.ACTIVE_PART) MPart part)
+    public void execute(@Named(IServiceConstants.ACTIVE_PART) MPart part, @Named(UIConstants.Parameter.TAG) String tag)
     {
-        findChildWithSash(part).ifPresent(SashLayout::flip);
+        findChildWithSash(part, tag).ifPresent(SashLayout::flip);
     }
 
-    private Optional<SashLayout> findChildWithSash(MPart part)
+    private Optional<SashLayout> findChildWithSash(MPart part, String tag)
     {
         if (!MenuHelper.getActiveClientInput(part, false).isPresent())
             return Optional.empty();
@@ -55,7 +61,7 @@ public class ShowHideSidebarHandler
 
             Layout layout = subject.getLayout();
 
-            if (layout instanceof SashLayout)
+            if (layout instanceof SashLayout && Objects.equals(((SashLayout) layout).getTag(), tag))
                 return Optional.of((SashLayout) layout);
 
             for (Control control : subject.getChildren())

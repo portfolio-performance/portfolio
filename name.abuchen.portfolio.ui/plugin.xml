@@ -76,6 +76,9 @@
                name="green-foreground">
          </property-name>
          <property-name
+               name="gray-foreground">
+         </property-name>
+         <property-name
                name="hyperlink">
          </property-name>
       </handler>
@@ -91,6 +94,13 @@
             handler="name.abuchen.portfolio.ui.theme.ColumnViewerCSSHandler">
          <property-name
                name="swt-lines-visible">
+         </property-name>
+      </handler>
+      <handler
+            adapter="name.abuchen.portfolio.ui.theme.SecuritiesChartElementAdapter"
+            handler="name.abuchen.portfolio.ui.theme.SecuritiesChartCSSHandler">
+         <property-name
+               name="quote-color">
          </property-name>
       </handler>
    </extension>
@@ -121,6 +131,9 @@
          </widget>
          <widget
                class="org.eclipse.swt.widgets.Tree">
+         </widget>
+         <widget
+               class="name.abuchen.portfolio.ui.views.SecuritiesChart">
          </widget>
       </provider>
    </extension>

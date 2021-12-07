@@ -11,14 +11,15 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 
-public class ViacPDFExtractor extends SwissBasedPDFExtractor
+public class ViacPDFExtractor extends AbstractPDFExtractor
 {
     public ViacPDFExtractor(Client client)
     {
         super(client);
 
-        addBankIdentifier("Terzo"); //$NON-NLS-1$
+        addBankIdentifier("WIR Bank"); //$NON-NLS-1$
 
         addDepositTransaction();
         addDepositTransactionEnglish();
@@ -33,6 +34,13 @@ public class ViacPDFExtractor extends SwissBasedPDFExtractor
         addDividendsTransaction();
         addDividendsTransactionEnglish();
         addTaxRefundTransaction();
+        addTaxRefundTransactionEnglish();
+    }
+
+    @Override
+    public String getLabel()
+    {
+        return "WIR Bank Genossenschaft"; //$NON-NLS-1$
     }
 
     @SuppressWarnings("nls")
@@ -355,7 +363,7 @@ public class ViacPDFExtractor extends SwissBasedPDFExtractor
 
                         .section("date", "amount", "currency") //
                         .find("Zins") //
-                        .match("Am (?<date>\\d+.\\d+.\\d{4}+) haben wir Ihrem Konto gutgeschrieben:") //
+                        .match("Am (?<date>\\d+.\\d+.\\d{4}+) haben wir (Ihrem Konto|Ihnen) gutgeschrieben:") //
                         .match("Zinsgutschrift: (?<currency>\\w{3}+) (?<amount>[\\d+',.]*)") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
@@ -596,11 +604,65 @@ public class ViacPDFExtractor extends SwissBasedPDFExtractor
 
                         .wrap(TransactionItem::new));
     }
+    
+    @SuppressWarnings("nls")
+    private void addTaxRefundTransactionEnglish()
+    {
+        DocumentType type = new DocumentType("Dividend Payment");
+        this.addDocumentTyp(type);
 
+        Block block = new Block("Type of dividend: Refund withholding tax");
+        type.addBlock(block);
+        block.set(new Transaction<AccountTransaction>()
+
+            .subject(() -> {
+                AccountTransaction transaction = new AccountTransaction();
+                transaction.setType(AccountTransaction.Type.TAX_REFUND);
+                return transaction;
+            })
+
+            .section("shares", "name", "isin", "currency")
+            .match("(?<shares>[\\d+,.]*) Qty (?<name>.*)$")
+            .match("ISIN: (?<isin>\\S*)") //
+            .match("Dividend payment: (?<currency>\\w{3}+) .*")
+            .assign((t, v) -> {
+                t.setSecurity(getOrCreateSecurity(v));
+                t.setShares(asShares(v.get("shares")));
+            })
+
+            .section("date", "amount", "currency")
+            .match("Amount credited: Value date (?<date>\\d+.\\d+.\\d{4}+) (?<currency>\\w{3}+) (?<amount>-?[\\d+',.]*)")
+            .assign((t, v) -> {
+                t.setDateTime(asDate(v.get("date")));
+
+                t.setAmount(asAmount(v.get("amount")));
+                t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
+                {
+                    t.setNote(t.getSecurity().getName());
+                    t.setSecurity(null);
+                    t.setShares(0L);
+                }
+            })
+
+            .wrap(TransactionItem::new));
+    }
 
     @Override
-    public String getLabel()
+    protected long asAmount(String value)
     {
-        return "VIAC"; //$NON-NLS-1$
+        return PDFExtractorUtils.convertToNumberLong(value, Values.Amount, "de", "CH");  //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    @Override
+    protected long asShares(String value)
+    {
+        return PDFExtractorUtils.convertToNumberLong(value, Values.Share, "de", "CH"); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    @Override
+    protected BigDecimal asExchangeRate(String value)
+    {
+        return PDFExtractorUtils.convertToNumberBigDecimal(value, Values.Share, "de", "CH"); //$NON-NLS-1$ //$NON-NLS-2$
     }
 }

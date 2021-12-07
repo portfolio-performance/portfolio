@@ -1,0 +1,86 @@
+PDF Autor: '99999 063 32000'
+PDFBox Version: 1.8.16
+-----------------------------------------
+ da
+ 
+  
+Raiffeisenbank Aaaaaaaaa eGen   
+Rathausplatz 1, 9999 Aaaaaaaaa
+   b
+BLZ: 99999 UID: ATU16346999  
+ 
+ 
+a
+a  
+Abrechnung Handel a  
+29541648 - 07.04.2021 a  
+Depot-Nr.: 11.111.111  
+Aaaaaaa Bbbbbb Bbbbbb Aaaaaa
+BBBBBAAAAA-BBBBBBCCC 11
+9999 Aaaaaaaaa 063/195
+Private Banking
+Wir haben für Sie am 07.04.2021 unten angeführtes Geschäft abgerechnet:
+Geschäftsart: Verkauf Auftrags-Nr.: 21112411 - 07.04.2021
+Auftragseingang: 07.04.2021 - 11:17:42
+Abgang: 4.500 Stk   
+Titel: AT0000837307 Zumtobel Group AG
+Inhaber-Aktien o.N.
+Kurs: 8,205151 EUR
+Handelsplatz: XVIE WIENER BOERSE
+Verwahrart: SVK
+Positionsdaten: Loco: Wien
+Kurswert: 36.923,18 EUR 
+Kursgewinn-KESt: -696,65 EUR 
+Serviceentgelt: -110,77 EUR 
+Zu Gunsten IBAN AT27 3284 2000 0011 1111 36.115,76 EUR 
+Valuta 09.04.2021
+KESt wird mit dem Finanzamt für Großbetriebe abgerechnet.
+Der oben angeführte Kurs setzt sich aus folgenden Ausführungen zusammen:
+18 STK Kurs: 8,2 EUR
+Handelszeit: 07.04.2021 11:17:43
+800 STK Kurs: 8,2 EUR
+Handelszeit: 07.04.2021 11:17:43
+400 STK Kurs: 8,22 EUR
+Handelszeit: 07.04.2021 11:17:43
+752 STK Kurs: 8,22 EUR
+Handelszeit: 07.04.2021 11:17:43
+14 STK Kurs: 8,21 EUR
+Handelszeit: 07.04.2021 11:17:43
+07.04.2021,12:44 1 / 2
+Irrtum vorbehalten
+Dieser Beleg trägt keine Unterschrift.
+Raiffeisenbank Aaaaaaaaa eGen
+Rathausplatz 1, 9999 Aaaaaaaaa
+ b
+BLZ: 99999 UID: ATU16346999
+a
+a
+Abrechnung Handel a
+29541111 - 07.04.2021 a
+Depot-Nr.: 11.111.111
+Bbbbbb Aaaaaaa
+063/195
+Private Banking
+935 STK Kurs: 8,2 EUR
+Handelszeit: 07.04.2021 11:17:43
+435 STK Kurs: 8,2 EUR
+Handelszeit: 07.04.2021 11:17:43
+49 STK Kurs: 8,2 EUR
+Handelszeit: 07.04.2021 11:17:44
+620 STK Kurs: 8,2 EUR
+Handelszeit: 07.04.2021 11:17:43
+6 STK Kurs: 8,2 EUR
+Handelszeit: 07.04.2021 11:17:44
+471 STK Kurs: 8,2 EUR
+Handelszeit: 07.04.2021 12:43:42
+Schlusstag: 07.04.2021
+Kassatag: 09.04.2021
+Execution venue: XVIE
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 4.500 Stk
+steuerlicher Anschaffungswert: 34.389,90 EUR
+steuerlicher Veräußerungswert: 36.923,18 EUR
+steuerpflichtiger Kursgewinn: 2.533,28 EUR
+07.04.2021, 12:44 2 / 2
+Irrtum vorbehalten
+Dieser Beleg trägt keine Unterschrift.

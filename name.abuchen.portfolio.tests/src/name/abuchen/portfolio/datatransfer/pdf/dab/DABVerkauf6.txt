@@ -1,0 +1,75 @@
+﻿PDF Autor: 'DAB-BNP-Paribas'
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=12345678
+Wertpapierabrechnung DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=DRUCK
+ADRESSZEILE1=Herr
+Verkauf  ADRESSZEILE2=Karl Ascheimer
+Kommissionsgeschäft ADRESSZEILE3=str-egal 10
+ADRESSZEILE4=11111 stadt-egal
+Depot-Nr. Abrechnungs-Nr. ADRESSZEILE5=
+12345678 98765432 / 16.06.2021 ADRESSZEILE6=
+Herr BELEGNUMMER=2806
+Karl Ascheimer SEITENNUMMER=1
+str-egal 10 STEUERERSTATTUNG=N
+11111 stadt-egal Depotinhaber
+Karl Ascheimer
+München, 16.06.2021
+Wir haben für Sie verkauft
+Gattungsbezeichnung ISIN
+BioNTech SE Nam.-Akt.(sp.ADRs)1/o.N. US09075V1026
+Nominal Kurs
+STK 100,000 EUR 175,1000
+Handelstag 16.06.2021 Kurswert EUR 17.510,00 
+Handelszeit 10:12* Provision EUR 1,00-
+Börse Sekunden-Handel Aktien L&S
+Verwahrart Girosammelverwahrung
+Wert Konto-Nr. Betrag zu Ihren Gunsten
+18.06.2021 12345678 EUR 17.509,00
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Veräußerungsverlust Aktien EUR 642,00
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern (negativ) EUR 642,00
+Steuerausgleich nach § 43a EStG:
+Kapitalertragsteuer EUR 157,36
+Solidaritätszuschlag EUR 8,65
+Kirchensteuer EUR 12,58
+Wert Konto-Nr. Abrechnungs-Nr. Betrag zu Ihren Gunsten
+16.06.2021 12345678 62168976 EUR 178,59
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 11.222,22
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 3.333,44
+im laufenden Jahr einbehaltene Kirchensteuer EUR 1.666,66
+Es folgt Seite 2
+BNP Paribas S.A. Niederlassung Deutschland > Standort: München > Landsberger Straße 300 > 80687 München > Sitz: Nürnberg HRB Nürnberg 31129 > USt.-Ident-Nr.: DE 
+191528929 > Sitz der Hauptniederlassung der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449 > Président du 
+Conseil d‘Administration: Jean Lemierre, Directeur Général: Jean-Laurent Bonnafé
+3.19/ABREABHNHANDVFDI/POC1618/002806/160621/110808
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+Depot-Nr. Abrechnungs-Nr. Seite-Nr. EMAILVERSAND=N
+12345678 98765432 2 DEPOTNUMMER=12345678
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=DRUCK
+ADRESSZEILE1=Herr
+ADRESSZEILE2=Karl Ascheimer
+Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer nach gemeldetem Kirchensteuersatz verrechnet mit dem ADRESSZEILE3=str-egal 10
+Finanzamt Frankfurt/M. V-Höchst, Steuernummer 999/222/34567. ADRESSZEILE4=11111 stadt-egal
+ADRESSZEILE5=
+ADRESSZEILE6=
+Wir werden in Ihrem Depot wie angegeben buchen. BELEGNUMMER=2806
+SEITENNUMMER=2
+* Die angegebene Zeit entspricht den Angaben der Handelspartner gemäß der lokalen Zeit in Deutschland STEUERERSTATTUNG=N
+  (Mitteleuropäische Zeit bzw. Mitteleuropäische Sommerzeit).
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+BNP Paribas S.A. Niederlassung Deutschland > Standort: München > Landsberger Straße 300 > 80687 München > Sitz: Nürnberg HRB Nürnberg 31129 > USt.-Ident-Nr.: DE 
+191528929 > Sitz der Hauptniederlassung der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449 > Président du 
+Conseil d‘Administration: Jean Lemierre, Directeur Général: Jean-Laurent Bonnafé
+3.19/ABREABHNHANDVFDI/POC1618/002806/160621/110808

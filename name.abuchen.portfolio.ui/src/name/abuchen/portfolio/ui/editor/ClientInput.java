@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import javax.inject.Inject;
 
@@ -40,6 +41,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
@@ -53,7 +55,6 @@ import name.abuchen.portfolio.ui.jobs.UpdateDividendsJob;
 import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
 import name.abuchen.portfolio.ui.wizards.client.ClientMigrationDialog;
 
-@SuppressWarnings("restriction")
 public class ClientInput
 {
     // compatibility: the value used to be stored in the AbstractHistoricView
@@ -462,10 +463,7 @@ public class ClientInput
 
         StringBuilder buf = new StringBuilder();
         for (ReportingPeriod p : reportingPeriods)
-        {
-            p.writeTo(buf);
-            buf.append(';');
-        }
+            buf.append(p.getCode()).append(';');
 
         getPreferenceStore().setValue(REPORTING_PERIODS_KEY, buf.toString());
     }
@@ -485,7 +483,9 @@ public class ClientInput
     {
         if (preferences.getBoolean(UIConstants.Preferences.UPDATE_QUOTES_AFTER_FILE_OPEN, true))
         {
-            Job initialQuoteUpdate = new UpdateQuotesJob(client,
+            Predicate<Security> onlyActive = s -> !s.isRetired();
+
+            Job initialQuoteUpdate = new UpdateQuotesJob(client, onlyActive,
                             EnumSet.of(UpdateQuotesJob.Target.LATEST, UpdateQuotesJob.Target.HISTORIC));
             initialQuoteUpdate.schedule(1000);
 
@@ -495,17 +495,19 @@ public class ClientInput
             checkInvestmentPlans.schedule(1100);
 
             int thirtyMinutes = 1000 * 60 * 30;
-            Job job = new UpdateQuotesJob(client, EnumSet.of(UpdateQuotesJob.Target.LATEST)).repeatEvery(thirtyMinutes);
+            Job job = new UpdateQuotesJob(client, onlyActive, EnumSet.of(UpdateQuotesJob.Target.LATEST))
+                            .repeatEvery(thirtyMinutes);
             job.schedule(thirtyMinutes);
             regularJobs.add(job);
 
             int sixHours = 1000 * 60 * 60 * 6;
-            job = new UpdateQuotesJob(client, EnumSet.of(UpdateQuotesJob.Target.HISTORIC)).repeatEvery(sixHours);
+            job = new UpdateQuotesJob(client, onlyActive, EnumSet.of(UpdateQuotesJob.Target.HISTORIC))
+                            .repeatEvery(sixHours);
             job.schedule(sixHours);
             regularJobs.add(job);
 
-            new SyncOnlineSecuritiesJob(client).schedule(2000);
-            new UpdateDividendsJob(getClient()).schedule(5000);
+            new SyncOnlineSecuritiesJob(client).schedule(5000);
+            new UpdateDividendsJob(getClient()).schedule(7000);
         }
     }
 

@@ -24,7 +24,6 @@ import org.osgi.service.prefs.BackingStoreException;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 
-@SuppressWarnings("restriction")
 @Creatable
 @Singleton
 public class RecentFilesCache

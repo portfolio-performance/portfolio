@@ -1,8 +1,12 @@
 package name.abuchen.portfolio.snapshot.trades;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,7 +34,9 @@ public class Trade implements Adaptable
     private List<TransactionPair<PortfolioTransaction>> transactions = new ArrayList<>();
 
     private Money entryValue;
+    private Money entryGrossValue;
     private Money exitValue;
+    private Money exitGrossValue;
     private long holdingPeriod;
     private double irr;
 
@@ -49,11 +55,23 @@ public class Trade implements Adaptable
                                         .with(converter.at(t.getTransaction().getDateTime())))
                         .collect(MoneyCollectors.sum(converter.getTermCurrency()));
 
+        this.entryGrossValue = transactions.stream() //
+                        .filter(t -> t.getTransaction().getType().isPurchase())
+                        .map(t -> t.getTransaction().getGrossValue()
+                                        .with(converter.at(t.getTransaction().getDateTime())))
+                        .collect(MoneyCollectors.sum(converter.getTermCurrency()));
+
         if (end != null)
         {
             this.exitValue = transactions.stream() //
                             .filter(t -> t.getTransaction().getType().isLiquidation())
                             .map(t -> t.getTransaction().getMonetaryAmount()
+                                            .with(converter.at(t.getTransaction().getDateTime())))
+                            .collect(MoneyCollectors.sum(converter.getTermCurrency()));
+
+            this.exitGrossValue = transactions.stream() //
+                            .filter(t -> t.getTransaction().getType().isLiquidation())
+                            .map(t -> t.getTransaction().getGrossValue()
                                             .with(converter.at(t.getTransaction().getDateTime())))
                             .collect(MoneyCollectors.sum(converter.getTermCurrency()));
 
@@ -66,9 +84,14 @@ public class Trade implements Adaptable
         else
         {
             LocalDate now = LocalDate.now();
-            double marketValue = shares / Values.Share.divider() * security.getSecurityPrice(now).getValue()
-                            / Values.Quote.dividerToMoney();
-            this.exitValue = converter.at(now).apply(Money.of(security.getCurrencyCode(), Math.round(marketValue)));
+
+            long marketValue = BigDecimal.valueOf(shares) //
+                            .movePointLeft(Values.Share.precision()) //
+                            .multiply(BigDecimal.valueOf(security.getSecurityPrice(now).getValue()), Values.MC)
+                            .movePointLeft(Values.Quote.precisionDeltaToMoney()) //
+                            .setScale(0, RoundingMode.HALF_UP).longValue();
+
+            this.exitValue = converter.at(now).apply(Money.of(security.getCurrencyCode(), marketValue));
 
             this.holdingPeriod = Math.round(transactions.stream() //
                             .filter(t -> t.getTransaction().getType().isPurchase())
@@ -76,6 +99,13 @@ public class Trade implements Adaptable
                                             * Dates.daysBetween(t.getTransaction().getDateTime().toLocalDate(), now))
                             .sum() / (double) shares);
         }
+
+        // let's sort again because the list might not be sorted anymore due to
+        // transfers
+        Collections.sort(transactions, Comparator.comparing(p -> p.getTransaction().getDateTime()));
+
+        // re-set start date from first entry after sorting
+        this.setStart(transactions.get(0).getTransaction().getDateTime());
 
         calculateIRR(converter);
     }
@@ -146,6 +176,13 @@ public class Trade implements Adaptable
         return transactions;
     }
 
+
+    public TransactionPair<PortfolioTransaction> getLastTransaction()
+    {
+        // transactions have been sorted by calculate(), which is called once after creation
+        return transactions.get(transactions.size() - 1);
+    }
+
     public Money getEntryValue()
     {
         return entryValue;
@@ -159,6 +196,13 @@ public class Trade implements Adaptable
     public Money getProfitLoss()
     {
         return exitValue.subtract(entryValue);
+    }
+
+    public Money getGrossProfitLoss()
+    {
+        if (exitGrossValue == null)
+            return null;
+        return exitGrossValue.subtract(entryGrossValue);
     }
 
     public long getHoldingPeriod()
@@ -176,10 +220,37 @@ public class Trade implements Adaptable
         return (exitValue.getAmount() / (double) entryValue.getAmount()) - 1;
     }
 
+    /**
+     * @brief Checks if the trade is closed
+     * @return True if the trade has been closed, false otherwise
+     */
+    public boolean isClosed()
+    {
+        return this.getEnd().isPresent();
+    }
+
+    /**
+     * @brief Checks if the trade made a net loss
+     * @return True if the trade resulted in a net loss
+     */
+    public boolean isLoss()
+    {
+        return this.getProfitLoss().isNegative();
+    }
+
+    /**
+     * @brief Check if the trade made a gross gross
+     * @return True if the trade result in a gross loss
+     */
+    public boolean isGrossLoss()
+    {
+        return this.getGrossProfitLoss().isNegative();
+    }
+
     @Override
     public <T> T adapt(Class<T> type)
     {
-        if (type == Named.class)
+        if (type == Security.class || type == Named.class)
             return type.cast(security);
         else
             return null;

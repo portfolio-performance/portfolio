@@ -20,23 +20,30 @@ public final class InfoToolTip extends ToolTip
     private Control control;
     private Supplier<String> message;
 
-    private InfoToolTip(Control control, Supplier<String> message)
+    private InfoToolTip(Control control, int style, Supplier<String> message)
     {
-        super(control, ToolTip.NO_RECREATE, false);
+        super(control, style, false);
         this.control = control;
         this.message = message;
     }
 
-    public static void attach(Control control, String message)
+    public static InfoToolTip attach(Control control, String message)
     {
-        attach(control, () -> message);
+        return attach(control, () -> message);
     }
 
-    public static void attach(Control control, Supplier<String> message)
+    public static InfoToolTip attach(Control control, Supplier<String> message)
     {
-        InfoToolTip tooltip = new InfoToolTip(control, message);
+        return attach(control, ToolTip.NO_RECREATE, message);
+    }
+
+    public static InfoToolTip attach(Control control, int style, Supplier<String> message)
+    {
+        InfoToolTip tooltip = new InfoToolTip(control, style, message);
         tooltip.setPopupDelay(0);
         tooltip.activate();
+
+        return tooltip;
     }
 
     @Override
@@ -45,15 +52,18 @@ public final class InfoToolTip extends ToolTip
         parent.setData(UIConstants.CSS.CLASS_NAME, "tooltip"); //$NON-NLS-1$
 
         Composite result = new Composite(parent, SWT.NONE);
-        result.setLayout(new GridLayout());
+        GridLayout layout = new GridLayout();
+        result.setLayout(layout);
 
         // create tool tip with a reasonable width
-        int width = SWTHelper.stringWidth(result, "ABCDEFGHIJK") * 5; //$NON-NLS-1$
+        int maximumWidth = SWTHelper.stringWidth(result, "ABCDEFGHIJK") * 5; //$NON-NLS-1$
+        int actualWidth = SWTHelper.stringWidth(result, message.get()) + layout.marginWidth * 2;
+        int widthHint = Math.min(maximumWidth, actualWidth);
 
         Text text = new Text(result, SWT.WRAP);
         text.setText(message.get());
         GridData gridData = new GridData();
-        gridData.widthHint = width;
+        gridData.widthHint = widthHint;
         text.setLayoutData(gridData);
         Dialog.applyDialogFont(result);
         return result;

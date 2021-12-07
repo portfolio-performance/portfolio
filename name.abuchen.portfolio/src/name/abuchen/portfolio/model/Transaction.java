@@ -3,13 +3,16 @@ package name.abuchen.portfolio.model;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import name.abuchen.portfolio.Messages;
@@ -54,6 +57,9 @@ public abstract class Transaction implements Annotated, Adaptable
             this.amount = Objects.requireNonNull(amount);
             this.forex = null;
             this.exchangeRate = null;
+
+            if (type == Type.GROSS_VALUE)
+                throw new IllegalArgumentException("Gross value without forex: " + Values.Money.format(amount)); //$NON-NLS-1$
         }
 
         public Unit(Type type, Money amount, Money forex, BigDecimal exchangeRate)
@@ -142,6 +148,7 @@ public abstract class Transaction implements Annotated, Adaptable
         }
     }
 
+    private String uuid;
     private LocalDateTime date;
     private String currencyCode;
     private long amount;
@@ -153,8 +160,12 @@ public abstract class Transaction implements Annotated, Adaptable
 
     private List<Unit> units;
 
+    private Instant updatedAt;
+
     public Transaction()
     {
+        this.uuid = UUID.randomUUID().toString();
+        this.updatedAt = Instant.now();
     }
 
     public Transaction(LocalDateTime date, String currencyCode, long amount)
@@ -165,12 +176,23 @@ public abstract class Transaction implements Annotated, Adaptable
     public Transaction(LocalDateTime date, String currencyCode, long amount, Security security, long shares,
                     String note)
     {
+        this();
         this.date = date;
         this.currencyCode = currencyCode;
         this.amount = amount;
         this.security = security;
         this.shares = shares;
         this.note = note;
+    }
+
+    public String getUUID()
+    {
+        return uuid;
+    }
+
+    void generateUUID()
+    {
+        uuid = UUID.randomUUID().toString();
     }
 
     public LocalDateTime getDateTime()
@@ -181,6 +203,7 @@ public abstract class Transaction implements Annotated, Adaptable
     public void setDateTime(LocalDateTime date)
     {
         this.date = date;
+        this.updatedAt = Instant.now();
     }
 
     public String getCurrencyCode()
@@ -191,6 +214,7 @@ public abstract class Transaction implements Annotated, Adaptable
     public void setCurrencyCode(String currencyCode)
     {
         this.currencyCode = currencyCode;
+        this.updatedAt = Instant.now();
     }
 
     public long getAmount()
@@ -201,6 +225,7 @@ public abstract class Transaction implements Annotated, Adaptable
     public void setAmount(long amount)
     {
         this.amount = amount;
+        this.updatedAt = Instant.now();
     }
 
     public Money getMonetaryAmount()
@@ -212,6 +237,7 @@ public abstract class Transaction implements Annotated, Adaptable
     {
         this.currencyCode = value.getCurrencyCode();
         this.amount = value.getAmount();
+        this.updatedAt = Instant.now();
     }
 
     public Security getSecurity()
@@ -227,6 +253,7 @@ public abstract class Transaction implements Annotated, Adaptable
     public void setSecurity(Security security)
     {
         this.security = security;
+        this.updatedAt = Instant.now();
     }
 
     public CrossEntry getCrossEntry()
@@ -237,6 +264,7 @@ public abstract class Transaction implements Annotated, Adaptable
     /* package */void setCrossEntry(CrossEntry crossEntry)
     {
         this.crossEntry = crossEntry;
+        this.updatedAt = Instant.now();
     }
 
     public long getShares()
@@ -247,6 +275,7 @@ public abstract class Transaction implements Annotated, Adaptable
     public void setShares(long shares)
     {
         this.shares = shares;
+        this.updatedAt = Instant.now();
     }
 
     @Override
@@ -259,6 +288,17 @@ public abstract class Transaction implements Annotated, Adaptable
     public void setNote(String note)
     {
         this.note = note;
+        this.updatedAt = Instant.now();
+    }
+
+    public Instant getUpdatedAt()
+    {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt)
+    {
+        this.updatedAt = updatedAt;
     }
 
     public Stream<Unit> getUnits()
@@ -280,6 +320,7 @@ public abstract class Transaction implements Annotated, Adaptable
     public void clearUnits()
     {
         units = null;
+        this.updatedAt = Instant.now();
     }
 
     public void addUnit(Unit unit)
@@ -292,6 +333,7 @@ public abstract class Transaction implements Annotated, Adaptable
         if (units == null)
             units = new ArrayList<>();
         units.add(unit);
+        this.updatedAt = Instant.now();
     }
 
     public void addUnits(Stream<Unit> items)
@@ -300,6 +342,7 @@ public abstract class Transaction implements Annotated, Adaptable
             units = new ArrayList<>();
 
         items.forEach(units::add);
+        this.updatedAt = Instant.now();
     }
 
     public void removeUnit(Unit unit)
@@ -307,6 +350,7 @@ public abstract class Transaction implements Annotated, Adaptable
         if (units == null)
             units = new ArrayList<>();
         units.remove(unit);
+        this.updatedAt = Instant.now();
     }
 
     /**
@@ -315,6 +359,16 @@ public abstract class Transaction implements Annotated, Adaptable
     public Money getUnitSum(Unit.Type type)
     {
         return getUnits().filter(u -> u.getType() == type) //
+                        .collect(MoneyCollectors.sum(getCurrencyCode(), Unit::getAmount));
+    }
+
+    /**
+     * Returns the sum of units in transaction currency
+     */
+    public Money getUnitSum(Unit.Type first, Unit.Type... rest)
+    {
+        EnumSet<Unit.Type> set = EnumSet.of(first, rest);
+        return getUnits().filter(u -> set.contains(u.getType())) //
                         .collect(MoneyCollectors.sum(getCurrencyCode(), Unit::getAmount));
     }
 

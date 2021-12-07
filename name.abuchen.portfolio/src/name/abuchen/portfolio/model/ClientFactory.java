@@ -22,12 +22,16 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.text.MessageFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.zip.Deflater;
@@ -62,8 +66,10 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
 import name.abuchen.portfolio.util.ProgressMonitorInputStream;
+import name.abuchen.portfolio.util.XStreamInstantConverter;
 import name.abuchen.portfolio.util.XStreamLocalDateConverter;
 import name.abuchen.portfolio.util.XStreamLocalDateTimeConverter;
+import name.abuchen.portfolio.util.XStreamSecurityPriceConverter;
 
 @SuppressWarnings("deprecation")
 public class ClientFactory
@@ -542,7 +548,7 @@ public class ClientFactory
                 // added currency support --> designate a default currency (user
                 // will get a dialog to change)
                 setAllCurrencies(client, CurrencyUnit.EUR);
-                bumpUpCPIMonthValue(client);
+                // bumpUpCPIMonthValue --> CPI removed anyways
                 convertFeesAndTaxesToTransactionUnits(client);
             case 29: // NOSONAR
                 // added decimal places to stock quotes
@@ -578,14 +584,28 @@ public class ClientFactory
                 // added data map to classification and assignment
             case 43:
                 // added LimitPrice as attribute type
-            case 44:
+            case 44: // NOSONAR
                 // added weights to dashboard columns
                 fixDashboardColumnWeights(client);
             case 45:
                 // added custom security type NOTE
-            case 46:
+            case 46: // NOSONAR
                 // added dividend payment security event
                 addDefaultLogoAttributes(client);
+            case 47:
+                // added fees to dividend transactions
+            case 48: // NOSONAR
+                incrementSharesPrecisionFromSixToEightDigitsAfterDecimalSign(client);
+                // add 4 more decimal places to the quote to make it 8
+                addDecimalPlacesToQuotes(client);
+                addDecimalPlacesToQuotes(client);
+            case 49: // NOSONAR
+                fixLimitQuotesWith4AdditionalDecimalPlaces(client);
+            case 50: // NOSONAR
+                assignTxUUIDsAndUpdateAtInstants(client);
+            case 51:
+                permanentelyRemoveCPIData(client);
+                fixDimensionsList(client);
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
@@ -938,16 +958,6 @@ public class ClientFactory
     }
 
     /**
-     * Previously, January had the index 0 (in line with java.util.Date). Bump
-     * it up by one since we are using new Java 8 Time API.
-     */
-    private static void bumpUpCPIMonthValue(Client client)
-    {
-        for (ConsumerPriceIndex i : client.getConsumerPriceIndices())
-            i.setMonth(i.getMonth() + 1);
-    }
-
-    /**
      * Sets all currency codes of accounts, securities, and transactions to the
      * given currency code.
      */
@@ -990,7 +1000,8 @@ public class ClientFactory
 
         for (Security security : client.getSecurities())
         {
-            security.getPrices().stream().forEach(p -> p.setValue(p.getValue() * decimalPlacesAdded));
+            security.getPrices().stream().filter(Objects::nonNull)
+                            .forEach(p -> p.setValue(p.getValue() * decimalPlacesAdded));
             if (security.getLatest() != null)
             {
                 LatestSecurityPrice l = security.getLatest();
@@ -1000,8 +1011,8 @@ public class ClientFactory
                     l.setHigh(l.getHigh() * decimalPlacesAdded);
                 if (l.getLow() != -1)
                     l.setLow(l.getLow() * decimalPlacesAdded);
-                if (l.getPreviousClose() != -1)
-                    l.setPreviousClose(l.getPreviousClose() * decimalPlacesAdded);
+                if (l.previousClose != -1)
+                    l.previousClose = l.previousClose * decimalPlacesAdded;
             }
         }
 
@@ -1091,6 +1102,76 @@ public class ClientFactory
         client.getSettings().addAttributeType(factory.apply(InvestmentPlan.class));
     }
 
+    private static void incrementSharesPrecisionFromSixToEightDigitsAfterDecimalSign(Client client)
+    {
+        for (Portfolio portfolio : client.getPortfolios())
+            for (PortfolioTransaction portfolioTransaction : portfolio.getTransactions())
+                portfolioTransaction.setShares(portfolioTransaction.getShares() * 100);
+        for (Account account : client.getAccounts())
+            for (AccountTransaction accountTransaction : account.getTransactions())
+                accountTransaction.setShares(accountTransaction.getShares() * 100);
+    }
+
+    private static void fixLimitQuotesWith4AdditionalDecimalPlaces(Client client)
+    {
+        List<AttributeType> typesWithLimit = client.getSettings().getAttributeTypes()
+                        .filter(t -> t.getConverter() instanceof AttributeType.LimitPriceConverter)
+                        .collect(Collectors.toList());
+
+        client.getSecurities().stream().map(Security::getAttributes).forEach(attributes -> {
+            for (AttributeType t : typesWithLimit)
+            {
+                Object value = attributes.get(t);
+                if (value instanceof LimitPrice)
+                {
+                    LimitPrice lp = (LimitPrice) value;
+                    attributes.put(t, new LimitPrice(lp.getRelationalOperator(), lp.getValue() * 10000));
+                }
+            }
+        });
+    }
+
+    private static void assignTxUUIDsAndUpdateAtInstants(Client client)
+    {
+        for (Account a : client.getAccounts())
+        {
+            a.setUpdatedAt(Instant.now());
+            for (Transaction t : a.getTransactions())
+            {
+                t.setUpdatedAt(Instant.now());
+                t.generateUUID();
+            }
+        }
+
+        for (Portfolio p : client.getPortfolios())
+        {
+            p.setUpdatedAt(Instant.now());
+            for (Transaction t : p.getTransactions())
+            {
+                t.setUpdatedAt(Instant.now());
+                t.generateUUID();
+            }
+        }
+
+        for (Security s : client.getSecurities())
+        {
+            s.setUpdatedAt(Instant.now());
+        }
+    }
+
+    private static void permanentelyRemoveCPIData(Client client)
+    {
+        client.consumerPriceIndeces = null;
+    }
+
+    private static void fixDimensionsList(Client client)
+    {
+        client.getTaxonomies().forEach(t -> {
+            if (t.getDimensions() != null)
+                t.setDimensions(new ArrayList<>(t.getDimensions()));
+        });
+    }
+
     @SuppressWarnings("nls")
     private static synchronized XStream xstream()
     {
@@ -1098,10 +1179,20 @@ public class ClientFactory
         {
             xstream = new XStream();
 
+            xstream.allowTypesByWildcard(new String[] { "name.abuchen.portfolio.model.**" });
+
             xstream.setClassLoader(ClientFactory.class.getClassLoader());
+
+            // because we introduced LocalDate and LocalDateTime before Xstream
+            // was supporting it, we must declare it referenceable for backward
+            // compatibility reasons
+            xstream.addImmutableType(LocalDate.class, true);
+            xstream.addImmutableType(LocalDateTime.class, true);
 
             xstream.registerConverter(new XStreamLocalDateConverter());
             xstream.registerConverter(new XStreamLocalDateTimeConverter());
+            xstream.registerConverter(new XStreamInstantConverter());
+            xstream.registerConverter(new XStreamSecurityPriceConverter());
             xstream.registerConverter(
                             new PortfolioTransactionConverter(xstream.getMapper(), xstream.getReflectionProvider()));
 

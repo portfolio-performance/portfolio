@@ -1,0 +1,110 @@
+
+/* Common LIGHT styles */
+
+.MPart Composite,
+.MPart Label {
+	background-color: white;
+}
+
+.MPart ToolBar {
+	background-color:inherit;
+}
+
+.MPartStack {
+	swt-selected-tab-fill: #F5F5F5 #F9FAFA 100% 100%;
+	swt-unselected-tabs-color: #F9FAFA #F9FAFA 100% 100%;
+    padding: 0px;
+}
+
+.MPartStack.active {
+	swt-selected-tab-fill: #E4E6E9 #F9FAFA 100% 100%;
+	swt-unselected-tabs-color: white white 100% 100%;
+}
+
+CTabFolder {
+    swt-tab-renderer: url('bundleclass://org.eclipse.e4.ui.workbench.renderers.swt/org.eclipse.e4.ui.workbench.renderers.swt.CTabRendering');
+    padding: 0px;
+    swt-tab-outline: '#org-eclipse-ui-workbench-ACTIVE_TAB_OUTLINE_COLOR';
+    swt-outer-keyline-color: '#org-eclipse-ui-workbench-ACTIVE_TAB_OUTER_KEYLINE_COLOR';
+    swt-unselected-tabs-color: '#org-eclipse-ui-workbench-ACTIVE_UNSELECTED_TABS_COLOR_START' '#org-eclipse-ui-workbench-ACTIVE_UNSELECTED_TABS_COLOR_END' 100% 100%;
+    swt-selected-tab-fill: '#org-eclipse-ui-workbench-ACTIVE_TAB_BG_END';
+    swt-shadow-visible: false;
+}
+
+CTabItem {
+	color: #393E42;
+}
+
+CTabItem:selected {
+	color: #393E42;
+}
+
+.MPart .sidebar,
+.MPart .sidebar Label {
+	color: #393E42;
+	background-color: #F9FAFA;
+	selection-color: #393E42;
+	selection-background-color: #E4E6E9;
+}
+
+.MPart .sidebarBorder {
+	background-color: #F4F5F5;
+}
+
+.tooltip Label,
+.tooltip Composite,
+.tooltip Text {
+	color: black;
+	background-color: #ECECEC;
+}
+
+.chart {
+	background-color: white;
+	axis-color: black;
+	grid-color: lightgrey;
+	highlight-color: black;
+}
+
+.dashboard Composite,
+.dashboard Label,
+.dashboard StyledLabel,
+.dashboard ImageHyperlink {
+	background-color: white;
+}
+
+CustomColors {
+	default-foreground: black;
+	default-background: white;
+	warning-background: #FEDF6B;
+	red-background: #FE2B05;
+	green-background: #02F500;
+
+	red-foreground: #800000;
+	green-foreground: #008000;
+	gray-foreground: #707070;
+}
+
+SecuritiesChart {
+	quote-color: #4D34EB;
+}
+
+* {
+	font-family: "#systemfont";
+}
+
+.heading1 {
+	font-family: "#org.eclipse.jface.headerfont";
+	font-weight: bold;
+	color: #393E42;
+}
+
+.heading2 {
+	font-family: "#systemfont";
+	font-weight: bold;
+	color: #393E42;
+}
+
+.kpi {
+	font-family: "#systemfont";
+	font-weight: normal;
+}

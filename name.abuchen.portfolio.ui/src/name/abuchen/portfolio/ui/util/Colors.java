@@ -25,6 +25,7 @@ public final class Colors
         private Color greenBackground = Colors.RED;
         private Color redForeground = Colors.DARK_RED;
         private Color greenForeground = Colors.DARK_GREEN;
+        private Color grayForeground = getColor(112, 112, 112); // 707070
         private Color hyperlink = Display.getDefault().getSystemColor(SWT.COLOR_LINK_FOREGROUND);
 
         public Color defaultForeground()
@@ -97,6 +98,16 @@ public final class Colors
             this.greenForeground = getColor(color.rgb);
         }
 
+        public Color grayForeground()
+        {
+            return grayForeground;
+        }
+
+        public void setGrayForeground(RGBA color)
+        {
+            this.grayForeground = getColor(color.rgb);
+        }
+
         public Color hyperlink()
         {
             return hyperlink;
@@ -120,7 +131,7 @@ public final class Colors
     private static final ColorRegistry REGISTRY = new ColorRegistry();
 
     public static final Color ICON_ORANGE = getColor(241, 143, 1); // F18F01
-    public static final Color ICON_BLUE = getColor(14, 110, 142);
+    public static final Color ICON_BLUE = getColor(14, 110, 142); // 0E6E8E
     public static final Color ICON_GREEN = getColor(154, 193, 85); // 9AC155
 
     public static final Color TOTALS = getColor(0, 0, 0);

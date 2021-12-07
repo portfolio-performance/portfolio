@@ -2,12 +2,11 @@ package name.abuchen.portfolio.ui.views;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.number.IsCloseTo.closeTo;
-import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -26,12 +25,11 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MoneyCollectors;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
-import name.abuchen.portfolio.snapshot.GroupByTaxonomy;
+import name.abuchen.portfolio.snapshot.filter.ClientFilter;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
 import name.abuchen.portfolio.ui.views.StatementOfAssetsViewer.Element;
 import name.abuchen.portfolio.ui.views.StatementOfAssetsViewer.ElementValueProvider;
-import name.abuchen.portfolio.ui.views.StatementOfAssetsViewer.StatementOfAssetsContentProvider;
 import name.abuchen.portfolio.util.Interval;
 
 /**
@@ -84,55 +82,55 @@ public class IssuePerformanceIndicatorsWithPartialAssignmentTest
     }
 
     @Test
-    public void testPartialAssignments() throws IOException
+    public void testPartialAssignments()
     {
         // taxonomy - regions
 
         Taxonomy taxonomy = CLIENT.getTaxonomy("f8ffb083-774d-499e-a983-5c214eff7297"); //$NON-NLS-1$
-        GroupByTaxonomy groupByRegions = SNAPSHOT.groupByTaxonomy(taxonomy);
-        StatementOfAssetsContentProvider provider = new StatementOfAssetsContentProvider();
-        provider.inputChanged(null, null, groupByRegions);
-        Object[] elements = provider.getElements(null);
-        Arrays.stream(elements).map(o -> (Element) o).filter(Element::isSecurity)
-                        .forEach(e -> e.setPerformance(REPORTING_PERIOD, SECURITY2RECORD.get(e.getSecurity())));
+
+        StatementOfAssetsViewer.Model model = new StatementOfAssetsViewer.Model(CLIENT, ClientFilter.NO_FILTER,
+                        SNAPSHOT.getCurrencyConverter(), SNAPSHOT.getTime(), taxonomy);
+
+        model.getElements().stream().map(Element.class::cast).filter(Element::isSecurity).forEach(e -> e
+                        .setPerformance(CurrencyUnit.EUR, REPORTING_PERIOD, SECURITY2RECORD.get(e.getSecurity())));
 
         // check that element has only partial values
 
-        checkValue(Arrays.stream(elements).map(o -> (Element) o).filter(Element::isGroupByTaxonomy).findFirst()
+        checkValue(model.getElements().stream().map(Element.class::cast).filter(Element::isGroupByTaxonomy).findFirst()
                         .orElseThrow(IllegalArgumentException::new), 262.26, 355.26, 262.26, null);
 
-        checkValue(Arrays.stream(elements).map(o -> (Element) o).filter(Element::isCategory)
+        checkValue(model.getElements().stream().map(Element.class::cast).filter(Element::isCategory)
                         .filter(e -> e.getCategory().getClassification().getName().equals("Europa")).findFirst() //$NON-NLS-1$
                         .orElseThrow(IllegalArgumentException::new), 62.94, 85.26, 62.94, null);
 
-        checkValue(Arrays.stream(elements).map(o -> (Element) o).filter(Element::isSecurity).filter(
+        checkValue(model.getElements().stream().map(Element.class::cast).filter(Element::isSecurity).filter(
                         e -> e.getValuation().equals(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1156.40))))
                         .findFirst().orElseThrow(IllegalArgumentException::new), 62.94, 85.26, 62.94, 0.0576);
     }
 
     @Test
-    public void testFullAssignments() throws IOException
+    public void testFullAssignments()
     {
         // taxonomy - regions
 
         Taxonomy taxonomy = CLIENT.getTaxonomy("21baca92-db77-41f2-96d4-64e31ff4b4f5"); //$NON-NLS-1$
-        GroupByTaxonomy groupByRegions = SNAPSHOT.groupByTaxonomy(taxonomy);
-        StatementOfAssetsContentProvider provider = new StatementOfAssetsContentProvider();
-        provider.inputChanged(null, null, groupByRegions);
-        Object[] elements = provider.getElements(null);
-        Arrays.stream(elements).map(o -> (Element) o).filter(Element::isSecurity)
-                        .forEach(e -> e.setPerformance(REPORTING_PERIOD, SECURITY2RECORD.get(e.getSecurity())));
+
+        StatementOfAssetsViewer.Model model = new StatementOfAssetsViewer.Model(CLIENT, ClientFilter.NO_FILTER,
+                        SNAPSHOT.getCurrencyConverter(), SNAPSHOT.getTime(), taxonomy);
+
+        model.getElements().stream().map(Element.class::cast).filter(Element::isSecurity).forEach(e -> e
+                        .setPerformance(CurrencyUnit.EUR, REPORTING_PERIOD, SECURITY2RECORD.get(e.getSecurity())));
 
         // check that element has full values
 
-        checkValue(Arrays.stream(elements).map(o -> (Element) o).filter(Element::isGroupByTaxonomy).findFirst()
+        checkValue(model.getElements().stream().map(Element.class::cast).filter(Element::isGroupByTaxonomy).findFirst()
                         .orElseThrow(IllegalArgumentException::new), 262.26, 355.26, 262.26, null);
 
-        checkValue(Arrays.stream(elements).map(o -> (Element) o).filter(Element::isCategory)
+        checkValue(model.getElements().stream().map(Element.class::cast).filter(Element::isCategory)
                         .filter(e -> e.getCategory().getClassification().getName().equals("Welt")).findFirst() //$NON-NLS-1$
                         .orElseThrow(IllegalArgumentException::new), 262.26, 355.26, 262.26, null);
 
-        checkValue(Arrays.stream(elements).map(o -> (Element) o).filter(Element::isSecurity).findFirst()
+        checkValue(model.getElements().stream().map(Element.class::cast).filter(Element::isSecurity).findFirst()
                         .orElseThrow(IllegalArgumentException::new), 262.26, 355.26, 262.26, 0.0576);
     }
 
@@ -140,24 +138,21 @@ public class IssuePerformanceIndicatorsWithPartialAssignmentTest
                     Double capital_gains_percent)
     {
 
-        assertThat(element.getProfitLoss(), //
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(profitLoss))));
-
         // includes dividend payments
-        assertThat((Money) function_delta.getValue(element, REPORTING_PERIOD),
+        assertThat((Money) function_delta.getValue(element, CurrencyUnit.EUR, REPORTING_PERIOD),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(delta))));
 
-        assertThat((Money) function_capital_gains.getValue(element, REPORTING_PERIOD),
+        assertThat((Money) function_capital_gains.getValue(element, CurrencyUnit.EUR, REPORTING_PERIOD),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(capital_gains))));
 
         if (capital_gains_percent == null)
         {
-            assertThat((Double) function_capical_gains_percent.getValue(element, REPORTING_PERIOD), //
+            assertThat((Double) function_capical_gains_percent.getValue(element, CurrencyUnit.EUR, REPORTING_PERIOD),
                             nullValue());
         }
         else
         {
-            assertThat((Double) function_capical_gains_percent.getValue(element, REPORTING_PERIOD), //
+            assertThat((Double) function_capical_gains_percent.getValue(element, CurrencyUnit.EUR, REPORTING_PERIOD),
                             closeTo(capital_gains_percent, 0.0001));
         }
     }

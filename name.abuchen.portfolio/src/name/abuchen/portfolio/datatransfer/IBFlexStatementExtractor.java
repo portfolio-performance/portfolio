@@ -296,6 +296,41 @@ public class IBFlexStatementExtractor implements Extractor
                 throw new IllegalArgumentException();
             }
 
+            if (transaction.getType().equals(AccountTransaction.Type.DIVIDENDS)
+                            || transaction.getType().equals(AccountTransaction.Type.TAXES))
+            {
+                // if the account currency differs from transaction currency
+                // convert currency, if there is a matching security with the
+                // account currency
+                if (this.ibAccountCurrency != null && !this.ibAccountCurrency.equals(currency)) // NOSONAR
+                {
+                    // matching isin & base currency
+                    boolean foundIsinBase = false;
+                    // matching isin & transaction currency
+                    boolean foundIsinTransaction = false;
+
+                    for (Security s : allSecurities)
+                    {
+                        String isin = element.getAttribute("isin");
+                        // Find security with same isin & currency
+                        if (isin.length() > 0 && isin.equals(s.getIsin()))
+                        {
+                            if (currency.equals(s.getCurrencyCode()))
+                                foundIsinTransaction = true;
+                            else if (this.ibAccountCurrency.equals(s.getCurrencyCode()))
+                                foundIsinBase = true;
+                        }
+
+                    }
+
+                    if (!foundIsinTransaction && foundIsinBase && element.getAttribute("fxRateToBase").length() > 0)
+                    {
+                        amount = amount * Double.parseDouble(element.getAttribute("fxRateToBase"));
+                        currency = asCurrencyUnit(this.ibAccountCurrency);
+                    }
+                }
+            }
+
             amount = Math.abs(amount);
             transaction.setMonetaryAmount(convertAmountToMoney(element, amount, currency));
             if (ibAccountCurrency != null && !ibAccountCurrency.equals(currency))

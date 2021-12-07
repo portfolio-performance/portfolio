@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
@@ -28,10 +29,18 @@ import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.ClientFilterDropDown;
 import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
+import name.abuchen.portfolio.ui.util.EmbeddedBrowser.ItemSelectedFunction;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.views.panes.HistoricalPricesPane;
+import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
+import name.abuchen.portfolio.ui.views.panes.SecurityEventsPane;
+import name.abuchen.portfolio.ui.views.panes.SecurityPriceChartPane;
+import name.abuchen.portfolio.ui.views.panes.TradesPane;
+import name.abuchen.portfolio.ui.views.panes.TransactionsPane;
 import name.abuchen.portfolio.util.ColorConversion;
 
 public class HoldingsPieChartView extends AbstractFinanceView
@@ -52,6 +61,7 @@ public class HoldingsPieChartView extends AbstractFinanceView
                         HoldingsPieChartView.class.getSimpleName(), filter -> notifyModelUpdated());
 
         Client filteredClient = clientFilter.getSelectedFilter().filter(getClient());
+        setToContext(UIConstants.Context.FILTERED_CLIENT, filteredClient);
         snapshot = ClientSnapshot.create(filteredClient, converter, LocalDate.now());
     }
 
@@ -65,10 +75,13 @@ public class HoldingsPieChartView extends AbstractFinanceView
     public void notifyModelUpdated()
     {
         Client filteredClient = clientFilter.getSelectedFilter().filter(getClient());
+        setToContext(UIConstants.Context.FILTERED_CLIENT, filteredClient);
         snapshot = ClientSnapshot.create(filteredClient, converter, LocalDate.now());
 
         browser.refresh();
         updateWarningInToolBar();
+
+        setInformationPaneInput(null);
     }
 
     @Override
@@ -83,7 +96,10 @@ public class HoldingsPieChartView extends AbstractFinanceView
         browser = make(EmbeddedBrowser.class);
         browser.setHtmlpage("/META-INF/html/pie.html"); //$NON-NLS-1$
         updateWarningInToolBar();
-        return browser.createControl(parent, b -> new LoadDataFunction(b, "loadData")); //$NON-NLS-1$
+        return browser.createControl(parent, LoadDataFunction::new,
+                        b -> new ItemSelectedFunction(b, uuid -> snapshot.getAssetPositions()
+                                        .filter(p -> uuid.equals(p.getInvestmentVehicle().getUUID())).findAny()
+                                        .ifPresent(p -> setInformationPaneInput(p.getInvestmentVehicle()))));
     }
 
     private void updateWarningInToolBar()
@@ -123,6 +139,17 @@ public class HoldingsPieChartView extends AbstractFinanceView
         }
     }
 
+    @Override
+    protected void addPanePages(List<InformationPanePage> pages)
+    {
+        super.addPanePages(pages);
+        pages.add(make(SecurityPriceChartPane.class));
+        pages.add(make(HistoricalPricesPane.class));
+        pages.add(make(TransactionsPane.class));
+        pages.add(make(TradesPane.class));
+        pages.add(make(SecurityEventsPane.class));
+    }
+
     private static final class JSColors
     {
         private static final int SIZE = 11;
@@ -143,16 +170,17 @@ public class HoldingsPieChartView extends AbstractFinanceView
 
     private final class LoadDataFunction extends BrowserFunction
     {
-        private static final String ENTRY = "{\"label\":\"%s\"," //$NON-NLS-1$
+        private static final String ENTRY = "{\"uuid\":\"%s\"," //$NON-NLS-1$
+                        + "\"label\":\"%s\"," //$NON-NLS-1$
                         + "\"value\":%s," //$NON-NLS-1$
                         + "\"color\":\"%s\"," //$NON-NLS-1$
                         + "\"caption\":\"<b>%s</b> (%s)<br>%s x %s = %s\"," //$NON-NLS-1$
                         + "\"valueLabel\":\"%s\"" //$NON-NLS-1$
                         + "}"; //$NON-NLS-1$
 
-        private LoadDataFunction(Browser browser, String name)
+        private LoadDataFunction(Browser browser) // NOSONAR
         {
-            super(browser, name);
+            super(browser, "loadData"); //$NON-NLS-1$
         }
 
         @Override
@@ -170,7 +198,7 @@ public class HoldingsPieChartView extends AbstractFinanceView
                                 .forEach(p -> {
                                     String name = JSONObject.escape(p.getDescription());
                                     String percentage = Values.Percent2.format(p.getShare());
-                                    joiner.add(String.format(ENTRY, name, //
+                                    joiner.add(String.format(ENTRY, p.getInvestmentVehicle().getUUID(), name, //
                                                     p.getValuation().getAmount(), //
                                                     colors.next(), //
                                                     name, percentage, Values.Share.format(p.getPosition().getShares()), //

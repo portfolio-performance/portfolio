@@ -199,6 +199,10 @@ public class WithoutTaxesFilter implements ClientFilter
         copy.setNote(t.getNote());
         copy.setShares(t.getShares());
         copy.setSecurity(t.getSecurity());
+
+        // move fees over to dividend tx
+        t.getUnits().filter(u -> u.getType() != Unit.Type.TAX).forEach(copy::addUnit);
+
         readOnlyAccount.internalAddTransaction(copy);
 
         AccountTransaction removal = new AccountTransaction();
