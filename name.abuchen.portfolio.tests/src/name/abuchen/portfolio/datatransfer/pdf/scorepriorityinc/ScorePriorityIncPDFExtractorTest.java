@@ -694,7 +694,7 @@ public class ScorePriorityIncPDFExtractorTest
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AccountStatement04.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(12));
+        assertThat(results.size(), is(16));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
@@ -724,10 +724,22 @@ public class ScorePriorityIncPDFExtractorTest
 
         Security security5 = results.stream().filter(i -> i instanceof SecurityItem).skip(4).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security5.getWkn(), is("09609G100"));
-        assertThat(security5.getName(), is("Bluebird Bio Inc"));
+        assertThat(security5.getWkn(), is("901384107"));
+        assertThat(security5.getName(), is("2seventy Bio Inc Common Stock"));
         assertThat(security5.getCurrencyCode(), is(CurrencyUnit.EUR));
 
+        Security security6 = results.stream().filter(i -> i instanceof SecurityItem).skip(5).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security6.getWkn(), is("68629Y103"));
+        assertThat(security6.getName(), is("Orion Office Reit Inc Com"));
+        assertThat(security6.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        Security security7 = results.stream().filter(i -> i instanceof SecurityItem).skip(6).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security7.getWkn(), is("09609G100"));
+        assertThat(security7.getName(), is("Bluebird Bio Inc"));
+        assertThat(security7.getCurrencyCode(), is(CurrencyUnit.EUR));
+        
         // check 1st buy sell transaction
         BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance)
                         .collect(Collectors.toList()).get(0).getSubject();
@@ -768,6 +780,42 @@ public class ScorePriorityIncPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
+        // check 1st delivery inbound transaction
+        PortfolioTransaction entry1 = (PortfolioTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+                        .collect(Collectors.toList()).get(2).getSubject();
+
+        assertThat(entry1.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
+
+        assertThat(entry1.getDateTime(), is(LocalDateTime.parse("2021-11-05T00:00")));
+        assertThat(entry1.getShares(), is(Values.Share.factorize(5)));
+
+        assertThat(entry1.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry1.getGrossValue(), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry1.getUnitSum(Unit.Type.TAX), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry1.getUnitSum(Unit.Type.FEE), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        // check 2nd delivery inbound transaction
+        entry1 = (PortfolioTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+                        .collect(Collectors.toList()).get(3).getSubject();
+
+        assertThat(entry1.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
+
+        assertThat(entry1.getDateTime(), is(LocalDateTime.parse("2021-11-15T00:00")));
+        assertThat(entry1.getShares(), is(Values.Share.factorize(2)));
+
+        assertThat(entry1.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry1.getGrossValue(), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry1.getUnitSum(Unit.Type.TAX), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry1.getUnitSum(Unit.Type.FEE), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));  
+
         // check 1st dividend transaction
         AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
                         .findFirst().get().getSubject();
@@ -807,7 +855,7 @@ public class ScorePriorityIncPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check fees transaction
-        transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).skip(2)
+        transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).skip(4)
                         .findFirst().get().getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
@@ -826,7 +874,7 @@ public class ScorePriorityIncPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 3rd dividend transaction
-        transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).skip(3)
+        transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).skip(5)
                         .findFirst().get().getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));

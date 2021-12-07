@@ -180,6 +180,46 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
          * Formatting:
          * Date | Effective Description | CUSIP | Type of Activity | Quantity Market Price | Net Settlement Amount
          * -------------------------------------
+         * Nov 05 2seventy Bio Inc 901384107 Security Journal 5
+         * Common Stock
+         * Nov 15 Orion Office Reit Inc 68629Y103 Security Journal 2
+         * Com
+         */
+        Block blockDeliveryInBound = new Block("^[\\w]{3} [\\d]{2} .* [\\w]{9} Security Journal [\\.,\\d]+$");
+        type.addBlock(blockDeliveryInBound);
+        blockDeliveryInBound.set(new Transaction<PortfolioTransaction>()
+
+                        .subject(() -> {
+                            PortfolioTransaction entry = new PortfolioTransaction();
+                            entry.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
+                            return entry;
+                        })
+
+                        .section("month", "day", "name", "wkn", "shares", "nameContinued")
+                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) (?<name>.*) (?<wkn>[\\w]{9}) Security Journal (?<shares>[\\.,\\d]+)$")
+                        .match("(?<nameContinued>.*)")
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+                            v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
+
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setShares(asShares(v.get("shares")));
+                            t.setAmount(0L);
+                            t.setCurrencyCode(getClient().getBaseCurrency());
+                            t.setSecurity(getOrCreateSecurity(v));
+                        })
+
+                        .wrap(t -> {
+                            java.lang.System.out.println(t);
+                            if (t.getCurrencyCode() != null)
+                                return new TransactionItem(t);
+                            return null;
+                        }));
+
+        /***
+         * Formatting:
+         * Date | Effective Description | CUSIP | Type of Activity | Quantity Market Price | Net Settlement Amount
+         * -------------------------------------
          * Nov 05 Ca Fee_spinoff_blue Tsvt 09609 Journal (30.00) <-- CUSIP is incorrect (length = 9)
          * Nov 15 Ca Fee_spinoff_o Onl 756109104 Journal (30.00)
          */
