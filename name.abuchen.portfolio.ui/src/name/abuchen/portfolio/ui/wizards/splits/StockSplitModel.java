@@ -20,6 +20,8 @@ public class StockSplitModel extends BindingHelper.Model
     private LocalDate exDate = LocalDate.now();
     private BigDecimal newShares = BigDecimal.ONE;
     private BigDecimal oldShares = BigDecimal.ONE;
+    private BigDecimal stockMultiplier = BigDecimal.ONE;
+    private BigDecimal quoteMultiplier = BigDecimal.ONE;
 
     private boolean changeTransactions = true;
     private boolean changeHistoricalQuotes = true;
@@ -57,8 +59,9 @@ public class StockSplitModel extends BindingHelper.Model
     }
 
     public void setNewShares(BigDecimal newShares)
-    {
+    {        
         firePropertyChange("newShares", this.newShares, this.newShares = newShares); //$NON-NLS-1$
+        calculateMultipliers();
     }
 
     public BigDecimal getOldShares()
@@ -69,6 +72,13 @@ public class StockSplitModel extends BindingHelper.Model
     public void setOldShares(BigDecimal oldShares)
     {
         firePropertyChange("oldShares", this.oldShares, this.oldShares = oldShares); //$NON-NLS-1$
+        calculateMultipliers();
+    }
+    
+    private void calculateMultipliers()
+    {
+        stockMultiplier = calculateStockMultiplier();
+        quoteMultiplier = calculateQuoteMultiplier();
     }
 
     public boolean isChangeTransactions()
@@ -93,22 +103,26 @@ public class StockSplitModel extends BindingHelper.Model
                         this.changeHistoricalQuotes = changeHistoricalQuotes);
     }
 
-    // stock multiplier = quote divider
-    private BigDecimal getStockMultiplier()
+    private BigDecimal calculateStockMultiplier()
     {
         return newShares.divide(oldShares, Values.MC);
     }
     
+    private BigDecimal calculateQuoteMultiplier()
+    {
+        return oldShares.divide(newShares, Values.MC);
+    }
+    
     public long calculateNewStock(long oldStock)
     {
-        return BigDecimal.valueOf(oldStock).multiply(getStockMultiplier())
+        return BigDecimal.valueOf(oldStock).multiply(stockMultiplier)
                         .setScale(0, RoundingMode.HALF_EVEN).longValue();
     }
     
     public long calculateNewQuote(long oldQuote)
     {
-        return BigDecimal.valueOf(oldQuote).divide(getStockMultiplier()) // when stock is multiplied, quote must be divided
-                        .setScale(0, RoundingMode.HALF_EVEN).longValue();        
+        return BigDecimal.valueOf(oldQuote).multiply(quoteMultiplier)
+                        .setScale(0, RoundingMode.HALF_EVEN).longValue();
     }
     
     @Override
