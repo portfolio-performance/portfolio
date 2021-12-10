@@ -59,7 +59,7 @@ public class StockSplitModel extends BindingHelper.Model
     }
 
     public void setNewShares(BigDecimal newShares)
-    {        
+    {
         firePropertyChange("newShares", this.newShares, this.newShares = newShares); //$NON-NLS-1$
         calculateMultipliers();
     }
