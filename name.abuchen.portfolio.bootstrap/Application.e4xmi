@@ -99,7 +99,9 @@
         </children>
         <children xsi:type="menu:MenuSeparator" xmi:id="_OvJsIL3OEeqoTtTaIzseTQ" elementId="name.abuchen.portfolio.bootstrap.menuseparator.6"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_PV6KIL3OEeqoTtTaIzseTQ" elementId="name.abuchen.portfolio.ui.menu.online.uploadToDivvyDiary" label="%menu.online.divvydiary.label" iconURI="platform:/plugin/name.abuchen.portfolio.ui/icons/divvydiary.com-logo.png" command="_ZWCyUL3OEeqoTtTaIzseTQ"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_HKgf4FpwEeyP3IDAnoSHMw" elementId="name.abuchen.portfolio.ui.menu.online.syncETFDataBint" label="%menu.online.bintee.label" iconURI="platform:/plugin/name.abuchen.portfolio.ui/icons/bint.ee-logo.png" command="_wd2FQFpwEeyP3IDAnoSHMw"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_HKgf4FpwEeyP3IDAnoSHMw" elementId="name.abuchen.portfolio.ui.menu.online.syncETFDataBint" label="%menu.online.bintee.label" iconURI="platform:/plugin/name.abuchen.portfolio.ui/icons/bint.ee-logo.png" command="_wd2FQFpwEeyP3IDAnoSHMw">
+          <visibleWhen xsi:type="ui:ImperativeExpression" xmi:id="_3wh4oFqEEeyF6tiJcUApjQ" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.preferences.ExperimentalFeaturesEnabledExpression"/>
+        </children>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_CB6bwHmPEeuiO8_BzX84yg" elementId="name.abuchen.portfolio.ui.menu.online.syncPortfolioReport" label="Sync with portfolio-report.net" command="_m720cHmOEeuiO8_BzX84yg">
           <visibleWhen xsi:type="ui:ImperativeExpression" xmi:id="_J5pDQKBuEeuHadwYWq-bDQ" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.preferences.ExperimentalFeaturesEnabledExpression"/>
         </children>
