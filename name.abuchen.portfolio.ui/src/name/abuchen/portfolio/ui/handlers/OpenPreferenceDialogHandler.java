@@ -20,6 +20,7 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.preferences.AlphaVantagePreferencePage;
 import name.abuchen.portfolio.ui.preferences.CalendarPreferencePage;
+import name.abuchen.portfolio.ui.preferences.BintPreferencePage;
 import name.abuchen.portfolio.ui.preferences.DivvyDiaryPreferencePage;
 import name.abuchen.portfolio.ui.preferences.EODHistoricalDataPreferencePage;
 import name.abuchen.portfolio.ui.preferences.FinnhubPreferencePage;
@@ -68,6 +69,7 @@ public class OpenPreferenceDialogHandler
         pm.addTo("api", new PreferenceNode("divvydiary", new DivvyDiaryPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
         pm.addTo("api", new PreferenceNode("eodhistoricaldata", new EODHistoricalDataPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
         pm.addTo("api", new PreferenceNode("finnhub", new FinnhubPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
+        pm.addTo("api", new PreferenceNode("BINT.ee", new BintPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
 
         if (enableExperimentalFeatures)
             pm.addTo("api", new PreferenceNode("portfolio-report", new PortfolioReportPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
