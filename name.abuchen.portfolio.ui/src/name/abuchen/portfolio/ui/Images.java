@@ -92,7 +92,9 @@ public enum Images
     HANDLE_NS("handle_ns.png"), //$NON-NLS-1$
     HANDLE_WE("handle_we.png"), //$NON-NLS-1$
 
-    DIVVYDIARY_LOGO("divvydiary.com-logo.png"); //$NON-NLS-1$
+    DIVVYDIARY_LOGO("divvydiary.com-logo.png"), //$NON-NLS-1$
+    
+    BINTEE_LOGO("bint.ee-logo.png"); //$NON-NLS-1$
 
     static
     {

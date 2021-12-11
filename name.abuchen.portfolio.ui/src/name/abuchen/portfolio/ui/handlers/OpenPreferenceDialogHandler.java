@@ -21,6 +21,7 @@ import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.preferences.AlphaVantagePreferencePage;
 import name.abuchen.portfolio.ui.preferences.CalendarPreferencePage;
 import name.abuchen.portfolio.ui.preferences.PresetsPreferencePage;
+import name.abuchen.portfolio.ui.preferences.BintPreferencePage;
 import name.abuchen.portfolio.ui.preferences.DivvyDiaryPreferencePage;
 import name.abuchen.portfolio.ui.preferences.EODHistoricalDataPreferencePage;
 import name.abuchen.portfolio.ui.preferences.FinnhubPreferencePage;
@@ -59,12 +60,12 @@ public class OpenPreferenceDialogHandler
         PreferenceManager pm = new PreferenceManager('/');
         pm.addToRoot(new PreferenceNode("general", new GeneralPreferencePage())); //$NON-NLS-1$
         pm.addTo("general", new PreferenceNode("presets", new PresetsPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
-        
+
         pm.addToRoot(new PreferenceNode("presentation", new PresentationPreferencePage())); //$NON-NLS-1$
         pm.addTo("presentation", new PreferenceNode("language", new LanguagePreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
         pm.addTo("presentation", new PreferenceNode("theme", new ThemePreferencePage(themeEngine))); //$NON-NLS-1$ //$NON-NLS-2$
         pm.addTo("presentation", new PreferenceNode("formatting", new FormattingPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
-        
+
         pm.addToRoot(new PreferenceNode("calendar", new CalendarPreferencePage())); //$NON-NLS-1$
 
         pm.addToRoot(new PreferenceNode("api", new APIKeyPreferencePage())); //$NON-NLS-1$
@@ -72,6 +73,7 @@ public class OpenPreferenceDialogHandler
         pm.addTo("api", new PreferenceNode("divvydiary", new DivvyDiaryPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
         pm.addTo("api", new PreferenceNode("eodhistoricaldata", new EODHistoricalDataPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
         pm.addTo("api", new PreferenceNode("finnhub", new FinnhubPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
+        pm.addTo("api", new PreferenceNode("BINT.ee", new BintPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
 
         if (enableExperimentalFeatures)
             pm.addTo("api", new PreferenceNode("portfolio-report", new PortfolioReportPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
