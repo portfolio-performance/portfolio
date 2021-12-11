@@ -20,6 +20,7 @@ import com.ibm.icu.text.MessageFormat;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy;
+import name.abuchen.portfolio.online.TaxonomySource;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
 import name.abuchen.portfolio.online.impl.ETFDataBint;
 import name.abuchen.portfolio.ui.Messages;
@@ -51,12 +52,14 @@ public final class SyncETFDataJob extends AbstractClientJob
         boolean isDirty = false;
         
         List<Taxonomy> countries = getClient().getTaxonomies().stream()
-                        .filter(t -> "etf-data.com$country-allocation".equals(t.getSource())) //$NON-NLS-1$
+                        .filter(t -> TaxonomySource.BINT_EE_COUNTRY_ALLOCATION.getIdentifier()
+                                        .equals(t.getSource()))
                         .collect(Collectors.toList());
 
-        List<Taxonomy> sectors = getClient().getTaxonomies().stream()
-                        .filter(t -> "etf-data.com$sector-allocation".equals(t.getSource())) //$NON-NLS-1$
+        List<Taxonomy> sectors = getClient().getTaxonomies().stream().filter(
+                        t -> TaxonomySource.BINT_EE_SECTOR_ALLOCATION.getIdentifier().equals(t.getSource()))
                         .collect(Collectors.toList());
+
 
         List<IOException> errors = new ArrayList<>();
 
