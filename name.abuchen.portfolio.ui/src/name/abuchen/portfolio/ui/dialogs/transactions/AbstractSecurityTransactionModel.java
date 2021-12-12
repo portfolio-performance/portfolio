@@ -438,12 +438,18 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
 
     public BigDecimal getInverseExchangeRate()
     {
-        return BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+        if (exchangeRate.compareTo(BigDecimal.ZERO) == 0)
+            return BigDecimal.ZERO;
+        else
+            return BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
     }
 
     public void setInverseExchangeRate(BigDecimal rate)
     {
-        setExchangeRate(BigDecimal.ONE.divide(rate, 10, RoundingMode.HALF_DOWN));
+        if (rate == null || rate.compareTo(BigDecimal.ZERO) == 0)
+            setExchangeRate(BigDecimal.ZERO);
+        else
+            setExchangeRate(BigDecimal.ONE.divide(rate, 10, RoundingMode.HALF_DOWN));
     }
 
     public long getConvertedGrossValue()

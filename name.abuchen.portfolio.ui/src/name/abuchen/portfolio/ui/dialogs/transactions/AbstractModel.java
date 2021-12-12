@@ -74,6 +74,9 @@ public abstract class AbstractModel
      */
     /* package */ static String createCurrencyToolTip(BigDecimal exchangeRate, String term, String base)
     {
+        if (exchangeRate.compareTo(BigDecimal.ZERO) == 0)
+            return ""; //$NON-NLS-1$
+
         BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
 
         StringBuilder tooltip = new StringBuilder();
