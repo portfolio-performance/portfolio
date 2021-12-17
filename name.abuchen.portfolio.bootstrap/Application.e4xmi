@@ -99,7 +99,7 @@
         </children>
         <children xsi:type="menu:MenuSeparator" xmi:id="_OvJsIL3OEeqoTtTaIzseTQ" elementId="name.abuchen.portfolio.bootstrap.menuseparator.6"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_PV6KIL3OEeqoTtTaIzseTQ" elementId="name.abuchen.portfolio.ui.menu.online.uploadToDivvyDiary" label="%menu.online.divvydiary.label" iconURI="platform:/plugin/name.abuchen.portfolio.ui/icons/divvydiary.com-logo.png" command="_ZWCyUL3OEeqoTtTaIzseTQ"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_HKgf4FpwEeyP3IDAnoSHMw" elementId="name.abuchen.portfolio.ui.menu.online.syncETFDataBint" label="%menu.online.bintee.label" iconURI="platform:/plugin/name.abuchen.portfolio.ui/icons/bint.ee-logo.png" command="_wd2FQFpwEeyP3IDAnoSHMw">
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_HKgf4FpwEeyP3IDAnoSHMw" elementId="name.abuchen.portfolio.ui.menu.online.syncBintETFData" label="%menu.online.bintee.label" iconURI="platform:/plugin/name.abuchen.portfolio.ui/icons/bint.ee-logo.png" command="_wd2FQFpwEeyP3IDAnoSHMw">
           <visibleWhen xsi:type="ui:ImperativeExpression" xmi:id="_3wh4oFqEEeyF6tiJcUApjQ" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.preferences.ExperimentalFeaturesEnabledExpression"/>
         </children>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_CB6bwHmPEeuiO8_BzX84yg" elementId="name.abuchen.portfolio.ui.menu.online.syncPortfolioReport" label="Sync with portfolio-report.net" command="_m720cHmOEeuiO8_BzX84yg">
@@ -181,7 +181,7 @@
   <handlers xmi:id="_YLz7IDFOEeuGXeKVI3KJtQ" elementId="name.abuchen.portfolio.handler.selectAll" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.SelectAllHandler" command="_gxx18DFPEeuGXeKVI3KJtQ"/>
   <handlers xmi:id="_toGqAHmOEeuiO8_BzX84yg" elementId="name.abuchen.portfolio.ui.handler.syncPortfolioReport" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.SyncPortfolioReportHandler" command="_m720cHmOEeuiO8_BzX84yg"/>
   <handlers xmi:id="_kqZZoDrlEeydp_NU-UFwGA" elementId="name.abuchen.portfolio.ui.handler.syncEODHistoricalData" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.SyncEODHistoricalDataHandler" command="_hlqdUDrlEeydp_NU-UFwGA"/>
-  <handlers xmi:id="_WsdVYFpxEeyP3IDAnoSHMw" elementId="name.abuchen.portfolio.ui.handler.downloadETFlData" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.SyncETFDataHandler" command="_wd2FQFpwEeyP3IDAnoSHMw"/>
+  <handlers xmi:id="_WsdVYFpxEeyP3IDAnoSHMw" elementId="name.abuchen.portfolio.ui.handler.syncBintETFData" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.SyncBintETFDataHandler" command="_wd2FQFpwEeyP3IDAnoSHMw"/>
   <bindingTables xmi:id="_uK6dcBiSEeO8gYEHAOvLsA" elementId="" bindingContext="_7d8q4RjAEeO8gYEHAOvLsA">
     <bindings xmi:id="_yNkakBiSEeO8gYEHAOvLsA" elementId="" keySequence="M1+O" command="_3CjQwBfHEeOders_POVQHQ"/>
     <bindings xmi:id="_0WsqQBiSEeO8gYEHAOvLsA" elementId="" keySequence="M1+N" command="_LiZuIBiOEeOR1rNFCzC82A"/>
@@ -273,7 +273,7 @@
   <commands xmi:id="_gxx18DFPEeuGXeKVI3KJtQ" elementId="name.abuchen.portfolio.ui.command.selectAll" commandName="selectAll"/>
   <commands xmi:id="_m720cHmOEeuiO8_BzX84yg" elementId="name.abuchen.portfolio.ui.command.syncPortfolioReport" commandName="syncPortfolioReport"/>
   <commands xmi:id="_hlqdUDrlEeydp_NU-UFwGA" elementId="name.abuchen.portfolio.ui.command.syncEODHistoricalData" commandName="syncEODHistoricalData"/>
-  <commands xmi:id="_wd2FQFpwEeyP3IDAnoSHMw" elementId="name.abuchen.portfolio.ui.command.downloadETFData" commandName="downloadETFData"/>
+  <commands xmi:id="_wd2FQFpwEeyP3IDAnoSHMw" elementId="name.abuchen.portfolio.ui.command.syncBintETFData" commandName="syncBintETFData"/>
   <addons xmi:id="_4SwvYLOQEeWe1a5u3oOf1Q" elementId="name.abuchen.portfolio.ui.addon.proxy" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.ProxyAddon"/>
   <addons xmi:id="_B_-6cKH7EeO9F5tUX5UqjQ" elementId="name.abuchen.portfolio.ui.addon.log" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.StartupAddon"/>
   <addons xmi:id="_D8SDoRfFEeOders_POVQHQ" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>

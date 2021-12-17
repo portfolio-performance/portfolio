@@ -22,16 +22,16 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.online.TaxonomySource;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
-import name.abuchen.portfolio.online.impl.ETFDataBint;
+import name.abuchen.portfolio.online.impl.BintETFData;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.util.WebAccess.WebAccessException;
 
-public final class SyncETFDataJob extends AbstractClientJob
+public final class SyncBintETFDataJob extends AbstractClientJob
 {
     private String apiKey;
     
-    public SyncETFDataJob(Client client, String apiKey)
+    public SyncBintETFDataJob(Client client, String apiKey)
     {
         super(client, MessageFormat.format(Messages.JobLabelSyncSecuritiesOnline, "BINT.ee")); //$NON-NLS-1$
         
@@ -63,7 +63,7 @@ public final class SyncETFDataJob extends AbstractClientJob
 
         List<IOException> errors = new ArrayList<>();
 
-        ETFDataBint etfdata = new ETFDataBint();
+        BintETFData etfdata = new BintETFData();
         
         etfdata.setApiKey(apiKey);
 
@@ -77,18 +77,18 @@ public final class SyncETFDataJob extends AbstractClientJob
 
                 if (!items.isEmpty())
                 {
-                    boolean hasUpdate = ETFDataBint.updateWith(security, getClient().getSettings(), items.get(0));
+                    boolean hasUpdate = BintETFData.updateWith(security, getClient().getSettings(), items.get(0));
                     isDirty = isDirty || hasUpdate;
 
                     for (Taxonomy taxonomy : countries)
                     {
-                        hasUpdate = ETFDataBint.updateCountryAllocation(security, taxonomy, items.get(0));
+                        hasUpdate = BintETFData.updateCountryAllocation(security, taxonomy, items.get(0));
                         isDirty = isDirty || hasUpdate;
                     }
 
                     for (Taxonomy taxonomy : sectors)
                     {
-                        hasUpdate = ETFDataBint.updateSectorAllocation(security, taxonomy, items.get(0));
+                        hasUpdate = BintETFData.updateSectorAllocation(security, taxonomy, items.get(0));
                         isDirty = isDirty || hasUpdate;
                     }
                 }
@@ -122,7 +122,7 @@ public final class SyncETFDataJob extends AbstractClientJob
         {
             Display.getDefault().asyncExec(() -> {
                 MultiStatus status = new MultiStatus(PortfolioPlugin.PLUGIN_ID, IStatus.ERROR, this.getName(), null);
-                errors.forEach(e -> status.add(new Status(IStatus.ERROR, SyncETFDataJob.class, e.getMessage())));
+                errors.forEach(e -> status.add(new Status(IStatus.ERROR, SyncBintETFDataJob.class, e.getMessage())));
                 ErrorDialog.openError(Display.getDefault().getActiveShell(), Messages.LabelError, this.getName(),
                                 status);
             });
