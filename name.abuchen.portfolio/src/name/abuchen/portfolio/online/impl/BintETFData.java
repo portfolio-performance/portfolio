@@ -40,7 +40,7 @@ import name.abuchen.portfolio.util.TextUtil;
 import name.abuchen.portfolio.util.WebAccess;
 import name.abuchen.portfolio.util.WebAccess.WebAccessException;
 
-public class ETFDataBint
+public class BintETFData
 {
     /* package */ static class SymbolInfo
     {
@@ -352,7 +352,7 @@ public class ETFDataBint
                             .addParameter("token", this.apiKey) //$NON-NLS-1$
                             .withScheme("http") //$NON-NLS-1$
                             .addUserAgent("PortfolioPerformance/" //$NON-NLS-1$
-                                            + FrameworkUtil.getBundle(ETFDataBint.class).getVersion().toString());
+                                            + FrameworkUtil.getBundle(BintETFData.class).getVersion().toString());
             return readItems(webAccess.get());
         }
         catch (WebAccessException e)

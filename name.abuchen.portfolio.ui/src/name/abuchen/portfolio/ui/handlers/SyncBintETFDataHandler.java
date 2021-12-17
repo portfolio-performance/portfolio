@@ -12,9 +12,9 @@ import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
-import name.abuchen.portfolio.ui.jobs.SyncETFDataJob;
+import name.abuchen.portfolio.ui.jobs.SyncBintETFDataJob;
 
-public class SyncETFDataHandler
+public class SyncBintETFDataHandler
 {
     @CanExecute
     boolean isVisible(@Named(IServiceConstants.ACTIVE_PART) MPart part)
@@ -34,6 +34,6 @@ public class SyncETFDataHandler
         }
         
         MenuHelper.getActiveClientInput(part)
-                        .ifPresent(clientInput -> new SyncETFDataJob(clientInput.getClient(), apiToken).schedule());
+                        .ifPresent(clientInput -> new SyncBintETFDataJob(clientInput.getClient(), apiToken).schedule());
     }
 }
