@@ -376,8 +376,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
     private void addDepotStatementTransaction()
     {
         final DocumentType type = new DocumentType("(Perioden-Kontoauszug|Tageskontoauszug)", (context, lines) -> {
-            Pattern pCurrency = Pattern
-                            .compile("(Perioden-Kontoauszug|Tageskontoauszug): (?<currency>[\\w]{3})-Konto(.*)");
+            Pattern pCurrency = Pattern.compile("(Perioden-Kontoauszug|Tageskontoauszug): (?<currency>[\\w]{3})-Konto(.*)");
             // read the current context here
             for (String line : lines)
             {
@@ -480,7 +479,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 
                 .section("date", "type", "amount", "shares")
                 .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<type>(Kauf|Verkauf)) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<amount>[\\.\\d]+,[\\d]{2})( .*)?$")
-                .match("^STK ([\\s]+)?(?<shares>[\\.,\\d]+)( .*)?$")
+                .match("^STK ([\\s]+)?(?<shares>[\\.,\\d]+)(([\\s]+)?\\-)?$")
                 .assign((t, v) -> {
                     // Is type --> "Verkauf" change from BUY to SELL
                     if (v.get("type").equals("Verkauf"))
