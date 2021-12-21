@@ -210,7 +210,6 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(t -> {
-                            java.lang.System.out.println(t);
                             if (t.getCurrencyCode() != null)
                                 return new TransactionItem(t);
                             return null;
