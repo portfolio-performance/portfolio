@@ -214,7 +214,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 // Handelstag 19.08.2019 Kurswert USD 1.677,20-
                 // 21.08.2019 372650044 EUR/USD 1,1026 EUR 1.536,13
                 .section("fxCurrency", "fxAmount", "exchangeRate", "amount", "currency").optional()
-                .match("^.* Kurswert (?<fxCurrency>[\\w]{3}) (?<fxAmount>[\\.,\\d]+)[-\\s]$")
+                .match("^.* Kurswert (?<fxCurrency>[\\w]{3}) (?<fxAmount>[\\.,\\d]+)([-\\s])?$")
                 .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\w]{3}\\/[\\w]{3} (?<exchangeRate>[\\.,\\d]+) (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
@@ -398,7 +398,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("(Dividendengutschrift|Erträgnisgutschrift|Kupongutschrift|Reinvestierung)");
         this.addDocumentTyp(type);
 
-        Block block = new Block("^(Dividende|Aussch.ttung|Zinsen) f.r( (?![\\d]+).*)?$");
+        Block block = new Block("^(Ertr.gnisgutschrift aus Wertpapieren|Kupongutschrift|Reinvestierung) .*$");
         type.addBlock(block);
         Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>().subject(() -> {
             AccountTransaction entry = new AccountTransaction();

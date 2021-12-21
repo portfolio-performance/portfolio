@@ -1231,6 +1231,47 @@ public class OnvistaPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierVerkauf10()
+    {
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf10.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("US83416M1053"));
+        assertThat(security.getName(), is("SLR Senior Investment Corp. Registered Shares DL -,01"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+
+        // check 1st buy sell transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance)
+                        .collect(Collectors.toList()).get(0).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-12-14T18:55")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
+        assertThat(entry.getSource(), is("Verkauf10.txt"));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1259.14))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1430.00 / 1.1312))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.66 / 1.1312))));
+    }
+
+    @Test
     public void testDividende01()
     {
         OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
@@ -1825,6 +1866,46 @@ public class OnvistaPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(141.49))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(24.22 + 1.34 + 1.09 + 1.09))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+    }
+
+    @Test
+    public void testDividende14()
+    {
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende14.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("US3165001070"));
+        assertThat(security.getName(), is("Fidus Investment Corp. Registered Shares DL -,001"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+
+        // check dividends transaction
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-12-17T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(1000)));
+        assertThat(transaction.getSource(), is("Dividende14.txt"));
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(269.63))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(362.16))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(54.32 + 36.22 + 1.99))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
     }
