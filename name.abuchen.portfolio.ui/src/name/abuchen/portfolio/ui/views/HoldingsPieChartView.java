@@ -6,7 +6,9 @@ import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 
+import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.ToolBarManager;
@@ -35,6 +37,9 @@ import name.abuchen.portfolio.ui.util.ClientFilterDropDown;
 import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
 import name.abuchen.portfolio.ui.util.EmbeddedBrowser.ItemSelectedFunction;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.views.charts.HoldingsBrowserPieChart;
+import name.abuchen.portfolio.ui.views.charts.IPieChart;
+import name.abuchen.portfolio.ui.views.charts.HoldingsSWTPieChart;
 import name.abuchen.portfolio.ui.views.panes.HistoricalPricesPane;
 import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
 import name.abuchen.portfolio.ui.views.panes.SecurityEventsPane;
@@ -48,12 +53,16 @@ public class HoldingsPieChartView extends AbstractFinanceView
     private static final String ID_WARNING_TOOL_ITEM = "warning"; //$NON-NLS-1$
 
     private CurrencyConverter converter;
-    private EmbeddedBrowser browser;
+    private IPieChart chart;
     private ClientFilterDropDown clientFilter;
     private ClientSnapshot snapshot;
 
+    @Inject
+    @Preference(UIConstants.Preferences.ENABLE_SWTCHART_PIECHARTS)
+    boolean useSWTCharts;
+
     @PostConstruct
-    protected void contruct(ExchangeRateProviderFactory factory)
+    protected void construct(ExchangeRateProviderFactory factory)
     {
         converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
 
@@ -78,7 +87,8 @@ public class HoldingsPieChartView extends AbstractFinanceView
         setToContext(UIConstants.Context.FILTERED_CLIENT, filteredClient);
         snapshot = ClientSnapshot.create(filteredClient, converter, LocalDate.now());
 
-        browser.refresh();
+        chart.refresh(snapshot);
+        
         updateWarningInToolBar();
 
         setInformationPaneInput(null);
@@ -93,13 +103,15 @@ public class HoldingsPieChartView extends AbstractFinanceView
     @Override
     protected Control createBody(Composite parent)
     {
-        browser = make(EmbeddedBrowser.class);
-        browser.setHtmlpage("/META-INF/html/pie.html"); //$NON-NLS-1$
+        if (this.useSWTCharts) {
+            chart = new HoldingsSWTPieChart(snapshot, this);
+        }
+        else {
+            chart = new HoldingsBrowserPieChart(make(EmbeddedBrowser.class), snapshot, this);
+        }
+
         updateWarningInToolBar();
-        return browser.createControl(parent, LoadDataFunction::new,
-                        b -> new ItemSelectedFunction(b, uuid -> snapshot.getAssetPositions()
-                                        .filter(p -> uuid.equals(p.getInvestmentVehicle().getUUID())).findAny()
-                                        .ifPresent(p -> setInformationPaneInput(p.getInvestmentVehicle()))));
+        return chart.createControl(parent);
     }
 
     private void updateWarningInToolBar()
@@ -148,73 +160,5 @@ public class HoldingsPieChartView extends AbstractFinanceView
         pages.add(make(TransactionsPane.class));
         pages.add(make(TradesPane.class));
         pages.add(make(SecurityEventsPane.class));
-    }
-
-    private static final class JSColors
-    {
-        private static final int SIZE = 11;
-        private static final float STEP = 360.0f / (float) SIZE;
-
-        private static final float HUE = 262.3f;
-        private static final float SATURATION = 0.464f;
-        private static final float BRIGHTNESS = 0.886f;
-
-        private int nextSlice = 0;
-
-        public String next()
-        {
-            float brightness = Math.min(1.0f, BRIGHTNESS + (0.05f * (nextSlice / (float) SIZE)));
-            return ColorConversion.toHex((HUE + (STEP * nextSlice++)) % 360f, SATURATION, brightness);
-        }
-    }
-
-    private final class LoadDataFunction extends BrowserFunction
-    {
-        private static final String ENTRY = "{\"uuid\":\"%s\"," //$NON-NLS-1$
-                        + "\"label\":\"%s\"," //$NON-NLS-1$
-                        + "\"value\":%s," //$NON-NLS-1$
-                        + "\"color\":\"%s\"," //$NON-NLS-1$
-                        + "\"caption\":\"<b>%s</b> (%s)<br>%s x %s = %s\"," //$NON-NLS-1$
-                        + "\"valueLabel\":\"%s\"" //$NON-NLS-1$
-                        + "}"; //$NON-NLS-1$
-
-        private LoadDataFunction(Browser browser) // NOSONAR
-        {
-            super(browser, "loadData"); //$NON-NLS-1$
-        }
-
-        @Override
-        public Object function(Object[] arguments)
-        {
-            try
-            {
-                StringJoiner joiner = new StringJoiner(",", "[", "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                JSColors colors = new JSColors();
-
-                snapshot.getAssetPositions() //
-                                .filter(p -> p.getValuation().getAmount() > 0) //
-                                .sorted((l, r) -> Long.compare(r.getValuation().getAmount(),
-                                                l.getValuation().getAmount())) //
-                                .forEach(p -> {
-                                    String name = JSONObject.escape(p.getDescription());
-                                    String percentage = Values.Percent2.format(p.getShare());
-                                    joiner.add(String.format(ENTRY, p.getInvestmentVehicle().getUUID(), name, //
-                                                    p.getValuation().getAmount(), //
-                                                    colors.next(), //
-                                                    name, percentage, Values.Share.format(p.getPosition().getShares()), //
-                                                    Values.Money.format(p.getValuation()
-                                                                    .multiply((long) Values.Share.divider())
-                                                                    .divide((long) (p.getPosition().getShares()))), //
-                                                    Values.Money.format(p.getValuation()), percentage));
-                                });
-
-                return joiner.toString();
-            }
-            catch (Throwable e) // NOSONAR
-            {
-                PortfolioPlugin.log(e);
-                return "[]"; //$NON-NLS-1$
-            }
-        }
     }
 }
