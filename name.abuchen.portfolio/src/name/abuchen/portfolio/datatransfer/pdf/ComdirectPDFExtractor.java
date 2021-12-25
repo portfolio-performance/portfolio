@@ -1031,7 +1031,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                             else if (v.get("note2").matches("^(?i:(.* )?Uebertrag auf Tagesgeld PLUS\\-Konto)$"))
                                 v.put("note", "Übertrag auf Tagesgeld PLUS-Konto");
                             else if (v.get("note2").matches("^(?i:(.* )?Uebertrag auf Visa\\-Karte)$"))
-                                v.put("note", "Übertrag auf auf Visa-Karte");
+                                v.put("note", "Übertrag auf Visa-Karte");
                             else
                                 v.put("note", v.get("note1"));
 
