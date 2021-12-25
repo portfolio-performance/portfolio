@@ -26,7 +26,7 @@ Paychex Inc. Registered Shares DL -,01 US7043261079
 Nominal Ex-Tag Zahltag Dividenden-Betrag pro Stück
 STK 10,000 31.07.2020 27.08.2020 USD 0,620000
 Wert Konto-Nr. Betrag zu Ihren Gunsten
-27.08.2020  USD 4,64
+27.08.2020 123456789 USD 4,64
 Hinweise zur steuerlichen Verrechnung: vorher aktuell
 ausländische Dividende EUR 5,25
 US-Quellensteuer 15% USD 0,93
