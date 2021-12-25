@@ -2637,7 +2637,7 @@ public class ComdirectPDFExtractorTest
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-03-26T00:00")));
             assertThat(transaction.getAmount(), is(Values.Amount.factorize(9.00)));
             assertThat(transaction.getSource(), is("Finanzreport01.txt"));
-            assertThat(transaction.getNote(), is("Kartenzahlung"));
+            assertThat(transaction.getNote(), is("Kartenverfügung Kartenzahlung"));
         }
 
         if (iter.hasNext())
