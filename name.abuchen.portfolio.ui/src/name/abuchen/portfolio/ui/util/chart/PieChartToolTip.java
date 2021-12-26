@@ -22,10 +22,40 @@ public class PieChartToolTip extends AbstractSWTChartToolTip
     private static final String X_AXIS = "X_AXIS"; //$NON-NLS-1$
     private static final String Y_AXIS = "Y_AXIS"; //$NON-NLS-1$
     private DecimalFormat defaultValueFormat = new DecimalFormat("#,##0.00"); //$NON-NLS-1$
+    private IToolTipBuilder tooltipBuilder;
 
+    public interface IToolTipBuilder
+    {
+        void build(Composite container, Node currentNode);
+        
+    }
+
+    public class ToolTipBuilder implements IToolTipBuilder
+    {
+        @Override
+        public void build(Composite container, Node currentNode)
+        {
+            RowLayout layout = new RowLayout(SWT.VERTICAL);
+            layout.center = true;
+            container.setLayout(layout);
+            Composite data = new Composite(container, SWT.NONE);
+            GridLayoutFactory.swtDefaults().numColumns(2).applyTo(data);
+            Label left = new Label(data, SWT.NONE);
+            left.setText(currentNode.getId());
+            Label right = new Label(data, SWT.NONE);
+            right.setText(defaultValueFormat.format(currentNode.getValue()));
+        }
+    }
+    
     public PieChartToolTip(Chart chart)
     {
         super(chart);
+        setToolTipBuilder(new ToolTipBuilder());
+    }
+
+    public void setToolTipBuilder(IToolTipBuilder builder)
+    {
+        tooltipBuilder = builder;
     }
 
     @Override
@@ -56,16 +86,7 @@ public class PieChartToolTip extends AbstractSWTChartToolTip
         }
         Node currentNode = (Node) focus;
         final Composite container = new Composite(parent, SWT.NONE);
-        RowLayout layout = new RowLayout(SWT.VERTICAL);
-        layout.center = true;
-        container.setLayout(layout);
-        Composite data = new Composite(container, SWT.NONE);
-        GridLayoutFactory.swtDefaults().numColumns(2).applyTo(data);
-        Label left = new Label(data, SWT.NONE);
-        left.setText(currentNode.getId());
-        Label right = new Label(data, SWT.NONE);
-
-        right.setText(defaultValueFormat.format(currentNode.getValue()));
+        tooltipBuilder.build(container, currentNode);
     }
 
     @Override
