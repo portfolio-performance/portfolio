@@ -11,7 +11,6 @@ import name.abuchen.portfolio.ui.UIConstants;
 
 public class PieChart extends Chart // NOSONAR
 {
-    @SuppressWarnings("unused")
     private PieChartToolTip tooltip;
     
     public PieChart(Composite parent)
@@ -35,5 +34,10 @@ public class PieChart extends Chart // NOSONAR
 
         getLegend().setVisible(true);
         tooltip = new PieChartToolTip(this);
+    }
+
+    public PieChartToolTip getToolTip()
+    {
+        return tooltip;
     }
 }

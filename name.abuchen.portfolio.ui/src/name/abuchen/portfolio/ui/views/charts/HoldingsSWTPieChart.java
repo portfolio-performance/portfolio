@@ -2,15 +2,20 @@ package name.abuchen.portfolio.ui.views.charts;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 
+import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swtchart.Chart;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swtchart.ICircularSeries;
 import org.eclipse.swtchart.ISeries.SeriesType;
 import org.eclipse.swtchart.model.Node;
@@ -22,22 +27,60 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.chart.PieChart;
+import name.abuchen.portfolio.ui.util.chart.PieChartToolTip;
 
 public class HoldingsSWTPieChart implements IPieChart
 {
-    private Chart chart;
+    private PieChart chart;
     private ClientSnapshot snapshot;
     private List<String> lastLabels;
+    private Map<String, NodeData> nodeDataMap;
 
+    private class NodeData
+    {
+        String percentage;
+        String shares;
+        String valueSingle;
+        String value;
+    }
     public HoldingsSWTPieChart(ClientSnapshot snapshot, AbstractFinanceView view)
     {
         this.snapshot = snapshot;
+        nodeDataMap = new HashMap<String, HoldingsSWTPieChart.NodeData>();
     }
     
     @Override
     public Control createControl(Composite parent)
     {
         chart = new PieChart(parent);
+        chart.getToolTip().setToolTipBuilder(new PieChartToolTip.IToolTipBuilder() {
+
+            @Override
+            public void build(Composite container, Node currentNode)
+            {
+                RowLayout layout = new RowLayout(SWT.VERTICAL);
+                layout.center = true;
+                container.setLayout(layout);
+                Composite data = new Composite(container, SWT.NONE);
+                GridLayoutFactory.swtDefaults().numColumns(2).applyTo(data);
+                Label assetLabel = new Label(data, SWT.NONE);
+                FontDescriptor boldDescriptor = FontDescriptor.createFrom(assetLabel.getFont()).setStyle(SWT.BOLD);
+                assetLabel.setFont(boldDescriptor.createFont(assetLabel.getDisplay()));
+                assetLabel.setText(currentNode.getId());
+                NodeData nodeData = nodeDataMap.get(currentNode.getId());
+                if (nodeData != null) {
+                    Label right = new Label(data, SWT.NONE);
+                    right.setText("(" + nodeData.percentage + ")");  //$NON-NLS-1$ //$NON-NLS-2$
+                    Label info = new Label(container, SWT.NONE);
+                    info.setText(
+                        String.format("%s x %s = %s", //$NON-NLS-1$
+                                nodeData.shares,
+                                nodeData.valueSingle,
+                                nodeData.value
+                        )); 
+                }
+            }
+        });
 
         chart.getTitle().setVisible(false);
         chart.getLegend().setPosition(SWT.RIGHT);
@@ -58,13 +101,23 @@ public class HoldingsSWTPieChart implements IPieChart
     {
         List<Double> values = new ArrayList<>();
         List<String> labels = new ArrayList<>();
+        nodeDataMap.clear();
 
         snapshot.getAssetPositions() //
                         .filter(p -> p.getValuation().getAmount() > 0) //
                         .sorted((l, r) -> Long.compare(r.getValuation().getAmount(), l.getValuation().getAmount())) //
                         .forEach(p -> {
-                            labels.add(JSONObject.escape(p.getDescription()));
+                            String nodeId = JSONObject.escape(p.getDescription());
+                            labels.add(nodeId);
                             values.add(p.getValuation().getAmount() / Values.Amount.divider());
+                            NodeData data = new NodeData();
+                            data.percentage = Values.Percent2.format(p.getShare());
+                            data.shares = Values.Share.format(p.getPosition().getShares());
+                            data.value = Values.Money.format(p.getValuation());
+                            data.valueSingle = Values.Money.format(p.getValuation()
+                                            .multiply((long) Values.Share.divider())
+                                            .divide((long) (p.getPosition().getShares())));
+                            nodeDataMap.put(nodeId, data);
                         });
 
         ICircularSeries<?> circularSeries = (ICircularSeries<?>) chart.getSeriesSet().getSeries(Messages.LabelStatementOfAssetsHoldings);
