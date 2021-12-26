@@ -2,7 +2,6 @@ package name.abuchen.portfolio.ui.views;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -13,12 +12,9 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.browser.BrowserFunction;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.json.simple.JSONObject;
 
 import com.ibm.icu.text.MessageFormat;
 
@@ -30,23 +26,20 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.ClientFilterDropDown;
 import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
-import name.abuchen.portfolio.ui.util.EmbeddedBrowser.ItemSelectedFunction;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.views.charts.HoldingsBrowserPieChart;
-import name.abuchen.portfolio.ui.views.charts.IPieChart;
 import name.abuchen.portfolio.ui.views.charts.HoldingsSWTPieChart;
+import name.abuchen.portfolio.ui.views.charts.IPieChart;
 import name.abuchen.portfolio.ui.views.panes.HistoricalPricesPane;
 import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
 import name.abuchen.portfolio.ui.views.panes.SecurityEventsPane;
 import name.abuchen.portfolio.ui.views.panes.SecurityPriceChartPane;
 import name.abuchen.portfolio.ui.views.panes.TradesPane;
 import name.abuchen.portfolio.ui.views.panes.TransactionsPane;
-import name.abuchen.portfolio.util.ColorConversion;
 
 public class HoldingsPieChartView extends AbstractFinanceView
 {
