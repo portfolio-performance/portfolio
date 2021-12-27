@@ -73,7 +73,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
         pdfTransaction
                 // Is type --> "Verkauf" change from BUY to SELL
                 .section("type").optional()
-                .match("B.rsentransaktion: (?<type>(Kauf|Verkauf)) .*$")
+                .match("^B.rsentransaktion: (?<type>(Kauf|Verkauf)) .*$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("Verkauf"))
                     {
@@ -364,8 +364,8 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
     private void addInterestTransaction()
     {
         final DocumentType type = new DocumentType("Zinsabschluss", (context, lines) -> {
-            Pattern pCurrency = Pattern.compile("(Kontonummer|IBAN) .* (?<currency>[A-Z]{3})(.*)?");
-            Pattern pYear = Pattern.compile("[\\d]{2}\\.[\\d]{2}\\.(?<year>[\\d]{4}) Kontostand nach Zinsabschluss .*");
+            Pattern pCurrency = Pattern.compile("^(Kontonummer|IBAN) .* (?<currency>[A-Z]{3})(.*)?$");
+            Pattern pYear = Pattern.compile("^[\\d]{2}\\.[\\d]{2}\\.(?<year>[\\d]{4}) Kontostand nach Zinsabschluss .*$");
             // read the current context here
             for (String line : lines)
             {
@@ -476,8 +476,8 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
     private void addTaxesTransaction()
     {
         final DocumentType type = new DocumentType("Zinsabschluss", (context, lines) -> {
-            Pattern pCurrency = Pattern.compile("(Kontonummer|IBAN) .* (?<currency>[A-Z]{3})(.*)?");
-            Pattern pNote = Pattern.compile("Zinsabschluss (?<note>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-|\\–) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*");
+            Pattern pCurrency = Pattern.compile("^(Kontonummer|IBAN) .* (?<currency>[A-Z]{3})(.*)?$");
+            Pattern pNote = Pattern.compile("^Zinsabschluss (?<note>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-|\\–) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$");
             // read the current context here
             for (String line : lines)
             {
@@ -532,8 +532,8 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
     private void addAccountStatementTransaction()
     {
         DocumentType type = new DocumentType("Kontoauszug", (context, lines) -> {
-            Pattern pCurrency = Pattern.compile("(Kontonummer|IBAN){1} (.*) (?<currency>[A-Z]{3})(.*)?");
-            Pattern pYear = Pattern.compile("Kontoauszug [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-|\\–) [\\d]{2}\\.[\\d]{2}\\.(?<year>[\\d]{4}) .*");
+            Pattern pCurrency = Pattern.compile("^(Kontonummer|IBAN){1} (.*) (?<currency>[A-Z]{3})(.*)?$");
+            Pattern pYear = Pattern.compile("^Kontoauszug [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-|\\–) [\\d]{2}\\.[\\d]{2}\\.(?<year>[\\d]{4}) .*$");
             for (String line : lines)
             {
                 Matcher m = pCurrency.matcher(line);
