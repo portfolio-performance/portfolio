@@ -109,7 +109,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
                 // Handelszeit       : 09:04 Uhr (MEZ/MESZ)                  (Kommissionsgeschäft) 
                 .section("time").optional()
-                .match("Handelszeit ([\\s]+)?: ([\\s]+)?(?<time>[\\d]{2}:[\\d]{2}) Uhr.*")
+                .match("^Handelszeit ([\\s]+)?: ([\\s]+)?(?<time>[\\d]{2}:[\\d]{2}) Uhr.*$")
                 .assign((t, v) -> type.getCurrentContext().put("time", v.get("time")))
 
                 // Geschäftstag      : 01.01.2000        Ausführungsplatz  : XETRA 
@@ -123,8 +123,9 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                 })
 
                 //        Umrechn. zum Dev. kurs 1,080600 vom 17.04.2020 : EUR            4.425,22 
+                //            Umrechnung zum Devisenkurs 1,216500        : EUR               49,98 
                 .section("exchangeRate").optional()
-                .match("^.* Umrechn\\. zum Dev\\. kurs (?<exchangeRate>[\\.,\\d]+)(.*)?$")
+                .match("^.* (Umrechn\\. zum Dev\\. kurs|Umrechnung zum Devisenkurs) (?<exchangeRate>[\\.,\\d]+)(.*)?$")
                 .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                     type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
@@ -138,7 +139,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                  * Fees are processed in a separate transaction
                  */
                 .section("negative").optional()
-                .match("^.* \\d{2}\\.\\d{2}\\.[\\d]{4} ([\\s]+)?[\\w]{3} ([\\s]+)?[\\.,\\d]+(?<negative>\\-)(.*)?$")
+                .match("^.* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} ([\\s]+)?[\\w]{3} ([\\s]+)?[\\.,\\d]+(?<negative>\\-)(.*)?$")
                 .assign((t, v) -> {
                     if (t.getPortfolioTransaction().getType().isLiquidation())
                     {
@@ -164,7 +165,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                 //                           Kurswert                    : USD            4.768,00 
                 //        Umrechn. zum Dev. kurs 1,080600 vom 17.04.2020 : EUR            4.425,22 
                 .section("fxCurrency", "fxAmount", "exchangeRate").optional()
-                .match("^.* Kurswert ([\\s]+)?: ([\\s]+)?(?<fxCurrency>[\\w]{3}) ([\\s]+)?(?<fxAmount>[\\.,\\d]+)(.*)?$")
+                .match("^.* Ausmachender Betrag ([\\s]+)?: ([\\s]+)?(?<fxCurrency>[\\w]{3}) ([\\s]+)?(?<fxAmount>[\\.,\\d]+)(.*)?$")
                 .match("^.* Umrechn\\. zum Dev\\. kurs (?<exchangeRate>[\\.,\\d]+)(.*)?$")
                 .assign((t, v) -> {
                     if (!"X".equals(type.getCurrentContext().get("negative")))
@@ -234,38 +235,30 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                 //        Umrechn. zum Dev. kurs 1,222500 vom 16.12.2020 : EUR                2,28 
                 // IBAN                                  Valuta         Zu Ihren Lasten vor Steuern                                                    
                 // XXXX XXXX XXXX XXXX XXXX XX   EUR     27.08.2020        EUR               10,12- 
-                .section("amount", "currency", "exchangeRate", "fxCurrency").optional()
-                .match("^.* Kurswert ([\\s]+)?: ([\\s]+)?(?<fxCurrency>[\\w]{3}) ([\\s]+)?(?<amount>[\\.,\\d]+)(.*)?$")
-                .match("^.* Umrechn\\. zum Dev\\. kurs (?<exchangeRate>[\\.,\\d]+)(.*)?$")
+                .section("fxAmount", "currency", "exchangeRate", "fxCurrency").optional()
+                .match("^.* Ausmachender Betrag ([\\s]+)?: ([\\s]+)?(?<fxCurrency>[\\w]{3}) ([\\s]+)?(?<fxAmount>[\\.,\\d]+)(.*)?$")
+                .match("^.* (Umrechn\\. zum Dev\\. kurs|Umrechnung zum Devisenkurs) (?<exchangeRate>[\\.,\\d]+)(.*)?$")
                 .match("^.* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?[\\.,\\d]+(.*)?$")
                 .assign((t, v) -> {
-                    if ("X".equals(type.getCurrentContext().get("negative")))
+                    // read the forex currency, exchange rate and gross
+                    // amount in forex currency
+                    String forex = asCurrencyCode(v.get("currency"));
+                    if (!t.getPortfolioTransaction().getSecurity().getCurrencyCode().equals(forex))
                     {
-                        // read the forex currency, exchange rate and gross
-                        // amount in forex currency
-                        String forex = asCurrencyCode(v.get("currency"));
-                        if (!t.getPortfolioTransaction().getSecurity().getCurrencyCode().equals(forex))
-                        {
-                            BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                            BigDecimal reverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
-                                            RoundingMode.HALF_DOWN);
+                        BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                        BigDecimal reverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
+                                        RoundingMode.HALF_DOWN);
 
-                            // gross given in forex currency
-                            long fxAmount = asAmount(v.get("amount"));
-                            long amount = reverseRate.multiply(BigDecimal.valueOf(fxAmount))
-                                            .setScale(0, RoundingMode.HALF_DOWN).longValue();
+                        // gross given in forex currency
+                        long fxAmount = asAmount(v.get("fxAmount"));
+                        long amount = reverseRate.multiply(BigDecimal.valueOf(fxAmount))
+                                        .setScale(0, RoundingMode.HALF_DOWN).longValue();
 
-                            // set amount in account currency
-                            String amountFX =  Double.toString((double)amount / 100.0).replace('.', ',');
-                            t.setAmount(asAmount(amountFX));
-                            t.setCurrencyCode(asCurrencyCode(t.getPortfolioTransaction().getCurrencyCode()));
+                        Unit grossValue = new Unit(Unit.Type.GROSS_VALUE,
+                                        Money.of(t.getPortfolioTransaction().getCurrencyCode(), amount),
+                                        Money.of(v.get("fxCurrency"), fxAmount), reverseRate);
 
-                            Unit grossValue = new Unit(Unit.Type.GROSS_VALUE,
-                                            Money.of(t.getPortfolioTransaction().getCurrencyCode(), amount),
-                                            Money.of(v.get("fxCurrency"), fxAmount), reverseRate);
-
-                            t.getPortfolioTransaction().addUnit(grossValue);
-                        }
+                        t.getPortfolioTransaction().addUnit(grossValue);
                     }
                 })
 
@@ -368,8 +361,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                 // Bruttobetrag                     USD              10,50                           
                 //     zum Devisenkurs EURUSD      1,185400                 EUR               7,52   
                 .section("exchangeRate", "fxAmount", "fxCurrency", "amount", "currency").optional()
-                .match("^Bruttobetrag([:])? ([\\s]+)?(?<fxCurrency>[\\w]{3}) ([\\s]+)?(?<fxAmount>[\\.,\\d]+)(.*)?$")
-                .match("^(.*)?zum Devisenkurs([:])? [\\w]{3}([\\/])?[\\w]{3} ([\\s]+)?(?<exchangeRate>[\\.,\\d]+) ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<amount>[\\.,\\d]+)(.*)?$")
+                .match("^Bruttobetrag(:)? ([\\s]+)?(?<fxCurrency>[\\w]{3}) ([\\s]+)?(?<fxAmount>[\\.,\\d]+)(.*)?$")
+                .match("^(.*)?zum Devisenkurs(:)? [\\w]{3}(\\/)?[\\w]{3} ([\\s]+)?(?<exchangeRate>[\\.,\\d]+) ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<amount>[\\.,\\d]+)(.*)?$")
                 .assign((t, v) -> {
                     if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
                     {
@@ -409,7 +402,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                 //              zum Devisenkurs: EUR/USD      1,167800                 EUR              11,65 
                 //     zum Devisenkurs EURUSD      1,185400                 EUR               7,52   
                 .section("exchangeRate").optional()
-                .match("^(.*)?zum Devisenkurs([:])? [\\w]{3}([\\/])?[\\w]{3} ([\\s]+)?(?<exchangeRate>[\\.,\\d]+) ([\\s]+)?[\\w]{3} ([\\s]+)?[\\.,\\d]+(.*)?$")
+                .match("^(.*)?zum Devisenkurs(:)? [\\w]{3}(\\/)?[\\w]{3} ([\\s]+)?(?<exchangeRate>[\\.,\\d]+) ([\\s]+)?[\\w]{3} ([\\s]+)?[\\.,\\d]+(.*)?$")
                 .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                     type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
@@ -449,7 +442,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                 // EUR           5.000 SANHA ANL 13/26 STZ , WKN / ISIN: A1TNA7  / DE000A1TNA70
                 // Z u  Ih r e n G u n s t e n n a c h S t e u er n :       U S D             126,3 2 
                 .section("shares", "name", "wkn", "isin", "currency")
-                .match("^[\\w]{3}([\\.])? ([\\s]+)?(?<shares>[\\.,\\d]+) (?<name>.*), WKN \\/ ISIN: (?<wkn>.*) \\/ (?<isin>[\\w]{12})(.*)?$")
+                .match("^[\\w]{3}(\\.)? ([\\s]+)?(?<shares>[\\.,\\d]+) (?<name>.*), WKN \\/ ISIN: (?<wkn>.*) \\/ (?<isin>[\\w]{12})(.*)?$")
                 .match("^([\\s]+)?Z([\\s]+)?u"
                                 + "([\\s]+)?I([\\s]+)?h([\\s]+)?r([\\s]+)?e([\\s]+)?n"
                                 + "([\\s]+)?G([\\s]+)?u([\\s]+)?n([\\s]+)?s([\\s]+)?t([\\s]+)?e([\\s]+)?n"
@@ -525,18 +518,18 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                 + "([\\s]+)?I([\\s]+)?h([\\s]+)?r([\\s]+)?e([\\s]+)?n"
                                 + "([\\s]+)?G([\\s]+)?u([\\s]+)?n([\\s]+)?s([\\s]+)?t([\\s]+)?e([\\s]+)?n"
                                 + "([\\s]+)?v([\\s]+)?o([\\s]+)?r"
-                                + "([\\s]+)?S([\\s]+)?t([\\s]+)?e([\\s]+)?u([\\s]+)?e([\\s]+)?r([\\s]+)?n([\\s]+)?:"
-                                + " ([\\s]+)?[A-Z\\s]+"
-                                + " ([\\s]+)?[.,\\d\\s]+"
-                                + " ([\\s]+)?(?<currency1>[A-Z\\s]+)"
-                                + " ([\\s]+)?(?<gross1>[\\.,\\d\\s]+)([\\W]+)?$")
+                                + "([\\s]+)?S([\\s]+)?t([\\s]+)?e([\\s]+)?u([\\s]+)?e([\\s]+)?r([\\s]+)?n([\\s]+)?: "
+                                + "([\\s]+)?[A-Z\\s]+ "
+                                + "([\\s]+)?[.,\\d\\s]+ "
+                                + "([\\s]+)?(?<currency1>[A-Z\\s]+) "
+                                + "([\\s]+)?(?<gross1>[\\.,\\d\\s]+)([\\W]+)?$")
                 .match("^([\\s]+)?S([\\s]+)?t([\\s]+)?e([\\s]+)?u([\\s]+)?e([\\s]+)?r([\\s]+)?b([\\s]+)?e([\\s]+)?m([\\s]+)?e([\\s]+)?s([\\s]+)?s([\\s]+)?u([\\s]+)?n([\\s]+)?g([\\s]+)?s([\\s]+)?g([\\s]+)?r([\\s]+)?u([\\s]+)?n([\\s]+)?d([\\s]+)?l([\\s]+)?a([\\s]+)?g([\\s]+)?e"
                                 + "([\\s]+)?"
                                 + "(v([\\s]+)?o([\\s]+)?r"
                                 + "([\\s]+)?V([\\s]+)?e([\\s]+)?r([\\s]+)?l([\\s]+)?u([\\s]+)?s([\\s]+)?t([\\s]+)?v([\\s]+)?e([\\s]+)?r([\\s]+)?r([\\s]+)?e([\\s]+)?c([\\s]+)?h([\\s]+)?n([\\s]+)?u([\\s]+)?n([\\s]+)?g)?"
-                                + "([\\s]+)?(\\(([\\s]+)?1([\\s]+)?\\))?"
-                                + " ([\\s]+)?(?<currency2>[A-Z\\s]+)"
-                                + " ([\\s]+)?(?<gross2>[\\.,\\d\\s]+)([\\W]+)?$")
+                                + "([\\s]+)?(\\(([\\s]+)?1([\\s]+)?\\))? "
+                                + "([\\s]+)?(?<currency2>[A-Z\\s]+) "
+                                + "([\\s]+)?(?<gross2>[\\.,\\d\\s]+)([\\W]+)?$")
                 .match("^([\\s]+)?Umrechnungen zum Devisenkurs ([\\s]+)?(?<exchangeRate>[\\.,\\d]+)(.*)?$")
                 .assign((t, v) -> {
                     v.put("currency1", stripBlanks(v.get("currency1")));
@@ -630,13 +623,13 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                 // VERRECHNUNGSKONTO VALUTA BETRAG
                 // DE12345678912345678912 04.01.2021 -0,32 EUR
                 .section("currency", "amount")
-                .match("^([\\s]+)?Z([\\s]+)?u"
-                                + " ([\\s]+)?I([\\s]+)?h([\\s]+)?r([\\s]+)?e([\\s]+)?n"
-                                + " ([\\s]+)?L([\\s]+)?a([\\s]+)?s([\\s]+)?t([\\s]+)?e([\\s]+)?n"
-                                + " ([\\s]+)?n([\\s]+)?a([\\s]+)?c([\\s]+)?h"
-                                + " ([\\s]+)?S([\\s]+)?t([\\s]+)?e([\\s]+)?u([\\s]+)?e([\\s]+)?r([\\s]+)?n([\\s]+)?:"
-                                + " [\\s]+(?<currency>[\\w\\s]+)"
-                                + " ([\\s]+)?(?<amount>[-\\.,\\d\\s]+)$")
+                .match("^([\\s]+)?Z([\\s]+)?u "
+                                + "([\\s]+)?I([\\s]+)?h([\\s]+)?r([\\s]+)?e([\\s]+)?n "
+                                + "([\\s]+)?L([\\s]+)?a([\\s]+)?s([\\s]+)?t([\\s]+)?e([\\s]+)?n "
+                                + "([\\s]+)?n([\\s]+)?a([\\s]+)?c([\\s]+)?h "
+                                + "([\\s]+)?S([\\s]+)?t([\\s]+)?e([\\s]+)?u([\\s]+)?e([\\s]+)?r([\\s]+)?n([\\s]+)?: "
+                                + "[\\s]+(?<currency>[\\w\\s]+) "
+                                + "([\\s]+)?(?<amount>[-\\.,\\d\\s]+)$")
                 .assign((t, v) -> {
                     v.put("amount", stripBlanksAndUnderscores(v.get("amount")));
                     v.put("currency", stripBlanksAndUnderscores(v.get("currency")));
@@ -711,8 +704,9 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                 })
 
                 //        Umrechn. zum Dev. kurs 1,080600 vom 17.04.2020 : EUR            4.425,22 
+                //            Umrechnung zum Devisenkurs 1,216500        : EUR               49,98 
                 .section("exchangeRate").optional()
-                .match("^.* Umrechn\\. zum Dev\\. kurs (?<exchangeRate>[\\.,\\d]+)(.*)?$")
+                .match("^.* (Umrechn\\. zum Dev\\. kurs|Umrechnung zum Devisenkurs) (?<exchangeRate>[\\.,\\d]+)(.*)?$")
                 .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                     type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
@@ -857,7 +851,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
                 // Handelszeit       : 09:04 Uhr (MEZ/MESZ)                  (Kommissionsgeschäft) 
                 .section("time").optional()
-                .match("Handelszeit *: (?<time>[\\d]{2}:[\\d]{2}) Uhr.*")
+                .match("Handelszeit [\\s]+: (?<time>[\\d]{2}:[\\d]{2}) Uhr.*")
                 .assign((t, v) -> type.getCurrentContext().put("time", v.get("time")))
 
                 // Geschäftstag      : 01.01.2000        Ausführungsplatz  : XETRA     
@@ -871,8 +865,9 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                 })
 
                 //        Umrechn. zum Dev. kurs 1,080600 vom 17.04.2020 : EUR            4.425,22 
+                //            Umrechnung zum Devisenkurs 1,216500        : EUR               49,98 
                 .section("exchangeRate").optional()
-                .match("^.* Umrechn\\. zum Dev\\. kurs (?<exchangeRate>[\\.,\\d]+)(.*)?$")
+                .match("^.* (Umrechn\\. zum Dev\\. kurs|Umrechnung zum Devisenkurs) (?<exchangeRate>[\\.,\\d]+)(.*)?$")
                 .assign((t, v) -> {                   
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                     type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
@@ -885,9 +880,9 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                 // e r s ta t te t e S t e ue r n     E_ _U R_ _ _ _ _ _ _ _ _  _ _ __ _ 7_1__,7_ 3_
                 .section("currency", "amount").optional()
                 .match("^([\\s]+)?e([\\s]+)?r([\\s]+)?s([\\s]+)?t([\\s]+)?a([\\s]+)?t([\\s]+)?t([\\s]+)?e([\\s]+)?t([\\s]+)?e"
-                                + "([\\s]+)?S([\\s]+)?t([\\s]+)?e([\\s]+)?u([\\s]+)?e([\\s]+)?r([\\s]+)?n"
-                                + " ([\\s]+)?(?<currency>[\\w\\s_]+)"
-                                + " ([\\s_]+)?(?<amount>[-\\.,\\d\\s_]+)(.*)?$")
+                                + "([\\s]+)?S([\\s]+)?t([\\s]+)?e([\\s]+)?u([\\s]+)?e([\\s]+)?r([\\s]+)?n "
+                                + "([\\s]+)?(?<currency>[\\w\\s_]+) "
+                                + "([\\s_]+)?(?<amount>[-\\.,\\d\\s_]+)(.*)?$")
                 .assign((t, v) -> {
                     v.put("amount", stripBlanksAndUnderscores(v.get("amount")));
                     v.put("currency", stripBlanksAndUnderscores(v.get("currency")));
@@ -931,7 +926,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
             Pattern pForeignCurrencyAccount = Pattern.compile("^(W.hrungsanlagekonto) \\(([\\w]{3})\\) .*$");
             Pattern pStartForeignCurrency = Pattern.compile("^(W.hrungsanlagekonto) \\(([\\w]{3})\\)$");
             Pattern pEndForeignCurrency = Pattern.compile("^Neuer Saldo .*$");
-            Pattern pAccountingBillDate = Pattern.compile("(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Kontoabschluss .*");
+            Pattern pAccountingBillDate = Pattern.compile("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Kontoabschluss .*$");
 
             Boolean ForeignCurrencyAccount = false;
 
@@ -986,7 +981,17 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
         });
         this.addDocumentTyp(type);
 
-        Block removalBlock = new Block("(^|^A)[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Konto.bertrag|.bertrag|Lastschrift|Visa\\-Umsatz|Auszahlung|Barauszahlung|Kartenverf.gun|Guthaben.bertr|Wechselgeld\\-).* \\-[\\.,\\d]+$");
+        Block removalBlock = new Block("(^|^A)[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
+                        + "(Konto.bertrag"
+                        + "|.bertrag"
+                        + "|Lastschrift"
+                        + "|Visa\\-Umsatz"
+                        + "|Auszahlung"
+                        + "|Barauszahlung"
+                        + "|Kartenverf.gun"
+                        + "|Guthaben.bertr"
+                        + "|Wechselgeld\\-).* "
+                        + "\\-[\\.,\\d]+$");
         type.addBlock(removalBlock);
         removalBlock.setMaxSize(3);
         removalBlock.set(new Transaction<AccountTransaction>()
@@ -998,7 +1003,18 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("note1", "note2", "amount", "date")
-                        .match("(^|^A)[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<note1>Konto.bertrag|.bertrag|Lastschrift|Visa\\-Umsatz|Auszahlung|Barauszahlung|Kartenverf.gun|Guthaben.bertr|Wechselgeld\\-)(?<note2>.*) \\-(?<amount>[\\.,\\d]+)$")
+                        .match("(^|^A)[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
+                                        + "(?<note1>Konto.bertrag"
+                                        + "|.bertrag"
+                                        + "|Lastschrift"
+                                        + "|Visa\\-Umsatz"
+                                        + "|Auszahlung"
+                                        + "|Barauszahlung"
+                                        + "|Kartenverf.gun"
+                                        + "|Guthaben.bertr"
+                                        + "|Wechselgeld\\-)"
+                                        + "(?<note2>.*) "
+                                        + "\\-(?<amount>[\\.,\\d]+)$")
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
@@ -1040,7 +1056,15 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
         
-        Block depositBlock = new Block("(^|^A)[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Konto.bertrag|.bertrag|Guthaben.bertr|Gutschrift|Bar|Visa\\-Kartenabre|Korrektur Barauszahlung).* \\+[\\.,\\d]+$");
+        Block depositBlock = new Block("(^|^A)[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
+                        + "(Konto.bertrag"
+                        + "|.bertrag"
+                        + "|Guthaben.bertr"
+                        + "|Gutschrift"
+                        + "|Bar"
+                        + "|Visa\\-Kartenabre"
+                        + "|Korrektur Barauszahlung).* "
+                        + "\\+[\\.,\\d]+$");
         type.addBlock(depositBlock);
         depositBlock.setMaxSize(3);
         depositBlock.set(new Transaction<AccountTransaction>()
@@ -1052,7 +1076,16 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("note1", "note2", "amount", "date")
-                        .match("(^|^A)[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<note1>Konto.bertrag|.bertrag|Guthaben.bertr|Gutschrift|Bar|Visa\\-Kartenabre|Korrektur Barauszahlung)(?<note2>.*) \\+(?<amount>[\\.,\\d]+)$")
+                        .match("(^|^A)[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
+                                        + "(?<note1>Konto.bertrag"
+                                        + "|.bertrag"
+                                        + "|Guthaben.bertr"
+                                        + "|Gutschrift"
+                                        + "|Bar"
+                                        + "|Visa\\-Kartenabre"
+                                        + "|Korrektur Barauszahlung)"
+                                        + "(?<note2>.*) "
+                                        + "\\+(?<amount>[\\.,\\d]+)$")
                         .match("(^|^A)(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
@@ -1098,7 +1131,12 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
         
-        Block feesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Geb.hren\\/Spesen|Geb.hr Barauszahlung|Entgelte|Auslandsentgelt).* \\-[\\.,\\d]+$");
+        Block feesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
+                        + "(Geb.hren\\/Spesen"
+                        + "|Geb.hr Barauszahlung"
+                        + "|Entgelte"
+                        + "|Auslandsentgelt).* "
+                        + "\\-[\\.,\\d]+$");
         type.addBlock(feesBlock);
         feesBlock.set(new Transaction<AccountTransaction>()
 
@@ -1109,7 +1147,12 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date", "amount", "note")
-                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<note>Geb.hren\\/Spesen|Geb.hr Barauszahlung|Entgelte|Auslandsentgelt).* \\-(?<amount>[\\.,\\d]+)$")
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
+                                        + "(?<note>Geb.hren\\/Spesen"
+                                        + "|Geb.hr Barauszahlung"
+                                        + "|Entgelte"
+                                        + "|Auslandsentgelt).* "
+                                        + "\\-(?<amount>[\\.,\\d]+)$")
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
