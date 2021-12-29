@@ -11,17 +11,19 @@ import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swtchart.ICircularSeries;
 import org.eclipse.swtchart.ISeries.SeriesType;
 import org.eclipse.swtchart.model.Node;
 import org.json.simple.JSONObject;
 
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.snapshot.AssetPosition;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
@@ -33,11 +35,13 @@ public class HoldingsSWTPieChart implements IPieChart
 {
     private PieChart chart;
     private ClientSnapshot snapshot;
+    private AbstractFinanceView financeView;
     private List<String> lastLabels;
     private Map<String, NodeData> nodeDataMap;
 
     private class NodeData
     {
+        AssetPosition position;
         Double percentage;
         String percentageString;
         String shares;
@@ -47,6 +51,7 @@ public class HoldingsSWTPieChart implements IPieChart
     public HoldingsSWTPieChart(ClientSnapshot snapshot, AbstractFinanceView view)
     {
         this.snapshot = snapshot;
+        this.financeView = view;
         nodeDataMap = new HashMap<String, HoldingsSWTPieChart.NodeData>();
     }
     
@@ -90,6 +95,22 @@ public class HoldingsSWTPieChart implements IPieChart
             }
         });
 
+        ((Composite)chart.getPlotArea()).addListener(SWT.MouseUp, new Listener()
+        {
+            @Override
+            public void handleEvent(Event event)
+            {
+                Node node = chart.getNodeAt(event.x, event.y);
+                if (node == null) {
+                    return;
+                }
+                NodeData nodeData = nodeDataMap.get(node.getId());
+                if (nodeData != null) {
+                    financeView.setInformationPaneInput(nodeData.position.getInvestmentVehicle());
+                }
+            }
+        });
+
         chart.getTitle().setVisible(false);
         chart.getLegend().setPosition(SWT.RIGHT);
 
@@ -119,6 +140,7 @@ public class HoldingsSWTPieChart implements IPieChart
                             labels.add(nodeId);
                             values.add(p.getValuation().getAmount() / Values.Amount.divider());
                             NodeData data = new NodeData();
+                            data.position = p;
                             data.percentage = p.getShare();
                             data.percentageString = Values.Percent2.format(p.getShare());
                             data.shares = Values.Share.format(p.getPosition().getShares());
