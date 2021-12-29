@@ -27,6 +27,12 @@ import name.abuchen.portfolio.ui.views.charts.IPieChart;
 
 public class PieChart extends Chart // NOSONAR
 {
+    private enum Orientation {X_AXIS, Y_AXIS};
+
+    private static final int ID_PRIMARY_X_AXIS = 0;
+    private static final int ID_PRIMARY_Y_AXIS = 0;
+
+
     private PieChartToolTip tooltip;
     private IPieChart.ChartType chartType;
     private ILabelProvider labelProvider;
@@ -87,6 +93,67 @@ public class PieChart extends Chart // NOSONAR
             return;
         }
         this.labelProvider = labelProvider;
+    }
+
+    /**
+     * Find the node at position
+     * @param x
+     * @param y
+     * @return
+     */
+    public Node getNodeAt(int x, int y)
+    {
+        Node node = null;
+        for(ISeries<?> series : getSeriesSet().getSeries()) {
+            if(!(series instanceof ICircularSeries)) {
+                continue;
+            }
+            ICircularSeries<?> circularSeries = (ICircularSeries<?>) series;
+
+            double primaryValueX = getSelectedPrimaryAxisValue(x, PieChart.Orientation.X_AXIS);
+            double primaryValueY = getSelectedPrimaryAxisValue(y, PieChart.Orientation.Y_AXIS);
+
+            node = circularSeries.getPieSliceFromPosition(primaryValueX, primaryValueY);
+            circularSeries.setHighlightedNode(node);
+
+        }
+        return node;
+    }
+
+    private double getSelectedPrimaryAxisValue(int position, Orientation orientation)
+    {
+        double primaryValue = 0.0d;
+        double start;
+        double stop;
+        int length;
+
+        if(Orientation.X_AXIS == orientation) {
+            IAxis axis = getAxisSet().getXAxis(ID_PRIMARY_X_AXIS);
+            start = axis.getRange().lower;
+            stop = axis.getRange().upper;
+            length = getPlotArea().getSize().x;
+        } else {
+            IAxis axis = getAxisSet().getYAxis(ID_PRIMARY_Y_AXIS);
+            start = axis.getRange().lower;
+            stop = axis.getRange().upper;
+            length = getPlotArea().getSize().y;
+        }
+        
+        if(position <= 0) {
+            primaryValue = start;
+        } else if(position > length) {
+            primaryValue = stop;
+        } else {
+            double delta = stop - start;
+            double percentage;
+            if(Orientation.X_AXIS == orientation) {
+                percentage = ((100.0d / length) * position) / 100.0d;
+            } else {
+                percentage = (100.0d - ((100.0d / length) * position)) / 100.0d;
+            }
+            primaryValue = start + delta * percentage;
+        }
+        return primaryValue;
     }
 
     protected void renderLabels(PaintEvent e)
