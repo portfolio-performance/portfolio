@@ -64,17 +64,19 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                 // Achat 310 HOME24 SE  INH O.N. (DE000A14KEB5) à 15,9324 EUR
                 // Vente 310 VERBIO VER.BIOENERGIE ON (DE000A0JL9W6) à 33,95 EUR
                 // Verkauf 22 SARTORIUS AG O.N. (DE0007165607) für 247 EUR
-                .section("isin", "name", "shares", "currency")
-                .match("^(Kauf|Achat|Verkauf|Vente) (?<shares>[\\.,\\d]+) (?<name>.*) \\((?<isin>[\\w]{12})\\) .* (?<currency>[\\w]{3})$")
+                .section("isin", "name", "shares", "amount", "currency")
+                .match("^(Kauf|Achat|Verkauf|Vente) (?<shares>[\\.,\\d]+) (?<name>.*) \\((?<isin>[\\w]{12})\\) .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     t.setShares(asShares(v.get("shares")));
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(v.get("currency"));
                     t.setSecurity(getOrCreateSecurity(v));
                 })
 
                 // Ausführungsdatum und -zeit : 15/03/2021 12:31:50 CET
-                // Ordre créé à : 10/02/2021 15:23:42 CET
+                // Ordre créé à: 10/02/2021 15:23:42 CET
                 .section("date", "time")
-                .match("^(Ausf.hrungsdatum und \\-zeit|Ordre cr.. .) : (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) .*$")
+                .match("^(Ausf.hrungsdatum und \\-zeit|Ordre cr.. .)\\s?: (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) .*$")
                 .assign((t, v) -> t.setDate(asDate(v.get("date").replaceAll("/", "."), v.get("time"))))
 
                 // Lastschrift 1.994,39 EUR Valutadatum 17/03/2021
@@ -111,8 +113,9 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                 })
 
                 // Auftragstyp : Limit (16 EUR)
+                // Type d'ordre: Limit (46,3 EUR
                 .section("note").optional()
-                .match("^(Auftragstyp|Type d' ordre) : (?<note>.*)$")
+                .match("^(Auftragstyp|Type d' ordre)\\s?: (?<note>.*)$")
                 .assign((t, v) -> t.setNote(v.get("note")))
 
                 .wrap(BuySellEntryItem::new);
