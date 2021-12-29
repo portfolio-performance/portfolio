@@ -64,27 +64,27 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                 // Achat 310 HOME24 SE  INH O.N. (DE000A14KEB5) à 15,9324 EUR
                 // Vente 310 VERBIO VER.BIOENERGIE ON (DE000A0JL9W6) à 33,95 EUR
                 // Verkauf 22 SARTORIUS AG O.N. (DE0007165607) für 247 EUR
-                .section("isin", "name", "shares", "amount", "currency")
-                .match("^(Kauf|Achat|Verkauf|Vente) (?<shares>[\\.,\\d]+) (?<name>.*) \\((?<isin>[\\w]{12})\\) .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .section("isin", "name", "shares", "currency")
+                .match("^(Kauf|Achat|Verkauf|Vente) (?<shares>[\\.,\\d]+) (?<name>.*) \\((?<isin>[\\w]{12})\\) .* (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     t.setShares(asShares(v.get("shares")));
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(v.get("currency"));
                     t.setSecurity(getOrCreateSecurity(v));
                 })
 
                 // Ausführungsdatum und -zeit : 15/03/2021 12:31:50 CET
+                // Ordre créé à : 10/02/2021 15:23:42 CET
                 // Ordre créé à: 10/02/2021 15:23:42 CET
                 .section("date", "time")
-                .match("^(Ausf.hrungsdatum und \\-zeit|Ordre cr.. .)\\s?: (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) .*$")
+                .match("^(Ausf.hrungsdatum und \\-zeit|Ordre cr.. .)(\\s)?: (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) .*$")
                 .assign((t, v) -> t.setDate(asDate(v.get("date").replaceAll("/", "."), v.get("time"))))
 
                 // Lastschrift 1.994,39 EUR Valutadatum 17/03/2021
                 // Gutschrift 5.409,05 EUR Valutadatum 03/07/2020
                 // Crédit 10.499,55 EUR Date valeur 12/02/2021
                 // Débit 4.963,99 EUR Date valeur 21/10/2020
+                // Débit 765,84 EUR
                 .section("amount", "currency")
-                .match("^(Gutschrift|Cr.dit|Lastschrift|D.bit) (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}) .*$")
+                .match("^(Gutschrift|Cr.dit|Lastschrift|D.bit) (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(v.get("currency"));
@@ -113,9 +113,9 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                 })
 
                 // Auftragstyp : Limit (16 EUR)
-                // Type d'ordre: Limit (46,3 EUR
+                // Type d'ordre: Limit (46,3 EUR)
                 .section("note").optional()
-                .match("^(Auftragstyp|Type d' ordre)\\s?: (?<note>.*)$")
+                .match("^(Auftragstyp|Type d' ordre)(\\s)?: (?<note>.*)$")
                 .assign((t, v) -> t.setNote(v.get("note")))
 
                 .wrap(BuySellEntryItem::new);
@@ -215,8 +215,9 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
         transaction
                 // Verrechnungssteuer 26,38 % 2,03 EUR
                 // Impôt à la source 26,38 % 16,35 EUR
+                // Taxe boursière - 0,35% - 5,22 EUR
                 .section("tax", "currency").optional()
-                .match("^(Verrechnungssteuer|Imp.t . la source) [\\.,\\d]+ % (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^(Verrechnungssteuer|Imp.t . la source|Taxe boursi.re) (- )?[\\.,\\d]+(\\s)?% (- )?(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
@@ -224,8 +225,9 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
     {
         transaction
                 // Transaktionskosten 14,95 EUR
+                // Courtage - 7,50 EUR
                 .section("fee", "currency").optional()
-                .match("^(Transaktionskosten|Frais de transaction) (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^(Transaktionskosten|Frais de transaction|Courtage) (- )?(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
