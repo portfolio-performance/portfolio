@@ -38,7 +38,8 @@ public class HoldingsSWTPieChart implements IPieChart
 
     private class NodeData
     {
-        String percentage;
+        Double percentage;
+        String percentageString;
         String shares;
         String valueSingle;
         String value;
@@ -52,7 +53,14 @@ public class HoldingsSWTPieChart implements IPieChart
     @Override
     public Control createControl(Composite parent)
     {
-        chart = new PieChart(parent);
+        chart = new PieChart(parent, IPieChart.ChartType.DONUT, new PieChart.ILabelProvider()
+        {
+            @Override
+            public String getLabel(Node node)
+            {
+                return getNodeLabel(node);
+            }
+        });
         chart.getToolTip().setToolTipBuilder(new PieChartToolTip.IToolTipBuilder() {
 
             @Override
@@ -70,7 +78,7 @@ public class HoldingsSWTPieChart implements IPieChart
                 NodeData nodeData = nodeDataMap.get(currentNode.getId());
                 if (nodeData != null) {
                     Label right = new Label(data, SWT.NONE);
-                    right.setText("(" + nodeData.percentage + ")");  //$NON-NLS-1$ //$NON-NLS-2$
+                    right.setText("(" + nodeData.percentageString + ")");  //$NON-NLS-1$ //$NON-NLS-2$
                     Label info = new Label(container, SWT.NONE);
                     info.setText(
                         String.format("%s x %s = %s", //$NON-NLS-1$
@@ -111,7 +119,8 @@ public class HoldingsSWTPieChart implements IPieChart
                             labels.add(nodeId);
                             values.add(p.getValuation().getAmount() / Values.Amount.divider());
                             NodeData data = new NodeData();
-                            data.percentage = Values.Percent2.format(p.getShare());
+                            data.percentage = p.getShare();
+                            data.percentageString = Values.Percent2.format(p.getShare());
                             data.shares = Values.Share.format(p.getPosition().getShares());
                             data.value = Values.Money.format(p.getValuation());
                             data.valueSingle = Values.Money.format(p.getValuation()
@@ -173,29 +182,19 @@ public class HoldingsSWTPieChart implements IPieChart
 
     private void setColors(ICircularSeries<?> circularSeries, int colorCount)
     {
-        PieColors wheel = new PieColors();
+        PieChart.PieColors wheel = new PieChart.PieColors();
         Color[] colors = new Color[colorCount];
         for (int ii = 0; ii < colors.length; ii++)
             colors[ii] = wheel.next();
         circularSeries.setColor(colors);
     }
 
-    private static final class PieColors
+    private String getNodeLabel(Node node)
     {
-        private static final int SIZE = 11;
-        private static final float STEP = 360.0f / (float) SIZE;
-
-        private static final float HUE = 262.3f;
-        private static final float SATURATION = 0.464f;
-        private static final float BRIGHTNESS = 0.886f;
-
-        private int nextSlice = 0;
-
-        public Color next()
-        {
-            float brightness = Math.min(1.0f, BRIGHTNESS + (0.05f * (nextSlice / (float) SIZE)));
-            return Colors.getColor(new RGB((HUE + (STEP * nextSlice++)) % 360f, SATURATION, brightness));
-
+        NodeData nodeData = nodeDataMap.get(node.getId());
+        if (nodeData != null) {
+            return nodeData.percentage > 0.025 ? nodeData.percentageString : null;
         }
+        return null;
     }
 }
