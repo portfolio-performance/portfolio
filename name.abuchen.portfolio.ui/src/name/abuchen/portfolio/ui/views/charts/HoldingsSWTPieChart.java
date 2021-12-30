@@ -48,6 +48,7 @@ public class HoldingsSWTPieChart implements IPieChart
         String valueSingle;
         String value;
     }
+
     public HoldingsSWTPieChart(ClientSnapshot snapshot, AbstractFinanceView view)
     {
         this.snapshot = snapshot;
@@ -66,6 +67,8 @@ public class HoldingsSWTPieChart implements IPieChart
                 return getNodeLabel(node);
             }
         });
+
+        // set customized tooltip builder
         chart.getToolTip().setToolTipBuilder(new PieChartToolTip.IToolTipBuilder() {
 
             @Override
@@ -95,6 +98,7 @@ public class HoldingsSWTPieChart implements IPieChart
             }
         });
 
+        // Listen on mouse clicks to update information pane
         ((Composite)chart.getPlotArea()).addListener(SWT.MouseUp, new Listener()
         {
             @Override

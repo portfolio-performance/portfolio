@@ -60,8 +60,7 @@ import name.abuchen.portfolio.util.ColorConversion;
     public Control createControl(Composite container)
     {
         if (this.useSWTCharts) {
-            chart = new TaxonomiePieChartSWT(this, IPieChart.ChartType.DONUT);
-
+            chart = new TaxonomiePieChartSWT(this, view, IPieChart.ChartType.DONUT);
         }
         else {
             chart = new TaxonomiePieChartBrowser(make(EmbeddedBrowser.class), view, this);

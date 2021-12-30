@@ -32,7 +32,7 @@ import name.abuchen.portfolio.ui.views.charts.IPieChart;
     public Control createControl(Composite container)
     {
         if (this.useSWTCharts) {
-            chart = new TaxonomieDonutChartSWT(this, IPieChart.ChartType.DONUT);
+            chart = new TaxonomieDonutChartSWT(this, view, IPieChart.ChartType.DONUT);
         }
         else {
             chart = new TaxonomieDonutChartBrowser(make(EmbeddedBrowser.class), this.view, this);
