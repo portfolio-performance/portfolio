@@ -162,10 +162,19 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                     t.setSecurity(getOrCreateSecurity(v));
                 })
 
-                // Ordre créé à: 26/P11/2021L10:05:13 CETDate et heure d'exécution: 26/11/2021 13:25:24 CETDate de comptabilisation: 26/11/2021Date valeur: 30/11/2021Lieu d'exécution: EURONEXT - EURONEXT BRUSS
-                .section("date", "time")
-                .match("^Ordre cr.. .(\\s)?: .*Date et heure d.ex.cution(\\s)?: (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) .*$")
-                .assign((t, v) -> t.setDate(asDate(v.get("date").replaceAll("/", "."), v.get("time"))))
+                .oneOf(
+                                // // Ordre créé à: 26/P11/2021L10:05:13 CETDate et heure d'exécution: 26/11/2021 13:25:24 CETDate de comptabilisation: 26/11/2021Date valeur: 30/11/2021Lieu d'exécution: EURONEXT - EURONEXT BRUSS
+                                section -> section
+                                        .attributes("date", "time")
+                                        .match("^Ordre cr.. .(\\s)?: .*Date et heure d.ex.cution(\\s)?: (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) .*$")
+                                        .assign((t, v) -> t.setDate(asDate(v.get("date").replaceAll("/", "."), v.get("time"))))
+                                ,
+                                // Ordre créé à: 05/11/2020 11:25:43 CET
+                                section -> section
+                                        .attributes("date", "time")
+                                        .match("^Ordre cr.. .(\\s)?: (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) .*$")
+                                        .assign((t, v) -> t.setDate(asDate(v.get("date").replaceAll("/", "."), v.get("time"))))
+                        )
 
                 // Débit 704,43 EUR
                 .section("amount", "currency")
@@ -177,7 +186,7 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
 
                 // Type d'ordre: Limit (46,30 EUR) I
                 .section("note").optional()
-                .match("^Type d'(\\s)?ordre(\\s)?: (?<note>.*\\))(.*)?$")
+                .match("^Type d'(\\s)?ordre(\\s)?: (?<note>.*) .*$")
                 .assign((t, v) -> t.setNote(v.get("note")))
 
                 .wrap(BuySellEntryItem::new);
