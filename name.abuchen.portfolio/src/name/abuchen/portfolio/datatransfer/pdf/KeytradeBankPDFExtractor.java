@@ -24,6 +24,7 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("Keytrade Bank"); //$NON-NLS-1$
 
         addBuySellTransaction();
+        addBuySellWithWatermarkTransaction();
         addDividendeTransaction();
     }
 
@@ -52,7 +53,7 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
         pdfTransaction
                 // Is type --> "Verkauf" change from BUY to SELL
                 .section("type").optional()
-                .match("(?<type>(Kauf|Achat|Vente|Verkauf)) .*")
+                .match("^(?<type>(Kauf|Achat|Vente|Verkauf)) .*$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("Verkauf") || v.get("type").equals("Vente"))
                     {
@@ -118,6 +119,65 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                 // Type d'ordre: Market
                 .section("note").optional()
                 .match("^(Auftragstyp|Type d'(\\s)?ordre)(\\s)?: (?<note>.*)$")
+                .assign((t, v) -> t.setNote(v.get("note")))
+
+                .wrap(BuySellEntryItem::new);
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
+        addFeesSectionsTransaction(pdfTransaction, type);
+    }
+
+    private void addBuySellWithWatermarkTransaction()
+    {
+        DocumentType type = new DocumentType("Num.ro.*(Achat|Vente)");
+        this.addDocumentTyp(type);
+
+        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        pdfTransaction.subject(() -> {
+            BuySellEntry entry = new BuySellEntry();
+            entry.setType(PortfolioTransaction.Type.BUY);
+            return entry;
+        });
+
+        Block firstRelevantLine = new Block("^Num.ro.*(Achat|Vente) .*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction
+                // Is type --> "Vente" change from BUY to SELL
+                .section("type").optional()
+                .match("^Num.ro.*(?<type>(Achat|Vente)) .*$")
+                .assign((t, v) -> {
+                    if (v.get("type").equals("Vente"))
+                    {
+                        t.setType(PortfolioTransaction.Type.SELL);
+                    }
+                })
+
+                // Numéro de réf. : 7763C9846/01AAchat 15 KINEPOLIS GROUP (BE0974274061) à 46,3 EURType d' instrument: Actions
+                .section("isin", "name", "shares", "currency").optional()
+                .match("^Num.ro.*(Achat|Vente) (?<shares>[\\.,\\d]+) (?<name>.*) \\((?<isin>[\\w]{12})\\) .* (?<currency>[\\w]{3}).*$")
+                .assign((t, v) -> {
+                    t.setShares(asShares(v.get("shares")));
+                    t.setSecurity(getOrCreateSecurity(v));
+                })
+
+                // Ordre créé à: 26/P11/2021L10:05:13 CETDate et heure d'exécution: 26/11/2021 13:25:24 CETDate de comptabilisation: 26/11/2021Date valeur: 30/11/2021Lieu d'exécution: EURONEXT - EURONEXT BRUSS
+                .section("date", "time")
+                .match("^Ordre cr.. .(\\s)?: .*Date et heure d.ex.cution(\\s)?: (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) .*$")
+                .assign((t, v) -> t.setDate(asDate(v.get("date").replaceAll("/", "."), v.get("time"))))
+
+                // Débit 704,43 EUR
+                .section("amount", "currency")
+                .match("^(Cr.dit|D.bit) (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .assign((t, v) -> {
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(v.get("currency"));
+                })
+
+                // Type d'ordre: Limit (46,30 EUR) I
+                .section("note").optional()
+                .match("^Type d'(\\s)?ordre(\\s)?: (?<note>.*\\))(.*)?$")
                 .assign((t, v) -> t.setNote(v.get("note")))
 
                 .wrap(BuySellEntryItem::new);
@@ -222,12 +282,13 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
 
                 // Impôt à la source 26,38 % 16,35 EUR
                 .section("tax", "currency").optional()
-                .match("^Imp.t . la source [\\.,\\d]+ % (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("(^.* .*|^)Imp.t . la source [\\.,\\d]+ % (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
                 // Taxe boursière - 0,35% - 5,22 EUR
+                // Montant brut U - 694,50 EURD - 694,50 EURTaxe boursière - 0,35% - 2,43 EURCourtage - 7,50 EUR
                 .section("tax", "currency").optional()
-                .match("^Taxe boursi.re \\- [\\.,\\d]+% \\- (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("(^.* .*|^)Taxe boursi.re \\- [\\.,\\d]+% \\- (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
                 .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
@@ -241,12 +302,13 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
 
                 // Frais de transaction 24,95 EUR
                 .section("fee", "currency").optional()
-                .match("^Frais de transaction (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("(^.* .*|^)Frais de transaction (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Courtage - 7,50 EUR
+                // Montant brut U - 694,50 EURD - 694,50 EURTaxe boursière - 0,35% - 2,43 EURCourtage - 7,50 EUR
                 .section("fee", "currency").optional()
-                .match("^Courtage \\- (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("(^.* .*|^)Courtage \\- (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
                 .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
