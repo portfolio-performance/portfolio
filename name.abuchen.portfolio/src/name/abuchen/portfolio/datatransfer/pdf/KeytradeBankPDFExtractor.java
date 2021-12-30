@@ -73,16 +73,19 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
 
                 // Ausführungsdatum und -zeit : 15/03/2021 12:31:50 CET
                 // Ordre créé à : 10/02/2021 15:23:42 CET
+                // Ordre créé à: 27/01/2021 14:37:13 CET
                 .section("date", "time")
-                .match("^(Ausf.hrungsdatum und \\-zeit|Ordre cr.. .) : (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) .*$")
+                .match("^(Ausf.hrungsdatum und \\-zeit|Ordre cr.. .)(\\s)?: (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) .*$")
                 .assign((t, v) -> t.setDate(asDate(v.get("date").replaceAll("/", "."), v.get("time"))))
 
                 // Lastschrift 1.994,39 EUR Valutadatum 17/03/2021
                 // Gutschrift 5.409,05 EUR Valutadatum 03/07/2020
                 // Crédit 10.499,55 EUR Date valeur 12/02/2021
                 // Débit 4.963,99 EUR Date valeur 21/10/2020
+                // Crédit 908,64 EUR
+                // Débit 1.502,72 EUR
                 .section("amount", "currency")
-                .match("^(Gutschrift|Cr.dit|Lastschrift|D.bit) (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}) .*$")
+                .match("^(Gutschrift|Cr.dit|Lastschrift|D.bit) (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(v.get("currency"));
@@ -111,8 +114,10 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                 })
 
                 // Auftragstyp : Limit (16 EUR)
+                // Type d' ordre : Limit (16 EUR)
+                // Type d'ordre: Market
                 .section("note").optional()
-                .match("^(Auftragstyp|Type d' ordre) : (?<note>.*)$")
+                .match("^(Auftragstyp|Type d'(\\s)?ordre)(\\s)?: (?<note>.*)$")
                 .assign((t, v) -> t.setNote(v.get("note")))
 
                 .wrap(BuySellEntryItem::new);
@@ -211,9 +216,18 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
     {
         transaction
                 // Verrechnungssteuer 26,38 % 2,03 EUR
+                .section("tax", "currency").optional()
+                .match("^Verrechnungssteuer [\\.,\\d]+ % (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> processTaxEntries(t, v, type))
+
                 // Impôt à la source 26,38 % 16,35 EUR
                 .section("tax", "currency").optional()
-                .match("^(Verrechnungssteuer|Imp.t . la source) [\\.,\\d]+ % (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^Imp.t . la source [\\.,\\d]+ % (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> processTaxEntries(t, v, type))
+
+                // Taxe boursière - 0,35% - 5,22 EUR
+                .section("tax", "currency").optional()
+                .match("^Taxe boursi.re \\- [\\.,\\d]+% \\- (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
@@ -222,7 +236,17 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
         transaction
                 // Transaktionskosten 14,95 EUR
                 .section("fee", "currency").optional()
-                .match("^(Transaktionskosten|Frais de transaction) (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^Transaktionskosten (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+
+                // Frais de transaction 24,95 EUR
+                .section("fee", "currency").optional()
+                .match("^Frais de transaction (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+
+                // Courtage - 7,50 EUR
+                .section("fee", "currency").optional()
+                .match("^Courtage \\- (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
