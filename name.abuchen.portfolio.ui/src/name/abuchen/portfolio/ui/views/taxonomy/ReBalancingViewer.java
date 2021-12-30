@@ -145,12 +145,74 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
         });
         support.addColumn(column);
 
+        // Column which shows percentage of the target for this asset class in relationship to total assets
+        column = new Column("toBePctOfTotal", Messages.ColumnToBePctOfTotal, SWT.RIGHT, 60); //$NON-NLS-1$
+        column.setMenuLabel(Messages.ColumnToBePctOfTotal_MenuLabel);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+                // Divide to-be amount for this asset class by amount of total assets
+                // (root of asset class tree)
+                if (node.getTarget() == null)
+                    return null;
+
+                long tobe = node.getTarget().getAmount();
+                
+                long total = node.getRoot().getActual().getAmount();
+                if (total == 0)
+                    return Values.Percent.format(0d);
+                else
+                    return Values.Percent.format((double) tobe / (double) total);
+            }
+        });
+        support.addColumn(column);
+
+        // Column which shows delta between to-be percentage of total and as-is percentage of total
+        column = new Column("deltaPctOfTotal", Messages.ColumnDeltaPctOfTotal, SWT.RIGHT, 60); //$NON-NLS-1$
+        column.setMenuLabel(Messages.ColumnDeltaPctOfTotal_MenuLabel);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+                // Divide as-is and to-be amount for this asset class by amount of total assets and calculate delta
+                // (root of asset class tree)
+                if (node.getTarget() == null)
+                    return null;
+                
+                long actual = node.getActual().getAmount();
+                long tobe = node.getTarget().getAmount();
+                long total = node.getRoot().getActual().getAmount();
+
+                if (total == 0)
+                    return Values.Percent.format(0d);
+                else
+                    return Values.Percent.format(((double) actual / (double) total) - ((double) tobe / (double) total));
+            }
+            
+            @Override
+            public Color getForeground(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+                if (node.getTarget() == null)
+                    return null;
+                return node.getActual().isGreaterOrEqualThan(node.getTarget()) ? Colors.theme().greenForeground()
+                                : Colors.theme().redForeground();
+            }
+        });
+        support.addColumn(column);
+
+        
         column = new Column("delta%indicator", Messages.ColumnDeltaPercentIndicator, SWT.LEFT, 60); //$NON-NLS-1$
 
         column.setLabelProvider(new DeltaPercentageIndicatorLabelProvider(getNodeViewer().getControl(),
                         getModel().getClient(), element -> (TaxonomyNode) element));
         support.addColumn(column);
-
+        
         column = new Column("delta%relative", Messages.ColumnDeltaPercentRelative, SWT.RIGHT, 100); //$NON-NLS-1$
         column.setDescription(Messages.ColumnDeltaPercentRelative_Description);
         column.setLabelProvider(new ColumnLabelProvider()
