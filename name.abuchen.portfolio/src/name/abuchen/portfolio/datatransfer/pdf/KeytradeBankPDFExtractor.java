@@ -187,7 +187,7 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
     private void addDividendeTransaction()
     {
         final DocumentType type = new DocumentType("(Einkommensart|Nature des revenus)", (context, lines) -> {
-            Pattern pTransaction = Pattern.compile("^CREDIT COUPON NR .*: (?<shares>[\\.,\\d]+) (?<name>.*) \\((?<isin>[\\w]{12})\\) . [\\.,\\d]+ (?<currency>[\\w]{3})$");
+            Pattern pTransaction = Pattern.compile("^CREDIT COUPON NR .*: (?<shares>[\\.,\\d]+) (?<name>.*) \\((?<isin>[\\w]{12})\\) . [\\.,\\d]+ (?<currency>[\\w]{3})(.*)?$");
             // read the current context here
 
             /***
@@ -260,20 +260,35 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date").replaceAll("/", "."))))
                                 ,
                                 // Date valeur: 11/01/2021
+                                // Date valeur: 17/11/2021 C
                                 section -> section
                                         .attributes("date")
-                                        .match("^Date valeur(\\s)?: (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4})$")
+                                        .match("^Date valeur(\\s)?: (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4})(.*)?$")
                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date").replaceAll("/", "."))))
                         )
 
-                // Nettoguthaben 5,67 EUR Datum  01/07/2020
-                // Net CREDIT 45,65 EUR Date  03/02/2021
-                .section("amount", "currency").optional()
-                .match("^(Nettoguthaben|Net CREDIT) (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
-                .assign((t, v) -> {
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(v.get("currency"));
-                })
+                .oneOf(
+                                // Nettoguthaben 5,67 EUR Datum  01/07/2020
+                                // Net CREDIT 45,65 EUR Date  03/02/2021
+                                section -> section
+                                        .attributes("amount", "currency")
+                                        .match("^(Nettoguthaben|Net CREDIT) (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                                        .assign((t, v) -> {
+                                            t.setAmount(asAmount(v.get("amount")));
+                                            t.setCurrencyCode(v.get("currency"));
+                                        })
+                                ,
+                                // Net CREDIT
+                                // 33,60 EUR
+                                section -> section
+                                        .attributes("amount", "currency")
+                                        .find("Net CREDIT")
+                                        .match("^(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                                        .assign((t, v) -> {
+                                            t.setAmount(asAmount(v.get("amount")));
+                                            t.setCurrencyCode(v.get("currency"));
+                                        })
+                        )
 
                 // Bruttobetrag 1,25 USD
                 // Wechselkurs 1,05 1,01 EUR
@@ -341,6 +356,15 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                 // Précompte mobilier belge 30,00% - 5,09 EUR
                 .section("tax", "currency").optional()
                 .match("(^.* .*|^)Pr.compte mobilier .* [\\.,\\d]+% \\- (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .assign((t, v) -> processTaxEntries(t, v, type))
+
+                // Précompte mobilier belge
+                // Net CREDIT
+                // Pièce justificative à conserver en vue de votre dUéclaration fiscaP
+                // L 30,00% - 14,40 EUR
+                .section("tax", "currency").optional()
+                .match("^Pr.compte mobilier .*$")
+                .match("^.* [\\.,\\d]+% \\- (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
                 // Taxe boursière - 0,35% - 5,22 EUR

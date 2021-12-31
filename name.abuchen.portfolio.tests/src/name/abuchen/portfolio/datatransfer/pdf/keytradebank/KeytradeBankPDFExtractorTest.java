@@ -689,4 +689,43 @@ public class KeytradeBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.FEE), 
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
     }
+
+    @Test
+    public void testDividende05()
+    {
+        Client client = new Client();
+
+        KeytradeBankPDFExtractor extractor = new KeytradeBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
+        assertThat(security.getIsin(), is("BE0003565737"));
+        assertThat(security.getName(), is("KBC"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-11-17T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(16)));
+        assertThat(transaction.getSource(), is("Dividende05.txt"));
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(33.60))));
+        assertThat(transaction.getGrossValue(), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(48.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(14.40))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+    }
 }
