@@ -99,7 +99,7 @@ public class KeytradeBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-10-19T11:53:02")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-10-19T11:53:03")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(310)));
         assertThat(entry.getSource(), is("Kauf02.txt"));
         assertThat(entry.getNote(), is("Limit (16 EUR)"));
@@ -267,7 +267,7 @@ public class KeytradeBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-12-13T08:48:02")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-12-13T16:24:15")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(20)));
         assertThat(entry.getSource(), is("Kauf06.txt"));
         assertThat(entry.getNote(), is("Limit (74,50 EUR)"));
@@ -283,13 +283,13 @@ public class KeytradeBankPDFExtractorTest
     }
 
     @Test
-    public void testBuyWithWatermark01()
+    public void testWertpapierKauf07()
     {
         KeytradeBankPDFExtractor extractor = new KeytradeBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "BuyWithWatermark01.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf07.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -311,7 +311,7 @@ public class KeytradeBankPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-11-26T13:25:24")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(15)));
-        assertThat(entry.getSource(), is("BuyWithWatermark01.txt"));
+        assertThat(entry.getSource(), is("Kauf07.txt"));
         assertThat(entry.getNote(), is("Limit (46,30 EUR)"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -325,13 +325,13 @@ public class KeytradeBankPDFExtractorTest
     }
 
     @Test
-    public void testBuyWithWatermark02()
+    public void testWertpapierKauf08()
     {
         KeytradeBankPDFExtractor extractor = new KeytradeBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "BuyWithWatermark02.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf08.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -353,7 +353,7 @@ public class KeytradeBankPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-05T11:25:43")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(21)));
-        assertThat(entry.getSource(), is("BuyWithWatermark02.txt"));
+        assertThat(entry.getSource(), is("Kauf08.txt"));
         assertThat(entry.getNote(), is("Market"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -560,7 +560,7 @@ public class KeytradeBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getShares(), is(Values.Share.factorize(22)));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-29T00:00")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-07-01T00:00")));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -599,7 +599,7 @@ public class KeytradeBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getShares(), is(Values.Share.factorize(310)));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-01T00:00")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-03T00:00")));
         assertThat(transaction.getSource(), is("Dividende02.txt"));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -637,7 +637,7 @@ public class KeytradeBankPDFExtractorTest
         
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-12-08T00:00")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-12-29T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(25)));
         assertThat(transaction.getSource(), is("Dividende03.txt"));
 
@@ -649,5 +649,44 @@ public class KeytradeBankPDFExtractorTest
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.19))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE), 
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
+    }
+
+    @Test
+    public void testDividende04()
+    {
+        Client client = new Client();
+
+        KeytradeBankPDFExtractor extractor = new KeytradeBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
+        assertThat(security.getIsin(), is("FR0000120271"));
+        assertThat(security.getName(), is("TOTALENERGIES"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-11T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(35)));
+        assertThat(transaction.getSource(), is("Dividende04.txt"));
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(11.89))));
+        assertThat(transaction.getGrossValue(), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(23.10))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(6.12 + 5.09))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
     }
 }
