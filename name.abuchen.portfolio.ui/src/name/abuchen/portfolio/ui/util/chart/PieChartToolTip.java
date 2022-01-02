@@ -9,9 +9,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swtchart.Chart;
-import org.eclipse.swtchart.IAxis;
-import org.eclipse.swtchart.ICircularSeries;
-import org.eclipse.swtchart.ISeries;
 import org.eclipse.swtchart.model.Node;
 
 

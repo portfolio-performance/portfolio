@@ -14,8 +14,12 @@ import org.eclipse.swtchart.ICircularSeries;
 import org.eclipse.swtchart.ISeries.SeriesType;
 import org.eclipse.swtchart.model.Node;
 
+import com.ibm.icu.text.MessageFormat;
+
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
+import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.chart.PieChart;
@@ -29,30 +33,24 @@ public class TaxonomieDonutChartSWT implements IPieChart
     private AbstractFinanceView financeView;
     private ChartType chartType;
 
-    private Map<String, NodeData> nodeDataMap;
-
-    private class NodeData
-    {
-        TaxonomyNode position;
-        Double percentage;
-        String percentageString;
-        String shares;
-        String valueSingle;
-        String value;
-    }
+    private Map<String, TaxonomiePieChartSWT.NodeData> nodeDataMap;
 
     public TaxonomieDonutChartSWT(AbstractChartPage page, AbstractFinanceView view, ChartType type)
     {
         this.chartPage = page;
         this.financeView = view;
         this.chartType = type;
-        nodeDataMap = new HashMap<String, TaxonomieDonutChartSWT.NodeData>();
+        nodeDataMap = new HashMap<String, TaxonomiePieChartSWT.NodeData>();
     }
 
     @Override
     public Control createControl(Composite parent)
     {
         chart = new PieChart(parent, chartType);
+
+        // set customized tooltip builder
+        chart.getToolTip().setToolTipBuilder(new TaxonomiePieChartSWT.TaxonomieTooltipBuilder(this.nodeDataMap));
+
         chart.getTitle().setVisible(false);
         chart.getLegend().setPosition(SWT.RIGHT);
 
@@ -66,7 +64,7 @@ public class TaxonomieDonutChartSWT implements IPieChart
                 if (node == null) {
                     return;
                 }
-                NodeData nodeData = nodeDataMap.get(node.getId());
+                TaxonomiePieChartSWT.NodeData nodeData = nodeDataMap.get(node.getId());
                 if (nodeData != null) {
                     financeView.setInformationPaneInput(nodeData.position);
                 }
@@ -95,19 +93,18 @@ public class TaxonomieDonutChartSWT implements IPieChart
         circularSeries.setHighlightColor(Colors.GREEN);
         circularSeries.setBorderColor(Colors.WHITE);
 
-        // TODO: integrate for tooltip
-        long total = getModel().getChartRenderingRootNode().getActual().getAmount();
+        Money total = getModel().getChartRenderingRootNode().getActual();
         
         Node rootNode = circularSeries.getRootNode();
         Map<String, Color> colors = new HashMap<String, Color>();
-        addNodes(nodeDataMap, colors, rootNode, node, node.getChildren());
+        addNodes(nodeDataMap, colors, rootNode, node, node.getChildren(), total);
         for (Map.Entry<String, Color> entry : colors.entrySet()) {
             circularSeries.setColor(entry.getKey(), entry.getValue());
         }
         chart.redraw();
     }
 
-    private void addNodes(Map<String, NodeData> dataMap, Map<String, Color> colors, Node node, TaxonomyNode parentNode, List<TaxonomyNode> children)
+    private void addNodes(Map<String, TaxonomiePieChartSWT.NodeData> dataMap, Map<String, Color> colors, Node node, TaxonomyNode parentNode, List<TaxonomyNode> children, Money total)
     {
         String parentColor = parentNode.getColor();
         for (TaxonomyNode child : children)
@@ -119,20 +116,37 @@ public class TaxonomieDonutChartSWT implements IPieChart
                 continue;
             }
             if (child.isAssignment()) {
+                long actual = child.isRoot() ? total.getAmount() : child.getActual().getAmount();
+                long base = child.isRoot() ? total.getAmount() : child.getParent().getActual().getAmount();
+
                 String nodeId = child.getName();
                 node.addChild(nodeId, child.getActual().getAmount() / Values.Amount.divider());
                 Color color = Colors.getColor(ColorConversion.hex2RGB(ColorConversion.brighter(parentColor)));
                 colors.put(child.getName(), color);
-                NodeData data = new NodeData();
-                // TODO: add useful data
+                TaxonomiePieChartSWT.NodeData data = new TaxonomiePieChartSWT.NodeData();
                 data.position = child;
+                if (child.getParent() != null && !child.getParent().isRoot()) {
+                    data.totalPercentage = MessageFormat.format(
+                        Messages.LabelTotalValuePercent,
+                        Values.Percent2.format(actual / (double) total.getAmount())
+                    );
+                }
+                data.percentage = Values.Percent2.format(actual / (double) base);
+                if (child.getParent() != null) {
+                    data.percentage = String.format(
+                        "%s %s", //$NON-NLS-1$
+                        data.percentage,
+                        child.getParent().getName()
+                    );
+                }
+
                 data.value = Values.Money.format(child.getActual());
                 dataMap.put(nodeId, data);
             }
 
 
             if (!child.getChildren().isEmpty()) {
-                addNodes(dataMap, colors, node, child, child.getChildren());
+                addNodes(dataMap, colors, node, child, child.getChildren(), total);
             }
         }
     }
