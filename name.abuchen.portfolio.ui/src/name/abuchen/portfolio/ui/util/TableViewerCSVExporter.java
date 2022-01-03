@@ -85,7 +85,8 @@ public class TableViewerCSVExporter extends AbstractCSVExporter
                         boolean isDateColumn = columnHeader.equals(Messages.ColumnStartDate) || columnHeader.equals(Messages.ColumnEndDate);
                         if(isDateColumn)
                         {
-                            try {
+                            try 
+                            {
                                 DateTimeFormatter formatter =  
                                                 new DateTimeFormatterBuilder().appendPattern("MMM d, uuuu[, h:m a]")
                                                 .parseDefaulting(ChronoField.CLOCK_HOUR_OF_AMPM, 12)
