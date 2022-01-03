@@ -1,5 +1,9 @@
 package name.abuchen.portfolio.ui.util;
 
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoField;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -15,6 +19,7 @@ import org.eclipse.swt.widgets.TableItem;
 
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
+import name.abuchen.portfolio.ui.Messages;
 
 public class TableViewerCSVExporter extends AbstractCSVExporter
 {
@@ -72,7 +77,33 @@ public class TableViewerCSVExporter extends AbstractCSVExporter
                         printer.print(value != null ? Values.Share.format(value) : ""); //$NON-NLS-1$
                     }
                     else
-                        printer.print(item.getText(ii));
+                    {
+                        // For columns that contain date values, format them consistently, so they'll sort chronologically
+                        // when opened in a spreadsheet (whether or not the value is a date only, or a date w/ a time)
+                        String columnHeader = viewer.getTable().getColumns()[ii].getText();
+                        String columnValue = item.getText(ii);
+                        boolean isDateColumn = columnHeader.equals(Messages.ColumnStartDate) || columnHeader.equals(Messages.ColumnEndDate);
+                        if(isDateColumn)
+                        {
+                            try {
+                                DateTimeFormatter formatter =  
+                                                new DateTimeFormatterBuilder().appendPattern("MMM d, uuuu[, h:m a]")
+                                                .parseDefaulting(ChronoField.CLOCK_HOUR_OF_AMPM, 12)
+                                                .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
+                                                .parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)
+                                                .parseDefaulting(ChronoField.AMPM_OF_DAY, 0)
+                                                .toFormatter();
+                                
+                                LocalDateTime dateTime = LocalDateTime.parse(columnValue, formatter);
+                                columnValue = dateTime.toString();
+                            }
+                            catch(Exception e)
+                            {
+                                //Do nothing
+                            }
+                        }
+                        printer.print(columnValue);
+                    }
                 }
                 printer.println();
             }
