@@ -43,6 +43,12 @@ public class TimelineChart extends Chart // NOSONAR
      * pixel threshold below which sparse label mode is used. The value is a bit arbitrary, but should be fine.
      */
     private static final int SPARSE_LABEL_MODE_PIXEL_THRESHOLD = 320;
+    
+    /**
+     * Minimum label width in pixels. It's mainly relevant for charts placed in narrow dashboard columns.
+     * The value is a bit arbitrary, but should be fine.
+     */
+    private static final int MIN_LABEL_WIDTH = 50;
 
     private static class MarkerLine
     {
@@ -297,33 +303,38 @@ public class TimelineChart extends Chart // NOSONAR
             // Sparse labeling mode used in low width conditions.
             // Its purpose is to ensure enough space between the labels to avoid overlays and ensure readability. 
             // It is mainly relevant to charts embedded into dashboards with narrow columns.
-            if (days < 120)
+            if (days < 100)
             {
                 period = Period.ofMonths(1);
                 format = DateTimeFormatter.ofPattern("MMMM yyyy"); //$NON-NLS-1$
             }   
-            else if (days < 250)
+            else if (days < 400)
             {
                 period = Period.ofMonths(3);
                 format = DateTimeFormatter.ofPattern("QQQ yyyy"); //$NON-NLS-1$
-                cursor = cursor.plusMonths((12 - cursor.getMonthValue() + 1) % 3);
             }
             else
             {
                 period = Period.ofYears(1);
                 format = DateTimeFormatter.ofPattern("yyyy"); //$NON-NLS-1$
-                cursor = cursor.plusYears(1).withDayOfYear(1);
             }          
         }
 
         e.gc.setForeground(getTitle().getForeground());
 
+        int previousLabelX = -1;
+        int xMax = xAxis.getPixelCoordinate(xAxis.getRange().upper);
         while (cursor.isBefore(end))
         {
-            int y = xAxis.getPixelCoordinate((double) cursor.atStartOfDay(zoneId).toInstant().toEpochMilli());
-            e.gc.drawLine(y, 0, y, e.height);
-            e.gc.drawText(format.format(cursor), y + 5, 5, true);
-
+            int x = xAxis.getPixelCoordinate((double) cursor.atStartOfDay(zoneId).toInstant().toEpochMilli());
+            e.gc.drawLine(x, 0, x, e.height);
+            
+            if (isLabelable(x, xMax, previousLabelX)) 
+            {
+                e.gc.drawText(format.format(cursor), x + 5, 5, true);
+                previousLabelX = x;     // remember the last x value of the line having a label 
+            }
+            
             cursor = cursor.plus(period);
         }
     }
@@ -447,5 +458,20 @@ public class TimelineChart extends Chart // NOSONAR
     public boolean setFocus()
     {
         return getPlotArea().setFocus();
+    }
+    
+    private boolean isLabelable(int currentX, int xMax, int previousLabelX)
+    {
+        // allow adding a text label to the vertical line, if 
+        //  a) it is the very first line at the beginning of the chart, or
+        //  b1) the new label fits to the right of the line, not exceeding the x-axis, and
+        //  b2) there is sufficient space between the label of the previous line and this new line
+        
+        if (previousLabelX == -1) 
+        {
+            return true;
+        }
+        
+        return currentX + MIN_LABEL_WIDTH <= xMax && currentX - MIN_LABEL_WIDTH > previousLabelX;
     }
 }
