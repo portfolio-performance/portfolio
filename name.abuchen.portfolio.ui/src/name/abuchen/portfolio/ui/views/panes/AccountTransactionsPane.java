@@ -58,6 +58,7 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationL
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.DateTimeEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.DateTimeLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.TransactionOwnerListEditingSupport;
@@ -129,15 +130,9 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
                         view.getPreferenceStore(), transactions, layout);
 
         Column column = new Column("0", Messages.ColumnDate, SWT.None, 80); //$NON-NLS-1$
-        column.setLabelProvider(new ColumnLabelProvider()
+        column.setLabelProvider(new DateTimeLabelProvider(e -> ((AccountTransaction) e).getDateTime())
         {
-            @Override
-            public String getText(Object e)
-            {
-                return Values.DateTime.format(((AccountTransaction) e).getDateTime());
-            }
-
-            @Override
+             @Override
             public Color getForeground(Object element)
             {
                 return colorFor((AccountTransaction) element);

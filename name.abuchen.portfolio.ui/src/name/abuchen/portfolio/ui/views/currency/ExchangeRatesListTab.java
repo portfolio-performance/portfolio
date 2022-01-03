@@ -5,6 +5,7 @@ import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 import javax.inject.Inject;
 
@@ -34,6 +35,7 @@ import name.abuchen.portfolio.ui.util.swt.SashLayoutData;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
+import name.abuchen.portfolio.ui.util.viewers.DateLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.views.AbstractTabbedView;
 
@@ -133,21 +135,14 @@ public class ExchangeRatesListTab implements AbstractTabbedView.Tab
         support.addColumn(column);
 
         column = new Column(Messages.ColumnDateLatestExchangeRate, SWT.None, 150);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object element)
-            {
-                ExchangeRateTimeSeries series = (ExchangeRateTimeSeries) element;
-                List<ExchangeRate> rates = series.getRates();
-                return rates.isEmpty() ? null : Values.Date.format(rates.get(rates.size() - 1).getTime());
-            }
-        });
-        ColumnViewerSorter.create(element -> {
+
+        Function<Object, LocalDate> dataProvider = element -> {
             ExchangeRateTimeSeries series = (ExchangeRateTimeSeries) element;
             List<ExchangeRate> rates = series.getRates();
             return rates.isEmpty() ? null : rates.get(rates.size() - 1).getTime();
-        }).attachTo(column);
+        };
+        column.setLabelProvider(new DateLabelProvider(dataProvider));
+        ColumnViewerSorter.create(dataProvider::apply).attachTo(column);
         support.addColumn(column);
 
         support.createColumns();

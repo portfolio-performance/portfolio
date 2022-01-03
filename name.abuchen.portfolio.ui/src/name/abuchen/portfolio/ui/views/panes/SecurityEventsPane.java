@@ -37,6 +37,7 @@ import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.DateEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.DateLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.wizards.events.CustomEventWizard;
@@ -98,14 +99,7 @@ public class SecurityEventsPane implements InformationPanePage
                         preferences, events, layout);
 
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object element)
-            {
-                return Values.Date.format(((SecurityEvent) element).getDate());
-            }
-        });
+        column.setLabelProvider(new DateLabelProvider(e -> ((SecurityEvent) e).getDate()));
         column.setSorter(ColumnViewerSorter.create(e -> ((SecurityEvent) e).getDate()), SWT.UP);
         column.setEditingSupport(new DateEditingSupport(SecurityEvent.class, "date") //$NON-NLS-1$
         {
@@ -130,15 +124,8 @@ public class SecurityEventsPane implements InformationPanePage
         support.addColumn(column);
 
         column = new Column(Messages.ColumnPaymentDate, SWT.NONE, 80);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object element)
-            {
-                return element instanceof DividendEvent ? Values.Date.format(((DividendEvent) element).getPaymentDate())
-                                : null;
-            }
-        });
+        column.setLabelProvider(new DateLabelProvider(
+                        e -> e instanceof DividendEvent ? ((DividendEvent) e).getPaymentDate() : null));
         column.setSorter(
                         ColumnViewerSorter.create(
                                         e -> e instanceof DividendEvent ? ((DividendEvent) e).getPaymentDate() : null),

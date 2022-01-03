@@ -68,6 +68,7 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.MarkDirtyClie
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.TouchClientListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
+import name.abuchen.portfolio.ui.util.viewers.DateLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.MoneyColorLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.MoneyTrailToolTipSupport;
 import name.abuchen.portfolio.ui.util.viewers.NumberColorLabelProvider;
@@ -865,15 +866,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column.setMenuLabel(Messages.ColumnLastDividendPayment_MenuLabel);
         column.setGroupLabel(Messages.GroupLabelDividends);
         column.setVisible(false);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object r)
-            {
-                LocalDate date = ((SecurityPerformanceRecord) r).getLastDividendPayment();
-                return date != null ? Values.Date.format(date) : null;
-            }
-        });
+        column.setLabelProvider(new DateLabelProvider(r -> ((SecurityPerformanceRecord) r).getLastDividendPayment()));
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "lastDividendPayment")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 

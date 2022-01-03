@@ -40,6 +40,7 @@ import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
+import name.abuchen.portfolio.ui.util.viewers.DateTimeLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.util.TextUtil;
@@ -124,14 +125,8 @@ public class TransactionsTab implements PaymentsTab
     private void addColumns(ShowHideColumnHelper support)
     {
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object element)
-            {
-                return Values.DateTime.format(((TransactionPair<?>) element).getTransaction().getDateTime());
-            }
-        });
+        column.setLabelProvider(new DateTimeLabelProvider(
+                        element -> ((TransactionPair<?>) element).getTransaction().getDateTime()));
         ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getDateTime()).attachTo(column,
                         SWT.UP);
         support.addColumn(column);

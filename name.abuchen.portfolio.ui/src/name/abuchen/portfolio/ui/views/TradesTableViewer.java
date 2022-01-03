@@ -29,6 +29,7 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.TouchClientListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
+import name.abuchen.portfolio.ui.util.viewers.DateTimeLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.MoneyColorLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.NumberColorLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
@@ -88,34 +89,20 @@ public class TradesTableViewer
         }
 
         Column column = new Column("start", Messages.ColumnStartDate, SWT.None, 80); //$NON-NLS-1$
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                Trade t = (Trade) e;
-                return Values.DateTime.format(t.getStart());
-            }
-        });
+        column.setLabelProvider(new DateTimeLabelProvider(e -> ((Trade) e).getStart()));
         column.setSorter(ColumnViewerSorter.create(e -> ((Trade) e).getStart()), SWT.DOWN);
         support.addColumn(column);
 
         column = new Column("end", Messages.ColumnEndDate, SWT.None, 80); //$NON-NLS-1$
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                Trade t = (Trade) e;
-                return t.isClosed() ? Values.DateTime.format(t.getEnd().get()) : Messages.LabelOpenTrade; // NOSONAR
-            }
-
-            @Override
-            public Color getBackground(Object e)
-            {
-                return ((Trade) e).isClosed() ? null : Colors.theme().warningBackground();
-            }
-        });
+        column.setLabelProvider(
+                        new DateTimeLabelProvider(e -> ((Trade) e).getEnd().orElse(null), Messages.LabelOpenTrade)
+                        {
+                            @Override
+                            public Color getBackground(Object e)
+                            {
+                                return ((Trade) e).isClosed() ? null : Colors.theme().warningBackground();
+                            }
+                        });
         column.setSorter(ColumnViewerSorter.create(e -> {
             Optional<LocalDateTime> date = ((Trade) e).getEnd();
             return date.isPresent() ? date.get() : LocalDateTime.now().plusYears(1);
@@ -213,15 +200,8 @@ public class TradesTableViewer
         support.addColumn(column);
 
         column = new Column("latesttrade", Messages.ColumnLatestTrade, SWT.None, 80); //$NON-NLS-1$
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                Trade t = (Trade) e;
-                return Values.DateTime.format(t.getLastTransaction().getTransaction().getDateTime());
-            }
-        });
+        column.setLabelProvider(new DateTimeLabelProvider(
+                        e -> ((Trade) e).getLastTransaction().getTransaction().getDateTime()));
         column.setSorter(ColumnViewerSorter
                         .create(e -> ((Trade) e).getLastTransaction().getTransaction().getDateTime()));
         column.setVisible(false);

@@ -66,6 +66,7 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.MarkDirtyClientListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
+import name.abuchen.portfolio.ui.util.viewers.DateTimeLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.MoneyTrailToolTipSupport;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
@@ -426,14 +427,8 @@ public class PerformanceView extends AbstractHistoricView
                         getPreferenceStore(), transactionViewer, layout);
 
         Column column = new Column(Messages.ColumnDate, SWT.None, 100);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object element)
-            {
-                return Values.DateTime.format(((TransactionPair<?>) element).getTransaction().getDateTime());
-            }
-        });
+        column.setLabelProvider(
+                        new DateTimeLabelProvider(e -> ((TransactionPair<?>) e).getTransaction().getDateTime()));
         column.setSorter(ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getDateTime()),
                         SWT.UP);
         support.addColumn(column);

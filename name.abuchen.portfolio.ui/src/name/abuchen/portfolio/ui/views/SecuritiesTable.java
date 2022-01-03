@@ -83,6 +83,7 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
+import name.abuchen.portfolio.ui.util.viewers.DateLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.NumberColorLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.OptionLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ReportingPeriodColumnOptions;
@@ -474,15 +475,14 @@ public final class SecuritiesTable implements ModificationListener
         Column column;
         column = new Column("9", Messages.ColumnLatestDate, SWT.LEFT, 80); //$NON-NLS-1$
         column.setMenuLabel(Messages.ColumnLatestDate_MenuLabel);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object element)
-            {
-                SecurityPrice latest = ((Security) element).getSecurityPrice(LocalDate.now());
-                return latest != null ? Values.Date.format(latest.getDate()) : null;
-            }
 
+        Function<Object, LocalDate> dataProvider = element -> {
+            SecurityPrice latest = ((Security) element).getSecurityPrice(LocalDate.now());
+            return latest != null ? latest.getDate() : null;
+        };
+
+        column.setLabelProvider(new DateLabelProvider(dataProvider)
+        {
             @Override
             public Color getBackground(Object element)
             {
@@ -499,17 +499,7 @@ public final class SecuritiesTable implements ModificationListener
                 return latest.getDate().isBefore(sevenDaysAgo) ? Colors.theme().warningBackground() : null;
             }
         });
-        column.setSorter(ColumnViewerSorter.create((o1, o2) -> {
-            SecurityPrice p1 = ((Security) o1).getSecurityPrice(LocalDate.now());
-            SecurityPrice p2 = ((Security) o2).getSecurityPrice(LocalDate.now());
-
-            if (p1 == null)
-                return p2 == null ? 0 : -1;
-            if (p2 == null)
-                return 1;
-
-            return p1.getDate().compareTo(p2.getDate());
-        }));
+        column.setSorter(ColumnViewerSorter.create(dataProvider::apply));
         support.addColumn(column);
     }
 
@@ -518,19 +508,18 @@ public final class SecuritiesTable implements ModificationListener
         Column column = new Column("10", Messages.ColumnLatestHistoricalDate, SWT.LEFT, 80); //$NON-NLS-1$
         column.setMenuLabel(Messages.ColumnLatestHistoricalDate_MenuLabel);
         column.setGroupLabel(Messages.GroupLabelDataQuality);
-        column.setLabelProvider(new ColumnLabelProvider() // NOSONAR
+
+        Function<Object, LocalDate> dataProvider = element -> {
+            List<SecurityPrice> prices = ((Security) element).getPrices();
+            if (prices.isEmpty())
+                return null;
+
+            SecurityPrice latest = prices.get(prices.size() - 1);
+            return latest != null ? latest.getDate() : null;
+        };
+
+        column.setLabelProvider(new DateLabelProvider(dataProvider)
         {
-            @Override
-            public String getText(Object element)
-            {
-                List<SecurityPrice> prices = ((Security) element).getPrices();
-                if (prices.isEmpty())
-                    return null;
-
-                SecurityPrice latest = prices.get(prices.size() - 1);
-                return latest != null ? Values.Date.format(latest.getDate()) : null;
-            }
-
             @Override
             public Color getBackground(Object element)
             {
@@ -549,19 +538,7 @@ public final class SecuritiesTable implements ModificationListener
                     return null;
             }
         });
-        column.setSorter(ColumnViewerSorter.create((o1, o2) -> {
-            List<SecurityPrice> prices1 = ((Security) o1).getPrices();
-            SecurityPrice p1 = prices1.isEmpty() ? null : prices1.get(prices1.size() - 1);
-            List<SecurityPrice> prices2 = ((Security) o2).getPrices();
-            SecurityPrice p2 = prices2.isEmpty() ? null : prices2.get(prices2.size() - 1);
-
-            if (p1 == null)
-                return p2 == null ? 0 : -1;
-            if (p2 == null)
-                return 1;
-
-            return p1.getDate().compareTo(p2.getDate());
-        }));
+        column.setSorter(ColumnViewerSorter.create(dataProvider::apply));
         support.addColumn(column);
     }
 
@@ -710,19 +687,14 @@ public final class SecuritiesTable implements ModificationListener
         Column column = new Column("q-date-first-historic", Messages.ColumnDateFirstHistoricalQuote, SWT.LEFT, 80); //$NON-NLS-1$
         column.setMenuLabel(Messages.ColumnDateFirstHistoricalQuote_MenuLabel);
         column.setGroupLabel(Messages.GroupLabelDataQuality);
-        column.setLabelProvider(new ColumnLabelProvider() // NOSONAR
-        {
-            @Override
-            public String getText(Object element)
-            {
-                List<SecurityPrice> prices = ((Security) element).getPrices();
-                return prices.isEmpty() ? null : Values.Date.format(prices.get(0).getDate());
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(element -> {
+
+        Function<Object, LocalDate> dataProvider = element -> {
             List<SecurityPrice> prices = ((Security) element).getPrices();
             return prices.isEmpty() ? null : prices.get(0).getDate();
-        }));
+        };
+
+        column.setLabelProvider(new DateLabelProvider(dataProvider));
+        column.setSorter(ColumnViewerSorter.create(dataProvider::apply));
         support.addColumn(column);
 
         column = new Column("qqm-completeness", Messages.ColumnMetricCompleteness, SWT.RIGHT, 80); //$NON-NLS-1$

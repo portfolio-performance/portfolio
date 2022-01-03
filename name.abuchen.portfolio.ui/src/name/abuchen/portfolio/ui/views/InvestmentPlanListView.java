@@ -2,10 +2,8 @@ package name.abuchen.portfolio.ui.views;
 
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import javax.inject.Inject;
 
@@ -53,6 +51,7 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationL
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.DateEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.DateLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ListEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
@@ -233,40 +232,19 @@ public class InvestmentPlanListView extends AbstractFinanceView implements Modif
         support.addColumn(column);
 
         column = new Column(Messages.ColumnStartDate, SWT.None, 80);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                return Values.Date.format(((InvestmentPlan) e).getStart());
-            }
-        });
+        column.setLabelProvider(new DateLabelProvider(e -> ((InvestmentPlan) e).getStart()));
         ColumnViewerSorter.create(InvestmentPlan.class, "start").attachTo(column); //$NON-NLS-1$
         new DateEditingSupport(InvestmentPlan.class, "start").addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column(Messages.ColumnLastDate, SWT.None, 80);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                Optional<LocalDate> lastDate = ((InvestmentPlan) e).getLastDate();
-                return lastDate.map(Values.Date::format).orElseGet(() -> null);
-            }
-        });
+        column.setLabelProvider(new DateLabelProvider(e -> ((InvestmentPlan) e).getLastDate().orElse(null)));
         ColumnViewerSorter.create(InvestmentPlan.class, "LastDate").attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column(Messages.ColumnNextDate, SWT.None, 80);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                return Values.Date.format(((InvestmentPlan) e).getDateOfNextTransactionToBeGenerated());
-            }
-        });
+        column.setLabelProvider(
+                        new DateLabelProvider(e -> ((InvestmentPlan) e).getDateOfNextTransactionToBeGenerated()));
         ColumnViewerSorter.create(InvestmentPlan.class, "DateOfNextTransactionToBeGenerated").attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 

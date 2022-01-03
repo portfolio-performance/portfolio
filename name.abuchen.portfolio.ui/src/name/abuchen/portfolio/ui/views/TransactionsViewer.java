@@ -48,6 +48,7 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationL
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.DateTimeEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.DateTimeLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
@@ -248,8 +249,23 @@ public final class TransactionsViewer implements ModificationListener
 
     private void addColumns()
     {
+        TransactionLabelProvider colors = new TransactionLabelProvider(t -> null);
+
         Column column = new Column("0", Messages.ColumnDate, SWT.None, 80); //$NON-NLS-1$
-        column.setLabelProvider(new TransactionLabelProvider(t -> Values.DateTime.format(t.getDateTime())));
+        column.setLabelProvider(new DateTimeLabelProvider(e -> ((TransactionPair<?>) e).getTransaction().getDateTime()) {
+            @Override
+            public Color getForeground(Object element)
+            {
+                return colors.getForeground(element);
+            }
+
+            @Override
+            public Color getBackground(Object element)
+            {
+                return colors.getBackground(element);
+            }
+        });
+        
         ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getDateTime()).attachTo(column,
                         SWT.UP);
         new DateTimeEditingSupport(Transaction.class, "dateTime").addListener(this).attachTo(column); //$NON-NLS-1$
@@ -307,8 +323,6 @@ public final class TransactionsViewer implements ModificationListener
         column = new Column("3", Messages.ColumnShares, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setLabelProvider(new SharesLabelProvider() // NOSONAR
         {
-            private TransactionLabelProvider colors = new TransactionLabelProvider(t -> null);
-
             @Override
             public Long getValue(Object element)
             {

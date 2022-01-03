@@ -43,6 +43,7 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.DateEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.DateLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
 import name.abuchen.portfolio.ui.views.QuotesContextMenu;
@@ -111,14 +112,8 @@ public class HistoricalPricesPane implements InformationPanePage
         prices.setUseHashlookup(true);
 
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);
-        column.setLabelProvider(new ColumnLabelProvider()
+        column.setLabelProvider(new DateLabelProvider(e -> ((SecurityPrice) e).getDate())
         {
-            @Override
-            public String getText(Object element)
-            {
-                return Values.Date.format(((SecurityPrice) element).getDate());
-            }
-
             @Override
             public Color getBackground(Object element)
             {

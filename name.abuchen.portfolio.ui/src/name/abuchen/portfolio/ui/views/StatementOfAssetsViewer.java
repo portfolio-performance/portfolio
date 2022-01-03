@@ -96,6 +96,7 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.TouchClientListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
+import name.abuchen.portfolio.ui.util.viewers.DateLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.OptionLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ReportingPeriodColumnOptions;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
@@ -420,16 +421,10 @@ public class StatementOfAssetsViewer
         support.addColumn(column);
 
         column = new Column("qdate", Messages.ColumnDateOfQuote, SWT.LEFT, 80); //$NON-NLS-1$
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                Element element = (Element) e;
-                return element.isSecurity() ? Values.Date.format(element.getSecurityPosition().getPrice().getDate())
-                                : null;
-            }
-        });
+        column.setLabelProvider(new DateLabelProvider(e -> {
+            Element element = (Element) e;
+            return element.isSecurity() ? element.getSecurityPosition().getPrice().getDate() : null;
+        }));
         column.setComparator(new ElementComparator(new AttributeComparator(
                         e -> ((Element) e).isSecurity() ? ((Element) e).getSecurityPosition().getPrice().getDate()
                                         : null)));
