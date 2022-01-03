@@ -238,6 +238,19 @@ public class TradesTableViewer
         column.setSorter(ColumnViewerSorter.create(e -> ((Trade) e).getReturn()));
         column.setVisible(false);
         support.addColumn(column);
+        
+        column = new Column("note", Messages.ColumnNote, SWT.LEFT, 80); //$NON-NLS-1$
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                Trade t = (Trade) e;
+                return t.getLastTransaction().getTransaction().getNote();
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(e -> ((Trade) e).getLastTransaction().getTransaction().getNote()));
+        support.addColumn(column);
 
         column = new Column("portfolio", Messages.ColumnPortfolio, SWT.LEFT, 100); //$NON-NLS-1$
         column.setMenuLabel(Messages.ColumnPortfolio);
