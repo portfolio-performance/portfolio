@@ -35,6 +35,7 @@ import name.abuchen.portfolio.ui.util.viewers.NumberColorLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class TradesTableViewer
 {
@@ -217,6 +218,33 @@ public class TradesTableViewer
         column.setLabelProvider(new NumberColorLabelProvider<>(Values.Percent2, t -> ((Trade) t).getReturn()));
         column.setSorter(ColumnViewerSorter.create(e -> ((Trade) e).getReturn()));
         column.setVisible(false);
+        support.addColumn(column);
+        
+        column = new Column("note", Messages.ColumnNote, SWT.LEFT, 80); //$NON-NLS-1$
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                Trade t = (Trade) e;
+                return t.getLastTransaction().getTransaction().getNote();
+            }
+
+            @Override
+            public Image getImage(Object e)
+            {
+                String note = getText(e);
+                return note != null && note.length() > 0 ? Images.NOTE.image() : null;
+            }
+
+            @Override
+            public String getToolTipText(Object e)
+            {
+                String note = getText(e);
+                return note == null || note.isEmpty() ? null : TextUtil.wordwrap(note);
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(e -> ((Trade) e).getLastTransaction().getTransaction().getNote()));
         support.addColumn(column);
 
         column = new Column("portfolio", Messages.ColumnPortfolio, SWT.LEFT, 100); //$NON-NLS-1$
