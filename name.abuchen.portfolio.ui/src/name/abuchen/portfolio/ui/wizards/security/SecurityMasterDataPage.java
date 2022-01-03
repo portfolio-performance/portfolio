@@ -146,8 +146,8 @@ public class SecurityMasterDataPage extends AbstractPage
         deco.show();
 
         Text valueNote = bindings.bindStringInput(container, Messages.ColumnNote, "note", //$NON-NLS-1$
-                        SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, SWT.DEFAULT);
-        GridDataFactory.fillDefaults().grab(true, false).hint(SWT.DEFAULT, SWTHelper.lineHeight(valueNote) * 4)
+                        SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL | SWT.WRAP, SWT.DEFAULT);
+        GridDataFactory.fillDefaults().grab(true, true).hint(SWT.DEFAULT, SWTHelper.lineHeight(valueNote) * 4)
                         .applyTo(valueNote);
     }
 }
