@@ -1794,4 +1794,197 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.73))));
     }
+
+    @Test
+    public void testUmsatzuebersicht10()
+    {
+        DZBankGruppePDFExtractor extractor = new DZBankGruppePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Umsatzuebersicht10.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(7));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security1 = results.stream().filter(i -> i instanceof SecurityItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security1.getIsin(), is("LU0089558679"));
+        assertThat(security1.getName(), is("UniDynamicFonds: Global A"));
+        assertThat(security1.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        Security security2 = results.stream().filter(i -> i instanceof SecurityItem).skip(1).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security2.getIsin(), is("LU0186860408"));
+        assertThat(security2.getName(), is("UniDividendenAss"));
+        assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        Security security3 = results.stream().filter(i -> i instanceof SecurityItem).skip(2).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security3.getIsin(), is("LU0115904467"));
+        assertThat(security3.getName(), is("UniEM Global"));
+        assertThat(security3.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check 1st transaction
+        PortfolioTransaction transaction = (PortfolioTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+                        .collect(Collectors.toList()).get(0).getSubject();
+
+        assertThat(transaction.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2014-02-10T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(12.152)));
+        assertThat(transaction.getSource(), is("Umsatzuebersicht10.txt"));
+        assertThat(transaction.getNote(), is("Umtausch aus Unterdepot 1345674218"));
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(458.99))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(458.99))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        // check 2nd transaction
+        transaction = (PortfolioTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+                        .collect(Collectors.toList()).get(1).getSubject();
+
+        assertThat(transaction.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2014-02-10T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(5.148)));
+        assertThat(transaction.getSource(), is("Umsatzuebersicht10.txt"));
+        assertThat(transaction.getNote(), is("Umtausch aus Unterdepot 1345674218"));
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(271.20))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(271.20))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        // check 3rd transaction
+        transaction = (PortfolioTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+                        .collect(Collectors.toList()).get(2).getSubject();
+
+        assertThat(transaction.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2014-02-10T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(4.136)));
+        assertThat(transaction.getSource(), is("Umsatzuebersicht10.txt"));
+        assertThat(transaction.getNote(), is("Umtausch zugunsten Unterdepot 1345674217"));
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(271.20))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(271.20))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        // check 4th transaction
+        transaction = (PortfolioTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+                        .collect(Collectors.toList()).get(3).getSubject();
+
+        assertThat(transaction.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2014-02-10T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(7)));
+        assertThat(transaction.getSource(), is("Umsatzuebersicht10.txt"));
+        assertThat(transaction.getNote(), is("Umtausch zugunsten Unterdepot 1345674205"));
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(458.99))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(458.99))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+    }
+
+    @Test
+    public void testUmsatzuebersicht11()
+    {
+        DZBankGruppePDFExtractor extractor = new DZBankGruppePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Umsatzuebersicht11.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("DE0008491051"));
+        assertThat(security.getName(), is("UniGlobal"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check 1th security buy sell transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)
+                        .collect(Collectors.toList()).get(0).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-12-20T00:00")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.036)));
+        assertThat(entry.getSource(), is("Umsatzuebersicht11.txt"));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9.00))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        // check 1st transaction
+        PortfolioTransaction transaction = (PortfolioTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+                        .collect(Collectors.toList()).get(0).getSubject();
+
+        assertThat(transaction.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-21T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(0.009)));
+        assertThat(transaction.getSource(), is("Umsatzuebersicht11.txt"));
+        assertThat(transaction.getNote(), is("Ausgleichsbuchung Steuer"));
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.09))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.09))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        // check fee transaction
+        AccountTransaction transaction1 = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+                        .skip(1).findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction1.getType(), is(AccountTransaction.Type.FEES));
+
+        assertThat(transaction1.getDateTime(), is(LocalDateTime.parse("2019-12-24T00:00")));
+        assertThat(transaction1.getSource(), is("Umsatzuebersicht11.txt"));
+        assertThat(transaction1.getNote(), is("Depotgebühr"));
+
+        assertThat(transaction1.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9.00))));
+        assertThat(transaction1.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9.00))));
+        assertThat(transaction1.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction1.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+    }
 }

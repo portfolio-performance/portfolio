@@ -14,6 +14,7 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.util.TextUtil;
 
@@ -67,7 +68,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
         pdfTransaction
                 // Is type --> "Verkauf" change from BUY to SELL
                 .section("type").optional()
-                .match("Wertpapier Abrechnung (?<type>Verkauf).*$")
+                .match("^Wertpapier Abrechnung (?<type>(Kauf|Verkauf)).*$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("Verkauf"))
                     {
@@ -83,7 +84,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                 .section("shares", "name", "isin", "wkn", "name1", "currency")
                 .match("^St.ck (?<shares>[\\.,\\d]+) (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
                 .match("^(?<name1>.*)$")
-                .match("^Kurswert [\\.,\\d]+([\\-])? (?<currency>[\\w]{3})$")
+                .match("^Kurswert [\\.,\\d]+(\\-)? (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Handels-/Ausführungsplatz"))
                         v.put("name", TextUtil.strip(v.get("name")) + " " + TextUtil.strip(v.get("name1")));
@@ -106,6 +107,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
 
                 // Ausmachender Betrag 5.109,01- EUR
                 // Ausmachender Betrag 1.109,01+ EUR
+                // Ausmachender Betrag 577,95 EUR
                 .section("amount", "currency")
                 .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+)([\\-|\\+])? (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
@@ -163,7 +165,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
 
                 // Ausmachender Betrag 13,28+ EUR
                 .section("amount", "currency").optional()
-                .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+)[\\-|\\+] (?<currency>[\\w]{3})$")
+                .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+)\\+ (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(v.get("currency"));
@@ -231,14 +233,12 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
             Pattern pIsin = Pattern.compile("Fonds: (?<name>(?!MusterFonds).*) ISIN: (?<isin>[\\w]{12}) .*");
 
             int endBlock = lines.length;
+            String baseCurrency = CurrencyUnit.EUR;
+
 
             for (int i = lines.length - 1; i >= 0; i--)
             {
-                Matcher m = pBaseCurrency.matcher(lines[i]);
-                if (m.matches())
-                    context.put("baseCurrency", m.group("baseCurrency"));
-
-                m = pAccountingNumber.matcher(lines[i]);
+                Matcher m = pAccountingNumber.matcher(lines[i]);
                 if (m.matches())
                     context.put("accountingNumber", m.group("accountingNumber"));
 
@@ -246,19 +246,36 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                 if (m.matches())
                 {
                     /***
+                     * Search the base currency in the block
+                     */
+                    for (int ii = i; ii < endBlock; ii++)
+                    {
+                        Matcher m1 = pBaseCurrency.matcher(lines[ii]);
+                        if (m1.matches())
+                            baseCurrency = m1.group("baseCurrency");
+                    }
+
+                    /***
                      * Stringbuilder:
                      * security_(security name)_(currency)_(start@line)_(end@line) = isin
                      * 
                      * Example:
                      * Fonds: PrivatFonds: Kontrolliert pro ISIN: DE000A0RPAN3 Verwaltungsvergütung: 1,55 % p. a.
                      * Buchungs-/ Umsatzart Betrag/EUR Ausgabe- Preis/EUR Anteile
+                     * 
+                     * Fonds: UniGlobal ISIN: DE0008491051 Verwaltungsvergütung: 1,20 % p. a.
+                     * Hinweis: UniProfiRente Altersvorsorgevertrag
+                     * - gefördert -
+                     * Buchungs-/ Umsatzart Betrag/EUR Ausgabe- Preis/EUR Anteile
                      */
+                    
                     StringBuilder securityListKey = new StringBuilder("security_");
                     securityListKey.append(TextUtil.strip(m.group("name"))).append("_");
-                    securityListKey.append(lines[i + 1].substring(47, 50)).append("_");
+                    securityListKey.append(baseCurrency).append("_");
                     securityListKey.append(Integer.toString(i)).append("_");
                     securityListKey.append(Integer.toString(endBlock));
                     context.put(securityListKey.toString(), m.group("isin"));
+
                     endBlock = i;
                 }
             }
@@ -274,6 +291,8 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
          * 18.07.2017
          * 17.07.2017 Kauf 2.125,00
          * Anlage 2.125,00 0,00 148,75 14,286
+         * 
+         * 19.11.2020 Verkauf *1 18.103,67 63,38 -285,637
          * 
          * 27.11.2017
          * 2 4.11.2017 Wiederanlage 94,78 0,00 142,61 0,665
@@ -389,9 +408,9 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
          */
         Transaction<AccountTransaction> pdfTransaction2 = new Transaction<>();
         pdfTransaction2.subject(() -> {
-            AccountTransaction entry = new AccountTransaction();
-            entry.setType(AccountTransaction.Type.DIVIDENDS);
-            return entry;
+            AccountTransaction transaction = new AccountTransaction();
+            transaction.setType(AccountTransaction.Type.DIVIDENDS);
+            return transaction;
         });
 
         Block firstRelevantLine2 = new Block("^(Gesamtaussch.ttung|Aussch.ttung) \\*[\\d]+ [\\.,\\d]+$", "^Bestand .*$");
@@ -430,21 +449,160 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
         addTaxesSectionsTransaction(pdfTransaction2, type);
 
         /***
-         * Depotgebühr mit Nutzung der -32,55
-         * Postbox
+         * Formatting:
+         * Buchungsdatum
+         * Preisdatum | Umsatzart | Betrag/EUR
+         * Anlage | Betrag/EUR | Ausgabeaufschlag % | Preis/EUR | Anteile
+         * -------------------------------------
+         * 22.11.2019
+         * 21.11.2019 Ausgleichsbuchung Steuer*1 2,09
+         * Anlage 2,09 0,00 241,88 0,009
+
          */
-        Transaction<AccountTransaction> pdfTransaction3 = new Transaction<>();
+        Transaction<PortfolioTransaction> pdfTransaction3 = new Transaction<>();
         pdfTransaction3.subject(() -> {
-            AccountTransaction entry = new AccountTransaction();
-            entry.setType(AccountTransaction.Type.FEES);
-            return entry;
+            PortfolioTransaction transaction = new PortfolioTransaction();
+            transaction.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
+            return transaction;
         });
 
-        Block firstRelevantLine3 = new Block("^Depotgeb.hr .*$", "^Bestand .*$");
+        Block firstRelevantLine3 = new Block("^[\\s\\d]{2,3}\\.[\\d]{2}\\.[\\d]{4} Ausgleichsbuchung Steuer.* .*$");
         type.addBlock(firstRelevantLine3);
         firstRelevantLine3.set(pdfTransaction3);
 
         pdfTransaction3
+                .section("date", "note", "amount", "shares")
+                .match("^(?<date>[\\s\\d]{2,3}\\.[\\d]{2}\\.[\\d]{4}) (?<note>Ausgleichsbuchung Steuer).* (?<amount>[\\.,\\d]+)$")
+                .match("^Anlage [\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+ (?<shares>[\\.,\\d]+)$")
+                .assign((t, v) -> {
+                    Map<String, String> context = type.getCurrentContext();
+
+                    Security securityData = getSecurity(context, v.getStartLineNumber());
+                    if (securityData != null)
+                    {
+                        v.put("name", securityData.getName());
+                        v.put("isin", securityData.getIsin());
+                        v.put("currency", asCurrencyCode(securityData.getCurrency()));
+                    }
+
+                    t.setDateTime(asDate(v.get("date").replaceAll(" ", "")));
+                    t.setShares(asShares(v.get("shares")));
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(asCurrencyCode(context.get("baseCurrency")));
+                    t.setSecurity(getOrCreateSecurity(v));
+                    t.setNote(v.get("note"));
+                })
+
+                .wrap(t -> {
+                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                        return new TransactionItem(t);
+                    return null;
+                });
+
+        addFeesSectionsTransaction(pdfTransaction3, type);
+        addTaxesSectionsTransaction(pdfTransaction3, type);
+
+        /***
+         * Formatting:
+         * Buchungsdatum
+         * Preisdatum | Umsatzart | Betrag/EUR
+         * Anlage | Betrag/EUR | Ausgabeaufschlag % | Preis/EUR | Anteile
+         * -------------------------------------
+         * 11.02.2014
+         * 10.02.2014 Umtausch 458,99
+         * aus Unterdepot 1345674218
+         * Anlage 458,99 0,00 37,77 12,152
+         */
+        Transaction<PortfolioTransaction> pdfTransaction4 = new Transaction<>();
+        pdfTransaction4.subject(() -> {
+            PortfolioTransaction transaction = new PortfolioTransaction();
+            transaction.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
+            return transaction;
+        });
+
+        Block firstRelevantLine4 = new Block("^[\\s\\d]{2,3}\\.[\\d]{2}\\.[\\d]{4} Umtausch .*$");
+        type.addBlock(firstRelevantLine4);
+        firstRelevantLine4.set(pdfTransaction4);
+
+        pdfTransaction4
+        .oneOf(
+                        section -> section
+                                .attributes("date", "note1", "amount", "note2", "shares")
+                                .match("^(?<date>[\\s\\d]{2,3}\\.[\\d]{2}\\.[\\d]{4}) (?<note1>Umtausch) (?<amount>[\\.,\\d]+)$")
+                                .match("^(?<note2>aus Unterdepot [\\d]+)$")
+                                .match("^Anlage [\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+ (?<shares>[\\.,\\d]+)$")
+                                .assign((t, v) -> {
+                                    Map<String, String> context = type.getCurrentContext();
+
+                                    Security securityData = getSecurity(context, v.getStartLineNumber());
+                                    if (securityData != null)
+                                    {
+                                        v.put("name", securityData.getName());
+                                        v.put("isin", securityData.getIsin());
+                                        v.put("currency", asCurrencyCode(securityData.getCurrency()));
+                                    }
+
+                                    t.setDateTime(asDate(v.get("date").replaceAll(" ", "")));
+                                    t.setShares(asShares(v.get("shares")));
+                                    t.setAmount(asAmount(v.get("amount")));
+                                    t.setCurrencyCode(asCurrencyCode(context.get("baseCurrency")));
+                                    t.setSecurity(getOrCreateSecurity(v));
+                                    t.setNote(v.get("note1") + " " + TextUtil.strip(v.get("note2")));
+                                })
+                        ,
+                        section -> section
+                                .attributes("date", "note1", "amount", "shares", "note2")
+                                .match("(?<date>[\\s\\d]{2,3}\\.[\\d]{2}\\.[\\d]{4}) (?<note1>Umtausch) (?<amount>[\\.,\\d]+) [\\.,\\d]+ \\-(?<shares>[\\.,\\d]+)$")
+                                .match("^(?<note2>zugunsten Unterdepot [\\d]+)$")
+                                .assign((t, v) -> {
+                                    Map<String, String> context = type.getCurrentContext();
+
+                                    // We switch to DELIVERY_OUTBOUND
+                                    t.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
+
+                                    Security securityData = getSecurity(context, v.getStartLineNumber());
+                                    if (securityData != null)
+                                    {
+                                        v.put("name", securityData.getName());
+                                        v.put("isin", securityData.getIsin());
+                                        v.put("currency", asCurrencyCode(securityData.getCurrency()));
+                                    }
+
+                                    t.setDateTime(asDate(v.get("date").replaceAll(" ", "")));
+                                    t.setShares(asShares(v.get("shares")));
+                                    t.setAmount(asAmount(v.get("amount")));
+                                    t.setCurrencyCode(asCurrencyCode(context.get("baseCurrency")));
+                                    t.setSecurity(getOrCreateSecurity(v));
+                                    t.setNote(v.get("note1") + " " + TextUtil.strip(v.get("note2")));
+                                })
+                    )
+
+                .wrap(t -> {
+                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                        return new TransactionItem(t);
+                    return null;
+                });
+
+        addFeesSectionsTransaction(pdfTransaction4, type);
+        addTaxesSectionsTransaction(pdfTransaction4, type);
+
+
+        /***
+         * Depotgebühr mit Nutzung der -32,55
+         * Postbox
+         */
+        Transaction<AccountTransaction> pdfTransaction5 = new Transaction<>();
+        pdfTransaction5.subject(() -> {
+            AccountTransaction transaction = new AccountTransaction();
+            transaction.setType(AccountTransaction.Type.FEES);
+            return transaction;
+        });
+
+        Block firstRelevantLine5 = new Block("^Depotgeb.hr .*$", "^Bestand .*$");
+        type.addBlock(firstRelevantLine5);
+        firstRelevantLine5.set(pdfTransaction5);
+
+        pdfTransaction5
                 .section("note", "amount", "date")
                 .match("^(?<note>Depotgeb.hr) .* \\-(?<amount>[\\.,\\d]+)$")
                 .match("^Bestand am (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$")
@@ -467,18 +625,18 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
          * Erstattung Kapitalertragsteuer 16,8
          * inklusive Solidaritätszuschlag
          */
-        Transaction<AccountTransaction> pdfTransaction4 = new Transaction<>();
-        pdfTransaction4.subject(() -> {
-            AccountTransaction entry = new AccountTransaction();
-            entry.setType(AccountTransaction.Type.TAX_REFUND);
-            return entry;
+        Transaction<AccountTransaction> pdfTransaction6 = new Transaction<>();
+        pdfTransaction6.subject(() -> {
+            AccountTransaction transaction = new AccountTransaction();
+            transaction.setType(AccountTransaction.Type.TAX_REFUND);
+            return transaction;
         });
 
-        Block firstRelevantLine4 = new Block("^Erstattung Kapitalertragsteuer .*$", "^Bestand .*$");
-        type.addBlock(firstRelevantLine4);
-        firstRelevantLine4.set(pdfTransaction4);
+        Block firstRelevantLine6 = new Block("^Erstattung Kapitalertragsteuer .*$", "^Bestand .*$");
+        type.addBlock(firstRelevantLine6);
+        firstRelevantLine6.set(pdfTransaction6);
 
-        pdfTransaction4
+        pdfTransaction6
                 .section("amount", "date")
                 .match("^Erstattung Kapitalertragsteuer (?<amount>[\\.,\\d]+)$")
                 .match("^Bestand am (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$")
@@ -500,18 +658,18 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
         /***
          * Erstattung Kirchensteuer 1,27
          */
-        Transaction<AccountTransaction> pdfTransaction5 = new Transaction<>();
-        pdfTransaction5.subject(() -> {
-            AccountTransaction entry = new AccountTransaction();
-            entry.setType(AccountTransaction.Type.TAX_REFUND);
-            return entry;
+        Transaction<AccountTransaction> pdfTransaction7 = new Transaction<>();
+        pdfTransaction7.subject(() -> {
+            AccountTransaction transaction = new AccountTransaction();
+            transaction.setType(AccountTransaction.Type.TAX_REFUND);
+            return transaction;
         });
 
-        Block firstRelevantLine5 = new Block("^Erstattung Kirchensteuer .*$", "^Bestand .*$");
-        type.addBlock(firstRelevantLine5);
-        firstRelevantLine5.set(pdfTransaction5);
+        Block firstRelevantLine7 = new Block("^Erstattung Kirchensteuer .*$", "^Bestand .*$");
+        type.addBlock(firstRelevantLine7);
+        firstRelevantLine7.set(pdfTransaction7);
 
-        pdfTransaction5
+        pdfTransaction7
                 .section("amount", "date")
                 .match("^Erstattung Kirchensteuer (?<amount>[\\.,\\d]+)$")
                 .match("^Bestand am (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$")
