@@ -12,6 +12,7 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 
+import name.abuchen.portfolio.model.FirstTransactionSupplier;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.EditReportingPeriodsDialog;
@@ -56,9 +57,14 @@ public final class ReportingPeriodDropDown extends DropDown implements IMenuList
             manager.add(action);
         }
 
+        FirstTransactionSupplier firstTransactionSupplier = new FirstTransactionSupplier(part.getClient());
+        
         manager.add(new Separator());
         manager.add(new SimpleAction(Messages.LabelReportingAddPeriod, a -> {
-            ReportingPeriodDialog dialog = new ReportingPeriodDialog(Display.getDefault().getActiveShell(), selected);
+            ReportingPeriodDialog dialog = new ReportingPeriodDialog(
+                            Display.getDefault().getActiveShell(),
+                            selected,
+                            firstTransactionSupplier);
 
             if (dialog.open() == Window.OK)
             {

@@ -6,6 +6,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 
+import name.abuchen.portfolio.model.FirstTransactionSupplier;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.ReportingPeriodDialog;
@@ -28,11 +29,15 @@ public class ReportingPeriodApplyToAll
 
         dashboardData.getDefaultReportingPeriods().stream()
                         .forEach(p -> subMenu.add(new SimpleAction(p.toString(), a -> apply(p, columnControl))));
-        subMenu.add(new Separator());
 
+        FirstTransactionSupplier firstTransactionSupplier = new FirstTransactionSupplier(dashboardData.getClient());
+        
+        subMenu.add(new Separator());
         subMenu.add(new SimpleAction(Messages.LabelReportingAddPeriod, a -> {
-            ReportingPeriodDialog dialog = new ReportingPeriodDialog(Display.getDefault().getActiveShell(),
-                            dashboardData.getDefaultReportingPeriod());
+            ReportingPeriodDialog dialog = new ReportingPeriodDialog(
+                            Display.getDefault().getActiveShell(),
+                            dashboardData.getDefaultReportingPeriod(),
+                            firstTransactionSupplier);
             if (dialog.open() == ReportingPeriodDialog.OK)
             {
                 ReportingPeriod reportingPeriod = dialog.getReportingPeriod();
