@@ -47,6 +47,7 @@ import com.google.common.collect.Streams;
 
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.FirstTransactionSupplier;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
@@ -592,8 +593,13 @@ public final class SecuritiesTable implements ModificationListener
             return Double.valueOf((latest.getValue() - previous.getValue()) / (double) previous.getValue());
         };
 
+        FirstTransactionSupplier firstTransactionSupplier = new FirstTransactionSupplier(getClient());
+        
         Column column = new Column("delta-w-period", Messages.ColumnQuoteChange, SWT.RIGHT, 80); //$NON-NLS-1$
-        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnQuoteChange_Option, options));
+        column.setOptions(new ReportingPeriodColumnOptions(
+                        firstTransactionSupplier,
+                        Messages.ColumnQuoteChange_Option,
+                        options));
         column.setDescription(Messages.ColumnQuoteChange_Description);
         column.setLabelProvider(new QuoteReportingPeriodLabelProvider(valueProvider));
         column.setVisible(false);

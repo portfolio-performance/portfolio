@@ -52,6 +52,7 @@ import name.abuchen.portfolio.model.Annotated;
 import name.abuchen.portfolio.model.Attributable;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.FirstTransactionSupplier;
 import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.model.Portfolio;
@@ -567,10 +568,15 @@ public class StatementOfAssetsViewer
     private void addPerformanceColumns(List<ReportingPeriod> options)
     {
         ReportingPeriodLabelProvider labelProvider;
+        
+        FirstTransactionSupplier firstTransactionSupplier = new FirstTransactionSupplier(client);
 
         Column column = new Column("ttwror", Messages.ColumnTTWROR, SWT.RIGHT, 80); //$NON-NLS-1$
         labelProvider = new ReportingPeriodLabelProvider(SecurityPerformanceRecord::getTrueTimeWeightedRateOfReturn);
-        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnTTWROR_Option, options));
+        column.setOptions(new ReportingPeriodColumnOptions(
+                        firstTransactionSupplier, 
+                        Messages.ColumnTTWROR_Option, 
+                        options));
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setDescription(Messages.LabelTTWROR);
         column.setLabelProvider(labelProvider);
@@ -581,7 +587,10 @@ public class StatementOfAssetsViewer
         column = new Column("ttwror_pa", Messages.ColumnTTWRORpa, SWT.RIGHT, 80); //$NON-NLS-1$
         labelProvider = new ReportingPeriodLabelProvider(
                         SecurityPerformanceRecord::getTrueTimeWeightedRateOfReturnAnnualized);
-        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnTTWRORpa_Option, options));
+        column.setOptions(new ReportingPeriodColumnOptions(
+                        firstTransactionSupplier, 
+                        Messages.ColumnTTWRORpa_Option, 
+                        options));
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setDescription(Messages.LabelTTWROR_Annualized);
         column.setLabelProvider(labelProvider);
@@ -591,7 +600,10 @@ public class StatementOfAssetsViewer
 
         column = new Column("irr", Messages.ColumnIRR, SWT.RIGHT, 80); //$NON-NLS-1$
         labelProvider = new ReportingPeriodLabelProvider(SecurityPerformanceRecord::getIrr);
-        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnIRRPerformanceOption, options));
+        column.setOptions(new ReportingPeriodColumnOptions(
+                        firstTransactionSupplier, 
+                        Messages.ColumnIRRPerformanceOption, 
+                        options));
         column.setMenuLabel(Messages.ColumnIRR_MenuLabel);
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setLabelProvider(labelProvider);
@@ -602,7 +614,10 @@ public class StatementOfAssetsViewer
         column = new Column("capitalgains", Messages.ColumnCapitalGains, SWT.RIGHT, 80); //$NON-NLS-1$
         labelProvider = new ReportingPeriodLabelProvider(SecurityPerformanceRecord::getCapitalGainsOnHoldings,
                         withSum(), true);
-        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnCapitalGains_Option, options));
+        column.setOptions(new ReportingPeriodColumnOptions(
+                        firstTransactionSupplier,
+                        Messages.ColumnCapitalGains_Option, 
+                        options));
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setDescription(Messages.ColumnCapitalGains_Description);
         column.setLabelProvider(labelProvider);
@@ -612,7 +627,10 @@ public class StatementOfAssetsViewer
 
         column = new Column("capitalgains%", Messages.ColumnCapitalGainsPercent, SWT.RIGHT, 80); //$NON-NLS-1$
         labelProvider = new ReportingPeriodLabelProvider(SecurityPerformanceRecord::getCapitalGainsOnHoldingsPercent);
-        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnCapitalGainsPercent_Option, options));
+        column.setOptions(new ReportingPeriodColumnOptions(
+                        firstTransactionSupplier, 
+                        Messages.ColumnCapitalGainsPercent_Option, 
+                        options));
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setDescription(Messages.ColumnCapitalGainsPercent_Description);
         column.setLabelProvider(labelProvider);
@@ -623,7 +641,10 @@ public class StatementOfAssetsViewer
         column = new Column("capitalgainsmvavg", Messages.ColumnCapitalGainsMovingAverage, SWT.RIGHT, 80); //$NON-NLS-1$
         labelProvider = new ReportingPeriodLabelProvider(
                         SecurityPerformanceRecord::getCapitalGainsOnHoldingsMovingAverage, withSum(), true);
-        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnCapitalGainsMovingAverage_Option, options));
+        column.setOptions(new ReportingPeriodColumnOptions(
+                        firstTransactionSupplier, 
+                        Messages.ColumnCapitalGainsMovingAverage_Option, 
+                        options));
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setDescription(Messages.ColumnCapitalGainsMovingAverage_Description);
         column.setLabelProvider(labelProvider);
@@ -634,7 +655,9 @@ public class StatementOfAssetsViewer
         column = new Column("capitalgainsmvavg%", Messages.ColumnCapitalGainsMovingAveragePercent, SWT.RIGHT, 80); //$NON-NLS-1$
         labelProvider = new ReportingPeriodLabelProvider(
                         SecurityPerformanceRecord::getCapitalGainsOnHoldingsMovingAveragePercent);
-        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnCapitalGainsMovingAveragePercent_Option,
+        column.setOptions(new ReportingPeriodColumnOptions(
+                        firstTransactionSupplier,
+                        Messages.ColumnCapitalGainsMovingAveragePercent_Option,
                         options));
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setDescription(Messages.ColumnCapitalGainsMovingAveragePercent_Description);
@@ -645,7 +668,10 @@ public class StatementOfAssetsViewer
 
         column = new Column("delta", Messages.ColumnAbsolutePerformance_MenuLabel, SWT.RIGHT, 80); //$NON-NLS-1$
         labelProvider = new ReportingPeriodLabelProvider(SecurityPerformanceRecord::getDelta, withSum(), true);
-        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnAbsolutePerformance_Option, options));
+        column.setOptions(new ReportingPeriodColumnOptions(
+                        firstTransactionSupplier, 
+                        Messages.ColumnAbsolutePerformance_Option,
+                        options));
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setDescription(Messages.ColumnAbsolutePerformance_Description);
         column.setLabelProvider(labelProvider);
@@ -655,7 +681,10 @@ public class StatementOfAssetsViewer
 
         column = new Column("delta%", Messages.ColumnAbsolutePerformancePercent_MenuLabel, SWT.RIGHT, 80); //$NON-NLS-1$
         labelProvider = new ReportingPeriodLabelProvider(SecurityPerformanceRecord::getDeltaPercent);
-        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnAbsolutePerformancePercent_Option, options));
+        column.setOptions(new ReportingPeriodColumnOptions(
+                        firstTransactionSupplier, 
+                        Messages.ColumnAbsolutePerformancePercent_Option, 
+                        options));
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setDescription(Messages.ColumnAbsolutePerformancePercent_Description);
         column.setLabelProvider(labelProvider);
@@ -667,12 +696,17 @@ public class StatementOfAssetsViewer
     private void addDividendColumns(List<ReportingPeriod> options)
     {
         ReportingPeriodLabelProvider labelProvider;
+        
+        FirstTransactionSupplier firstTransactionSupplier = new FirstTransactionSupplier(client);
 
         Column column = new Column("sumdiv", Messages.ColumnDividendSum, SWT.RIGHT, 80); //$NON-NLS-1$
 
         labelProvider = new ReportingPeriodLabelProvider(SecurityPerformanceRecord::getSumOfDividends, withSum(),
                         false);
-        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnDividendSum + " {0}", options)); //$NON-NLS-1$
+        column.setOptions(new ReportingPeriodColumnOptions(
+                        firstTransactionSupplier, 
+                        Messages.ColumnDividendSum + " {0}",
+                        options)); //$NON-NLS-1$
         column.setGroupLabel(Messages.GroupLabelDividends);
         column.setMenuLabel(Messages.ColumnDividendSum_MenuLabel);
         column.setLabelProvider(labelProvider);
@@ -683,7 +717,10 @@ public class StatementOfAssetsViewer
         column = new Column("d%", Messages.ColumnDividendTotalRateOfReturn, SWT.RIGHT, 80); //$NON-NLS-1$
         labelProvider = new ReportingPeriodLabelProvider(SecurityPerformanceRecord::getTotalRateOfReturnDiv, null,
                         false);
-        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnDividendTotalRateOfReturn + " {0}", options)); //$NON-NLS-1$
+        column.setOptions(new ReportingPeriodColumnOptions(
+                        firstTransactionSupplier, 
+                        Messages.ColumnDividendTotalRateOfReturn + " {0}", 
+                        options)); //$NON-NLS-1$
         column.setGroupLabel(Messages.GroupLabelDividends);
         column.setDescription(Messages.ColumnDividendTotalRateOfReturn_Description);
         column.setLabelProvider(labelProvider);
@@ -695,7 +732,9 @@ public class StatementOfAssetsViewer
         labelProvider = new ReportingPeriodLabelProvider(
                         SecurityPerformanceRecord::getTotalRateOfReturnDivMovingAverage, null, false);
         column.setOptions(new ReportingPeriodColumnOptions(
-                        Messages.ColumnDividendMovingAverageTotalRateOfReturn + " {0}", options)); //$NON-NLS-1$
+                        firstTransactionSupplier, 
+                        Messages.ColumnDividendMovingAverageTotalRateOfReturn + " {0}",
+                        options)); //$NON-NLS-1$
         column.setGroupLabel(Messages.GroupLabelDividends);
         column.setDescription(Messages.ColumnDividendMovingAverageTotalRateOfReturn_Description);
         column.setLabelProvider(labelProvider);
