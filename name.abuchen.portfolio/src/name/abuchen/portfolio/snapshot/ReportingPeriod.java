@@ -33,6 +33,7 @@ public abstract class ReportingPeriod
         LAST_X_DAYS('D', LastXDays.class), //
         LAST_X_TRADING_DAYS('T', LastXTradingDays.class), //
         LAST_X_YEARS_Y_MONTHS('L', LastX.class), //
+        PREVIOUS_DAY('P', PreviousDay.class), //
         PREVIOUS_WEEK('A', PreviousWeek.class), //
         PREVIOUS_MONTH('B', PreviousMonth.class), //
         PREVIOUS_QUARTER('C', PreviousQuarter.class), //
@@ -630,6 +631,40 @@ public abstract class ReportingPeriod
         }
     }
 
+    public static class PreviousDay extends ReportingPeriod
+    {
+        @Override
+        public Interval toInterval(LocalDate relativeTo)
+        {
+            LocalDate firstDay = relativeTo.minusDays(2);
+            LocalDate lastDay = relativeTo.minusDays(1);
+
+            return Interval.of(firstDay, lastDay);
+        }
+
+        @Override
+        public String toString()
+        {
+            return Messages.LabelReportingPeriodPreviousDay;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hashCode(Type.PREVIOUS_DAY);
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            return getClass() == obj.getClass();
+        }
+    }
+    
     public static class PreviousWeek extends ReportingPeriod
     {
         @Override
