@@ -680,6 +680,7 @@ public class Messages extends NLS
     public static String LabelReportingDialogSince;
     public static String LabelReportingDialogTradingDays;
     public static String LabelReportingDialogUntil;
+    public static String LabelReportingDialogDay;
     public static String LabelReportingDialogWeek;
     public static String LabelReportingDialogYear;
     public static String LabelReportingDialogYears;
