@@ -3,18 +3,13 @@ package name.abuchen.portfolio.online.impl;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import org.junit.Test;
 
-import name.abuchen.portfolio.TestUtilities;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
-import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeedData;
