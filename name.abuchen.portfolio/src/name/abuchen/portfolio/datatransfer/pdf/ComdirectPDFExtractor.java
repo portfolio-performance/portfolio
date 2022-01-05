@@ -289,7 +289,6 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
                 .wrap(BuySellEntryItem::new);
 
-        addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
         addTaxReturnBlock(type);
     }
@@ -356,6 +355,38 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                     t.setAmount(asAmount(v.get("amount")));
                 })
 
+                //              zum Devisenkurs: EUR/USD      1,167800                 EUR              11,65 
+                //     zum Devisenkurs EURUSD      1,185400                 EUR               7,52   
+                .section("exchangeRate").optional()
+                .match("^(.*)?zum Devisenkurs(:)? [\\w]{3}(\\/)?[\\w]{3} ([\\s]+)?(?<exchangeRate>[\\.,\\d]+) ([\\s]+)?[\\w]{3} ([\\s]+)?[\\.,\\d]+(.*)?$")
+                .assign((t, v) -> {
+                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
+                })
+
+                /***
+                 * In this section we calculate the taxes
+                 */
+                // Bruttobetrag:                     USD              22,60
+                // Bruttobetrag                     USD              10,50  
+                .section("currency", "gross").optional()
+                .match("^Bruttobetrag(:)? ([\\s]+)?(?<currency>\\w{3}) ([\\s]+)?(?<gross>[\\.,\\d]+).*$")
+                .assign((t, v) -> {
+                    String currency = asCurrencyCode(v.get("currency"));
+                    long gross = asAmount(v.get("gross"));
+                    long taxAmount = gross - t.getAmount();
+
+                    if (!t.getCurrencyCode().equals(currency))
+                    {
+                        BigDecimal exchangeRate = new BigDecimal(
+                                        type.getCurrentContext().get("exchangeRate"));
+                        taxAmount = gross - exchangeRate.multiply(BigDecimal.valueOf(t.getAmount()))
+                                        .setScale(0, RoundingMode.HALF_DOWN).longValue();
+                    }
+                    Money tax = Money.of(asCurrencyCode(v.get("currency")), taxAmount);
+                    PDFExtractorUtils.checkAndSetTax(tax, t, type);
+                })
+
                 // Bruttobetrag:                     USD              16,00
                 //     zum Devisenkurs: EUR/USD      1,167800                 EUR              11,65 
                 // Bruttobetrag                     USD              10,50                           
@@ -399,15 +430,6 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                     }
                 })
 
-                //              zum Devisenkurs: EUR/USD      1,167800                 EUR              11,65 
-                //     zum Devisenkurs EURUSD      1,185400                 EUR               7,52   
-                .section("exchangeRate").optional()
-                .match("^(.*)?zum Devisenkurs(:)? [\\w]{3}(\\/)?[\\w]{3} ([\\s]+)?(?<exchangeRate>[\\.,\\d]+) ([\\s]+)?[\\w]{3} ([\\s]+)?[\\.,\\d]+(.*)?$")
-                .assign((t, v) -> {
-                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
-                })
-
                 // zahlbar ab 19.03.2020                 Quartalsdividende                            
                 // zahlbar ab 15.12.2010                 Zwischendividende
                 // zahlbar ab 19.10.2017                 monatl. Dividende                            
@@ -417,7 +439,6 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                 
                 .wrap(TransactionItem::new);
 
-        addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
         
         block.set(pdfTransaction);
@@ -506,8 +527,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         // before taxes < tax base
                         tax = gross2 - amount;
 
-                    if (tax > 0)
-                        t.addUnit(new Unit(Unit.Type.TAX, Money.of(asCurrencyCode(stripBlanks(v.get("currency"))), tax)));
+                    t.addUnit(new Unit(Unit.Type.TAX, Money.of(asCurrencyCode(stripBlanks(v.get("currency"))), tax)));
                 })
 
                 //  Zu  Ih r e n G u n s t e n v o r S te u e r n :              E U R             302,5 5   
@@ -559,18 +579,13 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                                 .setScale(0, RoundingMode.HALF_DOWN);
                             
                             if (gross1 > fxAmount2.longValue())
-                            {
                                 // before taxes > Tax base
                                 tax = gross1 - amount;
-                            }
                             else
-                            {
                                 // before taxes < tax base
                                 tax = fxAmount2.longValue() - amount;
-                            }
 
-                            if (tax > 0)
-                                t.addUnit(new Unit(Unit.Type.TAX, Money.of(asCurrencyCode(v.get("currency1")), tax)));
+                            t.addUnit(new Unit(Unit.Type.TAX, Money.of(asCurrencyCode(v.get("currency1")), tax)));
                         }
                     }
                 })
@@ -767,6 +782,43 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                             t.addUnit(grossValue);
                         }
                     }
+                })
+
+                .section("currency", "gross") //
+                .optional() //
+                .match("^Bruttobetrag: *(?<currency>\\w{3}) *(?<gross>[\\d\\.]+,\\d+).*") //
+                .assign((t, v) -> {
+
+                    String currency = asCurrencyCode(v.get("currency"));
+                    long gross = asAmount(v.get("gross"));
+                    long taxAmount = gross - t.getAmount();
+
+                    if (!t.getCurrencyCode().equals(currency))
+                    {
+                        BigDecimal exchangeRate = new BigDecimal(
+                                        type.getCurrentContext().get("exchangeRate"));
+                        taxAmount = gross - exchangeRate.multiply(BigDecimal.valueOf(t.getAmount()))
+                                        .setScale(0, RoundingMode.HALF_DOWN).longValue();
+                    }
+                    Money tax = Money.of(asCurrencyCode(v.get("currency")), taxAmount);
+                    PDFExtractorUtils.checkAndSetTax(tax, t, type);
+
+                    if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
+                    {
+                        BigDecimal exchangeRate = new BigDecimal(
+                                        type.getCurrentContext().get("exchangeRate"));
+                        BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
+                                        RoundingMode.HALF_DOWN);
+                        Money grossFx = Money.of(currency, gross);
+                        // convert gross to local currency using
+                        // exchangeRate
+                        gross = inverseRate
+                                        .multiply(BigDecimal.valueOf(gross).setScale(0, RoundingMode.HALF_DOWN))
+                                        .longValue();
+                        Money grossTx = Money.of(t.getCurrencyCode(), gross);
+                        t.addUnit(new Unit(Unit.Type.GROSS_VALUE, grossTx, grossFx, inverseRate));
+                    }
+
                 })
 
                 .wrap(t -> {
@@ -1243,41 +1295,6 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         .wrap(TransactionItem::new));
 }
 
-    private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
-    {
-        transaction
-                // a b g e f ü h rt e S t e u er n       E_ U_ R_ _ _ _ _ _ _ _  _ _ __ _ _  __0,_0_ 0_ 
-                .section("currency", "tax").optional()
-                .match("^([\\s]+)?a([\\s]+)?b([\\s]+)?g([\\s]+)?e([\\s]+)?f([\\s]+)?.([\\s]+)?h([\\s]+)?r([\\s]+)?t([\\s]+)?e([\\s]+)?S([\\s]+)?t([\\s]+)?e([\\s]+)?u([\\s]+)?e([\\s]+)?r([\\s]+)?n"
-                                + " [\\s]+(?<currency>[\\w\\s_]+)"
-                                + " ([\\s]+)?(?<tax>[-\\.,\\d\\s_]+)$")
-                .assign((t, v) -> {
-                    v.put("tax", stripBlanksAndUnderscores(v.get("tax")));
-                    v.put("currency", stripBlanksAndUnderscores(v.get("currency")));
-                    processTaxEntries(t, v, type);  
-                })
-
-                // 15,000 % Quellensteuer                                     EUR              59,28 -
-                .section("currency", "tax").optional()
-                .match("^([\\s]+)?[\\.,\\d]+ % Quellensteuer ([\\s]+)?(?<currency>[\\w]+) ([\\s]+)?(?<tax>[\\.,\\d]+)(.*)?$")
-                .assign((t, v) -> processTaxEntries(t, v, type))
-
-                // 25,000 % Kapitalertragsteuer auf  EUR           2.100,00   EUR             525,00 -
-                .section("currency", "tax").optional()
-                .match("^([\\s]+)?[\\.,\\d]+ % Kapitalertragsteuer .* ([\\s]+)?(?<currency>[\\w]+) ([\\s]+)?(?<tax>[\\.,\\d]+)(.*)?$")
-                .assign((t, v) -> processTaxEntries(t, v, type))
-
-                //  5,500 % Solidaritätszuschl. auf  EUR             525,00   EUR              28,87 -
-                .section("currency", "tax").optional()
-                .match("^([\\s]+)?[\\.,\\d]+ % Solidarit.tszuschl. .* ([\\s]+)?(?<currency>[\\w]+) ([\\s]+)?(?<tax>[\\.,\\d]+)(.*)?$")
-                .assign((t, v) -> processTaxEntries(t, v, type))
-
-                //  5,500 % Kirchensteuer auf  EUR             1,00   EUR              1,00 -
-                .section("currency", "tax").optional()
-                .match("^([\\s]+)?[\\.,\\d]+ % Kirchensteuer .* ([\\s]+)?(?<currency>[\\w]+) ([\\s]+)?(?<tax>[\\.,\\d]+)(.*)?$")
-                .assign((t, v) -> processTaxEntries(t, v, type));
-    }
-
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction
@@ -1362,20 +1379,6 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                 });
     }
 
-    private void processTaxEntries(Object t, Map<String, String> v, DocumentType type)
-    {
-        if (t instanceof name.abuchen.portfolio.model.Transaction)
-        {
-            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-            PDFExtractorUtils.checkAndSetTax(tax, (name.abuchen.portfolio.model.Transaction) t, type);
-        }
-        else
-        {
-            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-            PDFExtractorUtils.checkAndSetTax(tax, ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
-        }
-    }
-
     private void processFeeEntries(Object t, Map<String, String> v, DocumentType type)
     {
         if (t instanceof name.abuchen.portfolio.model.Transaction)
@@ -1412,7 +1415,6 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         .collect(Collectors.groupingBy(Item::getDate, Collectors.groupingBy(Item::getSecurity)));
 
         Iterator<Item> iterator = items.iterator();
-
         while (iterator.hasNext())
         {
             Item i = iterator.next();
@@ -1439,8 +1441,10 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         a2 = (AccountTransaction) similarTransactions.get(0).getSubject();
                         ownIndex = 1;
                     }
+
                     // if tax of a1 < tax of a2
-                    if (!a1.getUnit(Type.TAX).isPresent() || a2.getUnit(Type.TAX).get().getAmount().isGreaterOrEqualThan(a1.getUnit(Type.TAX).get().getAmount()))
+                    if (!a1.getUnit(Type.TAX).isPresent() || a2.getUnit(Type.TAX).get().getAmount()
+                                    .isGreaterOrEqualThan(a1.getUnit(Type.TAX).get().getAmount()))
                     {
                         // store potential gross unit
                         Optional<Unit> unitGross = a1.getUnit(Unit.Type.GROSS_VALUE);
@@ -1448,11 +1452,11 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         {
                             a2.addUnit(unitGross.get());
                         }
-                    }
 
-                    // remove self and own divTransaction
-                    iterator.remove();
-                    dividends.get(i.getDate()).get(i.getSecurity()).remove(ownIndex);
+                        // remove self and own divTransaction
+                        iterator.remove();
+                        dividends.get(i.getDate()).get(i.getSecurity()).remove(ownIndex);
+                    }
                 }
             }
         }
