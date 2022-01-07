@@ -10,7 +10,15 @@ public class SecurityEvent
 {
     public enum Type
     {
-        STOCK_SPLIT(false), NOTE(true), DIVIDEND_PAYMENT(false);
+        STOCK_SPLIT(false),
+        NOTE(true),
+        DIVIDEND_PAYMENT(false),
+        DIVIDEND_DECLARATION(true),
+        EX_DIVIDEND(true),
+        DIVIDEND_RECORD(true),
+        PAYDAY(true),
+        EARNINGS_REPORT(true),
+        SHAREHOLDER_MEETING(true);
 
         private static final ResourceBundle RESOURCES = ResourceBundle.getBundle("name.abuchen.portfolio.model.labels"); //$NON-NLS-1$
 
