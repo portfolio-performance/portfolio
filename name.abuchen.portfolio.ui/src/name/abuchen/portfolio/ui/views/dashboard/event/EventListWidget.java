@@ -1,8 +1,5 @@
 package name.abuchen.portfolio.ui.views.dashboard.event;
 
-import static name.abuchen.portfolio.ui.views.dashboard.event.item.EventType.EX_DIVIDEND;
-import static name.abuchen.portfolio.ui.views.dashboard.event.item.EventType.PAYDAY;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.function.Predicate;
@@ -13,7 +10,6 @@ import javax.inject.Inject;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.RowLayout;
@@ -25,7 +21,7 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
@@ -38,6 +34,7 @@ import name.abuchen.portfolio.ui.views.dashboard.ReportingPeriodConfig;
 import name.abuchen.portfolio.ui.views.dashboard.WidgetDelegate;
 import name.abuchen.portfolio.ui.views.dashboard.event.item.AccountEventItem;
 import name.abuchen.portfolio.ui.views.dashboard.event.item.EventItem;
+import name.abuchen.portfolio.ui.views.dashboard.event.item.EventType;
 import name.abuchen.portfolio.ui.views.dashboard.event.item.HolidayEventItem;
 import name.abuchen.portfolio.ui.views.dashboard.event.item.SecurityEventItem;
 import name.abuchen.portfolio.util.Interval;
@@ -86,15 +83,15 @@ public final class EventListWidget extends WidgetDelegate<List<EventItem>>
         layout.wrap = false;
         layout.fill = true;
         list.setLayout(layout);
-        GridDataFactory.fillDefaults().grab(true, false).applyTo(list);
-
+        
         return container;
     }
     
     @Override
     public Supplier<List<EventItem>> getUpdateTask()
     {
-        Interval interval = get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now());
+        ReportingPeriod reportingPeriod = get(ReportingPeriodConfig.class).getReportingPeriod();
+        Interval interval = reportingPeriod.toInterval(LocalDate.now());
         return new EventItemSupplier(getClient(), new EventItemFactory(interval));
     }
     
@@ -115,7 +112,7 @@ public final class EventListWidget extends WidgetDelegate<List<EventItem>>
             addListing(items);
 
         list.setData(items);
-        list.layout(true);
+        list.requestLayout();
     }
 
     private void addEmptyListing(Composite parent)
@@ -139,7 +136,7 @@ public final class EventListWidget extends WidgetDelegate<List<EventItem>>
         composite.setLayout(new FormLayout());
 
         Label logo = new Label(composite, SWT.NONE);
-        logo.setImage(selectIcon(eventItem));
+        logo.setImage(eventItem.getType().getIcon());
         
         Label type = new Label(composite, SWT.NONE);
         type.setText(eventItem.getType().toString());
@@ -180,7 +177,7 @@ public final class EventListWidget extends WidgetDelegate<List<EventItem>>
             content.setOpenLinkHandler(
                     d -> view.getPart().activateView(SecurityListView.class, (Predicate<?>) security::equals));
             
-            if (eventItem.getType() != EX_DIVIDEND && eventItem.getType() != PAYDAY)
+            if (eventItem.getType() == EventType.NOTE)
             {
                 addMessage(container, securityEventItem.getMessage());
             }
@@ -204,45 +201,6 @@ public final class EventListWidget extends WidgetDelegate<List<EventItem>>
         return container;
     }
 
-    private Image selectIcon(EventItem eventItem)
-    {
-        switch (eventItem.getType())
-        {
-            case DIVIDEND_DECLARATION:
-                return Images.CHEVRON.image();
-                
-            case EX_DIVIDEND:
-                return Images.WARNING.image();
-                
-            case DIVIDEND_RECORD:
-                return Images.TEXT.image();
-                
-            case PAYDAY:
-                return Images.CLOCK.image();
-                
-            case PAYMENT:
-                return Images.ACCOUNT.image();
-                
-            case STOCK_SPLIT:
-                return Images.VIEW_REBALANCING.image();
-
-            case EARNINGS_REPORT:
-                return Images.VIEW_LINECHART.image();
-                
-            case SHAREHOLDER_MEETING:
-                return Images.INFO.image();
-            
-            case NOTE:
-                return Images.BOOKMARK.image();
-                
-            case HOLIDAY:
-                return Images.CALENDAR_OFF.image();
-
-            default:
-                return Images.REMOVE.image();
-        }
-    }
-    
     private void addMessage(Composite container, String message)
     {
         if (message != null) 

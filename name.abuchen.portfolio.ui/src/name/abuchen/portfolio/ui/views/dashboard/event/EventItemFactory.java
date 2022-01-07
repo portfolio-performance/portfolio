@@ -2,11 +2,15 @@ package name.abuchen.portfolio.ui.views.dashboard.event;
 
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toUnmodifiableList;
+import static name.abuchen.portfolio.ui.views.dashboard.event.item.EventType.DIVIDEND_DECLARATION;
+import static name.abuchen.portfolio.ui.views.dashboard.event.item.EventType.DIVIDEND_RECORD;
+import static name.abuchen.portfolio.ui.views.dashboard.event.item.EventType.EARNINGS_REPORT;
 import static name.abuchen.portfolio.ui.views.dashboard.event.item.EventType.EX_DIVIDEND;
 import static name.abuchen.portfolio.ui.views.dashboard.event.item.EventType.HOLIDAY;
 import static name.abuchen.portfolio.ui.views.dashboard.event.item.EventType.NOTE;
 import static name.abuchen.portfolio.ui.views.dashboard.event.item.EventType.PAYDAY;
 import static name.abuchen.portfolio.ui.views.dashboard.event.item.EventType.PAYMENT;
+import static name.abuchen.portfolio.ui.views.dashboard.event.item.EventType.SHAREHOLDER_MEETING;
 import static name.abuchen.portfolio.ui.views.dashboard.event.item.EventType.STOCK_SPLIT;
 
 import java.time.LocalDate;
@@ -89,7 +93,6 @@ public final class EventItemFactory
                 
                 eventItems.add(securityEventItem);
             }
-            
         }
         
         return eventItems.isEmpty() ? emptyList() : eventItems;
@@ -133,27 +136,31 @@ public final class EventItemFactory
 
             case STOCK_SPLIT:
                 return STOCK_SPLIT;
-                
-            case NOTE:
-                return parseSpecialNotes(securityEvent.getDetails());
-                
-            default:
-                return NOTE;
-        }
-    }
 
-    private EventType parseSpecialNotes(String details)
-    {
-        if (details.equalsIgnoreCase("payday") || details.equalsIgnoreCase("pay day"))  //$NON-NLS-1$ //$NON-NLS-2$
-        {
-            return PAYDAY;
+            case NOTE:
+                return NOTE;
+
+            case DIVIDEND_DECLARATION:
+                return DIVIDEND_DECLARATION;
+
+            case DIVIDEND_RECORD:
+                return DIVIDEND_RECORD;
+
+            case EARNINGS_REPORT:
+                return EARNINGS_REPORT;
+
+            case EX_DIVIDEND:
+                return EX_DIVIDEND;
+
+            case PAYDAY:
+                return PAYDAY;
+
+            case SHAREHOLDER_MEETING:
+                return SHAREHOLDER_MEETING;
+
+            default:
+                throw new UnsupportedOperationException("unsupported security event type: " + securityEvent.getType()); //$NON-NLS-1$
         }
-        else if (details.equalsIgnoreCase("ex-dividend")) //$NON-NLS-1$
-        {
-            return EX_DIVIDEND;
-        }
-        
-        return NOTE;
     }
     
 }
