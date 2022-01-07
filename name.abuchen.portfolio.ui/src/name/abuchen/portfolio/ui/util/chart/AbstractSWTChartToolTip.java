@@ -60,7 +60,8 @@ public abstract class AbstractSWTChartToolTip implements Listener
         {
             case SWT.Dispose:
             case SWT.MouseUp:
-                if (!isHoverMode()) {
+                if (!isHoverMode())
+                {
                     closeToolTip();
                 }
                 break;
@@ -124,12 +125,13 @@ public abstract class AbstractSWTChartToolTip implements Listener
             return;
 
         Object newTipFocus = getFocusObjectAt(event);
-        if (newTipFocus == null) {
+        if (newTipFocus == null)
+        {
             closeToolTip();
             onFocusChanged(newTipFocus);
             return;
         }
-        else if(isHoverMode() && (tip == null ||  tip.isDisposed()))
+        else if (isHoverMode() && (tip == null || tip.isDisposed()))
         {
             showToolTip(event);
             onFocusChanged(newTipFocus);

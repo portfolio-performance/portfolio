@@ -96,10 +96,12 @@ public class HoldingsPieChartView extends AbstractFinanceView
     @Override
     protected Control createBody(Composite parent)
     {
-        if (this.useSWTCharts) {
+        if (this.useSWTCharts)
+        {
             chart = new HoldingsSWTPieChart(snapshot, this);
         }
-        else {
+        else
+        {
             chart = new HoldingsBrowserPieChart(make(EmbeddedBrowser.class), snapshot, this);
         }
 

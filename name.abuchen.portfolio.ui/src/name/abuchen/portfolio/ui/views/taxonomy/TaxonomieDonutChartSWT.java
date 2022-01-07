@@ -55,17 +55,19 @@ public class TaxonomieDonutChartSWT implements IPieChart
         chart.getLegend().setPosition(SWT.RIGHT);
 
         // Listen on mouse clicks to update information pane
-        ((Composite)chart.getPlotArea()).addListener(SWT.MouseUp, new Listener()
+        ((Composite) chart.getPlotArea()).addListener(SWT.MouseUp, new Listener()
         {
             @Override
             public void handleEvent(Event event)
             {
                 Node node = chart.getNodeAt(event.x, event.y);
-                if (node == null) {
-                    return;
+                if (node == null)
+                {
+                    return; 
                 }
                 TaxonomiePieChartSWT.NodeData nodeData = nodeDataMap.get(node.getId());
-                if (nodeData != null) {
+                if (nodeData != null)
+                {
                     financeView.setInformationPaneInput(nodeData.position);
                 }
             }
@@ -87,35 +89,39 @@ public class TaxonomieDonutChartSWT implements IPieChart
         TaxonomyNode node = chartPage.getModel().getVirtualRootNode();
 
         ICircularSeries<?> circularSeries = (ICircularSeries<?>) chart.getSeriesSet().createSeries(
-                        ChartType.DONUT == chartType ? SeriesType.DOUGHNUT : SeriesType.PIE,
-                        node.getName());
+                        ChartType.DONUT == chartType ? SeriesType.DOUGHNUT : SeriesType.PIE, node.getName());
 
         circularSeries.setHighlightColor(Colors.GREEN);
         circularSeries.setBorderColor(Colors.WHITE);
 
         Money total = getModel().getChartRenderingRootNode().getActual();
-        
+
         Node rootNode = circularSeries.getRootNode();
         Map<String, Color> colors = new HashMap<String, Color>();
         addNodes(nodeDataMap, colors, rootNode, node, node.getChildren(), total);
-        for (Map.Entry<String, Color> entry : colors.entrySet()) {
+        for (Map.Entry<String, Color> entry : colors.entrySet())
+        {
             circularSeries.setColor(entry.getKey(), entry.getValue());
         }
         chart.redraw();
     }
 
-    private void addNodes(Map<String, TaxonomiePieChartSWT.NodeData> dataMap, Map<String, Color> colors, Node node, TaxonomyNode parentNode, List<TaxonomyNode> children, Money total)
+    private void addNodes(Map<String, TaxonomiePieChartSWT.NodeData> dataMap, Map<String, Color> colors, Node node,
+                    TaxonomyNode parentNode, List<TaxonomyNode> children, Money total)
     {
         String parentColor = parentNode.getColor();
         for (TaxonomyNode child : children)
         {
-            if (child.getActual().isZero()) {
+            if (child.getActual().isZero())
+            {
                 continue;
             }
-            if (getModel().isUnassignedCategoryInChartsExcluded() && getModel().getUnassignedNode().equals(child)) {
+            if (getModel().isUnassignedCategoryInChartsExcluded() && getModel().getUnassignedNode().equals(child))
+            {
                 continue;
             }
-            if (child.isAssignment()) {
+            if (child.isAssignment())
+            {
                 long actual = child.isRoot() ? total.getAmount() : child.getActual().getAmount();
                 long base = child.isRoot() ? total.getAmount() : child.getParent().getActual().getAmount();
 
@@ -125,27 +131,24 @@ public class TaxonomieDonutChartSWT implements IPieChart
                 colors.put(child.getName(), color);
                 TaxonomiePieChartSWT.NodeData data = new TaxonomiePieChartSWT.NodeData();
                 data.position = child;
-                if (child.getParent() != null && !child.getParent().isRoot()) {
-                    data.totalPercentage = MessageFormat.format(
-                        Messages.LabelTotalValuePercent,
-                        Values.Percent2.format(actual / (double) total.getAmount())
-                    );
+                if (child.getParent() != null && !child.getParent().isRoot())
+                {
+                    data.totalPercentage = MessageFormat.format(Messages.LabelTotalValuePercent,
+                                    Values.Percent2.format(actual / (double) total.getAmount()));
                 }
                 data.percentage = Values.Percent2.format(actual / (double) base);
-                if (child.getParent() != null) {
-                    data.percentage = String.format(
-                        "%s %s", //$NON-NLS-1$
-                        data.percentage,
-                        child.getParent().getName()
-                    );
+                if (child.getParent() != null)
+                {
+                    data.percentage = String.format("%s %s", //$NON-NLS-1$
+                                    data.percentage, child.getParent().getName());
                 }
 
                 data.value = Values.Money.format(child.getActual());
                 dataMap.put(nodeId, data);
             }
 
-
-            if (!child.getChildren().isEmpty()) {
+            if (!child.getChildren().isEmpty())
+            {
                 addNodes(dataMap, colors, node, child, child.getChildren(), total);
             }
         }

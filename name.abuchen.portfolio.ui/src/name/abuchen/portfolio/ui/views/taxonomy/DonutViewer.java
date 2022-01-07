@@ -31,10 +31,12 @@ import name.abuchen.portfolio.ui.views.charts.IPieChart;
     @Override
     public Control createControl(Composite container)
     {
-        if (this.useSWTCharts) {
+        if (this.useSWTCharts)
+        {
             chart = new TaxonomieDonutChartSWT(this, view, IPieChart.ChartType.DONUT);
         }
-        else {
+        else
+        {
             chart = new TaxonomieDonutChartBrowser(make(EmbeddedBrowser.class), this.view, this);
         }
         return chart.createControl(container);
