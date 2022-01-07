@@ -5,25 +5,15 @@ import javax.inject.Inject;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.browser.BrowserFunction;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.json.simple.JSONObject;
 
-import com.ibm.icu.text.MessageFormat;
-
-import name.abuchen.portfolio.money.Money;
-import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
-import name.abuchen.portfolio.ui.util.EmbeddedBrowser.ItemSelectedFunction;
-import name.abuchen.portfolio.ui.views.charts.IPieChart;
 import name.abuchen.portfolio.ui.util.SimpleAction;
-import name.abuchen.portfolio.util.ColorConversion;
+import name.abuchen.portfolio.ui.views.charts.IPieChart;
 
 /* package */class PieChartViewer extends AbstractChartPage
 {
@@ -34,7 +24,6 @@ import name.abuchen.portfolio.util.ColorConversion;
     @Inject
     @Preference(UIConstants.Preferences.ENABLE_SWTCHART_PIECHARTS)
     boolean useSWTCharts;
-
 
     @Inject
     public PieChartViewer(AbstractFinanceView view, TaxonomyModel model, TaxonomyNodeRenderer renderer)
@@ -59,10 +48,12 @@ import name.abuchen.portfolio.util.ColorConversion;
     @Override
     public Control createControl(Composite container)
     {
-        if (this.useSWTCharts) {
+        if (this.useSWTCharts)
+        {
             chart = new TaxonomiePieChartSWT(this, view, IPieChart.ChartType.DONUT);
         }
-        else {
+        else
+        {
             chart = new TaxonomiePieChartBrowser(make(EmbeddedBrowser.class), view, this);
         }
         return chart.createControl(container);

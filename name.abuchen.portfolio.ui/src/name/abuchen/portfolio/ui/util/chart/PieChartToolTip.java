@@ -11,7 +11,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swtchart.Chart;
 import org.eclipse.swtchart.model.Node;
 
-
 public class PieChartToolTip extends AbstractSWTChartToolTip
 {
     private DecimalFormat defaultValueFormat = new DecimalFormat("#,##0.00"); //$NON-NLS-1$
@@ -20,7 +19,7 @@ public class PieChartToolTip extends AbstractSWTChartToolTip
     public interface IToolTipBuilder
     {
         void build(Composite container, Node currentNode);
-        
+
     }
 
     public class ToolTipBuilder implements IToolTipBuilder
@@ -39,7 +38,7 @@ public class PieChartToolTip extends AbstractSWTChartToolTip
             right.setText(defaultValueFormat.format(currentNode.getValue()));
         }
     }
-    
+
     public PieChartToolTip(Chart chart)
     {
         super(chart);
@@ -60,9 +59,8 @@ public class PieChartToolTip extends AbstractSWTChartToolTip
     @Override
     protected void createComposite(Composite parent, Object focus)
     {
-        if (focus == null) {
-            return;
-        }
+        if (focus == null)
+        { return; }
         Node currentNode = (Node) focus;
         final Composite container = new Composite(parent, SWT.NONE);
         tooltipBuilder.build(container, currentNode);
@@ -73,7 +71,6 @@ public class PieChartToolTip extends AbstractSWTChartToolTip
     {
         return true;
     }
-
 
     @Override
     void onFocusChanged(Object newFocus)
