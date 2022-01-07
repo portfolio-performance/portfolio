@@ -60,7 +60,9 @@ public class PieChartToolTip extends AbstractSWTChartToolTip
     protected void createComposite(Composite parent, Object focus)
     {
         if (focus == null)
-        { return; }
+        {
+            return;
+        }
         Node currentNode = (Node) focus;
         final Composite container = new Composite(parent, SWT.NONE);
         tooltipBuilder.build(container, currentNode);
