@@ -147,6 +147,8 @@ public class Messages extends NLS
     public static String ColumnAbsolutePerformance;
     public static String ColumnAbsolutePerformance_Option;
     public static String ColumnAutoGenerate;
+    public static String ColumnDeltaPctOfTotal;
+    public static String ColumnDeltaPctOfTotal_MenuLabel;
     public static String ColumnDeltaPercent;
     public static String ColumnDeltaPercentIndicator;
     public static String ColumnDeltaPercentRelative;
@@ -302,6 +304,8 @@ public class Messages extends NLS
     public static String ColumnTermCurrency;
     public static String ColumnThereofForeignCurrencyGains;
     public static String ColumnTicker;
+    public static String ColumnToBePctOfTotal;
+    public static String ColumnToBePctOfTotal_MenuLabel;
     public static String ColumnTotal;
     public static String ColumnTransactionType;
     public static String ColumnTTWROR_Option;

@@ -1,0 +1,15 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Disponible depuis le : 05/11/2020 Téléchargé le : 29/12/2021A
+Bordereau T
+Compte titres: 7634568
+Numéro de réf. : 7763C9846/01AAchat 21 KBC (BE0003565737) à 43,85 EURType d' instrument: Actions
+Type d'ordre: Market I
+Validité: Day
+Ordre créé à: 05/11/2020 11:25:43 CET
+Date et heure d'exécution: 05/P11/2020L11:25:43 CETDate de comptabilisation: 05/11/2020Date valeur: U09/11/2020Lieu d'exécution: EquiductMontant brut - 920,85 EURD - 920,85 EURTaxe boursière - 0,35% - 3,22 EURCourtage - 7,50 EUR
+Débit 931,57 EUR
+Keytrade Bank, succursale belge d'Arkéa Direct Bank SA (France)
+Boulevard du Souverain 100 - 1170 Bruxelles, RPM Bruxelles - TVA BE 0879 257 191
+Intermédiaire en assurance autorisé à exercer en Belgique (ORIAS 07008441)
+T +32 2 679 90 00 - F +32 2 679 90 01 - info@keytradebank.com - keytradebank.be 

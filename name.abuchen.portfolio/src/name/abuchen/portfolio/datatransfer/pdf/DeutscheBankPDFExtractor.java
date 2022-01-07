@@ -77,7 +77,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                 // WKN BASF11 Nominal ST 19
                 // ISIN DE000BASF111 Kurs EUR 35,00
                 .section("name", "wkn", "shares", "isin", "currency")
-                .match("^[\\d]+ [ \\d]+ (?<name>.*)$")
+                .match("^[\\d]{3} [\\d]+ [\\d]{2} (?<name>.*)$")
                 .match("^WKN (?<wkn>.*) Nominal ST (?<shares>[\\.,\\d]+)$")
                 .match("^ISIN (?<isin>[\\w]{12}) Kurs (?<currency>[\\w]{3}) .*$")
                 .assign((t, v) -> {
@@ -237,11 +237,16 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
          * Verwendungszweck/ Kundenreferenz
          * 1111111111111111 1220 INKL. SONDERZAHLUNG
          */
-        Block blockDepositRemoval = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. (SEPA (Dauerauftrag|.berweisung|Lastschrifteinzug|Echtzeit.berweisung) .*"
+        Block blockDepositRemoval = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. "
+                        + "((SEPA )?"
+                        + "(Dauerauftrag"
+                        + "|.berweisung"
+                        + "|Lastschrifteinzug"
+                        + "|Echtzeit.berweisung) .*"
                         + "|Bargeldauszahlung GAA"
                         + "|Kartenzahlung"
                         + "|Verwendungszweck\\/ Kundenreferenz) "
-                        + "([\\-|\\+]) [\\.,\\d]+$");
+                        + "(\\-|\\+) [\\.,\\d]+$");
         type.addBlock(blockDepositRemoval);
         blockDepositRemoval.set(new Transaction<AccountTransaction>()
 
@@ -252,11 +257,16 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                 })
 
                 .section("date", "note", "sign", "amount", "note1")
-                .match("^[\\d]{2}\\.[\\d]{2}\\. (?<date>[\\d]{2}\\.[\\d]{2}\\.) (SEPA )?(?<note>(Dauerauftrag|.berweisung|Lastschrifteinzug|Echtzeit.berweisung) .*"
+                .match("^[\\d]{2}\\.[\\d]{2}\\. (?<date>[\\d]{2}\\.[\\d]{2}\\.) "
+                                + "(SEPA )?"
+                                + "(?<note>(Dauerauftrag"
+                                + "|.berweisung"
+                                + "|Lastschrifteinzug"
+                                + "|Echtzeit.berweisung) .*"
                                 + "|Bargeldauszahlung GAA"
                                 + "|Kartenzahlung"
                                 + "|Verwendungszweck\\/ Kundenreferenz) "
-                                + "(?<sign>([\\-|\\+])) (?<amount>[\\.,\\d]+)$")
+                                + "(?<sign>(\\-|\\+)) (?<amount>[\\.,\\d]+)$")
                 .match("^(?<note1>.*)$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
@@ -376,6 +386,11 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                 .match("^Kirchensteuer auf KESt ([\\s]+)?\\- (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
+                // Kirchensteuer auf KESt - 11,79 USD - 10,43 EUR
+                .section("tax", "currency").optional()
+                .match("^Kirchensteuer auf KESt ([\\s]+)?\\- [\\.,\\d]+ [\\w]{3} \\- (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> processTaxEntries(t, v, type))
+
                 // Anrechenbare ausländische Quellensteuer 13,07 EUR
                 .section("tax", "currency").optional()
                 .match("^Anrechenbare ausl.ndische Quellensteuer (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
@@ -389,14 +404,47 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
          * then we set a flag and don't book provision fee
          */
         transaction
+                // Provision EUR 3,13
+                // Provisions-Rabatt EUR -1,13
+                // Ausgekehrte Zuwendungen, die die Bank von DWS Xtrackers erhält EUR -2,00
+                .section("currency", "fee", "feeRefund1", "feeRefund2").optional()
+                .match("^Provision (?<currency>[\\w]{3}) (\\-)?(?<fee>[\\.,\\d]+)$")
+                .match("^Provisions\\-Rabatt (?<currency>[\\w]{3}) (\\-)?(?<feeRefund1>[\\.,\\d]+)$")
+                .match("^Ausgekehrte Zuwendungen, .* (?<currency>[\\w]{3}) \\-(?<feeRefund2>[\\.,\\d]+)$")
+                .assign((t, v) -> {
+                    double provision = Double.parseDouble(v.get("fee").replace(',', '.'));
+                    double feeRefund1 = Double.parseDouble(v.get("feeRefund1").replace(',', '.'));
+                    double feeRefund2 = Double.parseDouble(v.get("feeRefund2").replace(',', '.'));
+
+                    if (provision - (feeRefund1 + feeRefund2) != 0L)
+                    {
+                        String fee =  Double.toString(provision - (feeRefund1 + feeRefund2)).replace('.', ',');
+                        v.put("fee", fee);
+                        processFeeEntries(t, v, type);
+                    }
+
+                    type.getCurrentContext().put("noProvision", "X");
+                })
+
                 // Provision EUR 1,26
                 // Ausgekehrte Zuwendungen, die die Bank von DWS Xtrackers erhält EUR -1,26
                 .section("currency", "fee", "feeRefund").optional()
-                .match("^Provision (?<currency>[\\w]{3}) ([-])?(?<fee>[\\.,\\d]+)$")
+                .match("^Provision (?<currency>[\\w]{3}) (\\-)?(?<fee>[\\.,\\d]+)$")
                 .match("^Ausgekehrte Zuwendungen, .* (?<currency>[\\w]{3}) \\-(?<feeRefund>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    if (v.get("fee").equals(v.get("feeRefund")))
+                    double provision = Double.parseDouble(v.get("fee").replace(',', '.'));
+                    double feeRefund = Double.parseDouble(v.get("feeRefund").replace(',', '.'));
+
+                    if (!"X".equals(type.getCurrentContext().get("noProvision")))
                     {
+                        if (provision - feeRefund != 0L)
+                        {
+                            String fee =  Double.toString(provision - feeRefund).replace('.', ',');
+                            v.put("fee", fee);
+                            processFeeEntries(t, v, type);
+                            
+                        }
+
                         type.getCurrentContext().put("noProvision", "X");
                     }
                 });
@@ -405,12 +453,10 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                 // Provision EUR 7,90
                 // Provision EUR -7,90
                 .section("currency", "fee").optional()
-                .match("^Provision (?<currency>[\\w]{3}) ([-])?(?<fee>[\\.,\\d]+)$")
+                .match("^Provision (?<currency>[\\w]{3}) (\\-)?(?<fee>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     if (!"X".equals(type.getCurrentContext().get("noProvision")))
-                    {
                         processFeeEntries(t, v, type);
-                    }
                 })
 
                 // Provision (0,25 %) EUR 8,78

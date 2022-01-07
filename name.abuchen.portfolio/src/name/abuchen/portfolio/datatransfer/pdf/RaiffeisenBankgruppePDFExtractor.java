@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -11,16 +13,22 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.util.TextUtil;
 
 @SuppressWarnings("nls")
 public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
 {
+    private static final String FLAG_WITHHOLDING_TAX_FOUND = "exchangeRate"; //$NON-NLS-1$
+    private static final String EXCHANGE_RATE = "exchangeRate"; //$NON-NLS-1$
+
     public RaiffeisenBankgruppePDFExtractor(Client client)
     {
         super(client);
 
         addBankIdentifier("Raiffeisenbank"); //$NON-NLS-1$
+        addBankIdentifier("RB Augsburger Land West eG"); //$NON-NLS-1$
 
         addBuySellTransaction();
         addDividendeTransaction();
@@ -35,7 +43,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("Kauf|Verkauf");
+        DocumentType type = new DocumentType("(Kauf|Verkauf)");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -45,14 +53,14 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^Gesch.ftsart: (Kauf|Verkauf) .*$");
+        Block firstRelevantLine = new Block("^(Gesch.ftsart:|Wertpapier Abrechnung) (Kauf|Verkauf)(.*)?$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
                 // Is type --> "Verkauf" change from BUY to SELL
                 .section("type").optional()
-                .match("Gesch.ftsart: (?<type>Verkauf) .*$")
+                .match("^(Gesch.ftsart:|Wertpapier Abrechnung) (?<type>(Kauf|Verkauf)) .*$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("Verkauf"))
                     {
@@ -63,10 +71,10 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                 // Titel: DE000BAY0017 Bayer AG
                 // Namens-Aktien o.N.
                 // Kurs: 53,47 EUR
-                .section("isin", "name", "name1", "currency")
+                .section("isin", "name", "name1", "currency").optional()
                 .match("^Titel: (?<isin>[\\w]{12}) (?<name>.*)$")
                 .match("^(?<name1>.*)$")
-                .match("^Kurs: ([.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^Kurs: ([\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Kurs:"))
                         v.put("name", v.get("name") + " " + v.get("name1"));
@@ -74,30 +82,55 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                     t.setSecurity(getOrCreateSecurity(v));
                 })
 
-                // Zugang: 2 Stk   
-                // Abgang: 4.500 Stk   
-                .section("shares")
-                .match("^(Zugang|Abgang): (?<shares>[.,\\d]+)(.*)?$")
-                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
-
-                // Handelszeit: 03.05.2021 13:45:18 
-                .section("date", "time")
-                .match("^Handelszeit: (?<date>\\d+.\\d+.\\d{4}) (?<time>\\d+:\\d+:\\d+)$")
+                // Stück 100 QUALCOMM INC.                      US7475251036 (883121)
+                // REGISTERED SHARES DL -,0001        
+                // Ausführungskurs 143,68 EUR Auftragserteilung/ -ort Online-Banking
+                .section("name", "isin", "wkn", "name1", "currency").optional()
+                .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
+                .match("^(?<name1>.*)$")
+                .match("^Ausf.hrungskurs [\\.,\\d]+ (?<currency>[\\w]{3}) .*$")
                 .assign((t, v) -> {
-                    if (v.get("time") != null)
-                        t.setDate(asDate(v.get("date"), v.get("time")));
-                    else
-                        t.setDate(asDate(v.get("date")));
+                    if (!v.get("name1").startsWith("Handels-/Ausführungsplatz"))
+                        v.put("name", TextUtil.strip(v.get("name")) + " " + v.get("name1"));
+
+                    t.setSecurity(getOrCreateSecurity(v));
                 })
 
+                .oneOf(
+                                // Zugang: 2 Stk   
+                                // Abgang: 4.500 Stk  
+                                section -> section
+                                        .attributes("shares")
+                                        .match("^(Zugang|Abgang): (?<shares>[\\.,\\d]+)(.*)?$")
+                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                                ,
+                                // Stück 100 QUALCOMM INC.                      US7475251036 (883121)
+                                section -> section
+                                        .attributes("shares")
+                                        .match("^St.ck (?<shares>[\\.,\\d]+) .* [\\w]{12} \\(.*\\)$")
+                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        )
+
+                // Handelszeit: 03.05.2021 13:45:18
+                // Schlusstag/-Zeit 09.11.2021 09:58:45 Auftraggeber Muster 
+                .section("date", "time")
+                .match("^(Handelszeit:|Schlusstag\\/\\-Zeit) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2})(.*)?$")
+                .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
+
                 // Zu Lasten IBAN AT99 9999 9000 0011 1110 -107,26 EUR  
-                // Zu Gunsten IBAN AT27 3284 2000 0011 1111 36.115,76 EUR 
+                // Zu Gunsten IBAN AT27 3284 2000 0011 1111 36.115,76 EUR
+                // Ausmachender Betrag 14.399,34- EUR
                 .section("amount", "currency")
-                .match("^Zu (Lasten|Gunsten) .* ([-])?(?<amount>[.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .match("^(Zu (Lasten|Gunsten) .*|Ausmachender Betrag) (\\-)?(?<amount>[\\.,\\d]+)(\\-)? (?<currency>[\\w]{3})(.*)?$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(v.get("currency"));
                 })
+
+                // Limit bestens
+                .section("note").optional()
+                .match("^(?<note>Limit .*)$")
+                .assign((t, v) -> t.setNote(TextUtil.strip(v.get("note"))))
 
                 .wrap(BuySellEntryItem::new);
 
@@ -107,10 +140,10 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("Ertrag");
+        DocumentType type = new DocumentType("(Ertrag|Dividendengutschrift)");
         this.addDocumentTyp(type);
 
-        Block block = new Block("Gesch.ftsart: Ertrag");
+        Block block = new Block("^(Gesch.ftsart: Ertrag|Dividendengutschrift)$");
         type.addBlock(block);
         Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>()
             .subject(() -> {
@@ -123,10 +156,10 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                 // Titel: DE000BAY0017 Bayer AG
                 // Namens-Aktien o.N.
                 // Dividende: 2 EUR
-                .section("isin", "name", "name1", "currency")
+                .section("isin", "name", "name1", "currency").optional()
                 .match("^Titel: (?<isin>[\\w]{12}) (?<name>.*)$")
                 .match("^(?<name1>.*)$")
-                .match("^Dividende: ([.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^Dividende: [\\.,\\d]+ (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Dividende:"))
                         v.put("name", v.get("name") + " " + v.get("name1"));
@@ -134,25 +167,102 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                     t.setSecurity(getOrCreateSecurity(v));
                 })
 
-                // Geschäftsart: Ertrag
-                // 90 Stk    
-                .section("shares")
-                .match("^Gesch.ftsart: .*$")
-                .match("^(?<shares>[.,\\d]+) Stk(.*)?$")
-                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                // Stück 100 QUALCOMM INC. US7475251036 (883121)
+                // REGISTERED SHARES DL -,0001
+                // Zahlbarkeitstag 16.12.2021 Dividende pro Stück 0,68 USD
+                .section("name", "isin", "wkn", "name1", "currency").optional()
+                .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
+                .match("^(?<name1>.*)$")
+                .match("^Zahlbarkeitstag [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Dividende pro St.ck [\\.,\\d]+ (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    if (!v.get("name1").startsWith("Zahlbarkeitstag"))
+                        v.put("name", v.get("name") + " " + v.get("name1"));
 
-                // Valuta 30.04.2021
-                .section("date")
-                .match("^Valuta (?<date>\\d+.\\d+.\\d{4})$")
-                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                    t.setSecurity(getOrCreateSecurity(v));
+                })
+
+                .oneOf(
+                                // 90 Stk  
+                                section -> section
+                                        .attributes("shares")
+                                        .match("^(?<shares>[\\.,\\d]+) Stk(.*)?$")
+                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                                ,
+                                // Stück 100 QUALCOMM INC. US7475251036 (883121)
+                                section -> section
+                                        .attributes("shares")
+                                        .match("^St.ck (?<shares>[\\.,\\d]+) .* [\\w]{12} \\(.*\\)$")
+                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        )
+
+                .oneOf(
+                                // Valuta 30.04.2021
+                                section -> section
+                                        .attributes("date")
+                                        .match("^Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
+                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                                ,
+                                // Den Betrag buchen wir mit Wertstellung 20.12.2021 zu Gunsten des Kontos 123456789 (IBAN DE11 1111 1111 1111 123456), BLZ 720 692 74 (BIC GENODEF1ZUS). 
+                                section -> section
+                                        .attributes("date")
+                                        .match("^Den Betrag buchen wir mit Wertstellung (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$")
+                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        )
 
                 // Zu Gunsten IBAN AT99 9999 9000 0011 1111 110,02 EUR 
+                // Ausmachender Betrag 50,88+ EUR
                 .section("amount", "currency")
-                .match("^Zu Gunsten .* (?<amount>[.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .match("^(Zu Gunsten .*|Ausmachender Betrag) (?<amount>[\\.,\\d]+)(\\+)? (?<currency>[\\w]{3})(.*)?$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(v.get("currency"));
                 })
+
+                // Devisenkurs EUR / USD  1,1360
+                // Dividendengutschrift 68,00 USD 59,86+ EUR
+                .section("exchangeRate", "fxAmount", "fxCurrency", "amount", "currency").optional()
+                .match("^Devisenkurs [\\w]{3} \\/ [\\w]{3} ([\\s]+)?(?<exchangeRate>[\\.,\\d]+)$")
+                .match("^Dividendengutschrift (?<fxAmount>[\\.,\\d]+) (?<fxCurrency>[\\w]{3}) (?<amount>[\\.,\\d]+)\\+ (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                    if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
+                    {
+                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+                    }
+                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
+
+                    if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
+                    {
+                        BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
+                                        RoundingMode.HALF_DOWN);
+
+                        // check, if forex currency is transaction
+                        // currency or not and swap amount, if necessary
+                        Unit grossValue;
+                        if (!asCurrencyCode(v.get("fxCurrency")).equals(t.getCurrencyCode()))
+                        {
+                            Money fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")),
+                                            asAmount(v.get("fxAmount")));
+                            Money amount = Money.of(asCurrencyCode(v.get("currency")),
+                                            asAmount(v.get("amount")));
+                            grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
+                        }
+                        else
+                        {
+                            Money amount = Money.of(asCurrencyCode(v.get("fxCurrency")), 
+                                            asAmount(v.get("fxAmount")));
+                            Money fxAmount = Money.of(asCurrencyCode(v.get("currency")), 
+                                            asAmount(v.get("amount")));
+                            grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
+                        }
+                        t.addUnit(grossValue);
+                    }
+                })
+
+                // Ex-Tag 01.12.2021 Art der Dividende Quartalsdividende
+                .section("note").optional()
+                .match("^.* Art der Dividende (?<note>.*)$")
+                .assign((t, v) -> t.setNote(TextUtil.strip(v.get("note"))))
 
                 .wrap(TransactionItem::new);
 
@@ -164,36 +274,29 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransactions()
     {
-        DocumentType type1 = new DocumentType("Kontokorrent", (context, lines) -> {
-            Pattern pCurrency = Pattern.compile("^([\\w]{3})(-Konto Kontonummer)(.*)$");
-            Pattern pYear = Pattern.compile("^.* Kontoauszug Nr. ([\\s]+)?(?<nr>[\\d]+)\\/(?<year>[\\d]{4})");
+        DocumentType type = new DocumentType("(Kontokorrent|Privatkonto)", (context, lines) -> {
+            Pattern pCurrency = Pattern.compile("^(?<currency>[\\w]{3})\\-Konto Kontonummer .*$");
+            Pattern pYear = Pattern.compile("^.* Kontoauszug Nr\\. ([\\s]+)?(?<nr>[\\d]+)\\/(?<year>[\\d]{4})$");
 
             for (String line : lines)
             {
                 Matcher m = pCurrency.matcher(line);
                 if (m.matches())
                 {
-                    context.put("currency", m.group(1));
+                    context.put("currency", m.group("currency"));
                 }
-            }
-            
-            for (String line : lines)
-            {
-                Matcher m = pYear.matcher(line);
+
+                m = pYear.matcher(line);
                 if (m.matches())
                 {
-                    context.put("nr", m.group(2));
-                    // Read year
-                    context.put("year", m.group(3));
+                    context.put("nr", m.group("nr"));
+                    context.put("year", m.group("year"));
                 }
             }
         });
-        this.addDocumentTyp(type1);
-        
-        DocumentType type = new DocumentType("Kontokorrent");
         this.addDocumentTyp(type);
 
-        Block depositremoval = new Block("^\\d{2}\\.\\d{2}\\. \\d{2}\\.\\d{2}\\. .* [S|H]$");
+        Block depositremoval = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. .* [S|H]$");
         type.addBlock(depositremoval);
         Transaction<AccountTransaction> pdfTransactionDepositRemoval = new Transaction<AccountTransaction>()
             .subject(() -> {
@@ -205,7 +308,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
         pdfTransactionDepositRemoval
                 // Is type --> "H" change from DEPOSIT to REMOVAL
                 .section("type").optional()
-                .match("^\\d{2}\\.\\d{2}\\. \\d{2}\\.\\d{2}\\. .* [.,\\d]+ (?<type>[S|H])$")
+                .match("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. .* [\\.,\\d]+ (?<type>[S|H])$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("H"))
                     {
@@ -214,19 +317,22 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                 })
 
                 .section("day", "month", "amount", "note").optional()
-                .match("^\\d{2}\\.\\d{2}\\. (?<day>\\d{2})\\.(?<month>\\d{2})\\. "
+                .match("^[\\d]{2}\\.[\\d]{2}\\. (?<day>[\\d]{2})\\.(?<month>[\\d]{2})\\. "
+                                + "(?i:"
                                 + "(?<note>Einnahmen"
                                 + "|BASISLASTSCHRIFT"
                                 + "|DAUERAUFTRAG"
-                                + "|EURO-UEBERWEISUNG"
+                                + "|EURO\\-UEBERWEISUNG"
                                 + "|GUTSCHRIFT"
                                 + "|Kartenzahlung"
                                 + "|Auszahlung"
-                                + "|LOHN/GEHALT) .* (?<amount>[.,\\d]+) [S|H]$")
+                                + "|LOHN\\/GEHALT)"
+                                + ") .* "
+                                + "(?<amount>[\\.,\\d]+) [S|H]$")
                 .match("^(?![\\s]+ [Dividende]).*$")
                 .match("^(?![\\s]+ [Dividende]).*$")
                 .assign((t, v) -> {
-                    Map<String, String> context = type1.getCurrentContext();
+                    Map<String, String> context = type.getCurrentContext();
 
                     if (context.get("nr").compareTo("01") == 0  && Integer.parseInt(v.get("month")) < 3)
                     {
@@ -240,6 +346,15 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
 
                     t.setCurrencyCode(context.get("currency"));
                     t.setAmount(asAmount(v.get("amount")));
+                    
+                    // Formatting some notes
+                    if ("LOHN/GEHALT".equals(v.get("note")))
+                        v.put("note", "Lohn/Gehalt");
+                    else if ("EURO-UEBERWEISUNG".equals(v.get("note")))
+                        v.put("note", "EURO-Überweisung");
+                    else
+                        v.put("note", v.get("note").substring(0, 1).toUpperCase() + v.get("note").substring(1, v.get("note").length()).toLowerCase());
+
                     t.setNote(v.get("note"));
                 })
 
@@ -252,7 +367,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
 
         depositremoval.set(pdfTransactionDepositRemoval);
 
-        Block interest = new Block("^\\d{2}\\.\\d{2}\\. \\d{2}\\.\\d{2}\\. .* [S|H]$");
+        Block interest = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. .* [S|H]$");
         type.addBlock(interest);
         Transaction<AccountTransaction> pdfTransactionInterest = new Transaction<AccountTransaction>()
             .subject(() -> {
@@ -264,7 +379,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
         pdfTransactionInterest
                 // Is type --> "S" change from INTEREST to INTEREST_CHARGE
                 .section("type").optional()
-                .match("^\\d{2}\\.\\d{2}\\. \\d{2}\\.\\d{2}\\. .* [.,\\d]+ (?<type>[S|H])$")
+                .match("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. .* [.,\\d]+ (?<type>[S|H])$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("S"))
                     {
@@ -276,12 +391,12 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                 //          9,60000% einger. Kontoüberziehung    3112       1,00S
                 //          14,60000% einger. Kontoüberziehung    3112       1,00S
                 .section("day", "month", "amount1", "amount2", "note").optional()
-                .match("^\\d{2}\\.\\d{2}\\. (?<day>\\d{2}).(?<month>\\d{2}). (Abschluss) .* [.,\\d]+ [S|H]$")
-                .match("^[\\s]+ [.,\\d]+% einger. Konto.berziehung .* (?<amount1>[.,\\d]+)[S|H]$")
-                .match("^[\\s]+ [.,\\d]+% einger. Konto.berziehung .* (?<amount2>[.,\\d]+)[S|H]$")
-                .match("^[\\s]+ (?<note>Entgelte vom \\d{2}\\.\\d{2}\\.\\d{4} .* \\d{2}\\.\\d{2}\\.\\d{4})$")
+                .match("^[\\d]{2}\\.[\\d]{2}\\. (?<day>[\\d]{2}).(?<month>[\\d]{2}). (Abschluss) .* [\\.,\\d]+ [S|H]$")
+                .match("^[\\s]+ [\\.,\\d]+% einger. Konto.berziehung .* (?<amount1>[\\.,\\d]+)[S|H]$")
+                .match("^[\\s]+ [\\.,\\d]+% einger. Konto.berziehung .* (?<amount2>[\\.,\\d]+)[S|H]$")
+                .match("^[\\s]+ (?<note>Entgelte vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
                 .assign((t, v) -> {
-                    Map<String, String> context = type1.getCurrentContext();
+                    Map<String, String> context = type.getCurrentContext();
 
                     if (context.get("nr").compareTo("01") == 0  && Integer.parseInt(v.get("month")) < 3)
                     {
@@ -306,7 +421,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
 
         interest.set(pdfTransactionInterest);
 
-        Block fees = new Block("^\\d{2}\\.\\d{2}\\. \\d{2}\\.\\d{2}\\. .* [S|H]$");
+        Block fees = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. .* [S|H]$");
         type.addBlock(fees);
         Transaction<AccountTransaction> pdfTransactionFees = new Transaction<AccountTransaction>()
             .subject(() -> {
@@ -318,7 +433,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
         pdfTransactionFees
                 // Is type --> "H" change from FEES to FEES_REFUND
                 .section("type").optional()
-                .match("^\\d{2}\\.\\d{2}\\. \\d{2}\\.\\d{2}\\. .* [.,\\d]+ (?<type>[S|H])$")
+                .match("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. .* [\\.,\\d]+ (?<type>[S|H])$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("H"))
                     {
@@ -335,13 +450,13 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                 //          Kontoführungsentgelt        3112       1,95S
                 // Abschluss vom 01.10.2020 bis 31.12.2020
                 .section("day", "month", "amount1", "amount2", "amount3", "note").optional()
-                .match("^\\d{2}\\.\\d{2}\\. (?<day>\\d{2}).(?<month>\\d{2}). (Abschluss) .* [.,\\d]+ [S|H]$")
-                .match("^[\\s]+ Buchungen Online .* (?<amount1>[.,\\d]+)[S|H]$")
-                .match("^[\\s]+ Buchungen automatisch .* (?<amount2>[.,\\d]+)[S|H]$")
-                .match("^[\\s]+ Kontof.hrungsentgelt .* (?<amount3>[.,\\d]+)[S|H]$")
-                .match("^[\\s]+ (?<note>Abschluss vom \\d{2}\\.\\d{2}\\.\\d{4} .* \\d{2}\\.\\d{2}\\.\\d{4})$")
+                .match("^[\\d]{2}\\.[\\d]{2}\\. (?<day>[\\d]{2}).(?<month>[\\d]{2}). (Abschluss) .* [\\.,\\d]+ [S|H]$")
+                .match("^[\\s]+ Buchungen Online .* (?<amount1>[\\.,\\d]+)[S|H]$")
+                .match("^[\\s]+ Buchungen automatisch .* (?<amount2>[\\.,\\d]+)[S|H]$")
+                .match("^[\\s]+ Kontof.hrungsentgelt .* (?<amount3>[\\.,\\d]+)[S|H]$")
+                .match("^[\\s]+ (?<note>Abschluss vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
                 .assign((t, v) -> {
-                    Map<String, String> context = type1.getCurrentContext();
+                    Map<String, String> context = type.getCurrentContext();
 
                     if (context.get("nr").compareTo("01") == 0  && Integer.parseInt(v.get("month")) < 3)
                     {
@@ -362,12 +477,12 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                 //          Kontoführungsentgelt        2345       1,95S
                 // Abschluss vom 30.07.2021 bis 31.08.2021
                 .section("day", "month", "amount1", "amount2", "note").optional()
-                .match("^\\d{2}\\.\\d{2}\\. (?<day>\\d{2}).(?<month>\\d{2}). (Abschluss) .* [.,\\d]+ [S|H]$")
-                .match("^[\\s]+ Buchungen automatisch .* (?<amount1>[.,\\d]+)[S|H]$")
-                .match("^[\\s]+ Kontof.hrungsentgelt .* (?<amount2>[.,\\d]+)[S|H]$")
-                .match("^[\\s]+ (?<note>Abschluss vom \\d{2}\\.\\d{2}\\.\\d{4} .* \\d{2}\\.\\d{2}\\.\\d{4})$")
+                .match("^[\\d]{2}\\.[\\d]{2}\\. (?<day>[\\d]{2}).(?<month>[\\d]{2}). (Abschluss) .* [\\.,\\d]+ [S|H]$")
+                .match("^[\\s]+ Buchungen automatisch .* (?<amount1>[\\.,\\d]+)[S|H]$")
+                .match("^[\\s]+ Kontof.hrungsentgelt .* (?<amount2>[\\.,\\d]+)[S|H]$")
+                .match("^[\\s]+ (?<note>Abschluss vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
                 .assign((t, v) -> {
-                    Map<String, String> context = type1.getCurrentContext();
+                    Map<String, String> context = type.getCurrentContext();
 
                     if (context.get("nr").compareTo("01") == 0  && Integer.parseInt(v.get("month")) < 3)
                     {
@@ -398,18 +513,31 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
         transaction
                 // Quellensteuer: -47,48 EUR 
                 .section("tax", "currency").optional()
-                .match("^Quellensteuer: -(?<tax>[.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .match("^Quellensteuer: \\-(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
                 // Auslands-KESt: -22,50 EUR 
                 .section("tax", "currency").optional()
-                .match("^Auslands-KESt: -(?<tax>[.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .match("^Auslands\\-KESt: \\-(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
                 // Kursgewinn-KESt: -696,65 EUR 
                 .section("tax", "currency").optional()
-                .match("^Kursgewinn-KESt: -(?<tax>[.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
-                .assign((t, v) -> processTaxEntries(t, v, type));
+                .match("^Kursgewinn\\-KESt: \\-(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .assign((t, v) -> processTaxEntries(t, v, type))
+
+                // Einbehaltene Quellensteuer 15 % auf 68,00 USD 8,98- EUR
+                .section("quellensteinbeh", "currency").optional()
+                .match("^Einbehaltende Quellensteuer [\\.,\\d]+ % .* [\\.,\\d]+ [\\w]{3} (?<quellensteinbeh>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    type.getCurrentContext().put(FLAG_WITHHOLDING_TAX_FOUND, "true");
+                    addTax(t, v, type, "quellensteinbeh");
+                })
+
+                // Anrechenbare Quellensteuer 15 % auf 59,86 EUR 8,98 EUR
+                .section("quellenstanr", "currency").optional()
+                .match("^Anrechenbare Quellensteuer [\\.,\\d]+ % .* [\\.,\\d]+ [\\w]{3} (?<quellenstanr>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> addTax(t, v, type, "quellenstanr"));
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
@@ -417,7 +545,22 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
         transaction
                 // Serviceentgelt: -0,32 EUR 
                 .section("fee", "currency").optional()
-                .match("^Serviceentgelt: -(?<fee>[.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .match("^Serviceentgelt: \\-(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+
+                // Provision 0,2000 % vom Kurswert 28,74- EUR
+                .section("fee", "currency").optional()
+                .match("^Provision [\\.,\\d]+ % .* (?<fee>[\\.,\\d]+)\\- (?<currency>[\\w]{3})(.*)?$")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+
+                // Eigene Spesen 2,50- EUR
+                .section("fee", "currency").optional()
+                .match("^Eigene Spesen (?<fee>[\\.,\\d]+)\\- (?<currency>[\\w]{3})(.*)?$")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+
+                // Übertragungs-/Liefergebühr 0,10- EUR
+                .section("fee", "currency").optional()
+                .match("^.bertragungs\\-\\/Liefergebühr (?<fee>[\\.,\\d]+)\\- (?<currency>[\\w]{3})(.*)?$")
                 .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
@@ -449,5 +592,47 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
             PDFExtractorUtils.checkAndSetFee(fee,
                             ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
         }
+    }
+
+    private void addTax(Object t, Map<String, String> v, DocumentType type, String taxtype)
+    {
+        // Wenn es 'Einbehaltene Quellensteuer' gibt, dann die weiteren
+        // Quellensteuer-Arten nicht berücksichtigen.
+        if (checkWithholdingTax(type, taxtype))
+        {
+            name.abuchen.portfolio.model.Transaction tx = getTransaction(t);
+
+            String currency = asCurrencyCode(v.get("currency"));
+            long amount = asAmount(v.get(taxtype));
+
+            if (!currency.equals(tx.getCurrencyCode()) && type.getCurrentContext().containsKey(EXCHANGE_RATE))
+            {
+                BigDecimal rate = BigDecimal.ONE.divide(asExchangeRate(type.getCurrentContext().get(EXCHANGE_RATE)), 10,
+                                RoundingMode.HALF_DOWN);
+
+                currency = tx.getCurrencyCode();
+                amount = rate.multiply(BigDecimal.valueOf(amount)).setScale(0, RoundingMode.HALF_DOWN).longValue();
+            }
+
+            tx.addUnit(new Unit(Unit.Type.TAX, Money.of(currency, amount)));
+        }
+    }
+
+    private boolean checkWithholdingTax(DocumentType type, String taxtype)
+    {
+        if (Boolean.valueOf(type.getCurrentContext().get(FLAG_WITHHOLDING_TAX_FOUND)))
+        {
+            if ("quellenstanr".equalsIgnoreCase(taxtype))
+                return false;
+        }
+        return true;
+    }
+
+    private name.abuchen.portfolio.model.Transaction getTransaction(Object t)
+    {
+        if (t instanceof name.abuchen.portfolio.model.Transaction)
+            return ((name.abuchen.portfolio.model.Transaction) t);
+        return ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction();
+
     }
 }

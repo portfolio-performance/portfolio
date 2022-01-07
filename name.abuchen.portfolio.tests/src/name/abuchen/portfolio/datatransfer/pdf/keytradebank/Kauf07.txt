@@ -1,0 +1,15 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Disponible depuis le : 26/11/2021 Téléchargé le : 29/12/2021A
+Bordereau T
+Compte titres: 7634568
+Numéro de réf. : 7763C9846/01AAchat 15 KINEPOLIS GROUP (BE0974274061) à 46,3 EURType d' instrument: Actions
+Type d'ordre: Limit (46,30 EUR) I
+Validité: GTC
+Ordre créé à: 26/P11/2021L10:05:13 CETDate et heure d'exécution: 26/11/2021 13:25:24 CETDate de comptabilisation: 26/11/2021Date valeur: 30/11/2021Lieu d'exécution: EURONEXT - EURONEXT BRUSS
+Montant brut U - 694,50 EURD - 694,50 EURTaxe boursière - 0,35% - 2,43 EURCourtage - 7,50 EUR
+Débit 704,43 EUR
+Keytrade Bank, succursale belge d'Arkéa Direct Bank SA (France)
+Boulevard du Souverain 100 - 1170 Bruxelles, RPM Bruxelles - TVA BE 0879 257 191
+Intermédiaire en assurance autorisé à exercer en Belgique (ORIAS 07008441)
+T +32 2 679 90 00 - F +32 2 679 90 01 - info@keytradebank.com - keytradebank.be 

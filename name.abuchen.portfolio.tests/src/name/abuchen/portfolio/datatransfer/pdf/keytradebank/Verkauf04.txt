@@ -1,0 +1,24 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Disponible depuis le : 27/01/2021 Téléchargé le : 29/12/2021
+Bordereau
+Compte titres: 7634568
+Numéro de réf. : 7763C9846/01
+Vente 40 ORANGE BELGIUM (BE0003735496) à 22,45 EUR
+Type d' instrument: Actions
+Type d'ordre: Market
+Validité: GTC
+Ordre créé à: 27/01/2021 14:37:13 CET
+Date et heure d'exécution: 27/01/2021 14:37:13 CET
+Date de comptabilisation: 27/01/2021
+Date valeur: 29/01/2021
+Lieu d'exécution: Equiduct
+Montant brut + 898,00 EUR
++ 898,00 EUR
+Taxe boursière - 0,35% - 3,14 EUR
+Courtage - 7,50 EUR
+Crédit 887,36 EUR EUR
+Keytrade Bank, succursale belge d'Arkéa Direct Bank SA (France)
+Boulevard du Souverain 100 - 1170 Bruxelles, RPM Bruxelles - TVA BE 0879 257 191
+Intermédiaire en assurance autorisé à exercer en Belgique (ORIAS 07008441)
+T +32 2 679 90 00 - F +32 2 679 90 01 - info@keytradebank.com - keytradebank.be 
