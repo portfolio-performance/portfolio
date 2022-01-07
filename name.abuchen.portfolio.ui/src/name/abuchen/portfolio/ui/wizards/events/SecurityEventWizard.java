@@ -5,16 +5,17 @@ import org.eclipse.swt.graphics.Image;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityEvent;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
-public class CustomEventWizard extends Wizard
+public class SecurityEventWizard extends Wizard
 {
-    private CustomEventModel model;
+    private SecurityEventModel model;
 
-    public CustomEventWizard(Client client, Security security)
+    public SecurityEventWizard(Client client, Security security, SecurityEvent.Type type)
     {
-        this.model = new CustomEventModel(client, security);
+        this.model = new SecurityEventModel(client, security, type);
     }
 
     @Override
@@ -26,7 +27,7 @@ public class CustomEventWizard extends Wizard
     @Override
     public void addPages()
     {
-        addPage(new AddCustomEventPage(model));
+        addPage(new AddSecurityEventPage(model));
 
         AbstractWizardPage.attachPageListenerTo(this.getContainer());
     }

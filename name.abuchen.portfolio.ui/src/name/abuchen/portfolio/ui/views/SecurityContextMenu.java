@@ -19,7 +19,7 @@ import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransferDialog;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.BookmarkMenu;
-import name.abuchen.portfolio.ui.wizards.events.CustomEventWizard;
+import name.abuchen.portfolio.ui.util.EventMenu;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
 import name.abuchen.portfolio.ui.wizards.splits.StockSplitWizard;
 
@@ -100,20 +100,7 @@ public class SecurityContextMenu
             }
         });
 
-        manager.add(new Action(Messages.SecurityMenuAddEvent)
-        {
-            @Override
-            public void run()
-            {
-                CustomEventWizard wizard = new CustomEventWizard(owner.getClient(), security);
-                WizardDialog dialog = new WizardDialog(owner.getActiveShell(), wizard);
-                if (dialog.open() == Window.OK)
-                {
-                    owner.markDirty();
-                    owner.notifyModelUpdated();
-                }
-            }
-        });
+        manager.add(new EventMenu(owner, security));
 
         if (owner.getClient().getActivePortfolios().size() > 1)
         {

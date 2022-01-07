@@ -75,6 +75,7 @@ import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
 import name.abuchen.portfolio.ui.util.BookmarkMenu;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ConfirmActionWithSelection;
+import name.abuchen.portfolio.ui.util.EventMenu;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.viewers.BooleanEditingSupport;
@@ -94,7 +95,6 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 import name.abuchen.portfolio.ui.views.columns.SymbolColumn;
 import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
 import name.abuchen.portfolio.ui.views.columns.WknColumn;
-import name.abuchen.portfolio.ui.wizards.events.CustomEventWizard;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
 import name.abuchen.portfolio.ui.wizards.splits.StockSplitWizard;
 import name.abuchen.portfolio.util.Interval;
@@ -1027,15 +1027,7 @@ public final class SecuritiesTable implements ModificationListener
             }
         });
 
-        manager.add(new AbstractDialogAction(Messages.SecurityMenuAddEvent)
-        {
-            @Override
-            Dialog createDialog(Security security)
-            {
-                CustomEventWizard wizard = new CustomEventWizard(getClient(), security);
-                return new WizardDialog(getShell(), wizard);
-            }
-        });
+        manager.add(new EventMenu(view, security));
 
         if (view.getClient().getActivePortfolios().size() > 1)
         {
