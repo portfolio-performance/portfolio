@@ -385,12 +385,6 @@ public abstract class ReportingPeriod
         {
             this.startDate = startDate;
         }
-        
-        
-        public LocalDate getStartDate()
-        {
-            return startDate;
-        }
 
         @Override
         public Interval toInterval(LocalDate relativeTo)

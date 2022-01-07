@@ -15,12 +15,10 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
 
-import name.abuchen.portfolio.model.FirstTransactionSupplier;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.DatePicker;
@@ -50,9 +48,6 @@ public class ReportingPeriodDialog extends Dialog
     private Button radioSinceX;
     private DatePicker dateSince;
 
-    private Button radioSinceFirstTransaction;
-    private DateTime dateSinceFirstTransaction;
-    
     private Button radioYearX;
     private Spinner year;
 
@@ -67,12 +62,10 @@ public class ReportingPeriodDialog extends Dialog
     private Button radioPreviousYear;
 
     private List<Button> radioBtnList;
-    private FirstTransactionSupplier firstTransactionSupplier;
 
-    public ReportingPeriodDialog(Shell parentShell, ReportingPeriod template, FirstTransactionSupplier transactionSupplier)
+    public ReportingPeriodDialog(Shell parentShell, ReportingPeriod template)
     {
         super(parentShell);
-        this.firstTransactionSupplier = transactionSupplier;
         this.template = template != null ? template : new ReportingPeriod.LastX(1, 0);
     }
 
@@ -131,14 +124,6 @@ public class ReportingPeriodDialog extends Dialog
         radioSinceX = new Button(editArea, SWT.RADIO);
         radioSinceX.setText(Messages.LabelReportingDialogSince);
         dateSince = new DatePicker(editArea);
-        
-        radioSinceFirstTransaction = new Button(editArea, SWT.RADIO);
-        radioSinceFirstTransaction.setText(Messages.LabelReportingDialogSinceFirstTransaction);
-        LocalDate firstTransactionDate = getFirstTransactionDate();
-        LocalDate since = firstTransactionDate == null ? LocalDate.now() : firstTransactionDate;
-        dateSinceFirstTransaction = new DateTime(editArea, SWT.DATE | SWT.READ_ONLY | SWT.BORDER);
-        dateSinceFirstTransaction.setDate(since.getYear(), since.getMonthValue(), since.getDayOfMonth());
-        dateSinceFirstTransaction.setEnabled(false);
 
         radioYearX = new Button(editArea, SWT.RADIO);
         radioYearX.setText(Messages.LabelReportingDialogYear);
@@ -180,44 +165,38 @@ public class ReportingPeriodDialog extends Dialog
         // form layout
         //
 
-        if (Platform.OS_MACOSX.equals(Platform.getOS()))
-        {
-            // under Mac OS X, the date input fields are not align with the text
-            // by default
-
-            FormDataFactory.startingWith(radioSinceFirstTransaction).top(new FormAttachment(0, 10))
-                            .thenRight(dateSinceFirstTransaction).top(new FormAttachment(radioSinceFirstTransaction, -1, SWT.TOP));
-            
-            FormDataFactory.startingWith(radioSinceX).top(new FormAttachment(radioSinceFirstTransaction, 20))
-                            .thenRight(dateSince.getControl()).top(new FormAttachment(radioSinceX, -1, SWT.TOP));
-            
-            FormDataFactory.startingWith(radioFromXtoY).top(new FormAttachment(radioSinceX, 20))
-                            .thenRight(dateFrom.getControl()).top(new FormAttachment(radioFromXtoY, -1, SWT.TOP))
-                            .thenRight(lblTo).top(new FormAttachment(radioFromXtoY, 2, SWT.TOP))
-                            .thenRight(dateTo.getControl()).top(new FormAttachment(radioFromXtoY, -1, SWT.TOP));
-        }
-        else
-        {
-            FormDataFactory.startingWith(radioSinceFirstTransaction).top(new FormAttachment(0, 10))
-                            .thenRight(dateSinceFirstTransaction);
-            
-            FormDataFactory.startingWith(radioSinceX).top(new FormAttachment(radioSinceFirstTransaction, 20))
-                            .thenRight(dateSince.getControl());
-            
-            FormDataFactory.startingWith(radioFromXtoY).top(new FormAttachment(radioSinceX, 20))
-                            .thenRight(dateFrom.getControl()).thenRight(lblTo).thenRight(dateTo.getControl());
-        }
-        
-        FormDataFactory.startingWith(radioLast).top(new FormAttachment(radioFromXtoY, 20))
-                        .thenRight(years).thenRight(lblYears).thenRight(months).thenRight(lblMonths);
+        FormDataFactory.startingWith(radioLast).top(new FormAttachment(0, 10)).thenRight(years).thenRight(lblYears)
+                        .thenRight(months).thenRight(lblMonths);
 
         FormDataFactory.startingWith(radioLastDays).top(new FormAttachment(radioLast, 20)).thenRight(days)
                         .thenRight(lblDays);
 
         FormDataFactory.startingWith(radioLastTradingDays).top(new FormAttachment(radioLastDays, 20))
                         .thenRight(tradingDays).thenRight(lblTradingDays);
-        
-        FormDataFactory.startingWith(radioYearX).top(new FormAttachment(radioLastTradingDays, 20)).thenRight(year);
+
+        if (Platform.OS_MACOSX.equals(Platform.getOS()))
+        {
+            // under Mac OS X, the date input fields are not align with the text
+            // by default
+
+            FormDataFactory.startingWith(radioFromXtoY).top(new FormAttachment(radioLastTradingDays, 20))
+                            .thenRight(dateFrom.getControl()).top(new FormAttachment(radioFromXtoY, -1, SWT.TOP))
+                            .thenRight(lblTo).top(new FormAttachment(radioFromXtoY, 2, SWT.TOP))
+                            .thenRight(dateTo.getControl()).top(new FormAttachment(radioFromXtoY, -1, SWT.TOP));
+
+            FormDataFactory.startingWith(radioSinceX).top(new FormAttachment(radioFromXtoY, 20))
+                            .thenRight(dateSince.getControl()).top(new FormAttachment(radioSinceX, -1, SWT.TOP));
+        }
+        else
+        {
+            FormDataFactory.startingWith(radioFromXtoY).top(new FormAttachment(radioLastTradingDays, 20))
+                            .thenRight(dateFrom.getControl()).thenRight(lblTo).thenRight(dateTo.getControl());
+
+            FormDataFactory.startingWith(radioSinceX).top(new FormAttachment(radioFromXtoY, 20))
+                            .thenRight(dateSince.getControl());
+        }
+
+        FormDataFactory.startingWith(radioYearX).top(new FormAttachment(radioSinceX, 20)).thenRight(year);
 
         FormDataFactory.startingWith(lblCurrent).top(new FormAttachment(radioYearX, 20)).thenBelow(radioCurrentWeek)
                         .thenRight(radioCurrentMonth).thenRight(radioCurrentQuarter).thenRight(radioYTD);
@@ -234,8 +213,7 @@ public class ReportingPeriodDialog extends Dialog
 
         radioBtnList = Arrays.asList(radioLast, radioLastDays, radioLastTradingDays, radioFromXtoY, radioSinceX,
                         radioYearX, radioCurrentWeek, radioCurrentMonth, radioCurrentQuarter, radioYTD,
-                        radioPreviousWeek, radioPreviousMonth, radioPreviousQuarter, radioPreviousYear,
-                        radioSinceFirstTransaction);
+                        radioPreviousWeek, radioPreviousMonth, radioPreviousQuarter, radioPreviousYear);
         activateRadioOnChange(radioLast, years, months);
         activateRadioOnChange(radioLastDays, days);
         activateRadioOnChange(radioLastTradingDays, tradingDays);
@@ -276,19 +254,7 @@ public class ReportingPeriodDialog extends Dialog
         else if (template instanceof ReportingPeriod.FromXtoY)
             radioFromXtoY.setSelection(true);
         else if (template instanceof ReportingPeriod.SinceX)
-        {
-            ReportingPeriod.SinceX sinceX = (ReportingPeriod.SinceX) template;
-            LocalDate sinceXDate = sinceX.getStartDate();
-            LocalDate firstTransactionDate = getFirstTransactionDate();
-            if (sinceXDate.equals(firstTransactionDate)) 
-            {
-                radioSinceFirstTransaction.setSelection(true);
-            }
-            else
-            {
-                radioSinceX.setSelection(true);
-            }
-        }
+            radioSinceX.setSelection(true);
         else if (template instanceof ReportingPeriod.YearX)
             radioYearX.setSelection(true);
         else if (template instanceof ReportingPeriod.CurrentWeek)
@@ -359,12 +325,6 @@ public class ReportingPeriodDialog extends Dialog
 
             result = new ReportingPeriod.SinceX(dateSince.getSelection());
         }
-        else if (radioSinceFirstTransaction.getSelection())
-        {
-            LocalDate firstTransactionDate = getFirstTransactionDate();
-            LocalDate since = firstTransactionDate == null ? LocalDate.now() : firstTransactionDate;
-            result = new ReportingPeriod.SinceX(since);
-        }
         else if (radioYearX.getSelection())
         {
             result = new ReportingPeriod.YearX(year.getSelection());
@@ -414,9 +374,4 @@ public class ReportingPeriodDialog extends Dialog
         return result;
     }
 
-    private LocalDate getFirstTransactionDate()
-    {
-        return firstTransactionSupplier.get().map(t -> t.getDateTime().toLocalDate()).orElse(null);
-    }
-    
 }
