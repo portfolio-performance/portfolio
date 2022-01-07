@@ -177,7 +177,7 @@ public final class EventListWidget extends WidgetDelegate<List<EventItem>>
             content.setOpenLinkHandler(
                     d -> view.getPart().activateView(SecurityListView.class, (Predicate<?>) security::equals));
             
-            if (eventItem.getType() == EventType.NOTE)
+            if (eventItem.getType() == EventType.NOTE || eventItem.getType() == EventType.PAYMENT)
             {
                 addMessage(container, securityEventItem.getMessage());
             }
@@ -206,7 +206,7 @@ public final class EventListWidget extends WidgetDelegate<List<EventItem>>
         if (message != null) 
         {
             StyledLabel messageLabel = new StyledLabel(container, SWT.NONE);
-            String styledMessage = String.format("<em>%s</em>", message); //$NON-NLS-1$
+            String styledMessage = String.format("<em>\"%s\"</em>", message); //$NON-NLS-1$
             messageLabel.setText(styledMessage);
         }
     }
