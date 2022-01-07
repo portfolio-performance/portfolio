@@ -13,36 +13,41 @@ import org.eclipse.core.databinding.beans.typed.BeanProperties;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.jface.databinding.viewers.typed.ViewerProperties;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.SecurityEvent.Type;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.BindingHelper;
 import name.abuchen.portfolio.ui.util.DatePicker;
 import name.abuchen.portfolio.ui.util.SimpleDateTimeDateSelectionProperty;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
-public class AddSecurityEventPage extends AbstractWizardPage
+public class AddCustomEventPage extends AbstractWizardPage
 {
     private SecurityEventModel model;
     private BindingHelper bindings;
 
-    public AddSecurityEventPage(SecurityEventModel model)
+    public AddCustomEventPage(SecurityEventModel model)
     {
-        super("add-security-event"); //$NON-NLS-1$
+        super("add-custom-event"); //$NON-NLS-1$
+
+        setTitle(Messages.EventWizardTitleNote);
+        setDescription(Messages.EventWizardDescriptionNote);
 
         this.model = model;
-        
+
         bindings = new BindingHelper(model)
         {
             @Override
@@ -53,58 +58,6 @@ public class AddSecurityEventPage extends AbstractWizardPage
                 setPageComplete(isOK);
             }
         };
-        
-        setHeader();
-    }
-
-    private void setHeader()
-    {
-        
-        String title;
-        String description;
-        
-        Type type = model.getType();
-        switch (type)
-        {
-            case DIVIDEND_DECLARATION:
-                title = Messages.EventWizardTitleDividendDeclaration;
-                description = Messages.EventWizardDescriptionDividendDeclaration;
-                break;
-                
-            case DIVIDEND_RECORD:
-                title = Messages.EventWizardTitleDividendRecord;
-                description = Messages.EventWizardDescriptionDividendRecord;
-                break;
-                
-            case EARNINGS_REPORT:
-                title = Messages.EventWizardTitleEarningsReport;
-                description = Messages.EventWizardDescriptionEarningsReport;
-                break;
-                
-            case EX_DIVIDEND:
-                title = Messages.EventWizardTitleExDividend;
-                description = Messages.EventWizardDescriptionExDividend;
-                break;
-                
-            case NOTE:
-                throw new IllegalArgumentException("should be handled by AddCustomEventPage"); //$NON-NLS-1$
-                
-            case PAYDAY:
-                title = Messages.EventWizardTitlePayday;
-                description = Messages.EventWizardDescriptionPayday;
-                break;
-                
-            case SHAREHOLDER_MEETING:
-                title = Messages.EventWizardTitleShareholderMeeting;
-                description = Messages.EventWizardDescriptionShareholderMeeting;
-                break;
-                
-            default:
-                throw new UnsupportedOperationException("unsupported event type: " + type); //$NON-NLS-1$
-        }
-        
-        setTitle(title);
-        setDescription(description);
     }
 
     @Override
@@ -142,12 +95,23 @@ public class AddSecurityEventPage extends AbstractWizardPage
 
         DatePicker boxDate = new DatePicker(container);
 
+        Label labelMessage = new Label(container, SWT.NONE);
+        labelMessage.setLayoutData(new FormData());
+        labelMessage.setText(Messages.EventWizardLabelMessage);
+
+        Text text = new Text(container, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        FormData fd_text = new FormData();
+        fd_text.right = new FormAttachment(0, 480);
+        text.setLayoutData(fd_text);
+        text.setText("custom message"); //$NON-NLS-1$
+
         // form layout data
 
         int labelWidth = widest(labelSecurity, labelDate);
 
         startingWith(comboSecurity.getControl(), labelSecurity) //
-                        .thenBelow(boxDate.getControl()).label(labelDate);
+                        .thenBelow(boxDate.getControl()).label(labelDate) //
+                        .thenBelow(text).label(labelMessage);
 
         startingWith(labelSecurity).width(labelWidth);
 
@@ -166,5 +130,9 @@ public class AddSecurityEventPage extends AbstractWizardPage
                                         : ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired,
                                                         Messages.ColumnExDate))),
                         null);
+
+        IObservableValue<?> messageTargetObservable = WidgetProperties.text(SWT.Modify).observe(text);
+        IObservableValue<?> messageModelObservable = BeanProperties.value("message").observe(model); //$NON-NLS-1$
+        context.bindValue(messageTargetObservable, messageModelObservable);
     }
 }
