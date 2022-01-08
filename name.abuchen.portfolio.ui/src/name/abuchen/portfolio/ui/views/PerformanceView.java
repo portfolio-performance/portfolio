@@ -27,6 +27,7 @@ import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -56,6 +57,7 @@ import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.selection.SelectionService;
 import name.abuchen.portfolio.ui.util.ClientFilterDropDown;
+import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.SimpleAction;
@@ -428,7 +430,14 @@ public class PerformanceView extends AbstractHistoricView
 
         Column column = new Column(Messages.ColumnDate, SWT.None, 100);
         column.setLabelProvider(
-                        new DateTimeLabelProvider(e -> ((TransactionPair<?>) e).getTransaction().getDateTime()));
+                        new DateTimeLabelProvider(e -> ((TransactionPair<?>) e).getTransaction().getDateTime())
+                        {
+                            @Override
+                            public Color getForeground(Object element)
+                            {
+                                return colorFor(element);
+                            }
+                        });
         column.setSorter(ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getDateTime()),
                         SWT.UP);
         support.addColumn(column);
@@ -442,6 +451,12 @@ public class PerformanceView extends AbstractHistoricView
                 Transaction t = ((TransactionPair<?>) element).getTransaction();
                 return t instanceof AccountTransaction ? ((AccountTransaction) t).getType().toString()
                                 : ((PortfolioTransaction) t).getType().toString();
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                return colorFor(element);
             }
         });
         column.setSorter(ColumnViewerSorter.create(e -> {
@@ -459,6 +474,12 @@ public class PerformanceView extends AbstractHistoricView
             {
                 return Values.Money.format(((TransactionPair<?>) element).getTransaction().getMonetaryAmount(),
                                 getClient().getBaseCurrency());
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                return colorFor(element);
             }
         });
         column.setSorter(ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getMonetaryAmount()));
@@ -532,6 +553,12 @@ public class PerformanceView extends AbstractHistoricView
 
                 return Values.Money.format(t.getUnitSum(Unit.Type.TAX), getClient().getBaseCurrency());
             }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                return colorFor(element);
+            }
         });
         column.setSorter(ColumnViewerSorter
                         .create(e -> ((TransactionPair<?>) e).getTransaction().getUnitSum(Unit.Type.TAX)));
@@ -565,6 +592,12 @@ public class PerformanceView extends AbstractHistoricView
 
                 return Values.Money.format(t.getUnitSum(Unit.Type.FEE), getClient().getBaseCurrency());
             }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                return colorFor(element);
+            }
         });
         column.setSorter(ColumnViewerSorter
                         .create(e -> ((TransactionPair<?>) e).getTransaction().getUnitSum(Unit.Type.FEE)));
@@ -590,6 +623,12 @@ public class PerformanceView extends AbstractHistoricView
                 return security != null
                                 ? LogoManager.instance().getDefaultColumnImage(security, getClient().getSettings())
                                 : null;
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                return colorFor(element);
             }
         });
         column.setSorter(ColumnViewerSorter.create(e -> {
@@ -622,6 +661,12 @@ public class PerformanceView extends AbstractHistoricView
                 return portfolio != null
                                 ? LogoManager.instance().getDefaultColumnImage(portfolio, getClient().getSettings())
                                 : null;
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                return colorFor(element);
             }
         });
         column.setSorter(ColumnViewerSorter.create(e -> {
@@ -667,6 +712,12 @@ public class PerformanceView extends AbstractHistoricView
                 return account != null
                                 ? LogoManager.instance().getDefaultColumnImage(account, getClient().getSettings())
                                 : null;
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                return colorFor(element);
             }
         });
         column.setSorter(ColumnViewerSorter.create(e -> {
@@ -919,4 +970,19 @@ public class PerformanceView extends AbstractHistoricView
         }
     }
 
+    private Color colorFor(Object element)
+    {
+        TransactionPair<?> tx = (TransactionPair<?>) element;
+        if (tx.getTransaction() instanceof AccountTransaction)
+        {
+            return ((AccountTransaction) tx.getTransaction()).getType().isCredit() ? Colors.theme().greenForeground()
+                            : Colors.theme().redForeground();
+        }
+        else
+        {
+            return ((PortfolioTransaction) tx.getTransaction()).getType().isPurchase()
+                            ? Colors.theme().greenForeground()
+                            : Colors.theme().redForeground();
+        }
+    }
 }
