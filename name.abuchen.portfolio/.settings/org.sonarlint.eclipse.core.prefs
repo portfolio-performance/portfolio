@@ -1,6 +1,5 @@
 autoEnabled=true
 eclipse.preferences.version=1
-extraProperties=
 fileExclusions=GLOB\:**/Messages.java
 idePrefixKey=
 projectKey=name.abuchen.portfolio\:portfolio-app
