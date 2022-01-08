@@ -45,8 +45,7 @@ public class TimelineChart extends Chart // NOSONAR
     private static final int SPARSE_LABEL_MODE_PIXEL_THRESHOLD = 320;
     
     /**
-     * Minimum label width in pixels. It's mainly relevant for charts placed in narrow dashboard columns.
-     * The value is a bit arbitrary, but should be fine.
+     * Minimum label width in pixels. Used to suppress last x-axis labels that are too short to be useful.
      */
     private static final int MIN_LABEL_WIDTH = 50;
 
@@ -322,17 +321,21 @@ public class TimelineChart extends Chart // NOSONAR
 
         e.gc.setForeground(getTitle().getForeground());
 
-        int previousLabelX = -1;
+        int previousLabelExtend = -1;
         int xMax = xAxis.getPixelCoordinate(xAxis.getRange().upper);
         while (cursor.isBefore(end))
         {
             int x = xAxis.getPixelCoordinate((double) cursor.atStartOfDay(zoneId).toInstant().toEpochMilli());
             e.gc.drawLine(x, 0, x, e.height);
             
-            if (isLabelable(x, xMax, previousLabelX)) 
+            if (isLabelable(x, xMax, previousLabelExtend)) 
             {
-                e.gc.drawText(format.format(cursor), x + 5, 5, true);
-                previousLabelX = x;     // remember the last x value of the line having a label 
+                String labelText = format.format(cursor);
+                int currentLabelX = x + 5;
+                e.gc.drawText(labelText, currentLabelX, 5, true);
+                
+                int textExtend = e.gc.textExtent(labelText).x;
+                previousLabelExtend = currentLabelX + textExtend + 5;     // remember the total label extend 
             }
             
             cursor = cursor.plus(period);
@@ -460,18 +463,18 @@ public class TimelineChart extends Chart // NOSONAR
         return getPlotArea().setFocus();
     }
     
-    private boolean isLabelable(int currentX, int xMax, int previousLabelX)
+    private boolean isLabelable(int currentX, int xMax, int previousLabelExtend)
     {
         // allow adding a text label to the vertical line, if 
         //  a) it is the very first line at the beginning of the chart, or
         //  b1) the new label fits to the right of the line, not exceeding the x-axis, and
         //  b2) there is sufficient space between the label of the previous line and this new line
         
-        if (previousLabelX == -1) 
+        if (previousLabelExtend == -1) 
         {
             return true;
         }
         
-        return currentX + MIN_LABEL_WIDTH <= xMax && currentX - MIN_LABEL_WIDTH > previousLabelX;
+        return currentX + MIN_LABEL_WIDTH <= xMax && currentX - previousLabelExtend >= 0;
     }
 }
