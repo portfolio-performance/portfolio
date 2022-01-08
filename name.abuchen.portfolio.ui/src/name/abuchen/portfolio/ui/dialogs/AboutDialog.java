@@ -45,6 +45,7 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.DesktopAPI;
 import name.abuchen.portfolio.util.BuildInfo;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class AboutDialog extends Dialog
 {
@@ -105,7 +106,8 @@ public class AboutDialog extends Dialog
 
         aboutTextBox.addListener(SWT.MouseDown, e -> openBrowser(e, aboutTextBox));
 
-        String contributionsText = Messages.AboutTextContributions;
+        String contributionsText = generateDeveloperListText(Messages.AboutTextDevelopers)
+                        + Messages.AboutTextTranslationDevelopers + Messages.AboutTextOtherSoftware;
         styles = new ArrayList<>();
         contributionsText = addMarkdownLikeHyperlinks(contributionsText, styles);
 
@@ -214,6 +216,40 @@ public class AboutDialog extends Dialog
         styleRange.start = 0;
         styleRange.length = aboutText.indexOf('\n');
         ranges.add(styleRange);
+    }
+
+    private String generateDeveloperListText(String developers)
+    {
+        ArrayList<String> developerList = new ArrayList<>(Arrays.asList(TextUtil.strip(developers.split(",")))); //$NON-NLS-1$
+        developerList.sort(String::compareToIgnoreCase);
+
+        int developersTextLineLength = 0;
+
+        StringBuilder developerText = new StringBuilder();
+        developerText.append(Messages.AboutTextDeveloped + "\n  "); //$NON-NLS-1$
+
+        for (int i = 0; i < developerList.size(); i++)
+        {
+            if (i == developerList.size() - 1)
+                developerText.append("and [" + developerList.get(i) + "]" + "(https://github.com/" + developerList.get(i) + ").\n\n"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+            else
+                developerText.append("[" + developerList.get(i) + "]" + "(https://github.com/" + developerList.get(i) + "), "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+
+            // Line break if...
+            if (developersTextLineLength + developerList.get(i).length() >= 80)
+            {
+                developerText.append("\n  "); //$NON-NLS-1$
+                developersTextLineLength = 0;
+            }
+            else
+            {
+                developersTextLineLength += developerList.get(i).length();
+            }
+        }
+
+        developerText.append("  Many thanks to for your support.\n\n"); //$NON-NLS-1$
+
+        return developerText.toString();
     }
 
     private void openBrowser(Event event, StyledText textBox)
