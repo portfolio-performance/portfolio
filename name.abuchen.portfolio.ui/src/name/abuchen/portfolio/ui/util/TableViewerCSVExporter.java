@@ -96,7 +96,7 @@ public class TableViewerCSVExporter extends AbstractCSVExporter
                                                 .toFormatter();
                                 
                                 LocalDateTime dateTime = LocalDateTime.parse(columnValue, formatter);
-                                columnValue = dateTime.toString();
+                                columnValue = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
                             }
                             catch(Exception e)
                             {
