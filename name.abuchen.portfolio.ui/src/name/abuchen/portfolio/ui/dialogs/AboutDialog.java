@@ -247,7 +247,7 @@ public class AboutDialog extends Dialog
             }
         }
 
-        developerText.append("  Many thanks to for your support.\n\n"); //$NON-NLS-1$
+        developerText.append("  Many thanks for your support.\n\n"); //$NON-NLS-1$
 
         return developerText.toString();
     }
