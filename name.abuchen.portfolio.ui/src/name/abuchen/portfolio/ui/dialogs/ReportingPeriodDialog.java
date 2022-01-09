@@ -57,6 +57,7 @@ public class ReportingPeriodDialog extends Dialog
     private Button radioYTD;
 
     private Button radioPreviousDay;
+    private Button radioPreviousTradingDay;
     private Button radioPreviousWeek;
     private Button radioPreviousMonth;
     private Button radioPreviousQuarter;
@@ -153,6 +154,9 @@ public class ReportingPeriodDialog extends Dialog
         radioPreviousDay = new Button(editArea, SWT.RADIO);
         radioPreviousDay.setText(Messages.LabelReportingDialogDay);
         
+        radioPreviousTradingDay = new Button(editArea, SWT.RADIO);
+        radioPreviousTradingDay.setText(Messages.LabelReportingDialogTradingDay);
+
         radioPreviousWeek = new Button(editArea, SWT.RADIO);
         radioPreviousWeek.setText(Messages.LabelReportingDialogWeek);
 
@@ -206,8 +210,8 @@ public class ReportingPeriodDialog extends Dialog
                         .thenRight(radioCurrentMonth).thenRight(radioCurrentQuarter).thenRight(radioYTD);
 
         FormDataFactory.startingWith(lblPrevious).top(new FormAttachment(radioCurrentWeek, 20))
-                        .thenBelow(radioPreviousDay).thenRight(radioPreviousWeek).thenRight(radioPreviousMonth)
-                        .thenRight(radioPreviousQuarter).thenRight(radioPreviousYear);
+                        .thenBelow(radioPreviousDay).thenRight(radioPreviousTradingDay).thenRight(radioPreviousWeek)
+                        .thenRight(radioPreviousMonth).thenRight(radioPreviousQuarter).thenRight(radioPreviousYear);
 
         //
         // wiring
@@ -217,7 +221,8 @@ public class ReportingPeriodDialog extends Dialog
 
         radioBtnList = Arrays.asList(radioLast, radioLastDays, radioLastTradingDays, radioFromXtoY, radioSinceX,
                         radioYearX, radioCurrentWeek, radioCurrentMonth, radioCurrentQuarter, radioYTD,
-                        radioPreviousWeek, radioPreviousMonth, radioPreviousQuarter, radioPreviousYear, radioPreviousDay);
+                        radioPreviousTradingDay, radioPreviousWeek, radioPreviousMonth, radioPreviousQuarter,
+                        radioPreviousYear, radioPreviousDay);
         activateRadioOnChange(radioLast, years, months);
         activateRadioOnChange(radioLastDays, days);
         activateRadioOnChange(radioLastTradingDays, tradingDays);
@@ -271,6 +276,8 @@ public class ReportingPeriodDialog extends Dialog
             radioYTD.setSelection(true);
         else if (template instanceof ReportingPeriod.PreviousDay)
             radioPreviousDay.setSelection(true);
+        else if (template instanceof ReportingPeriod.PreviousTradingDay)
+            radioPreviousTradingDay.setSelection(true);
         else if (template instanceof ReportingPeriod.PreviousWeek)
             radioPreviousWeek.setSelection(true);
         else if (template instanceof ReportingPeriod.PreviousMonth)
@@ -354,6 +361,10 @@ public class ReportingPeriodDialog extends Dialog
         else if (radioPreviousDay.getSelection())
         {
             result = new ReportingPeriod.PreviousDay();
+        }
+        else if (radioPreviousTradingDay.getSelection())
+        {
+            result = new ReportingPeriod.PreviousTradingDay();
         }
         else if (radioPreviousWeek.getSelection())
         {
