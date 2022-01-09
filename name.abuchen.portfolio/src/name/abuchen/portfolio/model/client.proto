@@ -54,6 +54,12 @@ message PSecurityEvent {
     STOCK_SPLIT = 0;
     NOTE = 1;
     DIVIDEND_PAYMENT = 2;
+    DIVIDEND_DECLARATION = 3;
+    EX_DIVIDEND = 4;
+    DIVIDEND_RECORD = 5;
+    PAYDAY = 6;
+    EARNINGS_REPORT = 7;
+    SHAREHOLDER_MEETING = 8;
   }
   Type type = 1;
   int64 date = 2; // epoch day

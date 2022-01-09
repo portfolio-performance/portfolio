@@ -202,6 +202,30 @@ import name.abuchen.portfolio.money.Money;
                                         Money.of(newEvent.getData(1).getString(), newEvent.getData(2).getInt64()));
                         ((DividendEvent) event).setSource(newEvent.getData(3).getString());
                         break;
+                    case PSecurityEvent.Type.DIVIDEND_DECLARATION_VALUE:
+                        event = new SecurityEvent();
+                        event.setType(SecurityEvent.Type.DIVIDEND_DECLARATION);
+                        break;
+                    case PSecurityEvent.Type.EX_DIVIDEND_VALUE:
+                        event = new SecurityEvent();
+                        event.setType(SecurityEvent.Type.EX_DIVIDEND);
+                        break;
+                    case PSecurityEvent.Type.DIVIDEND_RECORD_VALUE:
+                        event = new SecurityEvent();
+                        event.setType(SecurityEvent.Type.DIVIDEND_RECORD);
+                        break;
+                    case PSecurityEvent.Type.PAYDAY_VALUE:
+                        event = new SecurityEvent();
+                        event.setType(SecurityEvent.Type.PAYDAY);
+                        break;
+                    case PSecurityEvent.Type.EARNINGS_REPORT_VALUE:
+                        event = new SecurityEvent();
+                        event.setType(SecurityEvent.Type.EARNINGS_REPORT);
+                        break;
+                    case PSecurityEvent.Type.SHAREHOLDER_MEETING_VALUE:
+                        event = new SecurityEvent();
+                        event.setType(SecurityEvent.Type.SHAREHOLDER_MEETING);
+                        break;
                     default:
                         throw new UnsupportedOperationException();
                 }
@@ -856,6 +880,24 @@ import name.abuchen.portfolio.money.Money;
                         newEvent.addData(PAnyValue.newBuilder().setString(dividendEvent.getAmount().getCurrencyCode()));
                         newEvent.addData(PAnyValue.newBuilder().setInt64(dividendEvent.getAmount().getAmount()));
                         newEvent.addData(PAnyValue.newBuilder().setString(dividendEvent.getSource()));
+                        break;
+                    case DIVIDEND_DECLARATION:
+                        newEvent.setTypeValue(PSecurityEvent.Type.DIVIDEND_DECLARATION_VALUE);
+                        break;
+                    case DIVIDEND_RECORD:
+                        newEvent.setTypeValue(PSecurityEvent.Type.DIVIDEND_RECORD_VALUE);
+                        break;
+                    case EARNINGS_REPORT:
+                        newEvent.setTypeValue(PSecurityEvent.Type.EARNINGS_REPORT_VALUE);
+                        break;
+                    case EX_DIVIDEND:
+                        newEvent.setTypeValue(PSecurityEvent.Type.EX_DIVIDEND_VALUE);
+                        break;
+                    case PAYDAY:
+                        newEvent.setTypeValue(PSecurityEvent.Type.PAYDAY_VALUE);
+                        break;
+                    case SHAREHOLDER_MEETING:
+                        newEvent.setTypeValue(PSecurityEvent.Type.SHAREHOLDER_MEETING_VALUE);
                         break;
                     default:
                         throw new UnsupportedOperationException();

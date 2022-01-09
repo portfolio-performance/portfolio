@@ -130,6 +130,30 @@ private static final long serialVersionUID = 0L;
      * <code>DIVIDEND_PAYMENT = 2;</code>
      */
     DIVIDEND_PAYMENT(2),
+    /**
+     * <code>DIVIDEND_DECLARATION = 3;</code>
+     */
+    DIVIDEND_DECLARATION(3),
+    /**
+     * <code>EX_DIVIDEND = 4;</code>
+     */
+    EX_DIVIDEND(4),
+    /**
+     * <code>DIVIDEND_RECORD = 5;</code>
+     */
+    DIVIDEND_RECORD(5),
+    /**
+     * <code>PAYDAY = 6;</code>
+     */
+    PAYDAY(6),
+    /**
+     * <code>EARNINGS_REPORT = 7;</code>
+     */
+    EARNINGS_REPORT(7),
+    /**
+     * <code>SHAREHOLDER_MEETING = 8;</code>
+     */
+    SHAREHOLDER_MEETING(8),
     UNRECOGNIZED(-1),
     ;
 
@@ -145,6 +169,30 @@ private static final long serialVersionUID = 0L;
      * <code>DIVIDEND_PAYMENT = 2;</code>
      */
     public static final int DIVIDEND_PAYMENT_VALUE = 2;
+    /**
+     * <code>DIVIDEND_DECLARATION = 3;</code>
+     */
+    public static final int DIVIDEND_DECLARATION_VALUE = 3;
+    /**
+     * <code>EX_DIVIDEND = 4;</code>
+     */
+    public static final int EX_DIVIDEND_VALUE = 4;
+    /**
+     * <code>DIVIDEND_RECORD = 5;</code>
+     */
+    public static final int DIVIDEND_RECORD_VALUE = 5;
+    /**
+     * <code>PAYDAY = 6;</code>
+     */
+    public static final int PAYDAY_VALUE = 6;
+    /**
+     * <code>EARNINGS_REPORT = 7;</code>
+     */
+    public static final int EARNINGS_REPORT_VALUE = 7;
+    /**
+     * <code>SHAREHOLDER_MEETING = 8;</code>
+     */
+    public static final int SHAREHOLDER_MEETING_VALUE = 8;
 
 
     public final int getNumber() {
@@ -174,6 +222,12 @@ private static final long serialVersionUID = 0L;
         case 0: return STOCK_SPLIT;
         case 1: return NOTE;
         case 2: return DIVIDEND_PAYMENT;
+        case 3: return DIVIDEND_DECLARATION;
+        case 4: return EX_DIVIDEND;
+        case 5: return DIVIDEND_RECORD;
+        case 6: return PAYDAY;
+        case 7: return EARNINGS_REPORT;
+        case 8: return SHAREHOLDER_MEETING;
         default: return null;
       }
     }
