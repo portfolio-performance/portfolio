@@ -220,8 +220,7 @@ public class AboutDialog extends Dialog
 
     private String generateDeveloperListText(String developers)
     {
-        ArrayList<String> developerList = new ArrayList<>(Arrays.asList(TextUtil.strip(developers.split(",")))); //$NON-NLS-1$
-        developerList.sort(String::compareToIgnoreCase);
+        List<String> developerList = Arrays.asList(TextUtil.strip(developers.split(","))); //$NON-NLS-1$
 
         int developersTextLineLength = 0;
 
