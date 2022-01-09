@@ -35,9 +35,7 @@ public class NoteColumn extends Column
                 {
                     String note = n.getNote();
                     if(note != null)
-                    {
-                        note = note.replace("\n", " "); 
-                    }
+                        note = note.replace("\n", " "); //$NON-NLS-1$ //$NON-NLS-2$
                     return note; 
                 }
 
