@@ -1150,7 +1150,7 @@ public class SecuritiesChart
                             .collect(Collectors.toList()).toArray(new Date[0]);
 
             IAxis yAxis1st = chart.getAxisSet().getYAxis(0);
-            double yAxis1stAxisPrice = yAxis1st.getRange().lower * (1 - 2 * 0.08);
+            double yAxis1stAxisPrice = Math.max(yAxis1st.getRange().lower * (1 - 2 * 0.08), 0.00001);
 
             double[] values = new double[dates.length];
             Arrays.fill(values, yAxis1stAxisPrice);
