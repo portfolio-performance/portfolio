@@ -11,6 +11,7 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.widgets.Display;
 
 import name.abuchen.portfolio.model.Dashboard;
+import name.abuchen.portfolio.model.FirstTransactionSupplier;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -77,11 +78,15 @@ public class ReportingPeriodConfig implements WidgetConfig
 
         delegate.getDashboardData().getDefaultReportingPeriods().stream()
                         .forEach(p -> subMenu.add(new SimpleAction(p.toString(), a -> setReportingPeriod(p))));
-        subMenu.add(new Separator());
+        
+        FirstTransactionSupplier firstTransactionSupplier = new FirstTransactionSupplier(delegate.getClient());
 
+        subMenu.add(new Separator());
         subMenu.add(new SimpleAction(Messages.LabelReportingAddPeriod, a -> {
-            ReportingPeriodDialog dialog = new ReportingPeriodDialog(Display.getDefault().getActiveShell(),
-                            getReportingPeriod());
+            ReportingPeriodDialog dialog = new ReportingPeriodDialog(
+                            Display.getDefault().getActiveShell(),
+                            getReportingPeriod(),
+                            firstTransactionSupplier);
             if (dialog.open() == ReportingPeriodDialog.OK)
             {
                 ReportingPeriod rp = dialog.getReportingPeriod();

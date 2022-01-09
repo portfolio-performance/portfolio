@@ -7,6 +7,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import com.ibm.icu.text.MessageFormat;
 
+import name.abuchen.portfolio.model.FirstTransactionSupplier;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.dialogs.ReportingPeriodDialog;
 
@@ -14,9 +15,11 @@ public class ReportingPeriodColumnOptions implements Column.Options<ReportingPer
 {
     private String columnLabel;
     private List<ReportingPeriod> defaultOptions;
+    private FirstTransactionSupplier firstTransactionSupplier;
 
-    public ReportingPeriodColumnOptions(String columnLabel, List<ReportingPeriod> defaultOptions)
+    public ReportingPeriodColumnOptions(FirstTransactionSupplier firstTransactionSupplier, String columnLabel, List<ReportingPeriod> defaultOptions)
     {
+        this.firstTransactionSupplier = firstTransactionSupplier;
         this.columnLabel = columnLabel;
         this.defaultOptions = defaultOptions;
     }
@@ -73,7 +76,7 @@ public class ReportingPeriodColumnOptions implements Column.Options<ReportingPer
     @Override
     public ReportingPeriod createNewOption(Shell shell)
     {
-        ReportingPeriodDialog dialog = new ReportingPeriodDialog(shell, null);
+        ReportingPeriodDialog dialog = new ReportingPeriodDialog(shell, null, firstTransactionSupplier);
         if (dialog.open() == ReportingPeriodDialog.OK)
         {
             ReportingPeriod p = dialog.getReportingPeriod();
