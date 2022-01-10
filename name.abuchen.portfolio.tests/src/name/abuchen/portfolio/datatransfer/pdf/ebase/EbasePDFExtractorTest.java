@@ -973,6 +973,7 @@ public class EbasePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-01-07T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.022249)));
         assertThat(entry.getSource(), is("Umsatzabrechnung12.txt"));
+        assertThat(entry.getNote(), is("Entgeltbelastung Verkauf"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.00))));
