@@ -27,7 +27,6 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
         addDividendeTransaction();
         addAdvanceTaxTransaction();
         addFeesWithSecurityTransaction();
-        addFeesWithoutSecurityTransaction();
         addDeliveryInOutBoundTransaction();
     }
 
@@ -282,6 +281,11 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                     }
                 })
 
+                // vermögenswirksame Leistungen
+                .section("note").optional()
+                .match("^(?<note>verm.genswirksame Leistungen)$")
+                .assign((t, v) -> t.setNote(v.get("note")))
+
                 // Verkauf wegen Vorabpauschale 0,14 EUR mit Kursdatum 27.01.2020 aus Depotposition XXXXXXXXXX.05
                 .section("note").optional()
                 .match("^(?<note>Verkauf wegen Vorabpauschale) .*$")
@@ -305,11 +309,6 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                 // Entgeltbelastung Verkauf 3,00 EUR mit Kursdatum 06.04.2021 aus Depotposition 99999999999.01
                 .section("note").optional()
                 .match("^(?<note>Entgeltbelastung Verkauf) .*$")
-                .assign((t, v) -> t.setNote(v.get("note")))
-
-                // vermögenswirksame Leistungen
-                .section("note").optional()
-                .match("^(?<note>verm.genswirksame Leistungen)$")
                 .assign((t, v) -> t.setNote(v.get("note")))
 
                 .wrap(t -> {
@@ -627,44 +626,6 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
 
                         t.addUnit(grossValue);
                     }
-                })
-
-                .wrap(t -> new TransactionItem(t));
-    }
-
-    private void addFeesWithoutSecurityTransaction()
-    {
-        DocumentType type = new DocumentType("Entgeltermittlung");
-        this.addDocumentTyp(type);
-
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
-        pdfTransaction.subject(() -> {
-            AccountTransaction entry = new AccountTransaction();
-            entry.setType(AccountTransaction.Type.FEES);
-            return entry;
-        });
-
-        Block firstRelevantLine = new Block("^Entgeltermittlung .*$");
-        type.addBlock(firstRelevantLine);
-        firstRelevantLine.set(pdfTransaction);
-
-        pdfTransaction
-                // Ref. Nr. 99999999999/01042021, Buchungsdatum 01.04.2021
-                .section("date")
-                .match(".* Buchungsdatum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
-                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
-
-                // Entgelte Betrag offene Forderung belasteter Betrag
-                // Depotführungsentgelt inkl. 19 %
-                // USt 3,00 EUR 3,00 EUR 0,00 EUR
-                .section("amount", "currency", "note")
-                .find("Entgelte Betrag offene Forderung belasteter Betrag")
-                .match("^(?<note>Depotf.hrungsentgelt|VL-Vertragsentgelt) inkl\\. .*$")
-                .match("^USt (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3}$")
-                .assign((t, v) -> {
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(v.get("currency"));
-                    t.setNote(v.get("note"));
                 })
 
                 .wrap(t -> new TransactionItem(t));
