@@ -202,8 +202,8 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
     private void addAccountStatementTransaction()
     {
         final DocumentType type = new DocumentType("Kontoauszug vom", (context, lines) -> {
-            Pattern pCurrency = Pattern.compile("^[\\d]{3} [\\d]+ [\\d]{2} (?<currency>[\\w]{3}) [\\-|\\+] [\\.,\\d]+$");
-            Pattern pYear = Pattern.compile("^Kontoauszug vom [\\d]{2}\\.[\\d]{2}\\.(?<year>[\\d]{4}) bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$");
+            Pattern pCurrency = Pattern.compile("[\\d]{3} [\\d]+ [\\d]{2} (?<currency>[\\w]{3}) [\\-|\\+] [\\.,\\d]+");
+            Pattern pYear = Pattern.compile("Kontoauszug vom [\\d]{2}\\.[\\d]{2}\\.(?<year>[\\d]{4}) bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}");
             // read the current context here
             for (String line : lines)
             {
@@ -424,6 +424,29 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                     }
 
                     type.getCurrentContext().put("noProvision", "X");
+                })
+
+                // Provision EUR 3,13
+                // Provisions-Rabatt EUR -3,13
+                .section("currency", "fee", "feeRefund").optional()
+                .match("^Provision (?<currency>[\\w]{3}) (\\-)?(?<fee>[\\.,\\d]+)$")
+                .match("^Provisions\\-Rabatt (?<currency>[\\w]{3}) (\\-)?(?<feeRefund>[\\.,\\d]+)$")
+                .assign((t, v) -> {
+                    double provision = Double.parseDouble(v.get("fee").replace(',', '.'));
+                    double feeRefund = Double.parseDouble(v.get("feeRefund").replace(',', '.'));
+
+                    if (!"X".equals(type.getCurrentContext().get("noProvision")))
+                    {
+                        if (provision - feeRefund != 0L)
+                        {
+                            String fee =  Double.toString(provision - feeRefund).replace('.', ',');
+                            v.put("fee", fee);
+                            processFeeEntries(t, v, type);
+                            
+                        }
+
+                        type.getCurrentContext().put("noProvision", "X");
+                    }
                 })
 
                 // Provision EUR 1,26
