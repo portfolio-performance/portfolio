@@ -179,11 +179,10 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                                 t.setDate(asDate(v.get("date")));
                                         })
                                 ,
-                                // Morgan Stanley & Co. Intl PLC DIZ 25.09.20 25.09.2020 DE000MC55366
-                                // TUI AG Wandelanl.v.2009(2014) 17.11.2014 DE000TUAG117
+                                // 25.09.2020 123456789 EUR 2.563,60
                                 section -> section
                                         .attributes("date")
-                                        .match("^.* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2,4})( [\\d]{2}\\.[\\d]{2}\\.[\\d]{2,4})? [\\w]{12}$")
+                                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]+ [\\w]{3} [\\.,\\d]+$")
                                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
                                 ,
                                 // Ausbuchung:
@@ -400,19 +399,20 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
         Block block = new Block("^(Ertr.gnisgutschrift aus Wertpapieren|Kupongutschrift|Reinvestierung) .*$");
         type.addBlock(block);
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>().subject(() -> {
-            AccountTransaction entry = new AccountTransaction();
-            entry.setType(AccountTransaction.Type.DIVIDENDS);
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>()
+            .subject(() -> {
+                AccountTransaction entry = new AccountTransaction();
+                entry.setType(AccountTransaction.Type.DIVIDENDS);
 
-            /***
-             * If we have multiple entries in the document,
-             * with taxes and tax refunds,
-             * then the "negative" flag must be removed.
-             */
-            type.getCurrentContext().remove("negative");
+                /***
+                 * If we have multiple entries in the document,
+                 * with taxes and tax refunds,
+                 * then the "negative" flag must be removed.
+                 */
+                type.getCurrentContext().remove("negative");
 
-            return entry;
-        });
+                return entry;
+            });
         
         pdfTransaction
                 // Gattungsbezeichnung ISIN
@@ -754,11 +754,6 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 .match("^(?<note>Umbuchung der Teil- in Vollrechte.) .*$")
                 .assign((t, v) -> t.setNote(v.get("note")))
 
-                // Wertlose Ausbuchung ADRESSZEILE1=Herr
-                .section("note").optional()
-                .match("^(?<note>Wertlose Ausbuchung) .*$")
-                .assign((t, v) -> t.setNote(v.get("note")))
-
                 // Einbuchung der Rechte zur Dividende wahlweise. Bitte beachten Sie hierzu unser separates Anschreiben.
                 .section("note").optional()
                 .match("^(?<note>Einbuchung der Rechte zur Dividende wahlweise.) .*$")
@@ -987,7 +982,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 // Gattungsbezeichnung Fälligkeit näch. Zinstermin ISIN
                 // Société Générale Effekten GmbH DISC.Z 13.05.2021 DE000SE8F9E8
                 // 13.05.21 NVIDIA 498
-                .section("name", "isin", "name1").optional()
+                .section("name", "isin", "name1", "currency").optional()
                 .match("^Gattungsbezeichnung F.lligkeit n.ch. Zinstermin ISIN$")
                 .match("^(?<name>.*) [\\d]{2}\\.[\\d]{2}\\.[\\d]{2,4} (?<isin>[\\w]{12})$")
                 .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2,4} (?<name1>.*)$")
@@ -999,6 +994,24 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                     t.setSecurity(getOrCreateSecurity(v));
                     t.setCurrencyCode(asCurrencyCode(t.getSecurity().getCurrencyCode()));
                 })
+
+                // Gattungsbezeichnung Fälligkeit näch. Zinstermin ISIN
+                // UBS AG (London Branch) TurboP O.End VW 07.12.2021 DE000UH42Q17
+                // Vz 171,844309
+                // STK 250,000 EUR 0,0010
+                .section("name", "isin", "name1", "currency").optional()
+                .match("^Gattungsbezeichnung F.lligkeit n.ch. Zinstermin ISIN$")
+                .match("^(?<name>.*) [\\d]{2}\\.[\\d]{2}\\.[\\d]{2,4} (?<isin>[\\w]{12})$")
+                .match("^(?<name1>.*)$")
+                .match("^[\\w]{3} [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+$")
+                .assign((t, v) -> {
+                    if (!v.get("name1").startsWith("Nominal"))
+                        v.put("name", v.get("name") + " " + v.get("name1"));
+
+                    t.setSecurity(getOrCreateSecurity(v));
+                    t.setCurrencyCode(asCurrencyCode(t.getSecurity().getCurrencyCode()));
+                })
+
 
                 // Gattungsbezeichnung ISIN
                 // AGIF-Allianz Euro Bond Inhaber Anteile A (EUR) o.N. LU0165915215
@@ -1060,11 +1073,10 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                                 t.setDateTime(asDate(v.get("date")));
                                         })
                                 ,
-                                // Morgan Stanley & Co. Intl PLC DIZ 25.09.20 25.09.2020 DE000MC55366
-                                // TUI AG Wandelanl.v.2009(2014) 17.11.2014 DE000TUAG117
+                                // 25.09.2020 123456789 EUR 2.563,60
                                 section -> section
                                         .attributes("date")
-                                        .match("^.* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2,4})( [\\d]{2}\\.[\\d]{2}\\.[\\d]{2,4})? [\\w]{12}$")
+                                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]+ [\\w]{3} [\\.,\\d]+$")
                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
                                 ,
                                 // STK 33,000 06.06.2011
