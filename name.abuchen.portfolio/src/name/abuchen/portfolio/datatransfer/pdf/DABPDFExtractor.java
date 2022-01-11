@@ -45,7 +45,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("(Kauf|Verkauf)");
+        DocumentType type = new DocumentType("(Kauf|Verkauf|Gesamtfälligkeit)");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -55,16 +55,16 @@ public class DABPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^(Kauf|Verkauf) .*$", "Dieser Beleg wird .*$");
+        Block firstRelevantLine = new Block("^(Kauf|Verkauf|Gesamtf.lligkeit) .*$", "Dieser Beleg wird .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
                 // Is type --> "Verkauf" change from BUY to SELL
                 .section("type").optional()
-                .match("^(?<type>(Kauf|Verkauf)) .*")
+                .match("^(?<type>(Kauf|Verkauf|Gesamtf.lligkeit)) .*")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("Verkauf"))
+                    if (v.get("type").equals("Verkauf") || v.get("type").equals("Gesamtfälligkeit"))
                     {
                         t.setType(PortfolioTransaction.Type.SELL);
                     }
@@ -148,20 +148,47 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                     t.setSecurity(getOrCreateSecurity(v));
                 })
 
+                // UniCredit Bank AG HVB TuBull 30.11.2021 DE000HB0NKY1
+                // O.EndDJIA34745,0898
+                // Nominal Einlösung zu:
+                // STK 54,000 EUR 0,0010
+                .section("name", "isin", "name1", "shares", "currency").optional()
+                .find("Gattungsbezeichnung F.lligkeit n.ch\\. Zinstermin ISIN")
+                .match("^(?<name>.*) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<isin>[\\w]{12})$")
+                .match("^(?<name1>.*)$")
+                .match("^Nominal Einl.sung zu:$")
+                .match("^STK (?<shares>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+$")
+                .assign((t, v) -> {
+                    if (!v.get("name1").startsWith("Nominal"))
+                        v.put("name", v.get("name") + " " + v.get("name1"));
+
+                    t.setShares(asShares(v.get("shares")));
+                    t.setSecurity(getOrCreateSecurity(v));
+                })
+
                 // Handelszeit 16:38* Provision USD 13,01-
                 .section("time").optional()
                 .match("^Handelszeit (?<time>[\\d]{2}:[\\d]{2}).*$")
                 .assign((t, v) -> type.getCurrentContext().put("time", v.get("time")))
-                
-                // Handelstag 24.08.2015  Kurswert                    USD 5.205,00
-                .section("date")
-                .match("^Handelstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$")
-                .assign((t, v) -> {
-                    if (type.getCurrentContext().get("time") != null)
-                        t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
-                    else
-                        t.setDate(asDate(v.get("date")));
-                })
+
+                .oneOf(
+                                // Handelstag 24.08.2015  Kurswert                    USD 5.205,00
+                                section -> section
+                                        .attributes("date")
+                                        .match("^Handelstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$")
+                                        .assign((t, v) -> {
+                                            if (type.getCurrentContext().get("time") != null)
+                                                t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
+                                            else
+                                                t.setDate(asDate(v.get("date")));
+                                        })
+                                ,
+                                // 07.12.2021 0000000000 EUR 0,05
+                                section -> section
+                                        .attributes("date")
+                                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .* [\\w]{3} [\\.,\\d]+$")
+                                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                        )
 
                 /***
                  * If changes are made in this area, 
@@ -190,13 +217,13 @@ public class DABPDFExtractor extends AbstractPDFExtractor
 
                 // Börse USA/NAN Ausmachender Betrag USD 5.280,17-
                 // 03.08.2015 0000000000 EUR/USD 1,100297 EUR 4.798,86
-                .section("fxcurrency", "fxamount", "exchangeRate").optional()
-                .match("^.* (Ausmachender Betrag|Kurswert) (?<fxcurrency>[\\w]{3}) (?<fxamount>[\\.,\\d]+)(\\-)?$")
+                .section("fxCurrency", "fxAmount", "exchangeRate").optional()
+                .match("^.* (Ausmachender Betrag|Kurswert) (?<fxCurrency>[\\w]{3}) (?<fxAmount>[\\.,\\d]+)(\\-)?$")
                 .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\w]{3}\\/[\\w]{3} (?<exchangeRate>[\\.,\\d]+) [\\w]{3} [\\.,\\d]+$")
                 .assign((t, v) -> {
                     // read the forex currency, exchange rate and gross
                     // amount in forex currency
-                    String forex = asCurrencyCode(v.get("fxcurrency"));
+                    String forex = asCurrencyCode(v.get("fxCurrency"));
                     if (t.getPortfolioTransaction().getSecurity().getCurrencyCode().equals(forex))
                     {
                         BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
@@ -204,7 +231,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                                         RoundingMode.HALF_DOWN);
 
                         // gross given in forex currency
-                        long fxAmount = asAmount(v.get("fxamount"));
+                        long fxAmount = asAmount(v.get("fxAmount"));
                         long amount = reverseRate.multiply(BigDecimal.valueOf(fxAmount))
                                         .setScale(0, RoundingMode.HALF_DOWN).longValue();
 
@@ -226,10 +253,10 @@ public class DABPDFExtractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private void addDividendTransaction()
     {
-        DocumentType type = new DocumentType("(Dividende|Ertr.gnisgutschrift|Gutschriftsanzeige)");
+        DocumentType type = new DocumentType("(Dividende|Ertr.gnisgutschrift)");
         this.addDocumentTyp(type);
 
-        Block block = new Block("^(Dividendengutschrift|Ertr.gnisgutschrift(?! aus)|Gutschriftsanzeige)(.*)?$");
+        Block block = new Block("^(Dividendengutschrift|Ertr.gnisgutschrift(?! aus))(.*)?$");
         type.addBlock(block);
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
         pdfTransaction.subject(() -> {
@@ -254,22 +281,6 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 .match("^(?<name>.*) (?<isin>[\\w]{12})$")
                 .match("^STK (?<shares>[\\.,\\d]+) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[\\w]{3}) [\\.,\\d]+$")
                 .assign((t, v) -> {
-                    t.setShares(asShares(v.get("shares")));
-                    t.setSecurity(getOrCreateSecurity(v));
-                })
-
-                // UniCredit Bank AG HVB TuBull 30.11.2021 DE000HB0NKY1
-                // O.EndDJIA34745,0898
-                // STK 54,000 EUR 0,0010
-                .section("name", "isin", "name1", "shares", "currency").optional()
-                .find("Gattungsbezeichnung F.lligkeit n.ch\\. Zinstermin ISIN")
-                .match("^(?<name>.*) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<isin>[\\w]{12})$")
-                .match("^(?<name1>.*)$")
-                .match("^STK (?<shares>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+$")
-                .assign((t, v) -> {
-                    if (!v.get("name1").startsWith("Nominal"))
-                        v.put("name", v.get("name") + " " + v.get("name1"));
-
                     t.setShares(asShares(v.get("shares")));
                     t.setSecurity(getOrCreateSecurity(v));
                 })
@@ -484,7 +495,6 @@ public class DABPDFExtractor extends AbstractPDFExtractor
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
-        addDividendeTaxReturnBlock(type);
 
         block.set(pdfTransaction);
     }
@@ -587,7 +597,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
          * the buy/sell transaction function must be adjusted.
          * addBuySellTransaction();
          */
-        Block block = new Block("^(Kauf|Verkauf) .*$", "Dieser Beleg wird .*$");
+        Block block = new Block("^(Kauf|Verkauf|Gesamtf.lligkeit) .*$", "Dieser Beleg wird .*$");
         type.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
 
@@ -649,124 +659,15 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                     t.setSecurity(getOrCreateSecurity(v));
                 })
 
-                // 27.08.2015 0000000000 EUR/USD 1,162765 EUR 4.465,12
-                // zu versteuern (negativ) EUR 341,55
-                // Wert Konto-Nr. Abrechnungs-Nr. Betrag zu Ihren Gunsten
-                // 24.08.2015 0000000000 00000000 EUR 90,09
-                .section("fxCurrency", "exchangeRate", "date", "currency", "amount").optional()
-                .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\w]{3}\\/(?<fxCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+) [\\w]{3} [\\.,\\d]+$")
-                .match("^zu versteuern \\(negativ\\).*$")
-                .match("^Wert Konto\\-Nr\\. Abrechnungs\\-Nr\\. Betrag zu Ihren Gunsten$")
-                .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]+ [\\d]+ (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
-                .assign((t, v) -> {
-                    t.setDateTime(asDate(v.get("date")));
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-
-                    // read the forex currency, exchange rate and gross
-                    // amount in forex currency
-                    String forex = asCurrencyCode(v.get("fxCurrency"));
-                    if (t.getSecurity().getCurrencyCode().equals(forex))
-                    {
-                        BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                        BigDecimal reverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
-                                        RoundingMode.HALF_DOWN);
-
-                        // gross given in forex currency
-                        long fxAmount = asAmount(v.get("amount"));
-                        long amount = reverseRate.multiply(BigDecimal.valueOf(fxAmount))
-                                        .setScale(0, RoundingMode.HALF_DOWN).longValue();
-
-                        Unit grossValue = new Unit(Unit.Type.GROSS_VALUE,
-                                        Money.of(t.getCurrencyCode(), amount),
-                                        Money.of(forex, fxAmount), reverseRate);
-
-                        t.addUnit(grossValue);
-                    }
-                })
-
-                // 27.08.2015 0000000000 EUR/USD 1,162765 EUR 4.465,12
-                // zu versteuern (negativ) EUR 59,20
-                // Wert Konto-Nr. Abrechnungs-Nr. Betrag zu Ihren Gunsten
-                // 07.07.2020 1234567 1234567 EUR 16,46
-                .section("date", "currency", "amount").optional()
-                .match("^zu versteuern \\(negativ\\).*$")
-                .match("^Wert Konto\\-Nr\\. Abrechnungs\\-Nr\\. Betrag zu Ihren Gunsten$")
-                .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]+ [\\d]+ (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
-                .assign((t, v) -> {
-                    t.setDateTime(asDate(v.get("date")));
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                })
-
-                .wrap(t -> {
-                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                        return new TransactionItem(t);
-                    return null;
-                }));
-    }
-
-    @SuppressWarnings("nls")
-    private void addDividendeTaxReturnBlock(DocumentType type)
-    {
-        /***
-         * If changes are made in this area,
-         * the buy/sell transaction function must be adjusted.
-         * addDividendeTransaction();
-         */
-        Block block = new Block("^(Dividendengutschrift|Ertr.gnisgutschrift(?! aus)|Gutschriftsanzeige)(.*)?$", "Dieser Beleg wird .*$");
-        type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>()
-
-                .subject(() -> {
-                    AccountTransaction t = new AccountTransaction();
-                    t.setType(AccountTransaction.Type.TAX_REFUND);
-                    return t;
-                })
-
-                // ComStage-MSCI USA TRN UCIT.ETF Inhaber-Anteile I o.N. LU0392495700
-                // STK 43,000 EUR 47,8310
-                .section("isin", "name", "shares").optional()
-                .find("Gattungsbezeichnung ISIN")
-                .match("^(?<name>.*) (?<isin>[\\w]{12})$")
-                .match("^STK (?<shares>[\\.,\\d]+) [\\w]{3} [\\.,\\d]+$")
-                .assign((t, v) -> {
-                    t.setShares(asShares(v.get("shares")));
-                    t.setSecurity(getOrCreateSecurity(v));
-                })
-
-                // Gattungsbezeichnung Fälligkeit näch. Zinstermin ISIN
-                // 4,75% Ranft Invest GmbH Inh.-Schv. 01.07.2030 01.07.2021 DE000A2LQLH9
-                // v.2018(2030)
-                // Nominal Kurs
-                // EUR 1.000,000 100,0000 %
-                .section("isin", "name", "name1", "shares", "currency").optional()
+                // UniCredit Bank AG HVB TuBull 30.11.2021 DE000HB0NKY1
+                // O.EndDJIA34745,0898
+                // Nominal Einlösung zu:
+                // STK 54,000 EUR 0,0010
+                .section("name", "isin", "name1", "shares", "currency").optional()
                 .find("Gattungsbezeichnung F.lligkeit n.ch\\. Zinstermin ISIN")
-                .match("^(?<name>.*) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<isin>[\\w]{12})$")
+                .match("^(?<name>.*) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<isin>[\\w]{12})$")
                 .match("^(?<name1>.*)$")
-                .match("^Nominal Kurs$")
-                .match("^(?<currency>[\\w]{3}) (?<shares>[\\.,\\d]+) [\\.,\\d]+ %$")
-                .assign((t, v) -> {
-                    if (!v.get("name1").startsWith("Nominal"))
-                        v.put("name", v.get("name") + " " + v.get("name1"));
-
-                    /***
-                     * Workaround for bonds 
-                     */
-                    t.setShares((asShares(v.get("shares")) / 100));
-                    t.setSecurity(getOrCreateSecurity(v));
-                })
-
-                // Gattungsbezeichnung Fälligkeit näch. Zinstermin ISIN
-                // HSBC Trinkaus & Burkhardt AG DIZ 27.08.21 27.08.2021 DE000TT649A1
-                // Siemens 140
-                // Nominal Kurs
-                // STK 15,000 EUR 133,5700
-                .section("isin", "name", "name1", "shares", "currency").optional()
-                .find("Gattungsbezeichnung F.lligkeit n.ch\\. Zinstermin ISIN")
-                .match("^(?<name>.*) ([\\d]+\\.[\\d]+\\.[\\d]{2,4}) ([\\d]+\\.[\\d]+\\.[\\d]{4}) (?<isin>[\\w]{12})$")
-                .match("^(?<name1>.*)$")
-                .match("^Nominal Kurs$")
+                .match("^Nominal Einl.sung zu:$")
                 .match("^STK (?<shares>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Nominal"))
