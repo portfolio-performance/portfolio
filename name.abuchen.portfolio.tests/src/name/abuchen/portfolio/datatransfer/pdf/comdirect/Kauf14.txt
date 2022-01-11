@@ -1,0 +1,157 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Ihren Auftrag haben wir gemäß unseren produktbezogenen
+Geschäftsbedingungen "Trading" wie nachstehend ausgeführt.
+Die Wertpapiere haben wir der Abrechnung entsprechend gebucht.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und
+Vollständigkeit zu überprüfen und etwaige Einwendungen
+25449 Quickborn unverzüglich zu erheben.
+fon   : 04106-708 25 00                                                  Tele   
+                                                                              
+                             
+                                       
+                             
+    97757 010
+Depotnr.:        1234567 00 
+            BLZ:             200 411 44
+Max Mustermann                  
+                             
+                             
+Musterstrasse 45                                          
+12345 Musterhausen                                         
+                             
+                             
+                             
+                                                  
+                                                  
+GESCHÄFTSABRECHNUNG VOM 10.05.2021                                                   
+                                                                                                                                    
+*
+Wertpapierkauf                                                                                                                      
+Geschäftsnummer   : 91 053052                                                                                                       
+                    1123456789560      Rechnungsnummer   : 123456784001DF35                                                          
+Geschäftstag      : 07.05.2021        Ausführung          comdirect                                                                 
+                                                          (Festpreisgeschäft)                                                       
+                                                                                                                                    
+Wertpapier-Bezeichnung                                               WPKNR/ISIN                                                     
+Fidelity Fds-Greater China Fd.                                           973265                                                     
+Reg.Shares A (Glob.Cert.) o.N.                                     LU0048580855                                                     
+                                                                                                                                    
+                                                                                                                                    
+Nennwert                  Zum comdirect Preis von                                                                                   
+St.  0,165                USD  387,84625                                                                                            
+                          Kurswert                    : USD               63,99                                                     
+                                                                                                                                    
+                          Ausmachender Betrag         : USD               60,80                                                     
+           Umrechnung zum Devisenkurs 1,216500        : EUR               49,98                                                     
+                 4,98812% Reduktion Kaufaufschlag     : USD                3,19-                                                    
+                                                                                                                                    
+                                                                                                                                    
+IBAN                                  Valuta         Zu Ihren Lasten vor Steuern                                                    
+DE12 1234 1234 1234 1234 00   EUR     12.05.2021        EUR               49,98                                                     
+                                                                                                                                    
+Verwahrungs-Art: WERTPAPIERRECHNUNG LUXEMBURG (AKV)                                                                                 
+                                                                                                                                    
+                                                                                                                                    
+                                                                                                                                    
+Informationen zur steuerlichen Behandlung dieses Geschäftsvorgangs und den auf                                                      
+Ihrem Konto gebuchten Endbetrag finden Sie auf der separaten Steuermitteilung.                                                      
+                                                                                                                                    
+                                                                                                                                    
+Ihre comdirect                                                                                                                      
+                                                                                                                                    
+Diese Abrechnung wird von der Bank nicht unterschrieben                                                                             
+Die Leistung ist gemäß §4 Nr.8 UStG umsatzsteuerfrei. USt-Id-Nr.: DE 114 103 514                                                    
+A113
+DO15DD/16/04/2010
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Kundennr. /BLZ Bezeichnung
+1234567  Max Mustermann                                 
+                                                  
+            
+200 411 44 Musterstrasse 45                                  12345 Musterhausen                                     
+abweichend wirtschaftlich Berechtigter
+                              
+                                              ----                    
+ c o  m   d  i r e  c  t                                    
+               
+ 2  5  4  5  1   Q  u  i c  k  b  o  r n                   
+0  1   0  9  7757
+                                                  
+ T  e  le  f o  n  :              0  4  1  0  6   -  7  0 8 25 00
+                              
+Herrn                          D  a  t u  m   :                        1  0  . 0  5  .2021         
+M a x M u s t e r m a n n                     D   e  p  o  t  n  u  m   m  er:         1 2  3  4 5  6 7 00  
+M u s t e r s t r a s s e   4  5               
+1 23 R  e  f e  r e  n  z  - N   u mmer:    2 C   I H   2  Z  Q   9  7GI002GX       4 5    M u s t e r h a u s e n                         
+                                      
+                                                  
+                                                  
+                                                  
+Steuerliche Behandlung: Wertpapierkauf Nr. 91053052 vom 07.05.2021                                                                
+Stk.               0,165 FID.FDS-GREAT.CHINA A GL. , WKN / ISIN: 973265  / LU0048580855                                           
+ Zu  Ih r e n L a s te n  v o r  S te u e r n:                                                                                                       E U R             -49,9 8   
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+S  te u e rb e m  e ss u n g s g r u n d la g e                                                            E  U   R                                  0 , 0 0                          
+                                                                                                                                
+                                                                                                                                
+ K ap i ta le r tr a gs t e ue r                                                                        E  U   R                                  0 , 0 0                          
+S  ol id a ri tä t sz u s c hl a g                                                                      E  U   R                                  0 , 0 0                          
+ K irc h e n s te u e r                                                                              E_  _U   R_  _  _  _   _  _  _   _  _  _  _   _  _  _   _  _0 ,_ _0 0_                          
+a b g e f ü h rt e S t e u er n                                                                                                                    E_ U_ R_ _ _ _ _ _ _ _ _  __  _ __ _ 0_,_0_ 0_   
+                                                                                                                                
+Z u  Ih r e n L a s te n  n a ch  S te u e r n :                                                                                                    E U R             -49,9 8   
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+Die Belastung erfolgt mit Valuta 12.05.2021 auf Konto EUR mit der IBAN DE12 1234 1234 1234 1234 00                                                    
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+KEINE STEUERBESCHEINIGUNG ...
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+Ihre comdirect                                                                                                                                        
+Diese Abrechnung ist maschinell erstellt und wird nicht unterschrieben.
