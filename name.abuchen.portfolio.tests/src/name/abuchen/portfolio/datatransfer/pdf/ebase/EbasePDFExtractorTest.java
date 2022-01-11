@@ -72,6 +72,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-11-21T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(12.729132)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung01.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(300.00))));
@@ -82,6 +83,10 @@ public class EbasePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.60))));
 
+        Unit grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
+                        .orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(299.40 * 1.105500))));
+
         // check 2nd buy sell transaction
         entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance)
                         .collect(Collectors.toList()).get(1).getSubject();
@@ -91,6 +96,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-01-13T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(199.500000)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung01.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(211.05))));
@@ -102,21 +108,22 @@ public class EbasePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.42))));
 
         // check transaction
-        PortfolioTransaction entry2 = (PortfolioTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+        PortfolioTransaction transaction = (PortfolioTransaction) results.stream().filter(i -> i instanceof TransactionItem)
                         .collect(Collectors.toList()).get(0).getSubject();
 
-        assertThat(entry2.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
+        assertThat(transaction.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
-        assertThat(entry2.getDateTime(), is(LocalDateTime.parse("2019-09-30T00:00")));
-        assertThat(entry2.getShares(), is(Values.Share.factorize(10)));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-09-30T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(10)));
+        assertThat(transaction.getSource(), is("Umsatzabrechnung01.txt"));
 
-        assertThat(entry2.getMonetaryAmount(),
+        assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(202.64))));
-        assertThat(entry2.getGrossValue(),
+        assertThat(transaction.getGrossValue(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(202.64))));
-        assertThat(entry2.getUnitSum(Unit.Type.TAX),
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(entry2.getUnitSum(Unit.Type.FEE),
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
     }
 
@@ -131,7 +138,7 @@ public class EbasePDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(6));
-//        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
         Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -161,6 +168,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-01-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.705860)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung02.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50.00))));
@@ -180,6 +188,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-01-20T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.005395)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung02.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.37))));
@@ -252,8 +261,8 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-01-27T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.001162)));
-        assertThat(entry.getPortfolioTransaction().getSource(), is("Umsatzabrechnung03.txt"));
-        assertThat(entry.getPortfolioTransaction().getNote(), is("Verkauf wegen Vorabpauschale"));
+        assertThat(entry.getSource(), is("Umsatzabrechnung03.txt"));
+        assertThat(entry.getNote(), is("Verkauf wegen Vorabpauschale"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.13))));
@@ -273,6 +282,8 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-10-22T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.705860)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung03.txt"));
+        assertThat(entry.getNote(), is("vermögenswirksame Leistungen"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50.00))));
@@ -291,6 +302,7 @@ public class EbasePDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-10-16T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1)));
+        assertThat(transaction.getSource(), is("Umsatzabrechnung03.txt"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.29))));
@@ -330,6 +342,7 @@ public class EbasePDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-02T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(7.332986)));
+        assertThat(transaction.getSource(), is("Umsatzabrechnung04.txt"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1.79))));
@@ -370,6 +383,8 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-05-03T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.122649)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung05.txt"));
+        assertThat(entry.getNote(), is("vermögenswirksame Leistungen"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(15.00))));
@@ -389,6 +404,8 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-12-22T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.100548)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung05.txt"));
+        assertThat(entry.getNote(), is("Entgelt Verkauf"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(12.00))));
@@ -446,6 +463,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+        assertThat(entry.getSource(), is("Umsatzabrechnung06.txt"));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-06-04T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(60)));
@@ -488,6 +506,7 @@ public class EbasePDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-07-30T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(37.327232)));
+        assertThat(transaction.getSource(), is("Umsatzabrechnung07.txt"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(10.25))));
@@ -507,6 +526,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-03T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.278245)));
+        assertThat(transaction.getSource(), is("Umsatzabrechnung07.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(10.25))));
@@ -547,6 +567,8 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-10-29T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.551798)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung08.txt"));
+        assertThat(entry.getNote(), is("vermögenswirksame Leistungen"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(40.00))));
@@ -566,6 +588,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-27T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.409391)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung08.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(40.00))));
@@ -585,6 +608,8 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-23T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.414447)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung08.txt"));
+        assertThat(entry.getNote(), is("Entgelt Verkauf"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(11.70))));
@@ -604,6 +629,8 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-23T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.382295)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung08.txt"));
+        assertThat(entry.getNote(), is("vermögenswirksame Leistungen"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(40.00))));
@@ -663,6 +690,7 @@ public class EbasePDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-28T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(12)));
+        assertThat(transaction.getSource(), is("Umsatzabrechnung09.txt"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(6.16))));
@@ -682,6 +710,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-12-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.200653)));
+        assertThat(transaction.getSource(), is("Umsatzabrechnung09.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(6.16))));
@@ -722,6 +751,8 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-10-19T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.703198)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung10.txt"));
+        assertThat(entry.getNote(), is("vermögenswirksame Leistungen"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(40.00))));
@@ -731,6 +762,10 @@ public class EbasePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.08))));
+
+        Unit grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
+                        .orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(39.92 * 1.173700))));
 
         // check 2nd buy sell transaction
         entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance)
@@ -741,6 +776,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-17T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.678808)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung10.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(40.00))));
@@ -750,6 +786,10 @@ public class EbasePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.08))));
+
+        grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
+                        .orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(39.92 * 1.184800))));
 
         // check 3rd buy sell transaction
         entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance)
@@ -760,6 +800,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-17T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.674710)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung10.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(40.00))));
@@ -770,6 +811,10 @@ public class EbasePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.08))));
 
+        grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
+                        .orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(39.92 * 1.220800))));
+
         // check 4th buy sell transaction
         entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance)
                         .collect(Collectors.toList()).get(3).getSubject();
@@ -779,6 +824,8 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-23T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.167976)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung10.txt"));
+        assertThat(entry.getNote(), is("Entgelt Verkauf"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9.75))));
@@ -789,6 +836,10 @@ public class EbasePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
+        grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
+                        .orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(9.75 * 1.227400))));
+
         // check fee transaction
         AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
@@ -797,6 +848,8 @@ public class EbasePDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-23T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.167976)));
+        assertThat(transaction.getSource(), is("Umsatzabrechnung10.txt"));
+        assertThat(transaction.getNote(), is("VL-Vertragsentgelt"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9.75))));
@@ -837,6 +890,8 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-06T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(9.999999)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung11.txt"));
+        assertThat(entry.getNote(), is("Entgeltbelastung Verkauf"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.00))));
@@ -878,16 +933,64 @@ public class EbasePDFExtractorTest
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Umsatzabrechnung12.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(1));
+        assertThat(results.size(), is(4));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
-        // check fee transaction
+        // check security
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("DE000A0F5UF5"));
+        assertThat(security.getName(), is("iShare.NASDAQ-100 UCITS ETF DE Inhaber-Anteile"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check 1st buy sell transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance)
+                        .collect(Collectors.toList()).get(0).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-01-03T00:00")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.047085)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung12.txt"));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(6.65))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(6.64))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.01))));
+
+        // check 2nd buy sell transaction
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance)
+                        .collect(Collectors.toList()).get(1).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-01-07T00:00")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.022249)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung12.txt"));
+        assertThat(entry.getNote(), is("Entgeltbelastung Verkauf"));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.00))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        // check 1st fee transaction
         AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-04-01T00:00")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-01-07T00:00")));
         assertThat(transaction.getSource(), is("Umsatzabrechnung12.txt"));
         assertThat(transaction.getNote(), is("Depotführungsentgelt"));
 
@@ -927,6 +1030,8 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+        assertThat(entry.getSource(), is("Umsatzabrechnung13.txt"));
+        assertThat(entry.getNote(), is("Entgeltbelastung Verkauf"));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-07-05T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.024859)));
@@ -971,7 +1076,7 @@ public class EbasePDFExtractorTest
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Umsatzabrechnung14.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(3));
+        assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
@@ -990,6 +1095,8 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-07-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1234.1234)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung14.txt"));
+        assertThat(entry.getNote(), is("vermögenswirksame Leistungen"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1234.12))));
@@ -999,25 +1106,6 @@ public class EbasePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.05))));
-
-        // check fee transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-07-02T00:00")));
-        assertThat(transaction.getSource(), is("Umsatzabrechnung14.txt"));
-        assertThat(transaction.getNote(), is("Depotführungsentgelt"));
-
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.00))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -1091,6 +1179,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-06T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.138927)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung15.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100.00))));
@@ -1110,6 +1199,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-06T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.879612)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung15.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100.00))));
@@ -1120,6 +1210,10 @@ public class EbasePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
+        Unit grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
+                        .orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(100.00 * 1.177800))));
+
         // check 3rd buy sell transaction
         entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance)
                         .collect(Collectors.toList()).get(2).getSubject();
@@ -1129,6 +1223,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-06T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.510346)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung15.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100.00))));
@@ -1148,6 +1243,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-06T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.221967)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung15.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50.00))));
@@ -1158,6 +1254,10 @@ public class EbasePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
+        grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
+                        .orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(50.00 * 1.177800))));
+
         // check 5th buy sell transaction
         entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance)
                         .collect(Collectors.toList()).get(4).getSubject();
@@ -1167,6 +1267,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-03T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.048774)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung15.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(25.00))));
@@ -1186,6 +1287,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-03T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.483285)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung15.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(25.00))));
@@ -1205,6 +1307,8 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-04T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.869440)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung15.txt"));
+        assertThat(entry.getNote(), is("vermögenswirksame Leistungen"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(40.00))));
@@ -1224,6 +1328,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-04T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.142698)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung15.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100.00))));
@@ -1243,6 +1348,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-04T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.865179)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung15.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100.00))));
@@ -1262,6 +1368,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-04T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.529988)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung15.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100.00))));
@@ -1281,6 +1388,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-04T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.223201)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung15.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50.00))));
@@ -1300,6 +1408,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.047562)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung15.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(25.00))));
@@ -1319,6 +1428,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.475691)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung15.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(25.00))));
@@ -1338,6 +1448,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.576541)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung15.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100.00))));
@@ -1357,6 +1468,8 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.939015)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung15.txt"));
+        assertThat(entry.getNote(), is("vermögenswirksame Leistungen"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(40.00))));
@@ -1376,6 +1489,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.146836)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung15.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100.00))));
@@ -1395,6 +1509,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.881525)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung15.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100.00))));
@@ -1414,6 +1529,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.229964)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung15.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50.00))));
@@ -1432,6 +1548,7 @@ public class EbasePDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-06-14T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.049184)));
+        assertThat(transaction.getSource(), is("Umsatzabrechnung15.txt"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.03))));
@@ -1508,6 +1625,8 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-01-25T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.002155)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung16.txt"));
+        assertThat(entry.getNote(), is("Verkauf wegen Vorabpauschale"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.94))));
@@ -1527,6 +1646,8 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-01-26T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.002987)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung16.txt"));
+        assertThat(entry.getNote(), is("Verkauf wegen Vorabpauschale"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.04))));
@@ -1546,6 +1667,8 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-01-26T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.000110)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung16.txt"));
+        assertThat(entry.getNote(), is("Verkauf wegen Vorabpauschale"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.07))));
@@ -1565,6 +1688,8 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-01-26T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.000268)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung16.txt"));
+        assertThat(entry.getNote(), is("Verkauf wegen Vorabpauschale"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.03))));
@@ -1575,6 +1700,10 @@ public class EbasePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
+        Unit grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
+                        .orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.03 * 1.216800))));
+
         // check 5th buy sell transaction
         entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance)
                         .collect(Collectors.toList()).get(4).getSubject();
@@ -1584,6 +1713,8 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-01-25T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.000143)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung16.txt"));
+        assertThat(entry.getNote(), is("Verkauf wegen Vorabpauschale"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.01))));
@@ -1603,6 +1734,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-02-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.525761)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung16.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(25.00))));
@@ -1622,6 +1754,8 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-02-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3.084040)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung16.txt"));
+        assertThat(entry.getNote(), is("vermögenswirksame Leistungen"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(40.00))));
@@ -1641,6 +1775,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-02-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.054216)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung16.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(25.00))));
@@ -1660,6 +1795,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-02-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.142943)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung16.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100.00))));
@@ -1679,6 +1815,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-02-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.494992)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung16.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100.00))));
@@ -1698,6 +1835,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-02-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.224522)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung16.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50.00))));
@@ -1717,6 +1855,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-02-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.175007)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung16.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100.00))));
@@ -1736,6 +1875,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-03-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.053239)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung16.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(25.00))));
@@ -1755,6 +1895,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-03-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.520901)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung16.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(25.00))));
@@ -1774,6 +1915,8 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-03-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3.037206)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung16.txt"));
+        assertThat(entry.getNote(), is("vermögenswirksame Leistungen"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(40.00))));
@@ -1793,6 +1936,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-03-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.473622)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung16.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100.00))));
@@ -1812,6 +1956,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-03-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.137031)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung16.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100.00))));
@@ -1831,6 +1976,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-03-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.211233)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung16.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50.00))));
@@ -1850,6 +1996,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-03-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.117828)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung16.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100.00))));
@@ -1869,6 +2016,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.049875)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung16.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(25.00))));
@@ -1888,6 +2036,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.488794)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung16.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(25.00))));
@@ -1907,6 +2056,8 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.947679)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung16.txt"));
+        assertThat(entry.getNote(), is("vermögenswirksame Leistungen"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(40.00))));
@@ -1945,6 +2096,8 @@ public class EbasePDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-22T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0L)));
+        assertThat(transaction.getSource(), is("Umsatzabrechnung16.txt"));
+        assertThat(transaction.getNote(), is("Vorabpauschale zum Stichtag 31.12.2020"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.04))));
@@ -1963,6 +2116,8 @@ public class EbasePDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-22T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0L)));
+        assertThat(transaction.getSource(), is("Umsatzabrechnung16.txt"));
+        assertThat(transaction.getNote(), is("Vorabpauschale zum Stichtag 31.12.2020"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.07))));
@@ -1981,6 +2136,8 @@ public class EbasePDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-22T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0L)));
+        assertThat(transaction.getSource(), is("Umsatzabrechnung16.txt"));
+        assertThat(transaction.getNote(), is("Vorabpauschale zum Stichtag 31.12.2020"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.03))));
@@ -1999,6 +2156,8 @@ public class EbasePDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-22T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0L)));
+        assertThat(transaction.getSource(), is("Umsatzabrechnung16.txt"));
+        assertThat(transaction.getNote(), is("Vorabpauschale zum Stichtag 31.12.2020"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.01))));
@@ -2098,6 +2257,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-27T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.793716)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung17.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(270.80))));
@@ -2117,6 +2277,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-27T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(9.887676)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung17.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(93.60))));
@@ -2136,6 +2297,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-27T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4.954360)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung17.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(733.87))));
@@ -2146,6 +2308,10 @@ public class EbasePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
+        Unit grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
+                        .orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(754.74 * 1.195300))));
+
         // check 4th buy sell transaction
         entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance)
                         .collect(Collectors.toList()).get(3).getSubject();
@@ -2155,6 +2321,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.033610)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung17.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(15.00))));
@@ -2174,6 +2341,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.325715)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung17.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(15.00))));
@@ -2193,6 +2361,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3.202562)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung17.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(40.00))));
@@ -2212,6 +2381,8 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-03T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.384890)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung17.txt"));
+        assertThat(entry.getNote(), is("Wiederanlage Fondsertrag"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("GBP", Values.Amount.factorize(3.03))));
@@ -2231,6 +2402,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.414731)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung17.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(25.00))));
@@ -2250,6 +2422,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.038637)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung17.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(25.00))));
@@ -2269,6 +2442,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.373877)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung17.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(40.00))));
@@ -2279,6 +2453,10 @@ public class EbasePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
+        grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
+                        .orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(40.00 * 1.202200))));
+
         // check 11th buy sell transaction
         entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance)
                         .collect(Collectors.toList()).get(10).getSubject();
@@ -2288,6 +2466,8 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.137606)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung17.txt"));
+        assertThat(entry.getNote(), is("vermögenswirksame Leistungen"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(15.00))));
@@ -2306,6 +2486,7 @@ public class EbasePDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(300.991871)));
+        assertThat(transaction.getSource(), is("Umsatzabrechnung17.txt"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of("GBP", Values.Amount.factorize(3.03))));
@@ -2346,6 +2527,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-10-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(20.422296)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung18.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5000.00))));
@@ -2392,6 +2574,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-28T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(7.101511)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung19.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1191.18))));
@@ -2411,6 +2594,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-28T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(18.568667)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung19.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1191.18))));
@@ -2451,6 +2635,8 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-07-05T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.095371)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung20.txt"));
+        assertThat(entry.getNote(), is("Entgeltbelastung Verkauf"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.00))));
@@ -2491,6 +2677,8 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-01-18T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.082378)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung21.txt"));
+        assertThat(entry.getNote(), is("Wiederanlage Ertragsausschüttung"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.94))));
@@ -2555,6 +2743,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-10-30T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.502194)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung22.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(140.07))));
@@ -2565,6 +2754,10 @@ public class EbasePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.13 + 0.28))));
 
+        Unit grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
+                        .orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of("CHF", Values.Amount.factorize(141.19 * 1.140900))));
+
         // check 2nd buy sell transaction
         entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance)
                         .collect(Collectors.toList()).get(1).getSubject();
@@ -2574,6 +2767,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-10-30T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3.760425)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung22.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(140.07))));
@@ -2584,6 +2778,10 @@ public class EbasePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.20 + 0.27))));
 
+        grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
+                        .orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(139.60 * 1.136400))));
+
         // check 3rd buy sell transaction
         entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance)
                         .collect(Collectors.toList()).get(2).getSubject();
@@ -2593,6 +2791,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-10-30T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.428056)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung22.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(85.61))));
@@ -2612,6 +2811,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-10-30T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.298277)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung22.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(85.61))));
@@ -2622,6 +2822,10 @@ public class EbasePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.12 + 0.17))));
 
+        grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
+                        .orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(85.32 * 1.136400))));
+
         // check 5th buy sell transaction
         entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance)
                         .collect(Collectors.toList()).get(4).getSubject();
@@ -2631,6 +2835,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-10-30T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5.883736)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung22.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(135.44))));
@@ -2650,6 +2855,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-10-30T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3.635976)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung22.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(135.44))));
@@ -2669,6 +2875,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-10-30T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.579236)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung22.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(55.58))));
@@ -2688,6 +2895,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-10-30T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.492048)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung22.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(55.58))));
@@ -2713,11 +2921,11 @@ public class EbasePDFExtractorTest
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security1.getIsin(), is("IE00BK5BQT80"));
-        assertThat(security1.getName(), is("Vanguard FTSE All-World U.ETF Reg. Shs USD Acc. oN"));
-        assertThat(security1.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security.getIsin(), is("IE00BK5BQT80"));
+        assertThat(security.getName(), is("Vanguard FTSE All-World U.ETF Reg. Shs USD Acc. oN"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
         // check 1st buy sell transaction
         BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance)
@@ -2728,6 +2936,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-08-03T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.276295)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung23.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(219.00))));
@@ -2737,6 +2946,10 @@ public class EbasePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.44))));
+
+        Unit grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
+                        .orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(218.56 * 1.185800))));
 
         // check 2nd buy sell transaction
         entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance)
@@ -2747,6 +2960,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-08-09T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.025198)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung23.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100.00))));
@@ -2757,6 +2971,10 @@ public class EbasePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.20))));
 
+        grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
+                        .orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(99.80 * 1.172300))));
+
         // check 3rd buy sell transaction
         entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance)
                         .collect(Collectors.toList()).get(2).getSubject();
@@ -2766,6 +2984,7 @@ public class EbasePDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-09-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.222628)));
+        assertThat(entry.getSource(), is("Umsatzabrechnung23.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(219.00))));
@@ -2775,5 +2994,9 @@ public class EbasePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.44))));
+
+        grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
+                        .orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(218.56 * 1.182500))));
     }
 }
