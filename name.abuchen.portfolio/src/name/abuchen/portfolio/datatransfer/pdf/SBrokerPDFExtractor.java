@@ -40,7 +40,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("(Kauf(.*)?|Verkauf(.*)?|Wertpapier Abrechnung Ausgabe Investmentfonds)");
+        DocumentType type = new DocumentType("(Kauf(.*)?|Verkauf(.*)?|Wertpapier Abrechnung (Ausgabe Investmentfonds|Kauf))");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -50,7 +50,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^(Kauf(.*)?|Verkauf(.*)?|Wertpapier Abrechnung Ausgabe Investmentfonds)$");
+        Block firstRelevantLine = new Block("^(Kauf(.*)?|Verkauf(.*)?|Wertpapier Abrechnung (Ausgabe Investmentfonds|Kauf))$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -75,16 +75,20 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                 // Gattungsbezeichnung ISIN
                 // iS.EO G.B.C.1.5-10.5y.U.ETF DE Inhaber-Anteile DE000A0H0785
                 .section("isin", "name").optional()
-                .match("^Gattungsbezeichnung ISIN$")
+                .find("Gattungsbezeichnung ISIN")
                 .match("^(?<name>.*) (?<isin>[\\w]{12})$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // Nominale Wertpapierbezeichnung ISIN (WKN)
                 // Stück 7,1535 BGF - WORLD TECHNOLOGY FUND LU0171310443 (A0BMAN)
-                .section("shares", "name", "isin", "wkn").optional()
-                .match("^Nominale Wertpapierbezeichnung ISIN \\(WKN\\)$")
+                .section("shares", "name", "isin", "wkn", "name1").optional()
+                .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)")
                 .match("^St.ck (?<shares>[\\.,\\d]+) (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
+                .match("(?<name1>.*)$")
                 .assign((t, v) -> {
+                    if (!v.get("name1").startsWith("Handels-/Ausführungsplatz"))
+                        v.put("name", TextUtil.strip(v.get("name")) + " " + TextUtil.strip(v.get("name1")));
+
                     t.setShares(asShares(v.get("shares")));
                     t.setSecurity(getOrCreateSecurity(v));
                 })
@@ -124,13 +128,18 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                 // 01.10.2014 10/0000/000 EUR 1.930,17
                                 section -> section
                                         .attributes("currency", "amount")
-                                        .match("^Wert Konto-Nr. Betrag zu Ihren (Gunsten|Lasten).*$")
+                                        .find("Wert Konto-Nr. Betrag zu Ihren (Gunsten|Lasten).*")
                                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\/\\d]+ (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
                                         .assign((t, v) -> {
                                             t.setAmount(asAmount(v.get("amount")));
                                             t.setCurrencyCode(v.get("currency"));
                                         })
                         )
+
+                // Limit 189,40 EUR
+                .section("note").optional()
+                .match("(?<note>Limit [\\.,\\d]+ [\\w]{3})$")
+                .assign((t, v) -> t.setNote(TextUtil.strip(v.get("note"))))
 
                 .wrap(BuySellEntryItem::new);
 
@@ -144,7 +153,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Dividendengutschrift|Aussch.ttung");
         this.addDocumentTyp(type);
 
-        Block block = new Block("^(Dividendengutschrift|Aussch.ttung (f.r|Investmentfonds))(.*)?$");
+        Block block = new Block("^(Dividendengutschrift|Aussch.ttung (f.r|Investmentfonds))( [^\\.,\\d]+.*)?$");
         type.addBlock(block);
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
@@ -166,7 +175,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                 // Gattungsbezeichnung ISIN
                 // iS.EO G.B.C.1.5-10.5y.U.ETF DE Inhaber-Anteile DE000A0H0785
                 .section("isin", "name").optional()
-                .find("^Gattungsbezeichnung ISIN$")
+                .find("Gattungsbezeichnung ISIN")
                 .match("^(?<name>.*) (?<isin>[\\w]{12})$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
@@ -177,7 +186,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                 .section("shares", "name", "isin", "wkn", "name1", "currency").optional()
                 .match("^St.ck (?<shares>[\\.,\\d]+) (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
                 .match("^(?<name1>.*)$")
-                .match("^Zahlbarkeitstag [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Aussch.ttung pro St\\. [\\.,\\d]+ (?<currency>[\\w]{3})$")
+                .match("^Zahlbarkeitstag [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Aussch.ttung|Dividende) pro (St\\.|St.ck) [\\.,\\d]+ (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Zahlbarkeitstag"))
                         v.put("name", TextUtil.strip(v.get("name")) + " " + TextUtil.strip(v.get("name1")));
@@ -298,6 +307,11 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                     type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
                 })
 
+                // Ex-Tag 22.12.2021 Art der Dividende Quartalsdividende
+                .section("note").optional()
+                .match("^.* Art der Dividende (?<note>.*)$")
+                .assign((t, v) -> t.setNote(TextUtil.strip(v.get("note"))))
+
                 .wrap(t -> new TransactionItem(t));
 
         addTaxesSectionsTransaction(pdfTransaction, type);
@@ -321,7 +335,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                 // Gattungsbezeichnung ISIN
                 // iS.EO G.B.C.1.5-10.5y.U.ETF DE Inhaber-Anteile DE000A0H0785
                 .section("isin", "name").optional()
-                .match("^Gattungsbezeichnung ISIN$")
+                .find("Gattungsbezeichnung ISIN")
                 .match("^(?<name>.*) (?<isin>[\\w]{12})$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
                                 
@@ -329,7 +343,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                 // Wert Konto-Nr. Abrechnungs-Nr. Betrag zu Ihren Gunsten
                 // 03.06.2015 10/3874/009 87966195 EUR 11,48
                 .section("date", "amount", "currency").optional()
-                .match("^Wert Konto-Nr\\. Abrechnungs\\-Nr\\. Betrag zu Ihren Gunsten$")
+                .find("Wert Konto-Nr\\. Abrechnungs\\-Nr\\. Betrag zu Ihren Gunsten")
                 .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\/\\d]+ [\\d]+ (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     t.setDateTime(asDate(v.get("date")));
@@ -475,19 +489,24 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
         transaction
                 // Handelszeit 09:02 Orderentgelt                EUR 10,90-
                 .section("fee", "currency").optional()
-                .match(".* Orderentgelt ([\\s]+)?(?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)-")
+                .match("^.* Orderentgelt ([\\s]+)?(?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)\\-$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Orderentgelt
                 // EUR 0,71-
                 .section("fee", "currency").optional()
                 .match("^Orderentgelt$")
-                .match("^(?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)-$")
+                .match("^(?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)\\-$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Börse Stuttgart Börsengebühr EUR 2,29-
                 .section("fee", "currency").optional()
-                .match(".* B.rsengeb.hr (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)-")
+                .match("^.* B.rsengeb.hr (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)-$")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+
+                // Provision 1,48- EUR
+                .section("fee", "currency").optional()
+                .match("^Provision (?<fee>[\\.,\\d]+)\\- (?<currency>[\\w]{3})")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Kurswert 509,71- EUR
