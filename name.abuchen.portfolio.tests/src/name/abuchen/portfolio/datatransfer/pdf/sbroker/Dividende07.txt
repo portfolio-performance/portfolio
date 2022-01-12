@@ -1,0 +1,50 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+~$~|ER01|265484||||||||ERTRAEGE.D220111.AFP||||20220111||1708|0000|||||~$~
+S Broker AG & Co. KG ´ Postfach 90 01 50 ´ 39133 Magdeburg Seite 1
+Depotnummer 
+Abrechnungsnr. 
+Datum 11.01.2022
+Dividendengutschrift
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 100 ALTRIA GROUP INC. US02209S1033 (200417)
+REGISTERED SHARES DL -,333
+Zahlbarkeitstag 10.01.2022 Dividende pro Stück 0,90 USD
+Bestandsstichtag 21.12.2021 Herkunftsland USA
+Ex-Tag 22.12.2021 Art der Dividende Quartalsdividende
+Geschäftsjahr 01.01.2021 - 31.12.2021
+Devisenkurs EUR / USD 1,1391
+Devisenkursdatum 11.01.2022
+Dividendengutschrift 90,00 USD 79,01+ EUR
+Umrechnung in EUR 79,01 EUR
+Einbehaltene Quellensteuer 15 % auf 90,00 USD 11,85- EUR
+Anrechenbare Quellensteuer 15 % auf 79,01 EUR 11,85 EUR
+Kapitalertragsteuerpflichtige Dividende 79,01 EUR
+Verrechnete anrechenbare ausländische Quellensteuer
+(Verhältnis 100/25) auf 11,85 EUR 47,40 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 31,61 EUR
+Kapitalertragsteuer 24,51 % auf 31,61 EUR 7,75- EUR
+Solidaritätszuschlag 5,5 % auf 7,75 EUR 0,42- EUR
+Kirchensteuer 8 % auf 7,75 EUR 0,62- EUR
+Ausmachender Betrag 58,37+ EUR
+Lagerstelle Clearstream Banking FFM (849000 / 40030000)
+Jahressteuerbescheinigung folgt.
+Bitte ggf. Rückseite beachten.
+5500.01112139.0003466ER01
+SBRO_ER01_v10.7P.ERTRAEGE.D220111.AFP_1708
+
+Seite 2
+Depotnummer 
+Abrechnungsnr. 
+Datum 11.01.2022
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2022 ohne Vorjahressaldo Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 0,00
+Ertrag 11,85
+0,00 0,00 0,00 11,85- 31,61
+Nachher 0,00 0,00 0,00 0,00 31,61
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+5500.01112139.0003467ER01

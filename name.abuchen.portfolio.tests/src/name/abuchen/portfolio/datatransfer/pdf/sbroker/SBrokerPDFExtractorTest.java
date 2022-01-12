@@ -130,7 +130,7 @@ public class SBrokerPDFExtractorTest
         Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
         assertThat(security.getIsin(), is("LU0171310443"));
         assertThat(security.getWkn(), is("A0BMAN"));
-        assertThat(security.getName(), is("BGF - WORLD TECHNOLOGY FUND"));
+        assertThat(security.getName(), is("BGF - WORLD TECHNOLOGY FUND ACT. NOM. CLASSE A2 EUR O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
@@ -234,6 +234,49 @@ public class SBrokerPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(14.40 + 0.71))));
+    }
+
+    @Test
+    public void testWertpapierKauf06()
+    {
+        SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf06.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("US45781V1017"));
+        assertThat(security.getWkn(), is("A2DGXH"));
+        assertThat(security.getName(), is("INNOVATIVE INDL PROPERTIES REGISTERED SHARES DL -,001"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check buy sell transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)
+                        .collect(Collectors.toList()).get(0).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-01-10T20:56:38")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(30)));
+        assertThat(entry.getSource(), is("Kauf06.txt"));
+        assertThat(entry.getNote(), is("Limit 189,40 EUR"));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5683.48))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5682.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.48))));
     }
 
     @Test
@@ -386,6 +429,12 @@ public class SBrokerPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-05-11T00:00")));
         assertThat(transaction.getMonetaryAmount(), 
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(74.02))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(74.02))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -547,6 +596,10 @@ public class SBrokerPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize((4.70 / 1.1396) + 2.70 + 0.14 + 0.21))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE), 
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        Unit grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(),
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(31.32))));
     }
 
     @Test
@@ -588,6 +641,10 @@ public class SBrokerPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.75 + 2.44 + 0.13 + 0.19))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE), 
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        Unit grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(),
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(28.50))));
     }
 
     @Test
@@ -629,5 +686,55 @@ public class SBrokerPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.30 + 1.50 + 0.08 + 0.12))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE), 
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        Unit grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(),
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(17.50))));
+    }
+
+    @Test
+    public void testDividende07()
+    {
+        SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende07.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
+        assertThat(security.getIsin(), is("US02209S1033"));
+        assertThat(security.getWkn(), is("200417"));
+        assertThat(security.getName(), is("ALTRIA GROUP INC. REGISTERED SHARES DL -,333"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+
+        // check dividends transaction
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+                        .findFirst().get().getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-01-10T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(100)));
+        assertThat(transaction.getSource(), is("Dividende07.txt"));
+        assertThat(transaction.getNote(), is("Quartalsdividende"));
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(58.37))));
+        assertThat(transaction.getGrossValue(), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(79.01))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(11.85 + 7.75 + 0.42 + 0.62))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        Unit grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(),
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(90.00))));
     }
 }
