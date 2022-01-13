@@ -117,9 +117,10 @@ public class YahooFinanceQuoteFeedTest
                         0);
         assertThat(prices.get(prices.size() - 1), equalTo(price));
     }
-    
+
     @Test
-    public void testParsingAustralianTimezoneQuotes() {
+    public void testParsingAustralianTimezoneQuotes()
+    {
         String rawQuotes = getHistoricalYahooQuotesAX();
 
         Security security = new Security();
@@ -129,9 +130,9 @@ public class YahooFinanceQuoteFeedTest
         QuoteFeedData data = feed.extractQuotes(rawQuotes);
         List<LatestSecurityPrice> prices = data.getLatestPrices();
         Collections.sort(prices, new SecurityPrice.ByDate());
-        
+
         assertThat(prices.size(), is(64));
-        
+
         // Timestamp 1641942000 => 2022-01-12
         assertThat(prices.get(62).getDate(), is(LocalDate.of(2022, 1, 12)));
     }
