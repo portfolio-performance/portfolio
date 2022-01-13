@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.text.ParseException;
+import java.time.DateTimeException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -229,6 +230,25 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
             if (result0 == null)
                 throw new IOException("result[0]"); //$NON-NLS-1$
 
+            ZoneId exchangeZoneId = ZoneOffset.UTC;
+            if (result0.containsKey("meta")) //$NON-NLS-1$
+            {
+                JSONObject meta = (JSONObject) result0.get("meta"); //$NON-NLS-1$
+
+                String exchangeTimezoneName = (String) meta.get("exchangeTimezoneName"); //$NON-NLS-1$
+                if (exchangeTimezoneName != null)
+                {
+                    try
+                    {
+                        exchangeZoneId = ZoneId.of(exchangeTimezoneName);
+                    }
+                    catch (DateTimeException e)
+                    {
+                        // Ignore
+                    }
+                }
+            }
+
             JSONArray timestamp = (JSONArray) result0.get("timestamp"); //$NON-NLS-1$
 
             JSONObject indicators = (JSONObject) result0.get("indicators"); //$NON-NLS-1$
@@ -247,7 +267,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
                 if (ts != null && q != null && q.doubleValue() > 0)
                 {
                     LatestSecurityPrice price = new LatestSecurityPrice();
-                    price.setDate(LocalDateTime.ofEpochSecond(ts, 0, ZoneOffset.UTC).toLocalDate());
+                    price.setDate(LocalDateTime.ofInstant(Instant.ofEpochSecond(ts), exchangeZoneId).toLocalDate());
 
                     // yahoo api seesm to return floating numbers --> limit to 4
                     // digits which seems to round it to the right value
