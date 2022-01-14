@@ -558,6 +558,7 @@ public class Messages extends NLS
     public static String LabelCollapseAll;
     public static String LabelColorSchema;
     public static String LabelColumns;
+    public static String LabelColumnsInReverseOrder;
     public static String LabelCommon;
     public static String LabelConsumerPriceIndex;
     public static String LabelConvertBuySellIntoDeliveryTransactions;
