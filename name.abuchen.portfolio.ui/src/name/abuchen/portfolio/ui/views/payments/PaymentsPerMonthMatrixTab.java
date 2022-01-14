@@ -4,8 +4,12 @@ import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.function.ToLongFunction;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -13,6 +17,7 @@ import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
@@ -52,6 +57,10 @@ import name.abuchen.portfolio.util.TextUtil;
 
 public class PaymentsPerMonthMatrixTab implements PaymentsTab
 {
+    // Keys in PreferenceStore
+    private static final String KEY_SHOW_ONE_YEAR = PaymentsPerMonthMatrixTab.class.getSimpleName()
+                    + "-showOnlyOneYear"; //$NON-NLS-1$
+
     @Inject
     private IStylingEngine stylingEngine;
 
@@ -64,7 +73,11 @@ public class PaymentsPerMonthMatrixTab implements PaymentsTab
     @Inject
     protected PaymentsViewModel model;
 
+    @Inject
+    protected IPreferenceStore preferences;
+
     private boolean showOnlyOneYear = false;
+    protected boolean columnsInReverseOrder = false;
 
     protected Font boldFont;
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM yy"); //$NON-NLS-1$
@@ -91,21 +104,44 @@ public class PaymentsPerMonthMatrixTab implements PaymentsTab
         });
     }
 
+    private String getKeyForReverseOrder()
+    {
+        // Separate keys for sub-classes
+        return this.getClass().getSimpleName() + "-columnsInReverseOrder"; //$NON-NLS-1$
+    }
+
+    protected void addReverseColumnAction(IMenuManager manager)
+    {
+        Action action = new SimpleAction(Messages.LabelColumnsInReverseOrder, a -> {
+            columnsInReverseOrder = !columnsInReverseOrder;
+            reverseColumnOrder();
+            preferences.setValue(getKeyForReverseOrder(), columnsInReverseOrder);
+        });
+        action.setChecked(columnsInReverseOrder);
+        manager.add(action);
+    }
+
     @Override
     public void addConfigActions(IMenuManager manager)
     {
         Action action = new SimpleAction(Messages.LabelShowOnlyOneYear, a -> {
             showOnlyOneYear = !showOnlyOneYear;
             updateColumns(tableViewer, tableLayout);
+            preferences.setValue(KEY_SHOW_ONE_YEAR, showOnlyOneYear);
         });
         action.setChecked(showOnlyOneYear);
         manager.add(action);
+
+        addReverseColumnAction(manager);
     }
 
     @Override
     public Control createControl(Composite parent)
     {
         Composite container = new Composite(parent, SWT.NONE);
+
+        showOnlyOneYear = preferences.getBoolean(KEY_SHOW_ONE_YEAR);
+        columnsInReverseOrder = preferences.getBoolean(getKeyForReverseOrder());
 
         tableLayout = new TableColumnLayout();
         container.setLayout(tableLayout);
@@ -171,6 +207,32 @@ public class PaymentsPerMonthMatrixTab implements PaymentsTab
         }
     }
 
+    protected void reverseColumnOrder()
+    {
+        // Keep first and last column in same position
+        reverseColumnOrder(1, 1);
+    }
+
+    /**
+     * Reverses column order in a given range.
+     *
+     * @param startOffset
+     *            Number of unchanged columns at the start
+     * @param endOffset
+     *            Number of unchanged columns at the end
+     */
+    protected void reverseColumnOrder(int startOffset, int endOffset)
+    {
+        int[] currentColumnOrder = tableViewer.getTable().getColumnOrder();
+        List<Integer> columnList = Arrays.stream(currentColumnOrder).boxed().collect(Collectors.toList());
+
+        // subList is view of original list => original list is changed
+        Collections.reverse(columnList.subList(startOffset, currentColumnOrder.length - endOffset));
+
+        int[] newColumnOrder = columnList.stream().mapToInt(i -> i).toArray();
+        tableViewer.getTable().setColumnOrder(newColumnOrder);
+    }
+
     protected void createColumns(TableViewer records, TableColumnLayout layout)
     {
         createVehicleColumn(records, layout, true);
@@ -191,6 +253,11 @@ public class PaymentsPerMonthMatrixTab implements PaymentsTab
         // add security name at the end of the matrix table again because the
         // first column is most likely not visible anymore
         createVehicleColumn(records, layout, false);
+
+        if (columnsInReverseOrder)
+        {
+            reverseColumnOrder();
+        }
     }
 
     protected void createVehicleColumn(TableViewer records, TableColumnLayout layout, boolean isSorted)
