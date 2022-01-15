@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.pdf.simpel;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
-import name.abuchen.portfolio.datatransfer.pdf.SelfWealthPDFExtractor;
+import name.abuchen.portfolio.datatransfer.pdf.SimpelPDFExtractor;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -32,7 +33,7 @@ public class SimpelPDFExtractorTest
     @Test
     public void testSecurityBuy01()
     {
-        SelfWealthPDFExtractor extractor = new SelfWealthPDFExtractor(new Client());
+        SimpelPDFExtractor extractor = new SimpelPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -45,7 +46,7 @@ public class SimpelPDFExtractorTest
         // check security
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getTickerSymbol(), is("AT0000A1QA38"));
+        assertThat(security.getIsin(), is("AT0000A1QA38"));
         assertThat(security.getName(), is("Standortfonds Österreich"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -59,12 +60,12 @@ public class SimpelPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-01-10T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.071)));
         assertThat(entry.getSource(), is("SimpelBuy01.txt"));
-        assertThat(entry.getNote(), is(""));
+        assertNull(entry.getNote());
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9999)))); // TODO ??
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.0))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
