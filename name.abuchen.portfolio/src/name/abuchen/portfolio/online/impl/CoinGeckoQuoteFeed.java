@@ -6,6 +6,7 @@ import java.text.MessageFormat;
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -90,6 +91,7 @@ public final class CoinGeckoQuoteFeed implements QuoteFeed
             return;
 
         List<LatestSecurityPrice> prices = new ArrayList<>();
+        LatestSecurityPrice previous = null;
 
         for (Object price : ohlcArray)
         {
@@ -98,7 +100,14 @@ public final class CoinGeckoQuoteFeed implements QuoteFeed
                 try
                 {
                     JSONArray priceArray = (JSONArray) price;
-                    prices.add(fromArray(priceArray));
+                    LatestSecurityPrice p = fromArray(priceArray);
+
+                    if (previous != null && previous.getDate().equals(p.getDate()))
+                        prices.set(prices.size() - 1, p);
+                    else
+                        prices.add(p);
+
+                    previous = p;
                 }
                 catch (ParseException ex)
                 {
@@ -122,9 +131,22 @@ public final class CoinGeckoQuoteFeed implements QuoteFeed
 
         // Closing prices will be returned with time 00:00:00 of the next day
         if (date.getHour() == 0 && date.getMinute() == 0 && date.getSecond() == 0)
+        {
             price.setDate(LocalDate.of(date.getYear(), date.getMonth(), date.getDayOfMonth()).minusDays(1));
+        }
         else
+        {
+            // Note: Although CoinGecko does return quotes in UTC, we must treat
+            // them as if they're 'localtime,' due to PP not storing its own
+            // data in UTC. This avoids the bug where users in timezones later
+            // than UTC see "latest quotes" one day late during the second part
+            // of the day. See:
+            // https://github.com/buchen/portfolio/issues/2106#issuecomment-822023523
+
+            date = date.withZoneSameInstant(ZoneId.systemDefault());
+
             price.setDate(LocalDate.of(date.getYear(), date.getMonth(), date.getDayOfMonth()));
+        }
 
         return price;
     }
@@ -132,7 +154,7 @@ public final class CoinGeckoQuoteFeed implements QuoteFeed
     private QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse, LocalDate start)
     {
         String coinGeckoId;
-        
+
         if (security.getTickerSymbol() == null)
             return QuoteFeedData.withError(
                             new IOException(MessageFormat.format(Messages.MsgMissingTickerSymbol, security.getName())));
@@ -141,15 +163,18 @@ public final class CoinGeckoQuoteFeed implements QuoteFeed
 
         try
         {
-            // The coin ID may be provided directly as a feed parameter (in case the ticker is ambiguously defined)
-            Optional<String> coinGeckoIdProperty = security.getPropertyValue(SecurityProperty.Type.FEED, COINGECKO_COIN_ID);
-            
+            // The coin ID may be provided directly as a feed parameter (in case
+            // the ticker is ambiguously defined)
+            Optional<String> coinGeckoIdProperty = security.getPropertyValue(SecurityProperty.Type.FEED,
+                            COINGECKO_COIN_ID);
+
             if (coinGeckoIdProperty.isPresent())
                 coinGeckoId = coinGeckoIdProperty.get();
             else
-                // If not specified explicitly, try to map the ticker symbol to a coin ID
+                // If not specified explicitly, try to map the ticker symbol to
+                // a coin ID
                 coinGeckoId = getCoinGeckoIdForTicker(security.getTickerSymbol().toLowerCase());
-                        
+
             String endpoint = "/api/v3/coins/" + coinGeckoId + "/market_chart"; //$NON-NLS-1$ //$NON-NLS-2$
             long days = ChronoUnit.DAYS.between(start, LocalDate.now()) + 1;
 
