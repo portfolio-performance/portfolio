@@ -44,63 +44,54 @@ public class SimpelPDFExtractor extends AbstractPDFExtractor
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
-            //  Kauf  Standortfonds Österreich 10.00 €  140.59 €  0.071
-            .section("type", "name", "amount", "kurs", "shares", "isin", "date", "shares1")
-            .match("^ (?<type>(Kauf|Verkauf))  (?<name>.*) (?<amount>[\\-\\.,\\d]+) €  (?<kurs>[\\-\\.,\\d]+) €  (?<shares>[\\d.,]+)$")
-            .match("^(?<isin>[\\w]{12}) (?<date>[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}) (?<shares1>[\\d.,]+)$")
-            .assign((t, v) -> {
-                if (v.get("type").equals("Verkauf"))
-                {
-                    t.setType(PortfolioTransaction.Type.SELL);
-                }
-                
-                t.setSecurity(getOrCreateSecurity(v));
-                t.setCurrencyCode("EUR");
-                t.setShares(asShares(normalizeAmount(v.get("shares"))));
-                
-                t.setAmount(asAmount(normalizeAmount(v.get("amount"))));
-                
-                t.setDate(asDate(v.get("date")));
-            })
-            
-            // Steuerlicher Anschaffungswert
-            .section("amount")
-            .optional()
-            .match("^Steuerlicher Anschaffungswert: (?<amount>[\\-\\.,\\d]+) €")
-            .assign((t, v) -> {
-                t.setAmount(asAmount(normalizeAmount(v.get("amount"))));
-            })
-            
-            
-            // Auszahlungsbetrag
-            .section("amount")
-            .optional()
-            .match("^Auszahlungsbetrag:  (?<amount>[\\-\\.,\\d]+) €")
-            .assign((t, v) -> {
-                t.setAmount(asAmount(normalizeAmount(v.get("amount"))));
-            })
-            
-            // Steuern
-            .section("tax")
-            .optional()
-            .match("^abgef.hrte Kapitalertragssteuer: (?<tax>[\\-\\.,\\d]+) €")
-            .assign((t, v) -> {
-                Money tax = Money.of("EUR", asAmount(normalizeAmount(v.get("tax"))));
-                PDFExtractorUtils.checkAndSetTax(tax, t.getPortfolioTransaction(), type);
-            })
-            
-            // Auftragsnummer
-            .section("ordernum")
-            .match("^Auftrags-Nummer: (?<ordernum>[\\d]+)$")
-            .assign((t,v) -> {
-                t.setNote("Auftrags-Nummer: " + v.get("ordernum"));
-            })
-            
+                        // Kauf Standortfonds Österreich 10.00 € 140.59 € 0.071
+                        .section("type", "name", "amount", "kurs", "shares", "isin", "date", "shares1")
+                        .match("^ (?<type>(Kauf|Verkauf))  (?<name>.*) (?<amount>[\\-\\.,\\d]+) €  (?<kurs>[\\-\\.,\\d]+) €  (?<shares>[\\d.,]+)$")
+                        .match("^(?<isin>[\\w]{12}) (?<date>[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}) (?<shares1>[\\d.,]+)$")
+                        .assign((t, v) -> {
+                            if (v.get("type").equals("Verkauf"))
+                            {
+                                t.setType(PortfolioTransaction.Type.SELL);
+                            }
 
-            .wrap(BuySellEntryItem::new);
+                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setCurrencyCode("EUR");
+                            t.setShares(asShares(normalizeAmount(v.get("shares"))));
+
+                            t.setAmount(asAmount(normalizeAmount(v.get("amount"))));
+
+                            t.setDate(asDate(v.get("date")));
+                        })
+
+                        // Steuerlicher Anschaffungswert
+                        .section("amount").optional()
+                        .match("^Steuerlicher Anschaffungswert: (?<amount>[\\-\\.,\\d]+) €").assign((t, v) -> {
+                            t.setAmount(asAmount(normalizeAmount(v.get("amount"))));
+                        })
+
+                        // Auszahlungsbetrag
+                        .section("amount").optional().match("^Auszahlungsbetrag:  (?<amount>[\\-\\.,\\d]+) €")
+                        .assign((t, v) -> {
+                            t.setAmount(asAmount(normalizeAmount(v.get("amount"))));
+                        })
+
+                        // Steuern
+                        .section("tax").optional().match("^abgef.hrte Kapitalertragssteuer: (?<tax>[\\-\\.,\\d]+) €")
+                        .assign((t, v) -> {
+                            Money tax = Money.of("EUR", asAmount(normalizeAmount(v.get("tax"))));
+                            PDFExtractorUtils.checkAndSetTax(tax, t.getPortfolioTransaction(), type);
+                        })
+
+                        // Auftragsnummer
+                        .section("ordernum").match("^Auftrags-Nummer: (?<ordernum>[\\d]+)$").assign((t, v) -> {
+                            t.setNote("Auftrags-Nummer: " + v.get("ordernum"));
+                        })
+
+                        .wrap(BuySellEntryItem::new);
     }
-    
-    private static String normalizeAmount(String amount) {
-        return amount.replace(",","").replace('.', ',');
+
+    private static String normalizeAmount(String amount)
+    {
+        return amount.replace(",", "").replace('.', ',');
     }
 }
