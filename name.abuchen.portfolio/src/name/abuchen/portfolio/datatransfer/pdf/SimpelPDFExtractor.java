@@ -49,7 +49,8 @@ public class SimpelPDFExtractor extends AbstractPDFExtractor
             //  Kauf  Standortfonds Österreich 10.00 €  140.59 €  0.071
             .section("type", "name", "amount", "kurs", "shares", "isin", "date", "shares1")
             .match("^ (?<type>(Kauf|Verkauf))  (?<name>.*) (?<amount>[\\-\\.,\\d]+) €  (?<kurs>[\\-\\.,\\d]+) €  (?<shares>[\\d.,]+)$")
-            .match("^(?<isin>[\\w]{12}) (?<date>[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}) (?<shares1>[\\d.,]+)$").assign((t, v) -> {
+            .match("^(?<isin>[\\w]{12}) (?<date>[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}) (?<shares1>[\\d.,]+)$")
+            .assign((t, v) -> {
                 if (v.get("type").equals("Verkauf"))
                 {
                     t.setType(PortfolioTransaction.Type.SELL);
@@ -63,6 +64,15 @@ public class SimpelPDFExtractor extends AbstractPDFExtractor
                 
                 t.setDate(asDate(v.get("date")));
             })
+            
+            // Auftragsnummer
+            
+            .section("ordernum")
+            .match("^Auftrags-Nummer: (?<ordernum>[\\d]+)$")
+            .assign((t,v) -> {
+                t.setNote("Auftrags-Nummer: " + v.get("ordernum"));
+            })
+            
 
             .wrap(BuySellEntryItem::new);
 

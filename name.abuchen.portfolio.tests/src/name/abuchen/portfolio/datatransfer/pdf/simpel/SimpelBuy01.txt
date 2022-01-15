@@ -18,7 +18,7 @@ AT0000A1QA38 10.01.2022 5.123
 Girosammelverwahrung/AT
 Abrechnungsbetrag: 10.00 €
 Ausgabeaufschlag/Provision: 0,00%
-Auftrags-Nummer: 202201066000231886000000612345
+Auftrags-Nummer: 20220106123456789000000612345
 KESt-Neubestand mit Anschaffungskosten nach dem gleitenden Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG: 
  0.071       Anteile.
 Steuerlicher Anschaffungswert: 9.98 €
