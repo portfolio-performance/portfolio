@@ -60,37 +60,37 @@ public class SimpelPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-01-10T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.071)));
         assertThat(entry.getSource(), is("SimpelBuy01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Auftrags-Nummer: 20220106123456789000000612345"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9.98))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9.98))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.0))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.0))));
     }
 
-   /* @Test
+    @Test
     public void testSecuritySell01()
     {
-        SelfWealthPDFExtractor extractor = new SelfWealthPDFExtractor(new Client());
+        SimpelPDFExtractor extractor = new SimpelPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SelfWealthSell01.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SimpelSell01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, "AUD");
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getTickerSymbol(), is("WPL"));
-        assertThat(security.getName(), is("WOODSIDE PETROLEUM"));
-        assertThat(security.getCurrencyCode(), is("AUD"));
+        assertThat(security.getIsin(), is("AT0000A1Z882"));
+        assertThat(security.getName(), is("Standortfonds Deutschland"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
         BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance)
@@ -99,16 +99,18 @@ public class SimpelPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-24T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(397)));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-12-29T00:00")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(6.590)));
+        assertThat(entry.getSource(), is("SimpelSell01.txt"));
+        assertThat(entry.getNote(), is("Auftrags-Nummer: 2021122812345678000000987656"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("AUD", Values.Amount.factorize(8676.86))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(848.68))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("AUD", Values.Amount.factorize(8686.36))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(880.29))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("AUD", Values.Amount.factorize(0.00))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(31.61))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("AUD", Values.Amount.factorize(9.50))));
-    }*/
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0))));
+    }
 }

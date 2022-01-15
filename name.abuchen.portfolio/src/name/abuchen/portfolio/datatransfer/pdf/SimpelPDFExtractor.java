@@ -7,18 +7,16 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.money.Money;
 
 @SuppressWarnings("nls")
 public class SimpelPDFExtractor extends AbstractPDFExtractor
 {
-    private static final String EXCHANGE_RATE = "exchangeRate"; //$NON-NLS-1$
-    private static final String FLAG_WITHHOLDING_TAX_FOUND = "isHoldingTax"; //$NON-NLS-1$
-
     public SimpelPDFExtractor(Client client)
     {
         super(client);
 
-        addBankIdentifier("LU32888126"); //$NON-NLS-1$
+        addBankIdentifier("LU32888126");
 
         addBuySellTransaction();
     }
@@ -26,7 +24,7 @@ public class SimpelPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Simpel S.A."; //$NON-NLS-1$
+        return "Simpel S.A.";
     }
 
     private void addBuySellTransaction()
@@ -65,8 +63,33 @@ public class SimpelPDFExtractor extends AbstractPDFExtractor
                 t.setDate(asDate(v.get("date")));
             })
             
-            // Auftragsnummer
+            // Steuerlicher Anschaffungswert
+            .section("amount")
+            .optional()
+            .match("^Steuerlicher Anschaffungswert: (?<amount>[\\-\\.,\\d]+) €")
+            .assign((t, v) -> {
+                t.setAmount(asAmount(normalizeAmount(v.get("amount"))));
+            })
             
+            
+            // Auszahlungsbetrag
+            .section("amount")
+            .optional()
+            .match("^Auszahlungsbetrag:  (?<amount>[\\-\\.,\\d]+) €")
+            .assign((t, v) -> {
+                t.setAmount(asAmount(normalizeAmount(v.get("amount"))));
+            })
+            
+            // Steuern
+            .section("tax")
+            .optional()
+            .match("^abgef.hrte Kapitalertragssteuer: (?<tax>[\\-\\.,\\d]+) €")
+            .assign((t, v) -> {
+                Money tax = Money.of("EUR", asAmount(normalizeAmount(v.get("tax"))));
+                PDFExtractorUtils.checkAndSetTax(tax, t.getPortfolioTransaction(), type);
+            })
+            
+            // Auftragsnummer
             .section("ordernum")
             .match("^Auftrags-Nummer: (?<ordernum>[\\d]+)$")
             .assign((t,v) -> {
@@ -75,11 +98,6 @@ public class SimpelPDFExtractor extends AbstractPDFExtractor
             
 
             .wrap(BuySellEntryItem::new);
-
-        /*
-         * addTaxesSectionsTransaction(pdfTransaction, type);
-         * addFeesSectionsTransaction(pdfTransaction, type);
-         */
     }
     
     private static String normalizeAmount(String amount) {
