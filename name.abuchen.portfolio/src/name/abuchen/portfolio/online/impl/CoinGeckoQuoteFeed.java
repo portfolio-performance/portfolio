@@ -115,7 +115,10 @@ public final class CoinGeckoQuoteFeed implements QuoteFeed
         long timestamp = Long.parseLong(ohlcArray.get(0).toString());
         long close = ohlcArray.get(1) != null ? YahooHelper.asPrice(ohlcArray.get(1).toString()) : 0;
 
-        ZonedDateTime date = ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneOffset.UTC);
+        // Note: Although CoinGecko does return quotes in UTC, we must treat them as if they're 'localtime,' due to PP
+        // not storing its own data in UTC. This avoids the bug where users in timezones later than UTC see "latest quotes"
+        // one day late during the second part of the day. See: https://github.com/buchen/portfolio/issues/2106#issuecomment-822023523
+        ZonedDateTime date = ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneOffset.systemDefault());
 
         LatestSecurityPrice price = new LatestSecurityPrice();
         price.setValue(close);
