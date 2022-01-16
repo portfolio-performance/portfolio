@@ -77,7 +77,7 @@ public class PaymentsPerMonthMatrixTab implements PaymentsTab
     protected IPreferenceStore preferences;
 
     private boolean showOnlyOneYear = false;
-    protected boolean columnsInReverseOrder = false;
+    private boolean columnsInReverseOrder = false;
 
     protected Font boldFont;
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM yy"); //$NON-NLS-1$
