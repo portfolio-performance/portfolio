@@ -52,15 +52,15 @@ public class PaymentsPerYearMatrixTab extends PaymentsPerMonthMatrixTab
 
         if (columnsInReverseOrder)
         {
-            reverseColumnOrder();
+            sortColumnOrder();
         }
     }
     
     @Override
-    protected void reverseColumnOrder()
+    protected void sortColumnOrder()
     {
         // Keep first column in same position
-        reverseColumnOrder(1, 0);
+        sortColumnOrder(1, 0);
     }
 
     private void createYearColumn(TableViewer records, TableColumnLayout layout, LocalDate start, int index)
