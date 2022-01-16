@@ -50,10 +50,7 @@ public class PaymentsPerYearMatrixTab extends PaymentsPerMonthMatrixTab
 
         createSumColumn(records, layout);
 
-        if (columnsInReverseOrder)
-        {
-            sortColumnOrder();
-        }
+        sortColumnOrder();
     }
     
     @Override
