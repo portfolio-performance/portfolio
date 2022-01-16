@@ -4,12 +4,12 @@ import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.ToLongFunction;
-import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import javax.inject.Inject;
 
@@ -114,7 +114,7 @@ public class PaymentsPerMonthMatrixTab implements PaymentsTab
     {
         Action action = new SimpleAction(Messages.LabelColumnsInReverseOrder, a -> {
             columnsInReverseOrder = !columnsInReverseOrder;
-            reverseColumnOrder();
+            sortColumnOrder();
             preferences.setValue(getKeyForReverseOrder(), columnsInReverseOrder);
         });
         action.setChecked(columnsInReverseOrder);
@@ -159,6 +159,7 @@ public class PaymentsPerMonthMatrixTab implements PaymentsTab
         boldFont = resources.createFont(FontDescriptor.createFrom(tableViewer.getTable().getFont()).setStyle(SWT.BOLD));
 
         createColumns(tableViewer, tableLayout);
+        sortColumnOrder();
 
         tableViewer.getTable().setHeaderVisible(true);
         tableViewer.getTable().setLinesVisible(true);
@@ -207,27 +208,31 @@ public class PaymentsPerMonthMatrixTab implements PaymentsTab
         }
     }
 
-    protected void reverseColumnOrder()
+    protected void sortColumnOrder()
     {
         // Keep first and last column in same position
-        reverseColumnOrder(1, 1);
+        sortColumnOrder(1, 1);
     }
 
     /**
-     * Reverses column order in a given range.
+     * Set column order in a given range.
      *
      * @param startOffset
      *            Number of unchanged columns at the start
      * @param endOffset
      *            Number of unchanged columns at the end
      */
-    protected void reverseColumnOrder(int startOffset, int endOffset)
+    protected void sortColumnOrder(int startOffset, int endOffset)
     {
-        int[] currentColumnOrder = tableViewer.getTable().getColumnOrder();
-        List<Integer> columnList = Arrays.stream(currentColumnOrder).boxed().collect(Collectors.toList());
+        // Natural order for all columns
+        List<Integer> columnList = new ArrayList<>();
+        IntStream.range(0, tableViewer.getTable().getColumnCount()).forEachOrdered(columnList::add);
 
-        // subList is view of original list => original list is changed
-        Collections.reverse(columnList.subList(startOffset, currentColumnOrder.length - endOffset));
+        if (columnsInReverseOrder)
+        {
+            // subList is view of original list => original list is changed
+            Collections.reverse(columnList.subList(startOffset, columnList.size() - endOffset));
+        }
 
         int[] newColumnOrder = columnList.stream().mapToInt(i -> i).toArray();
         tableViewer.getTable().setColumnOrder(newColumnOrder);
@@ -253,11 +258,6 @@ public class PaymentsPerMonthMatrixTab implements PaymentsTab
         // add security name at the end of the matrix table again because the
         // first column is most likely not visible anymore
         createVehicleColumn(records, layout, false);
-
-        if (columnsInReverseOrder)
-        {
-            reverseColumnOrder();
-        }
     }
 
     protected void createVehicleColumn(TableViewer records, TableColumnLayout layout, boolean isSorted)
@@ -406,6 +406,8 @@ public class PaymentsPerMonthMatrixTab implements PaymentsTab
 
             for (int ii = 0; ii < count; ii++)
                 records.getTable().getColumn(0).dispose();
+
+            sortColumnOrder();
 
             records.setInput(model.getAllLines());
 

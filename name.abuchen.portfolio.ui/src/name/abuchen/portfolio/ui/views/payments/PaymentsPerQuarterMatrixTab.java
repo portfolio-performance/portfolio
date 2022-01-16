@@ -45,17 +45,14 @@ public class PaymentsPerQuarterMatrixTab extends PaymentsPerMonthMatrixTab
 
         createSumColumn(records, layout);
 
-        if (columnsInReverseOrder)
-        {
-            reverseColumnOrder();
-        }
+        sortColumnOrder();
     }
 
     @Override
-    protected void reverseColumnOrder()
+    protected void sortColumnOrder()
     {
         // Keep first column in same position
-        reverseColumnOrder(1, 0);
+        sortColumnOrder(1, 0);
     }
 
     private void createQuarterColumns(TableViewer records, TableColumnLayout layout)
