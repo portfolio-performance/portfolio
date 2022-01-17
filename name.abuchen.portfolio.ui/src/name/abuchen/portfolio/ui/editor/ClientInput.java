@@ -335,7 +335,8 @@ public class ClientInput
             // than the main db if desired
             Path backupSubdir = sourceFile.resolveSibling("backup"); //$NON-NLS-1$
             File directory = backupSubdir.toFile();
-            if (!directory.exists()){
+            if (!directory.exists())
+            {
                 directory.mkdir();
             }
             
