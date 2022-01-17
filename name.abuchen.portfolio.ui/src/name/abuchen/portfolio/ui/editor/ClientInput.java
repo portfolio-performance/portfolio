@@ -328,9 +328,18 @@ public class ClientInput
             // keep original extension in order to be able to open the backup
             // file directly from within PP
             String backupName = constructFilename(file, suffix);
-
+            
             Path sourceFile = file.toPath();
-            Path backupFile = sourceFile.resolveSibling(backupName);
+            
+            // Write backups to a subdir, so it can be symlinked to a different location
+            // than the main db if desired
+            Path backupSubdir = sourceFile.resolveSibling("backup"); //$NON-NLS-1$
+            File directory = backupSubdir.toFile();
+            if (!directory.exists()){
+                directory.mkdir();
+            }
+            
+            Path backupFile = backupSubdir.resolve(backupName);
             Files.copy(sourceFile, backupFile, StandardCopyOption.REPLACE_EXISTING);
         }
         catch (IOException e)
