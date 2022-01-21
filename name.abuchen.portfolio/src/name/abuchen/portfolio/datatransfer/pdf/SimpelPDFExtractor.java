@@ -62,12 +62,6 @@ public class SimpelPDFExtractor extends AbstractPDFExtractor
                             t.setDate(asDate(v.get("date")));
                         })
 
-                        // Steuerlicher Anschaffungswert
-                        .section("amount").optional()
-                        .match("^Steuerlicher Anschaffungswert: (?<amount>[\\-\\.,\\d]+) €").assign((t, v) -> {
-                            t.setAmount(asAmount(normalizeAmount(v.get("amount"))));
-                        })
-
                         // Auszahlungsbetrag
                         .section("amount").optional().match("^Auszahlungsbetrag:  (?<amount>[\\-\\.,\\d]+) €")
                         .assign((t, v) -> {

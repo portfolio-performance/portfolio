@@ -62,9 +62,9 @@ public class SimpelPDFExtractorTest
         assertThat(entry.getNote(), is("Auftrags-Nummer: 20220106123456789000000612345"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9.98))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9.98))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.0))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
