@@ -182,7 +182,7 @@ public class SecuritiesChart
                     if (tx.isEmpty())
                         return new ChartInterval(now, now);
 
-                    Collections.sort(tx, new TransactionPair.ByDate());
+                    Collections.sort(tx, TransactionPair.BY_DATE);
                     boolean hasHoldings = ClientSnapshot.create(client, converter, LocalDate.now())
                                     .getPositionsByVehicle().containsKey(security);
 
@@ -1038,7 +1038,7 @@ public class SecuritiesChart
                         .filter(t -> t.getType() == PortfolioTransaction.Type.BUY
                                         || t.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND)
                         .filter(t -> chartInterval.contains(t.getDateTime())) //
-                        .sorted(new Transaction.ByDate()).collect(Collectors.toList());
+                        .sorted(Transaction.BY_DATE).collect(Collectors.toList());
 
         addInvestmentMarkers(purchase, Messages.SecurityMenuBuy, colorEventPurchase);
 
@@ -1047,7 +1047,7 @@ public class SecuritiesChart
                         .filter(t -> t.getType() == PortfolioTransaction.Type.SELL
                                         || t.getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND)
                         .filter(t -> chartInterval.contains(t.getDateTime())) //
-                        .sorted(new Transaction.ByDate()).collect(Collectors.toList());
+                        .sorted(Transaction.BY_DATE).collect(Collectors.toList());
 
         addInvestmentMarkers(sales, Messages.SecurityMenuSell, colorEventSale);
     }
@@ -1130,7 +1130,7 @@ public class SecuritiesChart
         List<AccountTransaction> dividends = client.getAccounts().stream().flatMap(a -> a.getTransactions().stream())
                         .filter(t -> t.getSecurity() == security)
                         .filter(t -> t.getType() == AccountTransaction.Type.DIVIDENDS)
-                        .filter(t -> chartInterval.contains(t.getDateTime())).sorted(new Transaction.ByDate())
+                        .filter(t -> chartInterval.contains(t.getDateTime())).sorted(Transaction.BY_DATE)
                         .collect(Collectors.toList());
 
         if (dividends.isEmpty())

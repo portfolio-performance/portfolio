@@ -34,8 +34,7 @@ public class TradeCollector
     {
         List<TransactionPair<?>> transactions = security.getTransactions(client);
 
-        Collections.sort(transactions,
-                        (p1, p2) -> p1.getTransaction().getDateTime().compareTo(p2.getTransaction().getDateTime()));
+        Collections.sort(transactions, TransactionPair.BY_DATE);
 
         List<Trade> trades = new ArrayList<>();
         Map<Portfolio, List<TransactionPair<PortfolioTransaction>>> openTransactions = new HashMap<>();
@@ -115,8 +114,7 @@ public class TradeCollector
         long sharesToDistribute = pair.getTransaction().getShares();
         
         // sort open to get fifo
-        Collections.sort(open,
-                        (p1, p2) -> p1.getTransaction().getDateTime().compareTo(p2.getTransaction().getDateTime()));
+        Collections.sort(open, TransactionPair.BY_DATE);
 
         for (TransactionPair<PortfolioTransaction> candidate : new ArrayList<>(open))
         {

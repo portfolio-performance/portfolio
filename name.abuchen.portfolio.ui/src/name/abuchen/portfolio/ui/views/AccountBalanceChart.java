@@ -51,7 +51,7 @@ public class AccountBalanceChart extends TimelineChart // NOSONAR
 
             CurrencyConverter converter = new CurrencyConverterImpl(exchangeRateProviderFactory,
                             account.getCurrencyCode());
-            Collections.sort(tx, new Transaction.ByDate());
+            Collections.sort(tx, Transaction.BY_DATE);
 
             if (now.isAfter(end))
                 end = now;

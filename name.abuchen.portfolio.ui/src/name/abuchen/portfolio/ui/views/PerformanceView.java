@@ -438,8 +438,7 @@ public class PerformanceView extends AbstractHistoricView
                                 return colorFor(element);
                             }
                         });
-        column.setSorter(ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getDateTime()),
-                        SWT.UP);
+        column.setSorter(ColumnViewerSorter.create(TransactionPair.BY_DATE), SWT.UP);
         support.addColumn(column);
 
         column = new Column(Messages.ColumnTransactionType, SWT.LEFT, 100);

@@ -1007,8 +1007,7 @@ public class ClientFactory
             List<TransactionPair<?>> transactions = security.getTransactions(client);
 
             // sort by date of transaction
-            Collections.sort(transactions, (one, two) -> one.getTransaction().getDateTime()
-                            .compareTo(two.getTransaction().getDateTime()));
+            Collections.sort(transactions, TransactionPair.BY_DATE);
 
             // count and assign number of shares by account
             Map<Account, Long> account2shares = new HashMap<>();

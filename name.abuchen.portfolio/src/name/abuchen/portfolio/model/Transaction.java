@@ -137,14 +137,34 @@ public abstract class Transaction implements Annotated, Adaptable
         }
     }
 
-    public static final class ByDate implements Comparator<Transaction>, Serializable
+    /**
+     * Date comparator for transactions. Guarantees a stable sorting.
+     */
+    public static final Comparator<Transaction> BY_DATE = new ByDate();
+
+    private static final class ByDate implements Comparator<Transaction>, Serializable
     {
         private static final long serialVersionUID = 1L;
 
         @Override
         public int compare(Transaction t1, Transaction t2)
         {
-            return t1.getDateTime().compareTo(t2.getDateTime());
+            int compareTo = t1.getDateTime().compareTo(t2.getDateTime());
+            if (compareTo != 0)
+                return compareTo;
+
+            // Fallback to updateAt
+            compareTo = t1.getUpdatedAt().compareTo(t2.getUpdatedAt());
+            if (compareTo != 0)
+                return compareTo;
+
+            // Fallback to uuid
+            compareTo = t1.getUUID().compareTo(t2.getUUID());
+            if (compareTo != 0)
+                return compareTo;
+
+            // Final fallback to guarantee stable sorting
+            return Integer.compare(t1.hashCode(), t2.hashCode());
         }
     }
 

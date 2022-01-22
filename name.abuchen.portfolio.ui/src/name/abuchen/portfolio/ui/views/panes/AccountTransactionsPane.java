@@ -37,6 +37,7 @@ import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MutableMoney;
 import name.abuchen.portfolio.money.Quote;
@@ -140,7 +141,7 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
                 return colorFor((AccountTransaction) element);
             }
         });
-        ColumnViewerSorter.create(new AccountTransaction.ByDateAmountTypeAndHashCode()).attachTo(column, SWT.DOWN);
+        ColumnViewerSorter.create(Transaction.BY_DATE).attachTo(column, SWT.DOWN);
         new DateTimeEditingSupport(AccountTransaction.class, "dateTime").addListener(this).attachTo(column); //$NON-NLS-1$
         transactionsColumns.addColumn(column);
 
@@ -543,7 +544,7 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
             return;
 
         List<AccountTransaction> tx = new ArrayList<>(account.getTransactions());
-        Collections.sort(tx, new AccountTransaction.ByDateAmountTypeAndHashCode());
+        Collections.sort(tx, Transaction.BY_DATE);
 
         MutableMoney balance = MutableMoney.of(account.getCurrencyCode());
         for (AccountTransaction t : tx)
