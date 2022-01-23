@@ -29,6 +29,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
 
         addBankIdentifier("Raiffeisenbank"); //$NON-NLS-1$
         addBankIdentifier("RB Augsburger Land West eG"); //$NON-NLS-1$
+        addBankIdentifier("Raiffeisenlandesbank"); //$NON-NLS-1$
 
         addBuySellTransaction();
         addDividendeTransaction();
@@ -76,8 +77,8 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                 .match("^(?<name1>.*)$")
                 .match("^Kurs: ([\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    if (!v.get("name1").startsWith("Kurs:"))
-                        v.put("name", v.get("name") + " " + v.get("name1"));
+                    if (!v.get("name1").startsWith("Kurs:") || !v.get("name1").startsWith("Fondsgesellschaft:"))
+                        v.put("name", TextUtil.strip(v.get("name")) + " " + TextUtil.strip(v.get("name1")));
 
                     t.setSecurity(getOrCreateSecurity(v));
                 })
@@ -91,7 +92,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                 .match("^Ausf.hrungskurs [\\.,\\d]+ (?<currency>[\\w]{3}) .*$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Handels-/Ausführungsplatz"))
-                        v.put("name", TextUtil.strip(v.get("name")) + " " + v.get("name1"));
+                        v.put("name", TextUtil.strip(v.get("name")) + " " + TextUtil.strip(v.get("name1")));
 
                     t.setSecurity(getOrCreateSecurity(v));
                 })
@@ -162,7 +163,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                 .match("^Dividende: [\\.,\\d]+ (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Dividende:"))
-                        v.put("name", v.get("name") + " " + v.get("name1"));
+                        v.put("name", TextUtil.strip(v.get("name")) + " " + TextUtil.strip(v.get("name1")));
 
                     t.setSecurity(getOrCreateSecurity(v));
                 })
@@ -176,7 +177,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                 .match("^Zahlbarkeitstag [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Dividende pro St.ck [\\.,\\d]+ (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Zahlbarkeitstag"))
-                        v.put("name", v.get("name") + " " + v.get("name1"));
+                        v.put("name", TextUtil.strip(v.get("name")) + " " + TextUtil.strip(v.get("name1")));
 
                     t.setSecurity(getOrCreateSecurity(v));
                 })
@@ -560,7 +561,22 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
 
                 // Übertragungs-/Liefergebühr 0,10- EUR
                 .section("fee", "currency").optional()
-                .match("^.bertragungs\\-\\/Liefergebühr (?<fee>[\\.,\\d]+)\\- (?<currency>[\\w]{3})(.*)?$")
+                .match("^.bertragungs\\-\\/Liefergeb.hr (?<fee>[\\.,\\d]+)\\- (?<currency>[\\w]{3})(.*)?$")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+
+                // Handelsortentgelt inkl. Fremdspesen: -4,00 EUR 
+                .section("fee", "currency").optional()
+                .match("^Handelsortentgelt inkl\\. Fremdspesen: \\-(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+
+                // Gebühren: -25,00 EUR 
+                .section("fee", "currency").optional()
+                .match("^Geb.hren: \\-(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+
+                // Orderleitgebühr: -3,00 EUR 
+                .section("fee", "currency").optional()
+                .match("^Orderleitgeb.hr: \\-(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
                 .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
