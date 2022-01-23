@@ -253,10 +253,10 @@ public class DABPDFExtractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private void addDividendTransaction()
     {
-        DocumentType type = new DocumentType("(Dividende|Ertr.gnisgutschrift)");
+        DocumentType type = new DocumentType("(Dividendengutschrift|Ertr.gnisgutschrift)");
         this.addDocumentTyp(type);
 
-        Block block = new Block("^(Dividendengutschrift|Ertr.gnisgutschrift(?! aus))(.*)?$");
+        Block block = new Block("^(Dividendengutschrift|Ertr.gnisgutschrift(?! (aus|VERSANDARTENSCHLUESSEL)))(.*)?$");
         type.addBlock(block);
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
         pdfTransaction.subject(() -> {
@@ -292,9 +292,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 .find("Wertpapierbezeichnung WKN ISIN")
                 .match("^(?<name>.*) (?<wkn>.*) (?<isin>[\\w]{12})$")
                 .match("^Dividende pro St.ck [\\.,\\d]+ (?<currency>[\\w]{3}) .*$")
-                .assign((t, v) -> {
-                    t.setSecurity(getOrCreateSecurity(v));
-                })
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // 1.500 Stück
                 .section("shares").optional()
@@ -325,10 +323,8 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                     t.setAmount(asAmount(v.get("amount")));
                 })
 
-                // Wert Konto-Nr. Betrag zu Ihren Gunsten
                 // 27.08.2020 123456789 USD 4,64
                 .section("date", "amount", "currency").optional()
-                .find("Wert Konto\\-Nr\\. Betrag zu Ihren Gunsten")
                 .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]+ (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     t.setDateTime(asDate(v.get("date")));
@@ -336,10 +332,8 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                     t.setAmount(asAmount(v.get("amount")));
                 })
 
-                // Wert Konto-Nr. Devisenkurs Betrag zu Ihren Gunsten
                 // 30.03.2015 0000000000 EUR/ZAR 13,195 EUR 586,80
                 .section("date", "amount", "currency", "forexCurrency", "exchangeRate").optional()
-                .find("Wert Konto\\-Nr\\. Devisenkurs Betrag zu Ihren Gunsten")
                 .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]+ [\\w]{3}\\/(?<forexCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+) (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     t.setDateTime(asDate(v.get("date")));
@@ -365,7 +359,6 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                  * the security is listed in local currency
                  */
                 .section("forex", "localCurrency", "forexCurrency", "exchangeRate").optional()
-                .find("Wert Konto\\-Nr\\. Betrag zu Ihren Gunsten")
                 .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [0-9]* [\\w]{3} (?<forex>[\\.,\\d]+)$")
                 .match("^Devisenkurs: (?<localCurrency>[\\w]{3})/(?<forexCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+)$")
                 .assign((t, v) -> {
@@ -684,7 +677,6 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 .section("fxCurrency", "exchangeRate", "date", "currency", "amount").optional()
                 .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\w]{3}\\/(?<fxCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+) [\\w]{3} [\\.,\\d]+$")
                 .match("^zu versteuern \\(negativ\\).*$")
-                .match("^Wert Konto\\-Nr\\. Abrechnungs\\-Nr\\. Betrag zu Ihren Gunsten$")
                 .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]+ [\\d]+ (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     t.setDateTime(asDate(v.get("date")));
@@ -719,7 +711,6 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 // 07.07.2020 1234567 1234567 EUR 16,46
                 .section("date", "currency", "amount").optional()
                 .match("^zu versteuern \\(negativ\\).*$")
-                .match("^Wert Konto\\-Nr\\. Abrechnungs\\-Nr\\. Betrag zu Ihren Gunsten$")
                 .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]+ [\\d]+ (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     t.setDateTime(asDate(v.get("date")));
@@ -755,47 +746,28 @@ public class DABPDFExtractor extends AbstractPDFExtractor
         type.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            AccountTransaction transaction = new AccountTransaction();
-                            transaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return transaction;
-                        })
+                .subject(() -> {
+                    AccountTransaction transaction = new AccountTransaction();
+                    transaction.setType(AccountTransaction.Type.DEPOSIT);
+                    return transaction;
+                })
 
-                        /***
-                         * A regular "SEPA-Lastschrift" is a deposit (delivery inbound) 
-                         * form a account to the reference account. (automatic savings plan)
-                         */
+                // SEPA-Lastschrift Max Mustermann 15.07.19 300,00
+                // SEPA-Gutschrift Max Mustermann 05.07.19 15.000,00
+                .section("date", "amount")
+                .match("^(SEPA\\-Gutschrift|SEPA\\-Lastschrift) [^Lastschrift].* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) (?<amount>[\\.,\\d]+)$")
+                .assign((t, v) -> {
+                    Map<String, String> context = type.getCurrentContext();
 
-                        // Is type --> "SEPA-XXXX" change from DEPOSIT to REMOVAL
-                        // 
-                        // At this time, we don't know the correct regEX for
-                        // a removal transaction.
-                        // 
-                        // .section("type").optional()
-                        // .match("^(?<type>SEPA-XXXX) .*$")
-                        // .assign((t, v) -> {
-                        //    if (v.get("type").equals("SEPA-XXXX"))
-                        //    {
-                        //       t.setType(AccountTransaction.Type.REMOVAL);
-                        //    }
-                        // })
+                    // Formate the date from 10.07.19 to 10.07.2019
+                    v.put("date", DateTimeFormatter.ofPattern("dd.MM.yyyy").format(LocalDate.parse(v.get("date"), DateTimeFormatter.ofPattern("dd.MM.yy", Locale.GERMANY))));
+                    t.setDateTime(asDate(v.get("date")));
 
-                        // SEPA-Lastschrift Max Mustermann 15.07.19 300,00
-                        // SEPA-Gutschrift Max Mustermann 05.07.19 15.000,00
-                        .section("date", "amount")
-                        .match("^(SEPA\\-Gutschrift|SEPA\\-Lastschrift) [^Lastschrift].* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) (?<amount>[\\.,\\d]+)$")
-                        .assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                })
 
-                            // Formate the date from 10.07.19 to 10.07.2019
-                            v.put("date", DateTimeFormatter.ofPattern("dd.MM.yyyy").format(LocalDate.parse(v.get("date"), DateTimeFormatter.ofPattern("dd.MM.yy", Locale.GERMANY))));
-                            t.setDateTime(asDate(v.get("date")));
-
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                        })
-
-                        .wrap(TransactionItem::new));
+                .wrap(TransactionItem::new));
     }
 
     @SuppressWarnings("nls")
@@ -819,27 +791,27 @@ public class DABPDFExtractor extends AbstractPDFExtractor
         type.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            AccountTransaction transaction = new AccountTransaction();
-                            transaction.setType(AccountTransaction.Type.FEES);
-                            return transaction;
-                        })
+                .subject(() -> {
+                    AccountTransaction transaction = new AccountTransaction();
+                    transaction.setType(AccountTransaction.Type.FEES);
+                    return transaction;
+                })
 
-                        // SEPA-Lastschrift Lastschrift Managementgebühr 29.06.20 53,02
-                        .section("date", "amount")
-                        .match("^SEPA\\-Lastschrift Lastschrift Managementgeb.hr (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) (?<amount>[\\.,\\d]+)$")
-                        .assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
+                // SEPA-Lastschrift Lastschrift Managementgebühr 29.06.20 53,02
+                .section("date", "amount")
+                .match("^SEPA\\-Lastschrift Lastschrift Managementgeb.hr (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) (?<amount>[\\.,\\d]+)$")
+                .assign((t, v) -> {
+                    Map<String, String> context = type.getCurrentContext();
 
-                            // Formate the date from 29.06.20 to 29.06.2020
-                            v.put("date", DateTimeFormatter.ofPattern("dd.MM.yyyy").format(LocalDate.parse(v.get("date"), DateTimeFormatter.ofPattern("dd.MM.yy", Locale.GERMANY))));
-                            t.setDateTime(asDate(v.get("date")));
+                    // Formate the date from 29.06.20 to 29.06.2020
+                    v.put("date", DateTimeFormatter.ofPattern("dd.MM.yyyy").format(LocalDate.parse(v.get("date"), DateTimeFormatter.ofPattern("dd.MM.yy", Locale.GERMANY))));
+                    t.setDateTime(asDate(v.get("date")));
 
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                        })
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                })
 
-                        .wrap(TransactionItem::new));
+                .wrap(TransactionItem::new));
     }
 
     @SuppressWarnings("nls")
@@ -860,8 +832,9 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 // davon anrechenbare US-Quellensteuer 15% EUR 0,79
                 // davon anrechenbare Quellensteuer 15% ZAR 1.560,00
                 // davon anrechenbare Quellensteuer Fondseingangsseite EUR 1,62
+                // davon anrechenbare US-Quellensteuer  15% USD             2,430     
                 .section("tax", "currency").optional()
-                .match("^(.*)?davon anrechenbare (US\\-)?Quellensteuer .* ([\\s]+)?(?<currency>[\\w]{3})([\\s+])? (?<tax>[\\.,\\d]+)(\\-)?$")
+                .match("^(.*)?davon anrechenbare (US\\-)?Quellensteuer .* ([\\s]+)?(?<currency>[\\w]{3})([\\s]+)? (?<tax>[\\.,\\d]+)(\\-|[\\s]+)?$")
                 .assign((t, v) -> {
                     if (!"X".equals(type.getCurrentContext().get("negative")))
                     {
@@ -881,7 +854,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
 
                 // anrechenbare Quellensteuer 15% EUR 0,73
                 .section("tax", "currency").optional()
-                .match("^anrechenbare Quellensteuer .* ([\\s]+)?(?<currency>[\\w]{3})([\\s+])? (?<tax>[\\.,\\d]+)(\\-)?$")
+                .match("^anrechenbare Quellensteuer .* ([\\s]+)?(?<currency>[\\w]{3})([\\s]+)? (?<tax>[\\.,\\d]+)(\\-)?$")
                 .assign((t, v) -> {
                     if (!"X".equals(type.getCurrentContext().get("negative")))
                     {
