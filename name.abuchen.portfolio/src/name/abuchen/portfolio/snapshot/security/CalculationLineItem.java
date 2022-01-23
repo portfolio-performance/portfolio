@@ -3,6 +3,7 @@ package name.abuchen.portfolio.snapshot.security;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.Optional;
 
 import name.abuchen.portfolio.Messages;
@@ -54,6 +55,12 @@ public interface CalculationLineItem
         }
 
         @Override
+        public long getOrderingHint()
+        {
+            return txPair.getTransaction().getUpdatedAt().getEpochSecond();
+        }
+
+        @Override
         public Money getValue()
         {
             return txPair.getTransaction().getMonetaryAmount();
@@ -69,6 +76,7 @@ public interface CalculationLineItem
         {
             return txPair.getTransaction();
         }
+
     }
 
     public static class DividendPayment extends TransactionItem
@@ -227,6 +235,13 @@ public interface CalculationLineItem
         {
             super(portfolio, position, date);
         }
+
+        @Override
+        public long getOrderingHint()
+        {
+            return 0;
+        }
+
     }
 
     public static class ValuationAtEnd extends Valuation
@@ -235,7 +250,27 @@ public interface CalculationLineItem
         {
             super(portfolio, position, date);
         }
+
+        @Override
+        public long getOrderingHint()
+        {
+            return Long.MAX_VALUE;
+        }
     }
+
+    public static final Comparator<CalculationLineItem> BY_DATE = new Comparator<CalculationLineItem>()
+    {
+        @Override
+        public int compare(CalculationLineItem l1, CalculationLineItem l2)
+        {
+            int compareTo = l1.getDateTime().compareTo(l2.getDateTime());
+            if (compareTo != 0)
+                return compareTo;
+
+            // Fallback
+            return Long.compare(l1.getOrderingHint(), l2.getOrderingHint());
+        }
+    };
 
     public static CalculationLineItem of(TransactionPair<?> transaction)
     {
@@ -271,6 +306,8 @@ public interface CalculationLineItem
     String getLabel();
 
     LocalDateTime getDateTime();
+
+    long getOrderingHint();
 
     Money getValue();
 
