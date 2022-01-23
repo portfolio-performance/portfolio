@@ -370,6 +370,7 @@ public class SecuritiesChart
         container.setLayout(new FillLayout());
 
         chart = new TimelineChart(container);
+        chart.getTitle().setText("..."); //$NON-NLS-1$
         chart.getTitle().setVisible(false);
 
         chart.getPlotArea().addPaintListener(event -> customPaintListeners.forEach(l -> l.paintControl(event)));
@@ -711,9 +712,12 @@ public class SecuritiesChart
 
             if (security == null || security.getPrices().isEmpty())
             {
+                chart.getTitle().setText(security == null ? "..." : security.getName()); //$NON-NLS-1$
                 chart.redraw();
                 return;
             }
+
+            chart.getTitle().setText(security.getName());
 
             boolean showAreaRelativeToFirstQuote = chartConfig.contains(ChartDetails.CLOSING)
                             || chartConfig.contains(ChartDetails.PURCHASEPRICE);
