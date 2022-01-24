@@ -1029,6 +1029,11 @@ public class Messages extends NLS
     public static String PrefTitleDivvyDiary;
     public static String PrefTitleFinnhub;
     public static String PrefTitleQuandl;
+    public static String PresetsPrefPageDescription;
+    public static String PresetsPrefPageNow;
+    public static String PresetsPrefPageStartOfDay;
+    public static String PresetsPrefPageTime;
+    public static String PresetsPrefPageTitle;
     public static String SecurityFilter;
     public static String SecurityFilterSharesHeldEqualZero;
     public static String SecurityFilterSharesHeldNotZero;
