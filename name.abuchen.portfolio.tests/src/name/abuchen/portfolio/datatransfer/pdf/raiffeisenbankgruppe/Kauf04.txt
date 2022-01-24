@@ -1,0 +1,50 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+ da
+ 
+  
+RB Timelkam-Lenzing-Puchkirchen eGen (BLZ: 34669)   
+Bankstelle Timelkam-Lenzing-Puchkirchen  
+Pollheimerstraße 1    b
+PLZ Ort
+ 
+ 
+a
+a  
+Abrechnung a  
+12345678 - 20.01.2022 a  
+Depotnummer: 00.111.222  
+Herrn Mein Name
+Mein Name
+Mein Adresse 000/82
+PLZ Ort
+Wir haben für Sie am 20.01.2022 unten angeführtes Geschäft abgerechnet:
+Geschäftsart: Kauf Auftrags-Nr.: 12345678 - 19.01.2022
+Auftragseingang: 19.01.2022 - 09:19:14
+Zugang: 22 Stk   
+Titel: CA1363851017 Canadian Natural Resources Ltd
+Registered Shares o.N.
+Kurs: 66,56 CAD
+Handelsplatz: XTSE TORONTO STOCK EXCHANGE (TSE)
+Handelszeit: 19.01.2022 15:30:00
+Verwahrart: WR
+Positionsdaten: Loco: Toronto
+Kurswert: -1.464,32 CAD 
+Handelsortentgelt inkl. Fremdspesen: -73,00 CAD 
+-1.537,32 CAD 
+Devisenkurs: 1,406 (20.01.2022) -1.093,40 EUR 
+Gebühren: -25,00 EUR 
+Orderleitgebühr: -3,00 EUR 
+Zu Lasten IBAN MeinKonto -1.121,40 EUR 
+Valuta 21.01.2022
+Schlusstag: 19.01.2022
+Kassatag: 21.01.2022
+Bestand nach Buchung:
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 22 Stk
+steuerlicher Anschaffungswert: 1.041,48 EUR
+Steuerl. Behandlung vorbehaltlich Beurteilung durch BMF
+20.01.2022 1 / 1
+BIC: RZOOAT2L669, Landesgericht Wels, FN 95196w, UID: ATU23469208
+Dieser Beleg wurde durch die Raiffeisenlandesbank Oberösterreich erstellt.
+Ohne Unterschrift. Bitte geben Sie Unstimmigkeiten sofort bekannt.
