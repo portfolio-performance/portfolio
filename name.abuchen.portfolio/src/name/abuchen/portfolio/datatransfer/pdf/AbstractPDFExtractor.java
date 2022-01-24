@@ -4,11 +4,8 @@ import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -32,17 +29,6 @@ import name.abuchen.portfolio.util.TextUtil;
 
 public abstract class AbstractPDFExtractor implements Extractor
 {
-    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy", Locale.GERMANY); //$NON-NLS-1$
-    private static final DateTimeFormatter DATE_FORMAT_YEAR_TWO_DIGIT = DateTimeFormatter.ofPattern("d.M.yy", //$NON-NLS-1$
-                    Locale.GERMANY);
-    private static final DateTimeFormatter DATE_FORMAT_DASHES = DateTimeFormatter.ofPattern("yyyy-M-d", Locale.GERMANY); //$NON-NLS-1$
-    private static final DateTimeFormatter DATE_FORMAT_DASHES_REVERSE = DateTimeFormatter.ofPattern("d-M-yyyy", //$NON-NLS-1$
-                    Locale.GERMANY);
-    private static final DateTimeFormatter DATE_TIME_SECONDS_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy HH:mm", //$NON-NLS-1$
-                    Locale.GERMANY);
-    private static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy HH:mm:ss", //$NON-NLS-1$
-                    Locale.GERMANY);
-
     private final NumberFormat numberFormat = NumberFormat.getInstance(Locale.GERMANY);
 
     private final Client client;
@@ -253,59 +239,17 @@ public abstract class AbstractPDFExtractor implements Extractor
 
     protected LocalDateTime asDate(String value)
     {
-        LocalDateTime date = null;
-
-        try
-        {
-            date = LocalDate.parse(value, DATE_FORMAT).atStartOfDay();
-        }
-        catch (DateTimeParseException e1)
-        {
-            try
-            {
-                date = LocalDate.parse(value, DATE_FORMAT_DASHES).atStartOfDay();
-            }
-            catch (DateTimeParseException e2)
-            {
-                try
-                {
-                    date = LocalDate.parse(value, DATE_FORMAT_DASHES_REVERSE).atStartOfDay();
-                }
-                catch (DateTimeParseException e3)
-                {
-                    date = LocalDate.parse(value, DATE_FORMAT_YEAR_TWO_DIGIT).atStartOfDay();
-                }
-            }
-        }
-        return date;
+        return PDFExtractorUtils.asDate(value);
     }
 
     protected LocalTime asTime(String value)
     {
-        LocalTime time = null;
-
-        try
-        {
-            time = LocalTime.parse(value, DateTimeFormatter.ofPattern("HH:mm")); //$NON-NLS-1$
-        }
-        catch (DateTimeParseException e)
-        {
-            time = LocalTime.parse(value, DateTimeFormatter.ofPattern("HH:mm:ss")); //$NON-NLS-1$
-        }
-
-        return time.withSecond(0);
+        return PDFExtractorUtils.asTime(value);
     }
 
     protected LocalDateTime asDate(String date, String time)
     {
-        try
-        {
-            return LocalDateTime.parse(String.format("%s %s", date, time), DATE_TIME_SECONDS_FORMAT); //$NON-NLS-1$
-        }
-        catch (Exception e)
-        {
-            return LocalDateTime.parse(String.format("%s %s", date, time), DATE_TIME_FORMAT); //$NON-NLS-1$
-        }
+        return PDFExtractorUtils.asDate(date, time);
     }
 
     protected void processTaxEntries(Object t, Map<String, String> v, DocumentType type)
