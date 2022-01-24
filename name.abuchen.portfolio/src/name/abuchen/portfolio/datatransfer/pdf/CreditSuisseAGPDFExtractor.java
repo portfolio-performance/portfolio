@@ -1,7 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import java.util.Map;
-
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -9,7 +7,6 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
@@ -289,36 +286,6 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                 .section("currency", "fee").optional()
                 .match("^Kosten und Abgaben (?<currency>[\\w]{3}) ([-\\s]+)?(?<fee>[.,\\d]+)$")
                 .assign((t, v) -> processFeeEntries(t, v, type));
-    }
-
-    private void processTaxEntries(Object t, Map<String, String> v, DocumentType type)
-    {
-        if (t instanceof name.abuchen.portfolio.model.Transaction)
-        {
-            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-            PDFExtractorUtils.checkAndSetTax(tax, (name.abuchen.portfolio.model.Transaction) t, type);
-        }
-        else
-        {
-            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-            PDFExtractorUtils.checkAndSetTax(tax, ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
-        }
-    }
-
-    private void processFeeEntries(Object t, Map<String, String> v, DocumentType type)
-    {
-        if (t instanceof name.abuchen.portfolio.model.Transaction)
-        {
-            Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
-            PDFExtractorUtils.checkAndSetFee(fee, 
-                            (name.abuchen.portfolio.model.Transaction) t, type);
-        }
-        else
-        {
-            Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
-            PDFExtractorUtils.checkAndSetFee(fee,
-                            ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
-        }
     }
 
     @Override

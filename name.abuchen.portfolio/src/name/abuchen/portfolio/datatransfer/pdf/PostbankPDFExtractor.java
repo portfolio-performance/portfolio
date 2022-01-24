@@ -293,33 +293,4 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
             return !"quellenstanr".equalsIgnoreCase(taxtype);
         return true;
     }
-
-    private void processTaxEntries(Object t, Map<String, String> v, DocumentType type)
-    {
-        if (t instanceof name.abuchen.portfolio.model.Transaction)
-        {
-            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-            PDFExtractorUtils.checkAndSetTax(tax, (name.abuchen.portfolio.model.Transaction) t, type);
-        }
-        else
-        {
-            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-            PDFExtractorUtils.checkAndSetTax(tax, ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
-        }
-    }
-    
-    private void processFeeEntries(Object t, Map<String, String> v, DocumentType type)
-    {
-        if (t instanceof name.abuchen.portfolio.model.Transaction)
-        {
-            Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
-            PDFExtractorUtils.checkAndSetFee(fee, (name.abuchen.portfolio.model.Transaction) t, type);
-        }
-        else
-        {
-            Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
-            PDFExtractorUtils.checkAndSetFee(fee,
-                            ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
-        }
-    }
 }

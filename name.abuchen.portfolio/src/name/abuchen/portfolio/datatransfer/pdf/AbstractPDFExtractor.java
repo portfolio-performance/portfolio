@@ -26,6 +26,7 @@ import name.abuchen.portfolio.model.CrossEntry;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.TextUtil;
 
@@ -304,6 +305,36 @@ public abstract class AbstractPDFExtractor implements Extractor
         catch (Exception e)
         {
             return LocalDateTime.parse(String.format("%s %s", date, time), DATE_TIME_FORMAT); //$NON-NLS-1$
+        }
+    }
+
+    protected void processTaxEntries(Object t, Map<String, String> v, DocumentType type)
+    {
+        if (t instanceof name.abuchen.portfolio.model.Transaction)
+        {
+            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))); //$NON-NLS-1$ //$NON-NLS-2$
+            PDFExtractorUtils.checkAndSetTax(tax, (name.abuchen.portfolio.model.Transaction) t, type);
+        }
+        else
+        {
+            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))); //$NON-NLS-1$ //$NON-NLS-2$
+            PDFExtractorUtils.checkAndSetTax(tax, ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
+        }
+    }
+
+    protected void processFeeEntries(Object t, Map<String, String> v, DocumentType type)
+    {
+        if (t instanceof name.abuchen.portfolio.model.Transaction)
+        {
+            Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))); //$NON-NLS-1$ //$NON-NLS-2$
+            PDFExtractorUtils.checkAndSetFee(fee, 
+                            (name.abuchen.portfolio.model.Transaction) t, type);
+        }
+        else
+        {
+            Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))); //$NON-NLS-1$ //$NON-NLS-2$
+            PDFExtractorUtils.checkAndSetFee(fee,
+                            ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
         }
     }
 }

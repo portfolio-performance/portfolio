@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
-import java.util.Map;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -12,7 +11,6 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.TextUtil;
 
@@ -107,22 +105,6 @@ public class SelfWealthPDFExtractor extends AbstractPDFExtractor
                 .section("fee", "currency").optional()
                 .match("^Adviser Fee\\* \\D(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processFeeEntries(t, v, type));
-    }
-
-    private void processFeeEntries(Object t, Map<String, String> v, DocumentType type)
-    {
-        if (t instanceof name.abuchen.portfolio.model.Transaction)
-        {
-            Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
-            PDFExtractorUtils.checkAndSetFee(fee, 
-                            (name.abuchen.portfolio.model.Transaction) t, type);
-        }
-        else
-        {
-            Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
-            PDFExtractorUtils.checkAndSetFee(fee,
-                            ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
-        }
     }
 
     @Override

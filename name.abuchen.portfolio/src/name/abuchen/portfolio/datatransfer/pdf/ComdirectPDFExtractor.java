@@ -1379,22 +1379,6 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                 });
     }
 
-    private void processFeeEntries(Object t, Map<String, String> v, DocumentType type)
-    {
-        if (t instanceof name.abuchen.portfolio.model.Transaction)
-        {
-            Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
-            PDFExtractorUtils.checkAndSetFee(fee, 
-                            (name.abuchen.portfolio.model.Transaction) t, type);
-        }
-        else
-        {
-            Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
-            PDFExtractorUtils.checkAndSetFee(fee,
-                            ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
-        }
-    }
-
     /***
      * In some cases, two documents are created for a dividend transaction. 
      * Once the dividend payment and once the tax treatment.

@@ -10,7 +10,6 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.util.TextUtil;
 
 @SuppressWarnings("nls")
@@ -264,20 +263,6 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                 .section("currency", "tax").optional()
                 .match("^\\+ Verrechnete Steuern (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$")
                 .assign((t, v) -> processTaxEntries(t, v, type));
-    }
-
-    private void processTaxEntries(Object t, Map<String, String> v, DocumentType type)
-    {
-        if (t instanceof name.abuchen.portfolio.model.Transaction)
-        {
-            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-            PDFExtractorUtils.checkAndSetTax(tax, (name.abuchen.portfolio.model.Transaction) t, type);
-        }
-        else
-        {
-            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-            PDFExtractorUtils.checkAndSetTax(tax, ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
-        }
     }
 
     private Security getSecurity(Map<String, String> context, Integer entry)
