@@ -3,7 +3,6 @@ package name.abuchen.portfolio.datatransfer.pdf.simpel;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.junit.Assert.assertNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -33,13 +32,13 @@ import name.abuchen.portfolio.money.Values;
 public class SimpelPDFExtractorTest
 {
     @Test
-    public void testSecurityBuy01()
+    public void testWertpapierKauf01()
     {
         SimpelPDFExtractor extractor = new SimpelPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SimpelBuy01.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -61,7 +60,7 @@ public class SimpelPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-01-10T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.071)));
-        assertThat(entry.getSource(), is("SimpelBuy01.txt"));
+        assertThat(entry.getSource(), is("Kauf01.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nummer: 20220106123456789000000612345"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -75,13 +74,13 @@ public class SimpelPDFExtractorTest
     }
 
     @Test
-    public void testSecuritySell01()
+    public void testWertpapierVerkauf01()
     {
         SimpelPDFExtractor extractor = new SimpelPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SimpelSell01.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -103,7 +102,7 @@ public class SimpelPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-12-29T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(6.590)));
-        assertThat(entry.getSource(), is("SimpelSell01.txt"));
+        assertThat(entry.getSource(), is("Verkauf01.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nummer: 2021122812345678000000987656"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -125,7 +124,7 @@ public class SimpelPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SimpelDividend01.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -139,19 +138,23 @@ public class SimpelPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check dividend transaction
-        AccountTransaction t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
-        assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-12-21T00:00")));
-        assertThat(t.getShares(), is(Values.Share.factorize(6.48708487)));
-        assertThat(t.getSource(), is("SimpelDividend01.txt"));
-        assertNull(t.getNote());
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-12-21T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(17.58 / 2.71)));
+        assertThat(transaction.getSource(), is("Dividende01.txt"));
+        assertThat(transaction.getNote(), is("Turnus: jährlich"));
 
-        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(13.3))));
-        assertThat(t.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(17.58))));
-        assertThat(t.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.28))));
-        assertThat(t.getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(13.30))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(17.58))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.28))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
     }
 }
