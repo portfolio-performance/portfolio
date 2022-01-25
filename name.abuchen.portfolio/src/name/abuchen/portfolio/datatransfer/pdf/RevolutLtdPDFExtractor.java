@@ -1,9 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -72,10 +69,7 @@ public class RevolutLtdPDFExtractor extends AbstractPDFExtractor
                 .find("Symbol Company ISIN Type Quantity Price Settlement date")
                 .match("^(?<tickerSymbol>.*) (?<name>.*) (?<isin>[\\w]{12}) Sell (?<shares>[\\.,\\d]+) \\D[\\.,\\d]+ (?<date>[\\d]{2} .* [\\d]{4})$")
                 .assign((t, v) -> {
-                    // Formate the date from 03 Nov 2021 to 03.11.2021
-                    v.put("date", DateTimeFormatter.ofPattern("dd.MM.yyyy").format(LocalDate.parse(v.get("date"), DateTimeFormatter.ofPattern("dd LLL yyyy", Locale.UK))));
                     v.put("currency", CurrencyUnit.USD);
-
                     t.setShares(asShares(v.get("shares")));
                     t.setDate(asDate(v.get("date")));
                     t.setSecurity(getOrCreateSecurity(v));
@@ -127,8 +121,6 @@ public class RevolutLtdPDFExtractor extends AbstractPDFExtractor
                         .section("date", "currency", "amount")
                         .match("^(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) [\\d]{2}\\/[\\d]{2}\\/[\\d]{4} (?<currency>[\\w]{3}) .* Cash Disbursement \\- Wallet \\([\\w]{3}\\) (?<amount>[\\.,\\d]+)$")
                         .assign((t, v) -> {
-                            // Formate the date from 07/08/2020 to 07.08.2020
-                            v.put("date", DateTimeFormatter.ofPattern("dd.MM.yyyy").format(LocalDate.parse(v.get("date"), DateTimeFormatter.ofPattern("MM/dd/yyyy", Locale.UK))));
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));

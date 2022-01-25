@@ -1,8 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 import java.util.Map;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
@@ -129,12 +126,7 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
                 // Orderausführung Datum/Zeit: 31 Jul 2020 21:00:15
                 .section("date", "time").optional()
                 .match("Orderausführung Datum\\/Zeit: (?<date>\\d+ .* \\d{4}) (?<time>\\d+:\\d+:\\d+).*")
-                .assign((t, v) -> {
-                    // Formate the date from 05. Oktober 2009 to 05.10.2009
-                    // Work-around DateTimeFormatter in Local.GERMAN looks like "Mär" not "Mrz" and in Local.ENGLISH like "Mar".
-                    v.put("date", DateTimeFormatter.ofPattern("dd.MM.yyyy").format(LocalDate.parse(v.get("date").replace("Mrz", "Mär"), DateTimeFormatter.ofPattern("d LLL yyyy", Locale.GERMANY))));
-                    t.setDate(asDate(v.get("date"), v.get("time")));
-                })
+                .assign((t, v) -> t.setDate(asDate(v.get("date").replace("Mrz", "Mär"), v.get("time"))))
 
                 // Schlusstag/-Zeit 02.01.2020 10:49:34 Auftragserteilung/ -ort sonstige
                 .section("date", "time").optional()
@@ -144,11 +136,7 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
                 // Valutadatum 25. Juni 2021
                 .section("date").optional()
                 .match("^Valutadatum (?<date>\\d+\\. .* \\d{4})$")
-                .assign((t, v) -> {
-                    // Formate the date from 25. Juni 2021 to 25.06.2009
-                    v.put("date", DateTimeFormatter.ofPattern("dd.MM.yyyy").format(LocalDate.parse(v.get("date"), DateTimeFormatter.ofPattern("d. MMMM yyyy", Locale.GERMANY))));
-                    t.setDate(asDate(v.get("date")));
-                })
+                .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                 // Ausmachender Betrag: €2.083,94
                 .section("amount").optional()
@@ -218,11 +206,7 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
                 // Valutadatum 15. März 2021
                 .section("date")
                 .match("^Valutadatum (?<date>\\d+. .* \\d{4})")
-                .assign((t, v) -> {
-                    // Formate the date from 01. März 2021 to 01.03.2021
-                    v.put("date", DateTimeFormatter.ofPattern("dd.MM.yyyy").format(LocalDate.parse(v.get("date"), DateTimeFormatter.ofPattern("d. MMMM yyyy", Locale.GERMANY))));
-                    t.setDateTime(asDate(v.get("date")));
-                })
+                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                 // Ausmachender Betrag EUR 12,15
                 .section("currency", "amount")

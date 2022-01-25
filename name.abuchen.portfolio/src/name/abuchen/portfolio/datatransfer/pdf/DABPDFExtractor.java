@@ -2,9 +2,6 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -759,8 +756,6 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
 
-                    // Formate the date from 10.07.19 to 10.07.2019
-                    v.put("date", DateTimeFormatter.ofPattern("dd.MM.yyyy").format(LocalDate.parse(v.get("date"), DateTimeFormatter.ofPattern("dd.MM.yy", Locale.GERMANY))));
                     t.setDateTime(asDate(v.get("date")));
 
                     t.setAmount(asAmount(v.get("amount")));
@@ -803,8 +798,6 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
 
-                    // Formate the date from 29.06.20 to 29.06.2020
-                    v.put("date", DateTimeFormatter.ofPattern("dd.MM.yyyy").format(LocalDate.parse(v.get("date"), DateTimeFormatter.ofPattern("dd.MM.yy", Locale.GERMANY))));
                     t.setDateTime(asDate(v.get("date")));
 
                     t.setAmount(asAmount(v.get("amount")));
