@@ -29,14 +29,14 @@ public class BintPreferencePage extends FieldEditorPreferencePage
     public void createFieldEditors()
     {
         Link link = new Link(getFieldEditorParent(), SWT.NONE);
-        link.setText("<a>eMail: pp@bint.ee</a>"); //$NON-NLS-1$
+        link.setText("<a>https://bint.ee/pp/</a>"); //$NON-NLS-1$
         link.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false, 3, 1));
         link.addSelectionListener(new SelectionAdapter()
         {
             @Override
             public void widgetSelected(final SelectionEvent event)
             {
-                DesktopAPI.browse("mailto:pp@bint.ee"); //$NON-NLS-1$
+                DesktopAPI.browse("https://bint.ee/pp/"); //$NON-NLS-1$
             }
         });
 
