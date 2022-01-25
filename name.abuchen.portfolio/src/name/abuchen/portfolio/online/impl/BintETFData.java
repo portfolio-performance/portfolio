@@ -334,7 +334,7 @@ public class BintETFData
     }
 
     public static final String PROVIDER_NAME = "BINT Technology"; //$NON-NLS-1$
-    private static final String HOST = "beta.bint.ee"; //$NON-NLS-1$
+    private static final String HOST = "bint.ee"; //$NON-NLS-1$
     
     private String apiKey;
     
@@ -348,9 +348,8 @@ public class BintETFData
     {
         try
         {
-            WebAccess webAccess = new WebAccess(HOST, "/pp/" + isin) //$NON-NLS-1$
+            WebAccess webAccess = new WebAccess(HOST, "/pp/api/" + isin) //$NON-NLS-1$
                             .addParameter("token", this.apiKey) //$NON-NLS-1$
-                            .withScheme("http") //$NON-NLS-1$
                             .addUserAgent("PortfolioPerformance/" //$NON-NLS-1$
                                             + FrameworkUtil.getBundle(BintETFData.class).getVersion().toString());
             return readItems(webAccess.get());
