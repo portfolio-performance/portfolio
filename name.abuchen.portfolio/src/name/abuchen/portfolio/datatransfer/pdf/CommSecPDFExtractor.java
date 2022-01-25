@@ -1,10 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,8 +16,6 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class CommSecPDFExtractor extends AbstractPDFExtractor
 {
-    private static final DateTimeFormatter australianDateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.ENGLISH);
-
     public CommSecPDFExtractor(Client client)
     {
         super(client);
@@ -180,12 +174,6 @@ public class CommSecPDFExtractor extends AbstractPDFExtractor
 
                     processFeeEntries(t, v, type);
                 });
-    }
-
-    @Override
-    protected LocalDateTime asDate(String value)
-    {
-        return LocalDate.parse(value, australianDateFormat).atStartOfDay();
     }
 
     @Override

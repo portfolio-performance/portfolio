@@ -1,10 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
-
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -17,8 +12,6 @@ import name.abuchen.portfolio.util.TextUtil;
 @SuppressWarnings("nls")
 public class SelfWealthPDFExtractor extends AbstractPDFExtractor
 {
-    private static final DateTimeFormatter australianDateFormat = DateTimeFormatter.ofPattern("d MMM yyyy", Locale.ENGLISH);
-
     public SelfWealthPDFExtractor(Client client)
     {
         super(client);
@@ -105,12 +98,6 @@ public class SelfWealthPDFExtractor extends AbstractPDFExtractor
                 .section("fee", "currency").optional()
                 .match("^Adviser Fee\\* \\D(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processFeeEntries(t, v, type));
-    }
-
-    @Override
-    protected LocalDateTime asDate(String value)
-    {
-        return LocalDate.parse(value, australianDateFormat).atStartOfDay();
     }
 
     @Override

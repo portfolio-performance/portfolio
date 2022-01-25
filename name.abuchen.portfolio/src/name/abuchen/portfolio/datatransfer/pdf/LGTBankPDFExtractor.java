@@ -1,9 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
-
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -125,11 +121,7 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
                 // Ex-Datum 12. Mai 2020
                 .section("date")
                 .match("^(Ex-Datum) (?<date>\\d+. \\w+ \\d{4})$")
-                .assign((t, v) -> {
-                    // Formate the date from 14. Mai 2020 to 14.05.2020
-                    v.put("date", DateTimeFormatter.ofPattern("dd.MM.yyyy").format(LocalDate.parse(v.get("date"), DateTimeFormatter.ofPattern("d. MMMM yyyy", Locale.GERMANY))));
-                    t.setDateTime(asDate(v.get("date")));
-                })
+                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
     
                 // Netto EUR 198.36
                 .section("currency", "amount")

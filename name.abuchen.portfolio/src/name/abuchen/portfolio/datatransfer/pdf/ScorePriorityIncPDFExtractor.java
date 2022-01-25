@@ -1,10 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,8 +19,6 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
 {
-    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd LLL yyyy", Locale.US); //$NON-NLS-1$
-
     public ScorePriorityIncPDFExtractor(Client client)
     {
         super(client);
@@ -375,11 +369,5 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
     protected BigDecimal asExchangeRate(String value)
     {
         return PDFExtractorUtils.convertToNumberBigDecimal(value, Values.Share, "en", "US");
-    }
-
-    @Override
-    protected LocalDateTime asDate(String date)
-    {
-        return LocalDate.parse(date, DATE_FORMAT).atStartOfDay();
     }
 }
