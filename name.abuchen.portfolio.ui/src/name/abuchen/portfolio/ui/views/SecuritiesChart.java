@@ -1044,7 +1044,7 @@ public class SecuritiesChart
                         .filter(t -> chartInterval.contains(t.getDateTime())) //
                         .sorted(Transaction.BY_DATE).collect(Collectors.toList());
 
-        addInvestmentMarkers(purchase, Messages.SecurityMenuBuy, colorEventPurchase);
+        addInvestmentMarkers(purchase, PortfolioTransaction.Type.BUY.toString(), colorEventPurchase);
 
         List<PortfolioTransaction> sales = client.getPortfolios().stream().flatMap(p -> p.getTransactions().stream())
                         .filter(t -> t.getSecurity() == security)
@@ -1053,7 +1053,7 @@ public class SecuritiesChart
                         .filter(t -> chartInterval.contains(t.getDateTime())) //
                         .sorted(Transaction.BY_DATE).collect(Collectors.toList());
 
-        addInvestmentMarkers(sales, Messages.SecurityMenuSell, colorEventSale);
+        addInvestmentMarkers(sales, PortfolioTransaction.Type.SELL.toString(), colorEventSale);
     }
 
     private void addInvestmentMarkers(List<PortfolioTransaction> transactions, String seriesLabel, Color color)
