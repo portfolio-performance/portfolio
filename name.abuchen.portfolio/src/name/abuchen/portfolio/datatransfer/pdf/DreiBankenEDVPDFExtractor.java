@@ -247,11 +247,13 @@ public class DreiBankenEDVPDFExtractor extends AbstractPDFExtractor
                 .match(".*KESt-Neu.*(?<currency>[\\w]{3}).*-(?<tax>[\\d.]+,\\d+).*")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
-                // Ertrag 0,68 USD Kurswert USD 2,04Quellensteuer USD
-                // -0,31
-                .section("tax", "currency").optional()
-                .match(".*Quellensteuer.*(?<currency>[\\w]{3}).*-(?<tax>[\\d.]+,\\d+).*")
-                .assign((t, v) -> processTaxEntries(t, v, type))
+                // Ertrag 0,68 USD Kurswert USD 2,04Quellensteuer USD -0,31
+                .section("withHoldingTax", "currency").optional()
+                .match(".*Quellensteuer.*(?<currency>[\\w]{3}).*-(?<withHoldingTax>[\\d.]+,\\d+).*")
+                .assign((t, v) -> {
+                    type.getCurrentContext().put(FLAG_WITHHOLDING_TAX_FOUND, Boolean.TRUE.toString());
+                    processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
+                })
 
                 // Kursgewinn-KESt EUR -3,37
                 .section("tax", "currency").optional()

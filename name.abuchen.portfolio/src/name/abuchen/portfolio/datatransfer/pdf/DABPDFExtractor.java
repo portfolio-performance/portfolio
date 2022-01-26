@@ -826,32 +826,32 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 // davon anrechenbare Quellensteuer 15% ZAR 1.560,00
                 // davon anrechenbare Quellensteuer Fondseingangsseite EUR 1,62
                 // davon anrechenbare US-Quellensteuer  15% USD             2,430     
-                .section("tax", "currency").optional()
-                .match("^(.*)?davon anrechenbare (US\\-)?Quellensteuer .* ([\\s]+)?(?<currency>[\\w]{3})([\\s]+)? (?<tax>[\\.,\\d]+)(\\-|[\\s]+)?$")
+                .section("creditableWithHoldingTax", "currency").optional()
+                .match("^(.*)?davon anrechenbare (US\\-)?Quellensteuer .* ([\\s]+)?(?<currency>[\\w]{3})([\\s]+)? (?<creditableWithHoldingTax>[\\.,\\d]+)(\\-|[\\s]+)?$")
                 .assign((t, v) -> {
                     if (!"X".equals(type.getCurrentContext().get("negative")))
                     {
-                        processTaxEntries(t, v, type);
+                        processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type);
                     }
                 })
 
                 // erstattungsfähige Quellensteuer 0,315% JPY 2
-                .section("tax", "currency").optional()
-                .match("^erstattungsf.hige Quellensteuer .* (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$")
+                .section("repatriableWithHoldingTax", "currency").optional()
+                .match("^erstattungsf.hige Quellensteuer .* (?<currency>[\\w]{3}) (?<repatriableWithHoldingTax>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     if (!"X".equals(type.getCurrentContext().get("negative")))
                     {
-                        processTaxEntries(t, v, type);
+                        processWithHoldingTaxEntries(t, v, "repatriableWithHoldingTax", type);
                     }
                 })
 
                 // anrechenbare Quellensteuer 15% EUR 0,73
-                .section("tax", "currency").optional()
-                .match("^anrechenbare Quellensteuer .* ([\\s]+)?(?<currency>[\\w]{3})([\\s]+)? (?<tax>[\\.,\\d]+)(\\-)?$")
+                .section("creditableWithHoldingTax", "currency").optional()
+                .match("^anrechenbare Quellensteuer .* ([\\s]+)?(?<currency>[\\w]{3})([\\s]+)? (?<creditableWithHoldingTax>[\\.,\\d]+)(\\-)?$")
                 .assign((t, v) -> {
                     if (!"X".equals(type.getCurrentContext().get("negative")))
                     {
-                        processTaxEntries(t, v, type);
+                        processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type);
                     }
                 })
 
@@ -918,10 +918,11 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                     }
                 })
 
-                .section("tax", "currency").optional()
-                .match("^abzgl\\. Quellensteuer .* [\\w]{3} (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .section("withHoldingTax", "currency").optional()
+                .match("^abzgl\\. Quellensteuer .* [\\w]{3} (?<withHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    processTaxEntries(t, v, type);
+                    type.getCurrentContext().put(FLAG_WITHHOLDING_TAX_FOUND, Boolean.TRUE.toString());
+                    processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
                 })
 
                 // abzgl. Kapitalertragsteuer 25,00 % von 90,02 EUR 22,51 EUR
