@@ -92,6 +92,7 @@
 	                            <goal>run</goal>
 	                        </goals>
 							<configuration>
+									<protocCommand>protoc</protocCommand>
 									<protocVersion>3.17.3</protocVersion>
 	                                <addProtoSources>all</addProtoSources>
 	                                <includeMavenTypes>direct</includeMavenTypes>

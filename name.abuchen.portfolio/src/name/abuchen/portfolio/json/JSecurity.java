@@ -2,6 +2,7 @@ package name.abuchen.portfolio.json;
 
 import com.google.common.base.Strings;
 
+import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 
 public class JSecurity
@@ -11,6 +12,7 @@ public class JSecurity
     private String wkn;
     private String ticker;
     private String currency;
+    private LatestSecurityPrice latest;
 
     public String getName()
     {
@@ -51,7 +53,7 @@ public class JSecurity
     {
         this.ticker = ticker;
     }
-    
+
     public String getCurrency()
     {
         return currency;
@@ -62,6 +64,11 @@ public class JSecurity
         this.currency = currency;
     }
 
+    public LatestSecurityPrice getLatest()
+    {
+        return latest;
+    }
+
     public static JSecurity from(Security security)
     {
         JSecurity s = new JSecurity();
@@ -70,6 +77,7 @@ public class JSecurity
         s.wkn = Strings.emptyToNull(security.getWkn());
         s.ticker = Strings.emptyToNull(security.getTickerSymbol());
         s.currency = Strings.emptyToNull(security.getCurrencyCode());
+        s.latest = security.getLatest();
         return s;
     }
 }

@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.preferences;
 
+import java.util.UUID;
+
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -30,5 +32,8 @@ public class PreferencesInitializer extends AbstractPreferenceInitializer
         store.setDefault(UIConstants.Preferences.ALPHAVANTAGE_CALL_FREQUENCY_LIMIT, 5);
         store.setDefault(UIConstants.Preferences.CALENDAR, "default"); //$NON-NLS-1$
         store.setDefault(UIConstants.Preferences.PORTFOLIO_REPORT_API_URL, "https://api.portfolio-report.net"); //$NON-NLS-1$
+        store.setDefault(UIConstants.Preferences.RUN_WEB_SERVER, false);
+        store.setDefault(UIConstants.Preferences.WEB_SERVER_PORT, 5712);
+        store.setDefault(UIConstants.Preferences.WEB_SERVER_TOKEN, UUID.randomUUID().toString());
     }
 }
