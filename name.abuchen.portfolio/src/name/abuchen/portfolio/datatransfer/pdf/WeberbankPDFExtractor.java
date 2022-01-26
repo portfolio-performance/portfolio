@@ -2,7 +2,6 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Map;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -17,8 +16,6 @@ import name.abuchen.portfolio.money.Money;
 @SuppressWarnings("nls")
 public class WeberbankPDFExtractor extends AbstractPDFExtractor
 {
-    private static final String FLAG_WITHHOLDING_TAX_FOUND = "exchangeRate"; //$NON-NLS-1$
-
     public WeberbankPDFExtractor(Client client)
     {
         super(client);
@@ -210,37 +207,17 @@ public class WeberbankPDFExtractor extends AbstractPDFExtractor
                 .match("^Solidaritätszuschlag [\\.,\\d]+ % .* (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
-                // Einbehaltene Quellensteuer 15 % auf 87,74 USD 11,11-
-                // EUR
-                .section("quellensteinbeh", "currency").optional()
-                .match("^Einbehaltende Quellensteuer [\\.,\\d]+ % .* (?<quellensteinbeh>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
+                // Einbehaltene Quellensteuer 15 % auf 87,74 USD 11,11- EUR
+                .section("withHoldingTax", "currency").optional()
+                .match("^Einbehaltende Quellensteuer [\\.,\\d]+ % .* (?<withHoldingTax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    type.getCurrentContext().put(FLAG_WITHHOLDING_TAX_FOUND, "true");
-                    addTax(type, t, v, "quellensteinbeh");
+                    type.getCurrentContext().put(FLAG_WITHHOLDING_TAX_FOUND, Boolean.TRUE.toString());
+                    processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
                 })
 
-                // Anrechenbare Quellensteuer 15 % auf 74,05 EUR 11,11
-                // EUR
-                .section("quellenstanr", "currency").optional()
-                .match("^Anrechenbare Quellensteuer [\\.,\\d]+ % .* (?<quellenstanr>[\\.,\\d]+) (?<currency>[\\w]{3})$")
-                .assign((t, v) -> addTax(type, t, v, "quellenstanr"));
-    }
-
-    private void addTax(DocumentType type, Object t, Map<String, String> v, String taxtype)
-    {
-        // Wenn es 'Einbehaltene Quellensteuer' gibt, dann die weiteren
-        // Quellensteuer-Arten nicht berücksichtigen.
-        if (checkWithholdingTax(type, taxtype))
-        {
-            ((name.abuchen.portfolio.model.Transaction) t).addUnit(new Unit(Unit.Type.TAX,
-                            Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get(taxtype)))));
-        }
-    }
-
-    private boolean checkWithholdingTax(DocumentType type, String taxtype)
-    {
-        if (Boolean.valueOf(type.getCurrentContext().get(FLAG_WITHHOLDING_TAX_FOUND)))
-            return !"quellenstanr".equalsIgnoreCase(taxtype);
-        return true;
+                // Anrechenbare Quellensteuer 15 % auf 74,05 EUR 11,11 EUR
+                .section("creditableWithHoldingTax", "currency").optional()
+                .match("^Anrechenbare Quellensteuer [\\.,\\d]+ % .* (?<creditableWithHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type));
     }
 }

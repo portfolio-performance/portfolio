@@ -22,7 +22,6 @@ import name.abuchen.portfolio.util.TextUtil;
 public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 {
     private static final String IS_JOINT_ACCOUNT = "isjointaccount"; //$NON-NLS-1$
-    private static final String EXCHANGE_RATE = "exchangeRate"; //$NON-NLS-1$
 
     BiConsumer<Map<String, String>, String[]> isJointAccount = (context, lines) -> {
         Pattern pJointAccount = Pattern.compile("KapSt anteilig 50,00 %.*"); //$NON-NLS-1$
@@ -285,7 +284,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 .match("^Umg\\. z\\. Dev\\.\\-Kurs \\((?<exchangeRate>[\\.,\\d]+)\\) (?<currency>[\\w]{3}) [\\.,\\d]+$")
                 .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                    type.getCurrentContext().put(EXCHANGE_RATE, exchangeRate.toPlainString());
+                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
 
                     if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
                     {
@@ -481,14 +480,20 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 })
 
                 // QuSt 15,00 % (EUR 8,87) USD 9,31
-                .section("tax", "currency").optional()
-                .match("^QuSt [\\.,\\d]+([\\s]+)?% \\((?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)\\) [\\w]{3} [\\.,\\d]+$")
-                .assign((t, v) -> processTaxEntries(t, v, type))
+                .section("withHoldingTax", "currency").optional()
+                .match("^QuSt [\\.,\\d]+([\\s]+)?% \\((?<currency>[\\w]{3}) (?<withHoldingTax>[\\.,\\d]+)\\) [\\w]{3} [\\.,\\d]+$")
+                .assign((t, v) -> {
+                    type.getCurrentContext().put(FLAG_WITHHOLDING_TAX_FOUND, Boolean.TRUE.toString());
+                    processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
+                })
 
                 // QuSt 30,00 % EUR 16,50
-                .section("tax", "currency").optional()
-                .match("^QuSt [\\.,\\d]+([\\s]+)?% (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$")
-                .assign((t, v) -> processTaxEntries(t, v, type));
+                .section("withHoldingTax", "currency").optional()
+                .match("^QuSt [\\.,\\d]+([\\s]+)?% (?<currency>[\\w]{3}) (?<withHoldingTax>[\\.,\\d]+)$")
+                .assign((t, v) -> {
+                    type.getCurrentContext().put(FLAG_WITHHOLDING_TAX_FOUND, Boolean.TRUE.toString());
+                    processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
+                });
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)

@@ -379,11 +379,11 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
     {
         transaction
                         // 2 2 , 0 0 0 % Q u e l l e n s t e u e r USD 1 9 , 0 6 -
-                        .section("tax", "currency").optional()
-                        .match(".* [\\d\\s,.]* % Q u e l l e n s t e u e r (?<currency>\\w{3}) (?<tax>[\\d\\s,.-]*)$")
+                        .section("withHoldingTax", "currency").optional()
+                        .match(".* [\\d\\s,.]* % Q u e l l e n s t e u e r (?<currency>\\w{3}) (?<withHoldingTax>[\\d\\s,.-]*)$")
                         .assign((t, v) -> {
-                            v.put("tax", stripBlanks(v.get("tax")));
-                            processTaxEntries(t, v, type);
+                            v.put("withHoldingTax", stripBlanks(v.get("withHoldingTax")));
+                            processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
                         });
     }
 

@@ -29,6 +29,8 @@ import name.abuchen.portfolio.util.TextUtil;
 
 public abstract class AbstractPDFExtractor implements Extractor
 {
+    protected static final String FLAG_WITHHOLDING_TAX_FOUND = Boolean.FALSE.toString();
+
     private final NumberFormat numberFormat = NumberFormat.getInstance(Locale.GERMANY);
 
     private final Client client;
@@ -106,7 +108,8 @@ public abstract class AbstractPDFExtractor implements Extractor
                 else if (subject.getNote() == null || TextUtil.strip(subject.getNote()).length() == 0)
                     item.getSubject().setNote(filename);
                 else
-                    item.getSubject().setNote(TextUtil.strip(item.getSubject().getNote()).concat(" | ").concat(filename)); //$NON-NLS-1$
+                    item.getSubject().setNote(
+                                    TextUtil.strip(item.getSubject().getNote()).concat(" | ").concat(filename)); //$NON-NLS-1$
             }
 
             return items;
@@ -262,7 +265,8 @@ public abstract class AbstractPDFExtractor implements Extractor
         else
         {
             Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))); //$NON-NLS-1$ //$NON-NLS-2$
-            PDFExtractorUtils.checkAndSetTax(tax, ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
+            PDFExtractorUtils.checkAndSetTax(tax,
+                            ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
         }
     }
 
@@ -271,8 +275,7 @@ public abstract class AbstractPDFExtractor implements Extractor
         if (t instanceof name.abuchen.portfolio.model.Transaction)
         {
             Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))); //$NON-NLS-1$ //$NON-NLS-2$
-            PDFExtractorUtils.checkAndSetFee(fee, 
-                            (name.abuchen.portfolio.model.Transaction) t, type);
+            PDFExtractorUtils.checkAndSetFee(fee, (name.abuchen.portfolio.model.Transaction) t, type);
         }
         else
         {
@@ -280,5 +283,37 @@ public abstract class AbstractPDFExtractor implements Extractor
             PDFExtractorUtils.checkAndSetFee(fee,
                             ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
         }
+    }
+
+    protected void processWithHoldingTaxEntries(Object t, Map<String, String> v, String taxType, DocumentType type)
+    {
+        /***
+         * If it is a "withholding tax", the other types of "creditable
+         * withholding tax" are not to be considered.
+         */
+        if (checkWithHoldingTax(taxType, type))
+        {
+            if (t instanceof name.abuchen.portfolio.model.Transaction)
+            {
+                Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get(taxType))); //$NON-NLS-1$
+                PDFExtractorUtils.checkAndSetTax(tax, (name.abuchen.portfolio.model.Transaction) t, type);
+            }
+            else
+            {
+                Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get(taxType))); //$NON-NLS-1$
+                PDFExtractorUtils.checkAndSetTax(tax,
+                                ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
+            }
+        }
+    }
+
+    protected boolean checkWithHoldingTax(String taxType, DocumentType type)
+    {
+        if (Boolean.valueOf(type.getCurrentContext().get(FLAG_WITHHOLDING_TAX_FOUND)))
+        {
+            if ("creditableWithHoldingTax".equalsIgnoreCase(taxType)) //$NON-NLS-1$
+                return false;
+        }
+        return true;
     }
 }

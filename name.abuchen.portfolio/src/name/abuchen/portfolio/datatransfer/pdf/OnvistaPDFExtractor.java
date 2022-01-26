@@ -1343,22 +1343,12 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 // davon anrechenbare US-Quellensteuer EUR 4,74
                 // davon anrechenbare US-Quellensteuer 15% EUR 2,72
                 //    davon anrechenbare Quellensteuer Fondseingangsseite EUR 0,03
-                .section("tax", "currency").optional()
-                .match("(^|^.* davon |^davon )anrechenbare (US-)?Quellensteuer( [\\.,\\d]+%|.*)? (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$")
+                .section("creditableWithHoldingTax", "currency").optional()
+                .match("(^|^.* davon |^davon )anrechenbare (US-)?Quellensteuer( [\\.,\\d]+%|.*)? (?<currency>[\\w]{3}) (?<creditableWithHoldingTax>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     if (!"X".equals(type.getCurrentContext().get("negative")))
                     {
-                        processTaxEntries(t, v, type);
-                    }
-                })
-
-                // erstattungsfähige Quellensteuer 12% DKK 3,71
-                .section("tax", "currency").optional()
-                .match("^erstattungsf.hige Quellensteuer .* (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$")
-                .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")))
-                    {
-                        processTaxEntries(t, v, type);
+                        processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type);
                     }
                 })
 

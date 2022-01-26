@@ -392,9 +392,9 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
                 // Anrechenbare ausländische Quellensteuer 13,07 EUR
-                .section("tax", "currency").optional()
-                .match("^Anrechenbare ausl.ndische Quellensteuer (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
-                .assign((t, v) -> processTaxEntries(t, v, type));
+                .section("creditableWithHoldingTax", "currency").optional()
+                .match("^Anrechenbare ausl.ndische Quellensteuer (?<creditableWithHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type));
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)

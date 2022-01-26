@@ -669,14 +669,20 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
                 // QUST 15,00000  %   EUR                 24,45  USD                 27,00
-                .section("tax", "currency").optional()
-                .match("^QUST [\\.,\\d]+ ([\\s]+)?% ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<tax>[\\.,\\d]+) .*$")
-                .assign((t, v) -> processTaxEntries(t, v, type))
+                .section("withHoldingTax", "currency").optional()
+                .match("^QUST [\\.,\\d]+ ([\\s]+)?% ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<withHoldingTax>[\\.,\\d]+) .*$")
+                .assign((t, v) -> {
+                    type.getCurrentContext().put(FLAG_WITHHOLDING_TAX_FOUND, Boolean.TRUE.toString());
+                    processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
+                })
 
                 // Quellensteuer in EUR 1,88 EUR
-                .section("tax", "currency").optional()
-                .match("^Quellensteuer in [\\w]{3} (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
-                .assign((t, v) -> processTaxEntries(t, v, type))
+                .section("withHoldingTax", "currency").optional()
+                .match("^Quellensteuer in [\\w]{3} (?<withHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    type.getCurrentContext().put(FLAG_WITHHOLDING_TAX_FOUND, Boolean.TRUE.toString());
+                    processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
+                })
 
                 // Kapitalertragsteuer (Account)
                 // KAPST                                 25,00 % EUR                111,00 

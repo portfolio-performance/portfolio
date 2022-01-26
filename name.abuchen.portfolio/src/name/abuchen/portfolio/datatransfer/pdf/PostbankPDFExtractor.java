@@ -2,7 +2,6 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Map;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -17,8 +16,6 @@ import name.abuchen.portfolio.money.Money;
 @SuppressWarnings("nls")
 public class PostbankPDFExtractor extends AbstractPDFExtractor
 {
-    private static final String FLAG_WITHHOLDING_TAX_FOUND = "exchangeRate"; //$NON-NLS-1$
-
     public PostbankPDFExtractor(Client client)
     {
         super(client);
@@ -213,27 +210,24 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction
-                        // Einbehaltene Quellensteuer 15 % auf 12,12 USD 1,53-
-                        // EUR
-                        .section("quellensteinbeh", "currency").optional()
-                        .match("^Einbehaltende Quellensteuer [.,\\d]+ % .* (?<quellensteinbeh>[.,\\d]+)- (?<currency>[\\w]{3})$")
+                        // Einbehaltene Quellensteuer 15 % auf 12,12 USD 1,53- EUR
+                        .section("withHoldingTax", "currency").optional()
+                        .match("^Einbehaltende Quellensteuer [.,\\d]+ % .* (?<withHoldingTax>[.,\\d]+)- (?<currency>[\\w]{3})$")
                         .assign((t, v) -> {
-                            type.getCurrentContext().put(FLAG_WITHHOLDING_TAX_FOUND, "true");
-                            addTax(type, t, v, "quellensteinbeh");
+                            type.getCurrentContext().put(FLAG_WITHHOLDING_TAX_FOUND, Boolean.TRUE.toString());
+                            processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
                         })
 
-                        // Anrechenbare Quellensteuer 15 % auf 10,17 EUR 1,53
-                        // EUR
-                        .section("quellenstanr", "currency").optional()
-                        .match("^Anrechenbare Quellensteuer [.,\\d]+ % .* [.,\\d]+ \\w{3} (?<quellenstanr>[.,\\d]+) (?<currency>\\w{3})$")
-                        .assign((t, v) -> addTax(type, t, v, "quellenstanr"))
+                        // Anrechenbare Quellensteuer 15 % auf 10,17 EUR 1,53 EUR
+                        .section("creditableWithHoldingTax", "currency").optional()
+                        .match("^Anrechenbare Quellensteuer [.,\\d]+ % .* [.,\\d]+ \\w{3} (?<creditableWithHoldingTax>[.,\\d]+) (?<currency>\\w{3})$")
+                        .assign((t, v) -> processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type))
                         
                         // Anrechenbare Quellensteuer pro Stück 0,0144878 EUR 0,29 EUR
-                        .section("quellenstanr", "currency").optional()
-                        .match("^Anrechenbare Quellensteuer pro St.ck [.,\\d]+ \\w{3} (?<quellenstanr>[.,\\d]+) (?<currency>\\w{3})$")
-                        .assign((t, v) -> addTax(type, t, v, "quellenstanr"))
+                        .section("creditableWithHoldingTax", "currency").optional()
+                        .match("^Anrechenbare Quellensteuer pro St.ck [.,\\d]+ \\w{3} (?<creditableWithHoldingTax>[.,\\d]+) (?<currency>\\w{3})$")
+                        .assign((t, v) -> processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type))
 
-        
                         // Kapitalertragsteuer 24,51% auf 0,71 EUR 0,17- EUR
                         .section("tax", "currency").optional()
                         .match("^Kapitalertragsteuer [\\d,.]+% auf [.,\\d]+ [\\w]{3} (?<tax>[.,\\d]+)- (?<currency>[\\w]{3})$")
@@ -272,25 +266,5 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                         .section("fee", "currency").optional()
                         .match("^.bertragungs-\\/Liefergeb.hr (?<fee>[.,\\d]+)- (?<currency>[\\w]{3}).*")
                         .assign((t, v) -> processFeeEntries(t, v, type));
-    }
-
-    private void addTax(DocumentType type, Object t, Map<String, String> v, String taxtype)
-    {
-        // Wenn es 'Einbehaltene Quellensteuer' gibt, dann die weiteren
-        // Quellensteuer-Arten nicht berücksichtigen.
-        if (checkWithholdingTax(type, taxtype))
-        {
-            ((name.abuchen.portfolio.model.Transaction) t).addUnit(new Unit(Unit.Type.TAX,
-                            Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get(taxtype)))));
-        }
-    }
-    
-    
-
-    private boolean checkWithholdingTax(DocumentType type, String taxtype)
-    {
-        if (Boolean.valueOf(type.getCurrentContext().get(FLAG_WITHHOLDING_TAX_FOUND)))
-            return !"quellenstanr".equalsIgnoreCase(taxtype);
-        return true;
     }
 }

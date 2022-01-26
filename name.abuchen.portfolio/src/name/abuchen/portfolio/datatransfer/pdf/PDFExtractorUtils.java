@@ -31,12 +31,12 @@ class PDFExtractorUtils
                     DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.GERMANY), //$NON-NLS-1$
                     DateTimeFormatter.ofPattern("d. MMMM yyyy", Locale.GERMANY), //$NON-NLS-1$
                     DateTimeFormatter.ofPattern("dd LLL yyyy", Locale.UK), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("MM/dd/yyyy", Locale.UK), //$NON-NLS-1$
+                    DateTimeFormatter.ofPattern("LL/dd/yyyy", Locale.UK), //$NON-NLS-1$
                     DateTimeFormatter.ofPattern("dd LLL yyyy", Locale.US), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("d MMM yyyy", Locale.ENGLISH), //$NON-NLS-1$
+                    DateTimeFormatter.ofPattern("d MMM yyyy", Locale.US), //$NON-NLS-1$
                     DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.GERMANY) }; //$NON-NLS-1$
 
-    private static final DateTimeFormatter[] DATE_TIME_FORMATTER = {
+    private static final DateTimeFormatter[] DATE_TIME_FORMATTER = { //
                     DateTimeFormatter.ofPattern("d.M.yyyy HH:mm", Locale.GERMANY), //$NON-NLS-1$
                     DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm", Locale.GERMANY), //$NON-NLS-1$
                     DateTimeFormatter.ofPattern("d LLL yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
@@ -58,16 +58,14 @@ class PDFExtractorUtils
             Money txTax = Money.of(t.getCurrencyCode(), BigDecimal.valueOf(tax.getAmount()).multiply(inverseRate)
                             .setScale(0, RoundingMode.HALF_UP).longValue());
 
-            // store tax value in both currencies, if security's currency
-            // is different to transaction currency
+            /**
+             * Store tax value in both currencies, if security's currency is
+             * different to transaction currency
+             */
             if (t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
-            {
                 t.addUnit(new Unit(Unit.Type.TAX, txTax));
-            }
             else
-            {
                 t.addUnit(new Unit(Unit.Type.TAX, txTax, tax, inverseRate));
-            }
         }
     }
 
@@ -86,16 +84,14 @@ class PDFExtractorUtils
             Money fxFee = Money.of(t.getCurrencyCode(), BigDecimal.valueOf(fee.getAmount()).multiply(inverseRate)
                             .setScale(0, RoundingMode.HALF_UP).longValue());
 
-            // store fee value in both currencies, if security's currency
-            // is different to transaction currency
+            /**
+             * Store tax value in both currencies, if security's currency is
+             * different to transaction currency
+             */
             if (t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
-            {
                 t.addUnit(new Unit(Unit.Type.FEE, fxFee));
-            }
             else
-            {
                 t.addUnit(new Unit(Unit.Type.FEE, fxFee, fee, inverseRate));
-            }
         }
     }
 

@@ -1522,19 +1522,28 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 })
 
                 // Quellenst.-satz :           15,00 %    Gez. Quellenst. :            1,15 USD
-                .section("tax", "currency").optional()
-                .match("^.* Gez\\. Quellenst\\.([\\s]+)?: ([\\s]+)?(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
-                .assign((t, v) -> processTaxEntries(t, v, type))
+                .section("withHoldingTax", "currency").optional()
+                .match("^.* Gez\\. Quellenst\\.([\\s]+)?: ([\\s]+)?(?<withHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    type.getCurrentContext().put(FLAG_WITHHOLDING_TAX_FOUND, Boolean.TRUE.toString());
+                    processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
+                })
 
                 // Quellenst.-satz :            15,00 %  Gez. Quellensteuer :           18,28 USD
-                .section("tax", "currency").optional()
-                .match("^.* Gez\\. Quellensteuer([\\s]+)?: ([\\s]+)?(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
-                .assign((t, v) -> processTaxEntries(t, v, type))
+                .section("withHoldingTax", "currency").optional()
+                .match("^.* Gez\\. Quellensteuer([\\s]+)?: ([\\s]+)?(?<withHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    type.getCurrentContext().put(FLAG_WITHHOLDING_TAX_FOUND, Boolean.TRUE.toString());
+                    processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
+                })
 
                 // Stk./Nominale  : 325,000000 Stk         Einbeh. Steuer*:            382,12 EUR
-                .section("tax", "currency").optional()
-                .match("^.* Einbeh\\. Steuer\\*([\\s]+)?: ([\\s]+)?(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
-                .assign((t, v) -> processTaxEntries(t, v, type));
+                .section("withHoldingTax", "currency").optional()
+                .match("^.* Einbeh\\. Steuer\\*([\\s]+)?: ([\\s]+)?(?<withHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    type.getCurrentContext().put(FLAG_WITHHOLDING_TAX_FOUND, Boolean.TRUE.toString());
+                    processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
+                });
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)

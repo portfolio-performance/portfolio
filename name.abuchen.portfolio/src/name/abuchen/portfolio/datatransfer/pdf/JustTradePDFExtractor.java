@@ -1,7 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import java.util.Map;
-
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -9,13 +7,10 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
-import name.abuchen.portfolio.money.Money;
 
 public class JustTradePDFExtractor extends AbstractPDFExtractor
 {
-    private static final String FLAG_WITHHOLDING_TAX_FOUND  = "exchangeRate"; //$NON-NLS-1$
     private static final String REGEX_AMOUNT = "^(\\d+\\.\\d+\\.\\d{4}) (\\d+\\.\\d+\\.\\d{4}) -?(?<amount>[\\.\\d]+[,\\d]*).*$"; //$NON-NLS-1$
     private static final String REGEX_AMOUNT_NEW_FORMAT = "^(\\d+\\.\\d+\\.\\d{4}) (\\d+\\.\\d+\\.\\d{4}).*(\\s|-)(?<amount>[\\.\\d]+,\\d{2})$"; //$NON-NLS-1$
     private static final String REGEX_AMOUNT_AND_SHARES = "^(\\d+.\\d+.\\d{4}+) (\\d+.\\d+.\\d{4}+) (?<sign>[-])?(?<amount>[\\.\\d]+[,\\d]*) .* -?(?<shares>[\\.\\d]+[,\\d]*)$"; //$NON-NLS-1$
@@ -466,17 +461,17 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
                 // Einbehaltende Quellensteuer EUR 2,14
-                .section("quellensteinbeh", "currency").optional()
-                .match("^Einbehaltende Quellensteuer (?<currency>\\w{3}) (?<quellensteinbeh>[.,\\d]+)$")
+                .section("withHoldingTax", "currency").optional()
+                .match("^Einbehaltende Quellensteuer (?<currency>\\w{3}) (?<withHoldingTax>[.,\\d]+)$")
                 .assign((t, v) ->  {
-                    type.getCurrentContext().put(FLAG_WITHHOLDING_TAX_FOUND, "true");
-                    addTax(type, t, v, "quellensteinbeh");
+                    type.getCurrentContext().put(FLAG_WITHHOLDING_TAX_FOUND, Boolean.TRUE.toString());
+                    processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
                 })
 
                 // Anrechenbare Quellensteuer EUR 2,14
-                .section("quellenstanr", "currency").optional()
-                .match("^Anrechenbare Quellensteuer (?<currency>\\w{3}) (?<quellenstanr>[.,\\d]+)$")
-                .assign((t, v) -> addTax(type, t, v, "quellenstanr"));
+                .section("creditableWithHoldingTax", "currency").optional()
+                .match("^Anrechenbare Quellensteuer (?<currency>\\w{3}) (?<creditableWithHoldingTax>[.,\\d]+)$")
+                .assign((t, v) -> processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type));
     }
 
     @SuppressWarnings("nls")
@@ -497,32 +492,5 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
                 .section("currency", "fee").optional()
                 .match(".* WP-Kommission: (?<currency>[\\w]{3}) (?<fee>[.,\\d]+)[-]?")
                 .assign((t, v) -> processFeeEntries(t, v, type));
-    }
-
-    @SuppressWarnings("nls")
-    private void addTax(DocumentType type, Object t, Map<String, String> v, String taxtype)
-    {
-        // Wenn es 'Einbehaltene Quellensteuer' gibt, dann die weiteren
-        // Quellensteuer-Arten nicht berücksichtigen.
-        if (checkWithholdingTax(type, taxtype))
-        {
-            ((name.abuchen.portfolio.model.Transaction) t)
-                    .addUnit(new Unit(Unit.Type.TAX, 
-                                    Money.of(asCurrencyCode(v.get("currency")), 
-                                                    asAmount(v.get(taxtype)))));
-        }
-    }
-
-    @SuppressWarnings("nls")
-    private boolean checkWithholdingTax(DocumentType type, String taxtype)
-    {
-        if (Boolean.valueOf(type.getCurrentContext().get(FLAG_WITHHOLDING_TAX_FOUND)))
-        {
-            if ("quellenstanr".equalsIgnoreCase(taxtype))
-            { 
-                return false; 
-            }
-        }
-        return true;
     }
 }

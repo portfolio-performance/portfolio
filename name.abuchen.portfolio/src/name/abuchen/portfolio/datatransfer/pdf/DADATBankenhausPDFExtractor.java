@@ -744,17 +744,19 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
     {
         transaction
                 // QUELLENSTEUER: -1,86 USD
-                .section("tax", "currency").optional()
-                .match("^QUELLENSTEUER: \\-(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
+                .section("withHoldingTax", "currency").optional()
+                .match("^QUELLENSTEUER: \\-(?<withHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> {
-                    processTaxEntries(t, v, type);
+                    type.getCurrentContext().put(FLAG_WITHHOLDING_TAX_FOUND, Boolean.TRUE.toString());
+                    processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
                 })
 
                 // QUELLENSTEUER           -15,60 USD  Auslands-KESt           -13,00 USD
-                .section("tax", "currency").optional()
-                .match("^QUELLENSTEUER [\\s]+\\-(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3}) .*$")
+                .section("withHoldingTax", "currency").optional()
+                .match("^QUELLENSTEUER [\\s]+\\-(?<withHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3}) .*$")
                 .assign((t, v) -> {
-                    processTaxEntries(t, v, type);
+                    type.getCurrentContext().put(FLAG_WITHHOLDING_TAX_FOUND, Boolean.TRUE.toString());
+                    processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
                 })
 
                 // Auslands-KESt: -1,54 USD

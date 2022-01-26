@@ -22,8 +22,6 @@ import name.abuchen.portfolio.util.TextUtil;
 public class DkbPDFExtractor extends AbstractPDFExtractor
 {
     private static final String IS_JOINT_ACCOUNT = "isJointAccount"; //$NON-NLS-1$
-    private static final String EXCHANGE_RATE = "exchangeRate"; //$NON-NLS-1$
-    private static final String FLAG_WITHHOLDING_TAX_FOUND  = "isHoldingTax"; //$NON-NLS-1$
 
     BiConsumer<Map<String, String>, String[]> isJointAccount = (context, lines) -> {
         Pattern pJointAccount = Pattern.compile("^Anteilige Berechnungsgrundlage für \\(50,00([\\s]+)?%\\).*$"); //$NON-NLS-1$
@@ -1134,28 +1132,23 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                     }
                 })
 
+                // Finanztransaktionssteuer 5,71- EUR
+                .section("tax", "currency").optional()
+                .match("^Finanztransaktionssteuer (?<tax>[\\.,\\d]+)- (?<currency>[\\w]{3})$")
+                .assign((t, v) -> processTaxEntries(t, v, type))
+
                 // Einbehaltene Quellensteuer 35 % auf 51,00 CHF 14,93- EUR
-                .section("quellensteinbeh", "currency").optional()
-                .match("^Einbehaltene Quellensteuer .* (?<quellensteinbeh>[\\.,\\d]+)- (?<currency>[\\w]{3})$")
+                .section("withHoldingTax", "currency").optional()
+                .match("^Einbehaltene Quellensteuer .* (?<withHoldingTax>[\\.,\\d]+)- (?<currency>[\\w]{3})$")
                 .assign((t, v) ->  {
                     type.getCurrentContext().put(FLAG_WITHHOLDING_TAX_FOUND, Boolean.TRUE.toString());
-                    addTax(t, v, type, "quellensteinbeh");
+                    processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
                 })
 
                 // Anrechenbare Quellensteuer 15 % auf 42,65 EUR 6,40 EUR
-                .section("quellenstanr", "currency").optional()
-                .match("^Anrechenbare Quellensteuer .* (?<quellenstanr>[\\.,\\d]+) (?<currency>[\\w]{3})$")
-                .assign((t, v) -> addTax(t, v, type, "quellenstanr"))
-
-                // 20 % rückforderbare Quellensteuer 10,20 CHF
-                .section("quellenstrueck", "currency").optional()
-                .match("^.* r.ckforderbare Quellensteuer (?<quellenstrueck>[\\.,\\d]+) (?<currency>[\\w]{3})$")
-                .assign((t, v) -> addTax(t, v, type, "quellenstrueck"))
-
-                // Finanztransaktionssteuer 5,71- EUR
-                .section("quellenstrueck", "currency").optional()
-                .match("^Finanztransaktionssteuer (?<quellenstrueck>[\\.,\\d]+)- (?<currency>[\\w]{3})$")
-                .assign((t, v) -> addTax(t, v, type, "quellenstrueck"));
+                .section("creditableWithHoldingTax", "currency").optional()
+                .match("^Anrechenbare Quellensteuer .* (?<creditableWithHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type));
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
@@ -1190,56 +1183,5 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                 .section("fee", "currency").optional()
                 .match("^Maklercourtage .* (?<fee>[\\.,\\d]+)- (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processFeeEntries(t, v, type));
-    }
-
-    private void addTax(Object t, Map<String, String> v, DocumentType type, String taxtype)
-    {
-        // Wenn es 'Einbehaltene Quellensteuer' gibt, dann die weiteren
-        // Quellensteuer-Arten nicht berücksichtigen.
-        // Die Berechnung der Gesamt-Quellensteuer anhand der anrechenbaren- und
-        // der rückforderbaren Steuer kann ansonsten zu Rundungsfehlern führen.
-        if (checkWithholdingTax(type, taxtype))
-        {
-            name.abuchen.portfolio.model.Transaction tx = getTransaction(t);
-
-            String currency = asCurrencyCode(v.get("currency"));
-            long amount = asAmount(v.get(taxtype));
-
-            if (!currency.equals(tx.getCurrencyCode()) && type.getCurrentContext().containsKey(EXCHANGE_RATE))
-            {
-                BigDecimal rate = BigDecimal.ONE.divide(
-                                asExchangeRate(type.getCurrentContext().get(EXCHANGE_RATE)), 10,
-                                RoundingMode.HALF_DOWN);
-
-                currency = tx.getCurrencyCode();
-                amount = rate.multiply(BigDecimal.valueOf(amount)).setScale(0, RoundingMode.HALF_DOWN).longValue();
-            }
-
-            tx.addUnit(new Unit(Unit.Type.TAX, Money.of(currency, amount)));
-        }
-    }
-
-    private boolean checkWithholdingTax(DocumentType type, String taxtype)
-    {
-        if (Boolean.valueOf(type.getCurrentContext().get(FLAG_WITHHOLDING_TAX_FOUND)))
-        {
-            if ("quellenstanr".equalsIgnoreCase(taxtype) || ("quellenstrueck".equalsIgnoreCase(taxtype)))
-            {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private name.abuchen.portfolio.model.Transaction getTransaction(Object t)
-    {
-        if (t instanceof name.abuchen.portfolio.model.Transaction)
-        {
-            return ((name.abuchen.portfolio.model.Transaction) t);
-        }
-        else
-        {
-            return ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction();
-        }
     }
 }
