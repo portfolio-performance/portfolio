@@ -121,7 +121,7 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
                 // Orderausführung Datum/Zeit: 31 Jul 2020 21:00:15
                 .section("date", "time").optional()
                 .match("Orderausführung Datum\\/Zeit: (?<date>\\d+ .* \\d{4}) (?<time>\\d+:\\d+:\\d+).*")
-                .assign((t, v) -> t.setDate(asDate(v.get("date").replace("Mrz", "Mär"), v.get("time"))))
+                .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
 
                 // Schlusstag/-Zeit 02.01.2020 10:49:34 Auftragserteilung/ -ort sonstige
                 .section("date", "time").optional()

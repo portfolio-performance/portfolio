@@ -158,6 +158,10 @@ class PDFExtractorUtils
 
     public static LocalDateTime asDate(String value)
     {
+        // https://bugs.openjdk.java.net/browse/JDK-8198491
+        // From Java 7 to Java 8 and to Java 9 the month names were adjusted.
+        value = value.replace("Mrz", "Mär"); //$NON-NLS-1$//$NON-NLS-2$
+
         for (DateTimeFormatter formatter : DATE_FORMATTER)
         {
             try
@@ -192,6 +196,10 @@ class PDFExtractorUtils
 
     public static LocalDateTime asDate(String date, String time)
     {
+        // https://bugs.openjdk.java.net/browse/JDK-8198491
+        // From Java 7 to Java 8 and to Java 9 the month names were adjusted.
+        date = date.replace("Mrz", "Mär"); //$NON-NLS-1$//$NON-NLS-2$
+
         String value = String.format("%s %s", date, time); //$NON-NLS-1$
 
         for (DateTimeFormatter formatter : DATE_TIME_FORMATTER)
