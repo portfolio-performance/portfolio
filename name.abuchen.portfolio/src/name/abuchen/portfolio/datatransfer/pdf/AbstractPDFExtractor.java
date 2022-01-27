@@ -29,7 +29,7 @@ import name.abuchen.portfolio.util.TextUtil;
 
 public abstract class AbstractPDFExtractor implements Extractor
 {
-    protected static final String FLAG_WITHHOLDING_TAX_FOUND = "isHoldingTax"; //$NON-NLS-1$
+    protected static final String FLAG_WITHHOLDING_TAX_FOUND = Boolean.FALSE.toString();
 
     private final NumberFormat numberFormat = NumberFormat.getInstance(Locale.GERMANY);
 
@@ -285,7 +285,7 @@ public abstract class AbstractPDFExtractor implements Extractor
         }
     }
 
-    protected void processWithHoldingTaxEntries(Object t, Map<String, String> v, String taxtype, DocumentType type)
+    protected void processWithHoldingTaxEntries(Object t, Map<String, String> v, String taxType, DocumentType type)
     {
         /***
          * If there is "withholding tax", do not take into account the other
@@ -293,28 +293,28 @@ public abstract class AbstractPDFExtractor implements Extractor
          * tax based on the "creditable withholding tax" and the "repatriable
          * withholding tax" may otherwise lead to rounding errors.
          */
-        if (checkWithHoldingTax(type, taxtype))
+        if (checkWithHoldingTax(taxType, type))
         {
             if (t instanceof name.abuchen.portfolio.model.Transaction)
             {
-                Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get(taxtype))); //$NON-NLS-1$
+                Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get(taxType))); //$NON-NLS-1$
                 PDFExtractorUtils.checkAndSetTax(tax, (name.abuchen.portfolio.model.Transaction) t, type);
             }
             else
             {
-                Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get(taxtype))); //$NON-NLS-1$
+                Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get(taxType))); //$NON-NLS-1$
                 PDFExtractorUtils.checkAndSetTax(tax,
                                 ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
             }
         }
     }
 
-    protected boolean checkWithHoldingTax(DocumentType type, String taxtype)
+    protected boolean checkWithHoldingTax(String taxType, DocumentType type)
     {
         if (Boolean.valueOf(type.getCurrentContext().get(FLAG_WITHHOLDING_TAX_FOUND)))
         {
-            if ("creditableWithHoldingTax".equalsIgnoreCase(taxtype) //$NON-NLS-1$
-                            || ("repatriableWithHoldingTax".equalsIgnoreCase(taxtype))) //$NON-NLS-1$
+            if ("creditableWithHoldingTax".equalsIgnoreCase(taxType) //$NON-NLS-1$
+                            || ("repatriableWithHoldingTax".equalsIgnoreCase(taxType))) //$NON-NLS-1$
                 return false;
         }
         return true;
