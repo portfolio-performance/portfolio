@@ -288,10 +288,8 @@ public abstract class AbstractPDFExtractor implements Extractor
     protected void processWithHoldingTaxEntries(Object t, Map<String, String> v, String taxType, DocumentType type)
     {
         /***
-         * If there is "withholding tax", do not take into account the other
-         * types of withholding tax. The calculation of the total withholding
-         * tax based on the "creditable withholding tax" and the "repatriable
-         * withholding tax" may otherwise lead to rounding errors.
+         * If it is a "withholding tax", the other types of "creditable
+         * withholding tax" are not to be considered.
          */
         if (checkWithHoldingTax(taxType, type))
         {
