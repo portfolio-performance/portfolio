@@ -73,13 +73,13 @@ public class OpenPreferenceDialogHandler
         pm.addTo("api", new PreferenceNode("divvydiary", new DivvyDiaryPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
         pm.addTo("api", new PreferenceNode("eodhistoricaldata", new EODHistoricalDataPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
         pm.addTo("api", new PreferenceNode("finnhub", new FinnhubPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
-        
-        if (enableExperimentalFeatures) 
+
+        if (enableExperimentalFeatures)
         {
             pm.addTo("api", new PreferenceNode("portfolio-report", new PortfolioReportPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
             pm.addTo("api", new PreferenceNode("BINT.ee", new BintPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
         }
-       
+
         pm.addTo("api", new PreferenceNode("quandl", new QuandlPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
 
         pm.addToRoot(new PreferenceNode("proxy", new ProxyPreferencePage())); //$NON-NLS-1$
