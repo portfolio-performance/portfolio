@@ -12,6 +12,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
 import java.util.Properties;
 
 import org.eclipse.core.runtime.Platform;
@@ -20,7 +24,7 @@ import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
-import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -86,7 +90,8 @@ public class LanguagePreferencePage extends PreferencePage
     }
 
     private Properties userProperties = new Properties();
-    private ComboViewer viewer;
+    private ComboViewer languageCombo;
+    private ComboViewer countryCombo;
 
     public LanguagePreferencePage()
     {
@@ -104,31 +109,111 @@ public class LanguagePreferencePage extends PreferencePage
         Label label = new Label(area, SWT.NONE);
         label.setText(Messages.LabelLanguage);
 
-        viewer = new ComboViewer(area, SWT.READ_ONLY);
-        viewer.setContentProvider(ArrayContentProvider.getInstance());
-        viewer.setInput(Language.values());
-        viewer.setSelection(new StructuredSelection(Language.valueOfLocale(userProperties.getProperty(OSGI_NL))));
+        languageCombo = new ComboViewer(area, SWT.READ_ONLY);
+        languageCombo.setContentProvider(ArrayContentProvider.getInstance());
+        languageCombo.setInput(Language.values());
+        languageCombo.addSelectionChangedListener(event -> {
+            Language l = (Language) event.getStructuredSelection().getFirstElement();
+            if (l != null)
+            {
+                countryCombo.getCombo().setEnabled(!l.equals(Language.AUTOMATIC));
+                countryCombo.setInput(getCountriesForLanguage(l));
+                area.layout();
+            }
+        });
+
+        label = new Label(area, SWT.NONE);
+        label.setText(Messages.LabelCountry);
+
+        countryCombo = new ComboViewer(area, SWT.READ_ONLY);
+        countryCombo.setContentProvider(ArrayContentProvider.getInstance());
+        countryCombo.setLabelProvider(new LabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return ((Locale) element).getDisplayCountry();
+            }
+        });
+
+        updateSelection(userProperties.getProperty(OSGI_NL));
 
         return area;
+    }
+
+    private void updateSelection(String nlValue)
+    {
+        Language language = Language.valueOfLocale(nlValue);
+        languageCombo.setSelection(new StructuredSelection(language));
+
+        if (language != Language.AUTOMATIC)
+        {
+            String country = ""; //$NON-NLS-1$
+            if (nlValue.contains("_")) //$NON-NLS-1$
+            {
+                String[] split = nlValue.split("_"); //$NON-NLS-1$
+                country = split[1];
+            }
+            Locale locale = new Locale(language.code, country);
+            countryCombo.setSelection(new StructuredSelection(locale));
+        }
+    }
+
+    private String getNlValueFromSelection()
+    {
+        Language language = (Language) languageCombo.getStructuredSelection().getFirstElement();
+        if (language == null || language.equals(Language.AUTOMATIC))
+        {
+            return null;
+        }
+        else
+        {
+            Locale locale = (Locale) countryCombo.getStructuredSelection().getFirstElement();
+            if (locale == null)
+            {
+                locale = (Locale) countryCombo.getElementAt(0);
+            }
+            return locale.toString();
+        }
+    }
+
+    private List<Locale> getCountriesForLanguage(Language langauage)
+    {
+        List<Locale> regions = new ArrayList<>();
+        if (langauage == Language.AUTOMATIC)
+            return regions;
+
+        for (Locale locale : Locale.getAvailableLocales())
+        {
+            if (locale.getLanguage().equals(langauage.code))
+            {
+                regions.add(locale);
+            }
+        }
+
+        // Remove irrelevant variants
+        regions.removeIf(l -> l.getDisplayVariant().length() > 0);
+
+        Collections.sort(regions, (l1, l2) -> l1.getDisplayCountry().compareTo(l2.getDisplayCountry()));
+
+        return regions;
     }
 
     @Override
     public boolean performOk()
     {
         // check if viewer is initialized at all
-        if (viewer == null)
+        if (languageCombo == null)
             return true;
 
-        Language language = (Language) ((IStructuredSelection) viewer.getSelection()).getFirstElement();
-
-        switch (language)
+        String nlValue = getNlValueFromSelection();
+        if (nlValue == null)
         {
-            case AUTOMATIC:
-                userProperties.remove(OSGI_NL);
-                break;
-            default:
-                userProperties.setProperty(OSGI_NL, language.getCode());
-                break;
+            userProperties.remove(OSGI_NL);
+        }
+        else
+        {
+            userProperties.setProperty(OSGI_NL, nlValue);
         }
 
         storeUserPreferences();
@@ -139,7 +224,7 @@ public class LanguagePreferencePage extends PreferencePage
     @Override
     protected void performDefaults()
     {
-        viewer.setSelection(new StructuredSelection(Language.valueOfLocale(userProperties.getProperty(OSGI_NL))));
+        updateSelection(userProperties.getProperty(OSGI_NL));
         super.performDefaults();
     }
 
