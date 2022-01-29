@@ -313,8 +313,7 @@ public abstract class AbstractPDFExtractor implements Extractor
     {
         if (Boolean.valueOf(type.getCurrentContext().get(FLAG_WITHHOLDING_TAX_FOUND)))
         {
-            if ("creditableWithHoldingTax".equalsIgnoreCase(taxType) //$NON-NLS-1$
-                            || ("repatriableWithHoldingTax".equalsIgnoreCase(taxType))) //$NON-NLS-1$
+            if ("creditableWithHoldingTax".equalsIgnoreCase(taxType)) //$NON-NLS-1$
                 return false;
         }
         return true;

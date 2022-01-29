@@ -762,11 +762,6 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                 .match("^Anrechenbare Quellensteuer [\\.,\\d]+([\\s]+)?% .* (?<creditableWithHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type))
 
-                // 4 % rückforderbare Quellensteuer 3,40 PLN
-                .section("repatriableWithHoldingTax", "currency").optional()
-                .match("^.* r.ckforderbare Quellensteuer (?<repatriableWithHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
-                .assign((t, v) -> processWithHoldingTaxEntries(t, v, "repatriableWithHoldingTax", type))
-
                 // abgeführte Kapitalertragsteuer 0,00
                 .section("tax").optional()
                 .match("^abgef.hrte Kapitalertragsteuer (?<tax>[\\.,\\d]+)$")

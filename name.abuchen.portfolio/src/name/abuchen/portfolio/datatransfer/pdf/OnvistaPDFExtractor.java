@@ -1352,16 +1352,6 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                     }
                 })
 
-                // erstattungsfähige Quellensteuer 12% DKK 3,71
-                .section("repatriableWithHoldingTax", "currency").optional()
-                .match("^erstattungsf.hige Quellensteuer .* (?<currency>[\\w]{3}) (?<repatriableWithHoldingTax>[\\.,\\d]+)$")
-                .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")))
-                    {
-                        processWithHoldingTaxEntries(t, v, "repatriableWithHoldingTax", type);
-                    }
-                })
-
                 // einbehaltene Kapitalertragsteuer EUR 1,81
                 // einbehaltene Kapitalertragsteuer EUR              0,39     
                 .section("tax", "currency").optional()

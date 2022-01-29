@@ -1148,12 +1148,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                 // Anrechenbare Quellensteuer 15 % auf 42,65 EUR 6,40 EUR
                 .section("creditableWithHoldingTax", "currency").optional()
                 .match("^Anrechenbare Quellensteuer .* (?<creditableWithHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
-                .assign((t, v) -> processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type))
-
-                // 20 % rückforderbare Quellensteuer 10,20 CHF
-                .section("repatriableWithHoldingTax", "currency").optional()
-                .match("^.* r.ckforderbare Quellensteuer (?<repatriableWithHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
-                .assign((t, v) -> processWithHoldingTaxEntries(t, v, "repatriableWithHoldingTax", type));
+                .assign((t, v) -> processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type));
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
