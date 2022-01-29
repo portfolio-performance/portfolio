@@ -39,7 +39,7 @@ public class AccountTransferModel extends AbstractModel
     private Account sourceAccount;
     private Account targetAccount;
     private LocalDate date = LocalDate.now();
-    private LocalTime time = LocalTime.MIDNIGHT;
+    private LocalTime time = PresetValues.getTime();
 
     private long fxAmount;
     private BigDecimal exchangeRate = BigDecimal.ONE;
@@ -132,6 +132,7 @@ public class AccountTransferModel extends AbstractModel
         setFxAmount(0);
         setAmount(0);
         setNote(null);
+        setTime(PresetValues.getTime());
     }
 
     public void setSource(AccountTransferEntry entry)
