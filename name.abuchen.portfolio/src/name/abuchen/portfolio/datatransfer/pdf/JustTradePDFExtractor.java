@@ -463,10 +463,7 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
                 // Einbehaltende Quellensteuer EUR 2,14
                 .section("withHoldingTax", "currency").optional()
                 .match("^Einbehaltende Quellensteuer (?<currency>\\w{3}) (?<withHoldingTax>[.,\\d]+)$")
-                .assign((t, v) ->  {
-                    type.getCurrentContext().put(FLAG_WITHHOLDING_TAX_FOUND, Boolean.TRUE.toString());
-                    processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
-                })
+                .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                 // Anrechenbare Quellensteuer EUR 2,14
                 .section("creditableWithHoldingTax", "currency").optional()

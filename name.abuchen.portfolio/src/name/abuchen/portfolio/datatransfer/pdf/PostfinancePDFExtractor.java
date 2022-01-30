@@ -946,10 +946,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                 // Quellensteuer 15.00% (NL) EUR 3.69
                 .section("withHoldingTax", "currency").optional()
                 .match("^Quellensteuer [\\.,'\\d\\s]+(%| %) \\(.*\\) (?<currency>[\\w]{3}) (?<withHoldingTax>[\\.,'\\d\\s]+)(.*)?$")
-                .assign((t, v) -> {
-                    type.getCurrentContext().put(FLAG_WITHHOLDING_TAX_FOUND, Boolean.TRUE.toString());
-                    processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
-                })
+                .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                 // Verrechnungssteuer 35% (CH) CHF 19.75
                 .section("tax", "currency").optional()

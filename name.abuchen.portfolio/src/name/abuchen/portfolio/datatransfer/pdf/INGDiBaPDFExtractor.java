@@ -482,18 +482,12 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 // QuSt 15,00 % (EUR 8,87) USD 9,31
                 .section("withHoldingTax", "currency").optional()
                 .match("^QuSt [\\.,\\d]+([\\s]+)?% \\((?<currency>[\\w]{3}) (?<withHoldingTax>[\\.,\\d]+)\\) [\\w]{3} [\\.,\\d]+$")
-                .assign((t, v) -> {
-                    type.getCurrentContext().put(FLAG_WITHHOLDING_TAX_FOUND, Boolean.TRUE.toString());
-                    processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
-                })
+                .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                 // QuSt 30,00 % EUR 16,50
                 .section("withHoldingTax", "currency").optional()
                 .match("^QuSt [\\.,\\d]+([\\s]+)?% (?<currency>[\\w]{3}) (?<withHoldingTax>[\\.,\\d]+)$")
-                .assign((t, v) -> {
-                    type.getCurrentContext().put(FLAG_WITHHOLDING_TAX_FOUND, Boolean.TRUE.toString());
-                    processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
-                });
+                .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type));
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)

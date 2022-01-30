@@ -1140,10 +1140,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                 // Einbehaltene Quellensteuer 35 % auf 51,00 CHF 14,93- EUR
                 .section("withHoldingTax", "currency").optional()
                 .match("^Einbehaltene Quellensteuer .* (?<withHoldingTax>[\\.,\\d]+)- (?<currency>[\\w]{3})$")
-                .assign((t, v) ->  {
-                    type.getCurrentContext().put(FLAG_WITHHOLDING_TAX_FOUND, Boolean.TRUE.toString());
-                    processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
-                })
+                .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                 // Anrechenbare Quellensteuer 15 % auf 42,65 EUR 6,40 EUR
                 .section("creditableWithHoldingTax", "currency").optional()

@@ -213,10 +213,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                 // EUR
                 .section("withHoldingTax", "currency").optional()
                 .match("^Einbehaltende Quellensteuer [\\.,\\d]+ .* (?<withHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
-                .assign((t, v) -> {
-                    type.getCurrentContext().put(FLAG_WITHHOLDING_TAX_FOUND, Boolean.TRUE.toString());
-                    processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
-                })
+                .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                 // Anrechenbare Quellensteuer 15 % auf 4,38 EUR 0,66 EUR
                 .section("creditableWithHoldingTax", "currency").optional()

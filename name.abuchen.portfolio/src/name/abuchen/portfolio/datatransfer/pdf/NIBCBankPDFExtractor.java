@@ -276,10 +276,7 @@ public class NIBCBankPDFExtractor extends AbstractPDFExtractor
                 // Einbehaltene Quellensteuer 19 % auf 85,00 PLN 3,59- EUR
                 .section("withHoldingTax", "currency").optional()
                 .match("^Einbehaltene Quellensteuer [\\.,\\d]+([\\s]+)?% .* (?<withHoldingTax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
-                .assign((t, v) -> {
-                    type.getCurrentContext().put(FLAG_WITHHOLDING_TAX_FOUND, Boolean.TRUE.toString());
-                    processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
-                })
+                .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                 // Anrechenbare Quellensteuer 15 % auf 18,87 EUR 2,83 EUR
                 .section("creditableWithHoldingTax", "currency").optional()

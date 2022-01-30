@@ -192,10 +192,7 @@ public class SantanderConsumerBankAGPDFExtractor extends AbstractPDFExtractor
                 // Einbehaltene Quellensteuer 15 % auf 2,96 USD 0,37- EUR
                 .section("withHoldingTax", "currency").optional()
                 .match("^Einbehaltene Quellensteuer [\\d]+ % .* [\\.,\\d]+ [\\w]{3} (?<withHoldingTax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})")
-                .assign((t, v) -> {
-                    type.getCurrentContext().put(FLAG_WITHHOLDING_TAX_FOUND, Boolean.TRUE.toString());
-                    processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
-                })
+                .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                 // Anrechenbare Quellensteuer 15 % auf 2,44 EUR 0,37 EUR
                 .section("creditableWithHoldingTax", "currency").optional()

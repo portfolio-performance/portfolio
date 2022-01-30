@@ -150,10 +150,7 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
                 // Quellensteuer 28 % EUR -77.14
                 .section("withHoldingTax", "currency").optional()
                 .match("^(Quellensteuer) .* (?<currency>[\\w]{3}) (?<withHoldingTax>-['.,\\d]+)$")
-                .assign((t, v) -> {
-                    type.getCurrentContext().put(FLAG_WITHHOLDING_TAX_FOUND, Boolean.TRUE.toString());
-                    processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
-                });
+                .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type));
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)

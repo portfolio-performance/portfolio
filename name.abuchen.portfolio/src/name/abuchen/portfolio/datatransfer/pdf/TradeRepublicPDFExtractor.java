@@ -1221,18 +1221,12 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 // Quellensteuer DE für US-Emittent -7,56 USD
                 .section("withHoldingTax", "currency").optional()
                 .match("^([\\d] )?Quellensteuer .* -(?<withHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
-                .assign((t, v) -> {
-                    type.getCurrentContext().put(FLAG_WITHHOLDING_TAX_FOUND, Boolean.TRUE.toString());
-                    processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
-                })
+                .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                 // Quellensteuer -12,00 USD
                 .section("withHoldingTax", "currency").optional()
                 .match("^([\\d] )?Quellensteuer -(?<withHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
-                .assign((t, v) -> {
-                    type.getCurrentContext().put(FLAG_WITHHOLDING_TAX_FOUND, Boolean.TRUE.toString());
-                    processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
-                })
+                .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                 // Kapitalertragssteuer -30,63 EUR
                 .section("tax", "currency").optional()

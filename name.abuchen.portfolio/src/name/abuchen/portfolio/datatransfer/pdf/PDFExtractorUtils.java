@@ -15,6 +15,7 @@ import java.util.Locale;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
+import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
@@ -42,6 +43,17 @@ class PDFExtractorUtils
                     DateTimeFormatter.ofPattern("d LLL yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
                     DateTimeFormatter.ofPattern("d. MMMM yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
                     DateTimeFormatter.ofPattern("d.M.yyyy HH:mm:ss", Locale.GERMANY) }; //$NON-NLS-1$
+
+    public static void checkAndSetTax(Money tax, Object transaction, DocumentType type)
+    {
+        if (transaction instanceof name.abuchen.portfolio.model.Transaction)
+            PDFExtractorUtils.checkAndSetTax(tax, (name.abuchen.portfolio.model.Transaction) transaction, type);
+        else if (transaction instanceof BuySellEntry)
+            PDFExtractorUtils.checkAndSetTax(tax,
+                            ((BuySellEntry) transaction).getPortfolioTransaction(), type);
+        else
+            throw new UnsupportedOperationException();
+    }
 
     @SuppressWarnings("nls")
     public static void checkAndSetTax(Money tax, name.abuchen.portfolio.model.Transaction t, DocumentType type)

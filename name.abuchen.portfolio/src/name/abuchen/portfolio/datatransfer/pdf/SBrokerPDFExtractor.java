@@ -459,10 +459,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                 // Einbehaltene Quellensteuer 15 % auf 31,32 USD 4,12- EUR
                 .section("withHoldingTax", "currency").optional()
                 .match("^Einbehaltene Quellensteuer .* (?<withHoldingTax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
-                .assign((t, v) ->  {
-                    type.getCurrentContext().put(FLAG_WITHHOLDING_TAX_FOUND, Boolean.TRUE.toString());
-                    processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
-                })
+                .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                 // Anrechenbare Quellensteuer pro Stück 0,01879125 USD 4,70 USD
                 .section("creditableWithHoldingTax", "currency").optional()

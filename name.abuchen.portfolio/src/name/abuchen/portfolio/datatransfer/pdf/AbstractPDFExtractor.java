@@ -17,6 +17,7 @@ import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.SecurityCache;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
+import name.abuchen.portfolio.datatransfer.pdf.PDFParser.ParsedData;
 import name.abuchen.portfolio.model.Annotated;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.CrossEntry;
@@ -29,8 +30,6 @@ import name.abuchen.portfolio.util.TextUtil;
 
 public abstract class AbstractPDFExtractor implements Extractor
 {
-    protected static final String FLAG_WITHHOLDING_TAX_FOUND = Boolean.FALSE.toString();
-
     private final NumberFormat numberFormat = NumberFormat.getInstance(Locale.GERMANY);
 
     private final Client client;
@@ -257,17 +256,8 @@ public abstract class AbstractPDFExtractor implements Extractor
 
     protected void processTaxEntries(Object t, Map<String, String> v, DocumentType type)
     {
-        if (t instanceof name.abuchen.portfolio.model.Transaction)
-        {
-            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))); //$NON-NLS-1$ //$NON-NLS-2$
-            PDFExtractorUtils.checkAndSetTax(tax, (name.abuchen.portfolio.model.Transaction) t, type);
-        }
-        else
-        {
-            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))); //$NON-NLS-1$ //$NON-NLS-2$
-            PDFExtractorUtils.checkAndSetTax(tax,
-                            ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
-        }
+        Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))); //$NON-NLS-1$ //$NON-NLS-2$
+        PDFExtractorUtils.checkAndSetTax(tax, t, type);
     }
 
     protected void processFeeEntries(Object t, Map<String, String> v, DocumentType type)
@@ -285,35 +275,43 @@ public abstract class AbstractPDFExtractor implements Extractor
         }
     }
 
-    protected void processWithHoldingTaxEntries(Object t, Map<String, String> v, String taxType, DocumentType type)
+    /**
+     * Process withholding taxes. Bank documents typically contain multiple
+     * pieces of information about withholding taxes: besides the paid
+     * withholding taxes also which proportion of the withholding taxes might be
+     * eligible for refund later. This method implements the following logic:
+     * <ul>
+     * <li>if withholding taxes are present, use only withholding taxes and
+     * ignore other withholding tax information</li>
+     * <li>if only information about creditable withholding taxes exist, use
+     * them</li>
+     * </ul>
+     */
+    protected void processWithHoldingTaxEntries(Object t, ParsedData data, String taxType, DocumentType type)
     {
-        /***
-         * If it is a "withholding tax", the other types of "creditable
-         * withholding tax" are not to be considered.
-         */
-        if (checkWithHoldingTax(taxType, type))
-        {
-            if (t instanceof name.abuchen.portfolio.model.Transaction)
-            {
-                Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get(taxType))); //$NON-NLS-1$
-                PDFExtractorUtils.checkAndSetTax(tax, (name.abuchen.portfolio.model.Transaction) t, type);
-            }
-            else
-            {
-                Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get(taxType))); //$NON-NLS-1$
-                PDFExtractorUtils.checkAndSetTax(tax,
-                                ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
-            }
-        }
-    }
+        Money tax = Money.of(asCurrencyCode(data.get("currency")), asAmount(data.get(taxType))); //$NON-NLS-1$
 
-    protected boolean checkWithHoldingTax(String taxType, DocumentType type)
-    {
-        if (Boolean.valueOf(type.getCurrentContext().get(FLAG_WITHHOLDING_TAX_FOUND)))
+        switch (taxType)
         {
-            if ("creditableWithHoldingTax".equalsIgnoreCase(taxType)) //$NON-NLS-1$
-                return false;
+            case "withHoldingTax": //$NON-NLS-1$
+                if (data.getTransactionContext().getBoolean("creditableWithHoldingTax")) //$NON-NLS-1$
+                    throw new IllegalArgumentException(
+                                    "processing of withholding taxes must be done before creditable withholding taxes"); //$NON-NLS-1$
+
+                PDFExtractorUtils.checkAndSetTax(tax, t, type);
+                data.getTransactionContext().putBoolean(taxType, true);
+                return;
+
+            case "creditableWithHoldingTax": //$NON-NLS-1$
+                if (!data.getTransactionContext().getBoolean("withHoldingTax")) //$NON-NLS-1$
+                {
+                    PDFExtractorUtils.checkAndSetTax(tax, t, type);
+                    data.getTransactionContext().putBoolean(taxType, true);
+                }
+                return;
+
+            default:
+                throw new IllegalArgumentException("Unsupported withholding tax type: " + taxType); //$NON-NLS-1$
         }
-        return true;
     }
 }

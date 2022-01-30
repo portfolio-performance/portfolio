@@ -827,19 +827,13 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 .match("^ausländische Quellensteuer .* ([\\s]+)?(?<currency>[\\w]{3})([\\s]+)? (?<withHoldingTax>[\\.,\\d]+)(\\-)?$")
                 .assign((t, v) -> {
                     if (!"X".equals(type.getCurrentContext().get("negative")))
-                    {
-                        type.getCurrentContext().put(FLAG_WITHHOLDING_TAX_FOUND, Boolean.TRUE.toString());
                         processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
-                    }
                 })
 
                 // abzgl. Quellensteuer 15,00 % von 281,25 USD 42,19 USD
                 .section("withHoldingTax", "currency").optional()
                 .match("^abzgl\\. Quellensteuer .* [\\w]{3} (?<withHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
-                .assign((t, v) -> {
-                    type.getCurrentContext().put(FLAG_WITHHOLDING_TAX_FOUND, Boolean.TRUE.toString());
-                    processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
-                })
+                .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                 // davon anrechenbare US-Quellensteuer 15% EUR 0,79
                 // davon anrechenbare Quellensteuer 15% ZAR 1.560,00

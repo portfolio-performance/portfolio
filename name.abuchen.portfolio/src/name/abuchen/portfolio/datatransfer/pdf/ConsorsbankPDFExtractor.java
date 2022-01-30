@@ -671,18 +671,12 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 // QUST 15,00000  %   EUR                 24,45  USD                 27,00
                 .section("withHoldingTax", "currency").optional()
                 .match("^QUST [\\.,\\d]+ ([\\s]+)?% ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<withHoldingTax>[\\.,\\d]+) .*$")
-                .assign((t, v) -> {
-                    type.getCurrentContext().put(FLAG_WITHHOLDING_TAX_FOUND, Boolean.TRUE.toString());
-                    processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
-                })
+                .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                 // Quellensteuer in EUR 1,88 EUR
                 .section("withHoldingTax", "currency").optional()
                 .match("^Quellensteuer in [\\w]{3} (?<withHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
-                .assign((t, v) -> {
-                    type.getCurrentContext().put(FLAG_WITHHOLDING_TAX_FOUND, Boolean.TRUE.toString());
-                    processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
-                })
+                .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                 // Kapitalertragsteuer (Account)
                 // KAPST                                 25,00 % EUR                111,00 

@@ -423,10 +423,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                 .section("currency", "withHoldingTax").optional()
                 .match("^Steuer : Quellensteuer")
                 .match("^Steuern : (?<currency>[\\w]{3}) (?<withHoldingTax>['\\.,\\d]+)")
-                .assign((t, v) -> {
-                    type.getCurrentContext().put(FLAG_WITHHOLDING_TAX_FOUND, Boolean.TRUE.toString());
-                    processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
-                })
+                .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                 // Steuer : KESt1
                 // Steuern : USD 0.18

@@ -307,18 +307,12 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
                 // Quellensteuer US-Emittent: -3,05 USD 
                 .section("withHoldingTax", "currency").optional()
                 .match("^Quellensteuer US\\-Emittent: \\-(?<withHoldingTax>[\\-\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
-                .assign((t, v) -> {
-                    type.getCurrentContext().put(FLAG_WITHHOLDING_TAX_FOUND, Boolean.TRUE.toString());
-                    processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
-                })
+                .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                 // Quellensteuer: -8,81 EUR 
                 .section("withHoldingTax", "currency").optional()
                 .match("^Quellensteuer: \\-(?<withHoldingTax>[\\-\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
-                .assign((t, v) -> {
-                    type.getCurrentContext().put(FLAG_WITHHOLDING_TAX_FOUND, Boolean.TRUE.toString());
-                    processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
-                })
+                .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                 // Umsatzsteuer: -0,19 EUR 
                 .section("tax", "currency").optional()

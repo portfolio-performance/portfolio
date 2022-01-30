@@ -237,10 +237,7 @@ public class BankSLMPDFExtractor extends AbstractPDFExtractor
                 // 20% Quellensteuer EUR -884.00
                 .section("currency", "withHoldingTax").optional()
                 .match("^[\\d]+% Quellensteuer (?<currency>[\\w]{3}) -(?<withHoldingTax>[.,'\\d]+)$")
-                .assign((t, v) -> {
-                    type.getCurrentContext().put(FLAG_WITHHOLDING_TAX_FOUND, Boolean.TRUE.toString());
-                    processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
-                })
+                .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                 // 10% Nicht r�ckforderbare Steuern EUR -442.00
                 .section("currency", "tax").optional()

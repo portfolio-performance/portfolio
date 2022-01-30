@@ -269,10 +269,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                 // Quellensteuer 15.00% (US) USD 4.20
                 .section("currency", "withHoldingTax").optional()
                 .match("^Quellensteuer ['.,\\d]+% \\(.*\\) (?<currency>[\\w]{3}) (?<withHoldingTax>['.,\\d]+)$")
-                .assign((t, v) -> {
-                    type.getCurrentContext().put(FLAG_WITHHOLDING_TAX_FOUND, Boolean.TRUE.toString());
-                    processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
-                })
+                .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                 // Zusätzlicher Steuerrückbehalt 15% USD 4.20
                 .section("currency", "tax").optional()
