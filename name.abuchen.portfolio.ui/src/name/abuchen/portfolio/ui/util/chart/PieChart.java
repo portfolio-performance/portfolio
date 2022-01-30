@@ -11,26 +11,23 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swtchart.Chart;
 import org.eclipse.swtchart.IAxis;
 import org.eclipse.swtchart.ICircularSeries;
-import org.eclipse.swtchart.ICustomPaintListener;
 import org.eclipse.swtchart.ISeries;
 import org.eclipse.swtchart.model.Node;
 
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.Colors;
-import name.abuchen.portfolio.ui.views.charts.IPieChart;
+import name.abuchen.portfolio.ui.views.IPieChart;
 
-public class PieChart extends Chart // NOSONAR
+public class PieChart extends Chart
 {
     private enum Orientation
     {
         X_AXIS, Y_AXIS
-    };
+    }
 
     private static final int ID_PRIMARY_X_AXIS = 0;
     private static final int ID_PRIMARY_Y_AXIS = 0;
@@ -54,29 +51,17 @@ public class PieChart extends Chart // NOSONAR
 
         if (IPieChart.ChartType.DONUT == chartType)
         {
-            addListener(SWT.Paint, new Listener()
-            {
-                @Override
-                public void handleEvent(Event event)
+            addListener(SWT.Paint, event -> {
+                // Set color in root node to background color
+                if (getSeriesSet().getSeries().length > 0)
                 {
-                    // Set color in root node to background color
-                    if (getSeriesSet().getSeries().length > 0)
-                    {
-                        ICircularSeries<?> cs = (ICircularSeries<?>) getSeriesSet().getSeries()[0];
-                        cs.getRootNode().setColor(getPlotArea().getBackground());
-                    }
+                    ICircularSeries<?> cs = (ICircularSeries<?>) getSeriesSet().getSeries()[0];
+                    cs.getRootNode().setColor(getPlotArea().getBackground());
                 }
             });
         }
 
-        getPlotArea().addCustomPaintListener(new ICustomPaintListener()
-        {
-            @Override
-            public void paintControl(PaintEvent e)
-            {
-                renderLabels(e);
-            }
-        });
+        getPlotArea().addCustomPaintListener(this::renderLabels);
 
         getLegend().setVisible(true);
         tooltip = new PieChartToolTip(this);
@@ -89,24 +74,15 @@ public class PieChart extends Chart // NOSONAR
 
     /**
      * Allow to override pie slide label
-     * 
-     * @param labelProvider
      */
     public void setLabelProvider(ILabelProvider labelProvider)
     {
-        if (labelProvider == null)
-        {
-            return; 
-        }
-        this.labelProvider = labelProvider;
+        if (labelProvider != null)
+            this.labelProvider = labelProvider;
     }
 
     /**
      * Find the node at position
-     * 
-     * @param x
-     * @param y
-     * @return
      */
     public Node getNodeAt(int x, int y)
     {
@@ -131,7 +107,7 @@ public class PieChart extends Chart // NOSONAR
 
     private double getSelectedPrimaryAxisValue(int position, Orientation orientation)
     {
-        double primaryValue = 0.0d;
+        double primaryValue;
         double start;
         double stop;
         int length;
@@ -182,8 +158,8 @@ public class PieChart extends Chart // NOSONAR
         {
             if (series instanceof ICircularSeries)
             {
-                IAxis xAxis = (IAxis) getAxisSet().getXAxis(series.getXAxisId());
-                IAxis yAxis = (IAxis) getAxisSet().getYAxis(series.getYAxisId());
+                IAxis xAxis = getAxisSet().getXAxis(series.getXAxisId());
+                IAxis yAxis = getAxisSet().getYAxis(series.getYAxisId());
 
                 List<Node> nodes = ((ICircularSeries<?>) series).getRootNode().getChildren();
                 if (!nodes.isEmpty())
@@ -216,7 +192,8 @@ public class PieChart extends Chart // NOSONAR
         Font oldFont = gc.getFont();
         gc.setForeground(Colors.WHITE);
 
-        int angleStart = node.getAngleBounds().x, angleWidth = (int) (node.getAngleBounds().y * 0.5);
+        int angleStart = node.getAngleBounds().x;
+        int angleWidth = (int) (node.getAngleBounds().y * 0.5);
 
         Point outerEnd = calcPixelCoord(xAxis, yAxis, level * 0.85, angleStart + angleWidth);
 
@@ -264,7 +241,7 @@ public class PieChart extends Chart // NOSONAR
     public static final class PieColors
     {
         private static final int SIZE = 11;
-        private static final float STEP = 360.0f / (float) SIZE;
+        private static final float STEP = 360.0f / SIZE;
 
         private static final float HUE = 262.3f;
         private static final float SATURATION = 0.464f;

@@ -20,7 +20,6 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.preferences.AlphaVantagePreferencePage;
 import name.abuchen.portfolio.ui.preferences.CalendarPreferencePage;
-import name.abuchen.portfolio.ui.preferences.PresetsPreferencePage;
 import name.abuchen.portfolio.ui.preferences.DivvyDiaryPreferencePage;
 import name.abuchen.portfolio.ui.preferences.EODHistoricalDataPreferencePage;
 import name.abuchen.portfolio.ui.preferences.FinnhubPreferencePage;
@@ -29,6 +28,7 @@ import name.abuchen.portfolio.ui.preferences.GeneralPreferencePage;
 import name.abuchen.portfolio.ui.preferences.LanguagePreferencePage;
 import name.abuchen.portfolio.ui.preferences.PortfolioReportPreferencePage;
 import name.abuchen.portfolio.ui.preferences.PresentationPreferencePage;
+import name.abuchen.portfolio.ui.preferences.PresetsPreferencePage;
 import name.abuchen.portfolio.ui.preferences.ProxyPreferencePage;
 import name.abuchen.portfolio.ui.preferences.QuandlPreferencePage;
 import name.abuchen.portfolio.ui.preferences.ThemePreferencePage;
@@ -60,7 +60,7 @@ public class OpenPreferenceDialogHandler
         pm.addToRoot(new PreferenceNode("general", new GeneralPreferencePage())); //$NON-NLS-1$
         pm.addTo("general", new PreferenceNode("presets", new PresetsPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
         
-        pm.addToRoot(new PreferenceNode("presentation", new PresentationPreferencePage())); //$NON-NLS-1$
+        pm.addToRoot(new PreferenceNode("presentation", new PresentationPreferencePage())); // NOSONAR //$NON-NLS-1$
         pm.addTo("presentation", new PreferenceNode("language", new LanguagePreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
         pm.addTo("presentation", new PreferenceNode("theme", new ThemePreferencePage(themeEngine))); //$NON-NLS-1$ //$NON-NLS-2$
         pm.addTo("presentation", new PreferenceNode("formatting", new FormattingPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$

@@ -9,7 +9,7 @@ import org.eclipse.swt.widgets.Control;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
-import name.abuchen.portfolio.ui.views.charts.IPieChart;
+import name.abuchen.portfolio.ui.views.IPieChart;
 
 /* package */class DonutViewer extends AbstractChartPage
 {
@@ -33,11 +33,11 @@ import name.abuchen.portfolio.ui.views.charts.IPieChart;
     {
         if (this.useSWTCharts)
         {
-            chart = new TaxonomieDonutChartSWT(this, view, IPieChart.ChartType.DONUT);
+            chart = new TaxonomyDonutSWT(this, view, IPieChart.ChartType.DONUT);
         }
         else
         {
-            chart = new TaxonomieDonutChartBrowser(make(EmbeddedBrowser.class), this.view, this);
+            chart = new TaxonomyDonutBrowser(make(EmbeddedBrowser.class), this.view, this);
         }
         return chart.createControl(container);
     }

@@ -10,9 +10,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swtchart.ICircularSeries;
 import org.eclipse.swtchart.ISeries.SeriesType;
 import org.eclipse.swtchart.model.Node;
@@ -27,10 +25,10 @@ import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.chart.PieChart;
 import name.abuchen.portfolio.ui.util.chart.PieChartToolTip;
-import name.abuchen.portfolio.ui.views.charts.IPieChart;
+import name.abuchen.portfolio.ui.views.IPieChart;
 import name.abuchen.portfolio.util.ColorConversion;
 
-public class TaxonomiePieChartSWT implements IPieChart
+public class TaxonomyPieChartSWT implements IPieChart
 {
     private PieChart chart;
     private AbstractChartPage chartPage;
@@ -39,7 +37,7 @@ public class TaxonomiePieChartSWT implements IPieChart
 
     private Map<String, NodeData> nodeDataMap;
 
-    protected final static class TaxonomieTooltipBuilder implements PieChartToolTip.IToolTipBuilder
+    protected static final class TaxonomieTooltipBuilder implements PieChartToolTip.IToolTipBuilder
     {
         private Map<String, NodeData> nodeDataMap;
 
@@ -85,26 +83,18 @@ public class TaxonomiePieChartSWT implements IPieChart
         String value;
     }
 
-    public TaxonomiePieChartSWT(AbstractChartPage page, AbstractFinanceView view, ChartType type)
+    public TaxonomyPieChartSWT(AbstractChartPage page, AbstractFinanceView view, ChartType type)
     {
         this.chartPage = page;
         this.financeView = view;
         this.chartType = type;
-        nodeDataMap = new HashMap<String, TaxonomiePieChartSWT.NodeData>();
+        nodeDataMap = new HashMap<>();
     }
 
     @Override
     public Control createControl(Composite parent)
     {
-        chart = new PieChart(parent, chartType, new PieChart.ILabelProvider()
-        {
-            @Override
-            public String getLabel(Node node)
-            {
-                return node.getId();
-            }
-
-        });
+        chart = new PieChart(parent, chartType, Node::getId);
 
         // set customized tooltip builder
         chart.getToolTip().setToolTipBuilder(new TaxonomieTooltipBuilder(this.nodeDataMap));
@@ -113,22 +103,13 @@ public class TaxonomiePieChartSWT implements IPieChart
         chart.getLegend().setVisible(false);
 
         // Listen on mouse clicks to update information pane
-        ((Composite) chart.getPlotArea()).addListener(SWT.MouseUp, new Listener()
-        {
-            @Override
-            public void handleEvent(Event event)
-            {
-                Node node = chart.getNodeAt(event.x, event.y);
-                if (node == null)
-                { 
-                    return;
-                }
-                NodeData nodeData = nodeDataMap.get(node.getId());
-                if (nodeData != null)
-                {
-                    financeView.setInformationPaneInput(nodeData.position);
-                }
-            }
+        ((Composite) chart.getPlotArea()).addListener(SWT.MouseUp, event -> {
+            Node node = chart.getNodeAt(event.x, event.y);
+            if (node == null)
+                return;
+            NodeData nodeData = nodeDataMap.get(node.getId());
+            if (nodeData != null)
+                financeView.setInformationPaneInput(nodeData.position);
         });
 
         updateChart();
@@ -158,7 +139,7 @@ public class TaxonomiePieChartSWT implements IPieChart
         circularSeries.setBorderColor(Colors.WHITE);
 
         Node rootNode = circularSeries.getRootNode();
-        Map<String, Color> colors = new HashMap<String, Color>();
+        Map<String, Color> colors = new HashMap<>();
         addNodes(nodeDataMap, colors, rootNode, taxRoot, taxRoot.getChildren(), taxRoot.getActual(),
                         getModel().isSecuritiesInPieChartExcluded());
         for (Map.Entry<String, Color> entry : colors.entrySet())

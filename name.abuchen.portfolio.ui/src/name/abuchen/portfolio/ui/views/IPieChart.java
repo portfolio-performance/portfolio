@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.views.charts;
+package name.abuchen.portfolio.ui.views;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;

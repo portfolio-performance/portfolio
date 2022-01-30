@@ -23,7 +23,7 @@ public abstract class AbstractSWTChartToolTip implements Listener
     private Object focus = null;
     private boolean isAltPressed = false;
 
-    public AbstractSWTChartToolTip(Chart chart)
+    protected AbstractSWTChartToolTip(Chart chart)
     {
         this.chart = chart;
 

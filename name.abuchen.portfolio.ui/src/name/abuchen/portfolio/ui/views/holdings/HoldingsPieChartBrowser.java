@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.views.charts;
+package name.abuchen.portfolio.ui.views.holdings;
 
 import java.util.StringJoiner;
 
@@ -14,16 +14,17 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
 import name.abuchen.portfolio.ui.util.EmbeddedBrowser.ItemSelectedFunction;
+import name.abuchen.portfolio.ui.views.IPieChart;
 import name.abuchen.portfolio.util.ColorConversion;
 
-public class HoldingsBrowserPieChart implements IPieChart
+public class HoldingsPieChartBrowser implements IPieChart
 {
     private EmbeddedBrowser browser;
     private ClientSnapshot snapshot;
     private AbstractFinanceView view;
 
 
-    public HoldingsBrowserPieChart(EmbeddedBrowser browser, ClientSnapshot snapshot, AbstractFinanceView view)
+    public HoldingsPieChartBrowser(EmbeddedBrowser browser, ClientSnapshot snapshot, AbstractFinanceView view)
     {
         this.browser = browser;
         this.browser.setHtmlpage("/META-INF/html/pie.html"); //$NON-NLS-1$
@@ -85,7 +86,7 @@ public class HoldingsBrowserPieChart implements IPieChart
                                                     name, percentage, Values.Share.format(p.getPosition().getShares()), //
                                                     Values.Money.format(p.getValuation()
                                                                     .multiply((long) Values.Share.divider())
-                                                                    .divide((long) (p.getPosition().getShares()))), //
+                                                                    .divide(p.getPosition().getShares())), //
                                                     Values.Money.format(p.getValuation()), percentage));
                                 });
 
@@ -103,7 +104,7 @@ public class HoldingsBrowserPieChart implements IPieChart
     private static final class JSColors
     {
         private static final int SIZE = 11;
-        private static final float STEP = 360.0f / (float) SIZE;
+        private static final float STEP = 360.0f / SIZE;
 
         private static final float HUE = 262.3f;
         private static final float SATURATION = 0.464f;

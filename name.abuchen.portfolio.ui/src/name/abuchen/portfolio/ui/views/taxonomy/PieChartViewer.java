@@ -13,7 +13,7 @@ import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
 import name.abuchen.portfolio.ui.util.SimpleAction;
-import name.abuchen.portfolio.ui.views.charts.IPieChart;
+import name.abuchen.portfolio.ui.views.IPieChart;
 
 /* package */class PieChartViewer extends AbstractChartPage
 {
@@ -50,11 +50,11 @@ import name.abuchen.portfolio.ui.views.charts.IPieChart;
     {
         if (this.useSWTCharts)
         {
-            chart = new TaxonomiePieChartSWT(this, view, IPieChart.ChartType.DONUT);
+            chart = new TaxonomyPieChartSWT(this, view, IPieChart.ChartType.DONUT);
         }
         else
         {
-            chart = new TaxonomiePieChartBrowser(make(EmbeddedBrowser.class), view, this);
+            chart = new TaxonomyPieChartBrowser(make(EmbeddedBrowser.class), view, this);
         }
         return chart.createControl(container);
     }

@@ -16,17 +16,17 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
 import name.abuchen.portfolio.ui.util.EmbeddedBrowser.ItemSelectedFunction;
-import name.abuchen.portfolio.ui.views.charts.IPieChart;
+import name.abuchen.portfolio.ui.views.IPieChart;
 import name.abuchen.portfolio.util.ColorConversion;
 
-public class TaxonomiePieChartBrowser implements IPieChart
+public class TaxonomyPieChartBrowser implements IPieChart
 {
     private EmbeddedBrowser browser;
     private AbstractChartPage chartPage;
     private AbstractFinanceView view;
 
 
-    public TaxonomiePieChartBrowser(EmbeddedBrowser browser, AbstractFinanceView view, AbstractChartPage page)
+    public TaxonomyPieChartBrowser(EmbeddedBrowser browser, AbstractFinanceView view, AbstractChartPage page)
     {
         this.browser = browser;
         this.chartPage = page;

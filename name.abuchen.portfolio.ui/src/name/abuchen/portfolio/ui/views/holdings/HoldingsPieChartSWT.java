@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.views.charts;
+package name.abuchen.portfolio.ui.views.holdings;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,9 +14,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swtchart.ICircularSeries;
 import org.eclipse.swtchart.ISeries.SeriesType;
 import org.eclipse.swtchart.model.Node;
@@ -29,9 +27,9 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.chart.PieChart;
-import name.abuchen.portfolio.ui.util.chart.PieChartToolTip;
+import name.abuchen.portfolio.ui.views.IPieChart;
 
-public class HoldingsSWTPieChart implements IPieChart
+public class HoldingsPieChartSWT implements IPieChart
 {
     private PieChart chart;
     private ClientSnapshot snapshot;
@@ -49,69 +47,49 @@ public class HoldingsSWTPieChart implements IPieChart
         String value;
     }
 
-    public HoldingsSWTPieChart(ClientSnapshot snapshot, AbstractFinanceView view)
+    public HoldingsPieChartSWT(ClientSnapshot snapshot, AbstractFinanceView view)
     {
         this.snapshot = snapshot;
         this.financeView = view;
-        nodeDataMap = new HashMap<String, HoldingsSWTPieChart.NodeData>();
+        nodeDataMap = new HashMap<>();
     }
 
     @Override
     public Control createControl(Composite parent)
     {
-        chart = new PieChart(parent, IPieChart.ChartType.DONUT, new PieChart.ILabelProvider()
-        {
-            @Override
-            public String getLabel(Node node)
-            {
-                return getNodeLabel(node);
-            }
-        });
+        chart = new PieChart(parent, IPieChart.ChartType.DONUT, this::getNodeLabel);
 
         // set customized tooltip builder
-        chart.getToolTip().setToolTipBuilder(new PieChartToolTip.IToolTipBuilder()
-        {
-
-            @Override
-            public void build(Composite container, Node currentNode)
+        chart.getToolTip().setToolTipBuilder((container, currentNode) -> {
+            RowLayout layout = new RowLayout(SWT.VERTICAL);
+            layout.center = true;
+            container.setLayout(layout);
+            Composite data = new Composite(container, SWT.NONE);
+            GridLayoutFactory.swtDefaults().numColumns(2).applyTo(data);
+            Label assetLabel = new Label(data, SWT.NONE);
+            FontDescriptor boldDescriptor = FontDescriptor.createFrom(assetLabel.getFont()).setStyle(SWT.BOLD);
+            assetLabel.setFont(boldDescriptor.createFont(assetLabel.getDisplay()));
+            assetLabel.setText(currentNode.getId());
+            NodeData nodeData = nodeDataMap.get(currentNode.getId());
+            if (nodeData != null)
             {
-                RowLayout layout = new RowLayout(SWT.VERTICAL);
-                layout.center = true;
-                container.setLayout(layout);
-                Composite data = new Composite(container, SWT.NONE);
-                GridLayoutFactory.swtDefaults().numColumns(2).applyTo(data);
-                Label assetLabel = new Label(data, SWT.NONE);
-                FontDescriptor boldDescriptor = FontDescriptor.createFrom(assetLabel.getFont()).setStyle(SWT.BOLD);
-                assetLabel.setFont(boldDescriptor.createFont(assetLabel.getDisplay()));
-                assetLabel.setText(currentNode.getId());
-                NodeData nodeData = nodeDataMap.get(currentNode.getId());
-                if (nodeData != null)
-                {
-                    Label right = new Label(data, SWT.NONE);
-                    right.setText("(" + nodeData.percentageString + ")"); //$NON-NLS-1$ //$NON-NLS-2$
-                    Label info = new Label(container, SWT.NONE);
-                    info.setText(String.format("%s x %s = %s", //$NON-NLS-1$
-                                    nodeData.shares, nodeData.valueSingle, nodeData.value));
-                }
+                Label right = new Label(data, SWT.NONE);
+                right.setText("(" + nodeData.percentageString + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+                Label info = new Label(container, SWT.NONE);
+                info.setText(String.format("%s x %s = %s", //$NON-NLS-1$
+                                nodeData.shares, nodeData.valueSingle, nodeData.value));
             }
         });
 
         // Listen on mouse clicks to update information pane
-        ((Composite) chart.getPlotArea()).addListener(SWT.MouseUp, new Listener()
-        {
-            @Override
-            public void handleEvent(Event event)
+        ((Composite) chart.getPlotArea()).addListener(SWT.MouseUp, event -> {
+            Node node = chart.getNodeAt(event.x, event.y);
+            if (node == null)
+                return;
+            NodeData nodeData = nodeDataMap.get(node.getId());
+            if (nodeData != null)
             {
-                Node node = chart.getNodeAt(event.x, event.y);
-                if (node == null)
-                { 
-                    return;
-                }
-                NodeData nodeData = nodeDataMap.get(node.getId());
-                if (nodeData != null)
-                {
-                    financeView.setInformationPaneInput(nodeData.position.getInvestmentVehicle());
-                }
+                financeView.setInformationPaneInput(nodeData.position.getInvestmentVehicle());
             }
         });
 
@@ -151,7 +129,7 @@ public class HoldingsSWTPieChart implements IPieChart
                             data.value = Values.Money.format(p.getValuation());
                             data.valueSingle = Values.Money
                                             .format(p.getValuation().multiply((long) Values.Share.divider())
-                                                            .divide((long) (p.getPosition().getShares())));
+                                                            .divide(p.getPosition().getShares()));
                             nodeDataMap.put(nodeId, data);
                         });
 
@@ -190,13 +168,10 @@ public class HoldingsSWTPieChart implements IPieChart
 
     /**
      * Check whether or not the same labels in dataset
-     * 
-     * @param labels
-     * @return
      */
     private boolean hasDataSetChanged(List<String> labels)
     {
-        List<String> newLabels = new ArrayList<String>(labels);
+        List<String> newLabels = new ArrayList<>(labels);
         Collections.sort(newLabels, String.CASE_INSENSITIVE_ORDER);
         return newLabels.equals(lastLabels);
     }
@@ -209,7 +184,7 @@ public class HoldingsSWTPieChart implements IPieChart
         circularSeries.setSeries(labels.toArray(new String[0]), values.stream().mapToDouble(d -> d).toArray());
         circularSeries.setHighlightColor(Colors.GREEN);
         circularSeries.setBorderColor(Colors.WHITE);
-        lastLabels = new ArrayList<String>(labels);
+        lastLabels = new ArrayList<>(labels);
         Collections.sort(lastLabels, String.CASE_INSENSITIVE_ORDER);
         return circularSeries;
     }
@@ -227,9 +202,8 @@ public class HoldingsSWTPieChart implements IPieChart
     {
         NodeData nodeData = nodeDataMap.get(node.getId());
         if (nodeData != null)
-        {
-            return nodeData.percentage > 0.025 ? nodeData.percentageString : null; 
-        }
-        return null;
+            return nodeData.percentage > 0.025 ? nodeData.percentageString : null;
+        else
+            return null;
     }
 }

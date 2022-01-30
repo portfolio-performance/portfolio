@@ -19,20 +19,19 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
 import name.abuchen.portfolio.ui.util.EmbeddedBrowser.ItemSelectedFunction;
-import name.abuchen.portfolio.ui.views.charts.IPieChart;
+import name.abuchen.portfolio.ui.views.IPieChart;
 
-public class TaxonomieDonutChartBrowser implements IPieChart
+public class TaxonomyDonutBrowser implements IPieChart
 {
     private EmbeddedBrowser browser;
     private AbstractChartPage chartPage;
     private AbstractFinanceView view;
 
-    public TaxonomieDonutChartBrowser(EmbeddedBrowser browser, AbstractFinanceView view, AbstractChartPage page)
+    public TaxonomyDonutBrowser(EmbeddedBrowser browser, AbstractFinanceView view, AbstractChartPage page)
     {
         this.browser = browser;
         this.chartPage = page;
-        this.view = view
-                        ;
+        this.view = view;
     }
 
     @Override

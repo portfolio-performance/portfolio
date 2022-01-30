@@ -38,7 +38,7 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage
                         Messages.PrefLabelEnableExperimentalFeatures, getFieldEditorParent()));
 
         addField(new BooleanFieldEditor(UIConstants.Preferences.ENABLE_SWTCHART_PIECHARTS, //
-                        "Use SWTChart library for pie charts", getFieldEditorParent()));
+                        Messages.PrefLabelUseSWTChartLibrary, getFieldEditorParent()));
 
     }
 }

@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.views;
+package name.abuchen.portfolio.ui.views.holdings;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -31,9 +31,7 @@ import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.ClientFilterDropDown;
 import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
 import name.abuchen.portfolio.ui.util.SimpleAction;
-import name.abuchen.portfolio.ui.views.charts.HoldingsBrowserPieChart;
-import name.abuchen.portfolio.ui.views.charts.HoldingsSWTPieChart;
-import name.abuchen.portfolio.ui.views.charts.IPieChart;
+import name.abuchen.portfolio.ui.views.IPieChart;
 import name.abuchen.portfolio.ui.views.panes.HistoricalPricesPane;
 import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
 import name.abuchen.portfolio.ui.views.panes.SecurityEventsPane;
@@ -98,11 +96,11 @@ public class HoldingsPieChartView extends AbstractFinanceView
     {
         if (this.useSWTCharts)
         {
-            chart = new HoldingsSWTPieChart(snapshot, this);
+            chart = new HoldingsPieChartSWT(snapshot, this);
         }
         else
         {
-            chart = new HoldingsBrowserPieChart(make(EmbeddedBrowser.class), snapshot, this);
+            chart = new HoldingsPieChartBrowser(make(EmbeddedBrowser.class), snapshot, this);
         }
 
         updateWarningInToolBar();
