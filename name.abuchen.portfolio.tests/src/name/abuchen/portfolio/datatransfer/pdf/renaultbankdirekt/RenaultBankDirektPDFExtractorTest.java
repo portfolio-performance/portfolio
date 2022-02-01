@@ -273,6 +273,75 @@ public class RenaultBankDirektPDFExtractorTest
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.73)));
     }
 
+    @Test
+    public void testKontoauszug6()
+    {
+        RenaultBankDirektPDFExtractor extractor = new RenaultBankDirektPDFExtractor(new Client());
+        List<Exception> errors = new ArrayList<>();
+        List<Item> results = extractor.extract(loadFile("renaultBankDirektKontoauszug6.txt"), errors);
+
+        assertThat(errors, empty());
+
+        assertThat(results.stream().filter(i -> i instanceof TransactionItem)
+                        .filter(i -> i.getSubject() instanceof AccountTransaction)
+                        .filter(i -> ((AccountTransaction) i.getSubject()).getType() == AccountTransaction.Type.DEPOSIT)
+                        .count(), is(1L));
+
+        assertThat(results.stream().filter(i -> i instanceof TransactionItem)
+                        .filter(i -> i.getSubject() instanceof AccountTransaction)
+                        .filter(i -> ((AccountTransaction) i.getSubject())
+                                        .getType() == AccountTransaction.Type.INTEREST)
+                        .count(), is(2L));
+
+        assertThat(results.stream().filter(i -> i instanceof TransactionItem)
+                        .filter(i -> i.getSubject() instanceof AccountTransaction)
+                        .filter(i -> ((AccountTransaction) i.getSubject()).getType() == AccountTransaction.Type.REMOVAL)
+                        .count(), is(1L));
+
+        assertThat(results.stream().filter(i -> i instanceof TransactionItem)
+                        .filter(i -> i.getSubject() instanceof AccountTransaction)
+                        .filter(i -> ((AccountTransaction) i.getSubject())
+                                        .getType() == AccountTransaction.Type.TAXES)
+                        .count(), is(1L));
+
+        Iterator<Extractor.Item> iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
+        Item item = iter.next();
+
+        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-12-04T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(3200)));
+
+        item = iter.next();
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-12-22T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(5000)));
+
+        item = iter.next();
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-12-31T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(1.23)));
+
+        item = iter.next();
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-12-31T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(2.46)));
+
+        item = iter.next();
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-12-31T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.62)));
+    }
+
     private List<InputFile> loadFile(String filename)
     {
         return PDFInputFile.loadTestCase(getClass(), filename);
