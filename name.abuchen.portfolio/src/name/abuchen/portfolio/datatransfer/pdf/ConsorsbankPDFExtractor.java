@@ -117,7 +117,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 // Kurs 37,650000 EUR P.ST. NETTO  
                 // Preis pro Anteil 25,640000 EUR  
                 .section("name", "wkn", "isin", "currency").optional()
-                .match("^(?<name>.*) (?<wkn>.*) (?<isin>[\\w]{12})$")
+                .match("^(?<name>.*) (?<wkn>.*) (?<isin>[\\w]{12})([\\s]+)?$")
                 .match("^(Kurs|Preis pro Anteil) [\\.,\\d]+ (?<currency>[\\w]{3})(.*)?$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
@@ -129,7 +129,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 .section("wkn", "name", "nameContinued", "currency").optional()
                 .match("^ST [\\.,\\d]+ WKN:(?<wkn>.*)$")
                 .match("^(?<name>.*)$")
-                .match("^(?<nameContinued>.*)")
+                .match("^(?<nameContinued>.*)$")
                 .match("^KURS [\\.,\\d]+ .*$")
                 .match("^KURSWERT (?<currency>[\\w]{3}) [\\.,\\d]+$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
@@ -152,7 +152,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 .section("wkn", "name", "nameContinued", "currency").optional()
                 .match("^[\\s]+ ST [\\s]+[\\.,\\d]+ [\\s]+WKN:(?<wkn>.*)$")
                 .match("^[\\s]+(?<name>.*)$")
-                .match("^[\\s]+(?<nameContinued>.*)")
+                .match("^[\\s]+(?<nameContinued>.*)$")
                 .match("^[\\s]+KURSWERT [\\s]+(?<currency>[\\w]{3}) [\\s]+[\\.,\\d]+$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
@@ -228,7 +228,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
                 // zulasten Konto-Nr. 0860101888 7.659,37 EUR
                 .section("amount", "currency").optional()
-                .match("^(zulasten|zugunsten) Konto\\-Nr\\. [\\d]+ (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^(zulasten|zugunsten) Konto\\-Nr\\. [\\d]+ (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})([\\s]+)?$")
                 .assign((t, v) -> {
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
@@ -355,7 +355,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 // UMGER.ZUM DEV.-KURS                 1,093000  EUR                285,60 
                 // WERT 11.01.2016  
                 .section("date", "currency", "amount").optional()
-                .match("^UMGER.ZUM DEV.-KURS [\\s]+[\\.,\\d]+ ([\\s]+)?(?<currency>[\\w]{3}) [\\s]+(?<amount>[\\.,\\d]+)+(.*)?$")
+                .match("^UMGER\\.ZUM DEV\\.\\-KURS [\\s]+[\\.,\\d]+ ([\\s]+)?(?<currency>[\\w]{3}) [\\s]+(?<amount>[\\.,\\d]+)+(.*)?$")
                 .match("^WERT (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})(.*)?$")
                 .assign((t, v) -> {
                     t.setDateTime(asDate(v.get("date")));
@@ -965,72 +965,77 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
         transaction
                 // Börsenplatzgebühr EUR 2,95
                 .section("fee", "currency").optional()
-                .match("^(abzgl\\. )?B.rsenplatzgeb.hr (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)$")
+                .match("^(abzgl\\. )?B.rsenplatzgeb.hr (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)([\\s]+)?$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Börsenplatzgebühr 2,50 EUR
                 // abzgl. Börsenplatzgebühr 1,50 EUR
                 .section("fee", "currency").optional()
-                .match("^(abzgl\\. )?B.rsenplatzgeb.hr (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^(abzgl\\. )?B.rsenplatzgeb.hr (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})([\\s]+)?$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Handelsentgelt EUR 3,00
                 .section("fee", "currency").optional()
-                .match("^(abzgl\\. )?Handelsentgelt (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)$")
+                .match("^(abzgl\\. )?Handelsentgelt (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)([\\s]+)?$")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+
+                // abzgl. Handelsentgelt 2,61 EUR
+                .section("fee", "currency").optional()
+                .match("^(abzgl\\. )?Handelsentgelt (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})([\\s]+)?$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Provision EUR 5,00
                 // PROVISION EUR 8,26
                 .section("fee", "currency").optional()
-                .match("^(abzgl\\. )?(Provision|PROVISION) (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)$")
+                .match("^(abzgl\\. )?(Provision|PROVISION) (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)([\s]+)?$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Provision 13,54 EUR
                 // abzgl. Provision 5,00 EUR
                 .section("fee", "currency").optional()
-                .match("^(abzgl\\. )?Provision (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^(abzgl\\. )?Provision (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})([\\s]+)?$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Grundgebühr EUR 4,95
                 // GRUNDGEBUEHR EUR 4,95
                 .section("fee", "currency").optional()
-                .match("^(abzgl\\. )?(Grundgeb.hr|GRUNDGEBUEHR) (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)$")
+                .match("^(abzgl\\. )?(Grundgeb.hr|GRUNDGEBUEHR) (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)([\\s]+)?$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Grundgebühr 3,95 EUR
                 // abzgl. Grundgebühr 4,95 EUR
                 .section("fee", "currency").optional()
-                .match("^(abzgl\\. )?Grundgeb.hr (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^(abzgl\\. )?Grundgeb.hr (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})([\\s]+)?$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Consorsbank Ausgabegeb�hr 2,50% EUR 0,61
                 .section("fee", "currency").optional()
-                .match("^(abzgl\\. )?Consorsbank Ausgabegeb.hr [\\.,\\d]+% (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)$")
+                .match("^(abzgl\\. )?Consorsbank Ausgabegeb.hr [\\.,\\d]+% (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)([\\s]+)?$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Transaktionsentgelt EUR 11,54
                 .section("fee", "currency").optional()
-                .match("^(abzgl\\. )?Transaktionsentgelt (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)$")
+                .match("^(abzgl\\. )?Transaktionsentgelt (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)([\\s]+)?$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Transaktionsentgelt 5,96 EUR
                 .section("fee", "currency").optional()
-                .match("^(abzgl\\. )?Transaktionsentgelt (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^(abzgl\\. )?Transaktionsentgelt (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})([\\s]+)?$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 //       COURTAGE                                      EUR                   1,53
                 .section("fee", "currency").optional()
-                .match("^[\\s]+ COURTAGE [\\s]+(?<currency>[\\w]{3}) [\\s]+(?<fee>[\\.,\\d]+)$")
+                .match("^[\\s]+ COURTAGE [\\s]+(?<currency>[\\w]{3}) [\\s]+(?<fee>[\\.,\\d]+)([\\s]+)?$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 //       PROVISION                                     EUR                   5,11
                 .section("fee", "currency").optional()
-                .match("^[\\s]+ PROVISION [\\s]+(?<currency>[\\w]{3}) [\\s]+(?<fee>[\\.,\\d]+)$")
+                .match("^[\\s]+ PROVISION [\\s]+(?<currency>[\\w]{3}) [\\s]+(?<fee>[\\.,\\d]+)([\\s]+)?$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // BONIFIKAT. 2,38100 % EUR 1,83
                 .section("fee", "currency").optional()
-                .match("^BONIFIKAT\\. [\\.,\\d]+ % (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)$")
+                .match("^BONIFIKAT\\. [\\.,\\d]+ % (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)([\\s]+)?$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 //       EIG.SPESEN                                    EUR                   4,60
