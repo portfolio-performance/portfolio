@@ -335,6 +335,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         // security name
         column = new NameColumn(getClient());
         column.getEditingSupport().addListener(new TouchClientListener(getClient()));
+        column.setSortDirction(SWT.UP);
         recordColumns.addColumn(column);
 
         // cost value - fifo

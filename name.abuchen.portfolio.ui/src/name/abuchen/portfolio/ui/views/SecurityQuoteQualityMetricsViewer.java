@@ -94,7 +94,7 @@ public class SecurityQuoteQualityMetricsViewer
                                     Values.Date.format(interval.getEnd()));
             }
         });
-        column.setSorter(ColumnViewerSorter.create(e -> ((Interval) e).getStart()), SWT.UP);
+        column.setSorter(ColumnViewerSorter.create(e -> ((Interval) e).getStart()), SWT.DOWN);
         support.addColumn(column);
 
         support.createColumns();

@@ -1155,7 +1155,7 @@ public class StatementOfAssetsViewer
             if (a != b)
             {
                 int direction = ColumnViewerSorter.SortingContext.getSortDirection();
-                return direction == SWT.DOWN ? a - b : b - a;
+                return direction == SWT.UP ? a - b : b - a;
             }
 
             return comparator.compare(o1, o2);

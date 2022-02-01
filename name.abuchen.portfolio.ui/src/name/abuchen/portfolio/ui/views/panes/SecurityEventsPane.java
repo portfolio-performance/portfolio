@@ -100,7 +100,7 @@ public class SecurityEventsPane implements InformationPanePage
 
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);
         column.setLabelProvider(new DateLabelProvider(e -> ((SecurityEvent) e).getDate()));
-        column.setSorter(ColumnViewerSorter.create(e -> ((SecurityEvent) e).getDate()), SWT.UP);
+        column.setSorter(ColumnViewerSorter.create(e -> ((SecurityEvent) e).getDate()), SWT.DOWN);
         column.setEditingSupport(new DateEditingSupport(SecurityEvent.class, "date") //$NON-NLS-1$
         {
             @Override
@@ -120,16 +120,14 @@ public class SecurityEventsPane implements InformationPanePage
                 return ((SecurityEvent) element).getType().toString();
             }
         });
-        column.setSorter(ColumnViewerSorter.create(e -> ((SecurityEvent) e).getType()), SWT.UP);
+        column.setSorter(ColumnViewerSorter.create(e -> ((SecurityEvent) e).getType()));
         support.addColumn(column);
 
         column = new Column(Messages.ColumnPaymentDate, SWT.NONE, 80);
         column.setLabelProvider(new DateLabelProvider(
                         e -> e instanceof DividendEvent ? ((DividendEvent) e).getPaymentDate() : null));
-        column.setSorter(
-                        ColumnViewerSorter.create(
-                                        e -> e instanceof DividendEvent ? ((DividendEvent) e).getPaymentDate() : null),
-                        SWT.UP);
+        column.setSorter(ColumnViewerSorter
+                        .create(e -> e instanceof DividendEvent ? ((DividendEvent) e).getPaymentDate() : null));
         support.addColumn(column);
 
         column = new Column(Messages.ColumnAmount, SWT.NONE, 80);
@@ -143,10 +141,8 @@ public class SecurityEventsPane implements InformationPanePage
                                 : null;
             }
         });
-        column.setSorter(
-                        ColumnViewerSorter.create(
-                                        e -> e instanceof DividendEvent ? ((DividendEvent) e).getAmount() : null),
-                        SWT.UP);
+        column.setSorter(ColumnViewerSorter
+                        .create(e -> e instanceof DividendEvent ? ((DividendEvent) e).getAmount() : null));
         support.addColumn(column);
 
         column = new Column(Messages.ColumnDetails, SWT.None, 300);
@@ -158,7 +154,7 @@ public class SecurityEventsPane implements InformationPanePage
                 return ((SecurityEvent) element).getDetails();
             }
         });
-        column.setSorter(ColumnViewerSorter.createIgnoreCase(e -> ((SecurityEvent) e).getDetails()), SWT.UP);
+        column.setSorter(ColumnViewerSorter.createIgnoreCase(e -> ((SecurityEvent) e).getDetails()));
         column.setEditingSupport(new StringEditingSupport(SecurityEvent.class, "details") //$NON-NLS-1$
         {
             @Override

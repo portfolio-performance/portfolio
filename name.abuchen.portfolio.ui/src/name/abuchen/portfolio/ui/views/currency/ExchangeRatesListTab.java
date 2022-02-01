@@ -105,7 +105,7 @@ public class ExchangeRatesListTab implements AbstractTabbedView.Tab
             }
         });
         ColumnViewerSorter.create(ExchangeRateTimeSeries.class, "baseCurrency", "termCurrency") //$NON-NLS-1$ //$NON-NLS-2$
-                        .attachTo(column, SWT.DOWN);
+                        .attachTo(column, SWT.UP);
         support.addColumn(column);
 
         column = new Column(Messages.ColumnTermCurrency, SWT.None, 80);

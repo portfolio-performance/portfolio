@@ -127,7 +127,7 @@ public class TransactionsTab implements PaymentsTab
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);
         column.setLabelProvider(new DateTimeLabelProvider(
                         element -> ((TransactionPair<?>) element).getTransaction().getDateTime()));
-        ColumnViewerSorter.create(TransactionPair.BY_DATE).attachTo(column, SWT.UP);
+        ColumnViewerSorter.create(TransactionPair.BY_DATE).attachTo(column, SWT.DOWN);
         support.addColumn(column);
 
         Function<Object, Comparable<?>> tx2type = element -> ((TransactionPair<?>) element)

@@ -139,7 +139,7 @@ public class HistoricalPricesPane implements InformationPanePage
                 return hasMissing ? Colors.theme().warningBackground() : null;
             }
         });
-        ColumnViewerSorter.create(SecurityPrice.class, "date").attachTo(column, SWT.UP); //$NON-NLS-1$
+        ColumnViewerSorter.create(SecurityPrice.class, "date").attachTo(column, SWT.DOWN); //$NON-NLS-1$
         new DateEditingSupport(SecurityPrice.class, "date") //$NON-NLS-1$
                         .addListener((e, o, n) -> {
                             SecurityPrice price = (SecurityPrice) e;

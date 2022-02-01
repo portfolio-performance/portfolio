@@ -266,7 +266,7 @@ public final class TransactionsViewer implements ModificationListener
             }
         });
         
-        ColumnViewerSorter.create(TransactionPair.BY_DATE).attachTo(column, SWT.UP);
+        ColumnViewerSorter.create(TransactionPair.BY_DATE).attachTo(column, SWT.DOWN);
         new DateTimeEditingSupport(Transaction.class, "dateTime").addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 

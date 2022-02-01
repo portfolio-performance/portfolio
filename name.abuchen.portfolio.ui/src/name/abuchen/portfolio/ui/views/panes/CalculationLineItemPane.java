@@ -99,7 +99,7 @@ public class CalculationLineItemPane implements InformationPanePage
         // date
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);
         column.setLabelProvider(new DateTimeLabelProvider(e -> ((CalculationLineItem) e).getDateTime()));
-        column.setSorter(ColumnViewerSorter.create(CalculationLineItem.BY_DATE));
+        column.setSorter(ColumnViewerSorter.create(CalculationLineItem.BY_DATE), SWT.DOWN);
         support.addColumn(column);
 
         // transaction type

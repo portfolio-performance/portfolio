@@ -456,7 +456,7 @@ public final class ColumnViewerSorter
 
     public void attachTo(ColumnViewer viewer, ViewerColumn column, boolean makeDefault)
     {
-        attachTo(viewer, column, makeDefault ? SWT.DOWN : SWT.NONE);
+        attachTo(viewer, column, makeDefault ? SWT.UP : SWT.NONE);
     }
 
     public void attachTo(ColumnViewer viewer, ViewerColumn column, int direction)

@@ -245,7 +245,7 @@ public final class SecuritiesTable implements ModificationListener
                 return LogoManager.instance().getDefaultColumnImage(e, getClient().getSettings());
             }
         });
-        ColumnViewerSorter.create(Security.class, "name").attachTo(column, SWT.DOWN); //$NON-NLS-1$
+        ColumnViewerSorter.create(Security.class, "name").attachTo(column, SWT.UP); //$NON-NLS-1$
         new StringEditingSupport(Security.class, "name").setMandatory(true).addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 

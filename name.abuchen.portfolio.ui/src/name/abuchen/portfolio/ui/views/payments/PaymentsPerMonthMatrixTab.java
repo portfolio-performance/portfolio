@@ -306,9 +306,9 @@ public class PaymentsPerMonthMatrixTab implements PaymentsTab
             PaymentsViewModel.Line line2 = (PaymentsViewModel.Line) o2;
 
             if (line1.getVehicle() == null)
-                return direction == SWT.DOWN ? 1 : -1;
+                return direction == SWT.UP ? 1 : -1;
             if (line2.getVehicle() == null)
-                return direction == SWT.DOWN ? -1 : 1;
+                return direction == SWT.UP ? -1 : 1;
 
             return comparator.compare(line1, line2);
         });

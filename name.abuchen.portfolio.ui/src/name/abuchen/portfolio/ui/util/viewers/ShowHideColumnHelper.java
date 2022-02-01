@@ -794,7 +794,29 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
                     // direction
                     String d = matcher.group(3);
-                    Integer direction = d != null ? Integer.parseInt(d) : null;
+                    Integer direction = null;
+                    
+                    if (d != null)
+                    {
+                        int sortDirection = Integer.parseInt(d);
+                        
+                        switch (sortDirection)
+                        {
+                            case 1: // ascending
+                                direction = SWT.UP;
+                                break;
+                            case 2: // descending
+                                direction = SWT.DOWN;
+                                break;
+                            case 1 << 7: // legacy
+                                direction = SWT.DOWN;
+                                break;
+                            case 1 << 10: // legacy
+                                direction = SWT.UP;
+                                break;
+                            default:
+                        }
+                    }
 
                     // width
                     int width = Integer.parseInt(matcher.group(4));
@@ -864,7 +886,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             if (column.hasOptions())
                 buf.append(column.getOptions().toString(col.getData(OPTIONS_KEY))).append('|');
             if (col.equals(sortedColumn))
-                buf.append(policy.getSortDirection()).append('$');
+                buf.append(policy.getSortDirection() == SWT.UP ? 1 : 2).append('$');
 
             buf.append(policy.getWidth(col)).append(';');
         }
