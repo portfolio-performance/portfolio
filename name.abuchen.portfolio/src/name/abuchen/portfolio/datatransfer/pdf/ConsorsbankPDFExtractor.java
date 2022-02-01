@@ -987,7 +987,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 // Provision EUR 5,00
                 // PROVISION EUR 8,26
                 .section("fee", "currency").optional()
-                .match("^(abzgl\\. )?(Provision|PROVISION) (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)([\s]+)?$")
+                .match("^(abzgl\\. )?(Provision|PROVISION) (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)([\\s]+)?$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Provision 13,54 EUR
