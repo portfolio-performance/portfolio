@@ -1,0 +1,47 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Postbank Köln · 51222 Köln    Seite 1 von 2
+Depotnummer
+ 123456789
+ Kundennummer 1234567899
+Dr. Max Mustermann
+ Auftragsnummer 12345678/32.00
+Herrn Datum 13.12.2016
+Dr. Max Mustermann Rechnungsnummer W00860-0001400141/16
+Musterstraße 1 Umsatzsteuer-ID DE123456789   
+12345 Musterstadt
+ 
+Wertpapier Abrechnung Verkauf-Festpreisgeschäft 
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 7 LINKEDIN CORP.                     US53578A1088 (A1H82D)
+REGISTERED SHS CL.A DL-,0001       
+Börse Außerbörslich
+Abrech.-Preis 196,00 USD
+Wertpapierrechnung Lagerland USA
+Devisenkurs (EUR/USD) 1,06386 vom 12.12.2016
+Kurswert 1.289,64 EUR
+Provision 9,95- EUR
+Ermittlung steuerrelevante Erträge
+Veräußerungsverlust 15,88- EUR
+Eingebuchte Aktienverluste 15,88 EUR
+Ausmachender Betrag 1.279,69 EUR
+ 
+Den Gegenwert buchen wir mit Valuta  14.12.2016 zu Gunsten des Kontos  12345678, BLZ  37011000. 
+Die Wertpapiere entnehmen wir Ihrem Depotkonto.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+Barabfindung wegen Fusion
+0860.12132252.0000128OR07                                                             
+Seite 2 von 2
+Depotnummer 123456789
+Kundennummer 1234567899
+Auftragsnummer 12345678/32.00
+Datum 13.12.2016
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2016 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien Sonstige
+Pauschbetrag Quellensteuer
+Nachher 15,88 0,00 379,00 4,90 0,00 0,00
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0860.12132252.0000129OR07                                                             
