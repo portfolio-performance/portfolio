@@ -153,18 +153,18 @@ public abstract class Transaction implements Annotated, Adaptable
             if (compareTo != 0)
                 return compareTo;
 
-            // Fallback to updateAt
-            compareTo = t1.getUpdatedAt().compareTo(t2.getUpdatedAt());
+            compareTo = Long.compare(t1.getAmount(), t2.getAmount());
             if (compareTo != 0)
                 return compareTo;
 
-            // Fallback to uuid
-            compareTo = t1.getUUID().compareTo(t2.getUUID());
-            if (compareTo != 0)
-                return compareTo;
+            if (t1 instanceof AccountTransaction && t2 instanceof AccountTransaction)
+            {
+                compareTo = ((AccountTransaction)t1).getType().compareTo(((AccountTransaction)t2).getType());
+                if (compareTo != 0)
+                    return compareTo;
+            }
 
-            // Final fallback to guarantee stable sorting
-            return Integer.compare(t1.hashCode(), t2.hashCode());
+            return Integer.compare(t1.hashCode(), t2.hashCode());            
         }
     }
 
