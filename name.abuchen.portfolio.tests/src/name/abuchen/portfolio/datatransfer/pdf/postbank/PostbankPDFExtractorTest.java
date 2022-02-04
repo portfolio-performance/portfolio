@@ -306,7 +306,7 @@ public class PostbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-12-13T00:00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-12-14T00:00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(7)));
         assertThat(entry.getSource(), is("Verkauf03.txt"));
         assertNull(entry.getNote());
@@ -349,7 +349,7 @@ public class PostbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-01-10T00:00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-01-14T00:00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.7918)));
         assertThat(entry.getSource(), is("Verkauf04.txt"));
         assertNull(entry.getNote());
