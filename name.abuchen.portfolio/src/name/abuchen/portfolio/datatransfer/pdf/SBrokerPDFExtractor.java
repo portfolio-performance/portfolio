@@ -36,7 +36,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("(Kauf(.*)?|Verkauf(.*)?|Wertpapier Abrechnung (Ausgabe Investmentfonds|Kauf))");
+        DocumentType type = new DocumentType("(Wertpapier Abrechnung )?(Ausgabe Investmentfonds|Kauf|Verkauf)( .*)?");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -46,14 +46,14 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^(Kauf(.*)?|Verkauf(.*)?|Wertpapier Abrechnung (Ausgabe Investmentfonds|Kauf))$");
+        Block firstRelevantLine = new Block("^(Wertpapier Abrechnung )?(Ausgabe Investmentfonds|Kauf|Verkauf)( .*)?$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
                 // Is type --> "Verkauf" change from BUY to SELL
                 .section("type").optional()
-                .match("^(?<type>(Kauf|Verkauf))(.*)?$")
+                .match("^(Wertpapier Abrechnung )?(?<type>(Ausgabe Investmentfonds|Kauf|Verkauf))( .*)?$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("Verkauf"))
                     {
@@ -80,7 +80,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                 .section("shares", "name", "isin", "wkn", "name1").optional()
                 .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)")
                 .match("^St.ck (?<shares>[\\.,\\d]+) (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
-                .match("(?<name1>.*)$")
+                .match("^(?<name1>.*)$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Handels-/Ausführungsplatz"))
                         v.put("name", TextUtil.strip(v.get("name")) + " " + TextUtil.strip(v.get("name1")));

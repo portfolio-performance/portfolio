@@ -1,0 +1,29 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+~$~|OR07|518007||||||||ORDER.D220202.AFP||||20220202||3087|0000|||||~$~
+S Broker AG & Co. KG ´ Postfach 90 01 50 ´ 39133 Magdeburg
+Depotnummer 
+Auftragsnummer 
+Datum 02.02.2022
+Rechnungsnummer W05500-0000362354/22
+Umsatzsteuer-ID DE213898425
+Wertpapier Abrechnung Kauf Direkthandel
+Auftrag vom 01.02.2022 21:03:07 Uhr
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 25 T. ROWE PRICE GROUP INC. US74144T1088 (870967)
+REGISTERED SHARES DL -,20
+Handels-/Ausführungsplatz Auûerbörslich (gemäû Weisung)
+Handelspartner Lang & Schwarz
+Limit-Order
+Limit 138,75 EUR
+Schlusstag/-Zeit 01.02.2022 21:03:07
+Ausführungskurs 138,75 EUR
+Girosammelverw. mehrere Sammelurkunden - kein Stückeausdruck -
+Kurswert 3.468,75- EUR
+Provision 0,98- EUR
+Ausmachender Betrag 3.469,73- EUR
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+5500.02022047.0004273OR07
+SBRO_OR07_v2.7P.ORDER.D220202.AFP_3087
