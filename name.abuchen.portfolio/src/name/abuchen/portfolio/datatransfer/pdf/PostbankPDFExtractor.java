@@ -35,7 +35,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("Wertpapier Abrechnung (Kauf|Verkauf|Verkauf\\-Festpreisgeschäft|Ausgabe Investmentfonds|R.cknahme Investmentfonds)");
+        DocumentType type = new DocumentType("Wertpapier Abrechnung (Kauf|Verkauf|Verkauf\\-Festpreisgesch.ft|Ausgabe Investmentfonds|R.cknahme Investmentfonds)");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -99,7 +99,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                 // Den Gegenwert buchen wir mit Valuta 14.01.2020 zu Gunsten des Kontos 012345678
                                 section -> section
                                         .attributes("date")
-                                        .match("^Datum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
+                                        .match("^Den Gegenwert buchen wir mit Valuta ([\\s]+)?(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$")
                                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
                         )
 
