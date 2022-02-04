@@ -2,6 +2,8 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.NumberFormat;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -407,18 +409,25 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                 // Provision EUR 3,13
                 // Provisions-Rabatt EUR -1,13
                 // Ausgekehrte Zuwendungen, die die Bank von DWS Xtrackers erhält EUR -2,00
-                .section("currency", "fee", "feeRefund1", "feeRefund2").optional()
-                .match("^Provision (?<currency>[\\w]{3}) (\\-)?(?<fee>[\\.,\\d]+)$")
-                .match("^Provisions\\-Rabatt (?<currency>[\\w]{3}) (\\-)?(?<feeRefund1>[\\.,\\d]+)$")
-                .match("^Ausgekehrte Zuwendungen, .* (?<currency>[\\w]{3}) \\-(?<feeRefund2>[\\.,\\d]+)$")
+                .section("fxCurrency", "fyCurrency", "fzCurrency", "fxFee", "fyFee", "fzFee").optional()
+                .match("^Provision (?<fxCurrency>[\\w]{3}) (\\-)?(?<fxFee>[\\.,\\d]+)$")
+                .match("^Provisions\\-Rabatt (?<fyCurrency>[\\w]{3}) (\\-)?(?<fyFee>[\\.,\\d]+)$")
+                .match("^Ausgekehrte Zuwendungen, .* (?<fzCurrency>[\\w]{3}) \\-(?<fzFee>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    double provision = Double.parseDouble(v.get("fee").replace(',', '.'));
-                    double feeRefund1 = Double.parseDouble(v.get("feeRefund1").replace(',', '.'));
-                    double feeRefund2 = Double.parseDouble(v.get("feeRefund2").replace(',', '.'));
+                    Money fxFeeMoney = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxFee")));
+                    Money fyFeeMoney = Money.of(asCurrencyCode(v.get("fyCurrency")), asAmount(v.get("fyFee")));
+                    Money fzFeeMoney = Money.of(asCurrencyCode(v.get("fzCurrency")), asAmount(v.get("fzFee")));
 
-                    if (provision - (feeRefund1 + feeRefund2) != 0L)
+                    if (!fxFeeMoney.equals(fyFeeMoney.add(fzFeeMoney)))
                     {
-                        String fee =  Double.toString(provision - (feeRefund1 + feeRefund2)).replace('.', ',');
+                        BigDecimal fxFee = asExchangeRate(v.get("fxFee"));
+                        BigDecimal fyFee = asExchangeRate(v.get("fyFee"));
+                        BigDecimal fzFee = asExchangeRate(v.get("fzFee"));
+
+                        // fee = fxFee - (fyFee + fzFee)
+                        String fee = (String) NumberFormat.getNumberInstance(Locale.GERMANY)
+                                        .format(fxFee.subtract(fyFee.add(fzFee)));
+
                         v.put("fee", fee);
                         processFeeEntries(t, v, type);
                     }
@@ -428,21 +437,26 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
 
                 // Provision EUR 3,13
                 // Provisions-Rabatt EUR -3,13
-                .section("currency", "fee", "feeRefund").optional()
-                .match("^Provision (?<currency>[\\w]{3}) (\\-)?(?<fee>[\\.,\\d]+)$")
-                .match("^Provisions\\-Rabatt (?<currency>[\\w]{3}) (\\-)?(?<feeRefund>[\\.,\\d]+)$")
+                .section("fxCurrency", "fxFee", "fyCurrency", "fyFee").optional()
+                .match("^Provision (?<fxCurrency>[\\w]{3}) (\\-)?(?<fxFee>[\\.,\\d]+)$")
+                .match("^Provisions\\-Rabatt (?<fyCurrency>[\\w]{3}) (\\-)?(?<fyFee>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    double provision = Double.parseDouble(v.get("fee").replace(',', '.'));
-                    double feeRefund = Double.parseDouble(v.get("feeRefund").replace(',', '.'));
+                    Money fxFeeMoney = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxFee")));
+                    Money fyFeeMoney = Money.of(asCurrencyCode(v.get("fyCurrency")), asAmount(v.get("fyFee")));
 
                     if (!"X".equals(type.getCurrentContext().get("noProvision")))
                     {
-                        if (provision - feeRefund != 0L)
+                        if (!fxFeeMoney.equals(fyFeeMoney))
                         {
-                            String fee =  Double.toString(provision - feeRefund).replace('.', ',');
+                            BigDecimal fxFee = asExchangeRate(v.get("fxFee"));
+                            BigDecimal fyFee = asExchangeRate(v.get("fyFee"));
+
+                            // fee = fxFee - fyFee
+                            String fee = (String) NumberFormat.getNumberInstance(Locale.GERMANY)
+                                            .format(fxFee.subtract(fyFee));
+
                             v.put("fee", fee);
                             processFeeEntries(t, v, type);
-                            
                         }
 
                         type.getCurrentContext().put("noProvision", "X");
@@ -451,21 +465,26 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
 
                 // Provision EUR 1,26
                 // Ausgekehrte Zuwendungen, die die Bank von DWS Xtrackers erhält EUR -1,26
-                .section("currency", "fee", "feeRefund").optional()
-                .match("^Provision (?<currency>[\\w]{3}) (\\-)?(?<fee>[\\.,\\d]+)$")
-                .match("^Ausgekehrte Zuwendungen, .* (?<currency>[\\w]{3}) \\-(?<feeRefund>[\\.,\\d]+)$")
+                .section("fxCurrency", "fxFee", "fyCurrency", "fyFee").optional()
+                .match("^Provision (?<fxCurrency>[\\w]{3}) (\\-)?(?<fxFee>[\\.,\\d]+)$")
+                .match("^Ausgekehrte Zuwendungen, .* (?<fyCurrency>[\\w]{3}) \\-(?<fyFee>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    double provision = Double.parseDouble(v.get("fee").replace(',', '.'));
-                    double feeRefund = Double.parseDouble(v.get("feeRefund").replace(',', '.'));
+                    Money fxFeeMoney = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxFee")));
+                    Money fyFeeMoney = Money.of(asCurrencyCode(v.get("fyCurrency")), asAmount(v.get("fyFee")));
 
                     if (!"X".equals(type.getCurrentContext().get("noProvision")))
                     {
-                        if (provision - feeRefund != 0L)
+                        if (!fxFeeMoney.equals(fyFeeMoney))
                         {
-                            String fee =  Double.toString(provision - feeRefund).replace('.', ',');
+                            BigDecimal fxFee = asExchangeRate(v.get("fxFee"));
+                            BigDecimal fyFee = asExchangeRate(v.get("fyFee"));
+
+                            // fee = fxFee - fyFee
+                            String fee = (String) NumberFormat.getNumberInstance(Locale.GERMANY)
+                                            .format(fxFee.subtract(fyFee));
+
                             v.put("fee", fee);
                             processFeeEntries(t, v, type);
-                            
                         }
 
                         type.getCurrentContext().put("noProvision", "X");

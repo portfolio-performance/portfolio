@@ -749,35 +749,30 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                 //        Umrechn. zum Dev. kurs 1,222500 vom 16.12.2020 : EUR                2,28 
                 // IBAN                                  Valuta         Zu Ihren Lasten vor Steuern 
                 // XXXX XXXX XXXX XXXX XXXX XX   EUR     27.08.2020        EUR               10,12- 
-                .section("amount", "currency", "exchangeRate", "fxCurrency", "amount2").optional()
-                .match("^.* Kurswert ([\\s]+)?: ([\\s]+)?(?<fxCurrency>[\\w]{3}) ([\\s]+)?(?<amount>[\\.,\\d]+)(.*)?$")
+                .section("fxCurrency", "exchangeRate", "currency", "amount").optional()
+                .match("^.* Kurswert ([\\s]+)?: ([\\s]+)?(?<fxCurrency>[\\w]{3}) ([\\s]+)?>[\\.,\\d]+(.*)?$")
                 .match("^.* Umrechn\\. zum Dev\\. kurs (?<exchangeRate>[\\.,\\d]+)(.*)?$")
-                .match("^.* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<amount2>[\\.,\\d]+)(.*)?$")
+                .match("^.* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<amount>[\\.,\\d]+)(.*)?$")
                 .assign((t, v) -> {
                     if ("X".equals(type.getCurrentContext().get("negative")))
                     {
                         // read the forex currency, exchange rate and gross
                         // amount in forex currency
-                        String forex = asCurrencyCode(v.get("currency"));
-                        if (!t.getSecurity().getCurrencyCode().equals(forex))
+                        String forex = asCurrencyCode(v.get("fxCurrency"));
+                        if (t.getSecurity().getCurrencyCode().equals(forex))
                         {
                             BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                             BigDecimal reverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
                                             RoundingMode.HALF_DOWN);
 
-                            // gross given in forex currency
-                            long fxAmount = asAmount(v.get("amount"));
-                            long amount = reverseRate.multiply(BigDecimal.valueOf(fxAmount))
+                            // gross given in account currency
+                            long amount = asAmount(v.get("amount"));
+                            long fxAmount = exchangeRate.multiply(BigDecimal.valueOf(amount))
                                             .setScale(0, RoundingMode.HALF_DOWN).longValue();
 
-                            // set amount in account currency
-                            String amountFX =  Double.toString((double)amount / 100.0).replace('.', ',');
-                            t.setAmount(asAmount(amountFX) + asAmount(v.get("amount2")));
-                            t.setCurrencyCode(asCurrencyCode(t.getCurrencyCode()));
-
                             Unit grossValue = new Unit(Unit.Type.GROSS_VALUE,
-                                            Money.of(t.getCurrencyCode(), amount),
-                                            Money.of(v.get("fxCurrency"), fxAmount), reverseRate);
+                                            Money.of(asCurrencyCode(v.get("currency")), amount),
+                                            Money.of(forex, fxAmount), reverseRate);
 
                             t.addUnit(grossValue);
                         }

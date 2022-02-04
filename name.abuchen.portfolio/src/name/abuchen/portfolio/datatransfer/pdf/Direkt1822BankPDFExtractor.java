@@ -2,6 +2,8 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -252,17 +254,30 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                 // Kurswert 52,50- EUR
                 // Kundenbonifikation 100 % vom Ausgabeaufschlag 2,50 EUR
                 // Ausgabeaufschlag pro Anteil 5,00 %
-                .section("feeFx", "feeFy", "amountFx", "currency").optional()
-                .match("^Kurswert (?<amountFx>[\\.,\\d]+)(\\-)? (?<currency>[\\w]{3})$")
-                .match("^Kundenbonifikation (?<feeFy>[\\.,\\d]+) % vom Ausgabeaufschlag [\\.,\\d]+ [\\w]{3}$")
-                .match("^Ausgabeaufschlag pro Anteil (?<feeFx>[\\.,\\d]+) %$")
+                .section("fxFee", "fyFee", "fxAmount", "fxCurrency").optional()
+                .match("^Kurswert (?<fxAmount>[\\.,\\d]+)(\\-)? (?<fxCurrency>[\\w]{3})$")
+                .match("^Kundenbonifikation (?<fyFee>[\\.,\\d]+) % vom Ausgabeaufschlag [\\.,\\d]+ [\\w]{3}$")
+                .match("^Ausgabeaufschlag pro Anteil (?<fxFee>[\\.,\\d]+) %$")
                 .assign((t, v) -> {
-                    // Fee in percent
-                    double amountFx = Double.parseDouble(v.get("amountFx").replace(".", "").replace(',', '.'));
-                    double feeFy = Double.parseDouble(v.get("feeFy").replace(',', '.'));
-                    double feeFx = Double.parseDouble(v.get("feeFx").replace(',', '.'));
-                    feeFy = (amountFx / (1 + feeFx / 100)) * (feeFx / 100) * (feeFy / 100);
-                    String fee = Double.toString((amountFx / (1 + feeFx / 100)) * (feeFx / 100) - feeFy).replace('.', ',');
+                    BigDecimal fxFeeDivisor1 = asExchangeRate(v.get("fxFee")).divide(new BigDecimal(100));
+                    BigDecimal fxFeeDivisor2 = fxFeeDivisor1.add(BigDecimal.ONE);
+                    BigDecimal fyFeeDivisor = asExchangeRate(v.get("fyFee")).divide(new BigDecimal(100));
+
+                    // fxFee = (fxAmount / (1 + fxFee / 100)) * (fxFee / 100)
+                    BigDecimal fxFee = asExchangeRate(v.get("fxAmount")).divide(fxFeeDivisor2, 10,
+                                    RoundingMode.HALF_DOWN);
+                    fxFee = fxFee.multiply(fxFeeDivisor1).setScale(2, RoundingMode.HALF_UP);
+
+                    // fyFee = (fxAmount / (1 + fxFee / 100)) * (fxFee / 100) * (fyFee / 100)
+                    BigDecimal fyFee = asExchangeRate(v.get("fxAmount")).divide(fxFeeDivisor2, 10,
+                                    RoundingMode.HALF_DOWN);
+                    fyFee = fyFee.multiply(fxFeeDivisor1);
+                    fyFee = fyFee.multiply(fyFeeDivisor).setScale(2, RoundingMode.HALF_UP);
+
+                    // fee = fxFee - fyFee
+                    String fee = (String) NumberFormat.getNumberInstance(Locale.GERMANY)
+                                    .format(fxFee.subtract(fyFee));
+
                     v.put("fee", fee);
 
                     processFeeEntries(t, v, type);

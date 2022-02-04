@@ -618,7 +618,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                     {
                         String splitNote = v.get("note");
                         String[] parts = splitNote.split("AUFTRAG");
-                        v.put("note", "Auftrag " + parts[1].replaceAll(" ", "").replace("BASISLASTSCHRIFT", "Basislastschrift"));
+                        v.put("note", "Auftrag " + parts[1].replaceAll("\\s", "").replace("BASISLASTSCHRIFT", "Basislastschrift"));
                     }
 
                     if ("LASTSCHRIFT".equals(v.get("note")))
@@ -654,7 +654,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                         {
                             String splitNote = v.get("note");
                             String[] parts = splitNote.split("OM");
-                            v.put("note", "Kauf/Online Shopping vom " + parts[1].replaceAll(" ", ""));
+                            v.put("note", "Kauf/Online Shopping vom " + parts[1].replaceAll("\\s", ""));
                         }
                         else
                         {
@@ -668,7 +668,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                         {
                             String splitNote = v.get("note");
                             String[] parts = splitNote.split("OM");
-                            v.put("note", "Bargeldbezug vom " + parts[1].replaceAll(" ", ""));
+                            v.put("note", "Bargeldbezug vom " + parts[1].replaceAll("\\s", ""));
                         }
                         else
                         {
@@ -690,7 +690,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                         {
                             String splitNote = v.get("note");
                             String[] parts = splitNote.split("OM");
-                            v.put("note", "Kauf/Dienstleistung vom " + parts[1].replaceAll(" ", ""));
+                            v.put("note", "Kauf/Dienstleistung vom " + parts[1].replaceAll("\\s", ""));
                         }
                         else
                         {
@@ -862,7 +862,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                     {
                         String splitNote = v.get("note");
                         String[] parts = splitNote.split("FÜR");
-                        v.put("note", "Guthabengebühr für " + parts[1].replaceAll(" ", ""));
+                        v.put("note", "Guthabengebühr für " + parts[1].replaceAll("\\s", ""));
                     }
 
                     t.setNote(v.get("note"));
@@ -981,21 +981,21 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
     @Override
     protected long asAmount(String value)
     {
-        value = value.trim().replaceAll(" ", "");
+        value = value.trim().replaceAll("\\s", "");
         return PDFExtractorUtils.convertToNumberLong(value, Values.Amount, "de", "CH");
     }
 
     @Override
     protected long asShares(String value)
     {
-        value = value.trim().replaceAll(" ", "");
+        value = value.trim().replaceAll("\\s", "");
         return PDFExtractorUtils.convertToNumberLong(value, Values.Share, "de", "CH");
     }
 
     @Override
     protected BigDecimal asExchangeRate(String value)
     {
-        value = value.trim().replaceAll(" ", "");
+        value = value.trim().replaceAll("\\s", "");
         return PDFExtractorUtils.convertToNumberBigDecimal(value, Values.Share, "de", "CH");
     }
 }

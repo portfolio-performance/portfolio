@@ -120,19 +120,19 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                                 section -> section
                                         .attributes("date", "time")
                                         .match("^(Ausf.hrungsdatum und \\-zeit|Date et heure d'ex.cution)(\\s)?: (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2})(.*)?$")
-                                        .assign((t, v) -> t.setDate(asDate(v.get("date").replaceAll("/", "."), v.get("time"))))
+                                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
                                 ,
                                 // Ordre créé à: 26/P11/2021L10:05:13 CETDate et heure d'exécution: 26/11/2021 13:25:24 CETDate de comptabilisation: 26/11/2021Date valeur: 30/11/2021Lieu d'exécution: EURONEXT - EURONEXT BRUSS
                                 section -> section
                                         .attributes("date", "time")
                                         .match("^Ordre cr.. .(\\s)?: .*Date et heure d'ex.cution(\\s)?: (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2})(.*)?$")
-                                        .assign((t, v) -> t.setDate(asDate(v.get("date").replaceAll("/", "."), v.get("time"))))
+                                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
                                 ,
                                 // Ordre créé à: 05/11/2020 11:25:43 CET
                                 section -> section
                                         .attributes("date", "time")
                                         .match("^Ordre cr.. .(\\s)?: (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2})(.*)?$")
-                                        .assign((t, v) -> t.setDate(asDate(v.get("date").replaceAll("/", "."), v.get("time"))))
+                                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
                         )
 
                 // Lastschrift 1.994,39 EUR Valutadatum 17/03/2021
@@ -257,14 +257,14 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                                 section -> section
                                         .attributes("date")
                                         .match("^(Nettoguthaben|Net CREDIT) [\\.,\\d]+ [\\w]{3} (Datum|Date) (\\s)?(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4})$")
-                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date").replaceAll("/", "."))))
+                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date").replaceAll("\\/", "."))))
                                 ,
                                 // Date valeur: 11/01/2021
                                 // Date valeur: 17/11/2021 C
                                 section -> section
                                         .attributes("date")
                                         .match("^Date valeur(\\s)?: (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4})(.*)?$")
-                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date").replaceAll("/", "."))))
+                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date").replaceAll("\\/", "."))))
                         )
 
                 .oneOf(

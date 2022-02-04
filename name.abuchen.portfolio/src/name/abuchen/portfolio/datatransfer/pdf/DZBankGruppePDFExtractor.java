@@ -2,6 +2,8 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.NumberFormat;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -322,7 +324,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                                             v.put("currency", asCurrencyCode(securityData.getCurrency()));
                                         }
                                         
-                                        t.setDate(asDate(v.get("date").replaceAll(" ", "")));
+                                        t.setDate(asDate(v.get("date").replaceAll("\\s", "")));
                                         t.setShares(asShares(v.get("shares")));
                                         t.setAmount(asAmount(v.get("amount")));
                                         t.setCurrencyCode(asCurrencyCode(context.get("baseCurrency")));
@@ -346,7 +348,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                                     v.put("currency", asCurrencyCode(securityData.getCurrency()));
                                 }
                                 
-                                t.setDate(asDate(v.get("date").replaceAll(" ", "")));
+                                t.setDate(asDate(v.get("date").replaceAll("\\s", "")));
                                 t.setShares(asShares(v.get("shares")));
                                 t.setAmount(asAmount(v.get("amount")));
                                 t.setCurrencyCode(asCurrencyCode(context.get("baseCurrency")));
@@ -367,7 +369,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                                             v.put("currency", asCurrencyCode(securityData.getCurrency()));
                                         }
 
-                                        t.setDate(asDate(v.get("date").replaceAll(" ", "")));
+                                        t.setDate(asDate(v.get("date").replaceAll("\\s", "")));
                                         t.setShares(asShares(v.get("shares")));
                                         t.setAmount(asAmount(v.get("amount")));
                                         t.setCurrencyCode(asCurrencyCode(context.get("baseCurrency")));
@@ -429,7 +431,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                         v.put("currency", asCurrencyCode(securityData.getCurrency()));
                     }
 
-                    t.setDateTime(asDate(v.get("date").replaceAll(" ", "")));
+                    t.setDateTime(asDate(v.get("date").replaceAll("\\s", "")));
                     t.setShares(asShares(v.get("shares")));
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(context.get("baseCurrency")));
@@ -482,7 +484,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                         v.put("currency", asCurrencyCode(securityData.getCurrency()));
                     }
 
-                    t.setDateTime(asDate(v.get("date").replaceAll(" ", "")));
+                    t.setDateTime(asDate(v.get("date").replaceAll("\\s", "")));
                     t.setShares(asShares(v.get("shares")));
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(context.get("baseCurrency")));
@@ -539,7 +541,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                                         v.put("currency", asCurrencyCode(securityData.getCurrency()));
                                     }
 
-                                    t.setDateTime(asDate(v.get("date").replaceAll(" ", "")));
+                                    t.setDateTime(asDate(v.get("date").replaceAll("\\s", "")));
                                     t.setShares(asShares(v.get("shares")));
                                     t.setAmount(asAmount(v.get("amount")));
                                     t.setCurrencyCode(asCurrencyCode(context.get("baseCurrency")));
@@ -565,7 +567,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                                         v.put("currency", asCurrencyCode(securityData.getCurrency()));
                                     }
 
-                                    t.setDateTime(asDate(v.get("date").replaceAll(" ", "")));
+                                    t.setDateTime(asDate(v.get("date").replaceAll("\\s", "")));
                                     t.setShares(asShares(v.get("shares")));
                                     t.setAmount(asAmount(v.get("amount")));
                                     t.setCurrencyCode(asCurrencyCode(context.get("baseCurrency")));
@@ -804,26 +806,40 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Anlage 2.125,00 2,00 113,45 18,730
-                .section("amount", "feeFx").optional()
-                .match("^Anlage (?<amount>[\\.,\\d]+) (?<feeFx>[\\.,\\d]+) [\\.,\\d]+ [\\.,\\d]+")
+                .section("fxAmount", "fxFee").optional()
+                .match("^Anlage (?<fxAmount>[\\.,\\d]+) (?<fxFee>[\\.,\\d]+) [\\.,\\d]+ [\\.,\\d]+$")
                 .assign((t, v) -> {
-                    // Fee in percent
-                    double amount = Double.parseDouble(v.get("amount").replace(".", "").replace(",", "."));
-                    double feeFx = Double.parseDouble(v.get("feeFx").replace(",", "."));
-                    String fee =  Double.toString((amount / (1 + feeFx / 100)) * (feeFx / 100)).replace(".", ",");
+                    BigDecimal fxFeeDivisor1 = asExchangeRate(v.get("fxFee")).divide(new BigDecimal(100));
+                    BigDecimal fxFeeDivisor2 = fxFeeDivisor1.add(BigDecimal.ONE);
+
+                    // fxFee = (fxAmount / (1 + fxFee / 100)) * (fxFee / 100)
+                    BigDecimal fxFee = asExchangeRate(v.get("fxAmount")).divide(fxFeeDivisor2, 10,
+                                    RoundingMode.HALF_DOWN);
+                    fxFee = fxFee.multiply(fxFeeDivisor1).setScale(2, RoundingMode.HALF_UP);
+
+                    String fee = (String) NumberFormat.getNumberInstance(Locale.GERMANY)
+                                    .format(fxFee);
+
                     v.put("fee", fee);
 
                     processFeeEntries(t, v, type);
                 })
 
                 // 1 0.12.2020 Wiederanlage 362,80 0,00 53,91 6,730
-                .section("amount", "feeFx").optional()
-                .match("^[\\s\\d]{2,3}\\.[\\d]{2}\\.[\\d]{4} Wiederanlage (?<amount>[\\.,\\d]+) (?<feeFx>[\\.,\\d]+) [\\.,\\d]+ [\\.,\\d]+$")
+                .section("fxAmount", "fxFee").optional()
+                .match("^[\\s\\d]{2,3}\\.[\\d]{2}\\.[\\d]{4} Wiederanlage (?<fxAmount>[\\.,\\d]+) (?<fxFee>[\\.,\\d]+) [\\.,\\d]+ [\\.,\\d]+$")
                 .assign((t, v) -> {
-                    // Fee in percent
-                    double amount = Double.parseDouble(v.get("amount").replace(".", "").replace(",", "."));
-                    double feeFx = Double.parseDouble(v.get("feeFx").replace(",", "."));
-                    String fee =  Double.toString((amount / (1 + feeFx / 100)) * (feeFx / 100)).replace(".", ",");
+                    BigDecimal fxFeeDivisor1 = asExchangeRate(v.get("fxFee")).divide(new BigDecimal(100));
+                    BigDecimal fxFeeDivisor2 = fxFeeDivisor1.add(BigDecimal.ONE);
+
+                    // fxFee = (fxAmount / (1 + fxFee / 100)) * (fxFee / 100)
+                    BigDecimal fxFee = asExchangeRate(v.get("fxAmount")).divide(fxFeeDivisor2, 10,
+                                    RoundingMode.HALF_DOWN);
+                    fxFee = fxFee.multiply(fxFeeDivisor1).setScale(2, RoundingMode.HALF_UP);
+
+                    String fee = (String) NumberFormat.getNumberInstance(Locale.GERMANY)
+                                    .format(fxFee);
+
                     v.put("fee", fee);
 
                     processFeeEntries(t, v, type);

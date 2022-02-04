@@ -42,7 +42,9 @@ class PDFExtractorUtils
                     DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm", Locale.GERMANY), //$NON-NLS-1$
                     DateTimeFormatter.ofPattern("d LLL yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
                     DateTimeFormatter.ofPattern("d. MMMM yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("d.M.yyyy HH:mm:ss", Locale.GERMANY) }; //$NON-NLS-1$
+                    DateTimeFormatter.ofPattern("d.M.yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
+                    DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
+                    DateTimeFormatter.ofPattern("dd.MM.yyyy HH.mm.ss", Locale.GERMANY) }; //$NON-NLS-1$
 
     public static void checkAndSetTax(Money tax, Object transaction, DocumentType type)
     {

@@ -2,6 +2,8 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.NumberFormat;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -454,22 +456,28 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                             processFeeEntries(t, v, type);
                         })
 
-                        .section("feeInPercent", "currency", "marketValue").optional()
-                        .match("(S t .|St.) [\\d\\s,.]* (?<currency>\\w{3}) (?<marketValue>[\\d\\s,.]*)$")
-                        .match("I n dem K u r s w e r t s i n d (?<feeInPercent>[\\d\\s,.]*) % A u s g a b e a u f s c h l a g d e r B a n k e n t h a l t e n.*")
+                        .section("fxCurrency", "fxAmount", "fxFee").optional()
+                        .match("^K u r s w e r t : (?<fxCurrency>\\w{3}) (?<fxAmount>[\\d\\s,.]*)$")
+                        .match("^I n dem K u r s w e r t s i n d (?<fxFee>[\\d\\s,.]*) % A u s g a b e a u f s c h l a g d e r B a n k e n t h a l t e n.*")
                         .assign((t, v) -> {
-                            // Fee in percent on the market value
-                            double marketValue = Double.parseDouble(stripBlanks(v.get("marketValue")).replace(',', '.'));
-                            double feeInPercent = Double.parseDouble(stripBlanks(v.get("feeInPercent")).replace(',', '.'));
-                            String fee =  Double.toString(marketValue / 100.0 * feeInPercent).replace('.', ',');
+                            BigDecimal fxFeeDivisor1 = asExchangeRate(stripBlanks(v.get("fxFee"))).divide(new BigDecimal(100));
+                            BigDecimal fxFeeDivisor2 = fxFeeDivisor1.add(BigDecimal.ONE);
+
+                            // fxFee = (fxAmount / (1 + fxFee / 100)) * (fxFee / 100)
+                            BigDecimal fxFee = asExchangeRate(stripBlanks(v.get("fxAmount"))).divide(fxFeeDivisor2, 10,
+                                            RoundingMode.HALF_DOWN);
+                            fxFee = fxFee.multiply(fxFeeDivisor1).setScale(2, RoundingMode.HALF_UP);
+
+                            String fee = (String) NumberFormat.getNumberInstance(Locale.GERMANY).format(fxFee);
 
                             v.put("fee", fee);
+
                             processFeeEntries(t, v, type);
                         });
     }
 
     private String stripBlanks(String input)
     {
-        return input.replaceAll(" ", ""); //$NON-NLS-1$ //$NON-NLS-2$
+        return input.replaceAll("\\s", ""); //$NON-NLS-1$ //$NON-NLS-2$
     }
 }

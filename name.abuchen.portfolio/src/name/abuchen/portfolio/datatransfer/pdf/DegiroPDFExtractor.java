@@ -1730,7 +1730,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
     @Override
     protected long asAmount(String value)
     {
-        value = value.trim().replaceAll(" ", ""); //$NON-NLS-1$ //$NON-NLS-2$
+        value = value.trim().replaceAll("\\s", ""); //$NON-NLS-1$ //$NON-NLS-2$
 
         String language = "de"; //$NON-NLS-1$
         String country = "DE"; //$NON-NLS-1$
@@ -1760,7 +1760,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
     @Override
     protected long asShares(String value)
     {
-        value = value.trim().replaceAll(" ", ""); //$NON-NLS-1$ //$NON-NLS-2$
+        value = value.trim().replaceAll("\\s", ""); //$NON-NLS-1$ //$NON-NLS-2$
 
         String language = "de"; //$NON-NLS-1$
         String country = "DE"; //$NON-NLS-1$
@@ -1790,7 +1790,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
     @Override
     protected BigDecimal asExchangeRate(String value)
     {
-        value = value.trim().replaceAll(" ", ""); //$NON-NLS-1$ //$NON-NLS-2$
+        value = value.trim().replaceAll("\\s", ""); //$NON-NLS-1$ //$NON-NLS-2$
 
         String language = "de"; //$NON-NLS-1$
         String country = "DE"; //$NON-NLS-1$
