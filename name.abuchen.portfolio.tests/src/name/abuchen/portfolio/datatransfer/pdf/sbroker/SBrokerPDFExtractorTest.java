@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -62,6 +63,7 @@ public class SBrokerPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2014-09-29T20:35")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(16)));
         assertThat(entry.getSource(), is("Kauf01.txt"));
+        assertNull(entry.getNote());
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1930.17))));
@@ -102,6 +104,7 @@ public class SBrokerPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2011-11-11T09:02")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(18)));
         assertThat(entry.getSource(), is("Kauf02.txt"));
+        assertNull(entry.getNote());
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1249.30))));
@@ -143,6 +146,7 @@ public class SBrokerPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-02-27T01:31:42")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(7.1535)));
         assertThat(entry.getSource(), is("Kauf03.txt"));
+        assertNull(entry.getNote());
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(500.00))));
@@ -184,6 +188,7 @@ public class SBrokerPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-05T09:04")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(19.916)));
         assertThat(entry.getSource(), is("Kauf04.txt"));
+        assertNull(entry.getNote());
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(498.20))));
@@ -225,6 +230,7 @@ public class SBrokerPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-12T10:06")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(66)));
         assertThat(entry.getSource(), is("Kauf05.txt"));
+        assertNull(entry.getNote());
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3186.41))));
@@ -280,6 +286,49 @@ public class SBrokerPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf07()
+    {
+        SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf07.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("US74144T1088"));
+        assertThat(security.getWkn(), is("870967"));
+        assertThat(security.getName(), is("T. ROWE PRICE GROUP INC. REGISTERED SHARES DL -,20"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check buy sell transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)
+                        .collect(Collectors.toList()).get(0).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-02-01T21:03:07")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(25)));
+        assertThat(entry.getSource(), is("Kauf07.txt"));
+        assertThat(entry.getNote(), is("Limit 138,75 EUR"));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3469.73))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3468.75))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.98))));
+    }
+
+    @Test
     public void testWertpapierVerkauf01()
     {
         SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
@@ -308,6 +357,7 @@ public class SBrokerPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-06-02T08:05")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(47)));
         assertThat(entry.getSource(), is("Verkauf01.txt"));
+        assertNull(entry.getNote());
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5648.24))));
@@ -368,6 +418,7 @@ public class SBrokerPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-26T14:10")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.836)));
         assertThat(entry.getSource(), is("Verkauf02.txt"));
+        assertNull(entry.getNote());
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(98.87))));
@@ -408,6 +459,7 @@ public class SBrokerPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-11T18:08")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(200)));
         assertThat(entry.getSource(), is("Verkauf03.txt"));
+        assertNull(entry.getNote());
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1757.25))));
@@ -466,6 +518,7 @@ public class SBrokerPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2014-11-17T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(16)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
+        assertNull(transaction.getNote());
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(12.70))));
@@ -506,6 +559,7 @@ public class SBrokerPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2014-12-15T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(103)));
         assertThat(transaction.getSource(), is("Dividende02.txt"));
+        assertNull(transaction.getNote());
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(52.36))));
@@ -546,6 +600,7 @@ public class SBrokerPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-05-17T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(25)));
         assertThat(transaction.getSource(), is("Dividende03.txt"));
+        assertNull(transaction.getNote());
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(13.39))));
@@ -587,6 +642,7 @@ public class SBrokerPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-12-31T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(250)));
         assertThat(transaction.getSource(), is("Dividende04.txt"));
+        assertNull(transaction.getNote());
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(20.31))));
@@ -632,6 +688,7 @@ public class SBrokerPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-12-31T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(150)));
         assertThat(transaction.getSource(), is("Dividende05.txt"));
+        assertNull(transaction.getNote());
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(18.50))));
@@ -677,6 +734,7 @@ public class SBrokerPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-12-31T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(250)));
         assertThat(transaction.getSource(), is("Dividende06.txt"));
+        assertNull(transaction.getNote());
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(11.36))));
