@@ -126,6 +126,23 @@ public final class TextUtil
     }
 
     /**
+     * Strip blanks in String
+     * It is not the same function as TextUtil.strip()
+     */
+    public static String stripBlanks(String input)
+    {
+        return input == null ? null : Pattern.compile("\\s").matcher(input).replaceAll(""); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    /**
+     * Remove blanks followed by underscores in the string
+     */
+    public static String stripBlanksAndUnderscores(String input)
+    {
+        return input == null ? null : Pattern.compile("[\\s_]").matcher(input).replaceAll(""); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    /**
      * Removes unwanted characters before and after any number characters. Used
      * when importing data from CSV files.
      */

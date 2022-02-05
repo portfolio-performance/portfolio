@@ -12,7 +12,6 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Locale;
-import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -44,8 +43,6 @@ class PDFExtractorUtils
                     DateTimeFormatter.ofPattern("d LLL yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
                     DateTimeFormatter.ofPattern("d. MMMM yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
                     DateTimeFormatter.ofPattern("d.M.yyyy HH:mm:ss", Locale.GERMANY) }; //$NON-NLS-1$
-
-    private static final Pattern PATTERN_BLANKS = Pattern.compile("\\s"); //$NON-NLS-1$
 
     private PDFExtractorUtils()
     {
@@ -235,10 +232,5 @@ class PDFExtractorUtils
         }
 
         throw new DateTimeParseException(Messages.MsgErrorNotAValidDate, value, 0);
-    }
-
-    public static String stripBlanks(String input)
-    {
-        return input == null ? null : PATTERN_BLANKS.matcher(input).replaceAll(""); //$NON-NLS-1$
     }
 }
