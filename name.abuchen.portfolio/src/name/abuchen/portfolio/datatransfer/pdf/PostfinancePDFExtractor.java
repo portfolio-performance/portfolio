@@ -618,7 +618,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                     {
                         String splitNote = v.get("note");
                         String[] parts = splitNote.split("AUFTRAG");
-                        v.put("note", "Auftrag " + parts[1].replaceAll(" ", "").replace("BASISLASTSCHRIFT", "Basislastschrift"));
+                        v.put("note", "Auftrag " + TextUtil.stripBlanks(parts[1]).replace("BASISLASTSCHRIFT", "Basislastschrift"));
                     }
 
                     if ("LASTSCHRIFT".equals(v.get("note")))
@@ -654,7 +654,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                         {
                             String splitNote = v.get("note");
                             String[] parts = splitNote.split("OM");
-                            v.put("note", "Kauf/Online Shopping vom " + parts[1].replaceAll(" ", ""));
+                            v.put("note", "Kauf/Online Shopping vom " + TextUtil.stripBlanks(parts[1]));
                         }
                         else
                         {
@@ -668,7 +668,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                         {
                             String splitNote = v.get("note");
                             String[] parts = splitNote.split("OM");
-                            v.put("note", "Bargeldbezug vom " + parts[1].replaceAll(" ", ""));
+                            v.put("note", "Bargeldbezug vom " + TextUtil.stripBlanks(parts[1]));
                         }
                         else
                         {
@@ -690,7 +690,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                         {
                             String splitNote = v.get("note");
                             String[] parts = splitNote.split("OM");
-                            v.put("note", "Kauf/Dienstleistung vom " + parts[1].replaceAll(" ", ""));
+                            v.put("note", "Kauf/Dienstleistung vom " + TextUtil.stripBlanks(parts[1]));
                         }
                         else
                         {
@@ -862,7 +862,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                     {
                         String splitNote = v.get("note");
                         String[] parts = splitNote.split("FÜR");
-                        v.put("note", "Guthabengebühr für " + parts[1].replaceAll(" ", ""));
+                        v.put("note", "Guthabengebühr für " + TextUtil.stripBlanks(parts[1]));
                     }
 
                     t.setNote(v.get("note"));
