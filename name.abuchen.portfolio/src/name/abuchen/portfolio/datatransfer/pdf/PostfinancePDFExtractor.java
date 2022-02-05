@@ -1,5 +1,8 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.util.TextUtil.strip;
+import static name.abuchen.portfolio.util.TextUtil.stripBlanks;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Map;
@@ -16,7 +19,6 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.util.TextUtil;
 
 @SuppressWarnings("nls")
 public class PostfinancePDFExtractor extends AbstractPDFExtractor
@@ -147,7 +149,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                 // Börsentransaktion: Kauf Unsere Referenz: 153557048
                 .section("note").optional()
                 .match("^B.rsentransaktion: (Kauf|Verkauf) Unsere (?<note>Referenz: .*)$")
-                .assign((t, v) -> t.setNote(TextUtil.strip(v.get("note"))))
+                .assign((t, v) -> t.setNote(strip(v.get("note"))))
 
                 .wrap(BuySellEntryItem::new);
 
@@ -240,7 +242,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                 // Auftrag 10111111 
                 .section("note").optional()
                 .match("^(?<note>Auftrag .*)$")
-                .assign((t, v) -> t.setNote(TextUtil.strip(v.get("note"))))
+                .assign((t, v) -> t.setNote(strip(v.get("note"))))
 
                 .wrap(BuySellEntryItem::new);
 
@@ -309,7 +311,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                 // Kapitalgewinn Unsere Referenz: 149619136
                 .section("note").optional()
                 .match("^(Dividende|Kapitalgewinn) Unsere (?<note>Referenz: .*)$")
-                .assign((t, v) -> t.setNote(TextUtil.strip(v.get("note"))))
+                .assign((t, v) -> t.setNote(strip(v.get("note"))))
 
                 .wrap(TransactionItem::new);
 
@@ -352,7 +354,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                 // Jahresgebühr Unsere Referenz: 161333839
                 .section("note1", "note2")
                 .match("^(?<note1>Jahresgeb.hr) Unsere (?<note2>Referenz: .*)$")
-                .assign((t, v) -> t.setNote(v.get("note1") + " - " + TextUtil.strip(v.get("note2"))))
+                .assign((t, v) -> t.setNote(v.get("note1") + " - " + strip(v.get("note2"))))
 
                 .wrap(t -> {
                     if (t.getCurrencyCode() != null && t.getAmount() != 0)
@@ -578,7 +580,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                     t.setCurrencyCode(context.get("currency"));
 
                     // Formatting some notes
-                    v.put("note", TextUtil.strip(v.get("note")));
+                    v.put("note", strip(v.get("note")));
 
                     if ("ÜBERTRAG".equals(v.get("note")))
                         v.put("note", "Übertrag auf Konto");
@@ -612,13 +614,13 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                     t.setCurrencyCode(context.get("currency"));
 
                     // Formatting some notes
-                    v.put("note", TextUtil.strip(v.get("note")));
+                    v.put("note", strip(v.get("note")));
 
                     if (v.get("note").contains("AUFTRAG") && v.get("note").contains("LASTSCHRIFT"))
                     {
                         String splitNote = v.get("note");
                         String[] parts = splitNote.split("AUFTRAG");
-                        v.put("note", "Auftrag " + parts[1].replaceAll(" ", "").replace("BASISLASTSCHRIFT", "Basislastschrift"));
+                        v.put("note", "Auftrag " + stripBlanks(parts[1]).replace("BASISLASTSCHRIFT", "Basislastschrift"));
                     }
 
                     if ("LASTSCHRIFT".equals(v.get("note")))
@@ -654,7 +656,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                         {
                             String splitNote = v.get("note");
                             String[] parts = splitNote.split("OM");
-                            v.put("note", "Kauf/Online Shopping vom " + parts[1].replaceAll(" ", ""));
+                            v.put("note", "Kauf/Online Shopping vom " + stripBlanks(parts[1]));
                         }
                         else
                         {
@@ -668,7 +670,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                         {
                             String splitNote = v.get("note");
                             String[] parts = splitNote.split("OM");
-                            v.put("note", "Bargeldbezug vom " + parts[1].replaceAll(" ", ""));
+                            v.put("note", "Bargeldbezug vom " + stripBlanks(parts[1]));
                         }
                         else
                         {
@@ -690,7 +692,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                         {
                             String splitNote = v.get("note");
                             String[] parts = splitNote.split("OM");
-                            v.put("note", "Kauf/Dienstleistung vom " + parts[1].replaceAll(" ", ""));
+                            v.put("note", "Kauf/Dienstleistung vom " + stripBlanks(parts[1]));
                         }
                         else
                         {
@@ -732,7 +734,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                     t.setCurrencyCode(context.get("currency"));
 
                     // Formatting some notes
-                    v.put("note", TextUtil.strip(v.get("note")));
+                    v.put("note", strip(v.get("note")));
 
                     if ("ÜBERTRAG".equals(v.get("note")))
                         v.put("note", "Übertrag aus Konto");
@@ -761,7 +763,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                     t.setCurrencyCode(context.get("currency"));
 
                     // Formatting some notes
-                    v.put("note", TextUtil.strip(v.get("note")));
+                    v.put("note", strip(v.get("note")));
 
                     if (v.get("note").contains("TWINT"))
                         v.put("note", "TWINT Geld empfangen");
@@ -834,7 +836,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                     t.setCurrencyCode(context.get("currency"));
 
                     // Formatting some notes
-                    v.put("note", TextUtil.strip(v.get("note")));
+                    v.put("note", strip(v.get("note")));
 
                     if ("JAHRESPREIS LOGIN".equals(v.get("note")))
                         v.put("note", "Jahrespreis Login");
@@ -862,7 +864,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                     {
                         String splitNote = v.get("note");
                         String[] parts = splitNote.split("FÜR");
-                        v.put("note", "Guthabengebühr für " + parts[1].replaceAll(" ", ""));
+                        v.put("note", "Guthabengebühr für " + stripBlanks(parts[1]));
                     }
 
                     t.setNote(v.get("note"));
@@ -899,7 +901,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                     t.setCurrencyCode(context.get("currency"));
 
                     // Formatting some notes
-                    t.setNote("Zinsabschluss " + TextUtil.strip(v.get("note")));
+                    t.setNote("Zinsabschluss " + strip(v.get("note")));
                 })
 
                 .section("date1", "date2", "amount").optional()
