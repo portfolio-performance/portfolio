@@ -1,5 +1,8 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetFee;
+import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.stripBlanks;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Map;
@@ -15,6 +18,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
 public class CommerzbankPDFExtractor extends AbstractPDFExtractor
@@ -454,22 +458,18 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                             processFeeEntries(t, v, type);
                         })
 
-                        .section("feeInPercent", "currency", "marketValue").optional()
-                        .match("(S t .|St.) [\\d\\s,.]* (?<currency>\\w{3}) (?<marketValue>[\\d\\s,.]*)$")
-                        .match("I n dem K u r s w e r t s i n d (?<feeInPercent>[\\d\\s,.]*) % A u s g a b e a u f s c h l a g d e r B a n k e n t h a l t e n.*")
+                        .section("currency", "amount", "percentage").optional()
+                        .match("^K u r s w e r t : (?<currency>\\w{3}) (?<amount>[\\d\\s,.]*)$")
+                        .match("^I n dem K u r s w e r t s i n d (?<percentage>[\\d\\s,.]*) % A u s g a b e a u f s c h l a g d e r B a n k e n t h a l t e n.*")
                         .assign((t, v) -> {
-                            // Fee in percent on the market value
-                            double marketValue = Double.parseDouble(stripBlanks(v.get("marketValue")).replace(',', '.'));
-                            double feeInPercent = Double.parseDouble(stripBlanks(v.get("feeInPercent")).replace(',', '.'));
-                            String fee =  Double.toString(marketValue / 100.0 * feeInPercent).replace('.', ',');
+                            BigDecimal percentage = asBigDecimal(stripBlanks(v.get("percentage")));
+                            BigDecimal amount = asBigDecimal(stripBlanks(v.get("amount")));
+                            BigDecimal fee = amount.multiply(percentage, Values.MC);
+                            
+                            Money f = Money.of(asCurrencyCode(v.get("currency")), fee.setScale(0, Values.MC.getRoundingMode()).longValue());
+                            
+                            checkAndSetFee(f, t, type);
 
-                            v.put("fee", fee);
-                            processFeeEntries(t, v, type);
                         });
-    }
-
-    private String stripBlanks(String input)
-    {
-        return input.replaceAll(" ", ""); //$NON-NLS-1$ //$NON-NLS-2$
     }
 }

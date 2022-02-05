@@ -188,7 +188,7 @@ public class CommerzbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(49.92))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.53))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.22))));
     }
 
     @Test
