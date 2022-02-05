@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.util.TextUtil.strip;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Map;
@@ -15,7 +17,6 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
-import name.abuchen.portfolio.util.TextUtil;
 
 @SuppressWarnings("nls")
 public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
@@ -278,10 +279,10 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
 
                     // Formatting some notes
                     if (!v.get("note1").startsWith("Verwendungszweck"))
-                        v.put("note", TextUtil.strip(v.get("note")) + " " + TextUtil.strip(v.get("note1")));
+                        v.put("note", strip(v.get("note")) + " " + strip(v.get("note1")));
 
                     if (v.get("note").startsWith("Lastschrifteinzug"))
-                        v.put("note", TextUtil.strip(v.get("note1")));
+                        v.put("note", strip(v.get("note1")));
 
                     if (v.get("note").startsWith("Verwendungszweck"))
                         v.put("note", "");

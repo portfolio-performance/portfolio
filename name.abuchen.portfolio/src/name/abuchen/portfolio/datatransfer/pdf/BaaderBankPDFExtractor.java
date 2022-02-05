@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.util.TextUtil.strip;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Map;
@@ -15,7 +17,6 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
-import name.abuchen.portfolio.util.TextUtil;
 
 @SuppressWarnings("nls")
 public class BaaderBankPDFExtractor extends AbstractPDFExtractor
@@ -167,12 +168,12 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 // Verhältnis: 1 : 1 
                 .section("note").optional()
                 .match("^(?<note>Verh.ltnis: .*)$")
-                .assign((t, v) -> t.setNote(TextUtil.strip(v.get("note"))))
+                .assign((t, v) -> t.setNote(strip(v.get("note"))))
 
                 // Spitzenregulierung KOPIE
                 .section("note").optional()
                 .match("^(?<note>Spitzenregulierung)( .*)?$")
-                .assign((t, v) -> t.setNote(TextUtil.strip(v.get("note"))))
+                .assign((t, v) -> t.setNote(strip(v.get("note"))))
 
                 .wrap(BuySellEntryItem::new);
 
@@ -329,7 +330,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 // Zahlungszeitraum: 01.01.2020 - 31.12.2020 
                 .section("note").optional()
                 .match("^(?<note>Zahlungszeitraum: .*)$")
-                .assign((t, v) -> t.setNote(TextUtil.strip(v.get("note"))))
+                .assign((t, v) -> t.setNote(strip(v.get("note"))))
 
                 .wrap(t -> new TransactionItem(t));
     }
@@ -646,7 +647,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 // Bezugsverhältnis: 16 : 1
                 .section("note").optional()
                 .match("^(?<note>Bezugsverh.ltnis: .*)$")
-                .assign((t, v) -> t.setNote(TextUtil.strip(v.get("note"))))
+                .assign((t, v) -> t.setNote(strip(v.get("note"))))
 
                 .wrap(t -> new TransactionItem(t));
     }

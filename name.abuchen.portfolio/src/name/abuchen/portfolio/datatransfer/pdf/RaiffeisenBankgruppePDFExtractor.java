@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.util.TextUtil.strip;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Map;
@@ -15,7 +17,6 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
-import name.abuchen.portfolio.util.TextUtil;
 
 @SuppressWarnings("nls")
 public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
@@ -75,7 +76,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                 .match("^Kurs: ([\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Kurs:") || !v.get("name1").startsWith("Fondsgesellschaft:"))
-                        v.put("name", TextUtil.strip(v.get("name")) + " " + TextUtil.strip(v.get("name1")));
+                        v.put("name", strip(v.get("name")) + " " + strip(v.get("name1")));
 
                     t.setSecurity(getOrCreateSecurity(v));
                 })
@@ -89,7 +90,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                 .match("^Ausf.hrungskurs [\\.,\\d]+ (?<currency>[\\w]{3}) .*$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Handels-/Ausführungsplatz"))
-                        v.put("name", TextUtil.strip(v.get("name")) + " " + TextUtil.strip(v.get("name1")));
+                        v.put("name", strip(v.get("name")) + " " + strip(v.get("name1")));
 
                     t.setSecurity(getOrCreateSecurity(v));
                 })
@@ -164,7 +165,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                 // Limit bestens
                 .section("note").optional()
                 .match("^(?<note>Limit .*)$")
-                .assign((t, v) -> t.setNote(TextUtil.strip(v.get("note"))))
+                .assign((t, v) -> t.setNote(strip(v.get("note"))))
 
                 .wrap(BuySellEntryItem::new);
 
@@ -196,7 +197,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                 .match("^Dividende: [\\.,\\d]+ (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Dividende:"))
-                        v.put("name", TextUtil.strip(v.get("name")) + " " + TextUtil.strip(v.get("name1")));
+                        v.put("name", strip(v.get("name")) + " " + strip(v.get("name1")));
 
                     t.setSecurity(getOrCreateSecurity(v));
                 })
@@ -210,7 +211,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                 .match("^Zahlbarkeitstag [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Dividende pro St.ck [\\.,\\d]+ (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Zahlbarkeitstag"))
-                        v.put("name", TextUtil.strip(v.get("name")) + " " + TextUtil.strip(v.get("name1")));
+                        v.put("name", strip(v.get("name")) + " " + strip(v.get("name1")));
 
                     t.setSecurity(getOrCreateSecurity(v));
                 })
@@ -296,7 +297,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                 // Ex-Tag 01.12.2021 Art der Dividende Quartalsdividende
                 .section("note").optional()
                 .match("^.* Art der Dividende (?<note>.*)$")
-                .assign((t, v) -> t.setNote(TextUtil.strip(v.get("note"))))
+                .assign((t, v) -> t.setNote(strip(v.get("note"))))
 
                 .wrap(TransactionItem::new);
 

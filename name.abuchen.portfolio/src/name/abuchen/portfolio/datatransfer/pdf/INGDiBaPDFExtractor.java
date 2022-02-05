@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.util.TextUtil.strip;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Map;
@@ -16,7 +18,6 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
-import name.abuchen.portfolio.util.TextUtil;
 
 @SuppressWarnings("nls")
 public class INGDiBaPDFExtractor extends AbstractPDFExtractor
@@ -178,7 +179,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 .section("note1", "note2").optional()
                 .match("^Diese Order wurde mit folgendem (?<note1>Limit) .*: (?<note2>[\\.,\\d]+ [\\w]{3})( .*)?$")
                 .assign((t, v) -> {
-                    t.setNote(TextUtil.strip(v.get("note1")) + ": " + TextUtil.strip(v.get("note2")));   
+                    t.setNote(strip(v.get("note1")) + ": " + strip(v.get("note2")));   
                 })
 
                 .wrap(BuySellEntryItem::new);
@@ -362,7 +363,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                     t.setAmount(asAmount(v.get("tax")));
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
 
-                    String sign = TextUtil.strip(v.get("sign"));
+                    String sign = strip(v.get("sign"));
                     if ("".equals(sign))
                     {
                         // change type for withdrawals

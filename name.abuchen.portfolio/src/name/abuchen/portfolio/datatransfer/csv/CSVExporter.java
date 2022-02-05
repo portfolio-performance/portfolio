@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.datatransfer.csv;
 
+import static name.abuchen.portfolio.util.TextUtil.getListSeparatorChar;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -25,13 +27,12 @@ import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.util.TextUtil;
 
 /* not thread safe */
 public class CSVExporter
 {
     /* package */ static final CSVFormat STRATEGY = CSVFormat.DEFAULT.builder() //
-                    .setDelimiter(TextUtil.getListSeparatorChar()).setQuote('"').setRecordSeparator("\r\n") //$NON-NLS-1$
+                    .setDelimiter(getListSeparatorChar()).setQuote('"').setRecordSeparator("\r\n") //$NON-NLS-1$
                     .setAllowDuplicateHeaderNames(true).build();
 
     public void exportAccountTransactions(File file, Account account) throws IOException

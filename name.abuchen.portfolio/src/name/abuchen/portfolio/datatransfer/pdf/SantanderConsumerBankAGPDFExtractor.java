@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.util.TextUtil.strip;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
@@ -12,7 +14,6 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
-import name.abuchen.portfolio.util.TextUtil;
 
 @SuppressWarnings("nls")
 public class SantanderConsumerBankAGPDFExtractor extends AbstractPDFExtractor
@@ -80,7 +81,7 @@ public class SantanderConsumerBankAGPDFExtractor extends AbstractPDFExtractor
                 // Limit billigst
                 .section("note").optional()
                 .match("^(?<note>Limit .*)$")
-                .assign((t, v) -> t.setNote(TextUtil.strip(v.get("note"))))
+                .assign((t, v) -> t.setNote(strip(v.get("note"))))
 
                 .wrap(BuySellEntryItem::new);
 
@@ -176,7 +177,7 @@ public class SantanderConsumerBankAGPDFExtractor extends AbstractPDFExtractor
                 // Ex-Tag 20.05.2021 Art der Dividende Quartalsdividende
                 .section("note").optional()
                 .match("^.* Art der Dividende (?<note>.*)$")
-                .assign((t, v) -> t.setNote(TextUtil.strip(v.get("note"))))
+                .assign((t, v) -> t.setNote(strip(v.get("note"))))
 
                 .wrap(TransactionItem::new);
 

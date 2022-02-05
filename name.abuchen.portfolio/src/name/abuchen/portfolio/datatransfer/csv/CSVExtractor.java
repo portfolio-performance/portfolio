@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.datatransfer.csv;
 
+import static name.abuchen.portfolio.util.TextUtil.stripNonNumberCharacters;
+
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.text.ParseException;
@@ -23,7 +25,6 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.Isin;
-import name.abuchen.portfolio.util.TextUtil;
 
 public abstract class CSVExtractor implements Extractor
 {
@@ -102,7 +103,7 @@ public abstract class CSVExtractor implements Extractor
         try
         {
             Number num = (Number) field2column.get(name).getFormat().getFormat()
-                            .parseObject(TextUtil.stripNonNumberCharacters(value));
+                            .parseObject(stripNonNumberCharacters(value));
             return Long.valueOf((long) Math.round(num.doubleValue() * values.factor()));
         }
         catch (ParseException e)

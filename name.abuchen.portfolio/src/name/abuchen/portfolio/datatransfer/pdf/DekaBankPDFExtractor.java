@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.util.TextUtil.strip;
+
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -10,7 +12,6 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.util.TextUtil;
 
 @SuppressWarnings("nls")
 public class DekaBankPDFExtractor extends AbstractPDFExtractor
@@ -145,7 +146,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                      * EUR Fremdwährung EUR Anteile tag nungstag
                      */
                     StringBuilder securityListKey = new StringBuilder("security_");
-                    securityListKey.append(TextUtil.strip(lines[i - 1])).append("_");
+                    securityListKey.append(strip(lines[i - 1])).append("_");
                     securityListKey.append(lines[i + 3].substring(17, 20)).append("_");
                     securityListKey.append(Integer.toString(i)).append("_");
                     securityListKey.append(Integer.toString(endBlock));
@@ -247,7 +248,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                 // Einbuchung w/ Fusion +1,315 31.05.2021 28.05.2021                          
                 .section("note").optional()
                 .match("^(Einbuchung|Ausbuchung) .* (?<note>.*) [-|+][\\.,\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$")
-                .assign((t, v) -> t.setNote(TextUtil.strip(v.get("note"))))
+                .assign((t, v) -> t.setNote(strip(v.get("note"))))
 
                 .wrap(t -> {
                     if (t.getCurrencyCode() != null)

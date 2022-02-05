@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.util.TextUtil.strip;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Map;
@@ -17,7 +19,6 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.util.TextUtil;
 
 @SuppressWarnings("nls")
 public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
@@ -508,7 +509,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 //   unter der Transaktion-Nr.: 132465978
                 .section("note").optional()
                 .match("^.* (?<note>Transaktion-Nr\\.: [\\d]+)$")
-                .assign((t, v) -> t.setNote(TextUtil.strip(v.get("note"))))
+                .assign((t, v) -> t.setNote(strip(v.get("note"))))
 
                 .wrap(TransactionItem::new);
 
