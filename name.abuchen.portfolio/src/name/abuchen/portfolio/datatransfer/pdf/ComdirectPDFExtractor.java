@@ -278,8 +278,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                 + " ([\\s_]+)?(?<currency>[\\w\\s_]+)"
                                 + " ([\\s_]+)?-(?<taxRefund>[.,\\d\\s_]+)?$")
                 .assign((t, v) -> {
-                    v.put("taxRefund", stripBlanksAndUnderscores(v.get("taxRefund")));
-                    v.put("currency", stripBlanksAndUnderscores(v.get("currency")));
+                    v.put("taxRefund", TextUtil.stripBlanksAndUnderscores(v.get("taxRefund")));
+                    v.put("currency", TextUtil.stripBlanksAndUnderscores(v.get("currency")));
 
                     if (t.getPortfolioTransaction().getCurrencyCode().equals(v.get("currency")))
                     {
@@ -316,10 +316,10 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                 .match("^([\\s]+)?(S([\\s]+)?T([\\s]+)?K) ([\\s]+)?(?<shares>[\\.,\\d\\s]+) (?<nameContinued>.*)[\\s]{3,}(?<isin>.*)$")
                 .match("^(?<currency>[\\w]{3}) [\\.,\\d]+ ([\\s]+)?(Dividende|Aussch.ttung) pro St.ck .*$")
                 .assign((t, v) -> {
-                    v.put("wkn", stripBlanks(v.get("wkn")));
-                    v.put("isin", stripBlanks(v.get("isin")));
+                    v.put("wkn", TextUtil.stripBlanks(v.get("wkn")));
+                    v.put("isin", TextUtil.stripBlanks(v.get("isin")));
 
-                    t.setShares(asShares(stripBlanks(v.get("shares"))));
+                    t.setShares(asShares(TextUtil.stripBlanks(v.get("shares"))));
                     t.setSecurity(getOrCreateSecurity(v));
                 })
 
@@ -329,10 +329,10 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                 .match("^([\\s]+)?(p([\\s]+)?e([\\s]+)?r) ([\\s]+)?[\\.\\d\\s]+ [\\s\\w]{3,} [\\s]{3,}(?<name>.*)[\\s]{3,}(?<wkn>.*)$")
                 .match("^(?<currency>[A-Z\\s]+) (?<shares>[\\.,\\d\\s]+) ST ([\\s]+)?(?<nameContinued>.*)[\\s]{3,}(?<isin>[\\w\\s]+)$")
                 .assign((t, v) -> {
-                    v.put("wkn", stripBlanks(v.get("wkn")));
-                    v.put("shares", stripBlanks(v.get("shares")));
-                    v.put("currency", stripBlanks(v.get("currency")));
-                    v.put("isin", stripBlanks(v.get("isin")));
+                    v.put("wkn", TextUtil.stripBlanks(v.get("wkn")));
+                    v.put("shares", TextUtil.stripBlanks(v.get("shares")));
+                    v.put("currency", TextUtil.stripBlanks(v.get("currency")));
+                    v.put("isin", TextUtil.stripBlanks(v.get("isin")));
 
                     // Workaround for bonds
                     t.setShares((asShares(v.get("shares")) / 100));
@@ -472,7 +472,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                 + " ([\\s]+)?(?<currency>[\\w\\s]+)"
                                 + " ([\\s]+)?[\\.,\\d\\s]+([\\W]+)?$")
                 .assign((t, v) -> {
-                    v.put("currency", stripBlanks(v.get("currency")));
+                    v.put("currency", TextUtil.stripBlanks(v.get("currency")));
 
                     t.setShares(asShares(v.get("shares")));
                     t.setSecurity(getOrCreateSecurity(v));
@@ -493,8 +493,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                 + " ([\\s]+)?(?<currency>[\\w\\s]+)"
                                 + " ([\\s]+)?(?<amount>[\\.,\\d\\s]+)([\\W]+)?$")
                 .assign((t, v) -> {
-                    t.setCurrencyCode(asCurrencyCode(stripBlanks(v.get("currency"))));
-                    t.setAmount(asAmount(stripBlanks(v.get("amount"))));
+                    t.setCurrencyCode(asCurrencyCode(TextUtil.stripBlanks(v.get("currency"))));
+                    t.setAmount(asAmount(TextUtil.stripBlanks(v.get("amount"))));
                 })
 
                 //  Zu  Ih r e n G u n s t e n v o r S te u e r n :              E U R             302,5 5   
@@ -516,8 +516,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                 + " ([\\s]+)?(?<gross2>[\\.,\\d\\s]+)([\\W]+)?$")
                 .assign((t, v) -> {
                     long amount = t.getAmount();
-                    long gross1 = asAmount(stripBlanks(v.get("gross1")));
-                    long gross2 = asAmount(stripBlanks(v.get("gross2")));
+                    long gross1 = asAmount(TextUtil.stripBlanks(v.get("gross1")));
+                    long gross2 = asAmount(TextUtil.stripBlanks(v.get("gross2")));
                     long tax = 0;
 
                     if (gross1 > gross2)
@@ -527,7 +527,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         // before taxes < tax base
                         tax = gross2 - amount;
 
-                    t.addUnit(new Unit(Unit.Type.TAX, Money.of(asCurrencyCode(stripBlanks(v.get("currency"))), tax)));
+                    t.addUnit(new Unit(Unit.Type.TAX, Money.of(asCurrencyCode(TextUtil.stripBlanks(v.get("currency"))), tax)));
                 })
 
                 //  Zu  Ih r e n G u n s t e n v o r S te u e r n :              E U R             302,5 5   
@@ -552,11 +552,11 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                 + "([\\s]+)?(?<gross2>[\\.,\\d\\s]+)([\\W]+)?$")
                 .match("^([\\s]+)?Umrechnungen zum Devisenkurs ([\\s]+)?(?<exchangeRate>[\\.,\\d]+)(.*)?$")
                 .assign((t, v) -> {
-                    v.put("currency1", stripBlanks(v.get("currency1")));
-                    v.put("gross1", stripBlanks(v.get("gross1")));
-                    v.put("currency2", stripBlanks(v.get("currency2")));
-                    v.put("gross2", stripBlanks(v.get("gross2")));
-                    v.put("exchangeRate", stripBlanks(v.get("exchangeRate")));
+                    v.put("currency1", TextUtil.stripBlanks(v.get("currency1")));
+                    v.put("gross1", TextUtil.stripBlanks(v.get("gross1")));
+                    v.put("currency2", TextUtil.stripBlanks(v.get("currency2")));
+                    v.put("gross2", TextUtil.stripBlanks(v.get("gross2")));
+                    v.put("exchangeRate", TextUtil.stripBlanks(v.get("exchangeRate")));
 
                     long tax = 0;
                     long amount = t.getAmount();
@@ -623,10 +623,10 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                 .section("shares", "name", "wkn", "isin")
                 .match("^Stk\\. ([\\s]+)?(?<shares>[\\.,\\d]+) (?<name>.*) , (WKN \\/ ISIN:) (?<wkn>.*) \\/ (?<isin>[\\w]{12})(.*)?$")
                 .assign((t, v) -> {
-                    v.put("wkn", stripBlanks(v.get("wkn")));
-                    v.put("isin", stripBlanks(v.get("isin")));
+                    v.put("wkn", TextUtil.stripBlanks(v.get("wkn")));
+                    v.put("isin", TextUtil.stripBlanks(v.get("isin")));
 
-                    t.setShares(asShares(stripBlanks(v.get("shares"))));
+                    t.setShares(asShares(TextUtil.stripBlanks(v.get("shares"))));
                     t.setSecurity(getOrCreateSecurity(v));
                 })
 
@@ -646,8 +646,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                 + "[\\s]+(?<currency>[\\w\\s]+) "
                                 + "([\\s]+)?(?<amount>[-\\.,\\d\\s]+)$")
                 .assign((t, v) -> {
-                    v.put("amount", stripBlanksAndUnderscores(v.get("amount")));
-                    v.put("currency", stripBlanksAndUnderscores(v.get("currency")));
+                    v.put("amount", TextUtil.stripBlanksAndUnderscores(v.get("amount")));
+                    v.put("currency", TextUtil.stripBlanksAndUnderscores(v.get("currency")));
 
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -849,7 +849,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                     .section("name", "wkn", "date")
                     .match("^.* Verwahrentgelt (?<name>.*), WKN (?<wkn>.*) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
                     .assign((t, v) -> {
-                        v.put("wkn", stripBlanks(v.get("wkn")));
+                        v.put("wkn", TextUtil.stripBlanks(v.get("wkn")));
 
                         t.setDateTime(asDate(v.get("date")));
                         t.setSecurity(getOrCreateSecurity(v));
@@ -861,7 +861,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                     .match("^.* (Buchung|H.he) von (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                     .assign((t, v) -> {
                         t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                        t.setAmount(asAmount(stripBlanks(v.get("amount"))));
+                        t.setAmount(asAmount(TextUtil.stripBlanks(v.get("amount"))));
                     })
 
                     .wrap(TransactionItem::new);
@@ -936,8 +936,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                 + "([\\s]+)?(?<currency>[\\w\\s_]+) "
                                 + "([\\s_]+)?(?<amount>[-\\.,\\d\\s_]+)(.*)?$")
                 .assign((t, v) -> {
-                    v.put("amount", stripBlanksAndUnderscores(v.get("amount")));
-                    v.put("currency", stripBlanksAndUnderscores(v.get("currency")));
+                    v.put("amount", TextUtil.stripBlanksAndUnderscores(v.get("amount")));
+                    v.put("currency", TextUtil.stripBlanksAndUnderscores(v.get("currency")));
 
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -1460,15 +1460,5 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
             }
         }
         return false;
-    }
-
-    private String stripBlanksAndUnderscores(String input)
-    {
-        return input.replaceAll("[\\s_]", ""); //$NON-NLS-1$ //$NON-NLS-2$
-    }
-
-    private String stripBlanks(String input)
-    {
-        return input.replaceAll("[\\s]", ""); //$NON-NLS-1$ //$NON-NLS-2$
     }
 }
