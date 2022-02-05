@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.util.TextUtil.strip;
+
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
@@ -26,7 +28,6 @@ import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.util.TextUtil;
 
 public abstract class AbstractPDFExtractor implements Extractor
 {
@@ -104,11 +105,11 @@ public abstract class AbstractPDFExtractor implements Extractor
                     ((Transaction) subject).setSource(filename);
                 else if (subject instanceof CrossEntry)
                     ((CrossEntry) subject).setSource(filename);
-                else if (subject.getNote() == null || TextUtil.strip(subject.getNote()).length() == 0)
+                else if (subject.getNote() == null || strip(subject.getNote()).length() == 0)
                     item.getSubject().setNote(filename);
                 else
                     item.getSubject().setNote(
-                                    TextUtil.strip(item.getSubject().getNote()).concat(" | ").concat(filename)); //$NON-NLS-1$
+                                    strip(item.getSubject().getNote()).concat(" | ").concat(filename)); //$NON-NLS-1$
             }
 
             return items;

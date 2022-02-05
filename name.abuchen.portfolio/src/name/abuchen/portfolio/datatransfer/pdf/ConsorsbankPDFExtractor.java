@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.util.TextUtil.strip;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Map;
@@ -18,7 +20,6 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
-import name.abuchen.portfolio.util.TextUtil;
 
 public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 {
@@ -292,12 +293,12 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 // Limitkurs  5,500000 EUR
                 .section("note").optional()
                 .match("^(?<note>Limitkurs .*)")
-                .assign((t, v) -> t.setNote(TextUtil.strip(v.get("note"))))
+                .assign((t, v) -> t.setNote(strip(v.get("note"))))
 
                 // Ursprungs-WKN 549532
                 .section("note").optional()
                 .match("^(?<note>Ursprungs-WKN .*)")
-                .assign((t, v) -> t.setNote(TextUtil.strip(v.get("note"))))
+                .assign((t, v) -> t.setNote(strip(v.get("note"))))
 
                 .wrap(BuySellEntryItem::new);
 

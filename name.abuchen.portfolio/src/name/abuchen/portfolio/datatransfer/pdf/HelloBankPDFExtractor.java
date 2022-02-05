@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.util.TextUtil.strip;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
@@ -12,7 +14,6 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
-import name.abuchen.portfolio.util.TextUtil;
 
 public class HelloBankPDFExtractor extends AbstractPDFExtractor
 {
@@ -70,7 +71,7 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
                 .match("^Kurs: [\\-\\.,\\d]+ (?<currency>[\\w]{3})(.*)?$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Kurs"))
-                        v.put("name", TextUtil.strip(v.get("name")) + " " + TextUtil.strip(v.get("name1")));
+                        v.put("name", strip(v.get("name")) + " " + strip(v.get("name1")));
 
                     t.setSecurity(getOrCreateSecurity(v));
                 })
@@ -172,7 +173,7 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
                 .match("^(Dividende|Ertrag): [\\-\\.,\\d]+ (?<currency>[\\w]{3})(.*)?$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Kurs"))
-                        v.put("name", TextUtil.strip(v.get("name")) + " " + TextUtil.strip(v.get("name1")));
+                        v.put("name", strip(v.get("name")) + " " + strip(v.get("name1")));
 
                     t.setSecurity(getOrCreateSecurity(v));
                 })
@@ -264,7 +265,7 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
                 .match("^steuerlicher Anschaffungswert: [\\-\\.,\\d]+ (?<currency>[\\w]{3})(.*)?$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Kurs")|| !v.get("name1").startsWith("Verwahrart"))
-                        v.put("name", TextUtil.strip(v.get("name")) + " " + TextUtil.strip(v.get("name1")));
+                        v.put("name", strip(v.get("name")) + " " + strip(v.get("name1")));
                     
                     t.setSecurity(getOrCreateSecurity(v));
                 })
