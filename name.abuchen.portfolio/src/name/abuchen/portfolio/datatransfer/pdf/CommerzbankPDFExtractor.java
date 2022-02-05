@@ -1,7 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetFee;
-import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.stripBlanks;
+import static name.abuchen.portfolio.util.TextUtil.stripBlanks;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -341,7 +341,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                         .match("^(.*)(?<day>(0 [1-9])|([1-2] [0-9])|(3 [0-1])) \\. (?<month>((0 [1-9])|(1 [0-2])) )(?<value>((\\. )?(\\d ){1,3})+\\, (\\d \\d))( \\-)$")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
-                            t.setDateTime(asDate(stripBlanks(v.get("day"))+"."+stripBlanks(v.get("month"))+"."+context.get("year")));     
+                            t.setDateTime(asDate(stripBlanks(v.get("day")) + "." + stripBlanks(v.get("month")) + "." + context.get("year")));     
                             t.setAmount(asAmount(stripBlanks(v.get("value"))));
                             t.setCurrencyCode(context.get("currency"));
                         })
@@ -362,7 +362,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                         .match("^(.*)(?<day>(0 [1-9])|([1-2] [0-9])|(3 [0-1])) \\. (?<month>((0 [1-9])|(1 [0-2])) )(?<value>((\\. )?(\\d ){1,3})+\\, (\\d \\d))$")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
-                            t.setDateTime(asDate(stripBlanks(v.get("day"))+"."+stripBlanks(v.get("month"))+"."+context.get("year")));     
+                            t.setDateTime(asDate(stripBlanks(v.get("day")) + "." + stripBlanks(v.get("month")) + "." + context.get("year")));     
                             t.setAmount(asAmount(stripBlanks(v.get("value"))));
                             t.setCurrencyCode(context.get("currency"));
                         })
