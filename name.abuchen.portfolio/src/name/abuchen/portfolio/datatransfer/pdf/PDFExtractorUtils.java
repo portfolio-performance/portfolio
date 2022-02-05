@@ -12,6 +12,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -44,13 +45,18 @@ class PDFExtractorUtils
                     DateTimeFormatter.ofPattern("d. MMMM yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
                     DateTimeFormatter.ofPattern("d.M.yyyy HH:mm:ss", Locale.GERMANY) }; //$NON-NLS-1$
 
+    private static final Pattern PATTERN_BLANKS = Pattern.compile("\\s"); //$NON-NLS-1$
+
+    private PDFExtractorUtils()
+    {
+    }
+
     public static void checkAndSetTax(Money tax, Object transaction, DocumentType type)
     {
         if (transaction instanceof name.abuchen.portfolio.model.Transaction)
             PDFExtractorUtils.checkAndSetTax(tax, (name.abuchen.portfolio.model.Transaction) transaction, type);
         else if (transaction instanceof BuySellEntry)
-            PDFExtractorUtils.checkAndSetTax(tax,
-                            ((BuySellEntry) transaction).getPortfolioTransaction(), type);
+            PDFExtractorUtils.checkAndSetTax(tax, ((BuySellEntry) transaction).getPortfolioTransaction(), type);
         else
             throw new UnsupportedOperationException();
     }
@@ -79,6 +85,16 @@ class PDFExtractorUtils
             else
                 t.addUnit(new Unit(Unit.Type.TAX, txTax, tax, inverseRate));
         }
+    }
+    
+    public static void checkAndSetFee(Money tax, Object transaction, DocumentType type)
+    {
+        if (transaction instanceof name.abuchen.portfolio.model.Transaction)
+            PDFExtractorUtils.checkAndSetFee(tax, (name.abuchen.portfolio.model.Transaction) transaction, type);
+        else if (transaction instanceof BuySellEntry)
+            PDFExtractorUtils.checkAndSetFee(tax, ((BuySellEntry) transaction).getPortfolioTransaction(), type);
+        else
+            throw new UnsupportedOperationException();
     }
 
     @SuppressWarnings("nls")
@@ -219,5 +235,10 @@ class PDFExtractorUtils
         }
 
         throw new DateTimeParseException(Messages.MsgErrorNotAValidDate, value, 0);
+    }
+
+    public static String stripBlanks(String input)
+    {
+        return input == null ? null : PATTERN_BLANKS.matcher(input).replaceAll(""); //$NON-NLS-1$
     }
 }
