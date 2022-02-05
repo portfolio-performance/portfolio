@@ -101,13 +101,8 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
                         // EUR 192,14 20.04.2021 03.53.15 WP-Rechnung GS
                         .section("date", "time").optional() //
                         .find("^Zum Kurs von .*$")
-                        .match("^[\\w]{3} [.,\\d]+ (?<date>\\d+.\\d+.\\d{4}) ([\\s]+)?(?<time>\\d+.\\d+.\\d+).*$")
-                        .assign((t, v) -> {
-                            if (v.get("time") != null)
-                                t.setDate(asDate(v.get("date"), v.get("time").replace(".", ":")));
-                            else
-                                t.setDate(asDate(v.get("date")));
-                        })
+                        .match("^[\\w]{3} [\\.,\\d]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) ([\\s]+)?(?<time>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) .*$")
+                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
 
                         // Belastung (vor Steuern) EUR 1.560,83
                         // Gutschrift (vor Steuern) EUR 8.175,91

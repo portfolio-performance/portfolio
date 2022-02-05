@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.stripBlanks;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Map;
@@ -322,7 +324,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                                             v.put("currency", asCurrencyCode(securityData.getCurrency()));
                                         }
                                         
-                                        t.setDate(asDate(v.get("date").replaceAll(" ", "")));
+                                        t.setDate(asDate(stripBlanks(v.get("date"))));
                                         t.setShares(asShares(v.get("shares")));
                                         t.setAmount(asAmount(v.get("amount")));
                                         t.setCurrencyCode(asCurrencyCode(context.get("baseCurrency")));
@@ -346,7 +348,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                                     v.put("currency", asCurrencyCode(securityData.getCurrency()));
                                 }
                                 
-                                t.setDate(asDate(v.get("date").replaceAll(" ", "")));
+                                t.setDate(asDate(stripBlanks(v.get("date"))));
                                 t.setShares(asShares(v.get("shares")));
                                 t.setAmount(asAmount(v.get("amount")));
                                 t.setCurrencyCode(asCurrencyCode(context.get("baseCurrency")));
@@ -367,8 +369,8 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                                             v.put("currency", asCurrencyCode(securityData.getCurrency()));
                                         }
 
-                                        t.setDate(asDate(v.get("date").replaceAll(" ", "")));
-                                        t.setShares(asShares(v.get("shares")));
+                                        t.setDate(asDate(stripBlanks(v.get("date"))));
+                                        t.setShares(asShares(stripBlanks(v.get("shares"))));
                                         t.setAmount(asAmount(v.get("amount")));
                                         t.setCurrencyCode(asCurrencyCode(context.get("baseCurrency")));
                                         t.setSecurity(getOrCreateSecurity(v));
@@ -429,7 +431,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                         v.put("currency", asCurrencyCode(securityData.getCurrency()));
                     }
 
-                    t.setDateTime(asDate(v.get("date").replaceAll(" ", "")));
+                    t.setDateTime(asDate(stripBlanks(v.get("date"))));
                     t.setShares(asShares(v.get("shares")));
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(context.get("baseCurrency")));
@@ -482,7 +484,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                         v.put("currency", asCurrencyCode(securityData.getCurrency()));
                     }
 
-                    t.setDateTime(asDate(v.get("date").replaceAll(" ", "")));
+                    t.setDateTime(asDate(stripBlanks(v.get("date"))));
                     t.setShares(asShares(v.get("shares")));
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(context.get("baseCurrency")));
@@ -539,7 +541,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                                         v.put("currency", asCurrencyCode(securityData.getCurrency()));
                                     }
 
-                                    t.setDateTime(asDate(v.get("date").replaceAll(" ", "")));
+                                    t.setDateTime(asDate(stripBlanks(v.get("date"))));
                                     t.setShares(asShares(v.get("shares")));
                                     t.setAmount(asAmount(v.get("amount")));
                                     t.setCurrencyCode(asCurrencyCode(context.get("baseCurrency")));
@@ -565,7 +567,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                                         v.put("currency", asCurrencyCode(securityData.getCurrency()));
                                     }
 
-                                    t.setDateTime(asDate(v.get("date").replaceAll(" ", "")));
+                                    t.setDateTime(asDate(stripBlanks(v.get("date"))));
                                     t.setShares(asShares(v.get("shares")));
                                     t.setAmount(asAmount(v.get("amount")));
                                     t.setCurrencyCode(asCurrencyCode(context.get("baseCurrency")));

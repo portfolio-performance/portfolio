@@ -12,6 +12,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Locale;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.Messages;
@@ -23,7 +24,7 @@ import name.abuchen.portfolio.money.Values;
 
 class PDFExtractorUtils
 {
-    private static final DateTimeFormatter[] DATE_FORMATTER = { //
+    private static final DateTimeFormatter[] DATE_FORMATTER_GERMANY = { //
                     DateTimeFormatter.ofPattern("d.M.yyyy", Locale.GERMANY), //$NON-NLS-1$
                     DateTimeFormatter.ofPattern("d.M.yy", Locale.GERMANY), //$NON-NLS-1$
                     DateTimeFormatter.ofPattern("yyyy-M-d", Locale.GERMANY), //$NON-NLS-1$
@@ -32,18 +33,27 @@ class PDFExtractorUtils
                     DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.GERMANY), //$NON-NLS-1$
                     DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.GERMANY), //$NON-NLS-1$
                     DateTimeFormatter.ofPattern("d. MMMM yyyy", Locale.GERMANY), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("dd LLL yyyy", Locale.UK), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("LL/dd/yyyy", Locale.UK), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("dd LLL yyyy", Locale.US), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("d MMM yyyy", Locale.US), //$NON-NLS-1$
                     DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.GERMANY) }; //$NON-NLS-1$
+
+    private static final DateTimeFormatter[] DATE_FORMATTER_US = { //
+                    DateTimeFormatter.ofPattern("dd LLL yyyy", Locale.US), //$NON-NLS-1$
+                    DateTimeFormatter.ofPattern("d MMM yyyy", Locale.US) }; //$NON-NLS-1$
+
+    private static final DateTimeFormatter[] DATE_FORMATTER_UK = { //
+                    DateTimeFormatter.ofPattern("dd LLL yyyy", Locale.UK), //$NON-NLS-1$
+                    DateTimeFormatter.ofPattern("LL/dd/yyyy", Locale.UK) }; //$NON-NLS-1$
+
+    private static final Map<Locale, DateTimeFormatter[]> LOCALE2DATE = Map.of(Locale.GERMANY, DATE_FORMATTER_GERMANY,
+                    Locale.US, DATE_FORMATTER_US, Locale.UK, DATE_FORMATTER_UK);
 
     private static final DateTimeFormatter[] DATE_TIME_FORMATTER = { //
                     DateTimeFormatter.ofPattern("d.M.yyyy HH:mm", Locale.GERMANY), //$NON-NLS-1$
                     DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm", Locale.GERMANY), //$NON-NLS-1$
                     DateTimeFormatter.ofPattern("d LLL yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
                     DateTimeFormatter.ofPattern("d. MMMM yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("d.M.yyyy HH:mm:ss", Locale.GERMANY) }; //$NON-NLS-1$
+                    DateTimeFormatter.ofPattern("d.M.yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
+                    DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
+                    DateTimeFormatter.ofPattern("dd.MM.yyyy HH.mm.ss", Locale.GERMANY) }; //$NON-NLS-1$
 
     private static final Pattern PATTERN_BLANKS = Pattern.compile("\\s"); //$NON-NLS-1$
 
@@ -86,7 +96,7 @@ class PDFExtractorUtils
                 t.addUnit(new Unit(Unit.Type.TAX, txTax, tax, inverseRate));
         }
     }
-    
+
     public static void checkAndSetFee(Money tax, Object transaction, DocumentType type)
     {
         if (transaction instanceof name.abuchen.portfolio.model.Transaction)
@@ -184,17 +194,22 @@ class PDFExtractorUtils
         }
     }
 
-    public static LocalDateTime asDate(String value)
+    public static LocalDateTime asDate(String value, Locale... hints)
     {
-        for (DateTimeFormatter formatter : DATE_FORMATTER)
+        Locale[] locales = hints.length > 0 ? hints : new Locale[] { Locale.GERMANY, Locale.US, Locale.UK };
+        
+        for (Locale l : locales)
         {
-            try
+            for (DateTimeFormatter formatter : LOCALE2DATE.get(l))
             {
-                return LocalDate.parse(value, formatter).atStartOfDay();
-            }
-            catch (DateTimeParseException ignore)
-            {
-                // continue with next formatter
+                try
+                {
+                    return LocalDate.parse(value, formatter).atStartOfDay();
+                }
+                catch (DateTimeParseException ignore)
+                {
+                    // continue with next formatter
+                }
             }
         }
 
