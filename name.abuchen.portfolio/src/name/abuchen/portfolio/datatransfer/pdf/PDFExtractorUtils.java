@@ -94,12 +94,12 @@ class PDFExtractorUtils
         }
     }
 
-    public static void checkAndSetFee(Money tax, Object transaction, DocumentType type)
+    public static void checkAndSetFee(Money fee, Object transaction, DocumentType type)
     {
         if (transaction instanceof name.abuchen.portfolio.model.Transaction)
-            PDFExtractorUtils.checkAndSetFee(tax, (name.abuchen.portfolio.model.Transaction) transaction, type);
+            PDFExtractorUtils.checkAndSetFee(fee, (name.abuchen.portfolio.model.Transaction) transaction, type);
         else if (transaction instanceof BuySellEntry)
-            PDFExtractorUtils.checkAndSetFee(tax, ((BuySellEntry) transaction).getPortfolioTransaction(), type);
+            PDFExtractorUtils.checkAndSetFee(fee, ((BuySellEntry) transaction).getPortfolioTransaction(), type);
         else
             throw new UnsupportedOperationException();
     }

@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetFee;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
@@ -18,6 +19,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
 public class INGDiBaPDFExtractor extends AbstractPDFExtractor
@@ -512,19 +514,31 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 // Kurswert EUR 52,63
                 // Rabatt EUR - 2,63
                 // Der regul�re Ausgabeaufschlag von 5,263% ist im Kurs enthalten.
-                .section("amountFx", "currency", "feeFy", "feeFx").optional()
-                .match("^Kurswert (?<currency>[\\w]{3}) (?<amountFx>[\\.,\\d]+)$")
-                .match("^Rabatt [\\w]{3} \\- (?<feeFy>[\\.,\\d]+)$")
-                .match("^Der regul.re Ausgabeaufschlag von (?<feeFx>[\\.,\\d]+)% .*$")
+                .section("currency", "amount", "discountCurrency", "discount", "percentageFee").optional()
+                .match("^Kurswert (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
+                .match("^Rabatt (?<discountCurrency>[\\w]{3}) \\- (?<discount>[\\.,\\d]+)$")
+                .match("^Der regul.re Ausgabeaufschlag von (?<percentageFee>[\\.,\\d]+)% .*$")
                 .assign((t, v) -> {
-                    // Calculation of the fee discount
-                    double amountFx = Double.parseDouble(v.get("amountFx").replace(".", "").replace(",", "."));
-                    double feeFy = Double.parseDouble(v.get("feeFy").replace(".", "").replace(",", "."));
-                    double feeFx = Double.parseDouble(v.get("feeFx").replace(".", "").replace(",", "."));
-                    String fee = Double.toString(amountFx / (1 + feeFx / 100) * (feeFx / 100) - feeFy).replace(".", ",");
-                    v.put("fee", fee);
+                    BigDecimal percentageFee = asBigDecimal(v.get("percentageFee"));
+                    BigDecimal amount = asBigDecimal(v.get("amount"));
+                    Money discount = Money.of(asCurrencyCode(v.get("discountCurrency")), asAmount(v.get("discount")));
 
-                    processFeeEntries(t, v, type);
+                    if (percentageFee.compareTo(BigDecimal.ZERO) != 0 && discount.isPositive())
+                    {
+                        // feeAmount = (amount / (1 + percentageFee / 100)) * (percentageFee / 100)
+                        BigDecimal fxFee = amount
+                                        .divide(percentageFee.divide(BigDecimal.valueOf(100))
+                                                        .add(BigDecimal.ONE), Values.MC)
+                                        .multiply(percentageFee, Values.MC);
+
+                        Money fee = Money.of(asCurrencyCode(v.get("currency")),
+                                        fxFee.setScale(0, Values.MC.getRoundingMode()).longValue());
+
+                        // fee = fee - discount
+                        fee = fee.subtract(discount);
+
+                        checkAndSetFee(fee, t, type);
+                    }
                 });
     }
 }

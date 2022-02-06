@@ -1,7 +1,8 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import static name.abuchen.portfolio.util.TextUtil.trim;
+import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetFee;
 import static name.abuchen.portfolio.util.TextUtil.stripBlanks;
+import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -19,6 +20,7 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
 public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
@@ -806,29 +808,53 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Anlage 2.125,00 2,00 113,45 18,730
-                .section("amount", "feeFx").optional()
-                .match("^Anlage (?<amount>[\\.,\\d]+) (?<feeFx>[\\.,\\d]+) [\\.,\\d]+ [\\.,\\d]+")
+                .section("amount", "percentageFee").optional()
+                .match("^Anlage (?<amount>[\\.,\\d]+) (?<percentageFee>[\\.,\\d]+) [\\.,\\d]+ [\\.,\\d]+")
                 .assign((t, v) -> {
-                    // Fee in percent
-                    double amount = Double.parseDouble(v.get("amount").replace(".", "").replace(",", "."));
-                    double feeFx = Double.parseDouble(v.get("feeFx").replace(",", "."));
-                    String fee =  Double.toString((amount / (1 + feeFx / 100)) * (feeFx / 100)).replace(".", ",");
-                    v.put("fee", fee);
+                    Map<String, String> context = type.getCurrentContext();
+                    v.put("currency", asCurrencyCode(context.get("baseCurrency")));
 
-                    processFeeEntries(t, v, type);
+                    BigDecimal percentageFee = asBigDecimal(v.get("percentageFee"));
+                    BigDecimal amount = asBigDecimal(v.get("amount"));
+
+                    if (percentageFee.compareTo(BigDecimal.ZERO) != 0)
+                    {
+                        // fxFee = (amount / (1 + percentageFee / 100)) * (percentageFee / 100)
+                        BigDecimal fxFee = amount
+                                        .divide(percentageFee.divide(BigDecimal.valueOf(100))
+                                                        .add(BigDecimal.ONE), Values.MC)
+                                        .multiply(percentageFee, Values.MC);
+
+                        Money fee = Money.of(asCurrencyCode(v.get("currency")),
+                                        fxFee.setScale(0, Values.MC.getRoundingMode()).longValue());
+
+                        checkAndSetFee(fee, t, type);
+                    }
                 })
 
                 // 1 0.12.2020 Wiederanlage 362,80 0,00 53,91 6,730
-                .section("amount", "feeFx").optional()
-                .match("^[\\s\\d]{2,3}\\.[\\d]{2}\\.[\\d]{4} Wiederanlage (?<amount>[\\.,\\d]+) (?<feeFx>[\\.,\\d]+) [\\.,\\d]+ [\\.,\\d]+$")
+                .section("amount", "percentageFee").optional()
+                .match("^[\\s\\d]{2,3}\\.[\\d]{2}\\.[\\d]{4} Wiederanlage (?<amount>[\\.,\\d]+) (?<percentageFee>[\\.,\\d]+) [\\.,\\d]+ [\\.,\\d]+$")
                 .assign((t, v) -> {
-                    // Fee in percent
-                    double amount = Double.parseDouble(v.get("amount").replace(".", "").replace(",", "."));
-                    double feeFx = Double.parseDouble(v.get("feeFx").replace(",", "."));
-                    String fee =  Double.toString((amount / (1 + feeFx / 100)) * (feeFx / 100)).replace(".", ",");
-                    v.put("fee", fee);
+                    Map<String, String> context = type.getCurrentContext();
+                    v.put("currency", asCurrencyCode(context.get("baseCurrency")));
 
-                    processFeeEntries(t, v, type);
+                    BigDecimal percentageFee = asBigDecimal(v.get("percentageFee"));
+                    BigDecimal amount = asBigDecimal(v.get("amount"));
+
+                    if (percentageFee.compareTo(BigDecimal.ZERO) != 0)
+                    {
+                        // fxFee = (amount / (1 + percentageFee / 100)) * (percentageFee / 100)
+                        BigDecimal fxFee = amount
+                                        .divide(percentageFee.divide(BigDecimal.valueOf(100))
+                                                        .add(BigDecimal.ONE), Values.MC)
+                                        .multiply(percentageFee, Values.MC);
+
+                        Money fee = Money.of(asCurrencyCode(v.get("currency")),
+                                        fxFee.setScale(0, Values.MC.getRoundingMode()).longValue());
+
+                        checkAndSetFee(fee, t, type);
+                    }
                 });
     }
 
