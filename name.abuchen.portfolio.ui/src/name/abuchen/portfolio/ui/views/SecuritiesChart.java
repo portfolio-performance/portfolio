@@ -1044,7 +1044,7 @@ public class SecuritiesChart
                         .filter(t -> chartInterval.contains(t.getDateTime())) //
                         .sorted(Transaction.BY_DATE).collect(Collectors.toList());
 
-        addInvestmentMarkers(purchase, PortfolioTransaction.Type.BUY.toString(), colorEventPurchase);
+        addInvestmentMarkers(purchase, PortfolioTransaction.Type.BUY.toString(), colorEventPurchase, PlotSymbolType.TRIANGLE);
 
         List<PortfolioTransaction> sales = client.getPortfolios().stream().flatMap(p -> p.getTransactions().stream())
                         .filter(t -> t.getSecurity() == security)
@@ -1053,10 +1053,10 @@ public class SecuritiesChart
                         .filter(t -> chartInterval.contains(t.getDateTime())) //
                         .sorted(Transaction.BY_DATE).collect(Collectors.toList());
 
-        addInvestmentMarkers(sales, PortfolioTransaction.Type.SELL.toString(), colorEventSale);
+        addInvestmentMarkers(sales, PortfolioTransaction.Type.SELL.toString(), colorEventSale, PlotSymbolType.INVERTED_TRIANGLE);
     }
 
-    private void addInvestmentMarkers(List<PortfolioTransaction> transactions, String seriesLabel, Color color)
+    private void addInvestmentMarkers(List<PortfolioTransaction> transactions, String seriesLabel, Color color, PlotSymbolType symbol)
     {
         if (transactions.isEmpty())
             return;
@@ -1086,7 +1086,7 @@ public class SecuritiesChart
             ILineSeries border = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, seriesLabel + "2"); //$NON-NLS-1$
             border.setYAxisId(0);
             border.setSymbolColor(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
-            border.setSymbolType(PlotSymbolType.DIAMOND);
+            border.setSymbolType(symbol);
             border.setSymbolSize(7);
 
             configureSeriesPainter(border, dates, values, null, 0, LineStyle.NONE, false, false);
@@ -1094,14 +1094,14 @@ public class SecuritiesChart
             ILineSeries background = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
                             seriesLabel + "1"); //$NON-NLS-1$
             background.setYAxisId(0);
-            background.setSymbolType(PlotSymbolType.DIAMOND);
+            background.setSymbolType(symbol);
             background.setSymbolSize(6);
             background.setSymbolColor(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
             configureSeriesPainter(background, dates, values, null, 0, LineStyle.NONE, false, false);
 
             ILineSeries inner = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, seriesLabel);
             inner.setYAxisId(0);
-            inner.setSymbolType(PlotSymbolType.DIAMOND);
+            inner.setSymbolType(symbol);
             inner.setSymbolSize(4);
             inner.setSymbolColor(color);
             configureSeriesPainter(inner, dates, values, color, 0, LineStyle.NONE, false, true);
@@ -1278,9 +1278,9 @@ public class SecuritiesChart
                         .filter(p -> chartInterval.contains(p.getDate())) //
                         .min(Comparator.comparing(SecurityPrice::getValue));
 
-        max.ifPresent(high -> addExtremeMarker(high, PlotSymbolType.TRIANGLE, // 
+        max.ifPresent(high -> addExtremeMarker(high, PlotSymbolType.DIAMOND, // 
                         Messages.LabelChartDetailMarkerHigh, colorHigh));
-        min.ifPresent(low -> addExtremeMarker(low, PlotSymbolType.INVERTED_TRIANGLE, // 
+        min.ifPresent(low -> addExtremeMarker(low, PlotSymbolType.DIAMOND, // 
                         Messages.LabelChartDetailMarkerLow, colorLow));
     }
 
