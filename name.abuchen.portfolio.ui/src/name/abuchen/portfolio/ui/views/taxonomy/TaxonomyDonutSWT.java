@@ -47,7 +47,7 @@ public class TaxonomyDonutSWT implements IPieChart
         chart = new PieChart(parent, chartType);
 
         // set customized tooltip builder
-        chart.getToolTip().setToolTipBuilder(new TaxonomyPieChartSWT.TaxonomieTooltipBuilder(this.nodeDataMap));
+        chart.getToolTip().setToolTipBuilder(new TaxonomyPieChartSWT.TaxonomyTooltipBuilder(this.nodeDataMap));
 
         chart.getTitle().setVisible(false);
         chart.getLegend().setPosition(SWT.RIGHT);

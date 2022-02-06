@@ -37,11 +37,11 @@ public class TaxonomyPieChartSWT implements IPieChart
 
     private Map<String, NodeData> nodeDataMap;
 
-    protected static final class TaxonomieTooltipBuilder implements PieChartToolTip.IToolTipBuilder
+    protected static final class TaxonomyTooltipBuilder implements PieChartToolTip.IToolTipBuilder
     {
         private Map<String, NodeData> nodeDataMap;
 
-        public TaxonomieTooltipBuilder(Map<String, NodeData> nodeDataMap)
+        public TaxonomyTooltipBuilder(Map<String, NodeData> nodeDataMap)
         {
             this.nodeDataMap = nodeDataMap;
         }
@@ -97,7 +97,7 @@ public class TaxonomyPieChartSWT implements IPieChart
         chart = new PieChart(parent, chartType, Node::getId);
 
         // set customized tooltip builder
-        chart.getToolTip().setToolTipBuilder(new TaxonomieTooltipBuilder(this.nodeDataMap));
+        chart.getToolTip().setToolTipBuilder(new TaxonomyTooltipBuilder(this.nodeDataMap));
 
         chart.getTitle().setVisible(false);
         chart.getLegend().setVisible(false);
