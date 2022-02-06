@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import static name.abuchen.portfolio.util.TextUtil.strip;
+import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -76,7 +76,7 @@ public class NIBCBankPDFExtractor extends AbstractPDFExtractor
                 .match("^Kurswert [\\.,\\d]+([\\-])? (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Handels-/Ausführungsplatz"))
-                        v.put("name", strip(v.get("name")) + " " + strip(v.get("name1")));
+                        v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
 
                     v.put("name", v.get("name"));
                     t.setShares(asShares(v.get("shares")));
@@ -105,7 +105,7 @@ public class NIBCBankPDFExtractor extends AbstractPDFExtractor
                 // Limit 79,23 EUR
                 .section("note").optional()
                 .match("^(?<note>(Limit|Stoplimit) .*)$")
-                .assign((t, v) -> t.setNote(strip(v.get("note"))))
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                 .wrap(BuySellEntryItem::new);
 
@@ -201,7 +201,7 @@ public class NIBCBankPDFExtractor extends AbstractPDFExtractor
                 // Ex-Tag 26.02.2021 Art der Dividende Quartalsdividende
                 .section("note").optional()
                 .match("^.* Art der Dividende (?<note>.*)$")
-                .assign((t, v) -> t.setNote(strip(v.get("note"))))
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                 .wrap(TransactionItem::new);
 
@@ -240,7 +240,7 @@ public class NIBCBankPDFExtractor extends AbstractPDFExtractor
                 // Verrechnete Aktienverluste 112,10- EUR
                 .section("note").optional()
                 .match("^(?<note>Verrechnete Aktienverluste .*)$")
-                .assign((t, v) -> t.setNote(strip(v.get("note"))))
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                 .wrap(t -> {
                     if (t.getCurrencyCode() != null && t.getAmount() != 0)

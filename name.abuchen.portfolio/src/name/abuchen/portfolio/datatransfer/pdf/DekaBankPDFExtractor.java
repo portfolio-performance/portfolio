@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import static name.abuchen.portfolio.util.TextUtil.strip;
+import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -146,7 +146,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                      * EUR Fremdwährung EUR Anteile tag nungstag
                      */
                     StringBuilder securityListKey = new StringBuilder("security_");
-                    securityListKey.append(strip(lines[i - 1])).append("_");
+                    securityListKey.append(trim(lines[i - 1])).append("_");
                     securityListKey.append(lines[i + 3].substring(17, 20)).append("_");
                     securityListKey.append(Integer.toString(i)).append("_");
                     securityListKey.append(Integer.toString(endBlock));
@@ -248,7 +248,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                 // Einbuchung w/ Fusion +1,315 31.05.2021 28.05.2021                          
                 .section("note").optional()
                 .match("^(Einbuchung|Ausbuchung) .* (?<note>.*) [-|+][\\.,\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$")
-                .assign((t, v) -> t.setNote(strip(v.get("note"))))
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                 .wrap(t -> {
                     if (t.getCurrencyCode() != null)

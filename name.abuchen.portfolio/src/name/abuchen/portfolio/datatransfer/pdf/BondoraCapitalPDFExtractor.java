@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import static name.abuchen.portfolio.util.TextUtil.strip;
+import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -57,7 +57,7 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
                     t.setDateTime(asDate(v.get("date")));
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(CurrencyUnit.EUR));
-                    t.setNote(strip(v.get("note")));
+                    t.setNote(trim(v.get("note")));
 
                     // Switch transactions if ...
                     if (t.getNote() != null)

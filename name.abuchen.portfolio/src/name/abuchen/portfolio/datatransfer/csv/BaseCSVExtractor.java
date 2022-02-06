@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.datatransfer.csv;
 
-import static name.abuchen.portfolio.util.TextUtil.strip;
+import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -77,7 +77,7 @@ import name.abuchen.portfolio.money.Money;
         int lineNo = 1 + skipLines; // +1 because of end user
         for (String[] strings : rawValues)
         {
-            String[] trimmed = strip(strings);
+            String[] trimmed = trim(strings);
 
             try
             {

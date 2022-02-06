@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import static name.abuchen.portfolio.util.TextUtil.strip;
+import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -509,7 +509,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 //   unter der Transaktion-Nr.: 132465978
                 .section("note").optional()
                 .match("^.* (?<note>Transaktion-Nr\\.: [\\d]+)$")
-                .assign((t, v) -> t.setNote(strip(v.get("note"))))
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                 .wrap(TransactionItem::new);
 

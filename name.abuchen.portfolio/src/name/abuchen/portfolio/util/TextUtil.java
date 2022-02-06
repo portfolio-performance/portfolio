@@ -79,7 +79,7 @@ public final class TextUtil
      * characters, this is an alternative implementation. Inspired by the blog
      * post at http://closingbraces.net/2008/11/11/javastringtrim/
      */
-    public static String strip(String value)
+    public static String trim(String value)
     {
         if (value == null)
             return null;
@@ -112,7 +112,7 @@ public final class TextUtil
      * Strips all whitespace and space characters using {@link #strip} from all
      * values of the array.
      */
-    public static String[] strip(String[] values)
+    public static String[] trim(String[] values)
     {
         if (values == null)
             return new String[0];
@@ -120,7 +120,7 @@ public final class TextUtil
         String[] answer = new String[values.length];
 
         for (int i = 0; i < values.length; i++)
-            answer[i] = TextUtil.strip(values[i]);
+            answer[i] = TextUtil.trim(values[i]);
 
         return answer;
     }

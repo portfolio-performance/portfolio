@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import static name.abuchen.portfolio.util.TextUtil.strip;
+import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -99,7 +99,7 @@ public class SimpelPDFExtractor extends AbstractPDFExtractor
                 // Auftrags-Nummer: 20220106123456789000000612345
                 .section("note").optional()
                 .match("^(?<note>Auftrags-Nummer: [\\d]+)$")
-                .assign((t, v) -> t.setNote(strip(v.get("note"))))
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                 .wrap(BuySellEntryItem::new);
 
@@ -166,7 +166,7 @@ public class SimpelPDFExtractor extends AbstractPDFExtractor
                 // WKN / ISIN: AT0000A1Z882 Turnus: jährlich
                 .section("note").optional()
                 .match("^.* (?<note>Turnus: .*)$")
-                .assign((t, v) -> t.setNote(strip(v.get("note"))))
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                 .wrap(TransactionItem::new);
 

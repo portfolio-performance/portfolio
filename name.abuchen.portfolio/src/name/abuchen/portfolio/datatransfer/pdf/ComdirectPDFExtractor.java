@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import static name.abuchen.portfolio.util.TextUtil.strip;
+import static name.abuchen.portfolio.util.TextUtil.trim;
 import static name.abuchen.portfolio.util.TextUtil.stripBlanks;
 import static name.abuchen.portfolio.util.TextUtil.stripBlanksAndUnderscores;
 
@@ -438,7 +438,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                 // zahlbar ab 19.10.2017                 monatl. Dividende                            
                 .section("note").optional()
                 .match("^zahlbar ab [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} ([\\s]+)(?<note>.*)$")
-                .assign((t, v) -> t.setNote(strip(v.get("note"))))
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
                 
                 .wrap(TransactionItem::new);
 

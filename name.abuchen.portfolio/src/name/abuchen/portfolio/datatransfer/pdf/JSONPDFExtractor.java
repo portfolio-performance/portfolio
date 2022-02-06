@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import static name.abuchen.portfolio.util.TextUtil.strip;
+import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -169,10 +169,10 @@ public class JSONPDFExtractor extends AbstractPDFExtractor
     {
         JSecurity security = new JSecurity();
         
-        if (strip(v.get("nameContinued")) != null) //$NON-NLS-1$
-            security.setName(strip(v.get("name") + " " + strip(v.get("nameContinued")))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        if (trim(v.get("nameContinued")) != null) //$NON-NLS-1$
+            security.setName(trim(v.get("name") + " " + trim(v.get("nameContinued")))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         else
-            security.setName(strip(v.get("name"))); //$NON-NLS-1$
+            security.setName(trim(v.get("name"))); //$NON-NLS-1$
 
         security.setIsin(v.get("isin")); //$NON-NLS-1$
         security.setTicker(v.get("ticker")); //$NON-NLS-1$

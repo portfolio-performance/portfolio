@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import static name.abuchen.portfolio.util.TextUtil.strip;
+import static name.abuchen.portfolio.util.TextUtil.trim;
 import static name.abuchen.portfolio.util.TextUtil.stripBlanks;
 
 import java.math.BigDecimal;
@@ -86,7 +86,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                 .match("^Kurswert [\\.,\\d]+(\\-)? (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Handels-/Ausführungsplatz"))
-                        v.put("name", strip(v.get("name")) + " " + strip(v.get("name1")));
+                        v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
 
                     v.put("name", v.get("name"));
                     t.setShares(asShares(v.get("shares")));
@@ -118,7 +118,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                 // Stoplimit 291,00 EUR Limit 290,00 EUR
                 .section("note").optional()
                 .match("^(?<note>(Limit|Stoplimit) .*)$")
-                .assign((t, v) -> t.setNote(strip(v.get("note"))))
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                 .wrap(BuySellEntryItem::new);
 
@@ -214,7 +214,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                 // Ex-Tag 26.02.2021 Art der Dividende Quartalsdividende
                 .section("note").optional()
                 .match("^.* Art der Dividende (?<note>.*)$")
-                .assign((t, v) -> t.setNote(strip(v.get("note"))))
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                 .wrap(TransactionItem::new);
 
@@ -269,7 +269,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                      */
                     
                     StringBuilder securityListKey = new StringBuilder("security_");
-                    securityListKey.append(strip(m.group("name"))).append("_");
+                    securityListKey.append(trim(m.group("name"))).append("_");
                     securityListKey.append(baseCurrency).append("_");
                     securityListKey.append(Integer.toString(i)).append("_");
                     securityListKey.append(Integer.toString(endBlock));
@@ -546,7 +546,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                                     t.setAmount(asAmount(v.get("amount")));
                                     t.setCurrencyCode(asCurrencyCode(context.get("baseCurrency")));
                                     t.setSecurity(getOrCreateSecurity(v));
-                                    t.setNote(v.get("note1") + " " + strip(v.get("note2")));
+                                    t.setNote(v.get("note1") + " " + trim(v.get("note2")));
                                 })
                         ,
                         section -> section
@@ -572,7 +572,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                                     t.setAmount(asAmount(v.get("amount")));
                                     t.setCurrencyCode(asCurrencyCode(context.get("baseCurrency")));
                                     t.setSecurity(getOrCreateSecurity(v));
-                                    t.setNote(v.get("note1") + " " + strip(v.get("note2")));
+                                    t.setNote(v.get("note1") + " " + trim(v.get("note2")));
                                 })
                     )
 
@@ -717,7 +717,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                 // Verrechnete Aktienverluste 112,10- EUR
                 .section("note").optional()
                 .match("^(?<note>Verrechnete Aktienverluste .*)$")
-                .assign((t, v) -> t.setNote(strip(v.get("note"))))
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                 .wrap(t -> {
                     if (t.getCurrencyCode() != null && t.getAmount() != 0)

@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import static name.abuchen.portfolio.util.TextUtil.strip;
+import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -168,12 +168,12 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 // Verhältnis: 1 : 1 
                 .section("note").optional()
                 .match("^(?<note>Verh.ltnis: .*)$")
-                .assign((t, v) -> t.setNote(strip(v.get("note"))))
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                 // Spitzenregulierung KOPIE
                 .section("note").optional()
                 .match("^(?<note>Spitzenregulierung)( .*)?$")
-                .assign((t, v) -> t.setNote(strip(v.get("note"))))
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                 .wrap(BuySellEntryItem::new);
 
@@ -330,7 +330,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 // Zahlungszeitraum: 01.01.2020 - 31.12.2020 
                 .section("note").optional()
                 .match("^(?<note>Zahlungszeitraum: .*)$")
-                .assign((t, v) -> t.setNote(strip(v.get("note"))))
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                 .wrap(t -> new TransactionItem(t));
     }
@@ -647,7 +647,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 // Bezugsverhältnis: 16 : 1
                 .section("note").optional()
                 .match("^(?<note>Bezugsverh.ltnis: .*)$")
-                .assign((t, v) -> t.setNote(strip(v.get("note"))))
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                 .wrap(t -> new TransactionItem(t));
     }

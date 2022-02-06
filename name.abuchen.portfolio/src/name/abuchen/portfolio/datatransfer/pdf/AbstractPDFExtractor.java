@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import static name.abuchen.portfolio.util.TextUtil.strip;
+import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
 import java.text.MessageFormat;
@@ -105,11 +105,11 @@ public abstract class AbstractPDFExtractor implements Extractor
                     ((Transaction) subject).setSource(filename);
                 else if (subject instanceof CrossEntry)
                     ((CrossEntry) subject).setSource(filename);
-                else if (subject.getNote() == null || strip(subject.getNote()).length() == 0)
+                else if (subject.getNote() == null || trim(subject.getNote()).length() == 0)
                     item.getSubject().setNote(filename);
                 else
                     item.getSubject().setNote(
-                                    strip(item.getSubject().getNote()).concat(" | ").concat(filename)); //$NON-NLS-1$
+                                    trim(item.getSubject().getNote()).concat(" | ").concat(filename)); //$NON-NLS-1$
             }
 
             return items;
