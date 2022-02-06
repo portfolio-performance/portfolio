@@ -458,18 +458,24 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                             processFeeEntries(t, v, type);
                         })
 
-                        .section("currency", "amount", "percentage").optional()
+                        // K u r s w e r t : EUR 4 9 , 9 2
+                        // I n dem K u r s w e r t s i n d 2 , 4 3 9 0 2 % A u s g a b e a u f s c h l a g d e r B a n k e n t h a l t e n .
+                        .section("currency", "amount", "percentageFee").optional()
                         .match("^K u r s w e r t : (?<currency>\\w{3}) (?<amount>[\\d\\s,.]*)$")
-                        .match("^I n dem K u r s w e r t s i n d (?<percentage>[\\d\\s,.]*) % A u s g a b e a u f s c h l a g d e r B a n k e n t h a l t e n.*")
+                        .match("^I n dem K u r s w e r t s i n d (?<percentageFee>[\\d\\s,.]*) % A u s g a b e a u f s c h l a g d e r B a n k e n t h a l t e n.*")
                         .assign((t, v) -> {
-                            BigDecimal percentage = asBigDecimal(stripBlanks(v.get("percentage")));
+                            BigDecimal percentageFee = asBigDecimal(stripBlanks(v.get("percentageFee")));
                             BigDecimal amount = asBigDecimal(stripBlanks(v.get("amount")));
-                            BigDecimal fee = amount.multiply(percentage, Values.MC);
-                            
-                            Money f = Money.of(asCurrencyCode(v.get("currency")), fee.setScale(0, Values.MC.getRoundingMode()).longValue());
-                            
-                            checkAndSetFee(f, t, type);
 
+                            if (percentageFee.compareTo(BigDecimal.ZERO) != 0)
+                            {
+                                BigDecimal fxFee = amount.multiply(percentageFee, Values.MC);
+
+                                Money fee = Money.of(asCurrencyCode(v.get("currency")),
+                                                fxFee.setScale(0, Values.MC.getRoundingMode()).longValue());
+
+                                checkAndSetFee(fee, t, type);
+                            }
                         });
     }
 }
