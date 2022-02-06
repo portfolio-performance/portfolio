@@ -245,9 +245,9 @@ public abstract class AbstractPDFExtractor implements Extractor
         }
     }
 
-    protected LocalDateTime asDate(String value)
+    protected LocalDateTime asDate(String value, Locale... hints)
     {
-        return PDFExtractorUtils.asDate(value);
+        return PDFExtractorUtils.asDate(value, hints);
     }
 
     protected LocalTime asTime(String value)

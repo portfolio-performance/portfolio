@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.math.BigDecimal;
+import java.util.Locale;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -71,7 +72,7 @@ public class RevolutLtdPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> {
                     v.put("currency", CurrencyUnit.USD);
                     t.setShares(asShares(v.get("shares")));
-                    t.setDate(asDate(v.get("date")));
+                    t.setDate(asDate(v.get("date"), Locale.UK));
                     t.setSecurity(getOrCreateSecurity(v));
                 })
 
@@ -121,7 +122,7 @@ public class RevolutLtdPDFExtractor extends AbstractPDFExtractor
                         .section("date", "currency", "amount")
                         .match("^(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) [\\d]{2}\\/[\\d]{2}\\/[\\d]{4} (?<currency>[\\w]{3}) .* Cash Disbursement \\- Wallet \\([\\w]{3}\\) (?<amount>[\\.,\\d]+)$")
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTime(asDate(v.get("date"), Locale.UK));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
                         })
