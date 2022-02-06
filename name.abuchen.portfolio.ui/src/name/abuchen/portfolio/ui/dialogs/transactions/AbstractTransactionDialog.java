@@ -201,7 +201,7 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
                     // drop down is available
                 }
             };
-            time.setFormat(CDT.TIME_SHORT);
+            time.setPattern("HH:mm"); //$NON-NLS-1$
             time.setButtonImage(Images.CLOCK.image());
 
             button = new ImageHyperlink(editArea, SWT.NONE);
