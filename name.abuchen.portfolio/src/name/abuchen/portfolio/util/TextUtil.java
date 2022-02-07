@@ -1,7 +1,5 @@
 package name.abuchen.portfolio.util;
 
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 import java.util.regex.Matcher;
@@ -53,23 +51,11 @@ public final class TextUtil
         return text == null ? null : text.replace("&", "&&"); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
-    public static final String sanitizeFilename(String label)
+    public static final String sanitizeFilename(String filename)
     {
-        // https://stackoverflow.com/a/10151795/1158146
-
-        String filename = label;
-
-        try
-        {
-            filename = new String(label.getBytes(), StandardCharsets.UTF_8.name());
-        }
-        catch (UnsupportedEncodingException ignore)
-        {
-            // UTF-8 is available
-        }
-
         // filter ? \ / : | < > // *
         filename = filename.replaceAll("[\\?\\\\/:|<>\\*]", " "); //$NON-NLS-1$ //$NON-NLS-2$
+        // replace multiple spaces
         filename = filename.replaceAll("\\s+", "_"); //$NON-NLS-1$ //$NON-NLS-2$
         return filename;
     }
