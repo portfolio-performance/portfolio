@@ -143,7 +143,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                 // Kurswert 1.950,00- EUR
                 .section("name", "isin", "wkn", "nameContinued", "currency")
                 .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)")
-                .match("^(St.ck|[\\w]{3}) (?<shares>[\\.,\\d]+) (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
+                .match("^(St.ck|[\\w]{3}) [\\.,\\d]+ (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
                 .match("(?<nameContinued>.*)")
                 .match("^(Kurswert|R.ckzahlungsbetrag) [\\.,\\d]+([+|-])? (?<currency>[\\w]{3})(.*)?$")
                 .assign((t, v) -> {
@@ -164,9 +164,18 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> {
                     // Workaround for bonds
                     if (v.get("notation") != null && !v.get("notation").equalsIgnoreCase("Stück"))
-                        t.setShares((asShares(v.get("shares")) / 100));
-                    else
+                    {
+                        // TODO: https://github.com/buchen/portfolio/issues/2684
+                        BigDecimal shares = asBigDecimal(v.get("shares"));
+                        shares = shares.divide(BigDecimal.valueOf(100));
+                        v.put("shares", shares.toString().replace(".", ","));
+
                         t.setShares(asShares(v.get("shares")));
+                    }
+                    else
+                    {
+                        t.setShares(asShares(v.get("shares")));
+                    }
 
                     // Handshake, if there is a tax refund
                     context.put("shares", v.get("shares"));
@@ -760,9 +769,9 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                     return entry;
                 })
 
-                .section("month1", "day", "month2", "note", "amount")
-                .match("^[\\d]{2}\\.(?<month1>[\\d]{2})\\. (?<day>[\\d]{2})\\.(?<month2>[\\d]{2})\\. (?<note>Rechnung) (?<amount>[\\.,\\d]+)$")
-                .match("^.* Bargeldeinzahlung .*$")
+                .section("month1", "day", "month2", "note1", "amount", "note2")
+                .match("^[\\d]{2}\\.(?<month1>[\\d]{2})\\. (?<day>[\\d]{2})\\.(?<month2>[\\d]{2})\\. (?<note1>Rechnung) (?<amount>[\\.,\\d]+)$")
+                .match("^(.*)?(?<note2>Bargeldeinzahlung|R.ckruf\\/Nachforschung).*$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
                     // since year is not within the date correction
@@ -778,7 +787,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                     }
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(context.get("currency"));
-                    t.setNote(v.get("note"));
+                    t.setNote(v.get("note1") + " " + v.get("note2"));
                 })
 
                 .wrap(TransactionItem::new));
