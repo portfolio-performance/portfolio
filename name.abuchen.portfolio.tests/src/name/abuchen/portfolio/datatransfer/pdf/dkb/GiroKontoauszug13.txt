@@ -1,0 +1,67 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Deutsche Kreditbank, Taubenstr. 7-9, 10117 Berlin
+Max Mustermann
+Muster Str. 3 IHR DISPOKREDIT EUR 9.999,00
+01234 Stadt
+DKB-Cash
+Kontoauszug Nummer 002 / 2022 vom 05.01.2022 bis 04.02.2022
+Kontonummer 1011111111 / IBAN DE11 1203 0000 1111 1111 11
+Bu.Tag Wert Wir haben für Sie gebucht Belastung in EUR Gutschrift in EUR
+27.01. 27.01. Rechnung 10,00
+RechnungKontokorrent ZusatzleistungÜW-
+Rückruf/Nachforschungzu Konto. 111111111111111111-
+BY111-00111111111
+ALTER KONTOSTAND 1111,11 S EUR
+NEUER KONTOSTAND 1.111,11 H EUR
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig.
+Nähere Informationen können dem Informationsbogen für Einleger entnommen werden, den Sie
+auch unter www.dkb.de/kundenservice/einlagensicherung einsehen können.
+Sehr geehrte Kundin, sehr geehrter Kunde,
+bitte beachten Sie nachstehenden Auszug aus unseren Allgemeinen Geschäftsbedingungen, sowie die mit Ihnen
+getroffene Regelung über die Erteilung von Rechnungsabschlüssen:
+Der angegebene Kontostand berücksichtigt nicht die Wertstellung der einzelnen Buchungen. Dies bedeutet,
+dass der genannte Betrag nicht dem für die Zinsrechnung maßgeblichen Kontostand entsprechen muss und bei
+Verfügungen möglicherweise Zinsen für die Inanspruchnahme einer eingeräumten oder geduldeten
+Kontoüberziehung anfallen können.
+Schreibt die Bank den Gegenwert von Schecks, Lastschriften oder anderen Einzugspapieren schon vor ihrer
+Einlösung gut, so geschieht dies unter dem Vorbehalt der Einlösung und des Einganges des Gegenwertes (E.v.-
+Gutschrift). Das gilt auch dann, wenn die Schecks, Lastschriften oder anderen Einzugspapiere bei der Bank
+selbst zahlbar sind. Werden Schecks oder Lastschriften nicht eingelöst oder geht der Bank der Gegenwert aus
+einem anderen Einzugspapier nicht zu, so macht sie die Gutschrift gemäß Nr. 23 dieser AGB rückgängig
+(Stornobuchung), und zwar auch nach einem zwischenzeitlich erfolgten Rechnungsabschluss.
+Schecks und andere Einzugspapiere sind erst eingelöst, wenn die Belastungsbuchung nicht bis zum Ablauf des
+übernächsten Bankarbeitstages rückgängig gemacht wird. Sie sind auch eingelöst, wenn die Bank ihren
+DEUTSCHE KREDITBANK AG IBAN: DE111111111111111111111 Seite 3 von 4
+TAUBENSTRASSE 7-9 BIC: BYLADEM1001
+10117 BERLIN USt-ID: DE111111111
+Kontoauszug Nummer 002 / 2022 vom 05.01.2022 bis 04.02.2022
+Kontonummer 1111111111 / IBAN DE11 1111 1111 1111 1111 11
+Einlösungswillen schon vorher Dritten gegenüber erkennbar bekundet hat (z. B. durch Bezahltmeldung). Für
+Lastschriften gelten die Einlöseregeln in den hierfür vereinbarten besonderen Bedingungen. Über die
+Abrechnungsstelle der Bundesbank eingezogene Schecks sind eingelöst, wenn sie nach deren Allgemeinen
+Geschäftsbedingungen nicht mehr zurückgegeben werden können. Barschecks sind mit Zahlung an den
+Scheckvorleger eingelöst.
+Aufgrund gesetzlicher Bestimmungen (§ 355 HGB) sind wir verpflichtet, Ihnen in regelmäßigen Abständen einen
+Rechnungsabschluss zu erteilen. Wir haben festgelegt, dass dies bei Kontoabrechnungsbuchungen (Zinsen
+und/oder sonstige Entgelte), zumindest aber einmal jährlich geschieht. Beachten Sie bitte, dass dieser
+Kontoauszug einen Rechnungsabschluss darstellt, wenn er als solcher bezeichnet ist. Im Abschlusssaldo sind
+Zinsen und/oder sonstige Entgelte bis zum letzten Zinsabschlusstermin berücksichtigt.
+Bitte prüfen Sie den Abschlusssaldo des Rechnungsabschlusses. Rechnungsabschlüsse gelten als genehmigt,
+sofern Sie innerhalb von 6 Wochen nach Zugang keine Einwendungen erheben.
+Einwendungen gegen Rechnungsabschlüsse müssen der Deutsche Kreditbank AG, Bereich Revision,
+Taubenstraße 7-9, 10117 Berlin schriftlich oder, wenn im Rahmen der Geschäftsbeziehung der elektronische
+Kommunikationsweg vereinbart wurde (z. B. Onlinebanking), auf diesem Wege zugehen. Zur Fristwahrung genügt
+die rechtzeitige Absendung (Nr. 7 Abs. 3 unserer Allgemeinen Geschäftsbedingungen).
+Dieser Kontoauszug gilt im Zusammenhang mit dem zugrunde liegenden Vertrag laut angegebener Kontonummer als
+Rechnung im Sinne des UStG.
+Mit freundlichen Grüßen
+Ihre Deutsche Kreditbank AG
+Gemäß dem Finanzkonten-Informationsaustauschgesetz (FKAustG) ermittelt die DKB AG die nach diesem Gesetz
+erforderlichen Daten zur steuerlichen Ansässigkeit und meldet diese, soweit aufgrund des Gesetzes
+erforderlich, jährlich an das Bundeszentralamt für Steuern (BZSt), das diese dann ggf. an zuständige
+ausländische Steuerbehörden weiterleitet. Gemeldet werden die erforderlichen Kundendaten, Steuer-
+Identifikationsnummer sowie Konto- und Depotnummern, Kontosalden sowie gutgeschriebene Kapitalerträge.
+DEUTSCHE KREDITBANK AG IBAN: DE111111111111111111111 Seite 4 von 4
+TAUBENSTRASSE 7-9 BIC: BYLADEM1001
+10117 BERLIN USt-ID: DE111111111
