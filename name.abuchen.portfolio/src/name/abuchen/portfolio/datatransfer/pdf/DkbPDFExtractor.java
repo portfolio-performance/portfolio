@@ -18,6 +18,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
 public class DkbPDFExtractor extends AbstractPDFExtractor
@@ -165,12 +166,8 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                     // Workaround for bonds
                     if (v.get("notation") != null && !v.get("notation").equalsIgnoreCase("Stück"))
                     {
-                        // TODO: https://github.com/buchen/portfolio/issues/2684
                         BigDecimal shares = asBigDecimal(v.get("shares"));
-                        shares = shares.divide(BigDecimal.valueOf(100));
-                        v.put("shares", shares.toString().replace(".", ","));
-
-                        t.setShares(asShares(v.get("shares")));
+                        t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
                     }
                     else
                     {
@@ -178,7 +175,8 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                     }
 
                     // Handshake, if there is a tax refund
-                    context.put("shares", v.get("shares"));
+                    // Use number for that is also used to (later) convert it back to a number
+                    context.put("shares", getNumberFormat().format(t.getPortfolioTransaction().getShares() / Values.Share.divider()));
                 })
 
                 // Den Gegenwert buchen wir mit Valuta 09.07.2020 zu Gunsten des Kontos 1053412345

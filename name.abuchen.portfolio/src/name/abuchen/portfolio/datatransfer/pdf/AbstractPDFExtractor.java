@@ -63,6 +63,11 @@ public abstract class AbstractPDFExtractor implements Extractor
     {
         return bankIdentifier;
     }
+    
+    /* package */ NumberFormat getNumberFormat()
+    {
+        return numberFormat;
+    }
 
     @Override
     public List<Item> extract(SecurityCache securityCache, Extractor.InputFile inputFile, List<Exception> errors)
