@@ -43,6 +43,7 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.DateEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.DateLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
 import name.abuchen.portfolio.ui.views.QuotesContextMenu;
@@ -111,14 +112,8 @@ public class HistoricalPricesPane implements InformationPanePage
         prices.setUseHashlookup(true);
 
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);
-        column.setLabelProvider(new ColumnLabelProvider()
+        column.setLabelProvider(new DateLabelProvider(e -> ((SecurityPrice) e).getDate())
         {
-            @Override
-            public String getText(Object element)
-            {
-                return Values.Date.format(((SecurityPrice) element).getDate());
-            }
-
             @Override
             public Color getBackground(Object element)
             {
@@ -144,7 +139,7 @@ public class HistoricalPricesPane implements InformationPanePage
                 return hasMissing ? Colors.theme().warningBackground() : null;
             }
         });
-        ColumnViewerSorter.create(SecurityPrice.class, "date").attachTo(column, SWT.UP); //$NON-NLS-1$
+        ColumnViewerSorter.create(SecurityPrice.class, "date").attachTo(column, SWT.DOWN); //$NON-NLS-1$
         new DateEditingSupport(SecurityPrice.class, "date") //$NON-NLS-1$
                         .addListener((e, o, n) -> {
                             SecurityPrice price = (SecurityPrice) e;

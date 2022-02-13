@@ -221,7 +221,7 @@ public final class ClientFilterMenu implements IMenuListener
             return;
         }
 
-        boolean isCustomItemSelected = customItems.contains(selectedItem);
+        final boolean isCustomItemSelected = customItems.contains(selectedItem);
 
         EditClientFilterDialog dialog = new EditClientFilterDialog(Display.getDefault().getActiveShell(), client,
                         preferences);
@@ -230,9 +230,14 @@ public final class ClientFilterMenu implements IMenuListener
 
         preferences.putValue(PREF_KEY, new Gson().toJson(customItems));
 
-        if (isCustomItemSelected && !customItems.contains(selectedItem))
+        if (isCustomItemSelected)
         {
-            selectedItem = defaultItems.get(0);
+            // previously selected custom filter was deleted in dialog --> select default filter item
+            if (!customItems.contains(selectedItem))
+                selectedItem = defaultItems.get(0);
+
+            // always update listeners (when custom filter selected) because filter may have been changed in edit filter dialog
+            // or default filter was set because selected filter was deleted 
             listeners.forEach(l -> l.accept(selectedItem.filter));
         }
     }

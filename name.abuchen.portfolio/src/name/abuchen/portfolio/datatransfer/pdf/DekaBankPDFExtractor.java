@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.util.TextUtil.trim;
+
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -10,8 +12,6 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.money.Money;
-import name.abuchen.portfolio.util.TextUtil;
 
 @SuppressWarnings("nls")
 public class DekaBankPDFExtractor extends AbstractPDFExtractor
@@ -146,7 +146,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                      * EUR Fremdwährung EUR Anteile tag nungstag
                      */
                     StringBuilder securityListKey = new StringBuilder("security_");
-                    securityListKey.append(TextUtil.strip(lines[i - 1])).append("_");
+                    securityListKey.append(trim(lines[i - 1])).append("_");
                     securityListKey.append(lines[i + 3].substring(17, 20)).append("_");
                     securityListKey.append(Integer.toString(i)).append("_");
                     securityListKey.append(Integer.toString(endBlock));
@@ -168,7 +168,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
 
                 // Is type --> "Verkauf" change from BUY to SELL
                 .section("type").optional()
-                .match("^(?<type>(Lastschrifteinzug|Verkauf)) .*")
+                .match("^(?<type>(Lastschrifteinzug|Verkauf)) .*$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("Verkauf"))
                     {
@@ -198,9 +198,6 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                 })
 
                 .wrap(t -> {
-                    type.getCurrentContext().remove("name");
-                    type.getCurrentContext().remove("isin");
-                    type.getCurrentContext().remove("currency");
                     if (t.getPortfolioTransaction().getCurrencyCode() != null)
                         return new BuySellEntryItem(t);
                     return null;
@@ -217,7 +214,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
 
                 // Is type --> "Ausbuchung" change from DELIVERY_INBOUND to DELIVERY_OUTBOUND
                 .section("type").optional()
-                .match("^(?<type>(Einbuchung|Ausbuchung)) .*")
+                .match("^(?<type>(Einbuchung|Ausbuchung)) .*$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("Ausbuchung"))
                     {
@@ -251,12 +248,9 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                 // Einbuchung w/ Fusion +1,315 31.05.2021 28.05.2021                          
                 .section("note").optional()
                 .match("^(Einbuchung|Ausbuchung) .* (?<note>.*) [-|+][\\.,\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$")
-                .assign((t, v) -> t.setNote(TextUtil.strip(v.get("note"))))
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                 .wrap(t -> {
-                    type.getCurrentContext().remove("name");
-                    type.getCurrentContext().remove("isin");
-                    type.getCurrentContext().remove("currency");
                     if (t.getCurrencyCode() != null)
                         return new TransactionItem(t);
                     return null;
@@ -270,20 +264,6 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                 .section("currency", "tax").optional()
                 .match("^\\+ Verrechnete Steuern (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$")
                 .assign((t, v) -> processTaxEntries(t, v, type));
-    }
-
-    private void processTaxEntries(Object t, Map<String, String> v, DocumentType type)
-    {
-        if (t instanceof name.abuchen.portfolio.model.Transaction)
-        {
-            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-            PDFExtractorUtils.checkAndSetTax(tax, (name.abuchen.portfolio.model.Transaction) t, type);
-        }
-        else
-        {
-            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-            PDFExtractorUtils.checkAndSetTax(tax, ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
-        }
     }
 
     private Security getSecurity(Map<String, String> context, Integer entry)

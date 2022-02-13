@@ -1,0 +1,28 @@
+PDF Author: 'Registered to: SWISQUOT'
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRANSAKTIONSBELEG
+Kunde: 999999 - TRADING
+Herrn Vorname Nachname
+Strasse Hausnummer
+CH-2540 Grenchen
+Bern, 25.09.2018
+Börsentransaktion: Kauf Unsere Referenz: 153557048 
+Gemäss Ihrem Kaufauftrag vom 25.09.2018 haben wir folgende Transaktionen vorgenommen:
+Titel Ort der Ausführung
+UNILEVER DUTCH CERT ISIN: NL0000009355 Amsterdam Euronext
+NKN: 2560588
+Anzahl Preis Betrag
+60 47.29 EUR 2'837.40
+Total EUR 2'837.40
+Kommission EUR 8.58
+Abgabe (Eidg. Stempelsteuer) EUR 4.26
+Zu Ihren Lasten EUR 2'850.24
+Betrag belastet auf Kontonummer 99999902, Valutadatum 27.09.2018
+Vielen Dank für Ihren Auftrag.
+Im Rahmen dieser Transaktion hat PostFinance als Kommissionär gehandelt.
+Bitte prüfen Sie dieses Dokument und benachrichtigen Sie uns bei Unstimmigkeiten innert Monatsfrist.
+PostFinance AG, Mingerstrasse 20, 3030 Bern
+Kontaktcenter E-Trading: 0848 800 000 (Mo-Fr: 08.00-22.00 Uhr, ab Festnetz CHF 0.08/Min.)
+Formular ohne Unterschrift S.E. & O.
+MwSt n° CHE-116.302.542

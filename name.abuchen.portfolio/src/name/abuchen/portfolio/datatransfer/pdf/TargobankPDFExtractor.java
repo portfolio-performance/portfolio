@@ -2,12 +2,9 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -35,14 +32,11 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
     private static final String regexShares = "St.ck (?<shares>(\\d+.)?\\d+(,\\d+)?)"; //$NON-NLS-1$
     private static final String regexFees = "Provision (?<fee>(\\d+\\.)?\\d+(,\\d+)?) (?<currency>\\w{3}+)"; //$NON-NLS-1$
     private static final String regexTaxes = "Gesamtsumme Steuern (?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)$"; //$NON-NLS-1$
-    private static final String regexWithholdingTaxDivDoc = ".*Ausl.ndische Quellensteuer .* (?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)$"; //$NON-NLS-1$
-    private static final String regexWithholdingTaxTaxDoc = "Anrechenbare ausl.ndische Quellensteuer (?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)$"; //$NON-NLS-1$
+    private static final String regexwithHoldingTaxDivDoc = ".*Ausl.ndische Quellensteuer .* (?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)$"; //$NON-NLS-1$
+    private static final String regexwithHoldingTaxTaxDoc = "Anrechenbare ausl.ndische Quellensteuer (?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)$"; //$NON-NLS-1$
 
     private static final String TO_BE_DELETED = "to_be_deleted"; //$NON-NLS-1$
     private static final String ATTRIBUTE_PAY_DATE = "pay_date"; //$NON-NLS-1$
-
-    private static final DateTimeFormatter SPECIAL_DATE_FORMAT = DateTimeFormatter.ofPattern("d. MMMM yyyy", //$NON-NLS-1$
-                    Locale.GERMANY);
 
     public TargobankPDFExtractor(Client client)
     {
@@ -254,7 +248,7 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                         })
                         
                         .section("tax", "currency").optional() //
-                        .match(regexWithholdingTaxDivDoc) //
+                        .match(regexwithHoldingTaxDivDoc) //
                         .assign((t, v) -> {
                             Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
@@ -334,7 +328,7 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                         })
                         
                         .section("tax", "currency").optional() //
-                        .match(regexWithholdingTaxTaxDoc) //
+                        .match(regexwithHoldingTaxTaxDoc) //
                         .assign((t, v) -> {
                             Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
@@ -351,9 +345,8 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                         .section("date").optional() // example: "27. April 2020"
                         .match("Belastung Ihres Kontos .* mit Wertstellung zum (?<date>\\d+. \\w+ \\d{4}).$")
                         .assign((t, v) -> {
-                            LocalDate date = LocalDate.parse(v.get("date"), SPECIAL_DATE_FORMAT);
                             t.getSecurity().getAttributes().put(new AttributeType(ATTRIBUTE_PAY_DATE),
-                                            date.atStartOfDay());
+                                            asDate(v.get("date")));
                         })
 
                         .wrap(TransactionItem::new));

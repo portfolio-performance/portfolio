@@ -1,14 +1,11 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import java.util.Map;
-
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.money.Money;
 
 @SuppressWarnings("nls")
 public class UnicreditPDFExtractor extends AbstractPDFExtractor
@@ -104,13 +101,8 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
                         // EUR 192,14 20.04.2021 03.53.15 WP-Rechnung GS
                         .section("date", "time").optional() //
                         .find("^Zum Kurs von .*$")
-                        .match("^[\\w]{3} [.,\\d]+ (?<date>\\d+.\\d+.\\d{4}) ([\\s]+)?(?<time>\\d+.\\d+.\\d+).*$")
-                        .assign((t, v) -> {
-                            if (v.get("time") != null)
-                                t.setDate(asDate(v.get("date"), v.get("time").replace(".", ":")));
-                            else
-                                t.setDate(asDate(v.get("date")));
-                        })
+                        .match("^[\\w]{3} [\\.,\\d]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) ([\\s]+)?(?<time>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) .*$")
+                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
 
                         // Belastung (vor Steuern) EUR 1.560,83
                         // Gutschrift (vor Steuern) EUR 8.175,91
@@ -148,20 +140,5 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
                         .section("fee", "currency").optional()
                         .match("^Wertpapierprovision\\* (?<currency>[\\w]{3}) (?<fee>[.,\\d]+)(.*)?$")
                         .assign((t, v) -> processFeeEntries(t, v, type));
-    }
-
-    private void processFeeEntries(Object t, Map<String, String> v, DocumentType type)
-    {
-        if (t instanceof name.abuchen.portfolio.model.Transaction)
-        {
-            Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
-            PDFExtractorUtils.checkAndSetFee(fee, (name.abuchen.portfolio.model.Transaction) t, type);
-        }
-        else
-        {
-            Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
-            PDFExtractorUtils.checkAndSetFee(fee,
-                            ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
-        }
     }
 }

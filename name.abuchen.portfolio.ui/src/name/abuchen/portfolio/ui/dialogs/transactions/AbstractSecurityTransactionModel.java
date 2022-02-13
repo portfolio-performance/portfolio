@@ -45,7 +45,7 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
     protected Portfolio portfolio;
     protected Security security;
     protected LocalDate date = LocalDate.now();
-    protected LocalTime time = LocalTime.MIDNIGHT;
+    protected LocalTime time = PresetValues.getTime();
     protected long shares;
     protected BigDecimal quote = BigDecimal.ONE;
     protected long grossValue;
@@ -89,6 +89,7 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
         setForexFees(0);
         setForexTaxes(0);
         setNote(null);
+        setTime(PresetValues.getTime());
     }
 
     protected void fillFromTransaction(PortfolioTransaction transaction)
@@ -438,12 +439,18 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
 
     public BigDecimal getInverseExchangeRate()
     {
-        return BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+        if (exchangeRate.compareTo(BigDecimal.ZERO) == 0)
+            return BigDecimal.ZERO;
+        else
+            return BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
     }
 
     public void setInverseExchangeRate(BigDecimal rate)
     {
-        setExchangeRate(BigDecimal.ONE.divide(rate, 10, RoundingMode.HALF_DOWN));
+        if (rate == null || rate.compareTo(BigDecimal.ZERO) == 0)
+            setExchangeRate(BigDecimal.ZERO);
+        else
+            setExchangeRate(BigDecimal.ONE.divide(rate, 10, RoundingMode.HALF_DOWN));
     }
 
     public long getConvertedGrossValue()

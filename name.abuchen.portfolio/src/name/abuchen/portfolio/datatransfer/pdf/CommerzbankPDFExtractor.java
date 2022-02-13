@@ -1,5 +1,8 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetFee;
+import static name.abuchen.portfolio.util.TextUtil.stripBlanks;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Map;
@@ -15,6 +18,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
 public class CommerzbankPDFExtractor extends AbstractPDFExtractor
@@ -337,7 +341,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                         .match("^(.*)(?<day>(0 [1-9])|([1-2] [0-9])|(3 [0-1])) \\. (?<month>((0 [1-9])|(1 [0-2])) )(?<value>((\\. )?(\\d ){1,3})+\\, (\\d \\d))( \\-)$")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
-                            t.setDateTime(asDate(stripBlanks(v.get("day"))+"."+stripBlanks(v.get("month"))+"."+context.get("year")));     
+                            t.setDateTime(asDate(stripBlanks(v.get("day")) + "." + stripBlanks(v.get("month")) + "." + context.get("year")));     
                             t.setAmount(asAmount(stripBlanks(v.get("value"))));
                             t.setCurrencyCode(context.get("currency"));
                         })
@@ -358,7 +362,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                         .match("^(.*)(?<day>(0 [1-9])|([1-2] [0-9])|(3 [0-1])) \\. (?<month>((0 [1-9])|(1 [0-2])) )(?<value>((\\. )?(\\d ){1,3})+\\, (\\d \\d))$")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
-                            t.setDateTime(asDate(stripBlanks(v.get("day"))+"."+stripBlanks(v.get("month"))+"."+context.get("year")));     
+                            t.setDateTime(asDate(stripBlanks(v.get("day")) + "." + stripBlanks(v.get("month")) + "." + context.get("year")));     
                             t.setAmount(asAmount(stripBlanks(v.get("value"))));
                             t.setCurrencyCode(context.get("currency"));
                         })
@@ -379,11 +383,11 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
     {
         transaction
                         // 2 2 , 0 0 0 % Q u e l l e n s t e u e r USD 1 9 , 0 6 -
-                        .section("tax", "currency").optional()
-                        .match(".* [\\d\\s,.]* % Q u e l l e n s t e u e r (?<currency>\\w{3}) (?<tax>[\\d\\s,.-]*)$")
+                        .section("withHoldingTax", "currency").optional()
+                        .match(".* [\\d\\s,.]* % Q u e l l e n s t e u e r (?<currency>\\w{3}) (?<withHoldingTax>[\\d\\s,.-]*)$")
                         .assign((t, v) -> {
-                            v.put("tax", stripBlanks(v.get("tax")));
-                            processTaxEntries(t, v, type);
+                            v.put("withHoldingTax", stripBlanks(v.get("withHoldingTax")));
+                            processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
                         });
     }
 
@@ -454,54 +458,18 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                             processFeeEntries(t, v, type);
                         })
 
-                        .section("feeInPercent", "currency", "marketValue").optional()
-                        .match("(S t .|St.) [\\d\\s,.]* (?<currency>\\w{3}) (?<marketValue>[\\d\\s,.]*)$")
-                        .match("I n dem K u r s w e r t s i n d (?<feeInPercent>[\\d\\s,.]*) % A u s g a b e a u f s c h l a g d e r B a n k e n t h a l t e n.*")
+                        .section("currency", "amount", "percentage").optional()
+                        .match("^K u r s w e r t : (?<currency>\\w{3}) (?<amount>[\\d\\s,.]*)$")
+                        .match("^I n dem K u r s w e r t s i n d (?<percentage>[\\d\\s,.]*) % A u s g a b e a u f s c h l a g d e r B a n k e n t h a l t e n.*")
                         .assign((t, v) -> {
-                            // Fee in percent on the market value
-                            double marketValue = Double.parseDouble(stripBlanks(v.get("marketValue")).replace(',', '.'));
-                            double feeInPercent = Double.parseDouble(stripBlanks(v.get("feeInPercent")).replace(',', '.'));
-                            String fee =  Double.toString(marketValue / 100.0 * feeInPercent).replace('.', ',');
+                            BigDecimal percentage = asBigDecimal(stripBlanks(v.get("percentage")));
+                            BigDecimal amount = asBigDecimal(stripBlanks(v.get("amount")));
+                            BigDecimal fee = amount.multiply(percentage, Values.MC);
+                            
+                            Money f = Money.of(asCurrencyCode(v.get("currency")), fee.setScale(0, Values.MC.getRoundingMode()).longValue());
+                            
+                            checkAndSetFee(f, t, type);
 
-                            v.put("fee", fee);
-                            processFeeEntries(t, v, type);
                         });
-    }
-
-    private void processTaxEntries(Object t, Map<String, String> v, DocumentType type)
-    {
-        if (t instanceof name.abuchen.portfolio.model.Transaction)
-        {
-            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-            PDFExtractorUtils.checkAndSetTax(tax, 
-                            (name.abuchen.portfolio.model.Transaction) t, type);
-        }
-        else
-        {
-            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-            PDFExtractorUtils.checkAndSetTax(tax,
-                            ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
-        }
-    }
-
-    private void processFeeEntries(Object t, Map<String, String> v, DocumentType type)
-    {
-        if (t instanceof name.abuchen.portfolio.model.Transaction)
-        {
-            Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
-            PDFExtractorUtils.checkAndSetFee(fee, 
-                            (name.abuchen.portfolio.model.Transaction) t, type);
-        }
-        else
-        {
-            Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
-            PDFExtractorUtils.checkAndSetFee(fee,
-                            ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
-        }
-    }
-
-    private String stripBlanks(String input)
-    {
-        return input.replaceAll(" ", ""); //$NON-NLS-1$ //$NON-NLS-2$
     }
 }

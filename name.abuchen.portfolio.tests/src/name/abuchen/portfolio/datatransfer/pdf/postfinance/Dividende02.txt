@@ -1,0 +1,28 @@
+PDF Author: 'Registered to: SWISQUOT'
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRANSAKTIONSBELEG
+Kunde: 999999 - TRADING
+Herrn Vorname Nachname
+Strasse Hausnummer
+CH-2540 Grenchen
+Bern, 06.09.2017
+Dividende Unsere Referenz: 130516418 
+Im Hinblick auf folgenden Titel:
+Titel
+Bezeichnung Anzahl
+UBS ETF CH - SLI CHF A ISIN: CH0032912732NKN: 3291273 34
+haben wir Ihrem Konto den folgenden Betrag gutgeschrieben:
+Kontonummer 99999900
+Ausführungsdatum 06.09.2017
+Valutadatum 08.09.2017
+Anzahl 34
+Dividende 1.66 CHF
+Betrag CHF 56.44
+Verrechnungssteuer 35% (CH) CHF 19.75
+Total CHF 36.69
+Bitte prüfen Sie dieses Dokument und benachrichtigen Sie uns bei Unstimmigkeiten innert Monatsfrist.
+PostFinance AG, Mingerstrasse 20, 3030 Bern
+Kontaktcenter E-Trading: 0848 800 000 (Mo-Fr: 08.00-22.00 Uhr, ab Festnetz CHF 0.08/Min.)
+Formular ohne Unterschrift S.E. & O.
+MwSt n° CHE-116.302.542

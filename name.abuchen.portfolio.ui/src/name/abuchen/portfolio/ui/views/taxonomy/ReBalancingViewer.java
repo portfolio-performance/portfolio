@@ -117,6 +117,33 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
         });
         support.addColumn(column);
 
+        // Column which shows percentage of the target for this asset class in
+        // relationship to total assets
+        column = new Column("toBePctOfTotal", Messages.ColumnToBePctOfTotal, SWT.RIGHT, 60); //$NON-NLS-1$
+        column.setMenuLabel(Messages.ColumnToBePctOfTotal_MenuLabel);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+                // Divide to-be amount for this asset class by amount of total
+                // assets (root of asset class tree)
+                if (node.getTarget() == null)
+                    return null;
+
+                long nodeTarget = node.getTarget().getAmount();
+                long totalTarget = node.getRoot().getTarget().getAmount();
+
+                if (totalTarget == 0)
+                    return Values.Percent.format(0d);
+                else
+                    return Values.Percent.format(nodeTarget / (double) totalTarget);
+            }
+        });
+        column.setVisible(false);
+        support.addColumn(column);
+
         addActualColumns(support);
 
         column = new Column("delta%", Messages.ColumnDeltaPercent, SWT.RIGHT, 60); //$NON-NLS-1$
@@ -211,6 +238,58 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                                 : Colors.theme().redForeground();
             }
         });
+        support.addColumn(column);
+
+        // Column which shows delta between to-be percentage of total and as-is
+        // percentage of total
+        column = new Column("deltaPctOfTotal", Messages.ColumnDeltaPctOfTotal, SWT.RIGHT, 60); //$NON-NLS-1$
+        column.setMenuLabel(Messages.ColumnDeltaPctOfTotal_MenuLabel);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            public Double getValue(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+                // Divide as-is and to-be amount for this asset class by amount
+                // of total assets and calculate delta
+                // (root of asset class tree)
+                if (node.getTarget() == null)
+                    return null;
+
+                long nodeActual = node.getActual().getAmount();
+                long nodeTarget = node.getTarget().getAmount();
+                long totalActual = node.getRoot().getActual().getAmount();
+                long totalTarget = node.getRoot().getTarget().getAmount();
+
+                if (totalTarget == 0)
+                    return 0d;
+                else
+                    return (nodeActual / (double) totalActual) - (nodeTarget / (double) totalTarget);
+            }
+
+            @Override
+            public String getText(Object element)
+            {
+                Double value = getValue(element);
+
+                if (value == null)
+                    return null;
+                else
+                    return Values.Percent.format(value);
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                Double value = getValue(element);
+
+                if (value == null)
+                    return null;
+                else
+                    return Double.compare(value, 0d) < 0 ? Colors.theme().redForeground()
+                                    : Colors.theme().greenForeground();
+            }
+        });
+        column.setVisible(false);
         support.addColumn(column);
 
         column = new Column("rebalanceAmount", Messages.ColumnRebalanceAmount, SWT.RIGHT, 100); //$NON-NLS-1$

@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.datatransfer.csv;
 
+import static name.abuchen.portfolio.util.TextUtil.trim;
+
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
@@ -835,7 +837,7 @@ public final class CSVImporter
         for (Column column : columns)
         {
             column.setField(null);
-            String normalizedColumnName = normalizeColumnName(TextUtil.strip(column.getLabel()));
+            String normalizedColumnName = normalizeColumnName(trim(column.getLabel()));
             Iterator<Field> iter = list.iterator();
             while (iter.hasNext())
             {

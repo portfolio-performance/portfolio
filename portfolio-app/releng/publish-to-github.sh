@@ -30,8 +30,8 @@ for f in $FILES;
 do
   if [ ! -d $f ]; then
     echo "Processing $f file..."
-    github-release upload --user buchen --repo portfolio --tag ${PCK_VERSION} --name "$f" --file $BASE/$f
-    github-release upload --user buchen --repo portfolio --tag ${PCK_VERSION} --name "$f.asc" --file $BASE_GPG/$f.asc
+    gh release upload --repo buchen/portfolio ${PCK_VERSION} $BASE/$f
+    gh release upload --repo buchen/portfolio ${PCK_VERSION} $BASE_GPG/$f.asc
     echo ""
   fi
 done

@@ -1,10 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
-import java.util.Map;
-
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -12,13 +7,10 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
-import name.abuchen.portfolio.money.Money;
 
 public class JustTradePDFExtractor extends AbstractPDFExtractor
 {
-    private static final String FLAG_WITHHOLDING_TAX_FOUND  = "exchangeRate"; //$NON-NLS-1$
     private static final String REGEX_AMOUNT = "^(\\d+\\.\\d+\\.\\d{4}) (\\d+\\.\\d+\\.\\d{4}) -?(?<amount>[\\.\\d]+[,\\d]*).*$"; //$NON-NLS-1$
     private static final String REGEX_AMOUNT_NEW_FORMAT = "^(\\d+\\.\\d+\\.\\d{4}) (\\d+\\.\\d+\\.\\d{4}).*(\\s|-)(?<amount>[\\.\\d]+,\\d{2})$"; //$NON-NLS-1$
     private static final String REGEX_AMOUNT_AND_SHARES = "^(\\d+.\\d+.\\d{4}+) (\\d+.\\d+.\\d{4}+) (?<sign>[-])?(?<amount>[\\.\\d]+[,\\d]*) .* -?(?<shares>[\\.\\d]+[,\\d]*)$"; //$NON-NLS-1$
@@ -129,12 +121,7 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
                 // Orderausführung Datum/Zeit: 31 Jul 2020 21:00:15
                 .section("date", "time").optional()
                 .match("Orderausführung Datum\\/Zeit: (?<date>\\d+ .* \\d{4}) (?<time>\\d+:\\d+:\\d+).*")
-                .assign((t, v) -> {
-                    // Formate the date from 05. Oktober 2009 to 05.10.2009
-                    // Work-around DateTimeFormatter in Local.GERMAN looks like "Mär" not "Mrz" and in Local.ENGLISH like "Mar".
-                    v.put("date", DateTimeFormatter.ofPattern("dd.MM.yyyy").format(LocalDate.parse(v.get("date").replace("Mrz", "Mär"), DateTimeFormatter.ofPattern("d LLL yyyy", Locale.GERMANY))));
-                    t.setDate(asDate(v.get("date"), v.get("time")));
-                })
+                .assign((t, v) -> t.setDate(asDate(v.get("date").replace("Mrz", "Mär"), v.get("time"))))
 
                 // Schlusstag/-Zeit 02.01.2020 10:49:34 Auftragserteilung/ -ort sonstige
                 .section("date", "time").optional()
@@ -144,11 +131,7 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
                 // Valutadatum 25. Juni 2021
                 .section("date").optional()
                 .match("^Valutadatum (?<date>\\d+\\. .* \\d{4})$")
-                .assign((t, v) -> {
-                    // Formate the date from 25. Juni 2021 to 25.06.2009
-                    v.put("date", DateTimeFormatter.ofPattern("dd.MM.yyyy").format(LocalDate.parse(v.get("date"), DateTimeFormatter.ofPattern("d. MMMM yyyy", Locale.GERMANY))));
-                    t.setDate(asDate(v.get("date")));
-                })
+                .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                 // Ausmachender Betrag: €2.083,94
                 .section("amount").optional()
@@ -218,11 +201,7 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
                 // Valutadatum 15. März 2021
                 .section("date")
                 .match("^Valutadatum (?<date>\\d+. .* \\d{4})")
-                .assign((t, v) -> {
-                    // Formate the date from 01. März 2021 to 01.03.2021
-                    v.put("date", DateTimeFormatter.ofPattern("dd.MM.yyyy").format(LocalDate.parse(v.get("date"), DateTimeFormatter.ofPattern("d. MMMM yyyy", Locale.GERMANY))));
-                    t.setDateTime(asDate(v.get("date")));
-                })
+                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                 // Ausmachender Betrag EUR 12,15
                 .section("currency", "amount")
@@ -482,17 +461,14 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
                 // Einbehaltende Quellensteuer EUR 2,14
-                .section("quellensteinbeh", "currency").optional()
-                .match("^Einbehaltende Quellensteuer (?<currency>\\w{3}) (?<quellensteinbeh>[.,\\d]+)$")
-                .assign((t, v) ->  {
-                    type.getCurrentContext().put(FLAG_WITHHOLDING_TAX_FOUND, "true");
-                    addTax(type, t, v, "quellensteinbeh");
-                })
+                .section("withHoldingTax", "currency").optional()
+                .match("^Einbehaltende Quellensteuer (?<currency>\\w{3}) (?<withHoldingTax>[.,\\d]+)$")
+                .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                 // Anrechenbare Quellensteuer EUR 2,14
-                .section("quellenstanr", "currency").optional()
-                .match("^Anrechenbare Quellensteuer (?<currency>\\w{3}) (?<quellenstanr>[.,\\d]+)$")
-                .assign((t, v) -> addTax(type, t, v, "quellenstanr"));
+                .section("creditableWithHoldingTax", "currency").optional()
+                .match("^Anrechenbare Quellensteuer (?<currency>\\w{3}) (?<creditableWithHoldingTax>[.,\\d]+)$")
+                .assign((t, v) -> processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type));
     }
 
     @SuppressWarnings("nls")
@@ -513,66 +489,5 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
                 .section("currency", "fee").optional()
                 .match(".* WP-Kommission: (?<currency>[\\w]{3}) (?<fee>[.,\\d]+)[-]?")
                 .assign((t, v) -> processFeeEntries(t, v, type));
-    }
-
-    @SuppressWarnings("nls")
-    private void addTax(DocumentType type, Object t, Map<String, String> v, String taxtype)
-    {
-        // Wenn es 'Einbehaltene Quellensteuer' gibt, dann die weiteren
-        // Quellensteuer-Arten nicht berücksichtigen.
-        if (checkWithholdingTax(type, taxtype))
-        {
-            ((name.abuchen.portfolio.model.Transaction) t)
-                    .addUnit(new Unit(Unit.Type.TAX, 
-                                    Money.of(asCurrencyCode(v.get("currency")), 
-                                                    asAmount(v.get(taxtype)))));
-        }
-    }
-
-    @SuppressWarnings("nls")
-    private void processTaxEntries(Object t, Map<String, String> v, DocumentType type)
-    {
-        if (t instanceof name.abuchen.portfolio.model.Transaction)
-        {
-            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-            PDFExtractorUtils.checkAndSetTax(tax, 
-                            (name.abuchen.portfolio.model.Transaction) t, type);
-        }
-        else
-        {
-            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-            PDFExtractorUtils.checkAndSetTax(tax,
-                            ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
-        }
-    }
-
-    @SuppressWarnings("nls")
-    private void processFeeEntries(Object t, Map<String, String> v, DocumentType type)
-    {
-        if (t instanceof name.abuchen.portfolio.model.Transaction)
-        {
-            Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
-            PDFExtractorUtils.checkAndSetFee(fee, 
-                            (name.abuchen.portfolio.model.Transaction) t, type);
-        }
-        else
-        {
-            Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
-            PDFExtractorUtils.checkAndSetFee(fee,
-                            ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
-        }
-    }
-
-    @SuppressWarnings("nls")
-    private boolean checkWithholdingTax(DocumentType type, String taxtype)
-    {
-        if (Boolean.valueOf(type.getCurrentContext().get(FLAG_WITHHOLDING_TAX_FOUND)))
-        {
-            if ("quellenstanr".equalsIgnoreCase(taxtype))
-            { 
-                return false; 
-            }
-        }
-        return true;
     }
 }

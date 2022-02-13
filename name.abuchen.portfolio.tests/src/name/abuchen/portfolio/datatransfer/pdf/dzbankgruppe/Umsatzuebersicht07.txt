@@ -1,0 +1,74 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Gern berät Sie:
+GLS Gemeinschaftsbank eG
+Union Investment - Kundenservice
+Telefon: 069 58998-6000
+Telefax: 069 58998-9000
+Frau Maxi Mustermann E-Mail: service@union-investment.de
+Herrn Max Mustermann
+Musterstr. 15 UnionDepot: 12345678
+01234 Musterhausen Depotinhaber:
+Maxi Mustermann,
+Max Mustermann
+3. Februar 2021
+Abrechnung Nr. 13
+Unterdepot-Nr.: 1234567891
+Fonds: GLS Bank Aktienfonds ISIN: DE000A1W2CK8 Verwaltungsvergütung: 0,40 % p. a.
+Buchungs-/ Umsatzart Betrag/EUR Ausgabe- Preis/EUR Anteile
+Preisdatum aufschlag %
+Vortrag vom 06.01.2021 17,172
+03.02.2021
+02.02.2021 Kauf 30,00
+Anlage 30,00 0,00 86,60 0,346
+Der Kaufpreis wird regelmäßig mit Ablauf des Bewertungstages fällig und nach Fälligkeit, monatlich, jeweils zum 01., von der hinterlegten Kontoverbindung per SE-
+PA-Basis-Lastschrift eingezogen. Die Mandatsreferenz lautet 015210414A.
+Bestand am 03.02.2021 17,518
+Steuerübersicht per 03.02.2021
+Es liegt kein Freistellungsauftrag vor.
+Depotübersicht zum 03.02.2021
+Unterdepot- Fondsname/Produktname Anteil- Rücknahme- Depotwert/
+Nr. ISIN/Ertragsverwendung bestand preis/Währung Währung
+Verwahrart/Lagerland
+1257084801 GLS Bank Aktienfonds 17,518 86,60 EUR 1.517,06 EUR
+DE000A1W2CK8/ausschüttend
+Wertpapierrechnung/CBL - Luxemburg
+Gesamt-Depotwert 1.517,06 EUR
+Die Bewertung der Fonds erfolgt zum jeweils letzten verfügbaren Rücknahmepreis. In der Depotübersicht sind alle Fondsanteile enthalten, die
+am Tag der Erstellung dieser Abrechnung in Ihrem Depotbestand sind.
+In manchen Fällen weichen die Werte der Depotübersicht von der Abrechnungsübersicht ab. Das kann dann vorkommen, wenn zum Beispiel
+Fonds betroffen sind, die nicht taggleich abgerechnet werden. Das ist bei den meisten Drittfonds oder Finanzportfolioverwaltungen der Fall.
+Hier können Transaktionen zwar bereits für einen der betroffenen Fonds gebucht und abgerechnet sein, für den anderen betroffenen Fonds
+aber noch nicht. In Ihrer nächsten Depotübersicht ist die ausstehende Buchung berücksichtigt.
+Fortsetzung auf Seite 2
+Union Investment Service Bank AG · 60621 Frankfurt am Main
+Tel.: 069 58998-0, Fax: 069 58998-9000 · E-Mail: service@union-investment.de · Internet: www.union-investment.de · Registergericht: Amtsgericht Frankfurt am Main HRB 54979
+Vorstand: Rainer Kobusch, Barbara Resch · Aufsichtsratsvorsitzender: Alexander Lichtenberg · Gläubiger-ID: DE81USB00000002100  
+Einzahlungen: DZ BANK AG Deutsche Zentral-Genossenschaftsbank, Frankfurt am Main, IBAN: DE34 5006 0400 0000 0006 86 (BIC: GENODEFFXXX)
+Seite 2 von 2 Datenschutzfeld
+zum Schreiben vom 3. Februar 2021 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+UnionDepot: 12345678 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+Depotinhaber: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+Maxi Mustermann, XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+Max Mustermann XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+Bitte überprüfen Sie, ob wir Ihre Aufträge weisungsgemäß ausgeführt haben. Bei Differenzen informieren Sie uns bitte schriftlich unverzüglich 
+unter Angabe Ihrer jeweiligen 10-stelligen Unterdepot-Nummer und der Abrechnungsnummer, die Sie auf der ersten Seite der Abrechnung 
+finden. Die Verkaufsunterlagen nach § 297 Abs. 5  KAGB und aktuelle Fondsinformationen erhalten Sie kostenlos bei Ihrer Bank oder im 
+Internet unter www.union-investment.de.
+B ei Fragen sind wir gern für Sie da. Rufen Sie uns einfach an! Sie erreichen uns montags bis freitags zwischen 08:00 und 18:00 Uhr.

@@ -1,0 +1,37 @@
+```
+PDFBox Version: 1.8.16
+-----------------------------------------
+Deutsche Bank AG
+V 999/111 1 105
+Klaus Mustermann
+Hauptstr. 000
+99999 Sonstwo
+30. Dezember 2021
+Ihr Depot Nr. 999 1111111 11
+Ertragsgutschrift
+Stück WKN ISIN
+2.000,000000 A1JX51 IE00B3VVMM84
+VANGUARD FTSE EMU.ETF DLD FUNDS
+Ausschüttung pro Stück 0,3827250000 USD Zahlbar 29.12.2021
+Geschäftsjahr 2021 / 2022
+Bruttoertrag 765,45 USD 677,27 EUR
+Kapitalertragsteuer (KESt) - 131,00 USD - 115,91 EUR
+Solidaritätszuschlag auf KESt - 7,20 USD - 6,37 EUR
+Kirchensteuer auf KESt - 11,79 USD - 10,43 EUR
+Umrechnungskurs USD zu EUR 1,1302000000
+Gutschrift mit Wert 31.12.2021 544,56 EUR
+Steuerliche Bemessungsgrundlagen zur Ertragsgutschrift - keine Steuerbescheinigung
+Steuerpflichtige Ausschüttung 677,27 EUR
+Abzüglich Teilfreistellung von Erträgen 203,18 EUR
+KESt-pflichtiger Kapitalertrag 474,09 EUR
+Vorsitzender des Aufsichtsrats: Paul Achleitner
+Vorstand: Christian Sewing (Vorsitzender), Karl von Rohr, Fabrizio Campelli, Bernd Leukert, Stuart Lewis, James von Moltke, Alexander von zur Mühlen,
+Christiana Riley, Rebecca Short, Stefan Simon
+Deutsche Bank Aktiengesellschaft mit Sitz in Frankfurt am Main; Amtsgericht Frankfurt am Main, HRB Nr. 30 000; Umsatzsteuer-Id.-Nr. DE114103379;
+www.db.com/de, www.deutsche-bank.de 1/2
+TRINCM0001 ERTR 20211230 06052118
+Wir überweisen den Betrag von 544,56 EUR auf Ihr Konto 1111111 11.
+Kapitalerträge sind einkommensteuerpflichtig!
+Diese Mitteilung wurde maschinell erstellt und wird nicht unterschrieben.
+2/2
+```

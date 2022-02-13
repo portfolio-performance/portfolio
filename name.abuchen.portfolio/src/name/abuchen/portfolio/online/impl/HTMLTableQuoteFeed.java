@@ -115,7 +115,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 
         protected boolean matches(Element header)
         {
-            String text = TextUtil.strip(header.text());
+            String text = TextUtil.trim(header.text());
             for (Pattern pattern : patterns)
             {
                 if (pattern.matcher(text).matches())
@@ -193,14 +193,15 @@ public class HTMLTableQuoteFeed implements QuoteFeed
                             DateTimeFormatter.ofPattern("MMM dd, y", Locale.ENGLISH), //$NON-NLS-1$
                             DateTimeFormatter.ofPattern("MMM dd y", Locale.ENGLISH), //$NON-NLS-1$
                             DateTimeFormatter.ofPattern("d MMM y", Locale.ENGLISH), //$NON-NLS-1$
-                            DateTimeFormatter.ofPattern("EEEE, MMMM dd, yEEE, MMM dd, y", Locale.ENGLISH) //$NON-NLS-1$
+                            DateTimeFormatter.ofPattern("EEEE, MMMM dd, yEEE, MMM dd, y", Locale.ENGLISH), //$NON-NLS-1$
+                            DateTimeFormatter.ofPattern("yyyy.MM.dd."), //$NON-NLS-1$
             };
         }
 
         @Override
         void setValue(Element value, ExtractedPrice price, String languageHint) throws ParseException
         {
-            String text = TextUtil.strip(value.text());
+            String text = TextUtil.trim(value.text());
             for (int ii = 0; ii < formatters.length; ii++)
             {
                 try
@@ -232,7 +233,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         @Override
         void setValue(Element value, ExtractedPrice price, String languageHint) throws ParseException
         {
-            String text = TextUtil.strip(value.text());
+            String text = TextUtil.trim(value.text());
             for (DateTimeFormatter formatter : formatters)
             {
                 try
@@ -257,7 +258,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         @SuppressWarnings("nls")
         public CloseColumn()
         {
-            super(new String[] { "Schluss.*", "Schluß.*", "Rücknahmepreis.*", "Close.*", "Zuletzt", "Price",
+            super(new String[] { "Schluss.*", "Schluß.*", "Rücknahmepreis.*", "Close.*", "Zuletzt", ".*[Pp]rice",
                             "akt. Kurs", "Dernier", "Kurs" });
         }
 

@@ -1007,8 +1007,7 @@ public class ClientFactory
             List<TransactionPair<?>> transactions = security.getTransactions(client);
 
             // sort by date of transaction
-            Collections.sort(transactions, (one, two) -> one.getTransaction().getDateTime()
-                            .compareTo(two.getTransaction().getDateTime()));
+            Collections.sort(transactions, TransactionPair.BY_DATE);
 
             // count and assign number of shares by account
             Map<Account, Long> account2shares = new HashMap<>();
@@ -1340,15 +1339,15 @@ public class ClientFactory
 
         for (Transaction tx : allTransactions)
         {
-            String note = TextUtil.strip(tx.getNote());
+            String note = TextUtil.trim(tx.getNote());
             if (note == null || note.length() == 0)
                 continue;
 
             Matcher m = pattern.matcher(note);
             if (m.matches())
             {
-                tx.setNote(TextUtil.strip(m.group("note"))); //$NON-NLS-1$
-                tx.setSource(TextUtil.strip(m.group("file"))); //$NON-NLS-1$
+                tx.setNote(TextUtil.trim(m.group("note"))); //$NON-NLS-1$
+                tx.setSource(TextUtil.trim(m.group("file"))); //$NON-NLS-1$
             }
         }
     }

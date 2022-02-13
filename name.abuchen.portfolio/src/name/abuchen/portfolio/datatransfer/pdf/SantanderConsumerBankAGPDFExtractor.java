@@ -1,8 +1,9 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.util.TextUtil.trim;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Map;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -13,14 +14,10 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
-import name.abuchen.portfolio.util.TextUtil;
 
 @SuppressWarnings("nls")
 public class SantanderConsumerBankAGPDFExtractor extends AbstractPDFExtractor
 {
-    private static final String FLAG_WITHHOLDING_TAX_FOUND = "exchangeRate"; //$NON-NLS-1$
-    private static final String EXCHANGE_RATE = "exchangeRate"; //$NON-NLS-1$
-
     public SantanderConsumerBankAGPDFExtractor(Client client)
     {
         super(client);
@@ -84,7 +81,7 @@ public class SantanderConsumerBankAGPDFExtractor extends AbstractPDFExtractor
                 // Limit billigst
                 .section("note").optional()
                 .match("^(?<note>Limit .*)$")
-                .assign((t, v) -> t.setNote(TextUtil.strip(v.get("note"))))
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                 .wrap(BuySellEntryItem::new);
 
@@ -180,7 +177,7 @@ public class SantanderConsumerBankAGPDFExtractor extends AbstractPDFExtractor
                 // Ex-Tag 20.05.2021 Art der Dividende Quartalsdividende
                 .section("note").optional()
                 .match("^.* Art der Dividende (?<note>.*)$")
-                .assign((t, v) -> t.setNote(TextUtil.strip(v.get("note"))))
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                 .wrap(TransactionItem::new);
 
@@ -194,17 +191,14 @@ public class SantanderConsumerBankAGPDFExtractor extends AbstractPDFExtractor
     {
         transaction
                 // Einbehaltene Quellensteuer 15 % auf 2,96 USD 0,37- EUR
-                .section("currency", "quellensteinbeh").optional()
-                .match("^Einbehaltene Quellensteuer [\\d]+ % .* [\\.,\\d]+ [\\w]{3} (?<quellensteinbeh>[\\.,\\d]+)\\- (?<currency>[\\w]{3})")
-                .assign((t, v) -> {
-                    type.getCurrentContext().put(FLAG_WITHHOLDING_TAX_FOUND, Boolean.TRUE.toString());
-                    addTax(t, v, type, "quellensteinbeh");
-                })
+                .section("withHoldingTax", "currency").optional()
+                .match("^Einbehaltene Quellensteuer [\\d]+ % .* [\\.,\\d]+ [\\w]{3} (?<withHoldingTax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})")
+                .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                 // Anrechenbare Quellensteuer 15 % auf 2,44 EUR 0,37 EUR
-                .section("currency", "quellenstanr").optional()
-                .match("^Anrechenbare Quellensteuer [\\d]+ % .* [\\.,\\d]+ [\\w]{3} (?<quellensteinbeh>[\\.,\\d]+)\\- (?<currency>[\\w]{3})")
-                .assign((t, v) -> addTax(t, v, type, "quellenstanr"));
+                .section("creditableWithHoldingTax", "currency").optional()
+                .match("^Anrechenbare Quellensteuer [\\d]+ % .* [\\.,\\d]+ [\\w]{3} (?<creditableWithHoldingTax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})")
+                .assign((t, v) -> processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type));
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
@@ -219,62 +213,5 @@ public class SantanderConsumerBankAGPDFExtractor extends AbstractPDFExtractor
                 .section("fee", "currency").optional()
                 .match("^Fremde Abwicklungsgeb.hr .* (?<fee>[.,\\d]+)\\- (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processFeeEntries(t, v, type));
-    }
-
-    private void addTax(Object t, Map<String, String> v, DocumentType type, String taxtype)
-    {
-        // Wenn es 'Einbehaltene Quellensteuer' gibt, dann die weiteren
-        // Quellensteuer-Arten nicht berücksichtigen.
-        if (checkWithholdingTax(type, taxtype))
-        {
-            name.abuchen.portfolio.model.Transaction tx = getTransaction(t);
-
-            String currency = asCurrencyCode(v.get("currency"));
-            long amount = asAmount(v.get(taxtype));
-
-            if (!currency.equals(tx.getCurrencyCode()) && type.getCurrentContext().containsKey(EXCHANGE_RATE))
-            {
-                BigDecimal rate = BigDecimal.ONE.divide(asExchangeRate(type.getCurrentContext().get(EXCHANGE_RATE)), 10,
-                                RoundingMode.HALF_DOWN);
-
-                currency = tx.getCurrencyCode();
-                amount = rate.multiply(BigDecimal.valueOf(amount)).setScale(0, RoundingMode.HALF_DOWN).longValue();
-            }
-
-            tx.addUnit(new Unit(Unit.Type.TAX, Money.of(currency, amount)));
-        }
-    }
-
-    private boolean checkWithholdingTax(DocumentType type, String taxtype)
-    {
-        if (Boolean.valueOf(type.getCurrentContext().get(FLAG_WITHHOLDING_TAX_FOUND)))
-        {
-            if ("quellenstanr".equalsIgnoreCase(taxtype))
-                return false;
-        }
-        return true;
-    }
-
-    private name.abuchen.portfolio.model.Transaction getTransaction(Object t)
-    {
-        if (t instanceof name.abuchen.portfolio.model.Transaction)
-            return ((name.abuchen.portfolio.model.Transaction) t);
-        return ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction();
-
-    }
-
-    private void processFeeEntries(Object t, Map<String, String> v, DocumentType type)
-    {
-        if (t instanceof name.abuchen.portfolio.model.Transaction)
-        {
-            Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
-            PDFExtractorUtils.checkAndSetFee(fee, (name.abuchen.portfolio.model.Transaction) t, type);
-        }
-        else
-        {
-            Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
-            PDFExtractorUtils.checkAndSetFee(fee,
-                            ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
-        }
     }
 }

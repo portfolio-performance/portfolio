@@ -2,9 +2,6 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -45,7 +42,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("(Kauf|Verkauf)");
+        DocumentType type = new DocumentType("(Kauf|Verkauf|Gesamtfälligkeit)");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -55,16 +52,16 @@ public class DABPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^(Kauf|Verkauf) .*$", "Dieser Beleg wird .*$");
+        Block firstRelevantLine = new Block("^(Kauf|Verkauf|Gesamtf.lligkeit) .*$", "Dieser Beleg wird .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
                 // Is type --> "Verkauf" change from BUY to SELL
                 .section("type").optional()
-                .match("^(?<type>(Kauf|Verkauf)) .*")
+                .match("^(?<type>(Kauf|Verkauf|Gesamtf.lligkeit)) .*")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("Verkauf"))
+                    if (v.get("type").equals("Verkauf") || v.get("type").equals("Gesamtfälligkeit"))
                     {
                         t.setType(PortfolioTransaction.Type.SELL);
                     }
@@ -94,7 +91,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 // Nominal Kurs
                 // EUR 1.000,000 100,0000 %
                 .section("isin", "name", "name1", "shares", "currency").optional()
-                .find("Gattungsbezeichnung F.lligkeit n.ch. Zinstermin ISIN")
+                .find("Gattungsbezeichnung F.lligkeit n.ch\\. Zinstermin ISIN")
                 .match("^(?<name>.*) [\\d]{2}\\.[\\d]{2}\\.[\\d]{2,4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<isin>[\\w]{12})$")
                 .match("^(?<name1>.*)$")
                 .match("^Nominal Kurs$")
@@ -116,8 +113,8 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 // Nominal Kurs
                 // STK 15,000 EUR 133,5700
                 .section("isin", "name", "name1", "shares", "currency").optional()
-                .find("Gattungsbezeichnung F.lligkeit n.ch. Zinstermin ISIN")
-                .match("^(?<name>.*) [\\d]+\\.[\\d]+\\.[\\d]{2,4} [\\d]+\\.[\\d]+\\.[\\d]{4} (?<isin>[\\w]{12})$")
+                .find("Gattungsbezeichnung F.lligkeit n.ch\\. Zinstermin ISIN")
+                .match("^(?<name>.*) [\\d]{2}\\.[\\d]{2}\\.[\\d]{2,4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<isin>[\\w]{12})$")
                 .match("^(?<name1>.*)$")
                 .match("^Nominal Kurs$")
                 .match("^STK (?<shares>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+$")
@@ -135,10 +132,28 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 // Nominal Kurs
                 // STK 1,000 EUR 111,1111
                 .section("isin", "name", "name1", "shares", "currency").optional()
-                .find("Gattungsbezeichnung F.lligkeit n.ch. Zinstermin ISIN")
+                .find("Gattungsbezeichnung F.lligkeit n.ch\\. Zinstermin ISIN")
                 .match("^(?<name>.*) [\\d]+\\.[\\d]+\\.[\\d]{4} (?<isin>[\\w]{12})$")
                 .match("^(?<name1>.*)$")
                 .match("^Nominal Kurs$")
+                .match("^STK (?<shares>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+$")
+                .assign((t, v) -> {
+                    if (!v.get("name1").startsWith("Nominal"))
+                        v.put("name", v.get("name") + " " + v.get("name1"));
+
+                    t.setShares(asShares(v.get("shares")));
+                    t.setSecurity(getOrCreateSecurity(v));
+                })
+
+                // UniCredit Bank AG HVB TuBull 30.11.2021 DE000HB0NKY1
+                // O.EndDJIA34745,0898
+                // Nominal Einlösung zu:
+                // STK 54,000 EUR 0,0010
+                .section("name", "isin", "name1", "shares", "currency").optional()
+                .find("Gattungsbezeichnung F.lligkeit n.ch\\. Zinstermin ISIN")
+                .match("^(?<name>.*) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<isin>[\\w]{12})$")
+                .match("^(?<name1>.*)$")
+                .match("^Nominal Einl.sung zu:$")
                 .match("^STK (?<shares>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Nominal"))
@@ -152,16 +167,25 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 .section("time").optional()
                 .match("^Handelszeit (?<time>[\\d]{2}:[\\d]{2}).*$")
                 .assign((t, v) -> type.getCurrentContext().put("time", v.get("time")))
-                
-                // Handelstag 24.08.2015  Kurswert                    USD 5.205,00
-                .section("date")
-                .match("^Handelstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$")
-                .assign((t, v) -> {
-                    if (type.getCurrentContext().get("time") != null)
-                        t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
-                    else
-                        t.setDate(asDate(v.get("date")));
-                })
+
+                .oneOf(
+                                // Handelstag 24.08.2015  Kurswert                    USD 5.205,00
+                                section -> section
+                                        .attributes("date")
+                                        .match("^Handelstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$")
+                                        .assign((t, v) -> {
+                                            if (type.getCurrentContext().get("time") != null)
+                                                t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
+                                            else
+                                                t.setDate(asDate(v.get("date")));
+                                        })
+                                ,
+                                // 07.12.2021 0000000000 EUR 0,05
+                                section -> section
+                                        .attributes("date")
+                                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .* [\\w]{3} [\\.,\\d]+$")
+                                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                        )
 
                 /***
                  * If changes are made in this area, 
@@ -190,13 +214,13 @@ public class DABPDFExtractor extends AbstractPDFExtractor
 
                 // Börse USA/NAN Ausmachender Betrag USD 5.280,17-
                 // 03.08.2015 0000000000 EUR/USD 1,100297 EUR 4.798,86
-                .section("fxcurrency", "fxamount", "exchangeRate").optional()
-                .match("^.* (Ausmachender Betrag|Kurswert) (?<fxcurrency>[\\w]{3}) (?<fxamount>[\\.,\\d]+)[-]?$")
+                .section("fxCurrency", "fxAmount", "exchangeRate").optional()
+                .match("^.* (Ausmachender Betrag|Kurswert) (?<fxCurrency>[\\w]{3}) (?<fxAmount>[\\.,\\d]+)(\\-)?$")
                 .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\w]{3}\\/[\\w]{3} (?<exchangeRate>[\\.,\\d]+) [\\w]{3} [\\.,\\d]+$")
                 .assign((t, v) -> {
                     // read the forex currency, exchange rate and gross
                     // amount in forex currency
-                    String forex = asCurrencyCode(v.get("fxcurrency"));
+                    String forex = asCurrencyCode(v.get("fxCurrency"));
                     if (t.getPortfolioTransaction().getSecurity().getCurrencyCode().equals(forex))
                     {
                         BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
@@ -204,7 +228,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                                         RoundingMode.HALF_DOWN);
 
                         // gross given in forex currency
-                        long fxAmount = asAmount(v.get("fxamount"));
+                        long fxAmount = asAmount(v.get("fxAmount"));
                         long amount = reverseRate.multiply(BigDecimal.valueOf(fxAmount))
                                         .setScale(0, RoundingMode.HALF_DOWN).longValue();
 
@@ -226,10 +250,10 @@ public class DABPDFExtractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private void addDividendTransaction()
     {
-        DocumentType type = new DocumentType("(Dividende|Ertr.gnisgutschrift)");
+        DocumentType type = new DocumentType("(Dividendengutschrift|Ertr.gnisgutschrift)");
         this.addDocumentTyp(type);
 
-        Block block = new Block("^(Dividendengutschrift|Ertr.gnisgutschrift(?! aus))(.*)?$");
+        Block block = new Block("^(Dividendengutschrift|Ertr.gnisgutschrift(?! (aus|VERSANDARTENSCHLUESSEL)))(.*)?$");
         type.addBlock(block);
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
         pdfTransaction.subject(() -> {
@@ -265,9 +289,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 .find("Wertpapierbezeichnung WKN ISIN")
                 .match("^(?<name>.*) (?<wkn>.*) (?<isin>[\\w]{12})$")
                 .match("^Dividende pro St.ck [\\.,\\d]+ (?<currency>[\\w]{3}) .*$")
-                .assign((t, v) -> {
-                    t.setSecurity(getOrCreateSecurity(v));
-                })
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // 1.500 Stück
                 .section("shares").optional()
@@ -281,7 +303,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
 
                 // 08.01.2015 8022574001 EUR 150,00
                 .section("date", "amount", "currency").optional()
-                .find("Nominal Ex-Tag Zahltag .*")
+                .find("Nominal Ex\\-Tag Zahltag .*")
                 .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]+ (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     t.setDateTime(asDate(v.get("date")));
@@ -298,10 +320,9 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                     t.setAmount(asAmount(v.get("amount")));
                 })
 
-                // 27.08.2020  USD 4,64
+                // 27.08.2020 123456789 USD 4,64
                 .section("date", "amount", "currency").optional()
-                .find("Wert *Konto-Nr. *Betrag *zu *Ihren *Gunsten")
-                .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) ([\\s]+)?(?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
+                .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]+ (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     t.setDateTime(asDate(v.get("date")));
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -310,7 +331,6 @@ public class DABPDFExtractor extends AbstractPDFExtractor
 
                 // 30.03.2015 0000000000 EUR/ZAR 13,195 EUR 586,80
                 .section("date", "amount", "currency", "forexCurrency", "exchangeRate").optional()
-                .find("Wert Konto-Nr. Devisenkurs Betrag zu Ihren Gunsten")
                 .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]+ [\\w]{3}\\/(?<forexCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+) (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     t.setDateTime(asDate(v.get("date")));
@@ -335,8 +355,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                  * the forex currency to a account in forex curreny but
                  * the security is listed in local currency
                  */
-                .section("forex", "localCurrency", "forexCurrency", "exchangeRate").optional() //
-                .find("Wert Konto-Nr. Betrag zu Ihren Gunsten")
+                .section("forex", "localCurrency", "forexCurrency", "exchangeRate").optional()
                 .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [0-9]* [\\w]{3} (?<forex>[\\.,\\d]+)$")
                 .match("^Devisenkurs: (?<localCurrency>[\\w]{3})/(?<forexCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+)$")
                 .assign((t, v) -> {
@@ -473,7 +492,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private void addTransferOutInTransaction()
     {
-        DocumentType type = new DocumentType("Einbuchung|Ihr Depotbestand");
+        DocumentType type = new DocumentType("(Einbuchung|Ihr Depotbestand)");
         this.addDocumentTyp(type);
 
         Transaction<PortfolioTransaction> pdfTransaction = new Transaction<>();
@@ -568,7 +587,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
          * the buy/sell transaction function must be adjusted.
          * addBuySellTransaction();
          */
-        Block block = new Block("^(Kauf|Verkauf) .*$", "Dieser Beleg wird .*$");
+        Block block = new Block("^(Kauf|Verkauf|Gesamtf.lligkeit) .*$", "Dieser Beleg wird .*$");
         type.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
 
@@ -595,7 +614,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 // Nominal Kurs
                 // EUR 1.000,000 100,0000 %
                 .section("isin", "name", "name1", "shares", "currency").optional()
-                .find("Gattungsbezeichnung F.lligkeit n.ch. Zinstermin ISIN")
+                .find("Gattungsbezeichnung F.lligkeit n.ch\\. Zinstermin ISIN")
                 .match("^(?<name>.*) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<isin>[\\w]{12})$")
                 .match("^(?<name1>.*)$")
                 .match("^Nominal Kurs$")
@@ -617,10 +636,28 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 // Nominal Kurs
                 // STK 15,000 EUR 133,5700
                 .section("isin", "name", "name1", "shares", "currency").optional()
-                .find("Gattungsbezeichnung F.lligkeit n.ch. Zinstermin ISIN")
-                .match("^(?<name>.*) ([\\d]+\\.[\\d]+\\.[\\d]{2,4}) ([\\d]+\\.[\\d]+\\.[\\d]{4}) (?<isin>[\\w]{12})$")
+                .find("Gattungsbezeichnung F.lligkeit n.ch\\. Zinstermin ISIN")
+                .match("^(?<name>.*) ([\\d]{2}\\.[\\d]{2}\\.[\\d]{2,4}) ([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<isin>[\\w]{12})$")
                 .match("^(?<name1>.*)$")
                 .match("^Nominal Kurs$")
+                .match("^STK (?<shares>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+$")
+                .assign((t, v) -> {
+                    if (!v.get("name1").startsWith("Nominal"))
+                        v.put("name", v.get("name") + " " + v.get("name1"));
+
+                    t.setShares(asShares(v.get("shares")));
+                    t.setSecurity(getOrCreateSecurity(v));
+                })
+
+                // UniCredit Bank AG HVB TuBull 30.11.2021 DE000HB0NKY1
+                // O.EndDJIA34745,0898
+                // Nominal Einlösung zu:
+                // STK 54,000 EUR 0,0010
+                .section("name", "isin", "name1", "shares", "currency").optional()
+                .find("Gattungsbezeichnung F.lligkeit n.ch\\. Zinstermin ISIN")
+                .match("^(?<name>.*) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<isin>[\\w]{12})$")
+                .match("^(?<name1>.*)$")
+                .match("^Nominal Einl.sung zu:$")
                 .match("^STK (?<shares>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Nominal"))
@@ -637,8 +674,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 .section("fxCurrency", "exchangeRate", "date", "currency", "amount").optional()
                 .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\w]{3}\\/(?<fxCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+) [\\w]{3} [\\.,\\d]+$")
                 .match("^zu versteuern \\(negativ\\).*$")
-                .match("^Wert Konto-Nr. Abrechnungs-Nr. Betrag zu Ihren Gunsten$")
-                .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) ([\\d]+) ([\\d]+) (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
+                .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]+ [\\d]+ (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     t.setDateTime(asDate(v.get("date")));
                     t.setAmount(asAmount(v.get("amount")));
@@ -672,8 +708,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 // 07.07.2020 1234567 1234567 EUR 16,46
                 .section("date", "currency", "amount").optional()
                 .match("^zu versteuern \\(negativ\\).*$")
-                .match("^Wert Konto-Nr. Abrechnungs-Nr. Betrag zu Ihren Gunsten$")
-                .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) ([\\d]+) ([\\d]+) (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
+                .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]+ [\\d]+ (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     t.setDateTime(asDate(v.get("date")));
                     t.setAmount(asAmount(v.get("amount")));
@@ -708,47 +743,26 @@ public class DABPDFExtractor extends AbstractPDFExtractor
         type.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            AccountTransaction transaction = new AccountTransaction();
-                            transaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return transaction;
-                        })
+                .subject(() -> {
+                    AccountTransaction transaction = new AccountTransaction();
+                    transaction.setType(AccountTransaction.Type.DEPOSIT);
+                    return transaction;
+                })
 
-                        /***
-                         * A regular "SEPA-Lastschrift" is a deposit (delivery inbound) 
-                         * form a account to the reference account. (automatic savings plan)
-                         */
+                // SEPA-Lastschrift Max Mustermann 15.07.19 300,00
+                // SEPA-Gutschrift Max Mustermann 05.07.19 15.000,00
+                .section("date", "amount")
+                .match("^(SEPA\\-Gutschrift|SEPA\\-Lastschrift) [^Lastschrift].* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) (?<amount>[\\.,\\d]+)$")
+                .assign((t, v) -> {
+                    Map<String, String> context = type.getCurrentContext();
 
-                        // Is type --> "SEPA-XXXX" change from DEPOSIT to REMOVAL
-                        // 
-                        // At this time, we don't know the correct regEX for
-                        // a removal transaction.
-                        // 
-                        // .section("type").optional()
-                        // .match("^(?<type>SEPA-XXXX) .*$")
-                        // .assign((t, v) -> {
-                        //    if (v.get("type").equals("SEPA-XXXX"))
-                        //    {
-                        //       t.setType(AccountTransaction.Type.REMOVAL);
-                        //    }
-                        // })
+                    t.setDateTime(asDate(v.get("date")));
 
-                        // SEPA-Lastschrift Max Mustermann 15.07.19 300,00
-                        // SEPA-Gutschrift Max Mustermann 05.07.19 15.000,00
-                        .section("date", "amount")
-                        .match("^(SEPA-Gutschrift|SEPA-Lastschrift) [^Lastschrift].* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) (?<amount>[\\.,\\d]+)$")
-                        .assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                })
 
-                            // Formate the date from 10.07.19 to 10.07.2019
-                            v.put("date", DateTimeFormatter.ofPattern("dd.MM.yyyy").format(LocalDate.parse(v.get("date"), DateTimeFormatter.ofPattern("dd.MM.yy", Locale.GERMANY))));
-                            t.setDateTime(asDate(v.get("date")));
-
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                        })
-
-                        .wrap(TransactionItem::new));
+                .wrap(TransactionItem::new));
     }
 
     @SuppressWarnings("nls")
@@ -772,27 +786,25 @@ public class DABPDFExtractor extends AbstractPDFExtractor
         type.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            AccountTransaction transaction = new AccountTransaction();
-                            transaction.setType(AccountTransaction.Type.FEES);
-                            return transaction;
-                        })
+                .subject(() -> {
+                    AccountTransaction transaction = new AccountTransaction();
+                    transaction.setType(AccountTransaction.Type.FEES);
+                    return transaction;
+                })
 
-                        // SEPA-Lastschrift Lastschrift Managementgebühr 29.06.20 53,02
-                        .section("date", "amount")
-                        .match("^SEPA-Lastschrift Lastschrift Managementgeb.hr (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) (?<amount>[\\.,\\d]+)$")
-                        .assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
+                // SEPA-Lastschrift Lastschrift Managementgebühr 29.06.20 53,02
+                .section("date", "amount")
+                .match("^SEPA\\-Lastschrift Lastschrift Managementgeb.hr (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) (?<amount>[\\.,\\d]+)$")
+                .assign((t, v) -> {
+                    Map<String, String> context = type.getCurrentContext();
 
-                            // Formate the date from 29.06.20 to 29.06.2020
-                            v.put("date", DateTimeFormatter.ofPattern("dd.MM.yyyy").format(LocalDate.parse(v.get("date"), DateTimeFormatter.ofPattern("dd.MM.yy", Locale.GERMANY))));
-                            t.setDateTime(asDate(v.get("date")));
+                    t.setDateTime(asDate(v.get("date")));
 
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                        })
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                })
 
-                        .wrap(TransactionItem::new));
+                .wrap(TransactionItem::new));
     }
 
     @SuppressWarnings("nls")
@@ -810,21 +822,35 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 });
 
         transaction
+                // ausländische Quellensteuer 15,315% JPY 95
+                .section("withHoldingTax", "currency").optional()
+                .match("^ausländische Quellensteuer .* ([\\s]+)?(?<currency>[\\w]{3})([\\s]+)? (?<withHoldingTax>[\\.,\\d]+)(\\-)?$")
+                .assign((t, v) -> {
+                    if (!"X".equals(type.getCurrentContext().get("negative")))
+                        processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
+                })
+
+                // abzgl. Quellensteuer 15,00 % von 281,25 USD 42,19 USD
+                .section("withHoldingTax", "currency").optional()
+                .match("^abzgl\\. Quellensteuer .* [\\w]{3} (?<withHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
+
                 // davon anrechenbare US-Quellensteuer 15% EUR 0,79
                 // davon anrechenbare Quellensteuer 15% ZAR 1.560,00
                 // davon anrechenbare Quellensteuer Fondseingangsseite EUR 1,62
-                .section("tax", "currency").optional()
-                .match("^(.*)?davon anrechenbare (US-)?Quellensteuer .* ([\\s]+)?(?<currency>[\\w]{3})([\\s+])? (?<tax>[\\.,\\d]+)([-])?$")
+                // davon anrechenbare US-Quellensteuer  15% USD             2,430     
+                .section("creditableWithHoldingTax", "currency").optional()
+                .match("^(.*)?davon anrechenbare (US\\-)?Quellensteuer .* ([\\s]+)?(?<currency>[\\w]{3})([\\s]+)? (?<creditableWithHoldingTax>[\\.,\\d]+)(\\-|[\\s]+)?$")
                 .assign((t, v) -> {
                     if (!"X".equals(type.getCurrentContext().get("negative")))
                     {
-                        processTaxEntries(t, v, type);
+                        processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type);
                     }
                 })
 
                 // Börse Sekunden-Handel Fonds L&S Kapitalertragsteuer EUR 45,88-
                 .section("tax", "currency", "label").optional()
-                .match("^(?<label>.*) Kapitalertragsteuer ([\\s]+)?(?<currency>[\\w]{3})([\\s]+)? (?<tax>[\\.,\\d]+)([-])?$")
+                .match("^(?<label>.*) Kapitalertragsteuer ([\\s]+)?(?<currency>[\\w]{3})([\\s]+)? (?<tax>[\\.,\\d]+)(\\-)?$")
                 .assign((t, v) -> {
                     if (!"X".equals(type.getCurrentContext().get("negative")) 
                                     && !v.get("label").trim().startsWith("im laufenden Jahr einbehaltene"))
@@ -835,7 +861,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
 
                 // Kapitalertragsteuer EUR 14,51
                 .section("tax", "currency").optional()
-                .match("^Kapitalertragsteuer (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)([-])?$")
+                .match("^Kapitalertragsteuer (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)(\\-)?$")
                 .assign((t, v) -> {
                     if (!"X".equals(type.getCurrentContext().get("negative")))
                     {
@@ -845,7 +871,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
 
                 // Verwahrart Girosammelverwahrung Solidaritätszuschlag EUR 2,52-
                 .section("tax", "currency", "label").optional()
-                .match("^(?<label>.*) Solidarit.tszuschlag ([\\s]+)?(?<currency>[\\w]{3})([\\s]+)? (?<tax>[\\.,\\d]+)([-])?$")
+                .match("^(?<label>.*) Solidarit.tszuschlag ([\\s]+)?(?<currency>[\\w]{3})([\\s]+)? (?<tax>[\\.,\\d]+)(\\-)?$")
                 .assign((t, v) -> {
                     if (!"X".equals(type.getCurrentContext().get("negative")) 
                                     && !v.get("label").trim().startsWith("im laufenden Jahr einbehaltene"))
@@ -856,7 +882,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
 
                 // Solidaritätszuschlag EUR 0,79
                 .section("tax", "currency").optional()
-                .match("^Solidarit.tszuschlag ([\\s]+)?(?<currency>[\\w]{3})([\\s]+)? (?<tax>[\\.,\\d]+)([-])?$")
+                .match("^Solidarit.tszuschlag ([\\s]+)?(?<currency>[\\w]{3})([\\s]+)? (?<tax>[\\.,\\d]+)(\\-)?$")
                 .assign((t, v) -> {
                     if (!"X".equals(type.getCurrentContext().get("negative")))
                     {
@@ -866,7 +892,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
 
                 // einbehaltene Kirchensteuer EUR 0,15
                 .section("tax", "currency", "label").optional()
-                .match("^(?<label>.*) Kirchensteuer ([\\s]+)?(?<currency>[\\w]{3})([\\s]+)? (?<tax>[\\.,\\d]+)([-])?$")
+                .match("^(?<label>.*) Kirchensteuer ([\\s]+)?(?<currency>[\\w]{3})([\\s]+)? (?<tax>[\\.,\\d]+)(\\-)?$")
                 .assign((t, v) -> {
                     if (!"X".equals(type.getCurrentContext().get("negative"))
                                     && !v.get("label").trim().startsWith("im laufenden Jahr einbehaltene"))
@@ -877,7 +903,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
 
                 // Kirchensteuer EUR 4,12-
                 .section("tax", "currency").optional()
-                .match("^Kirchensteuer ([\\s]+)?(?<currency>[\\w]{3})([\\s]+)? (?<tax>[\\.,\\d]+)([-])?$")
+                .match("^Kirchensteuer ([\\s]+)?(?<currency>[\\w]{3})([\\s]+)? (?<tax>[\\.,\\d]+)(\\-)?$")
                 .assign((t, v) -> {
                     if (!"X".equals(type.getCurrentContext().get("negative")))
                     {
@@ -885,28 +911,22 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                     }
                 })
 
-                .section("tax", "currency").optional()
-                .match("^abzgl. Quellensteuer .* [\\w]{3} (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
-                .assign((t, v) -> {
-                    processTaxEntries(t, v, type);
-                })
-
                 // abzgl. Kapitalertragsteuer 25,00 % von 90,02 EUR 22,51 EUR
                 .section("tax", "currency").optional()
-                .match("^abzgl. Kapitalertrags(s)?teuer .* (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^abzgl\\. Kapitalertrags(s)?teuer .* (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     processTaxEntries(t, v, type);
                 })
 
                 // abzgl. Solidaritätszuschlag 5,50 % von 22,51 EUR 1,23 EUR
                 .section("tax", "currency").optional()
-                .match("^abzgl. Solidarit.tszuschlag .* (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^abzgl\\. Solidarit.tszuschlag .* (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     processTaxEntries(t, v, type);
                 })
 
                 .section("tax", "currency").optional()
-                .match("^abzgl. Kirchensteuer .* (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^abzgl\\. Kirchensteuer .* (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     processTaxEntries(t, v, type);
                 });
@@ -918,69 +938,37 @@ public class DABPDFExtractor extends AbstractPDFExtractor
         transaction
                 // Handelszeit 14:15* Registrierungsspesen EUR 0,58-
                 .section("fee", "currency").optional()
-                .match("^.* Registrierungsspesen (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)-$")
+                .match("^.* Registrierungsspesen (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)\\-$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Handelszeit 16:38* Provision USD 18,78-
                 .section("fee", "currency").optional()
-                .match("^.* Provision (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)-$")
+                .match("^.* Provision (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)\\-$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Börse USA/NAN Handelsplatzentgelt USD 17,44-
                 .section("fee", "currency").optional()
-                .match("^.* Handelsplatzentgelt (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)-$")
+                .match("^.* Handelsplatzentgelt (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)\\-$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Verwahrart Wertpapierrechnung Abwicklungskosten Ausland USD 0,10-
                 .section("fee", "currency").optional()
-                .match("^.* Abwicklungskosten.* (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)-$")
+                .match("^.* Abwicklungskosten .* (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)\\-$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Verwahrart Girosammelverwahrung Gebühr EUR 0,50-
                 .section("fee", "currency").optional()
-                .match("^Verwahrart Girosammelverwahrung Geb.hr (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)-$")
+                .match("^Verwahrart Girosammelverwahrung Geb.hr (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)\\-$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Börse außerbörslich Bezugspreis EUR 27,00-
                 .section("fee", "currency").optional()
-                .match("^B.rse außerb.rslich Bezugspreis (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)-$")
+                .match("^B.rse außerb.rslich Bezugspreis (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)\\-$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Verwahrart Girosammelverwahrung Variabl. Transaktionsentgelt EUR 0,75-
                 .section("fee", "currency").optional()
-                .match("^.* Transaktionsentgelt (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)-$")
+                .match("^.* Transaktionsentgelt (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)\\-$")
                 .assign((t, v) -> processFeeEntries(t, v, type));
-    }
-
-    @SuppressWarnings("nls")
-    private void processTaxEntries(Object t, Map<String, String> v, DocumentType type)
-    {
-        if (t instanceof name.abuchen.portfolio.model.Transaction)
-        {
-            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-            PDFExtractorUtils.checkAndSetTax(tax, (name.abuchen.portfolio.model.Transaction) t, type);
-        }
-        else
-        {
-            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-            PDFExtractorUtils.checkAndSetTax(tax, ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
-        }
-    }
-    
-    @SuppressWarnings("nls")
-    private void processFeeEntries(Object t, Map<String, String> v, DocumentType type)
-    {
-        if (t instanceof name.abuchen.portfolio.model.Transaction)
-        {
-            Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
-            PDFExtractorUtils.checkAndSetFee(fee, 
-                            (name.abuchen.portfolio.model.Transaction) t, type);
-        }
-        else
-        {
-            Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
-            PDFExtractorUtils.checkAndSetFee(fee,
-                            ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
-        }
     }
 }

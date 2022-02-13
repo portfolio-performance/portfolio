@@ -369,7 +369,7 @@ public final class ColumnViewerSorter
             {
                 setupSortingContext();
 
-                int dir = direction == SWT.DOWN ? 1 : -1;
+                int dir = direction == SWT.UP ? 1 : -1;
 
                 if (element1 == null && element2 == null)
                     return 0;
@@ -456,7 +456,7 @@ public final class ColumnViewerSorter
 
     public void attachTo(ColumnViewer viewer, ViewerColumn column, boolean makeDefault)
     {
-        attachTo(viewer, column, makeDefault ? SWT.DOWN : SWT.NONE);
+        attachTo(viewer, column, makeDefault ? SWT.UP : SWT.NONE);
     }
 
     public void attachTo(ColumnViewer viewer, ViewerColumn column, int direction)

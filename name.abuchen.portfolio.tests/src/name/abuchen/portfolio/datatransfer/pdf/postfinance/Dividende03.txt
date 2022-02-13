@@ -1,0 +1,27 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRANSAKTIONSBELEG
+Kunde: 999999 - TRADING
+Herrn Vorname Nachname
+Strasse Hausnummer
+CH-2540 Grenchen
+Bern, 03.07.2018
+Kapitalgewinn Unsere Referenz: 149619136 
+Im Hinblick auf folgenden Titel:
+Titel
+Bezeichnung Anzahl
+YPSOMED HLDG ISIN: CH0019396990NKN: 1939699 19
+haben wir Ihrem Konto den folgenden Betrag gutgeschrieben:
+Kontonummer 99999900
+Ausführungsdatum 03.07.2018
+Valutadatum 05.07.2018
+Anzahl 19
+Kapitalgewinn 1.4 CHF
+Betrag CHF 26.60
+Total CHF 26.60
+Bitte prüfen Sie dieses Dokument und benachrichtigen Sie uns bei Unstimmigkeiten innert Monatsfrist.
+PostFinance AG, Mingerstrasse 20, 3030 Bern
+Kontaktcenter E-Trading: 0848 800 000 (Mo-Fr: 08.00-22.00 Uhr, ab Festnetz CHF 0.08/Min.)
+Formular ohne Unterschrift S.E. & O.
+MwSt n° CHE-116.302.542

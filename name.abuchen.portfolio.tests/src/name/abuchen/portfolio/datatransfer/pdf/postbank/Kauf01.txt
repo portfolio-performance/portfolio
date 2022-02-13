@@ -1,0 +1,60 @@
+PDF Author: 'Deutsche Postbank AG'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Postbank Köln · 51222 Köln    
+ 
+Wertpapier Abrechnung Kauf 
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 158 XTR.(IE) - MSCI WORLD              IE00BJ0KDQ92 (A1XB5U)
+REGISTERED SHARES 1C O.N.          
+Handels-/Ausführungsplatz Stuttgart (gemäß Weisung)
+Börsensegment STUB
+Limit-Order
+Limit 63,00 EUR 
+Schlusstag/-Zeit 04.02.2020 08:00:04 Auftragserteilung/ -ort Online-Banking
+Ausführungskurs 62,821 EUR
+Girosammelverw. mehrere Sammelurkunden - kein Stückeausdruck -
+Kurswert 9.925,72- EUR
+Provision 39,95- EUR
+Abwicklungskosten Börse 0,04- EUR
+Transaktionsentgelt Börse 11,82- EUR
+Übertragungs-/Liefergebühr 0,65- EUR
+Ausmachender Betrag 9.978,18- EUR
+Verwaltungsvergütung pro Jahr 0,09 %
+ 
+Den Gegenwert buchen wir mit Valuta 06.02.2020 zu Lasten des Kontos 123456789
+(IBAN DE93 XXXX XXXX XXXX XXXX XX), BLZ XXXXXXXX (BIC XXXXXXXX).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+Für das Geschäft wurde keine Anlageberatung erbracht.
+Auf Risiken gemäß WpHG wurde hingewiesen.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Postbank Köln · 51222 Köln    
+ 
+Wertpapier Abrechnung Kauf 
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 140 COMSTA.-MSCI EM.MKTS.TRN U.ETF     LU0635178014 (ETF127)
+INHABER-ANTEILE I O.N.             
+Handels-/Ausführungsplatz Stuttgart (gemäß Weisung)
+Börsensegment STUA
+Limit-Order
+Limit 43,00 EUR 
+Schlusstag/-Zeit 04.02.2020 08:00:04 Auftragserteilung/ -ort Online-Banking
+Ausführungskurs 42,96 EUR
+Girosammelverw. mehrere Sammelurkunden - kein Stückeausdruck -
+Kurswert 6.014,40- EUR
+Provision 39,95- EUR
+Abwicklungskosten Börse 0,04- EUR
+Transaktionsentgelt Börse 7,15- EUR
+Übertragungs-/Liefergebühr 0,65- EUR
+Ausmachender Betrag 6.062,19- EUR
+ 
+Den Gegenwert buchen wir mit Valuta 06.02.2020 zu Lasten des Kontos 123456789
+(IBAN DE93 XXXX XXXX XXXX XXXX XX), BLZ XXXXXXXXX (BIC XXXXXXX).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+Für das Geschäft wurde keine Anlageberatung erbracht.
+Auf Risiken gemäß WpHG wurde hingewiesen.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.

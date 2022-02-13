@@ -1,0 +1,39 @@
+PDF Author: 'Deutsche Postbank AG'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Postbank Köln · 51222 Köln    
+Depotnummer
+ 098765432
+ Kundennummer 1234567890
+Max Mustermann
+ Auftragsnummer 123456/26.00
+Herr Datum 01.01.2020
+Max Mustermann Rechnungsnummer W01234-5678901234/20
+Ortsteil Umsatzsteuer-ID DE811907980   
+Musterstr. 12
+12345 Musterstadt
+ 
+Wertpapier Abrechnung Ausgabe Investmentfonds
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 12,4085 VANGUARD FTSE ALL-WORLD U.ETF      IE00B3RBWM25 (A1JX52)
+REGISTERED SHARES USD DIS.ON       
+Handels-/Ausführungsplatz Außerbörslich (gemäß Weisung)
+Schlusstag 01.01.2020
+Ausführungskurs 80,59 EUR
+Girosammelverw. mehrere Sammelurkunden - kein Stückeausdruck -
+Kurswert 1.000,00- EUR
+Provision 0,90- EUR
+Ausmachender Betrag 1.000,90- EUR
+ 
+Den Gegenwert buchen wir mit Valuta 01.01.2020 zu Lasten des Kontos 0123456789
+(IBAN DE01 2345 6789 0123 4567 89), BLZ 12345678 (BIC PBNKDEFFXXX).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+Gegenpartei bei diesem Geschäft war BÖRSE QUOTRIX
+.
+ABR. OHNE AUSGABEAUFSCHLAG
+IHR ETF-SPARPLAN NR.      1
+Für das Geschäft wurde keine Anlageberatung erbracht.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0123.45678901.2345678XX90 

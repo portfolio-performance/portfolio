@@ -753,7 +753,7 @@ public class erstebankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-08-27T00:00")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-09-15T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(35)));
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.40))));
@@ -825,7 +825,7 @@ public class erstebankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-01-26T00:00")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-01-29T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(90)));
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(24.97))));
@@ -861,7 +861,7 @@ public class erstebankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-28T00:00")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-08-13T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(60)));
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.73))));

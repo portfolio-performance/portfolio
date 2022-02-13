@@ -44,7 +44,7 @@ public final class UpdateQuotesJob extends AbstractClientJob
      */
     private static class Dirtyable
     {
-        private static final int THRESHOLD = 5;
+        private static final int THRESHOLD = 20;
 
         private final Client client;
         private AtomicInteger counter;

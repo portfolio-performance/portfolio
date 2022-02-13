@@ -622,14 +622,14 @@ public class Client
         for (Portfolio portfolio : portfolios)
         {
             answer.append(portfolio.getName()).append('\n');
-            portfolio.getTransactions().stream().sorted(new Transaction.ByDate())
+            portfolio.getTransactions().stream().sorted(Transaction.BY_DATE)
                             .forEach(t -> answer.append(t).append('\n'));
         }
 
         for (Account account : accounts)
         {
             answer.append(account.getName()).append('\n');
-            account.getTransactions().stream().sorted(new Transaction.ByDate())
+            account.getTransactions().stream().sorted(Transaction.BY_DATE)
                             .forEach(t -> answer.append(t).append('\n'));
         }
 

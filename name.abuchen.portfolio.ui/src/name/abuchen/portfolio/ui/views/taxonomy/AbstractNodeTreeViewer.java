@@ -880,8 +880,8 @@ import name.abuchen.portfolio.util.TextUtil;
                 public void run()
                 {
                     assignment.moveTo(targetNode);
-                    nodeViewer.setExpandedState(targetNode, true);
                     onTaxnomyNodeEdited(targetNode);
+                    nodeViewer.setExpandedState(targetNode, true);
                 }
             });
         }

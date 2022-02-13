@@ -1,10 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
-import java.util.Map;
-
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -12,7 +7,6 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
@@ -127,11 +121,7 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
                 // Ex-Datum 12. Mai 2020
                 .section("date")
                 .match("^(Ex-Datum) (?<date>\\d+. \\w+ \\d{4})$")
-                .assign((t, v) -> {
-                    // Formate the date from 14. Mai 2020 to 14.05.2020
-                    v.put("date", DateTimeFormatter.ofPattern("dd.MM.yyyy").format(LocalDate.parse(v.get("date"), DateTimeFormatter.ofPattern("d. MMMM yyyy", Locale.GERMANY))));
-                    t.setDateTime(asDate(v.get("date")));
-                })
+                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
     
                 // Netto EUR 198.36
                 .section("currency", "amount")
@@ -158,9 +148,9 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
                 // Quellensteuer 28 % EUR -77.14
-                .section("tax", "currency").optional()
-                .match("^(Quellensteuer) .* (?<currency>[\\w]{3}) (?<tax>-['.,\\d]+)$")
-                .assign((t, v) -> processTaxEntries(t, v, type));
+                .section("withHoldingTax", "currency").optional()
+                .match("^(Quellensteuer) .* (?<currency>[\\w]{3}) (?<withHoldingTax>-['.,\\d]+)$")
+                .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type));
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
@@ -177,36 +167,6 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
-    private void processTaxEntries(Object t, Map<String, String> v, DocumentType type)
-    {
-        if (t instanceof name.abuchen.portfolio.model.Transaction)
-        {
-            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-            PDFExtractorUtils.checkAndSetTax(tax, (name.abuchen.portfolio.model.Transaction) t, type);
-        }
-        else
-        {
-            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-            PDFExtractorUtils.checkAndSetTax(tax, ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
-        }
-    }
-
-    private void processFeeEntries(Object t, Map<String, String> v, DocumentType type)
-    {
-        if (t instanceof name.abuchen.portfolio.model.Transaction)
-        {
-            Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
-            PDFExtractorUtils.checkAndSetFee(fee, 
-                            (name.abuchen.portfolio.model.Transaction) t, type);
-        }
-        else
-        {
-            Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
-            PDFExtractorUtils.checkAndSetFee(fee,
-                            ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
-        }
-    }
-    
     @Override
     protected long asAmount(String value)
     {

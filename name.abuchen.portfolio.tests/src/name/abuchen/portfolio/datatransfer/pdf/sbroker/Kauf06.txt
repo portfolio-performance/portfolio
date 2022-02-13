@@ -1,0 +1,29 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+~$~|OR07|518007||||||||ORDER.D220111.AFP||||20220111||6398|0000|||||~$~
+S Broker AG & Co. KG ´ Postfach 90 01 50 ´ 39133 Magdeburg
+Depotnummer 
+Auftragsnummer 
+Datum 11.01.2022
+Rechnungsnummer W05500-0000123541/22
+Umsatzsteuer-ID DE213898425
+Wertpapier Abrechnung Kauf
+Auftrag vom 10.01.2022 20:56:38 Uhr
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 30 INNOVATIVE INDL PROPERTIES US45781V1017 (A2DGXH)
+REGISTERED SHARES DL -,001
+Handels-/Ausführungsplatz Lang & Schwarz (gemäû Weisung)
+Börsensegment HAMN
+Limit-Order
+Limit 189,40 EUR
+Schlusstag/-Zeit 10.01.2022 20:56:38
+Ausführungskurs 189,40 EUR
+Wertpapierrechnung Lagerland USA
+Kurswert 5.682,00- EUR
+Provision 1,48- EUR
+Ausmachender Betrag 5.683,48- EUR
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+5500.01112038.0008268OR07
+SBRO_OR07_v2.7P.ORDER.D220111.AFP_6398

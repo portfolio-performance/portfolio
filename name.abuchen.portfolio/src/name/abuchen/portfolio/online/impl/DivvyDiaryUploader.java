@@ -15,9 +15,13 @@ import com.google.common.base.Strings;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.Quote;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
+import name.abuchen.portfolio.snapshot.security.SecurityPerformanceIndicator;
+import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
+import name.abuchen.portfolio.util.Interval;
 import name.abuchen.portfolio.util.WebAccess;
 
 public class DivvyDiaryUploader
@@ -32,12 +36,26 @@ public class DivvyDiaryUploader
         ClientSnapshot snapshot = ClientSnapshot.create(client, converter, LocalDate.now());
         PortfolioSnapshot portfolio = snapshot.getJointPortfolio();
 
+        SecurityPerformanceSnapshot performance = SecurityPerformanceSnapshot.create(client, converter,
+                        Interval.of(LocalDate.MIN, LocalDate.now()), SecurityPerformanceIndicator.Costs.class);
+
         List<JSONObject> payload = portfolio.getPositions().stream() //
                         .filter(p -> p.getInvestmentVehicle() instanceof Security)
                         .filter(p -> !Strings.isNullOrEmpty(((Security) p.getInvestmentVehicle()).getIsin())).map(p -> {
                             JSONObject item = new JSONObject();
                             item.put("isin", ((Security) p.getInvestmentVehicle()).getIsin()); //$NON-NLS-1$
                             item.put("quantity", p.getShares() / Values.Share.divider()); //$NON-NLS-1$
+
+                            performance.getRecord(p.getSecurity()).ifPresent(record -> {
+
+                                Quote fifo = record.getFifoCostPerSharesHeld();
+
+                                JSONObject buyin = new JSONObject();
+                                buyin.put("price", fifo.getAmount() / Values.Quote.divider()); //$NON-NLS-1$
+                                buyin.put("currency", fifo.getCurrencyCode()); //$NON-NLS-1$
+                                item.put("buyin", buyin); //$NON-NLS-1$
+                            });
+
                             return item;
                         }) //
                         .collect(Collectors.toList());

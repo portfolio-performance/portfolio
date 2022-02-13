@@ -1,14 +1,13 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.util.TextUtil.trim;
+
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -20,28 +19,18 @@ import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.SecurityCache;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
+import name.abuchen.portfolio.datatransfer.pdf.PDFParser.ParsedData;
 import name.abuchen.portfolio.model.Annotated;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.CrossEntry;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.util.TextUtil;
 
 public abstract class AbstractPDFExtractor implements Extractor
 {
-    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy", Locale.GERMANY); //$NON-NLS-1$
-    private static final DateTimeFormatter DATE_FORMAT_YEAR_TWO_DIGIT = DateTimeFormatter.ofPattern("d.M.yy", //$NON-NLS-1$
-                    Locale.GERMANY);
-    private static final DateTimeFormatter DATE_FORMAT_DASHES = DateTimeFormatter.ofPattern("yyyy-M-d", Locale.GERMANY); //$NON-NLS-1$
-    private static final DateTimeFormatter DATE_FORMAT_DASHES_REVERSE = DateTimeFormatter.ofPattern("d-M-yyyy", //$NON-NLS-1$
-                    Locale.GERMANY);
-    private static final DateTimeFormatter DATE_TIME_SECONDS_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy HH:mm", //$NON-NLS-1$
-                    Locale.GERMANY);
-    private static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy HH:mm:ss", //$NON-NLS-1$
-                    Locale.GERMANY);
-
     private final NumberFormat numberFormat = NumberFormat.getInstance(Locale.GERMANY);
 
     private final Client client;
@@ -116,10 +105,11 @@ public abstract class AbstractPDFExtractor implements Extractor
                     ((Transaction) subject).setSource(filename);
                 else if (subject instanceof CrossEntry)
                     ((CrossEntry) subject).setSource(filename);
-                else if (subject.getNote() == null || TextUtil.strip(subject.getNote()).length() == 0)
+                else if (subject.getNote() == null || trim(subject.getNote()).length() == 0)
                     item.getSubject().setNote(filename);
                 else
-                    item.getSubject().setNote(TextUtil.strip(item.getSubject().getNote()).concat(" | ").concat(filename)); //$NON-NLS-1$
+                    item.getSubject().setNote(
+                                    trim(item.getSubject().getNote()).concat(" | ").concat(filename)); //$NON-NLS-1$
             }
 
             return items;
@@ -240,6 +230,11 @@ public abstract class AbstractPDFExtractor implements Extractor
 
     protected BigDecimal asExchangeRate(String value)
     {
+        return asBigDecimal(value);
+    }
+
+    protected BigDecimal asBigDecimal(String value)
+    {
         try
         {
             return BigDecimal.valueOf(numberFormat.parse(value).doubleValue());
@@ -250,60 +245,70 @@ public abstract class AbstractPDFExtractor implements Extractor
         }
     }
 
-    protected LocalDateTime asDate(String value)
+    protected LocalDateTime asDate(String value, Locale... hints)
     {
-        LocalDateTime date = null;
-
-        try
-        {
-            date = LocalDate.parse(value, DATE_FORMAT).atStartOfDay();
-        }
-        catch (DateTimeParseException e1)
-        {
-            try
-            {
-                date = LocalDate.parse(value, DATE_FORMAT_DASHES).atStartOfDay();
-            }
-            catch (DateTimeParseException e2)
-            {
-                try
-                {
-                    date = LocalDate.parse(value, DATE_FORMAT_DASHES_REVERSE).atStartOfDay();
-                }
-                catch (DateTimeParseException e3)
-                {
-                    date = LocalDate.parse(value, DATE_FORMAT_YEAR_TWO_DIGIT).atStartOfDay();
-                }
-            }
-        }
-        return date;
+        return PDFExtractorUtils.asDate(value, hints);
     }
 
     protected LocalTime asTime(String value)
     {
-        LocalTime time = null;
-
-        try
-        {
-            time = LocalTime.parse(value, DateTimeFormatter.ofPattern("HH:mm")); //$NON-NLS-1$
-        }
-        catch (DateTimeParseException e)
-        {
-            time = LocalTime.parse(value, DateTimeFormatter.ofPattern("HH:mm:ss")); //$NON-NLS-1$
-        }
-
-        return time.withSecond(0);
+        return PDFExtractorUtils.asTime(value);
     }
 
     protected LocalDateTime asDate(String date, String time)
     {
-        try
+        return PDFExtractorUtils.asDate(date, time);
+    }
+
+    protected void processTaxEntries(Object t, Map<String, String> v, DocumentType type)
+    {
+        Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))); //$NON-NLS-1$ //$NON-NLS-2$
+        PDFExtractorUtils.checkAndSetTax(tax, t, type);
+    }
+
+    protected void processFeeEntries(Object t, Map<String, String> v, DocumentType type)
+    {
+        Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))); //$NON-NLS-1$ //$NON-NLS-2$
+        PDFExtractorUtils.checkAndSetFee(fee, t, type);
+    }
+
+    /**
+     * Process withholding taxes. Bank documents typically contain multiple
+     * pieces of information about withholding taxes: besides the paid
+     * withholding taxes also which proportion of the withholding taxes might be
+     * eligible for refund later. This method implements the following logic:
+     * <ul>
+     * <li>if withholding taxes are present, use only withholding taxes and
+     * ignore other withholding tax information</li>
+     * <li>if only information about creditable withholding taxes exist, use
+     * them</li>
+     * </ul>
+     */
+    protected void processWithHoldingTaxEntries(Object t, ParsedData data, String taxType, DocumentType type)
+    {
+        Money tax = Money.of(asCurrencyCode(data.get("currency")), asAmount(data.get(taxType))); //$NON-NLS-1$
+
+        switch (taxType)
         {
-            return LocalDateTime.parse(String.format("%s %s", date, time), DATE_TIME_SECONDS_FORMAT); //$NON-NLS-1$
-        }
-        catch (Exception e)
-        {
-            return LocalDateTime.parse(String.format("%s %s", date, time), DATE_TIME_FORMAT); //$NON-NLS-1$
+            case "withHoldingTax": //$NON-NLS-1$
+                if (data.getTransactionContext().getBoolean("creditableWithHoldingTax")) //$NON-NLS-1$
+                    throw new IllegalArgumentException(
+                                    "processing of withholding taxes must be done before creditable withholding taxes"); //$NON-NLS-1$
+
+                PDFExtractorUtils.checkAndSetTax(tax, t, type);
+                data.getTransactionContext().putBoolean(taxType, true);
+                return;
+
+            case "creditableWithHoldingTax": //$NON-NLS-1$
+                if (!data.getTransactionContext().getBoolean("withHoldingTax")) //$NON-NLS-1$
+                {
+                    PDFExtractorUtils.checkAndSetTax(tax, t, type);
+                    data.getTransactionContext().putBoolean(taxType, true);
+                }
+                return;
+
+            default:
+                throw new IllegalArgumentException("Unsupported withholding tax type: " + taxType); //$NON-NLS-1$
         }
     }
 }

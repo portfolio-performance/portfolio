@@ -2,7 +2,6 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Map;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -248,11 +247,10 @@ public class DreiBankenEDVPDFExtractor extends AbstractPDFExtractor
                 .match(".*KESt-Neu.*(?<currency>[\\w]{3}).*-(?<tax>[\\d.]+,\\d+).*")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
-                // Ertrag 0,68 USD Kurswert USD 2,04Quellensteuer USD
-                // -0,31
-                .section("tax", "currency").optional()
-                .match(".*Quellensteuer.*(?<currency>[\\w]{3}).*-(?<tax>[\\d.]+,\\d+).*")
-                .assign((t, v) -> processTaxEntries(t, v, type))
+                // Ertrag 0,68 USD Kurswert USD 2,04Quellensteuer USD -0,31
+                .section("withHoldingTax", "currency").optional()
+                .match(".*Quellensteuer.*(?<currency>[\\w]{3}).*-(?<withHoldingTax>[\\d.]+,\\d+).*")
+                .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                 // Kursgewinn-KESt EUR -3,37
                 .section("tax", "currency").optional()
@@ -267,36 +265,5 @@ public class DreiBankenEDVPDFExtractor extends AbstractPDFExtractor
                 .section("fee", "currency").optional()
                 .match("^(Dritt.*B.*sengeb.*) (?<currency>[\\w]{3}).*(?<fee>[\\d.-]+,\\d+).*")
                 .assign((t, v) -> processFeeEntries(t, v, type));
-    }
-
-    private void processTaxEntries(Object t, Map<String, String> v, DocumentType type)
-    {
-        if (t instanceof name.abuchen.portfolio.model.Transaction)
-        {
-            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-            PDFExtractorUtils.checkAndSetTax(tax, (name.abuchen.portfolio.model.Transaction) t, type);
-        }
-        else
-        {
-            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-            PDFExtractorUtils.checkAndSetTax(tax,
-                            ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
-        }
-    }
-
-    private void processFeeEntries(Object t, Map<String, String> v, DocumentType type)
-    {
-        if (t instanceof name.abuchen.portfolio.model.Transaction)
-        {
-            Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
-            PDFExtractorUtils.checkAndSetFee(fee, 
-                            (name.abuchen.portfolio.model.Transaction) t, type);
-        }
-        else
-        {
-            Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
-            PDFExtractorUtils.checkAndSetFee(fee,
-                            ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
-        }
     }
 }

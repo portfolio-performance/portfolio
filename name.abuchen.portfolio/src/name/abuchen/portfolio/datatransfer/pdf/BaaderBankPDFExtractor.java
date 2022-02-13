@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.util.TextUtil.trim;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Map;
@@ -15,7 +17,6 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
-import name.abuchen.portfolio.util.TextUtil;
 
 @SuppressWarnings("nls")
 public class BaaderBankPDFExtractor extends AbstractPDFExtractor
@@ -167,12 +168,12 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 // Verhältnis: 1 : 1 
                 .section("note").optional()
                 .match("^(?<note>Verh.ltnis: .*)$")
-                .assign((t, v) -> t.setNote(TextUtil.strip(v.get("note"))))
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                 // Spitzenregulierung KOPIE
                 .section("note").optional()
                 .match("^(?<note>Spitzenregulierung)( .*)?$")
-                .assign((t, v) -> t.setNote(TextUtil.strip(v.get("note"))))
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                 .wrap(BuySellEntryItem::new);
 
@@ -329,7 +330,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 // Zahlungszeitraum: 01.01.2020 - 31.12.2020 
                 .section("note").optional()
                 .match("^(?<note>Zahlungszeitraum: .*)$")
-                .assign((t, v) -> t.setNote(TextUtil.strip(v.get("note"))))
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                 .wrap(t -> new TransactionItem(t));
     }
@@ -376,7 +377,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
     private void addDepotStatementTransaction()
     {
         final DocumentType type = new DocumentType("(Perioden-Kontoauszug|Tageskontoauszug)", (context, lines) -> {
-            Pattern pCurrency = Pattern.compile("(Perioden-Kontoauszug|Tageskontoauszug): (?<currency>[\\w]{3})-Konto(.*)?");
+            Pattern pCurrency = Pattern.compile("(Perioden-Kontoauszug|Tageskontoauszug): (?<currency>[\\w]{3})-Konto(.*)");
             // read the current context here
             for (String line : lines)
             {
@@ -479,7 +480,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 
                 .section("date", "type", "amount", "shares")
                 .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<type>(Kauf|Verkauf)) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<amount>[\\.\\d]+,[\\d]{2})( .*)?$")
-                .match("^STK ([\\s]+)?(?<shares>[\\.,\\d]+)( .*)?$")
+                .match("^STK ([\\s]+)?(?<shares>[\\.,\\d]+)(([\\s]+)?\\-)?$")
                 .assign((t, v) -> {
                     // Is type --> "Verkauf" change from BUY to SELL
                     if (v.get("type").equals("Verkauf"))
@@ -646,7 +647,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 // Bezugsverhältnis: 16 : 1
                 .section("note").optional()
                 .match("^(?<note>Bezugsverh.ltnis: .*)$")
-                .assign((t, v) -> t.setNote(TextUtil.strip(v.get("note"))))
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                 .wrap(t -> new TransactionItem(t));
     }
@@ -676,9 +677,9 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 
                 // Quellensteuer EUR 30,21 -
                 // US-Quellensteuer EUR 0,17 -
-                .section("tax", "currency").optional()
-                .match("^(US-)?Quellensteuer (?<currency>[\\w]{3}) (?<tax>[\\.\\d]+,[\\d]{2}) \\-$")
-                .assign((t, v) -> processTaxEntries(t, v, type));
+                .section("withHoldingTax", "currency").optional()
+                .match("^(US-)?Quellensteuer (?<currency>[\\w]{3}) (?<withHoldingTax>[\\.\\d]+,[\\d]{2}) \\-$")
+                .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type));
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
@@ -689,35 +690,5 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 .section("currency", "fee").optional()
                 .match("^Provision (?<currency>[\\w]{3}) (?<fee>[\\.\\d]+,[\\d]{2})( \\-)?$")
                 .assign((t, v) -> processFeeEntries(t, v, type));
-    }
-
-    private void processTaxEntries(Object t, Map<String, String> v, DocumentType type)
-    {
-        if (t instanceof name.abuchen.portfolio.model.Transaction)
-        {
-            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-            PDFExtractorUtils.checkAndSetTax(tax, (name.abuchen.portfolio.model.Transaction) t, type);
-        }
-        else
-        {
-            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-            PDFExtractorUtils.checkAndSetTax(tax, ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
-        }
-    }
-
-    private void processFeeEntries(Object t, Map<String, String> v, DocumentType type)
-    {
-        if (t instanceof name.abuchen.portfolio.model.Transaction)
-        {
-            Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
-            PDFExtractorUtils.checkAndSetFee(fee, 
-                            (name.abuchen.portfolio.model.Transaction) t, type);
-        }
-        else
-        {
-            Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
-            PDFExtractorUtils.checkAndSetFee(fee,
-                            ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
-        }
     }
 }

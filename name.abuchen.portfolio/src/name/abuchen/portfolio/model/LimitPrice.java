@@ -90,7 +90,7 @@ public class LimitPrice implements Comparable<LimitPrice>
         int compare = operator.getOperatorString().compareTo(other.getRelationalOperator().getOperatorString());
         if (compare != 0)
             return compare;
-        return (int) (value - other.getValue());
+        return Long.compare(value, other.getValue());
     }
 
     @Override

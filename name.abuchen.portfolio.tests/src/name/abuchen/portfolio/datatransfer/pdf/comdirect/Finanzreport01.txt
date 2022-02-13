@@ -124,19 +124,12 @@ Valuta Referenz IBAN/BIC Eingang
 0,010% ab 30.06. 0,19 EUR
 vom 30.06.2018 bis 30.09.2018
 Kapitalertragsteuer 0,05- EUR
-Solidaritätszuschlag 0,01- EUR
-Abschlussrechnung 0,14 EUR
-Saldo nach Abschluss 0,14 EUR
-28.09.2018 Kontoabschluss Abschluss Zinsen Kto 000000005EUR +0,14
-30.09.2018 1PF18271L0000 von 30.06.2018 bis 30.09.2018
-052/2794 Habenzinsen
-0,010% ab 30.06. 0,19 EUR
-vom 30.06.2018 bis 30.09.2018
-Kapitalertragsteuer 0,05- EUR
 Solidaritätszuschlag 0,00 EUR
-Abschlussrechnung 0,14 EUR
-Saldo nach Abschluss 0,14 EUR
-Neuer Saldo 01.10.2018 +0,14
+Sonderentgelte
+Versandpauschale 0,70- EUR
+Abschlussrechnung 0,56- EUR
+Saldo nach Abschluss 0,56- EUR
+Neuer Saldo 01.10.2018 +0,56-
 Visa Prepaid-Karte 0000 Visa Limit Verfügungslimit am GeldautomatEUR 0/Monat EUR 600/Tag
 Buchungstag Vorgang Auftraggeber/Empfänger Buchungstext Ausgang
 Valuta Referenz IBAN/BIC Eingang
@@ -155,14 +148,6 @@ Alter Saldo 03.09.2018 +120,33
 27.07.2018 Auslandsentgelt 1.75 PROZ.AUSLANDSENTGELT -0,45
 27.07.2018 0000000000000
 01
-31.03.2016 Kontoabschluss Kontoführung -0,70
-31.03.2016 5DF00000J0453148/00000 Konto 00000000 EUR
-vom 01.01.2016 bis 31.03.2016
-Kontoführung 0,00 EUR
-Sonderentgelte
-Versandpauschale 0,70- EUR
-Abschlussrechnung 0,70- EUR
-Saldo nach Abschluss 192,17 EUR
 23.07.2019 Gutschrift Firma Ort 9 007 +71,93
 22.07.2019 1190723500000
 01

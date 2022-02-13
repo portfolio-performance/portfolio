@@ -32,7 +32,12 @@ public class NoteColumn extends Column
             {
                 Annotated n = Adaptor.adapt(Annotated.class, e);
                 if (n != null)
-                    return n.getNote();
+                {
+                    String note = n.getNote();
+                    if(note != null)
+                        note = note.replace("\n", " "); //$NON-NLS-1$ //$NON-NLS-2$
+                    return note; 
+                }
 
                 Named n2 = Adaptor.adapt(Named.class, e);
                 return n2 != null ? n2.getNote() : null;

@@ -1,0 +1,15 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Zusammenfassung
+XYZ Zu Beginn 0 €
+Einzahlungen 355,32 €
+Datum 05-10-2020 - 31-10-2020 Auszahlungen 0 €
+Referenznummer XYZ Ergebnis 355,32 €
+Schlechte Zeiten (Notgroschen)
+Datum Zahlungsart Eingänge Ausgänge Guthaben
+05-10-2020 Überweisen 25 € 25 €
+06-10-2020 Überweisen 4,91 € 104,91 €
+06-10-2020 Go & Grow Zinsen 0,02 € 154,93 €
+2020-10-31 Go & Grow Zinsen 0,06 € 355,32 €
+Gesamt 355,32 €

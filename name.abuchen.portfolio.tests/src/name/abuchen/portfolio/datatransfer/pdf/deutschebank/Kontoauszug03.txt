@@ -1,0 +1,246 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Deutsche Bank AG
+V 710/686 Filiale
+Frau Stadt-Löbtau
+Max Mustermann Kesselsdorfer Straße 22
+Muehlen Str. 18 B 01159 Stadt
+01111 Stadt Betreuergruppe DVAG
+Telefon (0351) 42411-0
+24h-Kundenservice (069) 910-10000
+29. Januar 2021
+Kontoauszug vom 01.01.2021 bis 29.01.2021
+Kontoinhaber: Max Mustermann
+ZINSKONTO PLUS
+Auszug Seite IBAN BIC (SWIFT) Alter Saldo per 31.12.2020
+1 1/6 DE11 1111 1111 1111 1111 11 DEUTDEDBCHE EUR + 2.015,61
+Buchung Valuta Vorgang Soll Haben
+04.01. 04.01. Verwendungszweck/ Kundenreferenz - 250,00
+GA NR07107840 BLZ870700240904.01/11.11UHR
+DD-LOEBTAU
+04.01. 04.01. SEPA Dauerauftrag an - 40,00
+Mustermann, Max
+IBAN DE1111110000111111
+BIC OSDDDE81XXX
+Verwendungszweck/ Kundenreferenz
+Taschengeld
+RINP Dauerauftrag
+04.01. 04.01. SEPA Dauerauftrag an - 50,00
+Mustermann, Max
+IBAN DE11 1111 1111 1111 1111 11
+BIC INGDDEFFXXX
+RINP Dauerauftrag
+04.01. 04.01. SEPA Dauerauftrag an - 1.000,00
+Mustermann, Max
+IBAN DE1111110000111111
+BIC BYLADEM1001
+Verwendungszweck/ Kundenreferenz
+Fixkosten
+RINP Dauerauftrag
+05.01. 05.01. SEPA Lastschrifteinzug von - 11,30
+PayPal (Europe) S.a.r.l. et Cie., S.C.A.
+Verwendungszweck/ Kundenreferenz
+PP.1111.PP . TAKEAWAYCOM, Ihr Einkauf bei
+TAKEAWAYCOM
+1011787052142 PP.1111.PP PAYPAL
+Gläubiger-ID LU96ZZZ0000000000000000058
+Mand-ID 4WH2224N7HE64
+RCUR Wiederholungslastschrift
+0000000003 / 06500900 / 20210130
+Auszug Seite IBAN BIC (SWIFT)
+1 2/6 DE11 1111 1111 1111 1111 11 DEUTDEDBCHE
+Buchung Valuta Vorgang Soll Haben
+05.01. 05.01. Kartenzahlung - 2,09
+Verwendungszweck/ Kundenreferenz
+NETTOMARKEN-DISCOU//Stadt/DE 04-01-2021
+T07:43:01 Folgenr. 09 Verfalld. 1224
+06.01. 05.01. SEPA Echtzeitüberweisung von + 365,00
+Max Mustermann
+Verwendungszweck/ Kundenreferenz
+Prämie Max Mustermann - Januar 2021
+07.01. 07.01. SEPA Lastschrifteinzug von - 69,00
+AMAZON EU S.A R.L., NIEDERLASSUNG
+DEUTSCHLAND
+Verwendungszweck/ Kundenreferenz
+111-1111111-1111111 AMZNPrime DE 2O7O4257PW
+RF9PFO
+2O7O4257PWRF9PFO
+Gläubiger-ID DE1111110000111111
+Mand-ID LOTM52)QPMTQX,YH,AKONPDHMADH)X
+RCUR Wiederholungslastschrift
+11.01. 11.01. SEPA Überweisung von + 438,00
+Unser Sparverein
+Verwendungszweck/ Kundenreferenz
+1111111111111111 0121 11111111111/1111111
+11111111111
+11111111111
+11.01. 11.01. Kartenzahlung - 29,24
+Verwendungszweck/ Kundenreferenz
+DANKE, IHR LIDL//Stadt/DE 09-01-2021T16:34:26
+Folgenr. 09 Verfalld. 1224
+14.01. 14.01. SEPA Überweisung von + 12,49
+AMAZON PAYMENTS EUROPE S.C.A.
+Verwendungszweck/ Kundenreferenz
+111-1111111-1111111 AMZ Jia Wei World
+11111111111
+11111111111
+14.01. 14.01. SEPA Lastschrifteinzug von - 7,99
+NETFLIX INTERNATIONAL B.V.
+Verwendungszweck/ Kundenreferenz
+Netflix Monthly Subscription
+11111111111
+Gläubiger-ID 1111111111111100001111
+Mand-ID DD-11111111933-1111-111111
+FRST Erstlastschrift
+0000000003 / 06500900 / 20210130
+Auszug Seite IBAN BIC (SWIFT)
+1 3/6 DE11 1111 1111 1111 1111 11 DEUTDEDBCHE
+Buchung Valuta Vorgang Soll Haben
+14.01. 14.01. SEPA Lastschrifteinzug von - 16,80
+PayPal (Europe) S.a.r.l. et Cie., S.C.A.
+Verwendungszweck/ Kundenreferenz
+PP.1111.PP . TAKEAWAYCOM, Ihr Einkauf bei
+TAKEAWAYCOM
+11111111111 PP.1111.PP PAYPAL
+Gläubiger-ID LU96ZZZ0000000000000000058
+Mand-ID 4WH2224N7HE64
+RCUR Wiederholungslastschrift
+18.01. 18.01. Kartenzahlung - 25,46
+Verwendungszweck/ Kundenreferenz
+DANKE, IHR LIDL//Stadt/DE 15-01-2021T11:11:52
+Folgenr. 09 Verfalld. 1224
+19.01. 19.01. SEPA Lastschrifteinzug von - 14,90
+AMAZON PAYMENTS EUROPE S.C.A.
+Verwendungszweck/ Kundenreferenz
+111-1111111-1111111 AMZN Mktp DE 7JMJBIR0HJ
+L4XEIF
+7JMJBIR0HJL4XEIF
+Gläubiger-ID DE1111100000111111
+Mand-ID LOTM52)QPMTQX,YH,AKONPDHMADH)X
+RCUR Wiederholungslastschrift
+19.01. 19.01. SEPA Lastschrifteinzug von - 28,61
+AMAZON PAYMENTS EUROPE S.C.A.
+Verwendungszweck/ Kundenreferenz
+111-1111111-1111111 AMZN Mktp DE 17IASY9GO9
+7OCAQ7
+17IASY9GO97OCAQ7
+Gläubiger-ID DE1111100000111111
+Mand-ID LOTM52)QPMTQX,YH,AKONPDHMADH)X
+RCUR Wiederholungslastschrift
+20.01. 20.01. SEPA Lastschrifteinzug von - 34,99
+AMAZON PAYMENTS EUROPE S.C.A.
+Verwendungszweck/ Kundenreferenz
+111-1111111-1111111 AMZN Mktp DE 2CXVFE4J4M
+IVDAZE
+2CXVFE4J4MIVDAZE
+Gläubiger-ID DE1111100000111111
+Mand-ID LOTM52)QPMTQX,YH,AKONPDHMADH)X
+RCUR Wiederholungslastschrift
+20.01. 20.01. Kartenzahlung - 39,18
+Verwendungszweck/ Kundenreferenz
+Kaufland Stadt//Stadt/DE 19-01-2021T17:29:30
+Folgenr. 09 Verfalld. 1224
+0000000003 / 06500900 / 20210130
+Auszug Seite IBAN BIC (SWIFT)
+1 4/6 DE11 1111 1111 1111 1111 11 DEUTDEDBCHE
+Buchung Valuta Vorgang Soll Haben
+21.01. 21.01. SEPA Lastschrifteinzug von - 4,79
+ROSSMANN VIELEN DANK
+Verwendungszweck/ Kundenreferenz
+190117399154166241220035320 ELV65376696 19.01
+17.39 ME9
+19011739915416624122003532065376696
+Gläubiger-ID DE1111100000011111
+Mand-ID 6537669643872101191739
+CGDD SEPA Lastschrift ELV
+OOFF Einmallastschrift
+25.01. 25.01. SEPA Lastschrifteinzug von - 29,85
+AMAZON PAYMENTS EUROPE S.C.A.
+Verwendungszweck/ Kundenreferenz
+111-1111111-1111111 AMZN Mktp DE 6ROQBY57WU
+645A4Y
+6ROQBY57WU645A4Y
+Gläubiger-ID DE1111100000111111
+Mand-ID LOTM52)QPMTQX,YH,AKONPDHMADH)X
+RCUR Wiederholungslastschrift
+25.01. 25.01. SEPA Lastschrifteinzug von - 37,99
+AMAZON PAYMENTS EUROPE S.C.A.
+Verwendungszweck/ Kundenreferenz
+304-9928980-7163506 AMZN Mktp DE 4D3JDYGLUQ
+GOZZH1
+4D3JDYGLUQGOZZH1
+Gläubiger-ID DE1111100000111111
+Mand-ID LOTM52)QPMTQX,YH,AKONPDHMADH)X
+RCUR Wiederholungslastschrift
+25.01. 25.01. Kartenzahlung - 48,01
+Verwendungszweck/ Kundenreferenz
+DANKE, IHR LIDL//Stadt/DE 23-01-2021T12:59:51
+Folgenr. 09 Verfalld. 1224
+25.01. 25.01. SEPA Überweisung an - 140,00
+Rundfunk ARD, ZDF, DRadio
+IBAN DE1111110000111111
+BIC HELADEFFXXX
+Verwendungszweck/ Kundenreferenz
+Beitragsnummer 1111111
+25.01. 25.01. SEPA Überweisung an - 365,00
+Max Mustermann
+IBAN DE11 1111 1111 1111 1111 11
+BIC INGDDEFFXXX
+Verwendungszweck/ Kundenreferenz
+-
+0000000003 / 06500900 / 20210130
+Auszug Seite IBAN BIC (SWIFT)
+1 5/6 DE11 1111 1111 1111 1111 11 DEUTDEDBCHE
+Buchung Valuta Vorgang Soll Haben
+26.01. 26.01. SEPA Überweisung an - 118,00
+Max Mustermann
+IBAN DE1111110000111111
+BIC GENODEF1Z01
+Verwendungszweck/ Kundenreferenz
+2 x Sets Mütze + Tuch (rot+blau)
+27.01. 27.01. Kartenzahlung - 41,00
+Verwendungszweck/ Kundenreferenz
+JET DANKT FUER IHREN KAUF//Stadt/DE
+26-01-2021T14:58:38 Folgenr. 09 Verfalld. 1224
+28.01. 28.01. SEPA Überweisung von + 2222,22
+Die Firma GmbH
+Verwendungszweck/ Kundenreferenz
+Lohn-Gehalt Abrechnung 01/2021
+1111111-0000002
+SALA Lohn/Gehalt
+29.01. 29.01. SEPA Überweisung von + 309,00
+Landeshauptstadt Stadt Stadtverwaltung
+Verwendungszweck/ Kundenreferenz
+Kostenausgleichszahlung 02.21 Mustermann, Max
+P11111111111111111111111
+ABWA Landeshauptstadt Stadt
+29.01. 29.01. SEPA Lastschrifteinzug von - 9,00
+Vodafone GmbH
+Verwendungszweck/ Kundenreferenz
+11111111111 Rechnung otelo
+11111111111
+Gläubiger-ID DE26ZZZ00000006194
+Mand-ID OTEL07073961
+RCUR Wiederholungslastschrift
+29.01. 29.01. Kartenzahlung - 44,49
+Verwendungszweck/ Kundenreferenz
+Kaufland Stadt//Stadt/DE 28-01-2021T15:10:20
+Folgenr. 09 Verfalld. 1224
+Filialnummer Kontonummer Neuer Saldo
+710 1111111 05 EUR + 9.999,99
+Bankleitzahl Ihre eingeräumte Kontoüberziehung
+111 111 11 EUR 500,00
+Sollzinssatz 10,9 % p.a.
+Wichtige Hinweise
+Bitte erheben Sie Einwendungen gegen einzelne Buchungen unverzüglich. Schecks, Wechsel und sonstige Lastschriften schreiben wir unter dem Vorbehalt
+des Eingangs gut. Der angegebene Kontostand berücksichtigt nicht die Wertstellung der Buchungen (siehe oben unter "Valuta").
+0000000003 / 06500900 / 20210130
+Auszug Seite IBAN BIC (SWIFT)
+1 6/6 DE11 1111 1111 1111 1111 11 DEUTDEDBCHE
+Somit können bei Verfügungen1) möglicherweise Zinsen für die Inanspruchnahme einer eingeräumten oder geduldeten Kontoüberziehung anfallen.
+Die abgerechneten Leistungen sind als Bank- oder Finanzdienstleistungen von der Umsatzsteuer befreit, sofern Umsatzsteuer nicht gesondert
+ausgewiesen ist. Umsatzsteuer ID Nr.: Deutsche Bank AG, 60262 Frankfurt DE114103379
+Guthaben sind als Einlagen nachMaßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen können dem "Informationsbogen
+für den Einleger" entnommen werden.
+1) Der Begriff umfasst unter anderem die relevanten Zahlungskontendienste "Bargeldauszahlung" und "Überweisung".
+0000000003 / 06500900 / 20210130

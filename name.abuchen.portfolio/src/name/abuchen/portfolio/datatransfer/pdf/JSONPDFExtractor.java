@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.util.TextUtil.trim;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
@@ -41,7 +43,6 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.util.TextUtil;
 
 public class JSONPDFExtractor extends AbstractPDFExtractor
 {
@@ -168,10 +169,10 @@ public class JSONPDFExtractor extends AbstractPDFExtractor
     {
         JSecurity security = new JSecurity();
         
-        if (TextUtil.strip(v.get("nameContinued")) != null) //$NON-NLS-1$
-            security.setName(TextUtil.strip(v.get("name") + " " + TextUtil.strip(v.get("nameContinued")))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        if (trim(v.get("nameContinued")) != null) //$NON-NLS-1$
+            security.setName(trim(v.get("name") + " " + trim(v.get("nameContinued")))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         else
-            security.setName(TextUtil.strip(v.get("name"))); //$NON-NLS-1$
+            security.setName(trim(v.get("name"))); //$NON-NLS-1$
 
         security.setIsin(v.get("isin")); //$NON-NLS-1$
         security.setTicker(v.get("ticker")); //$NON-NLS-1$

@@ -23,6 +23,7 @@ public class TestUtilities
     public static Collection<Object[]> availableLanguages()
     {
         return Arrays.asList(new String[] { "de" }, new String[] { "en" }, new String[] { "es" }, new String[] { "pt" },
-                        new String[] { "nl" }, new String[] { "fr" }, new String[] { "it" }, new String[] { "cs" });
+                        new String[] { "nl" }, new String[] { "fr" }, new String[] { "it" }, new String[] { "cs" },
+                        new String[] { "ru" });
     }
 }

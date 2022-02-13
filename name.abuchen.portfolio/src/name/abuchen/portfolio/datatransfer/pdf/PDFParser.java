@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
+import name.abuchen.portfolio.model.TypedMap;
 
 /* package */final class PDFParser
 {
@@ -221,7 +222,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
             sections.add(new Section<T>(this, null)
             {
                 @Override
-                public void parse(String filename, String[] lines, int lineNo, int lineNoEnd, T target)
+                public void parse(String filename, String[] lines, int lineNo, int lineNoEnd, TypedMap ctx, T target)
                 {
                     List<String> errors = new ArrayList<>();
 
@@ -229,7 +230,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
                     {
                         try
                         {
-                            section.parse(filename, lines, lineNo, lineNoEnd, target);
+                            section.parse(filename, lines, lineNo, lineNoEnd, ctx, target);
 
                             // if parsing was successful, then return
                             return;
@@ -257,10 +258,12 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
 
         public void parse(String filename, List<Item> items, String[] lines, int lineNoStart, int lineNoEnd)
         {
+            TypedMap txContext = new TypedMap();
+
             T target = supplier.get();
 
             for (Section<T> section : sections)
-                section.parse(filename, lines, lineNoStart, lineNoEnd, target);
+                section.parse(filename, lines, lineNoStart, lineNoEnd, txContext, target);
 
             if (wrapper == null)
                 throw new IllegalArgumentException("Wrapping function missing"); //$NON-NLS-1$
@@ -276,12 +279,14 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
         private final Map<String, String> base;
         private final int startLineNumber;
         private final int endLineNumber;
+        private final TypedMap txContext;
 
-        public ParsedData(Map<String, String> base, int startLineNumber, int endLineNumber)
+        private ParsedData(Map<String, String> base, int startLineNumber, int endLineNumber, TypedMap txContext)
         {
             this.base = base;
             this.startLineNumber = startLineNumber;
             this.endLineNumber = endLineNumber;
+            this.txContext = txContext;
         }
 
         public int getStartLineNumber()
@@ -292,6 +297,16 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
         public int getEndLineNumber()
         {
             return endLineNumber;
+        }
+
+        /**
+         * Returns the transactions context, a hash map that exist for as long
+         * as one transaction is parsed. It can be used to exchange data between
+         * sections.
+         */
+        public TypedMap getTransactionContext()
+        {
+            return txContext;
         }
 
         @Override
@@ -418,7 +433,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
             return transaction;
         }
 
-        public void parse(String filename, String[] lines, int lineNo, int lineNoEnd, T target)
+        public void parse(String filename, String[] lines, int lineNo, int lineNoEnd, TypedMap txContext, T target)
         {
             if (assignment == null)
                 throw new IllegalArgumentException("Assignment function missing"); //$NON-NLS-1$
@@ -448,7 +463,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
                                             Messages.MsgErrorMissingValueMatches, values.keySet().toString(),
                                             Arrays.toString(attributes), filename, lineNo + 1, lineNoEnd + 1));
 
-                        assignment.accept(target, new ParsedData(values, lineNo, lineNoEnd));
+                        assignment.accept(target, new ParsedData(values, lineNo, lineNoEnd, txContext));
 
                         // if there might be multiple occurrences that match,
                         // the found values need to be added and the search

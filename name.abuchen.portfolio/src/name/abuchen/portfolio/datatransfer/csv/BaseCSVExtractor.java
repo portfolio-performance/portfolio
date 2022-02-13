@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.datatransfer.csv;
 
+import static name.abuchen.portfolio.util.TextUtil.trim;
+
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
@@ -25,7 +27,6 @@ import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
-import name.abuchen.portfolio.util.TextUtil;
 
 /* package */ abstract class BaseCSVExtractor extends CSVExtractor
 {
@@ -76,7 +77,7 @@ import name.abuchen.portfolio.util.TextUtil;
         int lineNo = 1 + skipLines; // +1 because of end user
         for (String[] strings : rawValues)
         {
-            String[] trimmed = TextUtil.strip(strings);
+            String[] trimmed = trim(strings);
 
             try
             {

@@ -44,7 +44,7 @@ public class PortfolioSnapshot
                                 List<PortfolioTransaction> tx = e.getValue();
 
                                 Optional<PortfolioTransaction> last = tx.stream()
-                                                .sorted(new Transaction.ByDate().reversed()).findFirst();
+                                                .sorted(Transaction.BY_DATE.reversed()).findFirst();
 
                                 if (last.isPresent())
                                 {

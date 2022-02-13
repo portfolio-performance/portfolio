@@ -1,0 +1,35 @@
+PDF Autor: 'Consorsbank'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Cortal Consors S.A. • Postfach 17 43 • 90006 Nürnberg
+Power, Peter Depotnummer: 0546 956 987
+Germaniastraße 18 1000345726/00
+31275 Lehrte
+Vermerk der Bank: 4000
+02
+WERTPAPIERABRECHNUNG
+Verkauf AM 16.05.2008 UM 16:04:03 IN INL.AUSSERBOERSLICH NR.29541397.001
+ST 334,00000 WKN: A0MZBE
+AHOLD, KON. EO-,30
+Kurs 9,890000 EUR P.ST. FRANCO COURTAGE
+Kurswert EUR 3.303,26
+PROVISION EUR 8,26
+GRUNDGEBUEHR EUR 4,95
+WERT 20.05.2008 EUR 3.290,05
+zugunsten Konto-Nr. 0546956980
+Wertpapiere zulasten Girosammelverwahrung
+Limitkurs 9,800000 EUR
+Clearstream Bk Ffm 2126
+Hinweis für Kontoauszüge, Wertpapierabrechnungen und Depotbuchungsanzeigen:
+Kapitalerträge und Spekulationsgewinne sind einkommensteuerpflichtig.
+Einwendungen wegen Unrichtigkeit oder Unvollständigkeit dieser Mitteilung oder die Nichtgenehmigung eine(r4im) We(g5e) derEinzugsermächtigung erfolgten Lastschriftabbuchung müssen unverzüglich erhoben werden, vgl. Ziffer I. 11 und der Allgemeine
+Geschäftsbedingungen von Cortal Consors. Umsätze und Kontobuchungen, die nach dem Erstellungsdatum anfallen und sich auf den
+Abrechnungssaldo des abgelaufenen Abrechnungszeitraumes auswirken, werden erst mit dem folgenden Kontoauszug ausgewiesen.
+Korrekturen werden seitens der Bank gekennzeichnet.
+Machen Sie Ih(RreevEisiniowne)ndungen schriftlich geltend, ist der Versand Ihres Schreibens an Cortal Consors S.A. ZweigniederlassungDeutschland innerhalb der Sechs-Wochen-Frist ausreichend.
+Cortal Consors S.A., Zweigniederlassung Deutschland • Bahnhofstr. 55 • D-90402 Nürnberg • HR Nürnberg B 20075 • Ust-IdNr. DE225900761
+Fon 0180 3 / 252501* • Fax 0180 3 / 252532* • info@cortalconsors.de • www.cortalconsors.de
+*(0,09 €/Min. aus dem Festnetz der Deutschen Telekom, evtl. abweichende Preise für Anrufe aus den Netzen anderer Anbieter oder Mobilfunknetzen)
+Sitz der Cortal Consors S.A.: 5, ave Kléber • F-75016 Paris • Registergericht: R.C.S. Paris 327 787 909
+Président du Conseil d'Administration (Verwaltungsratsvorsitzender) und Directeur Général (Generaldirektor) der Cortal Consors S.A.: Olivier Le Grand
+Leitung der Zweigniederlassung Deutschland: Martin Daut (CEO), Olivier Le Grand, Richard Döppmann, Uwe Trittin

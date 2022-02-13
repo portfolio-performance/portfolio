@@ -105,7 +105,7 @@ public class PreviewTransactionsPage extends AbstractWizardPage
     {
         Security security = model.getSecurity();
         List<TransactionPair<?>> transactions = security.getTransactions(model.getClient());
-        Collections.sort(transactions, new TransactionPair.ByDate());
+        Collections.sort(transactions, TransactionPair.BY_DATE);
         tableViewer.setInput(transactions);
     }
 

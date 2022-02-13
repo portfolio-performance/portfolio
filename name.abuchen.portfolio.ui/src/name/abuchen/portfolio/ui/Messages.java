@@ -5,8 +5,11 @@ import org.eclipse.osgi.util.NLS;
 public class Messages extends NLS
 {
     private static final String BUNDLE_NAME = "name.abuchen.portfolio.ui.messages"; //$NON-NLS-1$
+    public static String AboutTextOtherSoftware;
+    public static String AboutTextTranslationDevelopers;
+    public static String AboutTextDeveloped;
     public static String AboutText;
-    public static String AboutTextContributions;
+    public static String AboutTextDevelopers;
     public static String AccountFilterRetiredAccounts;
     public static String AccountMenuActivate;
     public static String AccountMenuAdd;
@@ -147,6 +150,8 @@ public class Messages extends NLS
     public static String ColumnAbsolutePerformance;
     public static String ColumnAbsolutePerformance_Option;
     public static String ColumnAutoGenerate;
+    public static String ColumnDeltaPctOfTotal;
+    public static String ColumnDeltaPctOfTotal_MenuLabel;
     public static String ColumnDeltaPercent;
     public static String ColumnDeltaPercentIndicator;
     public static String ColumnDeltaPercentRelative;
@@ -302,6 +307,8 @@ public class Messages extends NLS
     public static String ColumnTermCurrency;
     public static String ColumnThereofForeignCurrencyGains;
     public static String ColumnTicker;
+    public static String ColumnToBePctOfTotal;
+    public static String ColumnToBePctOfTotal_MenuLabel;
     public static String ColumnTotal;
     public static String ColumnTransactionType;
     public static String ColumnTTWROR_Option;
@@ -546,13 +553,17 @@ public class Messages extends NLS
     public static String LabelClientFilterNoCustomFilterExisting;
     public static String LabelClose;
     public static String FilterOnlyClosedTrades;
+    public static String LabelCoinGeckoCoinId;
+    public static String LabelCoinGeckoCoinIdHint;
     public static String LabelCollapseAll;
     public static String LabelColorSchema;
     public static String LabelColumns;
+    public static String LabelColumnsInReverseOrder;
     public static String LabelCommon;
     public static String LabelConsumerPriceIndex;
     public static String LabelConvertBuySellIntoDeliveryTransactions;
     public static String LabelCopyToClipboard;
+    public static String LabelCountry;
     public static String LabelCurrencies;
     public static String LabelCurrencyConverter;
     public static String LabelCurrentDate;
@@ -580,6 +591,7 @@ public class Messages extends NLS
     public static String LabelExchangeRate;
     public static String LabelExchangeRates;
     public static String LabelExport;
+    public static String LabelFirstDayOfWeek;
     public static String LabelFontSize;
     public static String LabelFormatJSON;
     public static String LabelFullClassification;
@@ -669,8 +681,10 @@ public class Messages extends NLS
     public static String LabelReportingDialogMonths;
     public static String LabelReportingDialogQuarter;
     public static String LabelReportingDialogSince;
+    public static String LabelReportingDialogTradingDay;
     public static String LabelReportingDialogTradingDays;
     public static String LabelReportingDialogUntil;
+    public static String LabelReportingDialogDay;
     public static String LabelReportingDialogWeek;
     public static String LabelReportingDialogYear;
     public static String LabelReportingDialogYears;
@@ -996,6 +1010,7 @@ public class Messages extends NLS
     public static String PrefLabelQuoteDigits;
     public static String PrefLabelSharesDigits;
     public static String PrefLabelUseIndirectQuotation;
+    public static String PrefLabelUseSWTChartLibrary;
     public static String PrefMsgConfigureUpdates;
     public static String PrefMsgLanguageConfig;
     public static String PrefMsgCalendar;
@@ -1017,6 +1032,11 @@ public class Messages extends NLS
     public static String PrefTitleDivvyDiary;
     public static String PrefTitleFinnhub;
     public static String PrefTitleQuandl;
+    public static String PresetsPrefPageDescription;
+    public static String PresetsPrefPageNow;
+    public static String PresetsPrefPageStartOfDay;
+    public static String PresetsPrefPageTime;
+    public static String PresetsPrefPageTitle;
     public static String SecurityFilter;
     public static String SecurityFilterSharesHeldEqualZero;
     public static String SecurityFilterSharesHeldNotZero;

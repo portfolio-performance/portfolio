@@ -1,0 +1,41 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=405259000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Wertpapierabrechnung ADRESSZEILE1=Max Muster
+ADRESSZEILE2=Mini Muster
+Kauf ADRESSZEILE3=Kauffmannstr 111A
+Kommissionsgeschäft ADRESSZEILE4=70195 Stuttgart Botnang
+Max Muster ADRESSZEILE5=
+Mini Muster ADRESSZEILE6=Depot-Nr. Abrechnungs-Nr.
+Kaufstr 78A BELEGNUMMER=1111
+70195 Stuttgart Botnang 11111111 11111111 / 08.11.2021 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Max und Mini Muster
+Frankfurt am Main, 08.11.2021
+Wir haben für Sie gekauft
+Gattungsbezeichnung Fälligkeit näch. Zinstermin ISIN
+HSBC Trinkaus & Burkhardt AG DIZ 23.06.23 23.06.2023 DE000TT9F809
+RoyalD. 19
+Nominal Kurs
+STK 670,000 EUR 16,5000
+Handelstag 08.11.2021 Kurswert EUR 11.055,00-
+Handelszeit 09:46 Orderprovision EUR 5,00-
+Handelsplatz außerbörslich HSBC Trinkaus Handelsplatzgebühr EUR 2,00-
+Verwahrart Girosammelverwahrung
+Wert Konto-Nr. Betrag zu Ihren Lasten
+10.11.2021 111111111 EUR 11.062,00
+Wir werden in Ihrem Depot wie angegeben buchen.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+onvist a bank - eine M arke der Com merzbank AG · Wildunger S t raße 6a · 6 0 487 Frankfur t a m M ain
+Kundenservice: +49 ( 0 )69-710 7-53 0 · T: +49 ( 0 )69-710 7- 0 · F: +49 ( 0 )69-710 7-10 0 · E: in fo@onvist a -bank.de · W: w w w.onvist a -bank.de
+Commerzbank AG · 60261 Frankfur t am Main · AG Frankfur t am Main HRB 32000 · Vorstand: Manf red Knof (Vorsitzender),
+Marcus Chromik, Michael Kotzbauer, Bet t ina Orlopp, Sabine Schmit t roth · Vorsitzender des Aufsichtsrates: Helmut Got tschalk
+3.18/1111111/1111111/111111/111111/111111

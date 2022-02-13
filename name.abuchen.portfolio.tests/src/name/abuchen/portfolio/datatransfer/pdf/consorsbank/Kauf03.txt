@@ -1,0 +1,41 @@
+Consorsbank • 90318 Nürnberg
+Depotnummer ANONYM
+ANONYM/00
+VORNAME NAME
+STRASSE HSNR
+PLZ ORT Vermerk der Bank ZAHL
+ZAHL
+ORDERABRECHNUNG
+KAUF AM 16.10.2017  UM 15:24:22 INL.INVESTMENTGESCH. NR. ANONYM.001
+Bezeichnung WKN ISIN
+EARTH EXPLORAT.FDS UI EOR A0J3UF DE000A0J3UF6
+Einheit Umsatz
+ST 0,95126
+Preis pro Anteil 25,640000 EUR  
+Nettoinventarwert EUR 24,39
+Consorsbank Ausgabegebühr 2,50% EUR 0,61
+Wert 18.10.2017 EUR 25,00
+zulasten Konto-Nr. ANONYM
+Bestand zugunsten Girosammelverwahrung 
+ANONYM
+Ausgabeaufschlag regulär 5,00%
+Sparplanname: Earth Exploration zum 15.
+Hinweis für Orderabrechnungen und Depotbuchungsanzeigen:
+Einwendungen wegen Unrichtigkeit oder Unvollständigkeit dieser Mitteilung müssen unverzüglich erhoben werden, vgl. Nummer B. Ziffer I. 11 (4) und (5) der
+Allgemeinen Geschäftsbedingungen (AGB Banken).
+Machen Sie Ihre Einwendungen in Textform geltend, genügt die Absendung innerhalb der Sechs-Wochen-Frist an die Consorsbank (Revision) oder per Fax oder
+Mail an die unten angegebenen Adressen. Das Unterlassen rechtzeitiger Einwendungen gilt als Genehmigung.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland.
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+Président du Conseil d‘Administration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur Général (Generaldirektor): Jean-Laurent Bonnafé
+Seite 2 zu Orderabrechnung Nr. ANONYM.001 vom 16.10.2017 Depotnummer ANONYM
+Infos zu Investmentpreisen
+Bereinigte akkum. ausschüttungsgleiche Erträge EUR BETRAG
+ 
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland.
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+Président du Conseil d‘Administration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur Général (Generaldirektor): Jean-Laurent Bonnafé

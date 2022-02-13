@@ -169,6 +169,11 @@ public interface UIConstants
          * Preference key whether to store settings (standard calendar)
          */
         String CALENDAR = "CALENDAR"; //$NON-NLS-1$
+        
+        /**
+         * Preference key for preset time in new transactions.
+         */
+        String PRESET_VALUE_TIME = "PRESET_VALUE_TIME"; //$NON-NLS-1$
     }
 
     interface CSS // NOSONAR

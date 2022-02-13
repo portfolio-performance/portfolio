@@ -35,6 +35,7 @@ import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
+import name.abuchen.portfolio.ui.util.viewers.DateTimeLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 
@@ -97,21 +98,8 @@ public class CalculationLineItemPane implements InformationPanePage
     {
         // date
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                return Values.DateTime.format(((CalculationLineItem) e).getDateTime());
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create((o1, o2) -> {
-
-            CalculationLineItem c1 = (CalculationLineItem) o1;
-            CalculationLineItem c2 = (CalculationLineItem) o2;
-
-            return c1.getDateTime().compareTo(c2.getDateTime());
-        }));
+        column.setLabelProvider(new DateTimeLabelProvider(e -> ((CalculationLineItem) e).getDateTime()));
+        column.setSorter(ColumnViewerSorter.create(CalculationLineItem.BY_DATE), SWT.DOWN);
         support.addColumn(column);
 
         // transaction type

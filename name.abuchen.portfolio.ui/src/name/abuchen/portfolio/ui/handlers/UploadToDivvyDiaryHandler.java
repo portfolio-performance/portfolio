@@ -74,7 +74,12 @@ public class UploadToDivvyDiaryHandler
                         Display.getDefault().asyncExec(() -> MessageDialog.openError(ActiveShell.get(),
                                         Messages.LabelError, e.getMessage()));
 
-                        return new Status(Status.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e);
+                        return new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e);
+                    }
+                    catch (RuntimeException e)
+                    {
+                        PortfolioPlugin.log(e);
+                        throw e;
                     }
                 }
             }.schedule();

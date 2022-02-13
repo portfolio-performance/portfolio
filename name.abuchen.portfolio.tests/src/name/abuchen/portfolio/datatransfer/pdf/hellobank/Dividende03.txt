@@ -1,0 +1,40 @@
+PDF Author: '' 
+PDFBox Version: 1.8.13
+-----------------------------------------
+Abrechnung Ereignis
+Hellobank BNP Paribas Austria AG 36627032-26.6.2017
+Elisabethstraße 22 Depot-Nr.: DEPOTNUMMER
+5020 Salzburg DEPOTINHABER                  
+22/9865
+Hello bank!                        
+Frau
+DEPOTINHABER
+STRASSE
+PLZ ORT                                                                                                                                                                                                      
+Wir haben für Sie am 26.6.2017 unten angeführtes Geschäft abgerechnet:
+Geschäftsart: Ertrag
+Abgang: 140 Stk
+Titel: NL0012325773  R o y a l  D u t c h Shell PLC              
+Anrechte A (Wahldividende)         
+Dividende: 0,4194 EUR 
+Verwahrart: WR
+Positionsdaten: Loco: London                             
+Bruttoertrag: 58,72 EUR 
+Quellensteuer: -8,81 EUR 
+KESt Ausländische Dividende: -7,34 EUR 
+Inkassoprovision: -0,95 EUR 
+Umsatzsteuer: -0,19 EUR 
+Zu Gunsten IBAN AT44 1925 0654 0668 9002 41,43 EUR 
+Valuta 26.6.2017
+Es wurde Umsatzsteuer in der Höhe von 20% berücksichtigt.
+Extag: 26.6.2017
+QUSt pro Stück 15,00 %
+Es wurde Auslands-KESt in der Höhe von +12,5% berücksichtigt.
+Die KESt-Abfuhr erfolgt an das Finanzamt Salzburg-Stadt (FA91).
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 140 Stk
+Ertrag: 58,72 EUR
+2.7.2017 Seite 1
+____________________________________________________________________________________
+Diese Mitteilung wird nicht unterschrieben. Irrtum vorbehalten! DVR: 1026402
+48713 Doknr.: ON00-036-0000000001

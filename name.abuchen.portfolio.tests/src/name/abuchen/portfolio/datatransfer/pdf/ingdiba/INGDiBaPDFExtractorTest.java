@@ -17,7 +17,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
-import name.abuchen.portfolio.datatransfer.pdf.INGDiBaExtractor;
+import name.abuchen.portfolio.datatransfer.pdf.INGDiBaPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
@@ -35,7 +35,7 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testWertpapierKauf01()
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -62,6 +62,8 @@ public class INGDiBaPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-11-17T16:17:32")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(14)));
+        assertThat(entry.getSource(), is("Kauf01.txt"));
+        assertThat(entry.getNote(), is("Limit: 38,10 EUR"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(533.39))));
@@ -76,7 +78,7 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testWertpapierKauf02()
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -103,6 +105,7 @@ public class INGDiBaPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-06-11T16:30:32")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(18)));
+        assertThat(entry.getSource(), is("Kauf02.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(726.28))));
@@ -117,7 +120,7 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testWertpapierKauf03()
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -144,6 +147,8 @@ public class INGDiBaPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-11-06T16:10:26")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(40)));
+        assertThat(entry.getSource(), is("Kauf03.txt"));
+        assertThat(entry.getNote(), is("Limit: 25,33 EUR"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1027.40))));
@@ -158,7 +163,7 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testWertpapierKauf04()
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -185,6 +190,7 @@ public class INGDiBaPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-12-15T09:06:08")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.19591)));
+        assertThat(entry.getSource(), is("Kauf04.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50.00))));
@@ -199,7 +205,7 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testWertpapierKauf05()
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -226,6 +232,7 @@ public class INGDiBaPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-12-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3.67647)));
+        assertThat(entry.getSource(), is("Kauf05.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50.00))));
@@ -240,7 +247,7 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testWertpapierKauf06()
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -267,6 +274,7 @@ public class INGDiBaPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-12-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(6.53245)));
+        assertThat(entry.getSource(), is("Kauf06.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50.00))));
@@ -281,7 +289,7 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testWertpapierKauf07()
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -308,6 +316,7 @@ public class INGDiBaPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2012-03-20T19:35:40")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(11)));
+        assertThat(entry.getSource(), is("Kauf07.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5009.71))));
@@ -322,7 +331,7 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testWertpapierKauf08()
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -349,6 +358,7 @@ public class INGDiBaPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2012-02-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(6.41234)));
+        assertThat(entry.getSource(), is("Kauf08.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(75.00))));
@@ -363,7 +373,7 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testWertpapierKauf09()
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -390,6 +400,7 @@ public class INGDiBaPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-01-26T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(275)));
+        assertThat(entry.getSource(), is("Kauf09.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(297.15))));
@@ -402,9 +413,51 @@ public class INGDiBaPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf10()
+    {
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf10.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("US76954A1034"));
+        assertThat(security.getWkn(), is("A3C47B"));
+        assertThat(security.getName(), is("Rivian Automotive Inc. Reg.Shares Cl.A  DL -,0001"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+
+        // check buy sell transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)
+                        .collect(Collectors.toList()).get(0).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-11-10T20:25:34")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(15)));
+        assertThat(entry.getSource(), is("Kauf10.txt"));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1335.07))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1311.99))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(14.90 + 8.18))));
+    }
+
+    @Test
     public void testWertpapierVerkauf01()
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -431,6 +484,8 @@ public class INGDiBaPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-05-07T11:43:33")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(31)));
+        assertThat(entry.getSource(), is("Verkauf01.txt"));
+        assertThat(entry.getNote(), is("Limit: 57,00 EUR"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1887.64))));
@@ -445,7 +500,7 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testWertpapierVerkauf02()
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -472,6 +527,7 @@ public class INGDiBaPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-12-22T11:45:08")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(30)));
+        assertThat(entry.getSource(), is("Verkauf02.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(568.41))));
@@ -486,7 +542,7 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testWertpapierVerkauf03()
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -513,6 +569,8 @@ public class INGDiBaPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2013-06-21T17:04:26")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(11)));
+        assertThat(entry.getSource(), is("Verkauf03.txt"));
+        assertThat(entry.getNote(), is("Limit: 310,00 EUR"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3421.66))));
@@ -527,7 +585,7 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testWertpapierVerkauf04()
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -554,6 +612,8 @@ public class INGDiBaPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-09-24T08:14:25")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(70)));
+        assertThat(entry.getSource(), is("Verkauf04.txt"));
+        assertThat(entry.getNote(), is("Limit: 5,70 EUR"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(393.10))));
@@ -568,7 +628,7 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testWertpapierVerkauf05()
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -595,6 +655,7 @@ public class INGDiBaPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-01T12:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
+        assertThat(entry.getSource(), is("Verkauf05.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7.41))));
@@ -609,7 +670,7 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testWertpapierVerkauf06()
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -636,6 +697,7 @@ public class INGDiBaPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-24T08:17:03")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(300)));
+        assertThat(entry.getSource(), is("Verkauf06.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(569.23))));
@@ -650,7 +712,7 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testWertpapierVerkauf07()
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -677,6 +739,7 @@ public class INGDiBaPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-07-23T16:47:25")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(25)));
+        assertThat(entry.getSource(), is("Verkauf07.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4547.75))));
@@ -689,9 +752,51 @@ public class INGDiBaPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierVerkauf08()
+    {
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf08.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("US76954A1034"));
+        assertThat(security.getWkn(), is("A3C47B"));
+        assertThat(security.getName(), is("Rivian Automotive Inc. Reg.Shares Cl.A  DL -,0001"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+
+        // check buy sell transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)
+                        .collect(Collectors.toList()).get(0).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-11-16T15:41:12")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5)));
+        assertThat(entry.getSource(), is("Verkauf08.txt"));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(634.34))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(729.54))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(32.14 + 32.14 + 2.89 + 2.89 + 1.76 + 1.76))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(14.90 + 6.72))));
+    }
+
+    @Test
     public void testVorabpauschale01()
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -718,15 +823,22 @@ public class INGDiBaPDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-04T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(378)));
+        assertThat(transaction.getSource(), is("Vorabpauschale01.txt"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.16))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.16))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
     }
 
     @Test
     public void testVorabpauschale02()
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -753,15 +865,22 @@ public class INGDiBaPDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-04T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(61.76876)));
+        assertThat(transaction.getSource(), is("Vorabpauschale02.txt"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.32))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.32))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
     }
 
     @Test
     public void testDividende01()
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -787,6 +906,7 @@ public class INGDiBaPDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-12-15T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(66)));
+        assertThat(transaction.getSource(), is("Dividende01.txt"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(44.01))));
@@ -801,7 +921,7 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testDividende02()
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -827,6 +947,7 @@ public class INGDiBaPDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-12-15T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(694)));
+        assertThat(transaction.getSource(), is("Dividende02.txt"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(234.92))));
@@ -841,7 +962,7 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testDividende03()
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -867,6 +988,7 @@ public class INGDiBaPDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-03-22T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(35)));
+        assertThat(transaction.getSource(), is("Dividende03.txt"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(58.19))));
@@ -881,7 +1003,7 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testDividende04()
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -907,6 +1029,7 @@ public class INGDiBaPDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-05-09T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(55)));
+        assertThat(transaction.getSource(), is("Dividende04.txt"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(38.50))));
@@ -921,7 +1044,7 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testDividende05()
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -947,6 +1070,7 @@ public class INGDiBaPDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-15T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(10)));
+        assertThat(transaction.getSource(), is("Dividende05.txt"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(8.94))));
@@ -961,7 +1085,7 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testDividende06()
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -987,6 +1111,7 @@ public class INGDiBaPDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(16)));
+        assertThat(transaction.getSource(), is("Dividende06.txt"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.90))));
@@ -1001,7 +1126,7 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testDividende07()
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1027,6 +1152,7 @@ public class INGDiBaPDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(5)));
+        assertThat(transaction.getSource(), is("Dividende07.txt"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.12))));
@@ -1041,7 +1167,7 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testDividende08()
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1067,6 +1193,7 @@ public class INGDiBaPDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(250)));
+        assertThat(transaction.getSource(), is("Dividende08.txt"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(60.82))));
@@ -1081,7 +1208,7 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testDividende09()
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1107,6 +1234,7 @@ public class INGDiBaPDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(165)));
+        assertThat(transaction.getSource(), is("Dividende09.txt"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(29.60))));
@@ -1121,7 +1249,7 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testDividende10()
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1147,6 +1275,7 @@ public class INGDiBaPDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(11.97545)));
+        assertThat(transaction.getSource(), is("Dividende10.txt"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.68))));
@@ -1161,7 +1290,7 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testDividende11()
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1187,6 +1316,7 @@ public class INGDiBaPDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-09-15T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(18)));
+        assertThat(transaction.getSource(), is("Dividende11.txt"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(6.70))));
@@ -1201,7 +1331,7 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testDividende12()
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1227,6 +1357,7 @@ public class INGDiBaPDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-12-15T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(10)));
+        assertThat(transaction.getSource(), is("Dividende12.txt"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(72.50))));
@@ -1241,7 +1372,7 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testDividende13()
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1267,6 +1398,7 @@ public class INGDiBaPDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-10-17T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1112.0958)));
+        assertThat(transaction.getSource(), is("Dividende13.txt"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(101.32))));
@@ -1281,7 +1413,7 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testDividende14()
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1307,6 +1439,7 @@ public class INGDiBaPDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-02T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(304)));
+        assertThat(transaction.getSource(), is("Dividende14.txt"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(20.03))));
@@ -1321,7 +1454,7 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testDividende15()
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1347,6 +1480,7 @@ public class INGDiBaPDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-05-12T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(500)));
+        assertThat(transaction.getSource(), is("Dividende15.txt"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(468.04))));
@@ -1361,7 +1495,7 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testDividende16()
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1387,6 +1521,7 @@ public class INGDiBaPDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-12-21T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(700)));
+        assertThat(transaction.getSource(), is("Dividende16.txt"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(61.85))));
@@ -1401,7 +1536,7 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testWertpapierRueckzahlung01()
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
 
@@ -1431,6 +1566,7 @@ public class INGDiBaPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-05-25T00:00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(49)));
+        assertThat(entry.getSource(), is("Rueckzahlung01.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(256.66))));
@@ -1445,7 +1581,7 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testWertpapierRueckzahlung02()
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
 
@@ -1475,6 +1611,7 @@ public class INGDiBaPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-25T00:00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5)));
+        assertThat(entry.getSource(), is("Rueckzahlung02.txt"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1404.34))));

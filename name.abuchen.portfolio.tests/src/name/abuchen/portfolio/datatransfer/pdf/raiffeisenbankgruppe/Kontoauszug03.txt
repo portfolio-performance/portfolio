@@ -1,0 +1,44 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Raiffeisenbank Augsburger Land West eG
+Bahnhofstr. 5, 86424 Dinkelscherben
+Filiale Dinkelscherben, Tel. 08292 1234567
+Privatkonto
+EUR-Konto Kontonummer 1234567
+Raiffeisenbank Augsburger Land West eG
+Augsburger Str. 12, 86441 Zusmarshausen Kontoauszug Nr.  11/2021
+erstellt am 30.11.2021 23:09 Blatt  1 von 1
+IBAN: DE33 7206 1111 0003 1111 65 BIC: GENODEF1ZUS
+Herrn und Frau
+Mustermann
+Tannholzstr. 2
+86424 Dinkelscherben
+Bu-Tag Wert Vorgang
+alter Kontostand vom 29.10.2021                       1.272,78 H
+09.11. 09.11. Basislastschrift                                                    136,00 S
+              E.ON Energie Deutschland GmbH
+              Abschlag (Strom) November / 2021 Kunden-Nr. 2005111111
+              / 400618435 EREF: A1.200111110.400618435.49613058 MREF
+              : 20852HW3310463 CRED: DE41EON00011111111 IBAN: DE1370
+              070010011111111 BIC: DEUTDEMM
+15.11. 15.11. Basislastschrift                                                    133,29 S
+              Markt Dinkelscherben
+              2384                              .2384-1 Abfallbeseit
+              igung 2021 Tannholzstr. 2 /          29,49/15.11.21238
+              4-1 Grundsteuer B 2021 Tannholzs EREF: LA1111111116-02
+              444-4204219545 MREF: OKF100001111111 CRED: DE21ZZZ0000
+              0006575 IBAN: DE1272069274011111111 BIC: GENODEF1ZUS
+15.11. 15.11. Basislastschrift                                                    139,00 S
+              Markt Dinkelscherben
+              2384                              .2384-2 Abwassergebu
+              ehren VZ 2021 Tannholzstr./          70,00/15.11.21238
+              4-2 Wassergebuehren VZ 2021 Tann EREF: LA1111O11111-02
+              445-42041111116 MREF: OKF10001111111 CRED: DE21ZZZ0000
+              0006575 IBAN: DE1272069274011111111 BIC: GENODEF1ZUS
+16.11. 16.11. Basislastschrift                                                     35,19 S
+              Telekom Deutschland GmbH
+              Festnetz Vertragskonto 1111111  RG 7785476083/05.11
+              .2021 EREF: Zahlbeleg 111111111 MREF: DE00020110020
+              0000000000000002599156 CRED: DE93ZZZ00000011111 IBAN:
+              DE6870020270011111111 BIC: HYVEDEMM
+                                    neuer Kontostand vom 30.11.2021                         829,30 H

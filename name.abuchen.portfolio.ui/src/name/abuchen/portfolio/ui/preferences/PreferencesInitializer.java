@@ -6,6 +6,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.dialogs.transactions.PresetValues;
 
 public class PreferencesInitializer extends AbstractPreferenceInitializer
 {
@@ -30,5 +31,6 @@ public class PreferencesInitializer extends AbstractPreferenceInitializer
         store.setDefault(UIConstants.Preferences.ALPHAVANTAGE_CALL_FREQUENCY_LIMIT, 5);
         store.setDefault(UIConstants.Preferences.CALENDAR, "default"); //$NON-NLS-1$
         store.setDefault(UIConstants.Preferences.PORTFOLIO_REPORT_API_URL, "https://api.portfolio-report.net"); //$NON-NLS-1$
+        store.setDefault(UIConstants.Preferences.PRESET_VALUE_TIME, PresetValues.TimePreset.MIDNIGHT.name());
     }
 }

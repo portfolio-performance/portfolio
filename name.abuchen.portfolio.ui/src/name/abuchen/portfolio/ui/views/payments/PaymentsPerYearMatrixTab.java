@@ -33,7 +33,7 @@ public class PaymentsPerYearMatrixTab extends PaymentsPerMonthMatrixTab
     @Override
     public void addConfigActions(IMenuManager manager)
     {
-        // do not add configuration option from payments / month tab
+        addReverseColumnAction(manager);
     }
 
     @Override
@@ -49,6 +49,15 @@ public class PaymentsPerYearMatrixTab extends PaymentsPerMonthMatrixTab
         }
 
         createSumColumn(records, layout);
+
+        sortColumnOrder();
+    }
+    
+    @Override
+    protected void sortColumnOrder()
+    {
+        // Keep first column in same position
+        sortColumnOrder(1, 0);
     }
 
     private void createYearColumn(TableViewer records, TableColumnLayout layout, LocalDate start, int index)
