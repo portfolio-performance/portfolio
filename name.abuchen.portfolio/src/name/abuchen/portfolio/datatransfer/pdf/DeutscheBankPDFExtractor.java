@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetFee;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
@@ -408,20 +409,19 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                 // Provision EUR 3,13
                 // Provisions-Rabatt EUR -1,13
                 // Ausgekehrte Zuwendungen, die die Bank von DWS Xtrackers erhält EUR -2,00
-                .section("currency", "fee", "feeRefund1", "feeRefund2").optional()
+                .section("currency", "fee", "discountCurrency1", "discount1", "discountCurrency2", "discount2").optional()
                 .match("^Provision (?<currency>[\\w]{3}) (\\-)?(?<fee>[\\.,\\d]+)$")
-                .match("^Provisions\\-Rabatt (?<currency>[\\w]{3}) (\\-)?(?<feeRefund1>[\\.,\\d]+)$")
-                .match("^Ausgekehrte Zuwendungen, .* (?<currency>[\\w]{3}) \\-(?<feeRefund2>[\\.,\\d]+)$")
+                .match("^Provisions\\-Rabatt (?<discountCurrency1>[\\w]{3}) (\\-)?(?<discount1>[\\.,\\d]+)$")
+                .match("^Ausgekehrte Zuwendungen, .* (?<discountCurrency2>[\\w]{3}) \\-(?<discount2>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    double provision = Double.parseDouble(v.get("fee").replace(',', '.'));
-                    double feeRefund1 = Double.parseDouble(v.get("feeRefund1").replace(',', '.'));
-                    double feeRefund2 = Double.parseDouble(v.get("feeRefund2").replace(',', '.'));
+                    Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
+                    Money discount1 = Money.of(asCurrencyCode(v.get("discountCurrency1")), asAmount(v.get("discount1")));
+                    Money discount2 = Money.of(asCurrencyCode(v.get("discountCurrency2")), asAmount(v.get("discount2")));
 
-                    if (provision - (feeRefund1 + feeRefund2) != 0L)
+                    if (fee.subtract(discount1.add(discount2)).isPositive())
                     {
-                        String fee =  Double.toString(provision - (feeRefund1 + feeRefund2)).replace('.', ',');
-                        v.put("fee", fee);
-                        processFeeEntries(t, v, type);
+                        fee = fee.subtract(discount1.add(discount2));
+                        checkAndSetFee(fee, t, type);
                     }
 
                     type.getCurrentContext().put("noProvision", "X");
@@ -429,21 +429,19 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
 
                 // Provision EUR 3,13
                 // Provisions-Rabatt EUR -3,13
-                .section("currency", "fee", "feeRefund").optional()
+                .section("currency", "fee", "discountCurrency", "discount").optional()
                 .match("^Provision (?<currency>[\\w]{3}) (\\-)?(?<fee>[\\.,\\d]+)$")
-                .match("^Provisions\\-Rabatt (?<currency>[\\w]{3}) (\\-)?(?<feeRefund>[\\.,\\d]+)$")
+                .match("^Provisions\\-Rabatt (?<discountCurrency>[\\w]{3}) (\\-)?(?<discount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    double provision = Double.parseDouble(v.get("fee").replace(',', '.'));
-                    double feeRefund = Double.parseDouble(v.get("feeRefund").replace(',', '.'));
+                    Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
+                    Money discount = Money.of(asCurrencyCode(v.get("discountCurrency")), asAmount(v.get("discount")));
 
                     if (!"X".equals(type.getCurrentContext().get("noProvision")))
                     {
-                        if (provision - feeRefund != 0L)
+                        if (fee.subtract(discount).isPositive())
                         {
-                            String fee =  Double.toString(provision - feeRefund).replace('.', ',');
-                            v.put("fee", fee);
-                            processFeeEntries(t, v, type);
-                            
+                            fee = fee.subtract(discount);
+                            checkAndSetFee(fee, t, type);
                         }
 
                         type.getCurrentContext().put("noProvision", "X");
@@ -452,21 +450,19 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
 
                 // Provision EUR 1,26
                 // Ausgekehrte Zuwendungen, die die Bank von DWS Xtrackers erhält EUR -1,26
-                .section("currency", "fee", "feeRefund").optional()
+                .section("currency", "fee", "discountCurrency", "discount").optional()
                 .match("^Provision (?<currency>[\\w]{3}) (\\-)?(?<fee>[\\.,\\d]+)$")
-                .match("^Ausgekehrte Zuwendungen, .* (?<currency>[\\w]{3}) \\-(?<feeRefund>[\\.,\\d]+)$")
+                .match("^Ausgekehrte Zuwendungen, .* (?<discountCurrency>[\\w]{3}) \\-(?<discount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    double provision = Double.parseDouble(v.get("fee").replace(',', '.'));
-                    double feeRefund = Double.parseDouble(v.get("feeRefund").replace(',', '.'));
+                    Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
+                    Money discount = Money.of(asCurrencyCode(v.get("discountCurrency")), asAmount(v.get("discount")));
 
                     if (!"X".equals(type.getCurrentContext().get("noProvision")))
                     {
-                        if (provision - feeRefund != 0L)
+                        if (fee.subtract(discount).isPositive())
                         {
-                            String fee =  Double.toString(provision - feeRefund).replace('.', ',');
-                            v.put("fee", fee);
-                            processFeeEntries(t, v, type);
-                            
+                            fee = fee.subtract(discount);
+                            checkAndSetFee(fee, t, type);
                         }
 
                         type.getCurrentContext().put("noProvision", "X");
