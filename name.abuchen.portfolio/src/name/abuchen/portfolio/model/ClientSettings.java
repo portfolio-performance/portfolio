@@ -52,7 +52,7 @@ public class ClientSettings
     private Map<Integer, TypedMap> createDefaultSettingsSMA()
     {
         Map<Integer, TypedMap> map = new HashMap<>();
-        IntervalSettings mapWrapper = new IntervalSettings(map);
+        IntervalSettings mapWrapper = new IntervalSettings();
         getDefaultSmaColors().forEach((interval, color) -> mapWrapper.add(interval, color, false));
         return map;
     }

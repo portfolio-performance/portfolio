@@ -640,14 +640,13 @@ public class SecuritiesChart
             menu.add(new Separator());
         
         // Edit SMA intervals button
-        Action action = new SimpleAction("Verwalten...", a -> { //$NON-NLS-1$
-            // TODO: open dialog for configure SMA intervals (add/remove, change color)
+        Action action = new SimpleAction(Messages.EditSmaIntervalDialog_ManageLabel, a -> {
             EditSmaIntervalsDialog dlg = new EditSmaIntervalsDialog(Display.getDefault().getActiveShell(), smaSettings);
             if(dlg.open() == Window.OK)
             {
                 // update settings
                 smaSettings.clear();
-                for(IntervalSettings.IntervalSetting i : dlg.getIntervals())                    
+                for(IntervalSettings.IntervalSetting i : dlg.getIntervals())
                     smaSettings.add(i.getInterval(), i.getRGB(), i.getIsActive());
                 
                 ReadOnlyClient.unwrap(client).touch();

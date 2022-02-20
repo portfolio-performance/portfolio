@@ -38,7 +38,7 @@ public class EditSmaIntervalsDialog extends Dialog
     {
         super(parentShell);
 
-        // create copy of settings
+        // create copy of settings to work on them
         intervals = new IntervalSettings();        
         for(IntervalSettings.IntervalSetting i : smaIntervals.getAll())
             intervals.add(i.getInterval(), i.getRGB(), i.getIsActive());
@@ -93,12 +93,12 @@ public class EditSmaIntervalsDialog extends Dialog
     {
         final Button addButton = new Button(container, SWT.FLAT | SWT.PUSH);
         addButton.setImage(Images.ADD.image());
-        addButton.setToolTipText("Element hinzufügen");
+        addButton.setToolTipText(Messages.EditSmaIntervalDialog_AddIntervalLabel);
         addButton.addListener(SWT.MouseUp, e -> 
         {
             if (e.type == SWT.MouseUp) 
             {
-                InputDialog dlg = new InputDialog(this.getShell(), "Interval eingeben", "Interval", "", new IntervalValidator(intervals.getAll()));
+                InputDialog dlg = new InputDialog(this.getShell(), Messages.EditSmaIntervalDialog_InsertIntervalLabel, Messages.EditSmaIntervalDialog_InsertIntervalLabel, "", new IntervalValidator(intervals.getAll())); //$NON-NLS-1$
                 if(dlg.open() == Window.OK)
                 {
                     intervals.add(Integer.parseInt(dlg.getValue()), new RGB(107, 179, 143), false);
@@ -127,19 +127,18 @@ public class EditSmaIntervalsDialog extends Dialog
             }
             catch(NumberFormatException ex)
             {
-                return "Ganze Zahl eingeben";
+                return Messages.EditSmaIntervalDialog_ValidateEnterNumberLabel;
             }
             
-            final int parsedInterval = tempInterval;
-            
+            final int parsedInterval = tempInterval;            
             if(parsedInterval <= 0)
             {
-                return "Positive Zahl eingeben";
+                return Messages.EditSmaIntervalDialog_ValidateEnterPositiveNumberLabel;
             }
             
-            if(Arrays.stream(existingIntervals).anyMatch(i -> (int)i.getInterval() == parsedInterval))
+            if(Arrays.stream(existingIntervals).anyMatch(i -> i.getInterval() == parsedInterval))
             {
-                return "Gibt es schon";
+                return Messages.EditSmaIntervalDialog_ValidateIntervalAlreadyExistsLabel;
             }
             return null;
         }
@@ -151,15 +150,14 @@ public class EditSmaIntervalsDialog extends Dialog
         removeButton.setEnabled(false); // disable by default. will be enabled if row is selected
         removeButton.setLayoutData(new GridData(GridData.VERTICAL_ALIGN_BEGINNING));
         removeButton.setImage(Images.REMOVE.image());        
-        removeButton.setToolTipText("Selektiertes Element entfernen");
+        removeButton.setToolTipText(Messages.EditSmaIntervalDialog_DeleteIntervalLabel);
         removeButton.addListener(SWT.MouseUp, e -> 
         {
             if (e.type == SWT.MouseUp) 
             {
                 IntervalSettings.IntervalSetting interval = (IntervalSettings.IntervalSetting)table.getStructuredSelection().getFirstElement();
                 table.remove(interval);
-                intervals.remove(interval.getInterval());
-                
+                intervals.remove(interval.getInterval());                
             }
         });
         
@@ -179,14 +177,13 @@ public class EditSmaIntervalsDialog extends Dialog
     {       
         TableViewerColumn colInterval = new TableViewerColumn(table, SWT.NONE);
         colInterval.getColumn().setWidth(80);
-        colInterval.getColumn().setText("Interval");
+        colInterval.getColumn().setText(Messages.EditSmaIntervalDialog_IntervalLabel);
         colInterval.setLabelProvider(new ColumnLabelProvider() 
         {
             @Override
             public String getText(Object element) 
             {
-                IntervalSettings.IntervalSetting i = (IntervalSettings.IntervalSetting) element;
-                return String.valueOf(i.getInterval());
+                return String.valueOf(((IntervalSettings.IntervalSetting)element).getInterval());
             }
         });
     }
@@ -195,15 +192,13 @@ public class EditSmaIntervalsDialog extends Dialog
     {
         TableViewerColumn colColor = new TableViewerColumn(table, SWT.NONE);
         colColor.getColumn().setWidth(160);
-        colColor.getColumn().setText("Farbe");
+        colColor.getColumn().setText(Messages.EditSmaIntervalDialog_ColorLabel);
         colColor.setEditingSupport(new ColorEditingSupport(table));
         colColor.setLabelProvider(new ColumnLabelProvider() 
         {
             @Override
             public String getText(Object element) 
             {
-                //IntervalSettings.IntervalSetting i = (IntervalSettings.IntervalSetting) element;
-                //return ColorConversion.toHex(i.getRGBA());
                 return null;
             }
             
@@ -220,12 +215,6 @@ public class EditSmaIntervalsDialog extends Dialog
                 IntervalSettings.IntervalSetting i = (IntervalSettings.IntervalSetting) element;
                 return new Color(i.getRGB());
             }
-            
-        //    @Override
-        //    public Color getForeground(Object element) 
-        //    {
-        //        return Colors.getTextColor(getBackground(element));
-        //    }
         });        
     }
 

@@ -15,20 +15,18 @@ public class IntervalSettings
     
     public static class SortIntervalSetting implements Comparator<IntervalSettings.IntervalSetting> 
     {
-        
         @Override
         public int compare(IntervalSettings.IntervalSetting a, IntervalSettings.IntervalSetting b)
         {
             return a.getInterval() - b.getInterval();
         }
     }
-    
+
     public class IntervalSetting
     {
-        
-        
-        private Entry<Integer, TypedMap> setting; 
-                
+
+        private Entry<Integer, TypedMap> setting;
+
         public IntervalSetting(Entry<Integer, TypedMap> entry)
         {
             setting = entry;
@@ -38,22 +36,22 @@ public class IntervalSettings
         {
             return setting.getKey();
         }
-        
+
         public RGB getRGB()
         {
             return ColorConversion.hex2RGB(setting.getValue().getString(IntervalSettings.C_COLOR));
         }
-        
+
         public void setRGB(RGB color)
         {
             setting.getValue().putString(IntervalSettings.C_COLOR, ColorConversion.toHex(color));
         }
-        
+
         public boolean getIsActive()
         {
             return setting.getValue().getBoolean(IntervalSettings.C_ISACTIVE);
         }
-        
+
         public void setIsActive(boolean isActive)
         {
             setting.getValue().putBoolean(IntervalSettings.C_ISACTIVE, isActive);

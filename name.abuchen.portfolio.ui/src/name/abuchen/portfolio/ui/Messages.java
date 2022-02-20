@@ -374,6 +374,15 @@ public class Messages extends NLS
     public static String DivvyDiaryMissingAPIKey;
     public static String DivvyDiaryMsgUploading;
     public static String DivvyDiaryUploadSuccessfulMsg;
+    public static String EditSmaIntervalDialog_AddIntervalLabel;
+    public static String EditSmaIntervalDialog_ColorLabel;
+    public static String EditSmaIntervalDialog_DeleteIntervalLabel;
+    public static String EditSmaIntervalDialog_InsertIntervalLabel;
+    public static String EditSmaIntervalDialog_IntervalLabel;
+    public static String EditSmaIntervalDialog_ManageLabel;
+    public static String EditSmaIntervalDialog_ValidateEnterNumberLabel;
+    public static String EditSmaIntervalDialog_ValidateEnterPositiveNumberLabel;
+    public static String EditSmaIntervalDialog_ValidateIntervalAlreadyExistsLabel;
     public static String EditWizardAttributesTitle;
     public static String EditWizardLatestQuoteFeedTitle;
     public static String EditWizardMasterDataLinkNewCategory;
