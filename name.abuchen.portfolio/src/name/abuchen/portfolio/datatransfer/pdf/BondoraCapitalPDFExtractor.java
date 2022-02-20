@@ -13,10 +13,13 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
 {
-    static String ACCOUNT_STATEMENT_TRANSACTION_REGEX = "^(?<date>[\\d]{2}.[\\d]{2}.[\\d]{4}|[\\d]{4}.[\\d]{2}.[\\d]{2})\\s"
-                    + "(?<note>[^€\\d]*)(\\s[€]\\D|\\D)"
-                    + "(?<amount>[\\.'\\d\\s]+(,[\\d]{1,2})?)"
-                    + "(\\D*)([\\.'\\d\\s]+(,\\d+)*)(.{2})?$";
+    static String ACCOUNT_STATEMENT_TRANSACTION_REGEX = "^(?<date>[\\d]{2}.[\\d]{2}.[\\d]{4}|[\\d]{4}.[\\d]{2}.[\\d]{2}) "
+                    + "(?<note>[^\\p{Sc}\\d]*)"
+                    + "([\\D\\s]*)?"
+                    + "(?<amount>[\\.',\\d\\s]+)"
+                    + "([\\D\\s]*)?"
+                    + "[\\.',\\d\\s]+"
+                    + "([\\D\\s]*)?$";
 
     public BondoraCapitalPDFExtractor(Client client)
     {
@@ -90,7 +93,7 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
     @Override
     protected long asAmount(String value)
     {
-        value = value.trim().replaceAll(" ", ""); //$NON-NLS-1$ //$NON-NLS-2$
+        value = value.trim().replaceAll("\\s", "");  //$NON-NLS-1$//$NON-NLS-2$
 
         String language = "de"; //$NON-NLS-1$
         String country = "DE"; //$NON-NLS-1$
@@ -100,18 +103,6 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
         {
             language = "de"; //$NON-NLS-1$
             country = "CH"; //$NON-NLS-1$
-        }
-        else
-        {
-            int lastDot = value.lastIndexOf("."); //$NON-NLS-1$
-            int lastComma = value.lastIndexOf(","); //$NON-NLS-1$
-    
-            // returns the greater of two int values
-            if (Math.max(lastDot, lastComma) == lastDot)
-            {
-                language = "en"; //$NON-NLS-1$
-                country = "US"; //$NON-NLS-1$
-            }
         }
 
         return PDFExtractorUtils.convertToNumberLong(value, Values.Amount, language, country);
