@@ -195,7 +195,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 // Börse USA/NAN Ausmachender Betrag USD 5.280,17-
                 // 03.08.2015 0000000000 EUR/USD 1,100297 EUR 4.798,86
                 .section("fxCurrency", "fxAmount", "exchangeRate").optional()
-                .match("^.* (Ausmachender Betrag|Kurswert) (?<fxCurrency>[\\w]{3}) (?<fxAmount>[\\.,\\d]+)(\\-)?$")
+                .match("^.* (Ausmachender Betrag|Kurswert) (?<fxCurrency>[\\w]{3}) (?<fxAmount>[\\.,\\d]+)(\\-)?\\s?$")
                 .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\w]{3}\\/[\\w]{3} (?<exchangeRate>[\\.,\\d]+) [\\w]{3} [\\.,\\d]+$")
                 .assign((t, v) -> {
                     // read the forex currency, exchange rate and gross
