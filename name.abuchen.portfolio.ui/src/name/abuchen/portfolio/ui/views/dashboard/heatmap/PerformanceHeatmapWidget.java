@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.Year;
 import java.time.YearMonth;
 import java.time.temporal.TemporalAdjusters;
-import java.util.Arrays;
 import java.util.function.DoubleBinaryOperator;
 import java.util.function.ToDoubleFunction;
 
@@ -124,34 +123,13 @@ public class PerformanceHeatmapWidget extends AbstractHeatmapWidget<Double>
 
     private double getPerformanceFor(PerformanceIndex index, YearMonth month)
     {
-        int start = Arrays.binarySearch(index.getDates(), month.atDay(1).minusDays(1));
-        // should not happen, but let's be defensive this time
-        if (start < 0)
-            start = 0;
-
-        int end = Arrays.binarySearch(index.getDates(), month.atEndOfMonth());
-        // make sure there is an end index if the binary search returns a
-        // negative value (i.e. if the current month is not finished)
-        if (end < 0)
-        {
-            // take the last available date
-            end = index.getDates().length - 1;
-        }
-
-        return ((index.getAccumulatedPercentage()[end] + 1) / (index.getAccumulatedPercentage()[start] + 1)) - 1;
+        return index.getPerformance(Interval.of(month.atDay(1).minusDays(1),
+                                                month.atEndOfMonth()));
     }
 
     private double getSumPerformance(PerformanceIndex index, Year year)
     {
-        int start = Arrays.binarySearch(index.getDates(), year.atDay(1).minusDays(1));
-        if (start < 0)
-            start = 0;
-
-        int end = Arrays.binarySearch(index.getDates(), year.atDay(1).with(TemporalAdjusters.lastDayOfYear()));
-        if (end < 0)
-            end = index.getDates().length - 1;
-
-        return ((index.getAccumulatedPercentage()[end] + 1) / (index.getAccumulatedPercentage()[start] + 1)) - 1;
+        return index.getPerformance(Interval.of(year.atDay(1).minusDays(1),
+                                                year.atDay(1).with(TemporalAdjusters.lastDayOfYear())));
     }
-
 }
