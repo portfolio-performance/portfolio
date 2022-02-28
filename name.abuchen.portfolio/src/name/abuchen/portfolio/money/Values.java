@@ -92,7 +92,7 @@ public abstract class Values<E>
 
         public String format(String currencyCode, long quote)
         {
-            return currencyCode + " " + format(quote); //$NON-NLS-1$
+            return currencyCode != null ? currencyCode + " " + format(quote) : format(quote); //$NON-NLS-1$
         }
 
         public String format(Quote quote)
