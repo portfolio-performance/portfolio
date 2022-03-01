@@ -64,7 +64,7 @@ public class WeberbankPDFExtractor extends AbstractPDFExtractor
                 // Stück 4.440 NEL ASA NO0010081235 (A0B733)
                 // NAVNE-AKSJER NK -,20
                 .section("shares", "name", "isin", "wkn", "name1")
-                .match("^St.ck (?<shares>[\\d.,]+) (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
+                .match("^St.ck (?<shares>[\\.,\\d]+) (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
                 .match("^(?<name1>.*)$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Handels-/Ausführungsplatz"))
