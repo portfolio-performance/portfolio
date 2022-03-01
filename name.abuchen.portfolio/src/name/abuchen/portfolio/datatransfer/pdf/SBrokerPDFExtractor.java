@@ -26,6 +26,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
 
         addBankIdentifier("S Broker AG & Co. KG"); //$NON-NLS-1$
         addBankIdentifier("Sparkasse"); //$NON-NLS-1$
+        addBankIdentifier("Stadtsparkasse"); //$NON-NLS-1$
 
         addBuySellTransaction();
         addDividendTransaction();
@@ -111,6 +112,12 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                         .match("^Handelstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$")
                                         .match("^Handelszeit (?<time>[\\d]{2}:[\\d]{2})(.*)?$")
                                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
+                                ,
+                                // Schlusstag/-Zeit 14.10.2021 09:00:12 Auftraggeber XXXXXX XXXXXXX
+                                section -> section
+                                        .attributes("date", "time")
+                                        .match("^Schlusstag\\/\\-Zeit (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) .*$")
+                                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
                         )
 
                 .oneOf(
@@ -137,7 +144,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
 
                 // Limit 189,40 EUR
                 .section("note").optional()
-                .match("(?<note>Limit [\\.,\\d]+ [\\w]{3})$")
+                .match("(?<note>Limit .*)$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                 .wrap(BuySellEntryItem::new);
@@ -337,7 +344,11 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                 .find("Gattungsbezeichnung ISIN")
                 .match("^(?<name>.*) (?<isin>[\\w]{12})$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
-                                
+
+                // STK 47,000 EUR 120,3500
+                .section("shares").optional()
+                .match("^STK (?<shares>[\\.,\\d]+) .*$")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 // Wert Konto-Nr. Abrechnungs-Nr. Betrag zu Ihren Gunsten
                 // 03.06.2015 10/3874/009 87966195 EUR 11,48
@@ -498,6 +509,16 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                 // Provision 1,48- EUR
                 .section("fee", "currency").optional()
                 .match("^Provision (?<fee>[\\.,\\d]+)\\- (?<currency>[\\w]{3})")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+
+                // Transaktionsentgelt Börse 0,60- EUR
+                .section("fee", "currency").optional()
+                .match("^Transaktionsentgelt B.rse (?<fee>[\\.,\\d]+)\\- (?<currency>[\\w]{3})")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+
+                // Übertragungs-/Liefergebühr 0,12- EUR
+                .section("fee", "currency").optional()
+                .match("^.bertragungs\\-\\/Liefergeb.hr (?<fee>[\\.,\\d]+)\\- (?<currency>[\\w]{3})")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Kurswert 509,71- EUR
