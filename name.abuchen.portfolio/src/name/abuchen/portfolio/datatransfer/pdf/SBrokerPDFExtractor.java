@@ -74,17 +74,21 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
 
                 // Gattungsbezeichnung ISIN
                 // iS.EO G.B.C.1.5-10.5y.U.ETF DE Inhaber-Anteile DE000A0H0785
-                .section("isin", "name").optional()
+                // STK 16,000 EUR 120,4000
+                .section("name", "isin", "currency").optional()
                 .find("Gattungsbezeichnung ISIN")
                 .match("^(?<name>.*) (?<isin>[\\w]{12})$")
+                .match("^STK .* (?<currency>[\\w]{3} [\\.,\\d]+)$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // Nominale Wertpapierbezeichnung ISIN (WKN)
                 // Stück 7,1535 BGF - WORLD TECHNOLOGY FUND LU0171310443 (A0BMAN)
-                .section("shares", "name", "isin", "wkn", "name1").optional()
+                // Kurswert 509,71- EUR
+                .section("shares", "name", "isin", "wkn", "name1", "currency").optional()
                 .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)")
                 .match("^St.ck (?<shares>[\\.,\\d]+) (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
                 .match("^(?<name1>.*)$")
+                .match("^Kurswert [\\.,\\d]+(\\-)? (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Handels-/Ausführungsplatz"))
                         v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
@@ -180,9 +184,10 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
         pdfTransaction
                 // Gattungsbezeichnung ISIN
                 // iS.EO G.B.C.1.5-10.5y.U.ETF DE Inhaber-Anteile DE000A0H0785
-                .section("isin", "name").optional()
+                .section("name", "isin", "currency").optional()
                 .find("Gattungsbezeichnung ISIN")
                 .match("^(?<name>.*) (?<isin>[\\w]{12})$")
+                .match("^STK .* (?<currency>[\\w]{3} [\\.,\\d]+)$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // Nominale Wertpapierbezeichnung ISIN (WKN)
@@ -340,9 +345,10 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
 
                 // Gattungsbezeichnung ISIN
                 // iS.EO G.B.C.1.5-10.5y.U.ETF DE Inhaber-Anteile DE000A0H0785
-                .section("isin", "name").optional()
+                .section("name", "isin", "currency").optional()
                 .find("Gattungsbezeichnung ISIN")
                 .match("^(?<name>.*) (?<isin>[\\w]{12})$")
+                .match("^STK .* (?<currency>[\\w]{3} [\\.,\\d]+)$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // STK 47,000 EUR 120,3500
