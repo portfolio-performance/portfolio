@@ -156,7 +156,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendTransaction()
     {
-        DocumentType type = new DocumentType("Dividendengutschrift|Aussch.ttung");
+        DocumentType type = new DocumentType("(Dividendengutschrift|Aussch.ttung)");
         this.addDocumentTyp(type);
 
         Block block = new Block("^(Dividendengutschrift|Aussch.ttung (f.r|Investmentfonds))( [^\\.,\\d]+.*)?$");
