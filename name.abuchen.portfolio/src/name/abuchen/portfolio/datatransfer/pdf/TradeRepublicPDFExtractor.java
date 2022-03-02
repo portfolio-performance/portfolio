@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.pdf;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -121,13 +122,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                 // Verkauf am 26.02.2021, um 11:44 Uhr.
                                 section -> section
                                         .attributes("date", "time")
-                                        .match("^((Limit|Stop-Market|Market)-Order )?(Kauf|Verkauf) .* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}-[\\d]{2}-[\\d]{2}), um (?<time>[\\d]{2}:[\\d]{2}) .*$")
+                                        .match("^((Limit|Stop-Market|Market)-Order )?(Kauf|Verkauf) .* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}), um (?<time>[\\d]{2}:[\\d]{2}) .*$")
                                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
                                 ,
                                 // Sparplanausführung am 18.11.2019 an der Lang & Schwarz Exchange.
                                 section -> section
                                         .attributes("date")
-                                        .match("^Sparplanausf.hrung .* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}-[\\d]{2}-[\\d]{2}) .*$")
+                                        .match("^Sparplanausf.hrung .* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) .*$")
                                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
                                 ,
                                 /***
@@ -136,7 +137,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                 // DE40110101001234567890 06.08.2021 0,44 GBP
                                 section -> section
                                         .attributes("date")
-                                        .match("^[\\w]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}-[\\d]{2}-[\\d]{2}) [\\.,\\d]+ [\\w]{3}$")
+                                        .match("^[\\w]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) [\\.,\\d]+ [\\w]{3}$")
                                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
                         )
 
@@ -148,8 +149,8 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                  * Fees are processed in a separate transaction
                  */
                 .section("negative").optional()
-                .match("GESAMT ([-])?[\\.,\\d]+ [\\w]{3}")
-                .match("GESAMT (?<negative>[-])[\\.,\\d]+ [\\w]{3}")
+                .match("GESAMT (\\-)?[\\.,\\d]+ [\\w]{3}")
+                .match("GESAMT (?<negative>\\-)[\\.,\\d]+ [\\w]{3}")
                 .assign((t, v) -> {
                     if (t.getPortfolioTransaction().getType().isLiquidation())
                     {
@@ -167,8 +168,8 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 // GESAMT 1.825,60 EUR
                 // GESAMT 1.792,29 EUR
                 .section("fxAmount", "fxCurrency", "amount", "currency").optional()
-                .match("^GESAMT ([-])?(?<fxAmount>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
-                .match("^GESAMT ([-])?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^GESAMT (\\-)?(?<fxAmount>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
+                .match("^GESAMT (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -188,7 +189,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                 // GESAMT 1.792,29 EUR
                 .section("amount", "currency")
-                .match("^GESAMT ([-])?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^GESAMT (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     // if amount is already set, we do nothing
                     if (t.getPortfolioTransaction().getAmount() == 0L)
@@ -327,7 +328,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                 // DE0000000000000000000 02.10.2020 33,89 EUR
                 .section("date")
-                .match("^[\\w]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}-[\\d]{2}-[\\d]{2}) [\\.,\\d]+ [\\w]{3}$")
+                .match("^[\\w]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) [\\.,\\d]+ [\\w]{3}$")
                 .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                 // 1 Kurswert 0,70 EUR
@@ -335,7 +336,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 // 1 Kurswert 0,25 EUR
                 // GESAMT 0,25 EUR
                 .section("amount", "currency")
-                .match("^[\\d]+ Kurswert .*$")
+                .match("^[\\d] Kurswert .*$")
                 .match("^(SUMME|GESAMT) (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
@@ -361,7 +362,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("(AUSSCHÜTTUNG|DIVIDENDE|REINVESTIERUNG)");
+        DocumentType type = new DocumentType("(AUSSCH.TTUNG|DIVIDENDE|REINVESTIERUNG)");
         this.addDocumentTyp(type);
 
         Block block = new Block("^(AUSSCH.TTUNG|DIVIDENDE|REINVESTIERUNG)$");
@@ -413,7 +414,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                 // DExxxxxx 25.09.2019 4,18 EUR
                 .section("date")
-                .match("^[\\w]+ (?<date>\\d+.\\d+.[\\d]{4}|[\\d]{4}-\\d+-\\d+) [\\.,\\d]+ [\\w]{3}$")
+                .match("^[\\w]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) [\\.,\\d]+ [\\w]{3}$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                 // GESAMT 1,630 EUR
@@ -445,28 +446,94 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 })
 
-                // GESAMT 5,63 USD
-                // Zwischensumme 1,102 EUR/USD 5,11 EUR
-                // GESAMT 4,18 EUR
-                .section("forexCurrency", "exchangeRate", "amount", "currency").optional()
-                .match("^GESAMT [\\.,\\d]+ (?<forexCurrency>[\\w]{3})$")
-                .match("^Zwischensumme (?<exchangeRate>[\\.,\\d]+) [\\w]{3}\\/[\\w]{3} [\\.,\\d]+ [\\w]{3}$")
-                .match("^GESAMT (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                // GESAMT 4,60 USD
+                // Quellensteuer DE für US-Emittent -0,690 USD
+                // Zwischensumme 3,91 USD
+                // Zwischensumme 1,106 EUR/USD 3,54 EUR
+                .section("exchangeRate", "fxAmount", "fxTaxAmount", "fxTaxCurrency", "fxCurrency", "amount", "currency").optional()
+                .match("^GESAMT (?<fxAmount>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
+                .match("^Quellensteuer( DE für US\\-Emittent)? \\-(?<fxTaxAmount>[\\.,\\d]+) (?<fxTaxCurrency>[\\w]{3})$")
+                .match("^Zwischensumme (?<exchangeRate>[\\.,\\d]+) [\\w]{3}\\/[\\w]{3} (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-
-                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate")).setScale(10,
-                                    RoundingMode.HALF_DOWN);
-                    BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
-
+                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                    if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
+                    {
+                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+                    }
                     type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
 
-                    Money forex = Money.of(asCurrencyCode(v.get("forexCurrency")),
-                                    Math.round(t.getAmount() / inverseRate.doubleValue()));
-                    Unit unit = new Unit(Unit.Type.GROSS_VALUE, t.getMonetaryAmount(), forex, inverseRate);
-                    if (unit.getForex().getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
-                        t.addUnit(unit);
+                    Money fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxAmount")));
+                    Money tax = Money.of(asCurrencyCode(v.get("fxTaxCurrency")), asAmount(v.get("fxTaxAmount")));
+                    Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
+
+                    // Calculate gross amount + tax in account currency
+                    gross = Money.of(asCurrencyCode(v.get("currency")),
+                                    Math.round(tax.getAmount() / exchangeRate.doubleValue())).add(gross);
+
+                    if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
+                    {
+                        BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
+                                        RoundingMode.HALF_DOWN);
+
+                        // check, if forex currency is transaction
+                        // currency or not and swap amount, if necessary
+                        Unit grossValue;
+                        if (!asCurrencyCode(v.get("fxCurrency")).equals(t.getCurrencyCode()))
+                        {
+                            grossValue = new Unit(Unit.Type.GROSS_VALUE, gross, fxAmount, inverseRate);
+                        }
+                        else
+                        {
+                            grossValue = new Unit(Unit.Type.GROSS_VALUE, fxAmount, gross, inverseRate);
+                        }
+                        t.addUnit(grossValue);
+                    }
+                })
+
+                // GESAMT 5,63 USD
+                // Zwischensumme 1,102 EUR/USD 5,11 EUR
+                .section("exchangeRate", "fxAmount", "fxCurrency", "amount", "currency").optional()
+                .match("^GESAMT (?<fxAmount>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
+                .match("^Zwischensumme (?<exchangeRate>[\\.,\\d]+) [\\w]{3}\\/[\\w]{3} (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                    if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
+                    {
+                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+                    }
+                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
+
+                    // if not gross is present
+                    Optional<Unit> grossUnit = t.getUnit(Unit.Type.GROSS_VALUE);
+                    if (!grossUnit.isPresent())
+                    {
+                        if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
+                        {
+                            BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
+                                            RoundingMode.HALF_DOWN);
+    
+                            // check, if forex currency is transaction
+                            // currency or not and swap amount, if necessary
+                            Unit grossValue;
+                            if (!asCurrencyCode(v.get("fxCurrency")).equals(t.getCurrencyCode()))
+                            {
+                                Money fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")),
+                                                asAmount(v.get("fxAmount")));
+                                Money amount = Money.of(asCurrencyCode(v.get("currency")),
+                                                asAmount(v.get("amount")));
+                                grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
+                            }
+                            else
+                            {
+                                Money amount = Money.of(asCurrencyCode(v.get("fxCurrency")), 
+                                                asAmount(v.get("fxAmount")));
+                                Money fxAmount = Money.of(asCurrencyCode(v.get("currency")), 
+                                                asAmount(v.get("amount")));
+                                grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
+                            }
+                            t.addUnit(grossValue);
+                        }
+                    }
                 })
 
                 // 1 Bruttoertrag 26,80 GBP
@@ -617,10 +684,10 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
     
     private void addDeliveryInOutBoundTransaction()
     {
-        DocumentType type = new DocumentType("(UMTAUSCH\\/BEZUG|FUSION|KAPITALERHÖHUNG GEGEN BAR)", (context, lines) -> {
+        DocumentType type = new DocumentType("(UMTAUSCH\\/BEZUG|FUSION|KAPITALERH.HUNG GEGEN BAR)", (context, lines) -> {
             Pattern pDate = Pattern.compile("^(.*) DATUM (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$");
             Pattern pSkipTransaction = Pattern.compile("^ABRECHNUNG$");
-            Pattern pTransactionPosition = Pattern.compile("^(?<transactionPosition>[\\d]) (Barausgleich|Kurswert) ([-])?[\\.,\\d]+ [\\w]{3}$");
+            Pattern pTransactionPosition = Pattern.compile("^(?<transactionPosition>[\\d]) (Barausgleich|Kurswert) (\\-)?[\\.,\\d]+ [\\w]{3}$");
             context.put("skipTransaction", Boolean.FALSE.toString());
             context.put("transactionPosition", "0");
             // read the current context here
@@ -745,7 +812,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         pdfTransaction2
                 // Is type --> "Barausgleich" change from BUY to SELL
                 .section("type").optional()
-                .match("^[\\d] (?<type>Barausgleich|Kurswert) ([-])?[\\.,\\d]+ [\\w]{3}$")
+                .match("^[\\d] (?<type>Barausgleich|Kurswert) (\\-)?[\\.,\\d]+ [\\w]{3}$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("Barausgleich"))
                     {
@@ -758,8 +825,8 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 // 1 Barausgleich 267,90 USD
                 // DEXXXXXXXXXXXXXXXXXXXX 22.07.2021 163,68 EUR
                 .section("position", "amount", "currency", "date")
-                .match("^(?<position>[\\d]) (Barausgleich|Kurswert) ([-])?[\\.,\\d]+ [\\w]{3}$")
-                .match("^[\\w]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) ([-])?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^(?<position>[\\d]) (Barausgleich|Kurswert) (\\-)?[\\.,\\d]+ [\\w]{3}$")
+                .match("^[\\w]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
                     // Check if the position are equal
@@ -811,9 +878,9 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         });
         this.addDocumentTyp(type);
 
-        Block payInBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Accepted PayIn|Einzahlung akzeptiert).*$");
-        type.addBlock(payInBlock);
-        payInBlock.set(new Transaction<AccountTransaction>()
+        Block depositBlock = new Block("^([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) (Accepted PayIn|Einzahlung akzeptiert).*$");
+        type.addBlock(depositBlock);
+        depositBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
                             AccountTransaction t = new AccountTransaction();
@@ -822,7 +889,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date", "amount")
-                        .match("(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}-[\\d]{2}-[\\d]{2}) (Accepted PayIn|Einzahlung akzeptiert):.* (to|auf).* (?<amount>[\\.,\\d]+)")
+                        .match("(?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) (Accepted PayIn|Einzahlung akzeptiert):.* (to|auf).* (?<amount>[\\.,\\d]+)")
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -831,7 +898,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
 
-        Block taxRefundBlock = new Block("[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Steueroptimierung.*");
+        Block taxRefundBlock = new Block("([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) Steueroptimierung.*");
         type.addBlock(taxRefundBlock);
         taxRefundBlock.set(new Transaction<AccountTransaction>()
 
@@ -842,7 +909,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date", "amount")
-                        .match("(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}-[\\d]{2}-[\\d]{2}) Steueroptimierung null [\\d]{16} (?<amount>[\\.,\\d]+)")
+                        .match("(?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}-[\\d]{2}-[\\d]{2})) Steueroptimierung.* (?<amount>[\\.,\\d]+)")
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -879,8 +946,8 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 // Kapitalertragssteuer Optimierung 3,75 EUR
                 .section("amount", "currency", "date").optional()
                 .match("^Kapitalertragssteuer Optimierung (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
-                .match("^VERRECHNUNGSKONTO VALUTA BETRAG$")
-                .match("^.* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}-[\\d]{2}-[\\d]{2}) [\\.,\\d]+$")
+                .find("VERRECHNUNGSKONTO VALUTA BETRAG")
+                .match("^.* (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) [\\.,\\d]+$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -890,8 +957,8 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 // Kapitalertragsteuer Optimierung 3,75 EUR
                 .section("amount", "currency", "date").optional()
                 .match("^Kapitalertragsteuer Optimierung (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
-                .match("^VERRECHNUNGSKONTO VALUTA BETRAG$")
-                .match("^.* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}-[\\d]{2}-[\\d]{2}) [\\.,\\d]+$")
+                .find("VERRECHNUNGSKONTO VALUTA BETRAG")
+                .match("^.* (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) [\\.,\\d]+$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -901,8 +968,8 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 // Solidaritätszuschlag Optimierung 0,21 EUR
                 .section("amount", "currency", "date")
                 .match("^Solidarit.tszuschlag Optimierung (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
-                .match("^VERRECHNUNGSKONTO VALUTA BETRAG$")
-                .match("^.* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}-[\\d]{2}-[\\d]{2}) [\\.,\\d]+$")
+                .find("VERRECHNUNGSKONTO VALUTA BETRAG")
+                .match("^.* (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) [\\.,\\d]+$")
                 .assign((t, v) -> {
                     t.setAmount(t.getAmount() + asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -912,8 +979,8 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 // Kirchensteuer Optimierung 0,30 EUR
                 .section("amount", "currency", "date").optional()
                 .match("^Kirchensteuer Optimierung (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
-                .match("^VERRECHNUNGSKONTO VALUTA BETRAG$")
-                .match("^.* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}-[\\d]{2}-[\\d]{2}) [\\.,\\d]+$")
+                .find("VERRECHNUNGSKONTO VALUTA BETRAG")
+                .match("^.* (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) [\\.,\\d]+$")
                 .assign((t, v) -> {
                     t.setAmount(t.getAmount() + asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -962,7 +1029,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 // VERRECHNUNGSKONTO VALUTA BETRAG
                 // DE12345678912345678912 04.01.2021 -0,32 EUR
                 .section("date", "amount", "currency")
-                .match("^.* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) -(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^.* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) \\-(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     t.setDateTime(asDate(v.get("date")));
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -999,7 +1066,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 // Clinuvel Pharmaceuticals Ltd. 80 Stk. 22,82 EUR 1.825,60 EUR
                 // Registered Shares o.N.
                 // AU000000CUV3
-                .section("name", "shares", "currency", "isin", "nameContinued")
+                .section("name", "shares", "currency", "nameContinued", "isin")
                 .match("^(?<name>.*) (?<shares>[\\.,\\d]+) Stk\\. [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$")
                 .match("^(?<nameContinued>.*)$")
                 .match("^(ISIN: )?(?<isin>[\\w]{12})$")
@@ -1013,7 +1080,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 // Limit-Order Verkauf am 21.07.2020, um 09:30 Uhr an der Lang & Schwarz Exchange.
                 // Verkauf am 26.02.2021, um 11:44 Uhr.
                 .section("date", "time")
-                .match("^((Limit|Stop-Market|Market)-Order )?(Kauf|Verkauf) .* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}-[\\d]{2}-[\\d]{2}), um (?<time>[\\d]{2}:[\\d]{2}) .*$")
+                .match("^((Limit|Stop-Market|Market)-Order )?(Kauf|Verkauf) .* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}), um (?<time>[\\d]{2}:[\\d]{2}) .*$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"), v.get("time"))))
 
                 // Kapitalertragssteuer Optimierung 20,50 EUR
@@ -1082,7 +1149,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 // 1 Tilgung HSBC Trinkaus & Burkhardt AG 700 Stk.
                 // TurboC O.End Linde
                 // DE000TT22GS8
-                .section("name", "isin", "shares", "nameContinued")
+                .section("name", "shares", "nameContinued", "isin")
                 .match("^[\\d] Tilgung (?<name>.*) (?<shares>[\\.,\\d]+) Stk\\.$")
                 .match("^(?<nameContinued>.*)$")
                 .match("^(ISIN: )?(?<isin>[\\w]{12})$")
@@ -1093,7 +1160,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                 // DE0000000000000000000 02.10.2020 33,89 EUR
                 .section("date")
-                .match("^[\\w]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}-[\\d]{2}-[\\d]{2}) [\\.,\\d]+ [\\w]{3}$")
+                .match("^[\\w]+ (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) [\\.,\\d]+ [\\w]{3}$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                 // 2 Kapitalertragssteuer Optimierung 29,24 EUR
@@ -1141,7 +1208,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Verkauf");
         this.addDocumentTyp(type);
 
-        Block block = new Block("^(.*-Order )?Verkauf.*$");
+        Block block = new Block("^(.*\\-Order )?Verkauf.*$");
         type.addBlock(block);
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
         pdfTransaction.subject(() -> {
@@ -1162,7 +1229,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 // Registered Shares o.N.
                 // AU000000CUV3
                 // ISIN: DE000A3H23V7
-                .section("name", "shares", "currency", "isin", "nameContinued")
+                .section("name", "shares", "currency", "nameContinued", "isin")
                 .match("^(?<name>.*) (?<shares>[\\.,\\d]+) Stk\\. [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$")
                 .match("^(?<nameContinued>.*)$")
                 .match("^(ISIN: )?(?<isin>[\\w]{12})$")
@@ -1176,18 +1243,16 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 // Limit-Order Verkauf am 21.07.2020, um 09:30 Uhr an der Lang & Schwarz Exchange.
                 // Verkauf am 26.02.2021, um 11:44 Uhr.
                 .section("date", "time").optional()
-                .match("^((Limit|Stop-Market|Market)-Order )?(Kauf|Verkauf) .* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}-[\\d]{2}-[\\d]{2}), um (?<time>[\\d]{2}:[\\d]{2}) .*$")
+                .match("^((Limit|Stop-Market|Market)-Order )?(Kauf|Verkauf) .* (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})), um (?<time>[\\d]{2}:[\\d]{2}) .*$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"), v.get("time"))))
 
                 .section("negative").optional()
                 .match("^GESAMT [\\.,\\d]+ [\\w]{3}$")
-                .match("^GESAMT (?<negative>[-])[\\.,\\d]+ [\\w]{3}$")
-                .assign((t, v) -> {
-                    type.getCurrentContext().put("negative", "X");
-                })
+                .match("^GESAMT (?<negative>\\-)[\\.,\\d]+ [\\w]{3}$")
+                .assign((t, v) -> type.getCurrentContext().put("negative", "X"))
 
                 .section("negative").optional()
-                .match("^GESAMT (?<negative>[-])[\\.,\\d]+ [\\w]{3}$")
+                .match("^GESAMT (?<negative>\\-)[\\.,\\d]+ [\\w]{3}$")
                 .assign((t, v) -> {
                     if (!"X".equals(type.getCurrentContext().get("negative")))
                     {
@@ -1220,45 +1285,45 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         transaction
                 // Quellensteuer DE für US-Emittent -7,56 USD
                 .section("withHoldingTax", "currency").optional()
-                .match("^([\\d] )?Quellensteuer .* -(?<withHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^([\\d] )?Quellensteuer .* \\-(?<withHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                 // Quellensteuer -12,00 USD
                 .section("withHoldingTax", "currency").optional()
-                .match("^([\\d] )?Quellensteuer -(?<withHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^([\\d] )?Quellensteuer \\-(?<withHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                 // Kapitalertragssteuer -30,63 EUR
                 .section("tax", "currency").optional()
-                .match("^([\\d] )?Kapitalertragssteuer -(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^([\\d] )?Kapitalertragssteuer \\-(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     processTaxEntries(t, v, type);
                 })
 
                 // Kapitalertragsteuer -8,36 EUR
                 .section("tax", "currency").optional()
-                .match("^([\\d] )?Kapitalertragsteuer -(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^([\\d] )?Kapitalertragsteuer \\-(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     processTaxEntries(t, v, type);
                 })
 
                 // Solidaritätszuschlag -1,68 EUR
                 .section("tax", "currency").optional()
-                .match("^([\\d] )?Solidarit.tszuschlag -(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^([\\d] )?Solidarit.tszuschlag \\-(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     processTaxEntries(t, v, type);
                 })
 
                 // Kirchensteuer -1,68 EUR
                 .section("tax", "currency").optional()
-                .match("^([\\d] )?Kirchensteuer -(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^([\\d] )?Kirchensteuer \\-(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     processTaxEntries(t, v, type);
                 })
 
                 // Frz. Finanztransaktionssteuer -3,00 EUR
                 .section("tax", "currency").optional()
-                .match("^.* Finanztransaktionssteuer -(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^.* Finanztransaktionssteuer \\-(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     processTaxEntries(t, v, type);
                 });
@@ -1269,7 +1334,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         transaction
                 // Fremdkostenzuschlag -1,00 EUR
                 .section("fee", "currency").optional()
-                .match("^Fremdkostenzuschlag -(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^Fremdkostenzuschlag \\-(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     if (!"X".equals(type.getCurrentContext().get("negative")))
                     {
@@ -1279,7 +1344,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                 // Gebühr Kundenweisung -5,00 EUR
                 .section("fee", "currency").optional()
-                .match("^Geb.hr Kundenweisung -(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^Geb.hr Kundenweisung \\-(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processFeeEntries(t, v, type));
     }
 }
