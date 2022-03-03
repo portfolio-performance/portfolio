@@ -215,34 +215,54 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                     t.setAmount(asAmount(v.get("amount")));
                 })
 
-                // EUR 75,00
-                // WERT 21.10.2005
-                //                                                     EUR                 691,31
-                //       WERT  24.03.2005
-                .section("currency", "amount").optional()
-                .match("^([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<amount>[\\.,\\d]+)$")
-                .match("^([\\s]+)?WERT ([\\s]+)?[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}([\\s]+)?$")
-                .assign((t, v) -> {
-                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                    t.setAmount(asAmount(v.get("amount")));
-                })
-
-                // zulasten Konto-Nr. 0860101888 7.659,37 EUR
-                .section("amount", "currency").optional()
-                .match("^(zulasten|zugunsten) Konto\\-Nr\\. [\\d]+ (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})([\\s]+)?$")
-                .assign((t, v) -> {
-                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                    t.setAmount(asAmount(v.get("amount")));
-                })
+                .oneOf(
+                                // Wert 13.05.2020 EUR 525,92
+                                section -> section
+                                        .attributes("currency", "amount")
+                                        .match("^(?i)Wert [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
+                                        .assign((t, v) -> {
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                        })
+                                ,
+                                // EUR 75,00
+                                // WERT 21.10.2005
+                                section -> section
+                                        .attributes("currency", "amount")
+                                        .match("^([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<amount>[\\.,\\d]+)$")
+                                        .match("^([\\s]+)?(?i)WERT ([\\s]+)?[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}([\\s]+)?$")
+                                        .assign((t, v) -> {
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                        })
+                                ,
+                                // zulasten Konto-Nr. 0860101888 7.659,37 EUR
+                                section -> section
+                                        .attributes("currency", "amount")
+                                        .match("^(?i)(zulasten|zugunsten) Konto\\-Nr\\. [\\d]+ (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})([\\s]+)?$")
+                                        .assign((t, v) -> {
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                        })
+                                ,
+                                //       ZU LASTEN  KONTO-NR.   546956980              EUR               1.928,74
+                                section -> section
+                                        .attributes("currency", "amount")
+                                        .match("^([\\s]+)?(?i)ZU (LASTEN|GUNSTEN) ([\\s]+)?KONTO\\-NR\\. ([\\s]+)?[\\d]+ ([\\s]+)? ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<amount>[\\.,\\d]+)$")
+                                        .assign((t, v) -> {
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                        })
+                        )
 
                 // umger. zum Devisenkurs USD 1,077900 EUR 500,97
                 //       UMGER. ZUM DEVISENKURS  USD        0,882100   EUR                  56,68
-                .section("forex", "exchangeRate", "currency", "amount").optional()
-                .match("^([\\s]+)?(umger\\. zum Devisenkurs|UMGER\\. ZUM DEVISENKURS) ([\\s]+)?(?<forex>[\\w]{3}) ([\\s]+)?(?<exchangeRate>[\\.,\\d]+) ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<amount>[\\.,\\d]+)$")
+                .section("fxCurrency", "exchangeRate", "currency", "amount").optional()
+                .match("^([\\s]+)?(umger\\. zum Devisenkurs|UMGER\\. ZUM DEVISENKURS) ([\\s]+)?(?<fxCurrency>[\\w]{3}) ([\\s]+)?(?<exchangeRate>[\\.,\\d]+) ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     // read the forex currency, exchange rate, account
                     // currency and gross amount in account currency
-                    String forex = asCurrencyCode(v.get("forex"));
+                    String forex = asCurrencyCode(v.get("fxCurrency"));
                     if (t.getPortfolioTransaction().getSecurity().getCurrencyCode().equals(forex))
                     {
                         BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
@@ -331,69 +351,78 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 // ST                    1.370,00000          WKN:  ETF110                 
                 //            COMS.-MSCI WORL.T.U.ETF I                                    
                 //            Namens-Aktien o.N.                                           
-                .section("shares", "wkn", "name", "nameContinued", "currency").optional()
-                .match("^ST ([\\s]+)?(?<shares>[\\.,\\d]+) ([\\s]+)?WKN: ([\\s]+)?(?<wkn>.*)(.*)?$")
+                .section("wkn", "name", "nameContinued", "currency").optional()
+                .match("^ST ([\\s]+)?[\\.,\\d]+ ([\\s]+)?WKN: ([\\s]+)?(?<wkn>.*)(.*)?$")
                 .match("^(?<name>.*)$")
                 .match("^(?<nameContinued>.*)$")
                 .match("^(ZINS-\\/DIVIDENDENSATZ|ERTRAGSAUSSCHUETTUNG P\\. ST\\.) .* ([\\s]+)?(?<currency>[\\w]{3}) SCHLUSSTAG PER [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}(.*)?$")
-                .assign((t, v) -> {
-                    t.setShares(asShares(v.get("shares")));
-                    t.setSecurity(getOrCreateSecurity(v));
-                })
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // OMNICOM GROUP INC. Registered Shares DL -,15 871706 US6819191064
                 // 25 Stück
                 // Dividende pro Stück 0,60 USD Schlusstag 17.12.2017
-                .section("name", "wkn", "isin", "shares", "currency").optional()
+                .section("name", "wkn", "isin", "currency").optional()
                 .match("^(?<name>.*) (?<wkn>.*) (?<isin>[\\w]{12})$")
-                .match("^(?<shares>[\\.,\\d]+) St.ck$")
                 .match("^(Steuerfreie )?(Dividende pro St.ck|Ertragsaussch.ttung je Anteil) [\\.,\\d]+ (?<currency>[\\w]{3}) Schlusstag [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$")
-                .assign((t, v) -> {
-                    t.setShares(asShares(v.get("shares")));
-                    t.setSecurity(getOrCreateSecurity(v));
-                })
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-                // UMGER.ZUM DEV.-KURS                 1,093000  EUR                285,60 
-                // WERT 11.01.2016  
-                .section("date", "currency", "amount").optional()
-                .match("^UMGER\\.ZUM DEV\\.\\-KURS [\\s]+[\\.,\\d]+ ([\\s]+)?(?<currency>[\\w]{3}) [\\s]+(?<amount>[\\.,\\d]+)+(.*)?$")
-                .match("^WERT (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})(.*)?$")
-                .assign((t, v) -> {
-                    t.setDateTime(asDate(v.get("date")));
-                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                    t.setAmount(asAmount(v.get("amount")));
-                })
+                .oneOf(
+                                // ST                    1.370,00000          WKN:  ETF110          
+                                section -> section
+                                        .attributes("shares")
+                                        .match("^ST ([\\s]+)?(?<shares>[\\.,\\d]+) ([\\s]+)?WKN: .*$")
+                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                                ,
+                                // 25 Stück
+                                section -> section
+                                        .attributes("shares")
+                                        .match("^(?<shares>[\\.,\\d]+) St.ck$")
+                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        )
 
-                // WERT 08.05.2015                               EUR                326,90 
-                .section("date", "currency", "amount").optional()
-                .match("^WERT (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<amount>[\\.,\\d]+)(.*)?$")
-                .assign((t, v) -> {
-                    t.setDateTime(asDate(v.get("date")));
-                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                    t.setAmount(asAmount(v.get("amount")));
-                })
+                .oneOf(
+                                // WERT 11.01.2016  
+                                section -> section
+                                        .attributes("date")
+                                        .match("^(?i)WERT (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})( .*)?$")
+                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                                ,
+                                // Valuta 09.01.2018 BIC CSDBDE71XXX
+                                section -> section
+                                        .attributes("date")
+                                        .match("^(?i)Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})( .*)?$")
+                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        )
 
-                // Netto zugunsten IBAN DE00 0000 0000 0000 0000 00 9,34 EUR
-                // Valuta 09.01.2018 BIC CSDBDE71XXX
-                .section("date", "currency", "amount").optional()
-                .match("^Netto zugunsten .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
-                .match("^Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})(.*)?$")
-                .assign((t, v) -> {
-                    t.setDateTime(asDate(v.get("date")));
-                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                    t.setAmount(asAmount(v.get("amount")));
-                })
-
-                // Netto in USD zugunsten IBAN DE12 3456 3456 3456 3456 78 6,46 USD
-                // Valuta 01.01.2020 BIC AAAAAA11XXX
-                .section("date", "currency", "amount").optional()
-                .match("^Netto in [\\w]{3} zugunsten .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
-                .match("^Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})(.*)?$")
-                .assign((t, v) -> {
-                    t.setDateTime(asDate(v.get("date")));
-                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                    t.setAmount(asAmount(v.get("amount")));
-                })
+                .oneOf(
+                                // WERT 08.05.2015                               EUR                326,90 
+                                section -> section
+                                        .attributes("currency", "amount")
+                                        .match("^(?i)WERT (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<amount>[\\.,\\d]+)(.*)?$")
+                                        .assign((t, v) -> {
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                        })
+                                ,
+                                // Netto zugunsten IBAN DE00 0000 0000 0000 0000 00 9,34 EUR
+                                // Netto in USD zugunsten IBAN DE12 3456 3456 3456 3456 78 6,46 USD
+                                section -> section
+                                        .attributes("amount", "currency")
+                                        .match("^Netto( in [\\w]{3})? zugunsten .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                                        .assign((t, v) -> {
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                        })
+                                ,
+                                // UMGER.ZUM DEV.-KURS                 1,093000  EUR                285,60 
+                                section -> section
+                                        .attributes("currency", "amount")
+                                        .match("^(?i)UMGER\\.ZUM DEV\\.\\-KURS ([\\s]+)?[\\.,\\d]+ ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<amount>[\\.,\\d]+)(.*)?$")
+                                        .assign((t, v) -> {
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                        })
+                        )
 
                 // BRUTTO                                        USD                180,00 
                 // UMGER.ZUM DEV.-KURS                 1,104300  EUR                138,55 
