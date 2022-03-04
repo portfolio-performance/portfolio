@@ -721,15 +721,6 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                     }
                 })
 
-                //        Umrechn. zum Dev. kurs 1,080600 vom 17.04.2020 : EUR            4.425,22 
-                //            Umrechnung zum Devisenkurs 1,216500        : EUR               49,98 
-                .section("exchangeRate").optional()
-                .match("^.* (Umrechn\\. zum Dev\\. kurs|Umrechnung zum Devisenkurs) (?<exchangeRate>[\\.,\\d]+)(.*)?$")
-                .assign((t, v) -> {
-                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
-                })
-
                 //                           Kurswert                    : EUR                3,54 
                 // IBAN                                  Valuta         Zu Ihren Lasten vor Steuern                                                    
                 // XXXX XXXX XXXX XXXX XXXX XX   EUR     27.08.2020        EUR                9,61- 
@@ -746,81 +737,6 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         t.setAmount(asAmount(v.get("fxAmount")) + asAmount(v.get("amount")));
                         t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                     }
-                })
-
-                //                           Kurswert                    : USD                3,54 
-                //        Umrechn. zum Dev. kurs 1,222500 vom 16.12.2020 : EUR                2,28 
-                // IBAN                                  Valuta         Zu Ihren Lasten vor Steuern 
-                // XXXX XXXX XXXX XXXX XXXX XX   EUR     27.08.2020        EUR               10,12- 
-                .section("fxCurrency", "fxAmount", "exchangeRate", "currency", "amount").optional()
-                .match("^.* Kurswert ([\\s]+)?: ([\\s]+)?(?<fxCurrency>[\\w]{3}) ([\\s]+)?(?<fxAmount>[\\.,\\d]+)(.*)?$")
-                .match("^.* Umrechn\\. zum Dev\\. kurs (?<exchangeRate>[\\.,\\d]+)(.*)?$")
-                .match("^.* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<amount>[\\.,\\d]+)(.*)?$")
-                .assign((t, v) -> {
-                    if ("X".equals(type.getCurrentContext().get("negative")))
-                    {
-                        // read the forex currency, exchange rate and gross
-                        // amount in forex currency
-                        String forex = asCurrencyCode(v.get("currency"));
-                        if (!t.getSecurity().getCurrencyCode().equals(forex))
-                        {
-                            BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                            BigDecimal reverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
-                                            RoundingMode.HALF_DOWN);
-
-                            // gross given in forex currency
-                            long fxAmount = asAmount(v.get("amount"));
-                            long amount = reverseRate.multiply(BigDecimal.valueOf(fxAmount))
-                                            .setScale(0, RoundingMode.HALF_DOWN).longValue();
-
-                            // set amount in account currency
-                            String amountFX =  Double.toString((double)amount / 100.0).replace('.', ',');
-                            t.setAmount(asAmount(amountFX) + asAmount(v.get("fxAmount")));
-                            t.setCurrencyCode(asCurrencyCode(t.getCurrencyCode()));
-
-                            Unit grossValue = new Unit(Unit.Type.GROSS_VALUE,
-                                            Money.of(t.getCurrencyCode(), amount),
-                                            Money.of(v.get("fxCurrency"), fxAmount), reverseRate);
-
-                            t.addUnit(grossValue);
-                        }
-                    }
-                })
-
-                .section("currency", "gross").optional()
-                .match("^Bruttobetrag: *(?<currency>\\w{3}) *(?<gross>[\\d\\.]+,\\d+).*")
-                .assign((t, v) -> {
-
-                    String currency = asCurrencyCode(v.get("currency"));
-                    long gross = asAmount(v.get("gross"));
-                    long taxAmount = gross - t.getAmount();
-
-                    if (!t.getCurrencyCode().equals(currency))
-                    {
-                        BigDecimal exchangeRate = new BigDecimal(
-                                        type.getCurrentContext().get("exchangeRate"));
-                        taxAmount = gross - exchangeRate.multiply(BigDecimal.valueOf(t.getAmount()))
-                                        .setScale(0, RoundingMode.HALF_DOWN).longValue();
-                    }
-                    Money tax = Money.of(asCurrencyCode(v.get("currency")), taxAmount);
-                    PDFExtractorUtils.checkAndSetTax(tax, t, type);
-
-                    if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
-                    {
-                        BigDecimal exchangeRate = new BigDecimal(
-                                        type.getCurrentContext().get("exchangeRate"));
-                        BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
-                                        RoundingMode.HALF_DOWN);
-                        Money grossFx = Money.of(currency, gross);
-                        // convert gross to local currency using
-                        // exchangeRate
-                        gross = inverseRate
-                                        .multiply(BigDecimal.valueOf(gross).setScale(0, RoundingMode.HALF_DOWN))
-                                        .longValue();
-                        Money grossTx = Money.of(t.getCurrencyCode(), gross);
-                        t.addUnit(new Unit(Unit.Type.GROSS_VALUE, grossTx, grossFx, inverseRate));
-                    }
-
                 })
 
                 .wrap(t -> {
