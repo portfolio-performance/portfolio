@@ -693,7 +693,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         this.addDocumentTyp(type);
 
         // 29.01.     29.01.  Überweisung                                       1.100,00+
-        Block block = new Block("^[\\d]{2}\\.[\\d]{2}\\. ([\s]+)?+[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?.berweisung ([\\s]+)?[\\-\\.,\\d]+[\\+|\\-]$");
+        Block block = new Block("^[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?+[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?.berweisung ([\\s]+)?[\\-\\.,\\d]+[\\+|\\-]$");
         type.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
 
