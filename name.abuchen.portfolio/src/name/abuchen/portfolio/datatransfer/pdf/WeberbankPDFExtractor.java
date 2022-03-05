@@ -63,9 +63,11 @@ public class WeberbankPDFExtractor extends AbstractPDFExtractor
 
                 // Stück 4.440 NEL ASA NO0010081235 (A0B733)
                 // NAVNE-AKSJER NK -,20
-                .section("shares", "name", "isin", "wkn", "name1")
-                .match("^St.ck (?<shares>[\\d.,]+) (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
+                // Kurswert 9.657,00- EUR
+                .section("shares", "name", "isin", "wkn", "name1", "currency")
+                .match("^St.ck (?<shares>[\\.,\\d]+) (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
                 .match("^(?<name1>.*)$")
+                .match("^Kurswert [\\.,\\d]+(\\-)? (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Handels-/Ausführungsplatz"))
                         v.put("name", v.get("name") + " " + v.get("name1"));
@@ -115,9 +117,11 @@ public class WeberbankPDFExtractor extends AbstractPDFExtractor
         pdfTransaction
                 // Nominale Wertpapierbezeichnung ISIN (WKN)
                 // Stück 107 APPLE INC. US0378331005 (865985)
-                .section("shares", "name", "isin", "wkn", "name1")
+                // Dividendengutschrift 87,74 USD 74,05+ EUR
+                .section("shares", "name", "isin", "wkn", "name1", "currency")
                 .match("^St.ck (?<shares>[\\.,\\d]+) (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
                 .match("(?<name1>.*)")
+                .match("^Dividendengutschrift [\\.,\\d]+ (?<currency>[\\w]{3}) .*$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Zahlbarkeitstag"))
                         v.put("name", v.get("name") + " " + v.get("name1"));
