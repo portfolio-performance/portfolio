@@ -17,6 +17,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
 public class BaaderBankPDFExtractor extends AbstractPDFExtractor
@@ -45,7 +46,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("(Wertpapierabrechnung: (Kauf|Verkauf)|Zeichnung|Spitzenregulierung( .*)?)");
+        DocumentType type = new DocumentType("((Wertpapierabrechnung|Transaction Statement): (Kauf|Verkauf|Purchase|Sale)|Zeichnung|Spitzenregulierung( .*)?)");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -55,16 +56,16 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^(Auftragsdatum:|Einbuchung in Depot|Ausbuchung aus Depot) .*$");
+        Block firstRelevantLine = new Block("^((Auftragsdatum|Order Date):|Einbuchung in Depot|Ausbuchung aus Depot) .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
                 // Is type --> "Verkauf" change from BUY to SELL
                 .section("type").optional()
-                .match("^Wertpapierabrechnung: (?<type>(Kauf|Verkauf))(.*)?$")
+                .match("^(Wertpapierabrechnung|Transaction Statement): (?<type>(Kauf|Verkauf|Purchase|Sale))(.*)?$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("Verkauf"))
+                    if (v.get("type").equals("Verkauf") || v.get("type").equals("Sale"))
                     {
                         t.setType(PortfolioTransaction.Type.SELL);
                     }
@@ -85,8 +86,8 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 // Registered Shares o.N.
                 // Kurswert EUR 208,74
                 .section("isin", "wkn", "name", "nameContinued", "currency").optional()
-                .match("^Nominale ISIN: (?<isin>[\\w]{12}) WKN: (?<wkn>.*) (Kurs|Bezugspreis|Barabfindung)(.*)?$")
-                .match("^STK [\\.,\\d]+ (?<name>.*) (?<currency>[\\w]{3}) .*$")
+                .match("^(Nominale ISIN|Quantity ISIN): (?<isin>[\\w]{12}) WKN: (?<wkn>.*) (Kurs|Bezugspreis|Barabfindung|Price)(.*)?$")
+                .match("^(STK|Units) [\\.,\\d]+ (?<name>.*) (?<currency>[\\w]{3}) .*$")
                 .match("^(?<nameContinued>.*)$")
                 .assign((t, v) -> {
                     if (v.get("nameContinued").endsWith("p.STK"))
@@ -96,8 +97,9 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 })
 
                 // STK 2 iShs DL Corp Bond UCITS ETF EUR 104,37
+                // Units 2.734 iShsIII-Core MSCI World U.ETF EUR 73.128
                 .section("shares")
-                .match("^STK (?<shares>[\\.,\\d]+) .*$")
+                .match("^(STK|Units) (?<shares>[\\.,\\d]+) .*$")
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 .oneOf(
@@ -128,16 +130,36 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                         .attributes("date")
                                         .match("^Ausbuchung aus Depot .* per (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
                                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                                ,
+                                // Trade Date Trade Time
+                                // 2022-02-28 13:48:52:44
+                                section -> section
+                                        .attributes("date", "time")
+                                        .find("Trade Date Trade Time")
+                                        .match("^(?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$")
+                                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
                         )
 
-                // Zu Lasten Konto 12345004 Valuta: 22.03.2017 EUR 208,95
-                // Zu Gunsten Konto 12345004 Valuta: 12.05.2017 EUR 75,92
-                .section("amount", "currency")
-                .match("^Zu (Gunsten|Lasten) Konto .* (?<currency>[\\w]{3}) (?<amount>[\\.\\d]+,[\\d]{2})$")
-                .assign((t, v) -> {
-                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                    t.setAmount(asAmount(v.get("amount")));
-                })
+                .oneOf(
+                                // Zu Lasten Konto 12345004 Valuta: 22.03.2017 EUR 208,95
+                                // Zu Gunsten Konto 12345004 Valuta: 12.05.2017 EUR 75,92
+                                section -> section
+                                        .attributes("currency", "amount")
+                                        .match("^Zu (Gunsten|Lasten) Konto .* (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
+                                        .assign((t, v) -> {
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                        })
+                                ,
+                                // Amount debited to account 1960017000 Value: 2022-03-02 EUR 199.93
+                                section -> section
+                                        .attributes("currency", "amount")
+                                        .match("^Amount debited to account .* (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
+                                        .assign((t, v) -> {
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                        })
+                        )
 
                 // Kurswert Umrechnungskurs CAD/EUR: 1,4595 EUR 8,85
                 .section("forex", "exchangeRate", "currency", "amount").optional()
@@ -690,5 +712,62 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 .section("currency", "fee").optional()
                 .match("^Provision (?<currency>[\\w]{3}) (?<fee>[\\.\\d]+,[\\d]{2})( \\-)?$")
                 .assign((t, v) -> processFeeEntries(t, v, type));
+    }
+
+    @Override
+    protected long asAmount(String value)
+    {
+        String language = "de"; //$NON-NLS-1$
+        String country = "DE"; //$NON-NLS-1$
+
+        int lastDot = value.lastIndexOf("."); //$NON-NLS-1$
+        int lastComma = value.lastIndexOf(","); //$NON-NLS-1$
+
+        // returns the greater of two int values
+        if (Math.max(lastDot, lastComma) == lastDot)
+        {
+            language = "en"; //$NON-NLS-1$
+            country = "US"; //$NON-NLS-1$
+        }
+
+        return PDFExtractorUtils.convertToNumberLong(value, Values.Amount, language, country);
+    }
+
+    @Override
+    protected long asShares(String value)
+    {
+        String language = "de"; //$NON-NLS-1$
+        String country = "DE"; //$NON-NLS-1$
+
+        int lastDot = value.lastIndexOf("."); //$NON-NLS-1$
+        int lastComma = value.lastIndexOf(","); //$NON-NLS-1$
+
+        // returns the greater of two int values
+        if (Math.max(lastDot, lastComma) == lastDot)
+        {
+            language = "en"; //$NON-NLS-1$
+            country = "US"; //$NON-NLS-1$
+        }
+
+        return PDFExtractorUtils.convertToNumberLong(value, Values.Share, language, country);
+    }
+
+    @Override
+    protected BigDecimal asExchangeRate(String value)
+    {
+        String language = "de"; //$NON-NLS-1$
+        String country = "DE"; //$NON-NLS-1$
+
+        int lastDot = value.lastIndexOf("."); //$NON-NLS-1$
+        int lastComma = value.lastIndexOf(","); //$NON-NLS-1$
+
+        // returns the greater of two int values
+        if (Math.max(lastDot, lastComma) == lastDot)
+        {
+            language = "en"; //$NON-NLS-1$
+            country = "US"; //$NON-NLS-1$
+        }
+
+        return PDFExtractorUtils.convertToNumberBigDecimal(value, Values.Share, language, country);
     }
 }
