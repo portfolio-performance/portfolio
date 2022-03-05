@@ -3,12 +3,11 @@ package name.abuchen.portfolio.datatransfer.pdf.commsec;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.junit.Test;
 
@@ -44,24 +43,23 @@ public class CommSecPDFExtractorTest
         new AssertImportActions().check(results, "AUD");
 
         // check security
-        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst()
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getTickerSymbol(), is("QAN"));
         assertThat(security.getName(), is("QANTAS AIRWAYS LIMITED"));
         assertThat(security.getCurrencyCode(), is("AUD"));
 
-        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
-        assertThat(item.isPresent(), is(true));
-
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)
-                        .collect(Collectors.toList()).get(0).getSubject();
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-04-20T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(277)));
+        assertThat(entry.getSource(), is("Kauf01.txt"));
+        assertNull(entry.getNote());
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("AUD", Values.Amount.factorize(1029.92))));
@@ -87,24 +85,23 @@ public class CommSecPDFExtractorTest
         new AssertImportActions().check(results, "AUD");
 
         // check security
-        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst()
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getTickerSymbol(), is("MSB"));
         assertThat(security.getName(), is("MESOBLAST LIMITED"));
         assertThat(security.getCurrencyCode(), is("AUD"));
 
-        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
-        assertThat(item.isPresent(), is(true));
-
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)
-                        .collect(Collectors.toList()).get(0).getSubject();
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-09-09T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4500)));
+        assertThat(entry.getSource(), is("Kauf02.txt"));
+        assertNull(entry.getNote());
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("AUD", Values.Amount.factorize(20495.47))));
@@ -130,24 +127,23 @@ public class CommSecPDFExtractorTest
         new AssertImportActions().check(results, "AUD");
 
         // check security
-        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst()
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getTickerSymbol(), is("WTC"));
         assertThat(security.getName(), is("WISETECH GLOBAL LIMITED"));
         assertThat(security.getCurrencyCode(), is("AUD"));
 
-        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
-        assertThat(item.isPresent(), is(true));
-
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)
-                        .collect(Collectors.toList()).get(0).getSubject();
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-09-09T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1000)));
+        assertThat(entry.getSource(), is("Verkauf01.txt"));
+        assertNull(entry.getNote());
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("AUD", Values.Amount.factorize(28031.94))));
