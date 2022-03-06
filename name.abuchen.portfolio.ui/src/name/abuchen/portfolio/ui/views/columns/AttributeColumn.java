@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -166,8 +167,8 @@ public class AttributeColumn extends Column
         @Override
         public int compare(Object o1, Object o2)
         {
-            Pair<Double, String> pair1 = getNormalizedDistance(o1);
-            Pair<Double, String> pair2 = getNormalizedDistance(o2);
+            Pair<String, Supplier<Double>> pair1 = getCompareValues(o1);
+            Pair<String, Supplier<Double>> pair2 = getCompareValues(o2);
 
             if (pair1 == null && pair2 == null)
                 return 0;
@@ -177,13 +178,15 @@ public class AttributeColumn extends Column
                 return 1;
 
             // order by comparator...
-            int operatorCompare = pair1.getRight().compareTo(pair2.getRight());
+            int operatorCompare = pair1.getLeft().compareTo(pair2.getLeft());
             if(operatorCompare != 0)
                 return operatorCompare;
 
-            Double distance1 = pair1.getLeft();
-            Double distance2 = pair2.getLeft();
+            // operators are the same, now calculate the normalized distance
+            Double distance1 = pair1.getRight().get();
+            Double distance2 = pair2.getRight().get();
 
+            // checks in case one or both distance(s) not available
             if (distance1 == null && distance2 == null)
                 return 0;
             else if (distance1 == null)
@@ -195,7 +198,7 @@ public class AttributeColumn extends Column
             return Double.compare(distance1, distance2);
         }
 
-        private Pair<Double, String> getNormalizedDistance(Object o)
+        private Pair<String, Supplier<Double>> getCompareValues(Object o)
         {
             Security s = Adaptor.adapt(Security.class, o);
             if (s == null)
@@ -207,9 +210,9 @@ public class AttributeColumn extends Column
 
             SecurityPrice p = s.getSecurityPrice(LocalDate.now());
             if (p == null)
-                return new Pair<>(null, l.getRelationalOperator().getOperatorString());
+                return new Pair<>(l.getRelationalOperator().getOperatorString(), () -> null); // no price, no distance
 
-            return new Pair<>(calculateNormalizedDistance(l, p), l.getRelationalOperator().getOperatorString());
+            return new Pair<>(l.getRelationalOperator().getOperatorString(), () -> calculateNormalizedDistance(l, p));
         }
 
         public static Double calculateNormalizedDistance(LimitPrice limit, SecurityPrice latest)
