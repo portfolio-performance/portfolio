@@ -38,6 +38,7 @@ import name.abuchen.portfolio.ui.util.viewers.CellItemImageClickedListener;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.ImageAttributeEditingSupport;
+import name.abuchen.portfolio.util.Pair;
 
 public class AttributeColumn extends Column
 {
@@ -150,6 +151,72 @@ public class AttributeColumn extends Column
 
             Attributes attributes = attributable.getAttributes();
             return Optional.ofNullable((Boolean) attributes.get(attribute));
+        }
+    }
+
+    public static final class LimitPriceComparator implements Comparator<Object>
+    {
+        private final AttributeType attribute;
+
+        private LimitPriceComparator(AttributeType attribute)
+        {
+            this.attribute = attribute;
+        }
+
+        @Override
+        public int compare(Object o1, Object o2)
+        {
+            Pair<Double, String> pair1 = getNormalizedDistance(o1);
+            Pair<Double, String> pair2 = getNormalizedDistance(o2);
+
+            if (pair1 == null && pair2 == null)
+                return 0;
+            else if (pair1 == null)
+                return -1;
+            else if (pair2 == null)
+                return 1;
+
+            // order by comparator...
+            int operatorCompare = pair1.getRight().compareTo(pair2.getRight());
+            if(operatorCompare != 0)
+                return operatorCompare;
+
+            Double distance1 = pair1.getLeft();
+            Double distance2 = pair2.getLeft();
+
+            if (distance1 == null && distance2 == null)
+                return 0;
+            else if (distance1 == null)
+                return -1;
+            else if (distance2 == null)
+                return 1;
+
+            // ...then by distance
+            return Double.compare(distance1, distance2);
+        }
+
+        private Pair<Double, String> getNormalizedDistance(Object o)
+        {
+            Security s = Adaptor.adapt(Security.class, o);
+            if (s == null)
+                return null;
+
+            LimitPrice l = Adaptor.adapt(LimitPrice.class, s.getAttributes().get(attribute));
+            if (l == null)
+                return null;
+
+            SecurityPrice p = s.getSecurityPrice(LocalDate.now());
+            if (p == null)
+                return new Pair<>(null, l.getRelationalOperator().getOperatorString());
+
+            return new Pair<>(calculateNormalizedDistance(l, p), l.getRelationalOperator().getOperatorString());
+        }
+
+        public static Double calculateNormalizedDistance(LimitPrice limit, SecurityPrice latest)
+        {
+            // "normalized relative distance": relative distance, but if exceeded then as positive value, otherwise as negative value
+            double relativeDistanceAbs = Math.abs((double) limit.getValue() / latest.getValue() - 1);
+            return  limit.isExceeded(latest) ? relativeDistanceAbs : -relativeDistanceAbs;
         }
     }
 
@@ -304,6 +371,7 @@ public class AttributeColumn extends Column
         {
             setStyle(SWT.RIGHT);
             setLabelProvider(new LimitPriceLabelProvider(attribute));
+            setComparator(new LimitPriceComparator(attribute));
             new AttributeEditingSupport(attribute).attachTo(this);
         }
         else if (attribute.getType() == Bookmark.class)
