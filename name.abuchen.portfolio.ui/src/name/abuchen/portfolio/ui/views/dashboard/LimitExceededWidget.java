@@ -26,6 +26,7 @@ import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.swt.ColoredLabel;
 import name.abuchen.portfolio.ui.util.swt.StyledLabel;
+import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
 import name.abuchen.portfolio.ui.views.settings.AttributeFieldType;
 import name.abuchen.portfolio.ui.views.settings.SettingsView;
 
@@ -82,7 +83,7 @@ public class LimitExceededWidget extends AbstractSecurityListWidget<LimitExceede
                 }
             }
 
-            Collections.sort(items, (r, l) -> r.getSecurity().getName().compareTo(l.getSecurity().getName()));
+            Collections.sort(items, (r, l) -> Double.compare(AttributeColumn.LimitPriceComparator.calculateNormalizedDistance(l.limit, l.price), AttributeColumn.LimitPriceComparator.calculateNormalizedDistance(r.limit, r.price)));
 
             return items;
         };
