@@ -195,7 +195,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 // Börse USA/NAN Ausmachender Betrag USD 5.280,17-
                 // 03.08.2015 0000000000 EUR/USD 1,100297 EUR 4.798,86
                 .section("fxCurrency", "fxAmount", "exchangeRate").optional()
-                .match("^.* (Ausmachender Betrag|Kurswert) (?<fxCurrency>[\\w]{3}) (?<fxAmount>[\\.,\\d]+)(\\-)?\\s?$")
+                .match("^.* (Ausmachender Betrag|Kurswert) (?<fxCurrency>[\\w]{3}) (?<fxAmount>[\\.,\\d]+)([\\-\\s]+)?$")
                 .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\w]{3}\\/[\\w]{3} (?<exchangeRate>[\\.,\\d]+) [\\w]{3} [\\.,\\d]+$")
                 .assign((t, v) -> {
                     // read the forex currency, exchange rate and gross
@@ -327,36 +327,6 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                         t.addUnit(unit);
                 })
 
-                /***
-                 * this section is needed, if the dividend is payed in
-                 * the forex currency to a account in forex curreny but
-                 * the security is listed in local currency
-                 */
-                .section("forex", "localCurrency", "forexCurrency", "exchangeRate").optional()
-                .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\w]{3} (?<forex>[\\.,\\d]+)$")
-                .match("^Devisenkurs: (?<localCurrency>[\\w]{3})/(?<forexCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+)$")
-                .assign((t, v) -> {
-                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate")).setScale(10,
-                                    RoundingMode.HALF_DOWN);
-                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
-
-                    Money forex = Money.of(asCurrencyCode(v.get("forexCurrency")), asAmount(v.get("forex")));
-                    Money localAmount = Money.of(v.get("localCurrency"), Math.round(forex.getAmount()
-                                    / Double.parseDouble(v.get("exchangeRate").replace(',', '.'))));
-
-                    t.setAmount(forex.getAmount());
-                    t.setCurrencyCode(forex.getCurrencyCode());
-
-                    Unit unit = new Unit(Unit.Type.GROSS_VALUE, forex, localAmount, exchangeRate);
-
-                    if (unit.getForex().getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
-                        t.addUnit(unit);
-                })
-
-                /***
-                 * if gross dividend is given in document, we need to fix the unit.
-                 * if security currency and transaction currency differ
-                 */
                 // ausländische Dividende EUR 5,25
                 // Devisenkurs: EUR/USD 1,1814
                 .section("fxCurrency", "fxAmount", "currency", "exchangeRate").optional()
