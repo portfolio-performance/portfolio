@@ -61,6 +61,11 @@ public class LimitPrice implements Comparable<LimitPrice>
     {
         return value;
     }
+    
+    public double calculateRelativeDistance(long price)
+    {
+        return ((double) value / price - 1);
+    }
 
     @Override
     public int hashCode()

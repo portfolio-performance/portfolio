@@ -61,9 +61,8 @@ public class LimitPriceSettings
 
         if (getShowRelativeDiff())
         {
-            double relativeDistance = ((double) limit.getValue() / price.getValue() - 1);
             DecimalFormat df = new DecimalFormat("+#.#%;-#.#%"); //$NON-NLS-1$
-            joiner.add(df.format(relativeDistance));
+            joiner.add(df.format(limit.calculateRelativeDistance(price.getValue())));
         }
 
         return limit.toString() + joiner.toString();

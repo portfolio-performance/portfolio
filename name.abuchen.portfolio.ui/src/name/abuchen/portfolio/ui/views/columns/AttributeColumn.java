@@ -218,7 +218,7 @@ public class AttributeColumn extends Column
         public static Double calculateNormalizedDistance(LimitPrice limit, SecurityPrice latest)
         {
             // "normalized relative distance": relative distance, but if exceeded then as positive value, otherwise as negative value
-            double relativeDistanceAbs = Math.abs((double) limit.getValue() / latest.getValue() - 1);
+            double relativeDistanceAbs = Math.abs(limit.calculateRelativeDistance(latest.getValue()));
             return  limit.isExceeded(latest) ? relativeDistanceAbs : -relativeDistanceAbs;
         }
     }
