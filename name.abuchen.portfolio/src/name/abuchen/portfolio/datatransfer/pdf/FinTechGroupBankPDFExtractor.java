@@ -617,9 +617,11 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 .match("^Valuta ([\\s]+)?: ([\\s]+)?(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
+                // Devisenkurs     :         1,110600   *Einbeh. Steuer     :           99,39 EUR
                 //                                       Endbetrag          :        -8,26 EUR
                 .section("amount", "currency").optional()
-                .match("^.* Endbetrag([\\s]+)?: ([\\s]+)?\\-(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^.*Einbeh\\. Steuer([\\s]+)?: ([\\s]+)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^.* Endbetrag([\\s]+)?: ([\\s]+)?\\-[\\.,\\d]+ [\\w]{3}$")
                 .assign((t, v) -> {
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                     t.setAmount(asAmount(v.get("amount")));

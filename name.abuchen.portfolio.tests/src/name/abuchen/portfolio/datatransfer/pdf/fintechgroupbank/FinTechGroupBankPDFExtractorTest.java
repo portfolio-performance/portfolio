@@ -3633,9 +3633,9 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getNote(), is("Transaktion-Nr.: 1234567891"));
 
         assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(68.18))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(99.39))));
         assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(68.18))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(99.39))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -3694,9 +3694,9 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getNote(), is("Transaktion-Nr.: 1234567891"));
 
         assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(68.18))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(99.39))));
         assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(68.18))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(99.39))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
