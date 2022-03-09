@@ -201,11 +201,25 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
                     // drop down is available
                 }
             };
-            time.setPattern("HH:mm"); //$NON-NLS-1$
+            time.setFormat(CDT.TIME_SHORT);
+            adjustTimePattern();
             time.setButtonImage(Images.CLOCK.image());
 
             button = new ImageHyperlink(editArea, SWT.NONE);
             button.setImage(Images.CLOCK.image());
+        }
+
+        /*
+         * Modify pattern to always create enough space for two hour-digits.
+         * 'h:mm a' => 'hh:mm a'
+         */
+        private void adjustTimePattern()
+        {
+            String pattern = time.getPattern();
+            if (pattern.length() > 1 && pattern.charAt(1) == ':')
+            {
+                time.setPattern(pattern.substring(0, 1) + pattern);
+            }
         }
 
         public void bindDate(String property)
