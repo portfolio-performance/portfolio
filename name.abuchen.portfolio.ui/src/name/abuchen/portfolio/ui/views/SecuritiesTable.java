@@ -913,6 +913,19 @@ public final class SecuritiesTable implements ModificationListener
             }
         }
 
+        // update quotes for multiple securities
+        if (selection.size() > 1)
+        {
+            manager.add(new SimpleAction(MessageFormat.format(Messages.SecurityMenuUpdateQuotesMultipleSecurities, selection.size()), a  ->
+            { 
+                for(Object selectedSecurity : selection)
+                {
+                    if(selectedSecurity instanceof Security)
+                        updateQuotes((Security)selectedSecurity);
+                }
+            }));
+        }
+
         // if any retired security in selection, add "unretire/activate all"
         // option
         if (Streams.stream((Iterable<?>) selection).anyMatch(s -> ((Security) s).isRetired()))
