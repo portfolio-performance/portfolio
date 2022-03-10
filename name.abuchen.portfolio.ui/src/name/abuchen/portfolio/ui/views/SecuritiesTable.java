@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -916,14 +917,9 @@ public final class SecuritiesTable implements ModificationListener
         // update quotes for multiple securities
         if (selection.size() > 1)
         {
-            manager.add(new SimpleAction(MessageFormat.format(Messages.SecurityMenuUpdateQuotesMultipleSecurities, selection.size()), a  ->
-            { 
-                for(Object selectedSecurity : selection)
-                {
-                    if(selectedSecurity instanceof Security)
-                        updateQuotes((Security)selectedSecurity);
-                }
-            }));
+            manager.add(new SimpleAction(MessageFormat.format(Messages.SecurityMenuUpdateQuotesMultipleSecurities, selection.size()), a  ->            
+                new UpdateQuotesJob(getClient(), Arrays.asList(selection.toArray()).toArray(new Security[0])).schedule()
+            ));
         }
 
         // if any retired security in selection, add "unretire/activate all"
