@@ -1,0 +1,60 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+MLP Banking AG · Alte Heerstraße 40 · 69168 Wiesloch Seite 1 von 2
+Depotnummer 8505679654
+Kundennummer 9999999
+Max Mustermann
+Auftragsnummer 638328/75.00
+Max Mustermann Datum 03.03.2022
+Musterstraße 10 Rechnungsnummer W00866-00001111111/22
+11111 Musterstadt Umsatzsteuer-ID DE111111111
+Vermögensdepot
+0016
+Wertpapier Abrechnung Verkauf
+Auftrag vom 01.03.2022 10:36:00 Uhr
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 8,104 DWS CON.DJE ALPHA RENT.GLOBAL LU0087412390 (974515)
+INHABER-ANTEILE LC O.N.
+Handels-/Ausführungsplatz Außerbörslich
+Schlusstag 01.03.2022
+Ausführungskurs 135,74 EUR
+Girosammelverw. mehrere Sammelurkunden - kein Stückeausdruck -
+Kurswert 1.100,04 EUR
+Ermittlung steuerrelevante Erträge
+Veräußerungsverlust 3,00- EUR
+Eingebuchte sonstige negative Kapitalerträge 3,00 EUR
+Ausmachender Betrag 1.100,04 EUR
+Den Gegenwert buchen wir mit Valuta 03.03.2022 zu Gunsten des Kontos 505679278
+(IBAN DE11 1111 0000 0111 1111 11), BLZ 67230000 (BIC MLPBDE61XXX).
+Die Wertpapiere entnehmen wir Ihrem Depotkonto.
+Steuerliche Ausgleichrechnung
+Verrechnete sonstige negative Kapitalerträge 3,00- EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 3,00 EUR
+0866.03032049.0016501OR07
+Seite 2 von 2
+Depotnummer 11111111
+Kundennummer 9999999
+Auftragsnummer 638328/75.00
+Datum 03.03.2022
+Kapitalertragsteuer 25,00% auf 3,00 EUR 0,75 EUR
+Solidaritätszuschlag 5,50% auf 0,75 EUR 0,04 EUR
+Ausmachender Betrag 0,79 EUR
+Den Gegenwert buchen wir mit Valuta 03.03.2022 zu Gunsten des Kontos 1111111111111
+(IBAN DE11 1111 0000 0111 1111 11), BLZ 67230000 (BIC MLPBDE61XXX).
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verlustverrechnungstöpfe 2022 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 31.980,37
+Verkauf 0,00 3,00 0,00 0,00 0,00
+Steuerausgleich 0,00 3,00- 0,00 0,00 3,00-
+Nachher 0,00 0,00 0,00 0,00 31.977,37
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäft Auftragsnr. Ausführ.-tag Whr./St. Nennwert/Stück AS-Kosten Erlös Teilfrei- ant. Ergebnis
+stellung
+Kauf 4884246100 18.02.2022 Stück 8,1040 1.103,04- 1.100,04 0,00 3,00- (D)
+Summe aller Erträge nach Differenzmethode und/oder Ersatzbemessungsgrundlage 3,00-
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0866.03032049.0016502OR07
