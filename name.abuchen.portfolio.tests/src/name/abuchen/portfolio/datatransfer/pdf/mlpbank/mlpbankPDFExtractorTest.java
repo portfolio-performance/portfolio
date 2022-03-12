@@ -15,9 +15,12 @@ import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
+import name.abuchen.portfolio.datatransfer.ImportAction.Status;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
+import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
 import name.abuchen.portfolio.datatransfer.pdf.MLPBankingAGPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -178,5 +181,53 @@ public class mlpbankPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(702.41 + 38.63))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf02WithSecurityInEUR()
+    {
+        Security security = new Security("AB SICAV I-AMERICAN GROWTH PTF ACTIONS NOM. A O.N.", CurrencyUnit.EUR);
+        security.setIsin("LU0079474960");
+        security.setWkn("986838");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        MLPBankingAGPDFExtractor extractor = new MLPBankingAGPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check buy sell transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(),is(LocalDateTime.parse("2022-02-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(163.269)));
+        assertThat(entry.getSource(), is("Verkauf02.txt"));
+        assertNull(entry.getNote());
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(23272.81))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(24013.85))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(702.41 + 38.63))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        CheckCurrenciesAction c = new CheckCurrenciesAction();
+        Account account = new Account();
+        account.setCurrencyCode(CurrencyUnit.EUR);
+        Status s = c.process(entry, account, entry.getPortfolio());
+        assertThat(s, is(Status.OK_STATUS));
     }
 }
