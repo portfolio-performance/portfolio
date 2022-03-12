@@ -1,5 +1,9 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.util.TextUtil.trim;
+
+import java.math.BigDecimal;
+
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -30,7 +34,7 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType(".*Abrechnung Kauf.*");
+        DocumentType type = new DocumentType("Abrechnung Kauf");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -40,7 +44,7 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block(".*Abrechnung Kauf.*");
+        Block firstRelevantLine = new Block("^Abrechnung Kauf .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -50,39 +54,37 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
                 // ISIN DK0010244508
                 // Valorennummer 906020
                 // Wertpapierkennnummer 861837
-                .section("isin", "wkn", "name", "nameContinued")
-                .match("^(Titel) (?<name>.*)$")
+                // Kurswert DKK 80'784.00
+                .section("name", "nameContinued", "isin", "wkn", "currency")
+                .match("^Titel (?<name>.*)$")
                 .match("(?<nameContinued>.*)")
-                .match("^(ISIN) (?<isin>[\\w]{12}.*)$")
-                .match("^(Wertpapierkennnummer) (?<wkn>.*)$")
-                .assign((t, v) -> {
-                    t.setSecurity(getOrCreateSecurity(v));
-                })
-    
-                // Abschlussdatum 14.04.2020 09:00:02
-                .section("date", "time")
-                .match("^(Abschlussdatum) (?<date>\\d+.\\d+.\\d{4}+) (?<time>\\d+:\\d+:\\d+)$")
-                .assign((t, v) -> {
-                    if (v.get("time") != null)
-                        t.setDate(asDate(v.get("date"), v.get("time")));
-                    else
-                        t.setDate(asDate(v.get("date")));
-                })
-                
+                .match("^ISIN (?<isin>[\\w]{12})$")
+                .match("^Wertpapierkennnummer (?<wkn>.*)$")
+                .match("^Kurswert (?<currency>[\\w]{3}) [\\.,'\\d]+$")
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
                 // Anzahl 12 Stück
                 .section("shares")
-                .match("^(Anzahl) (?<shares>[\\d.,]+) (Stück)$")
-                .assign((t, v) -> {
-                    t.setShares(asShares(v.get("shares")));
-                })
+                .match("^Anzahl (?<shares>[\\d.,]+) St.ck$")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                // Abschlussdatum 14.04.2020 09:00:02
+                .section("date", "time")
+                .match("^Abschlussdatum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2})$")
+                .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
     
                 // Belastung DKK Konto 0037156.021 DKK 82'452.21
                 .section("currency", "amount")
-                .match("^(Belastung.* Konto) .* (?<currency>[\\w]{3}) (?<amount>['.,\\d]+)$")
+                .match("^Belastung [\\w]{3} Konto .* (?<currency>[\\w]{3}) (?<amount>[\\.',\\d]+)$")
                 .assign((t, v) -> {
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
                 })
+
+                // Valorennummer 906020
+                .section("note").optional()
+                .match("^(?<note>Valorennummer .*)$")
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
     
                 .wrap(BuySellEntryItem::new);
 
@@ -93,10 +95,10 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("Barausschüttung .*");
+        DocumentType type = new DocumentType("Baraussch.ttung");
         this.addDocumentTyp(type);
 
-        Block block = new Block("Barausschüttung .*");
+        Block block = new Block("^Baraussch.ttung .*$");
         type.addBlock(block);
         Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>()
             .subject(() -> {
@@ -109,33 +111,44 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
                 // 551 Veolia Environnement SA
                 // Namen- und Inhaber-Aktien
                 // ISIN: FR0000124141, Valoren-Nr.: 1098758
-                .section("shares", "isin", "wkn", "name", "nameContinued")
-                .match("^(?<shares>[\\d.,]+) (?<name>.*)$")
-                .match("(?<nameContinued>.*)")
-                .match("^(ISIN:) (?<isin>[\\w]{12}), .* (?<wkn>.*)$")
-                .assign((t, v) -> {
-                    t.setSecurity(getOrCreateSecurity(v));
-                    t.setShares(asShares(v.get("shares")));
-                })
-    
-                // Ex-Datum 12. Mai 2020
+                // Ausschüttung EUR 0.50
+                .section("name", "nameContinued", "isin", "wkn", "currency")
+                .find("Stand Ihres Depots am [\\d]{2}\\. .* [\\d]{4}:")
+                .match("^[\\.,\\d]+ (?<name>.*)$")
+                .match("^(?<nameContinued>.*)$")
+                .match("^ISIN: (?<isin>[\\w]{12}), Valoren\\-Nr\\.: (?<wkn>.*)$")
+                .match("^Aussch.ttung (?<currency>[\\w]{3}) [\\.,'\\d]+$")
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                // 551 Veolia Environnement SA
+                .section("shares")
+                .find("Stand Ihres Depots am [\\d]{2}\\. .* [\\d]{4}:")
+                .match("^(?<shares>[\\.,\\d]+) .*$")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                // Valuta 14. Mai 2020
                 .section("date")
-                .match("^(Ex-Datum) (?<date>\\d+. \\w+ \\d{4})$")
+                .match("^Valuta (?<date>[\\d]{2}\\. .* [\\d]{4})$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
-    
+
                 // Netto EUR 198.36
                 .section("currency", "amount")
-                .match("^(Netto) (?<currency>[\\w]{3}) *(?<amount>['.,\\d]+)$")
+                .match("^Netto (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d]+)$")
                 .assign((t, v) -> {
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
                 })
-    
+
+                // Ausschüttungsart Ordentliche Dividende
+                .section("note").optional()
+                .match("^Aussch.ttungsart (?<note>.*)$")
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
                 .wrap(TransactionItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
-        
+
         block.set(pdfTransaction);
     }
 
@@ -144,12 +157,12 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
         transaction
                 // Eidg. Umsatzabgabe  DKK 121.19
                 .section("tax", "currency").optional()
-                .match("^(Eidg. Umsatzabgabe)\\s+(?<currency>[\\w]{3}) (?<tax>['.,\\d]+)$")
+                .match("^Eidg\\. Umsatzabgabe ([\\s]+)?(?<currency>[\\w]{3}) (?<tax>[\\.,'\\d]+)$")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
                 // Quellensteuer 28 % EUR -77.14
                 .section("withHoldingTax", "currency").optional()
-                .match("^(Quellensteuer) .* (?<currency>[\\w]{3}) (?<withHoldingTax>-['.,\\d]+)$")
+                .match("^Quellensteuer [\\d]+ % (?<currency>[\\w]{3}) \\-(?<withHoldingTax>[\\.,'\\d]+)$")
                 .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type));
     }
 
@@ -158,12 +171,12 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
         transaction
                 // Courtage  DKK 1'534.90
                 .section("fee", "currency").optional()
-                .match("^(Courtage)\\s+(?<currency>[\\w]{3}) (?<fee>['.,\\d]+)$")
+                .match("^Courtage ([\\s]+)?(?<currency>[\\w]{3}) (?<fee>[\\.,'\\d]+)$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
         
                 // Broker Kommission  DKK 12.12
                 .section("fee", "currency").optional()
-                .match("^(Broker Kommission)\\s+(?<currency>[\\w]{3}) (?<fee>['.,\\d]+)$")
+                .match("^Broker Kommission ([\\s]+)?(?<currency>[\\w]{3}) (?<fee>[\\.,'\\d]+)$")
                 .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
@@ -177,5 +190,11 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
     protected long asShares(String value)
     {
         return PDFExtractorUtils.convertToNumberLong(value, Values.Share, "de", "CH");
+    }
+
+    @Override
+    protected BigDecimal asExchangeRate(String value)
+    {
+        return PDFExtractorUtils.convertToNumberBigDecimal(value, Values.Share, "de", "CH"); //$NON-NLS-1$ //$NON-NLS-2$
     }
 }
