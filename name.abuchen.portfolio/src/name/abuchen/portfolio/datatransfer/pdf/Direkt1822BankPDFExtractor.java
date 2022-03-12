@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetFee;
+import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -64,14 +65,23 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
 
                 // Stück 13 COMSTA.-MSCI EM.MKTS.TRN U.ETF LU0635178014 (ETF127)
                 // INHABER-ANTEILE I O.N.
+                // Börse Außerbörslich (gemäß Weisung)
                 // Ausführungskurs 40,968 EUR Auftragserteilung Online-Banking
-                .section("shares", "name", "isin", "wkn", "nameContinued")
-                .match("^St.ck (?<shares>[\\.,\\d]+) (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
-                .match("(?<nameContinued>.*)$")
+                .section("name", "isin", "wkn", "name1", "currency")
+                .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
+                .match("(?<name1>.*)$")
+                .match("^Ausf.hrungskurs [\\.,\\d]+ (?<currency>[\\w]{3}) .*$")
                 .assign((t, v) -> {
+                    if (!v.get("name1").startsWith("Börse"))
+                        v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
+
                     t.setSecurity(getOrCreateSecurity(v));
-                    t.setShares(asShares(v.get("shares")));
                 })
+
+                // Stück 13 COMSTA.-MSCI EM.MKTS.TRN U.ETF LU0635178014 (ETF127)
+                .section("shares")
+                .match("^St.ck (?<shares>[\\.,\\d]+) .* [\\w]{12} \\(.*\\)$")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 .oneOf(
                                 // Auftrag vom 05.12.2017 00:15:28 Uhr
@@ -98,6 +108,45 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                     t.setCurrencyCode(v.get("currency"));
                 })
 
+                // Devisenkurs (EUR/USD) 1,1987 vom 02.03.2021
+                // Kurswert 52,50- EUR
+                .section("fxCurrency", "exchangeRate", "amount", "currency").optional()
+                .match("^Devisenkurs \\([\\w]{3}\\/(?<fxCurrency>[\\w]{3})\\) (?<exchangeRate>[\\.,\\d]+) .*$")
+                .match("^Kurswert (?<amount>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                    if (t.getPortfolioTransaction().getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
+                    {
+                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+                    }
+                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
+
+                    // read the forex currency, exchange rate and gross
+                    // amount in forex currency
+                    String forex = asCurrencyCode(v.get("fxCurrency"));
+                    if (t.getPortfolioTransaction().getSecurity().getCurrencyCode().equals(forex))
+                    {
+                        BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
+                                        RoundingMode.HALF_DOWN);
+
+                        // gross given in account currency
+                        long amount = asAmount(v.get("amount"));
+                        long fxAmount = exchangeRate.multiply(BigDecimal.valueOf(amount))
+                                        .setScale(0, RoundingMode.HALF_DOWN).longValue();
+
+                        Unit grossValue = new Unit(Unit.Type.GROSS_VALUE,
+                                        Money.of(asCurrencyCode(v.get("currency")), amount),
+                                        Money.of(forex, fxAmount), inverseRate);
+
+                        t.getPortfolioTransaction().addUnit(grossValue);
+                    }
+                })
+
+                // Limit 40,99 EUR AN
+                .section("note").optional()
+                .match("^(?<note>Limit [\\.,\\d]+ [\\w]{3})( .*)?$")
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
                 .wrap(BuySellEntryItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
@@ -120,16 +169,22 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
         pdfTransaction
                 // Stück 920 ISHSIV-FA.AN.HI.YI.CO.BD U.ETF IE00BYM31M36 (A2AFCX)
                 // REGISTERED SHARES USD O.N.
-                .section("isin", "wkn", "name", "shares", "name1")
-                .match("^St.ck (?<shares>[\\.,\\d]+) (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
+                // Zahlbarkeitstag 29.12.2017 Ertrag pro St. 0,123000000 USD
+                .section("name", "isin", "wkn", "name1", "currency")
+                .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
                 .match("(?<name1>.*)")
+                .match("^Zahlbarkeitstag [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Aussch.ttung|Dividende|Ertrag) pro (St\\.|St.ck) [\\.,\\d]+ (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Zahlbarkeitstag"))
                         v.put("name", v.get("name") + " " + v.get("name1"));
 
                     t.setSecurity(getOrCreateSecurity(v));
-                    t.setShares(asShares(v.get("shares")));
                 })
+
+                // Stück 920 ISHSIV-FA.AN.HI.YI.CO.BD U.ETF IE00BYM31M36 (A2AFCX)
+                .section("shares")
+                .match("^St.ck (?<shares>[\\.,\\d]+) .*$")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 // Ausmachender Betrag 68,87+ EUR
                 .section("currency", "amount")
@@ -149,7 +204,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                 // Ausschüttung 113,16 USD 93,56+ EUR
                 .section("exchangeRate", "fxAmount", "fxCurrency", "amount", "currency").optional()
                 .match("^Devisenkurs .* (?<exchangeRate>[\\.,\\d]+)$")
-                .match("^Aussch.ttung (?<fxAmount>[\\.,\\d]+) (?<fxCurrency>[\\w]{3}) (?<amount>[\\.,\\d]+)\\+ (?<currency>[\\w]{3})$")
+                .match("^(Aussch.ttung|Dividendengutschrift) (?<fxAmount>[\\.,\\d]+) (?<fxCurrency>[\\w]{3}) (?<amount>[\\.,\\d]+)\\+ (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                     if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
