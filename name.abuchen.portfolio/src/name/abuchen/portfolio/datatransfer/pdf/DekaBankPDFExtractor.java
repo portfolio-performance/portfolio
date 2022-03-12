@@ -12,6 +12,7 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.money.CurrencyUnit;
 
 @SuppressWarnings("nls")
 public class DekaBankPDFExtractor extends AbstractPDFExtractor
@@ -61,58 +62,58 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
 
                 // Bezeichnung: Deka-UmweltInvest TF
                 // ISIN: DE000DK0ECT0 Unterdepot: 00 Auftragsnummer: 8103 1017
-                // =Abrechnungsbetrag EUR 4.000,00 EUR 4.000,00 EUR 187,770000 Anteilumsatz: 21,303
+                // =Abrechnungsbetrag EUR 4.000,00 EUR 4.000,00 EUR 494,260000 Anteilumsatz: 8,093
                 .section("name", "isin", "currency").optional()
                 .match("^Bezeichnung: (?<name>.*)$")
                 .match("^ISIN: (?<isin>[\\w]{12})( .*)?$")
-                .match("^(?<currency>[\\w]{3}) ([-])?[.,\\d]+$")
+                .match("^.* (?<currency>[\\w]{3}) [\\.,\\d]+ Anteilumsatz: (\\-)?[\\.,\\d]+$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-                // zu Lasten
-                // Bezeichnung: Deka-Europa Nebenwerte TF (A) 
-                // ISIN: LU0075131606 Unterdepot: 00
-                // Kurs/Kaufpreis
-                // EUR 65,000000
+                // Bezeichnung: Deka-Liquidität: EURO TF
+                // ISIN: DE0009771824
+                // Kurs
+                // EUR 128,610000
                 .section("name", "isin", "currency").optional()
-                .find("zu (Lasten|Gunsten)")
                 .match("^Bezeichnung: (?<name>.*)$")
                 .match("^ISIN: (?<isin>[\\w]{12})( .*)?$")
-                .find("zu (Lasten|Gunsten)")
-                .match("^Bezeichnung: .*$")
-                .match("^ISIN: [\\w]{12}( .*)?$")
-                .match("^(?<currency>[\\w]{3}) ([-])?[.,\\d]+$")
+                .find("Kurs(\\/Kaufpreis)?")
+                .match("^(?<currency>[\\w]{3}) [\\.,\\d]+$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // Anteilumsatz: 5,112
                 // Anteilumsatz: -2,598
                 // =Abrechnungsbetrag EUR 4.000,00 EUR 4.000,00 EUR 187,770000 Anteilumsatz: 21,303
                 .section("shares")
-                .match("(^|^.* )?Anteilumsatz: ([-])?(?<shares>[\\.,\\d]+)$")
+                .match("(^|^.* )?Anteilumsatz: (\\-)?(?<shares>[\\.,\\d]+)$")
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 // Verwahrart: GiroSammel Abrechnungstag: 18.05.2021
                 // Abrechnungstag: 06.06.2018
                 .section("date")
-                .match("^(.* )?Abrechnungstag: (?<date>[\\d]+.[\\d]+.[\\d]{4})$")
+                .match("(^|^.* )?Abrechnungstag: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
                 .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
-                // Einzugsbetrag EUR 4.000,00 Kurs/Kaufpreis Bestand alt: 11,291
-                // Abrechnungsbetrag EUR 332,31 EUR 332,31
-                .section("currency", "amount").optional()
-                .match("^(Einzugsbetrag|Abrechnungsbetrag) (?<currency>[\\w]{3}) (?<amount>[.,\\d]+) .*$")
-                .assign((t, v) -> {
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(v.get("currency"));
-                })
-
-                // Auszahlungsbetrag EUR 332,31
-                // Einzugsbetrag EUR 4.000,00
-                .section("currency", "amount").optional()
-                .match("^(Auszahlungsbetrag|Einzugsbetrag) (?<currency>[\\w]{3}) (?<amount>[.,\\d]+)$")
-                .assign((t, v) -> {
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(v.get("currency"));
-                })
+                .oneOf(
+                                // Einzugsbetrag EUR 4.000,00 Kurs/Kaufpreis Bestand alt: 11,291
+                                // Abrechnungsbetrag EUR 332,31 EUR 332,
+                                section -> section
+                                        .attributes("currency", "amount")
+                                        .match("^(Abrechnungsbetrag|Einzugsbetrag) (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)( .*)?$")
+                                        .assign((t, v) -> {
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                        })
+                                ,
+                                // Auszahlungsbetrag EUR 332,31
+                                // Einzugsbetrag EUR 4.000,00
+                                section -> section
+                                        .attributes("currency", "amount")
+                                        .match("^(Auszahlungsbetrag|Einzugsbetrag) (?<currency>[\\w]{3}) (?<amount>[.,\\d]+)$")
+                                        .assign((t, v) -> {
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                        })
+                        )
 
                 .wrap(BuySellEntryItem::new);
 
@@ -122,20 +123,32 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
     public void addDepotStatementTransaction()
     {
         final DocumentType type = new DocumentType("Quartalsbericht per [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}", (context, lines) -> {
-            Pattern pBaseCurrency = Pattern.compile("depot in (?<baseCurrency>[\\w]{3}) in [\\w]{3}");
-            Pattern pIsin = Pattern.compile("ISIN: (?<isin>[\\w]{12}) .*");
+            Pattern pAccountCurrency = Pattern.compile("^depot in (?<accountCurrency>[\\w]{3}) in [\\w]{3}$");
+            Pattern pSecurityCurrency = Pattern.compile("^(?<securityCurrency>[\\w]{3}) Fremdw.hrung [\\w]{3}$");
+            Pattern pIsin = Pattern.compile("^ISIN: (?<isin>[\\w]{12}) .*$");
 
             int endBlock = lines.length;
+            String securityCurrency = CurrencyUnit.EUR;
 
             for (int i = lines.length - 1; i >= 0; i--)
             {
-                Matcher m = pBaseCurrency.matcher(lines[i]);
+                Matcher m = pAccountCurrency.matcher(lines[i]);
                 if (m.matches())
-                    context.put("baseCurrency", m.group("baseCurrency"));
+                    context.put("accountCurrency", m.group("accountCurrency"));
 
                 m = pIsin.matcher(lines[i]);
                 if (m.matches())
                 {
+                    /***
+                     * Search the security currency in the block
+                     */
+                    for (int ii = i; ii < endBlock; ii++)
+                    {
+                        Matcher m1 = pSecurityCurrency.matcher(lines[ii]);
+                        if (m1.matches())
+                            securityCurrency = m1.group("securityCurrency");
+                    }
+
                     /***
                      * Stringbuilder:
                      * security_(security name)_(currency)_(start@line)_(end@line) = isin
@@ -147,10 +160,11 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                      */
                     StringBuilder securityListKey = new StringBuilder("security_");
                     securityListKey.append(trim(lines[i - 1])).append("_");
-                    securityListKey.append(lines[i + 3].substring(17, 20)).append("_");
+                    securityListKey.append(securityCurrency).append("_");
                     securityListKey.append(Integer.toString(i)).append("_");
                     securityListKey.append(Integer.toString(endBlock));
                     context.put(securityListKey.toString(), m.group("isin"));
+
                     endBlock = i;
                 }
             }
@@ -178,7 +192,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
 
                 // Lastschrifteinzug 250,00 198,660000 +1,258 01.04.2021 01.04.2021
                 .section("amount", "shares", "date")
-                .match("^(Lastschrifteinzug|Verkauf) (?<amount>[\\.,\\d]+) [\\.,\\d]+ [-|+](?<shares>[\\.,\\d]+) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
+                .match("^(Lastschrifteinzug|Verkauf) (?<amount>[\\.,\\d]+) [\\.,\\d]+ [\\-|\\+](?<shares>[\\.,\\d]+) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
 
@@ -193,7 +207,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                     t.setDate(asDate(v.get("date")));
                     t.setShares(asShares(v.get("shares")));
                     t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(context.get("baseCurrency")));
+                    t.setCurrencyCode(asCurrencyCode(context.get("accountCurrency")));
                     t.setSecurity(getOrCreateSecurity(v));
                 })
 
@@ -225,7 +239,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                 // Ausbuchung w/ Fusion -2,140 31.05.2021 28.05.2021
                 // Einbuchung w/ Fusion +1,315 31.05.2021 28.05.2021
                 .section("shares", "date")
-                .match("^(Einbuchung|Ausbuchung) .* [-|+](?<shares>[\\.,\\d]+) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
+                .match("^(Einbuchung|Ausbuchung) .* [\\-|\\+](?<shares>[\\.,\\d]+) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
 
@@ -240,14 +254,14 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                     t.setDateTime(asDate(v.get("date")));
                     t.setShares(asShares(v.get("shares")));
                     t.setAmount(0L);
-                    t.setCurrencyCode(asCurrencyCode(context.get("baseCurrency")));
+                    t.setCurrencyCode(asCurrencyCode(context.get("accountCurrency")));
                     t.setSecurity(getOrCreateSecurity(v));
                 })
 
                 // Ausbuchung w/ Fusion -2,140 31.05.2021 28.05.2021
                 // Einbuchung w/ Fusion +1,315 31.05.2021 28.05.2021                          
                 .section("note").optional()
-                .match("^(Einbuchung|Ausbuchung) .* (?<note>.*) [-|+][\\.,\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$")
+                .match("^(Einbuchung|Ausbuchung) .* (?<note>.*) [\\-|\\+][\\.,\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                 .wrap(t -> {
