@@ -34,7 +34,7 @@ public class DreiBankenEDVPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType(".*(Kauf|Verkauf).*");
+        DocumentType type = new DocumentType("(Kauf|Verkauf)");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -44,13 +44,13 @@ public class DreiBankenEDVPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block(".*(Kauf|Verkauf).*");
+        Block firstRelevantLine = new Block("^Wertpapier\\-.* (Kauf|Verkauf)$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
                 // Is type --> "Verkauf" change from BUY to SELL
-                .section("type").optional().match("Wertpapier-Abrechnu.*(?<type>Verkauf?).*") //
+                .section("type").optional().match("Wertpapier\\-.* (?<type>(Kauf|Verkauf))$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("Verkauf"))
                     {
@@ -58,29 +58,28 @@ public class DreiBankenEDVPDFExtractor extends AbstractPDFExtractor
                     }
                 })
 
-                // LU0675401409 Lyxor Emerg Market 2x Lev ETF Zugang Stk
-                // . 2,00
+                // LU0675401409 Lyxor Emerg Market 2x Lev ETF Zugang Stk .               2,00
                 // Inhaber-Anteile I o.N.
-                .section("isin", "name", "shares", "nameContinued")
-                .match("(?<isin>[\\w]{12}.*?) (?<name>.*?) (Zugang|Abgang).*(?<shares>[\\d.]+(,\\d+)).*")
-                .match("(?<nameContinued>.*)").assign((t, v) -> {
-                    t.setSecurity(getOrCreateSecurity(v));
-                    t.setShares(asShares(v.get("shares")));
-                })
+                // Kurs 102,64 EUR Kurswert EUR              205,28
+                .section("isin", "name", "nameContinued", "currency")
+                .match("^(?<isin>[\\w]{12}) (?<name>.*) (Zugang|Abgang) .*$")
+                .match("^(?<nameContinued>.*)$")
+                .match("^Kurs [\\.,\\d]+ (?<currency>[\\w]{3}) .*$")
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                // LU0675401409 Lyxor Emerg Market 2x Lev ETF Zugang Stk .               2,00
+                .section("shares")
+                .match("^.* (Zugang|Abgang) Stk([\\s]+)?\\. ([\\s]+)?(?<shares>[\\.,\\d]+)$")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 // Handelszeitpunkt: 04.01.2021 12:05:55
                 .section("date", "time")
-                .match("^(Handelszeitpunkt:).*(?<date>\\d+.\\d+.\\d{4}+) (?<time>\\d+:\\d+:\\d+).*")
-                .assign((t, v) -> {
-                    if (v.get("time") != null)
-                        t.setDate(asDate(v.get("date"), v.get("time")));
-                    else
-                        t.setDate(asDate(v.get("date")));
-                })
+                .match("^Handelszeitpunkt: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2})$")
+                .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
 
-                // Wertpapierrechnung Wert 06.01.2021 EUR 205,30
+                // Wertpapierrechnung Wert 06.01.2021 EUR              205,30
                 .section("currency", "amount")
-                .match("^(Wertpapierrechn.* Wert) (\\d+.\\d+.\\d{4}+) (?<currency>[\\w]{3}) *(?<amount>[\\d.-]+,\\d+).*")
+                .match("^Wertpapierrechnung Wert [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[\\w]{3}) ([\\s]+)?(?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(v.get("currency"));
@@ -94,10 +93,10 @@ public class DreiBankenEDVPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType(".*(Ausschüttung|Dividende).*");
+        DocumentType type = new DocumentType("(Aussch.ttung|Dividende)");
         this.addDocumentTyp(type);
 
-        Block block = new Block(".*(Ausschüttung|Dividende).*");
+        Block block = new Block("^Wertpapier\\-.* (Ausschüttung|Dividende)$");
         type.addBlock(block);
         Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>()
             .subject(() -> {
@@ -107,41 +106,39 @@ public class DreiBankenEDVPDFExtractor extends AbstractPDFExtractor
             });
 
         pdfTransaction
-                // IE00B0M63284 iShs Euro.Property Yield U.ETF Stk .
-                // 4,00
+                // IE00B0M63284 iShs Euro.Property Yield U.ETF Stk .               4,00
                 // Registered Shares EUR (Dist)oN
-                .section("isin", "name", "shares", "nameContinued")
-                .match("(?<isin>[\\w]{12}.*?) (?<name>.*?) (Stk .).*(?<shares>[\\d.]+(,\\d+)).*")
-                .match("(?<nameContinued>.*)").assign((t, v) -> {
-                    t.setSecurity(getOrCreateSecurity(v));
-                    t.setShares(asShares(v.get("shares")));
-                })
+                // Ertrag 0,0806 EUR Kurswert EUR                0,32KESt-Neu EUR               -0,02
+                .section("isin", "name", "nameContinued", "currency")
+                .match("^(?<isin>[\\w]{12}) (?<name>.*) Stk([\\s]+)?\\. .*$")
+                .match("(?<nameContinued>.*)")
+                .match("^Ertrag [\\.,\\d]+ (?<currency>[\\w]{3}) .*$")
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-                // Wertpapierrechnung Wert 23.12.2020 EUR 0,30
+                // IE00B0M63284 iShs Euro.Property Yield U.ETF Stk .               4,00
+                .section("shares")
+                .match("^.* Stk([\\s]+)?\\. ([\\s]+)?(?<shares>[\\.,\\d]+)$")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                // Wertpapierrechnung Wert 23.12.2020 EUR                0,30
+                .section("date")
+                .match("^Wertpapierrechnung Wert (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$")
+                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                // Wertpapierrechnung Wert 23.12.2020 EUR                0,30
                 .section("currency", "amount")
-                .match("^(Wertpapierrechn.* Wert) (\\d+.\\d+.\\d{4}+) (?<currency>[\\w]{3}) *(?<amount>[\\d.-]+,\\d+).*")
+                .match("^Wertpapierrechnung Wert [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[\\w]{3}) ([\\s]+)?(?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
                 })
 
-                // Extag 10.12.2020
-                .section("date") //
-                .match("^Extag (?<date>\\d+.\\d+.\\d{4}+).*")
-                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
-
-                // Ertrag 0,68 USD Kurswert USD 2,04Quellensteuer USD
-                // -0,31
-                // Auslands-KESt USD -0,26
-                // Zwischensumme USD 1,47
+                // Ertrag 0,68 USD Kurswert USD                2,04Quellensteuer USD               -0,31
                 // 15 % QUSt a 1,224 v. 28.12.2020 EUR 1,21
-                .section("exchangeRate", "fxAmount", "fxCurrency", "amount", "currency").optional()
-                .match(".*Kurswert.*(?<fxCurrency>[\\w]{3}).*(?<fxAmount>[\\d.]+,\\d+).*\\w+.*([\\w]{3}).*([\\d.]+,\\d+)")
-                .match("\\w.*")
-                .match("\\w.*")
-                .match(".*(?<exchangeRate>[\\d.]+,\\d+) v. (\\d+.\\d+.\\d{4}).*(?<currency>[\\w]{3}).*(?<amount>[\\d.]+,\\d+).*")
+                .section("fxCurrency", "fxAmount", "exchangeRate", "currency").optional()
+                .match("^.* Kurswert (?<fxCurrency>[\\w]{3}) ([\\s]+)?(?<fxAmount>[\\.,\\d]+).*$")
+                .match("^.* (?<exchangeRate>[\\.,\\d]+) v\\. [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[\\w]{3}) ([\\s]+)?[\\.,\\d]+$")
                 .assign((t, v) -> {
-
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                     if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
                     {
@@ -162,7 +159,9 @@ public class DreiBankenEDVPDFExtractor extends AbstractPDFExtractor
                             Money fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")),
                                             asAmount(v.get("fxAmount")));
                             Money amount = Money.of(asCurrencyCode(v.get("currency")),
-                                            asAmount(v.get("amount")));
+                                            BigDecimal.valueOf(fxAmount.getAmount()).multiply(inverseRate)
+                                                            .setScale(0, RoundingMode.HALF_UP).longValue());
+
                             grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
                         }
                         else
@@ -170,51 +169,9 @@ public class DreiBankenEDVPDFExtractor extends AbstractPDFExtractor
                             Money amount = Money.of(asCurrencyCode(v.get("fxCurrency")),
                                             asAmount(v.get("fxAmount")));
                             Money fxAmount = Money.of(asCurrencyCode(v.get("currency")),
-                                            asAmount(v.get("amount")));
-                            grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
-                        }
-                        t.addUnit(grossValue);
-                    }
-                })
+                                            BigDecimal.valueOf(amount.getAmount()).multiply(inverseRate)
+                                                            .setScale(0, RoundingMode.HALF_UP).longValue());
 
-                // Ertrag 0,09 USD Kurswert USD                0,54KESt-Neu USD               -0,15
-                // Zwischensumme USD                0,39
-                // a 1,214 v. 09.12.2020 EUR                0,32
-                .section("exchangeRate", "fxAmount", "fxCurrency", "amount", "currency").optional()
-                .match(".*Kurswert.*(?<fxCurrency>[\\w]{3}).*(?<fxAmount>[\\d.]+,\\d+).*\\w+.*([\\w]{3}).*([\\d.]+,\\d+)")
-                .match("\\w.*")
-                .match(".*(?<exchangeRate>[\\d.]+,\\d+) v. (\\d+.\\d+.\\d{4}).*(?<currency>[\\w]{3}).*(?<amount>[\\d.]+,\\d+).*")
-                .assign((t, v) -> {
-
-                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                    if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
-                    {
-                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
-                    }
-                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
-
-                    if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
-                    {
-                        BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
-                                        RoundingMode.HALF_DOWN);
-
-                        // check, if forex currency is transaction
-                        // currency or not and swap amount, if necessary
-                        Unit grossValue;
-                        if (!asCurrencyCode(v.get("fxCurrency")).equals(t.getCurrencyCode()))
-                        {
-                            Money fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")),
-                                            asAmount(v.get("fxAmount")));
-                            Money amount = Money.of(asCurrencyCode(v.get("currency")),
-                                            asAmount(v.get("amount")));
-                            grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
-                        }
-                        else
-                        {
-                            Money amount = Money.of(asCurrencyCode(v.get("fxCurrency")),
-                                            asAmount(v.get("fxAmount")));
-                            Money fxAmount = Money.of(asCurrencyCode(v.get("currency")),
-                                            asAmount(v.get("amount")));
                             grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
                         }
                         t.addUnit(grossValue);
@@ -232,38 +189,39 @@ public class DreiBankenEDVPDFExtractor extends AbstractPDFExtractor
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction
-                // Auslands-KESt USD -0,26
+                // Auslands-KESt USD               -0,26
                 .section("tax", "currency").optional()
-                .match("Auslands-KESt.*(?<currency>[\\w]{3}).*-(?<tax>[\\d.]+,\\d+).*")
+                .match("^Auslands\\-KESt (?<currency>[\\w]{3}) ([\\s]+)?\\-(?<tax>[\\.,\\d]+)$")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
                 // 0,0204 EUR KESt
                 .section("tax", "currency").optional()
-                .match(".*(?<tax>[\\d.]+,\\d+).*(?<currency>[\\w]{3}).*KESt")
+                .match("^(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3}) KESt$")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
-                // Ertrag 0,0806 EUR Kurswert EUR 0,32KESt-Neu EUR -0,02
+                // Ertrag 0,0806 EUR Kurswert EUR                0,32KESt-Neu EUR               -0,02
                 .section("tax", "currency").optional()
-                .match(".*KESt-Neu.*(?<currency>[\\w]{3}).*-(?<tax>[\\d.]+,\\d+).*")
+                .match("^.*KESt\\-Neu (?<currency>[\\w]{3}) ([\\s]+)?\\-(?<tax>[\\.,\\d]+)$")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
-                // Ertrag 0,68 USD Kurswert USD 2,04Quellensteuer USD -0,31
+                // Ertrag 0,68 USD Kurswert USD                2,04Quellensteuer USD               -0,31
                 .section("withHoldingTax", "currency").optional()
-                .match(".*Quellensteuer.*(?<currency>[\\w]{3}).*-(?<withHoldingTax>[\\d.]+,\\d+).*")
+                .match("^.*Quellensteuer (?<currency>[\\w]{3}) ([\\s]+)?\\-(?<withHoldingTax>[\\.,\\d]+)$")
                 .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
-                // Kursgewinn-KESt EUR -3,37
+                // Kursgewinn-KESt EUR                -3,37
                 .section("tax", "currency").optional()
-                .match("^(Kursgewinn-KESt) (?<currency>[\\w]{3}).*(?<tax>-[\\d.]+,\\d{2})")
+                .match("^Kursgewinn\\-KESt (?<currency>[\\w]{3}) ([\\s]+)?\\-(?<tax>[\\.,\\d]+)$")
                 .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction
-                // Dritt- und Börsengebühr EUR 0,02
+                // Dritt- und Börsengebühr EUR                0,02
+                // Dritt- und Börsengebühr EUR                -0,08
                 .section("fee", "currency").optional()
-                .match("^(Dritt.*B.*sengeb.*) (?<currency>[\\w]{3}).*(?<fee>[\\d.-]+,\\d+).*")
+                .match("^Dritt\\- und B.rsengeb.hr (?<currency>[\\w]{3}) ([\\s]+)?(\\-)?(?<fee>[\\.,\\d]+)$")
                 .assign((t, v) -> processFeeEntries(t, v, type));
     }
 }
