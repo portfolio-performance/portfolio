@@ -179,7 +179,7 @@ public class AttributesPage extends AbstractPage implements IMenuListener
             preview.setText(previewPlaceholderText);
 
             ImageConverter conv = (ImageConverter) attribute.getType().getConverter();
-            Image img = ImageUtil.toImage(conv.toString(attribute.getValue()), 16, 16);
+            Image img = ImageUtil.toImage(conv.toString(attribute.getValue()), 0, 16, 16);
             if (img != null)
                 preview.setImage(img);
 
@@ -206,7 +206,7 @@ public class AttributesPage extends AbstractPage implements IMenuListener
                                                         return Status.OK_STATUS;
                                                     }
 
-                                                    Image img = ImageUtil.toImage(s, 16, 16);
+                                                    Image img = ImageUtil.toImage(s, 0, 16, 16);
 
                                                     updatePreview(img);
                                                     return img == null ? Status.CANCEL_STATUS : Status.OK_STATUS;
