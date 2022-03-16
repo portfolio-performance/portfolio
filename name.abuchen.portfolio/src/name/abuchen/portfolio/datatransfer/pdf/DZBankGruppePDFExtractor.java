@@ -6,6 +6,8 @@ import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -77,27 +79,33 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                     }
                 })
 
-                // Stück 2.700 INTERNAT. CONS. AIRL. GROUP SA
-                // ES0177542018 (A1H6AJ)
+                // Stück 2.700 INTERNAT. CONS. AIRL. GROUP SA ES0177542018 (A1H6AJ)
                 // ACCIONES NOM. EO -,10
                 // Handels-/Ausführungsplatz XETRA (gemäß Weisung)
                 // Kurswert 5.047,65- EUR
-                .section("shares", "name", "isin", "wkn", "name1", "currency")
-                .match("^St.ck (?<shares>[\\.,\\d]+) (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
+                .section("name", "isin", "wkn", "name1", "currency")
+                .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
                 .match("^(?<name1>.*)$")
                 .match("^Kurswert [\\.,\\d]+(\\-)? (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Handels-/Ausführungsplatz"))
                         v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
 
-                    v.put("name", v.get("name"));
-                    t.setShares(asShares(v.get("shares")));
                     t.setSecurity(getOrCreateSecurity(v));
 
                     // Handshake, if there is a tax refund
                     context.put("name", v.get("name"));
                     context.put("isin", v.get("isin"));
                     context.put("wkn", v.get("wkn"));
+                })
+
+                // Stück 2.700 INTERNAT. CONS. AIRL. GROUP SA ES0177542018 (A1H6AJ)
+                .section("shares")
+                .match("^St.ck (?<shares>[\\.,\\d]+) .*$")
+                .assign((t, v) -> {
+                    t.setShares(asShares(v.get("shares")));
+
+                    // Handshake, if there is a tax refund
                     context.put("shares", v.get("shares"));
                 })
 
@@ -131,7 +139,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("(Dividendengutschrift|Ausschüttung Investmentfonds|Ertragsgutschrift)");
+        DocumentType type = new DocumentType("(Dividendengutschrift|Aussch.ttung Investmentfonds|Ertragsgutschrift)");
         this.addDocumentTyp(type);
 
         Block block = new Block("^(Dividendengutschrift|Aussch.ttung Investmentfonds|Ertragsgutschrift .*)$");
@@ -146,18 +154,21 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                 // Stück 17 CD PROJEKT S.A. PLOPTTC00011 (534356)
                 // INHABER-AKTIEN C ZY 1
                 // Zahlbarkeitstag 08.06.2021 Dividende pro Stück 5,00 PLN
-                .section("shares", "name", "isin", "wkn", "name1", "currency")
-                .match("^St.ck (?<shares>[\\.,\\d]+) (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
+                .section("name", "isin", "wkn", "name1", "currency")
+                .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
                 .match("^(?<name1>.*)$")
                 .match("^.* ((Dividende|Ertrag) ([\\s]+)?pro St.ck|Aussch.ttung pro St\\.) [\\.,\\d]+ (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Zahlbarkeitstag"))
-                        v.put("name", v.get("name").trim() + " " + v.get("name1").trim());
+                        v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
 
-                    v.put("name", v.get("name").trim());
-                    t.setShares(asShares(v.get("shares")));
                     t.setSecurity(getOrCreateSecurity(v));
                 })
+
+                // Stück 17 CD PROJEKT S.A. PLOPTTC00011 (534356)
+                .section("shares")
+                .match("^St.ck (?<shares>[\\.,\\d]+) .*$")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 // Den Betrag buchen wir mit Wertstellung 10.06.2021 zu Gunsten des Kontos XXXX (IBAN DE88 4306 0967 1154
                 .section("date")
@@ -165,7 +176,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                 // Ausmachender Betrag 13,28+ EUR
-                .section("amount", "currency").optional()
+                .section("amount", "currency")
                 .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+)\\+ (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
@@ -175,7 +186,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                 // Devisenkurs EUR / PLN 4,5044
                 // Dividendengutschrift 85,00 PLN 18,87+ EUR
                 .section("exchangeRate", "fxAmount", "fxCurrency", "amount", "currency").optional()
-                .match("^Devisenkurs (?<fxCurrency>[\\w]{3}) \\/ (?<currency>[\\w]{3}) ([\\s]+)?(?<exchangeRate>[\\.,\\d]+)$")
+                .match("^Devisenkurs [\\w]{3} \\/ [\\w]{3} ([\\s]+)?(?<exchangeRate>[\\.,\\d]+)$")
                 .match("^(Dividendengutschrift|Aussch.ttung) (?<fxAmount>[\\.,\\d]+) (?<fxCurrency>[\\w]{3}) (?<amount>[\\.,\\d]+)\\+ (?<currency>[\\w]{3})")
                 .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
@@ -229,31 +240,37 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
     public void addDepotStatementTransaction()
     {
         final DocumentType type = new DocumentType("Abrechnung Nr\\. [\\d]+", (context, lines) -> {
-            Pattern pAccountingNumber = Pattern.compile("(?<accountingNumber>Abrechnung Nr\\. [\\d]+)");
-            Pattern pBaseCurrency = Pattern.compile(".* Preis\\/(?<baseCurrency>[\\w]{3}) .*");
-            Pattern pIsin = Pattern.compile("Fonds: (?<name>(?!MusterFonds).*) ISIN: (?<isin>[\\w]{12}) .*");
+            Pattern pAccountingNumber = Pattern.compile("^(?<accountingNumber>Abrechnung Nr\\. [\\d]+)$");
+            Pattern pBaseCurrency = Pattern.compile("^.* Preis\\/(?<baseCurrency>[\\w]{3}) .*$");
+            Pattern pNameIsin = Pattern.compile("^(Fonds: )?(?<name>((?!MusterFonds).)*) ISIN: (?<isin>[\\w]{12}) .*$");
 
-            int endBlock = lines.length;
+            // Set end of line of the securities transaction block
+            int endOfLineOfSecurityTransactionBlock = lines.length;
             String baseCurrency = CurrencyUnit.EUR;
 
+            // Create security list
+            List<String[]> securityList = new ArrayList<String[]>();
 
-            for (int i = lines.length - 1; i >= 0; i--)
+            // Set patter of security names
+            String patterOfSecurityNames = "";
+
+            for (int i = lines.length - 1; i >= 1; i--)
             {
-                Matcher m = pAccountingNumber.matcher(lines[i]);
-                if (m.matches())
-                    context.put("accountingNumber", m.group("accountingNumber"));
+                Matcher m1 = pAccountingNumber.matcher(lines[i]);
+                if (m1.matches())
+                    context.put("accountingNumber", m1.group("accountingNumber"));
 
-                m = pIsin.matcher(lines[i]);
-                if (m.matches())
+                m1 = pNameIsin.matcher(lines[i]);
+                if (m1.matches())
                 {
                     /***
                      * Search the base currency in the block
                      */
-                    for (int ii = i; ii < endBlock; ii++)
+                    for (int ii = i; ii < endOfLineOfSecurityTransactionBlock; ii++)
                     {
-                        Matcher m1 = pBaseCurrency.matcher(lines[ii]);
-                        if (m1.matches())
-                            baseCurrency = m1.group("baseCurrency");
+                        Matcher m2 = pBaseCurrency.matcher(lines[ii]);
+                        if (m2.matches())
+                            baseCurrency = m2.group("baseCurrency");
                     }
 
                     /***
@@ -268,16 +285,91 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                      * Hinweis: UniProfiRente Altersvorsorgevertrag
                      * - gefördert -
                      * Buchungs-/ Umsatzart Betrag/EUR Ausgabe- Preis/EUR Anteile
+                     * 
+                     * Fonds: UniMultiAsset: Exklusiv ISIN: DE000A2H9A01 Verwaltungsvergütung: 0,50 % p. a.
+                     * UniMultiAsset: Chance I ISIN: DE000A2H9A19 Verwaltungsvergütung: 0,40 % p. a.
+                     * LMGF-L.M.Mart.Cu.Gl.L.T.Uncon. Reg. ISIN: IE00BMDQ4622 Verwaltungsvergütung: 0,40 % p. a.
                      */
-                    
-                    StringBuilder securityListKey = new StringBuilder("security_");
-                    securityListKey.append(trim(m.group("name"))).append("_");
-                    securityListKey.append(baseCurrency).append("_");
-                    securityListKey.append(Integer.toString(i)).append("_");
-                    securityListKey.append(Integer.toString(endBlock));
-                    context.put(securityListKey.toString(), m.group("isin"));
+                    if (i != (endOfLineOfSecurityTransactionBlock - 1))
+                    {
+                        StringBuilder securityListKey = new StringBuilder("security_");
+                        securityListKey.append(trim(m1.group("name"))).append("_");
+                        securityListKey.append(baseCurrency).append("_");
+                        securityListKey.append(Integer.toString(i + 1)).append("_");
+                        securityListKey.append(Integer.toString(((endOfLineOfSecurityTransactionBlock))));
+                        context.put(securityListKey.toString(), m1.group("isin"));
 
-                    endBlock = i;
+                        // Add security to securityList
+                        String[] security = {m1.group("isin"), trim(m1.group("name"))};
+                        securityList.add(security);
+                    }
+                    else
+                    {
+                        /***
+                         * Example:
+                         * Fonds: UniMultiAsset: Exklusiv ISIN: DE000A2H9A01 Verwaltungsvergütung: 0,50 % p. a.
+                         * UniMultiAsset: Chance I ISIN: DE000A2H9A19 Verwaltungsvergütung: 0,40 % p. a.
+                         * LMGF-L.M.Mart.Cu.Gl.L.T.Uncon. Reg. ISIN: IE00BMDQ4622 Verwaltungsvergütung: 0,40 % p. a.
+                         * iShares III- Core EO Govt Bond UCIT ISIN: IE00B4WXJJ64 Verwaltungsvergütung: 0,20 % p. a.
+                         * J O H.C.M.U.Fd-Glob.Opport.Fd ISIN: IE00B7MR5575 Verwaltungsvergütung: 0,75 % p. a.
+                         * SISF EURO Corporate Bond C Acc EUR ISIN: LU0113258742 Verwaltungsvergütung: 0,45 % p. a.
+                         * BGF Euro Corporate Bond Fund D2 EUR ISIN: LU0368266499 Verwaltungsvergütung: 0,40 % p. a.
+                         * UBS(L)F.S-MSCI EM.MKTS UC ETF A USD ISIN: LU0480132876 Verwaltungsvergütung: 0,225 % p. a.
+                         * Xtrackers MSCI World Swap ISIN: LU0659579733 Verwaltungsvergütung: 0,42 % p. a
+                         * DWS Inv.-Euro-Gov Bonds ISIN: LU1663883681 Verwaltungsvergütung: 0,35 % p. a.
+                         * */
+
+                        // Add security to securityList
+                        String[] security = {m1.group("isin"), trim(m1.group("name"))};
+                        securityList.add(security);   
+                    }
+
+                    endOfLineOfSecurityTransactionBlock = i;
+                }
+            }
+
+            // Create patter of security names
+            for (String[] security : securityList) 
+            {
+                if (patterOfSecurityNames.isEmpty())
+                    patterOfSecurityNames = security[1];
+                else
+                    patterOfSecurityNames = patterOfSecurityNames + "|" + security[1];
+            }
+
+            endOfLineOfSecurityTransactionBlock = lines.length;
+
+            // Characters that have to be escaped in regular expressions
+            patterOfSecurityNames = patterOfSecurityNames
+                            .replaceAll("\\(", "\\\\(")
+                            .replaceAll("\\)", "\\\\)")
+                            .replaceAll("\\.", "\\\\.")
+                            .replaceAll("\\-", "\\\\-")
+                            .replaceAll("\\+", "\\\\+");
+
+            for (int i = lines.length - 1; i >= 0; i--)
+            {
+                Pattern pSearchSecurity = Pattern.compile("^(?<name>(" + patterOfSecurityNames + "))$");
+                Matcher m = pSearchSecurity.matcher(lines[i]);
+                if (m.matches())
+                {
+                    for (String[] security : securityList) 
+                    {
+                        if (m.group("name").equals(security[1]))
+                        {
+                            /***
+                             * Stringbuilder:
+                             * security_(security name)_(currency)_(start@line)_(end@line) = isin
+                             */
+                            StringBuilder securityListKey = new StringBuilder("security_");
+                            securityListKey.append(trim(m.group("name"))).append("_");
+                            securityListKey.append(baseCurrency).append("_");
+                            securityListKey.append(Integer.toString(i + 1)).append("_");
+                            securityListKey.append(Integer.toString(((endOfLineOfSecurityTransactionBlock))));
+                            context.put(securityListKey.toString(), security[0]);
+                        }
+                    }
+                    endOfLineOfSecurityTransactionBlock = i;
                 }
             }
         });
@@ -297,6 +389,8 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
          * 
          * 27.11.2017
          * 2 4.11.2017 Wiederanlage 94,78 0,00 142,61 0,665
+         * 
+         * 01.03.2022 Anlage 4,24 25,5849 0,166
          */
         Transaction<BuySellEntry> pdfTransaction1 = new Transaction<>();
         pdfTransaction1.subject(() -> {
@@ -305,7 +399,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine1 = new Block("^[\\s\\d]{2,3}\\.[\\d]{2}\\.[\\d]{4} (Kauf|Wiederanlage|Verkauf) .*$");
+        Block firstRelevantLine1 = new Block("^[\\s\\d]{2,3}\\.[\\d]{2}\\.[\\d]{4} (Kauf|Wiederanlage|Verkauf|Anlage) .*$");
         type.addBlock(firstRelevantLine1);
         firstRelevantLine1.set(pdfTransaction1);
 
@@ -325,37 +419,37 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                                             v.put("isin", securityData.getIsin());
                                             v.put("currency", asCurrencyCode(securityData.getCurrency()));
                                         }
-                                        
+                                        t.setSecurity(getOrCreateSecurity(v));
+
                                         t.setDate(asDate(stripBlanks(v.get("date"))));
                                         t.setShares(asShares(v.get("shares")));
-                                        t.setAmount(asAmount(v.get("amount")));
                                         t.setCurrencyCode(asCurrencyCode(context.get("baseCurrency")));
-                                        t.setSecurity(getOrCreateSecurity(v));
+                                        t.setAmount(asAmount(v.get("amount")));
                                     })
                             ,
                             section -> section
-                            .attributes("date", "amount", "shares")
-                            .match("(?<date>[\\s\\d]{2,3}\\.[\\d]{2}\\.[\\d]{4}) Verkauf \\*[\\d]+ (?<amount>[\\.,\\d]+) [\\.,\\d]+ \\-(?<shares>[\\.,\\d]+)$")
-                            .assign((t, v) -> {
-                                Map<String, String> context = type.getCurrentContext();
+                                    .attributes("date", "amount", "shares")
+                                    .match("(?<date>[\\s\\d]{2,3}\\.[\\d]{2}\\.[\\d]{4}) Verkauf \\*[\\d]+ (?<amount>[\\.,\\d]+) [\\.,\\d]+ \\-(?<shares>[\\.,\\d]+)$")
+                                    .assign((t, v) -> {
+                                        Map<String, String> context = type.getCurrentContext();
 
-                                // We switch to SELL
-                                t.setType(PortfolioTransaction.Type.SELL);
+                                        // We switch to SELL
+                                        t.setType(PortfolioTransaction.Type.SELL);
 
-                                Security securityData = getSecurity(context, v.getStartLineNumber());
-                                if (securityData != null)
-                                {
-                                    v.put("name", securityData.getName());
-                                    v.put("isin", securityData.getIsin());
-                                    v.put("currency", asCurrencyCode(securityData.getCurrency()));
-                                }
-                                
-                                t.setDate(asDate(stripBlanks(v.get("date"))));
-                                t.setShares(asShares(v.get("shares")));
-                                t.setAmount(asAmount(v.get("amount")));
-                                t.setCurrencyCode(asCurrencyCode(context.get("baseCurrency")));
-                                t.setSecurity(getOrCreateSecurity(v));
-                            })
+                                        Security securityData = getSecurity(context, v.getStartLineNumber());
+                                        if (securityData != null)
+                                        {
+                                            v.put("name", securityData.getName());
+                                            v.put("isin", securityData.getIsin());
+                                            v.put("currency", asCurrencyCode(securityData.getCurrency()));
+                                        }
+                                        t.setSecurity(getOrCreateSecurity(v));
+
+                                        t.setDate(asDate(stripBlanks(v.get("date"))));
+                                        t.setShares(asShares(v.get("shares")));
+                                        t.setCurrencyCode(asCurrencyCode(context.get("baseCurrency")));
+                                        t.setAmount(asAmount(v.get("amount")));
+                                    })
                             ,
                             section -> section
                                     .attributes("date", "note", "amount", "shares")
@@ -370,12 +464,57 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                                             v.put("isin", securityData.getIsin());
                                             v.put("currency", asCurrencyCode(securityData.getCurrency()));
                                         }
+                                        t.setSecurity(getOrCreateSecurity(v));
 
                                         t.setDate(asDate(stripBlanks(v.get("date"))));
                                         t.setShares(asShares(v.get("shares")));
-                                        t.setAmount(asAmount(v.get("amount")));
                                         t.setCurrencyCode(asCurrencyCode(context.get("baseCurrency")));
+                                        t.setAmount(asAmount(v.get("amount")));
+                                        t.setNote(v.get("note"));
+                                    })
+                            ,
+                            section -> section
+                                    .attributes("date", "note", "amount", "shares", "time")
+                                    .match("^(?<date>[\\s\\d]{2,3}\\.[\\d]{2}\\.[\\d]{4}) (?<note>Anlage) (?<amount>[\\.,\\d]+) [\\.,\\d]+ (?<shares>[\\.,\\d]+)$")
+                                    .match("^Handelszeit: (?<time>[\\d]{2}:[\\d]{2}) .*$")
+                                    .assign((t, v) -> {
+                                        Map<String, String> context = type.getCurrentContext();
+
+                                        Security securityData = getSecurity(context, v.getStartLineNumber());
+                                        if (securityData != null)
+                                        {
+                                            v.put("name", securityData.getName());
+                                            v.put("isin", securityData.getIsin());
+                                            v.put("currency", asCurrencyCode(securityData.getCurrency()));
+                                        }
                                         t.setSecurity(getOrCreateSecurity(v));
+                                        
+                                        t.setDate(asDate(stripBlanks(v.get("date")), v.get("time")));
+                                        t.setShares(asShares(v.get("shares")));
+                                        t.setCurrencyCode(asCurrencyCode(context.get("baseCurrency")));
+                                        t.setAmount(asAmount(v.get("amount")));
+                                        t.setNote(v.get("note"));
+                                    })
+                            ,
+                            section -> section
+                                    .attributes("date", "note", "amount", "shares")
+                                    .match("^(?<date>[\\s\\d]{2,3}\\.[\\d]{2}\\.[\\d]{4}) (?<note>Anlage) (?<amount>[\\.,\\d]+) [\\.,\\d]+ (?<shares>[\\.,\\d]+)$")
+                                    .assign((t, v) -> {
+                                        Map<String, String> context = type.getCurrentContext();
+
+                                        Security securityData = getSecurity(context, v.getStartLineNumber());
+                                        if (securityData != null)
+                                        {
+                                            v.put("name", securityData.getName());
+                                            v.put("isin", securityData.getIsin());
+                                            v.put("currency", asCurrencyCode(securityData.getCurrency()));
+                                        }
+                                        t.setSecurity(getOrCreateSecurity(v));
+
+                                        t.setDate(asDate(stripBlanks(v.get("date"))));
+                                        t.setShares(asShares(v.get("shares")));
+                                        t.setCurrencyCode(asCurrencyCode(context.get("baseCurrency")));
+                                        t.setAmount(asAmount(v.get("amount")));
                                         t.setNote(v.get("note"));
                                     })
                         )
@@ -858,14 +997,14 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                 });
     }
 
-    private Security getSecurity(Map<String, String> context, Integer entry)
+    private Security getSecurity(Map<String, String> context, Integer startTransactionLine)
     {
         for (String key : context.keySet())
         {
             String[] parts = key.split("_"); //$NON-NLS-1$
             if (parts[0].equalsIgnoreCase("security")) //$NON-NLS-1$
             {
-                if (entry >= Integer.parseInt(parts[3]) && entry <= Integer.parseInt(parts[4]))
+                if (startTransactionLine >= Integer.parseInt(parts[3]) && startTransactionLine <= Integer.parseInt(parts[4]))
                 {
                     // returns security name, isin, security currency
                     return new Security(parts[1], context.get(key), parts[2]);
