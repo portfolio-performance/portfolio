@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 import java.util.UUID;
 
@@ -20,6 +21,8 @@ import name.abuchen.portfolio.util.ColorConversion;
 
 public class Classification implements Named
 {
+    private static final String PORTFOLIO_CLASSIFICATION_KEY = "portfolioClassificationKey"; //$NON-NLS-1$
+
     public static class Assignment
     {
         private InvestmentVehicle investmentVehicle;
@@ -148,6 +151,16 @@ public class Classification implements Named
     public Classification(Classification parent, String id, String name)
     {
         this(parent, id, name, null);
+    }
+
+    public void setKey(String key)
+    {
+        setData(PORTFOLIO_CLASSIFICATION_KEY, key);
+    }
+
+    public String getKey()
+    {
+        return Objects.toString(getData(PORTFOLIO_CLASSIFICATION_KEY), ""); //$NON-NLS-1$
     }
 
     public String getId()

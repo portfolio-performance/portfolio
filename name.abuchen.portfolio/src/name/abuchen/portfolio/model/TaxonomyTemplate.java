@@ -106,6 +106,7 @@ public final class TaxonomyTemplate
         taxonomy.setSource(getString(bundle, "source")); //$NON-NLS-1$
 
         Classification root = new Classification(id, name);
+        root.setKey(id);
         taxonomy.setRootNode(root);
         String labels = getString(bundle, "labels"); //$NON-NLS-1$
         if (labels == null)
@@ -141,6 +142,7 @@ public final class TaxonomyTemplate
             String color = getString(bundle, childId + ".color"); //$NON-NLS-1$
 
             Classification child = new Classification(parent, childId, label, color);
+            child.setKey(childId);
 
             int weight = getInt(bundle, childId + ".weight"); //$NON-NLS-1$
             if (weight >= 0)
