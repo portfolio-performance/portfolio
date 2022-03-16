@@ -491,6 +491,26 @@ import name.abuchen.portfolio.util.TextUtil;
         column.setSorter(null);
         support.addColumn(column);
 
+        column = new Column("classificationKey", Messages.ColumnCategoryKey, SWT.RIGHT, 100); //$NON-NLS-1$
+        column.setLabelProvider(new ColumnLabelProvider() // NOSONAR
+        {
+            @Override
+            public String getText(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+
+                if (node.isClassification())
+                    return node.getClassification().getKey();
+                return null;
+            }
+        });
+        new StringEditingSupport(TaxonomyNode.class, "key") //$NON-NLS-1$
+                        .setMandatory(false).setCanEditCheck(n -> (((TaxonomyNode) n).isClassification()))
+                        .addListener(this).attachTo(column);
+        column.setSorter(null);
+        column.setVisible(false);
+        support.addColumn(column);
+
         column = new IsinColumn();
         column.getEditingSupport().addListener(this);
         column.setSorter(null);

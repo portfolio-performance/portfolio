@@ -55,6 +55,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
+import com.google.common.base.Strings;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.XStreamException;
 import com.thoughtworks.xstream.converters.collections.MapConverter;
@@ -764,6 +765,8 @@ public class ClientFactory
                 // added properties to attribute types
             case 53:
                 fixSourceAttributeOfTransactions(client);
+            case 54:
+                addKeyToTaxonomyClassifications(client);
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
@@ -911,6 +914,7 @@ public class ClientFactory
 
         Taxonomy taxonomy = new Taxonomy("assetallocation", Messages.LabelAssetAllocation); //$NON-NLS-1$
         Classification root = new Classification(category.getUUID(), Messages.LabelAssetAllocation);
+        root.setKey(taxonomy.getId());
         taxonomy.setRootNode(root);
 
         buildTree(root, category);
@@ -1348,6 +1352,39 @@ public class ClientFactory
             {
                 tx.setNote(TextUtil.trim(m.group("note"))); //$NON-NLS-1$
                 tx.setSource(TextUtil.trim(m.group("file"))); //$NON-NLS-1$
+            }
+        }
+    }
+
+    private static void addKeyToTaxonomyClassifications(Client client)
+    {
+        List<TaxonomyTemplate> taxonomyTemplates = TaxonomyTemplate.list();
+        for (Taxonomy taxonomy : client.getTaxonomies())
+        {
+            if (Strings.isNullOrEmpty(taxonomy.getRoot().getKey()))
+            {
+                taxonomyTemplates.stream().filter(tt -> tt.getName().equals(taxonomy.getName())).findAny()
+                                .ifPresent(template -> {
+                                    copyClassificationKeys(template.build().getRoot(), taxonomy.getRoot());
+                                });
+            }
+        }
+    }
+
+    private static void copyClassificationKeys(Classification from, Classification to)
+    {
+        to.setKey(from.getKey());
+        Map<String, Classification> fromChildren = from.getChildren().stream()
+                        .collect(Collectors.toMap(Classification::getName, Function.identity()));
+        Map<String, Classification> toChildren = to.getChildren().stream()
+                        .collect(Collectors.toMap(Classification::getName, Function.identity()));
+        for (Map.Entry<String, Classification> entry : fromChildren.entrySet())
+        {
+            String key = entry.getKey();
+            Classification fromChild = entry.getValue();
+            if (toChildren.containsKey(key))
+            {
+                copyClassificationKeys(fromChild, toChildren.get(key));
             }
         }
     }

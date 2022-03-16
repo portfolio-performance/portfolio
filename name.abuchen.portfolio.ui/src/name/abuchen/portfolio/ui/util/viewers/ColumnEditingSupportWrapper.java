@@ -3,6 +3,8 @@ package name.abuchen.portfolio.ui.util.viewers;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 
+import java.lang.reflect.InvocationTargetException;
+
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
@@ -64,9 +66,18 @@ public class ColumnEditingSupportWrapper extends EditingSupport
         catch (Exception e)
         {
             PortfolioPlugin.log(e);
+            Status status;
+            if (e instanceof InvocationTargetException && e.getCause() != null)
+            {
+                Throwable cause = e.getCause();
+                status = new Status(Status.ERROR, PortfolioPlugin.PLUGIN_ID, cause.getMessage(), cause);
+            }
+            else
+            {
+                status = new Status(Status.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e);
+            }
             ErrorDialog dialog = new ErrorDialog(Display.getDefault().getActiveShell(), Messages.LabelError,
-                            Messages.LabelInputValidationFailed, new Status(Status.ERROR, PortfolioPlugin.PLUGIN_ID,
-                                            e.getMessage(), e), IStatus.ERROR);
+                            Messages.LabelInputValidationFailed, status, IStatus.ERROR);
             dialog.setBlockOnOpen(false);
             dialog.open();
         }
