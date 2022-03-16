@@ -58,6 +58,14 @@ public class ImageUtil
         }
     }
 
+    /**
+     * 
+     * @param value
+     * @param xOffset Additional transparent offset. Width of the resulting image is (xOffset + maxWidth)
+     * @param logicalWidth
+     * @param logicalHeight
+     * @return
+     */
     public static Image toImage(String value, int xOffset, int logicalWidth, int logicalHeight)
     {
         if (value == null || value.length() == 0)
