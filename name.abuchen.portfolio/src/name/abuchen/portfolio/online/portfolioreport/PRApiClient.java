@@ -88,17 +88,17 @@ public class PRApiClient
 
     public List<PRPortfolio> listPortfolios() throws IOException
     {
-        return list(PRPortfolio.class, "/portfolios");
+        return list(PRPortfolio.class, "/portfolios/");
     }
 
     public PRPortfolio createPortfolio(PRPortfolio portfolio) throws IOException
     {
-        return create(PRPortfolio.class, "/portfolios", portfolio);
+        return create(PRPortfolio.class, "/portfolios/", portfolio);
     }
 
     public List<PRSecurity> listSecurities(long portfolioId) throws IOException
     {
-        return list(PRSecurity.class, "/portfolios/" + portfolioId + "/securities");
+        return list(PRSecurity.class, "/portfolios/" + portfolioId + "/securities/");
     }
 
     public PRSecurity updateSecurity(long portfolioId, PRSecurity security) throws IOException
@@ -113,7 +113,7 @@ public class PRApiClient
 
     public List<PRAccount> listAccounts(long portfolioId) throws IOException
     {
-        return list(PRAccount.class, "/portfolios/" + portfolioId + "/accounts");
+        return list(PRAccount.class, "/portfolios/" + portfolioId + "/accounts/");
     }
 
     public PRAccount updateAccount(long portfolioId, PRAccount account) throws IOException
@@ -128,7 +128,7 @@ public class PRApiClient
 
     public List<PRTransaction> listTransactions(long portfolioId) throws IOException
     {
-        return list(PRTransaction.class, "/portfolios/" + portfolioId + "/transactions");
+        return list(PRTransaction.class, "/portfolios/" + portfolioId + "/transactions/");
     }
 
     public PRTransaction updateTransaction(long portfolioId, PRTransaction transaction) throws IOException
