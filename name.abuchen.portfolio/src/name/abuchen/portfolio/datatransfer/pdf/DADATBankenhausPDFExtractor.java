@@ -65,7 +65,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                 // Reg. Shares Class A DL -,01
                 // Kurswert: -1.800,-- EUR
                 .section("isin", "name", "name1", "currency")
-                .match("^Titel: (?<isin>[\\w]{12}) ([\\s+])?(?<name>.*)$")
+                .match("^Titel: (?<isin>[\\w]{12}) ([\\s]+)?(?<name>.*)$")
                 .match("^(?<name1>.*)$")
                 .match("^Kurswert: [\\-\\.,\\d]+ (?<currency>[\\w]{3}) .*$")
                 .assign((t, v) -> {
@@ -220,7 +220,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                 // Reg. Shares Class A DL -,01
                 // Dividende: 4,13 USD 
                 .section("isin", "name", "name1", "currency")
-                .match("^Titel: (?<isin>[\\w]{12}) ([\\s+])?(?<name>.*)$")
+                .match("^Titel: (?<isin>[\\w]{12}) ([\\s]+)?(?<name>.*)$")
                 .match("^(?<name1>.*)$")
                 .match("Dividende: [\\.,\\d]+ (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> {
