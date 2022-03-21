@@ -45,7 +45,7 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^(Splittkauf|Splitkauf|Wiederanlage|Kauf|Verkauf) .*");
+        Block firstRelevantLine = new Block("^(Splittkauf|Splitkauf|Wiederanlage|Kauf|Verkauf) .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -73,40 +73,43 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
 
                 // Kauf UBS Emer.Mkt.Soc.Resp.UETFADIS 89,56 EUR 12,6399 USD 7,728
                 // 2540401213 A110QD / LU1048313891 1,090667 USD 02.10.2019 45,394
-                .section("name", "currency", "shares", "wkn", "isin", "note").optional()
-                .match("^(?<note>Splittkauf|Splitkauf|Wiederanlage|Kauf|Verkauf)( Betrag)? (?<name>.*) [.,\\d]+ [\\w]{3} [.,\\d]+ (?<currency>[\\w]{3}) ([-|+])?(?<shares>[.,\\d]+)$")
+                .section("note", "name", "currency", "wkn", "isin").optional()
+                .match("^(?<note>Splittkauf|Splitkauf|Wiederanlage|Kauf|Verkauf)( Betrag)? (?<name>.*) [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ (?<currency>[\\w]{3}) ([\\-|\\+])?[\\.,\\d]+$")
                 .match("^[\\d]+ (?<wkn>.*) \\/ (?<isin>[\\w]{12}) .*$")
                 .assign((t, v) -> {
                     if (v.get("note").equals("Splittkauf"))
                         v.put("note", "Splitkauf");
-                    
-                    t.setShares(asShares(v.get("shares")));
-                    t.setNote(v.get("note"));
+
                     t.setSecurity(getOrCreateSecurity(v));
+                    t.setNote(v.get("note"));
                 })
 
                 // Splittkauf Betrag hausInvest 20,00 EUR 42,2300 EUR 0,474
                 // 2490116288 DE0009807016 / 980701 04.01.2016 3,818
-                .section("name", "currency", "shares", "wkn", "isin", "note").optional()
-                .match("^(?<note>Splittkauf|Splitkauf|Wiederanlage|Kauf|Verkauf)( Betrag)? (?<name>.*) [.,\\d]+ [\\w]{3} [.,\\d]+ (?<currency>[\\w]{3}) ([-|+])?(?<shares>[.,\\d]+)$")
+                .section("note", "name", "currency", "isin", "wkn").optional()
+                .match("^(?<note>Splittkauf|Splitkauf|Wiederanlage|Kauf|Verkauf)( Betrag)? (?<name>.*) [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ (?<currency>[\\w]{3}) ([\\-|\\+])?[\\.,\\d]+$")
                 .match("^[\\d]+ (?<isin>[\\w]{12}) \\/ (?<wkn>[\\w]{6}) .*$")
                 .assign((t, v) -> {
                     if (v.get("note").equals("Splittkauf"))
                         v.put("note", "Splitkauf");
 
-                    t.setShares(asShares(v.get("shares")));
-                    t.setNote(v.get("note"));
                     t.setSecurity(getOrCreateSecurity(v));
+                    t.setNote(v.get("note"));
                 })
+
+                // Kauf UBS Emer.Mkt.Soc.Resp.UETFADIS 89,56 EUR 12,6399 USD 7,728
+                .section("shares")
+                .match("^(Splittkauf|Splitkauf|Wiederanlage|Kauf|Verkauf)( Betrag)? .* ([\\-|\\+])?(?<shares>[\\.,\\d]+)$")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 // Handelsuhrzeit 16:51:24
                 .section("time").optional()
-                .match("^Handelsuhrzeit (?<time>\\d+:\\d+:\\d+)$")
+                .match("^Handelsuhrzeit (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2})$")
                 .assign((t, v) -> type.getCurrentContext().put("time", v.get("time")))
 
                 // 2536717769 A0X97T / LU0446734526 1,125168 USD 16.04.2019 1,334
                 .section("date")
-                .match("^.* (?<date>\\d+.\\d+.\\d{4}) [.,\\d]+$")
+                .match("^.* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\.,\\d]+$")
                 .assign((t, v) -> {
                     if (type.getCurrentContext().get("time") != null)
                         t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
@@ -116,8 +119,8 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
 
                 // Abrechnungsbetrag 1,77 EUR
                 // Auszahlungsbetrag 0,00 EUR
-                .section("amount", "currency").optional()
-                .match("^(Abrechnungsbetrag|Auszahlungsbetrag) (?<amount>[.,\\d]+) (?<currency>[\\w]{3})$")
+                .section("amount", "currency")
+                .match("^(Abrechnungsbetrag|Auszahlungsbetrag) (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -125,14 +128,13 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
 
                 // Splittkauf Betrag UBS Msci Pacific exJap.U ETF A 1,77 EUR 44,4324 USD 0,045
                 // 2536717769 A0X97T / LU0446734526 1,125168 USD 16.04.2019 1,334
-                .section("forex", "exchangeRate", "currency", "amount").optional()
-                .match("^(Splittkauf|Splitkauf|Wiederanlage|Kauf|Verkauf)( Betrag)? .* (?<amount>[.,\\d]+) (?<currency>[\\w]{3}) [.,\\d]+ (?<forex>[\\w]{3}) ([-|+])?[.,\\d]+$")
-                .match("^[\\d]+ .* \\/ .* (?<exchangeRate>[.,\\d]+) [\\w]{3} \\d+.\\d+.\\d{4} [.,\\d]+$")
+                .section("amount", "currency", "fxCurrency", "exchangeRate").optional()
+                .match("^(Splittkauf|Splitkauf|Wiederanlage|Kauf|Verkauf)( Betrag)? .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+ (?<fxCurrency>[\\w]{3}) ([\\-|\\+])?[\\.,\\d]+$")
+                .match("^[\\d]+ .* \\/ .* (?<exchangeRate>[\\.,\\d]+) [\\w]{3} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+$")
                 .assign((t, v) -> {
                     // read the forex currency, exchange rate, account
                     // currency and gross amount in account currency
-                    String forex = asCurrencyCode(v.get("forex"));
-
+                    String forex = asCurrencyCode(v.get("fxCurrency"));
                     if (t.getPortfolioTransaction().getSecurity().getCurrencyCode().equals(forex))
                     {
                         BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
@@ -180,63 +182,67 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                  */
                 .section("type").optional()
                 .match("^(?<type>Entgeltbelastung) .*$")
-                .assign((t, v) -> {
-                    type.getCurrentContext().put("sale", "X");
-                })
+                .assign((t, v) -> type.getCurrentContext().put("sale", "X"))
 
                 // Entgeltbelastung UBS-MSCI WLD.SOC.RESP.A.D.E. 1,01 EUR 98,1753 USD -0,011
                 // 2540818151 A1JA1R / LU0629459743 1,113832 USD 15.10.2019 17,187
-                .section("note", "name", "currency", "shares", "wkn", "isin").optional()
-                .match("^(?<note>Entgeltbelastung) (?<name>.*) [.,\\d]+ [\\w]{3} [.,\\d]+ (?<currency>[\\w]{3}) -(?<shares>[.,\\d]+)$")
+                .section("note", "name", "currency", "wkn", "isin").optional()
+                .match("^(?<note>Entgeltbelastung) (?<name>.*) [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ (?<currency>[\\w]{3}) \\-[\\.,\\d]+$")
                 .match("^[\\d]+ (?<wkn>.*) \\/ (?<isin>[\\w]{12}) .*$")
                 .assign((t, v) -> {
-                    t.setShares(asShares(v.get("shares")));
-                    t.setNote(v.get("note"));
                     t.setSecurity(getOrCreateSecurity(v));
+                    t.setNote(v.get("note"));
                 })
 
                 // Entgeltbelastung Templeton Growth (Euro) Fund 25,00 EUR 15,3000 EUR -1,634
                 // 2490658604 LU0114760746 / 941034 04.01.2016 10,848
-                .section("note", "name", "currency", "shares", "wkn", "isin").optional()
-                .match("^(?<note>Entgeltbelastung) (?<name>.*) [.,\\d]+ [\\w]{3} [.,\\d]+ (?<currency>[\\w]{3}) -(?<shares>[.,\\d]+)$")
+                .section("note", "name", "currency", "wkn", "isin").optional()
+                .match("^(?<note>Entgeltbelastung) (?<name>.*) [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ (?<currency>[\\w]{3}) \\-[\\.,\\d]+$")
                 .match("^[\\d]+ (?<isin>[\\w]{12}) \\/ (?<wkn>[\\w]{6}) .*$")
                 .assign((t, v) -> {
-                    t.setShares(asShares(v.get("shares")));
-                    t.setNote(v.get("note"));
                     t.setSecurity(getOrCreateSecurity(v));
+                    t.setNote(v.get("note"));
                 })
+
+                // Entgeltbelastung Templeton Growth (Euro) Fund 25,00 EUR 15,3000 EUR -1,634
+                .section("shares")
+                .match("^Entgeltbelastung .* ([\\-|\\+])?(?<shares>[\\.,\\d]+)$")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 // 2540818151 A1JA1R / LU0629459743 1,113832 USD 15.10.2019 17,187
                 .section("date")
-                .match("^.* (?<date>\\d+.\\d+.\\d{4}) [.,\\d]+$")
+                .match("^.* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\.,\\d]+$")
                 .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
-                // Entgeltbelastung UBS-MSCI WLD.SOC.RESP.A.D.E. 1,01 EUR 98,1753 USD -0,011
-                .section("amount", "currency").optional()
-                .match("^Entgeltbelastung .* (?<amount>[.,\\d]+) (?<currency>[\\w]{3}) [.,\\d]+ [\\w]{3} -[.,\\d]+$")
-                .assign((t, v) -> {
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                })
-
-                // Verwahrentgelt Fonds ohne Abschlussfolgeprovision 2019 1,00 EUR
-                .section("amount", "currency").optional()
-                .match("^Verwahrentgelt Fonds ohne Abschlussfolgeprovision .* (?<amount>[.,\\d]+) (?<currency>[\\w]{3})$")
-                .assign((t, v) -> {
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                })
+                .oneOf(
+                                // Verwahrentgelt Fonds ohne Abschlussfolgeprovision 2019 1,00 EUR
+                                section -> section
+                                        .attributes("amount", "currency")
+                                        .match("^Verwahrentgelt Fonds ohne Abschlussfolgeprovision .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                                        .assign((t, v) -> {
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                        })
+                                ,
+                                // Entgeltbelastung UBS-MSCI WLD.SOC.RESP.A.D.E. 1,01 EUR 98,1753 USD -0,011
+                                section -> section
+                                        .attributes("currency", "amount")
+                                        .match("^Entgeltbelastung .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3} \\-[\\.,\\d]+$")
+                                        .assign((t, v) -> {
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                        })
+                        )
 
                 // Entgeltbelastung UBS-MSCI WLD.SOC.RESP.A.D.E. 1,01 EUR 98,1753 USD -0,011
                 // 2540818151 A1JA1R / LU0629459743 1,113832 USD 15.10.2019 17,187
-                .section("forex", "exchangeRate", "currency", "amount").optional()
-                .match("^Entgeltbelastung .* (?<amount>[.,\\d]+) (?<currency>[\\w]{3}) [.,\\d]+ (?<forex>[\\w]{3}) -[.,\\d]+$")
-                .match("^[\\d]+ .* \\/ [\\w]{12} (?<exchangeRate>[.,\\d]+) [\\w]{3} \\d+.\\d+.\\d{4} [.,\\d]+$")
+                .section("amount", "currency", "fxCurrency", "exchangeRate").optional()
+                .match("^Entgeltbelastung .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+ (?<fxCurrency>[\\w]{3}) \\-[\\.,\\d]+$")
+                .match("^[\\d]+ .* \\/ .* (?<exchangeRate>[\\.,\\d]+) [\\w]{3} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+$")
                 .assign((t, v) -> {
                     // read the forex currency, exchange rate, account
                     // currency and gross amount in account currency
-                    String forex = asCurrencyCode(v.get("forex"));
-
+                    String forex = asCurrencyCode(v.get("fxCurrency"));
                     if (t.getPortfolioTransaction().getSecurity().getCurrencyCode().equals(forex))
                     {
                         BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
@@ -280,56 +286,57 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
 
                 // Entgeltbelastung UBS-MSCI WLD.SOC.RESP.A.D.E. 1,01 EUR 98,1753 USD -0,011
                 // 2540818151 A1JA1R / LU0629459743 1,113832 USD 15.10.2019 17,187
-                .section("name", "currency", "shares", "wkn", "isin").optional()
-                .match("^Entgeltbelastung (?<name>.*) [.,\\d]+ [\\w]{3} [.,\\d]+ (?<currency>[\\w]{3}) -(?<shares>[.,\\d]+)$")
+                .section("name", "currency", "wkn", "isin").optional()
+                .match("^Entgeltbelastung (?<name>.*) [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ (?<currency>[\\w]{3}) \\-[\\.,\\d]+$")
                 .match("^[\\d]+ (?<wkn>.*) \\/ (?<isin>[\\w]{12}) .*$")
-                .assign((t, v) -> {
-                    t.setShares(asShares(v.get("shares")));
-                    t.setSecurity(getOrCreateSecurity(v));
-                })
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // Entgeltbelastung Templeton Growth (Euro) Fund 25,00 EUR 15,3000 EUR -1,634
                 // 2490658604 LU0114760746 / 941034 04.01.2016 10,848
-                .section("note", "name", "currency", "shares", "wkn", "isin").optional()
-                .match("^(?<note>Entgeltbelastung) (?<name>.*) [.,\\d]+ [\\w]{3} [.,\\d]+ (?<currency>[\\w]{3}) -(?<shares>[.,\\d]+)$")
+                .section("name", "currency", "isin", "wkn").optional()
+                .match("^Entgeltbelastung (?<name>.*) [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ (?<currency>[\\w]{3}) \\-[\\.,\\d]+$")
                 .match("^[\\d]+ (?<isin>[\\w]{12}) \\/ (?<wkn>[\\w]{6}) .*$")
-                .assign((t, v) -> {
-                    t.setShares(asShares(v.get("shares")));
-                    t.setNote(v.get("note"));
-                    t.setSecurity(getOrCreateSecurity(v));
-                })
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                // Entgeltbelastung Templeton Growth (Euro) Fund 25,00 EUR 15,3000 EUR -1,634
+                .section("shares")
+                .match("^Entgeltbelastung .* ([\\-|\\+])?(?<shares>[\\.,\\d]+)$")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 // 2540818151 A1JA1R / LU0629459743 1,113832 USD 15.10.2019 17,187
                 .section("date")
-                .match("^.* (?<date>\\d+.\\d+.\\d{4}) [.,\\d]+$")
+                .match("^.* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\.,\\d]+$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
-                // Entgeltbelastung UBS-MSCI WLD.SOC.RESP.A.D.E. 1,01 EUR 98,1753 USD -0,011
-                .section("amount", "currency").optional()
-                .match("^Entgeltbelastung (?<name>.*) (?<amount>[.,\\d]+) (?<currency>[\\w]{3}) [.,\\d]+ [\\w]{3} -(?<shares>[.,\\d]+)$")
-                .assign((t, v) -> {
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                })
-
-                // lfd. Vermögensverwaltungsentgelt gem. separatem Auftrag 0,43 EUR
-                .section("amount", "currency").optional()
-                .match("^lfd. Verm.gensverwaltungsentgelt gem. separatem Auftrag (?<amount>[.,\\d]+) (?<currency>[\\w]{3})$")
-                .assign((t, v) -> {
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                })
+                .oneOf(
+                                // lfd. Vermögensverwaltungsentgelt gem. separatem Auftrag 0,43 EUR
+                                section -> section
+                                        .attributes("amount", "currency")
+                                        .match("^lfd\\. Verm.gensverwaltungsentgelt gem. separatem Auftrag (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                                        .assign((t, v) -> {
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                        })
+                                ,
+                                // Entgeltbelastung UBS-MSCI WLD.SOC.RESP.A.D.E. 1,01 EUR 98,1753 USD -0,011
+                                section -> section
+                                        .attributes("currency", "amount")
+                                        .match("^Entgeltbelastung .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3} \\-[\\.,\\d]+$")
+                                        .assign((t, v) -> {
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                        })
+                        )
 
                 // Entgeltbelastung UBS-MSCI WLD.SOC.RESP.A.D.E. 1,01 EUR 98,1753 USD -0,011
                 // 2540818151 A1JA1R / LU0629459743 1,113832 USD 15.10.2019 17,187
-                .section("forex", "exchangeRate", "currency", "amount").optional()
-                .match("^Entgeltbelastung .* (?<amount>[.,\\d]+) (?<currency>[\\w]{3}) [.,\\d]+ (?<forex>[\\w]{3}) ([-|+])?[.,\\d]+$")
-                .match("^[\\d]+ .* \\/ [\\w]{12} (?<exchangeRate>[.,\\d]+) [\\w]{3} \\d+.\\d+.\\d{4} [.,\\d]+$")
+                .section("amount", "currency", "fxCurrency", "exchangeRate").optional()
+                .match("^Entgeltbelastung .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+ (?<fxCurrency>[\\w]{3}) \\-[\\.,\\d]+$")
+                .match("^[\\d]+ .* \\/ .* (?<exchangeRate>[\\.,\\d]+) [\\w]{3} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+$")
                 .assign((t, v) -> {
                     // read the forex currency, exchange rate, account
                     // currency and gross amount in account currency
-                    String forex = asCurrencyCode(v.get("forex"));
-
+                    String forex = asCurrencyCode(v.get("fxCurrency"));
                     if (t.getSecurity().getCurrencyCode().equals(forex))
                     {
                         BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
@@ -352,7 +359,17 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                 // Depotführungsentgelt 2018 25,00 EUR
                 // Depotführungsentgelt 25,00 EUR
                 .section("note").optional()
-                .match("^(?<note>Depotf.hrungsentgelt( [\\d]+)?) [.,\\d]+ [\\w]{3}$")
+                .match("^(?<note>Depotf.hrungsentgelt( [\\d]+)?) [\\.,\\d]+ [\\w]{3}$")
+                .assign((t, v) -> t.setNote(v.get("note")))
+
+                // Verwahrentgelt Fonds ohne Abschlussfolgeprovision 2019 1,00 EUR
+                .section("note1", "note2").optional()
+                .match("^(?<note1>Verwahrentgelt Fonds) .* (?<note2>[\\d]{4}) .*$")
+                .assign((t, v) -> t.setNote(v.get("note1") + " " + v.get("note2")))
+
+                // lfd. Vermögensverwaltungsentgelt gem. separatem Auftrag 0,09 EUR
+                .section("note").optional()
+                .match("^(?<note>lfd\\. Verm.gensverwaltungsentgelt) .*$")
                 .assign((t, v) -> t.setNote(v.get("note")))
 
                 .wrap(TransactionItem::new));
@@ -360,7 +377,7 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("(Ausschüttungsanzeige|Datum der Ausschüttung)");
+        DocumentType type = new DocumentType("(Aussch.ttungsanzeige|Datum der Aussch.ttung)");
         this.addDocumentTyp(type);
 
         Block block = new Block("^Fondsname .*$");
@@ -383,24 +400,25 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                 // Fondsname iShs S&P SmallCap 600 UCITS ET Datum der Ausschüttung 25.07.2018
                 // WKN / ISIN A0Q1YY / IE00B2QWCY14 Turnus halbjährlich
                 // Ausschüttung               0,289000000 USD 0,03 EUR
-                .section("name", "wkn", "isin", "shares", "currency")
-                .match("^Fondsname (?<name>.*) Datum der Aussch.ttung \\d+.\\d+.\\d{4}$")
+                .section("name", "wkn", "isin", "currency")
+                .match("^Fondsname (?<name>.*) Datum der Aussch.ttung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$")
                 .match("^WKN \\/ ISIN (?<wkn>.*) \\/ (?<isin>[\\w]{12}) .*$")
-                .match("^Fondsgesellschaft .* Anteilsbestand per \\d{2}.\\d{2}.\\d{4} (?<shares>[\\d.,]+) St.$")
-                .match("^Aussch.ttung( vor Teilfreistellung)? ([\\s]+)?[.,\\d]+ [\\w]{3} [.,\\d]+ (?<currency>[\\w]{3})")
-                .assign((t, v) -> {
-                    t.setShares(asShares(v.get("shares")));
-                    t.setSecurity(getOrCreateSecurity(v));
-                })
+                .match("^Aussch.ttung( vor Teilfreistellung)? ([\\s]+)?[\\.,\\d]+ [\\w]{3} [\\.,\\d]+ (?<currency>[\\w]{3})")
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                // Fondsgesellschaft iShares Anteilsbestand per 12.07.2018 0,0930 St.
+                .section("shares")
+                .match("^.* Anteilsbestand per [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<shares>[\\.,\\d]+) St\\.$")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 // Fondsname iShs S&P SmallCap 600 UCITS ET Datum der Ausschüttung 25.07.2018
-                .section("date").optional()
-                .match("^Fondsname (?<name>.*) Datum der Aussch.ttung (?<date>\\d+.\\d+.\\d{4})$")
+                .section("date")
+                .match("^Fondsname .* Datum der Aussch.ttung (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                 // Folgender Betrag wurde zugunsten Ihrer Referenzbankverbindung überwiesen 0,03 EUR
                 .section("amount", "currency").optional()
-                .match("^Folgender Betrag wurde zugunsten Ihrer Referenzbankverbindung .berwiesen (?<amount>[\\d.,]+) (?<currency>[\\w]{3})$")
+                .match("^Folgender Betrag wurde zugunsten Ihrer Referenzbankverbindung .berwiesen (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -408,7 +426,7 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
 
                 // zur Wiederanlage zur Verfügung stehend 15,67 EUR
                 .section("amount", "currency").optional()
-                .match("^zur Wiederanlage zur Verf.gung stehend (?<amount>[\\d.,]+) (?<currency>[\\w]{3})$")
+                .match("^zur Wiederanlage zur Verf.gung stehend (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -427,7 +445,7 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
         transaction
                 // Kapitalertragsteuer               0,00 EUR
                 .section("tax", "currency").optional()
-                .match("^Kapitalertragsteuer ([\\s]+)?(?<tax>[.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^Kapitalertragsteuer ([\\s]+)?(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     if (!"X".equals(type.getCurrentContext().get("sale")))
                     {
@@ -437,7 +455,7 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
 
                 // abgeführte Kapitalertragsteuer 21,15 EUR
                 .section("tax", "currency").optional()
-                .match("^abgef.hrte Kapitalertragsteuer ([\\s]+)?(?<tax>[.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^abgef.hrte Kapitalertragsteuer ([\\s]+)?(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     if ("X".equals(type.getCurrentContext().get("sale")))
                     {
@@ -447,7 +465,7 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
 
                 // Solidaritätszuschlag               0,00 EUR
                 .section("tax", "currency").optional()
-                .match("^Solidarit.tszuschlag ([\\s]+)(?<tax>[.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^Solidarit.tszuschlag ([\\s]+)(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     if (!"X".equals(type.getCurrentContext().get("sale")))
                     {
@@ -457,7 +475,7 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
 
                 // abgeführter Solidaritätszuschlag 1,16 EUR
                 .section("tax", "currency").optional()
-                .match("^abgeführter Solidarit.tszuschlag ([\\s]+)?(?<tax>[.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^abgeführter Solidarit.tszuschlag ([\\s]+)?(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     if ("X".equals(type.getCurrentContext().get("sale")))
                     {
@@ -467,7 +485,7 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
 
                 // Kirchensteuer               0,00 EURR
                 .section("tax", "currency").optional()
-                .match("^Kirchensteuer ([\\s]+)(?<tax>[.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^Kirchensteuer ([\\s]+)(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     if (!"X".equals(type.getCurrentContext().get("sale")))
                     {
@@ -477,7 +495,7 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
 
                 // abgeführte Kirchensteuer 0,91 EUR
                 .section("tax", "currency").optional()
-                .match("^abgef.hrte Kirchensteuer ([\\s]+)?(?<tax>[.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^abgef.hrte Kirchensteuer ([\\s]+)?(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     if ("X".equals(type.getCurrentContext().get("sale")))
                     {
@@ -490,18 +508,18 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
     {
         transaction
                 // Ausgabeaufschlag / Provision (0,00 %) 0,00 EUR
-                .section("currency", "fee").optional()
-                .match("^Ausgabeaufschlag \\/ Provision .* (?<fee>[.,\\d]+) (?<currency>[\\w]{3})$")
+                .section("fee", "currency").optional()
+                .match("^Ausgabeaufschlag \\/ Provision .* (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Additional Trading Costs 0,52 EUR
-                .section("currency", "fee").optional()
-                .match("^Additional Trading Costs (?<fee>[.,\\d]+) (?<currency>[\\w]{3})$")
+                .section("fee", "currency").optional()
+                .match("^Additional Trading Costs (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // ETF Transaktionskosten FFB 0,00 EUR
-                .section("currency", "fee").optional()
-                .match("^ETF Transaktionskosten FFB (?<fee>[.,\\d]+) (?<currency>[\\w]{3})$")
+                .section("fee", "currency").optional()
+                .match("^ETF Transaktionskosten FFB (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processFeeEntries(t, v, type));
     }
 }
