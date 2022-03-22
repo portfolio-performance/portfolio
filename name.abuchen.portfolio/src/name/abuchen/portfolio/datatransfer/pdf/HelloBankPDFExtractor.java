@@ -38,7 +38,7 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("Geschäftsart: (Kauf|Verkauf|Kauf aus Dauerauftrag)");
+        DocumentType type = new DocumentType("Gesch.ftsart: (Kauf|Verkauf|Kauf aus Dauerauftrag)");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -55,7 +55,7 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
         pdfTransaction
                 // Is type --> "Verkauf" change from BUY to SELL
                 .section("type").optional()
-                .match("^Geschäftsart: (?<type>(Kauf|Verkauf|Kauf aus Dauerauftrag))$")
+                .match("^Gesch.ftsart: (?<type>(Kauf|Verkauf|Kauf aus Dauerauftrag))$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("Verkauf"))
                     {
@@ -99,7 +99,7 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
 
                 // Zu Lasten IBAN AT44 1925 0654 0668 9002 -1.118,80 EUR 
                 .section("amount", "currency")
-                .match("^(Zu Lasten|Zu Gunsten) .* (?<amount>[\\-\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .match("^(Zu Lasten|Zu Gunsten) .* (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -151,7 +151,7 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private void addDividendTransaction()
     {
-        DocumentType type = new DocumentType("Geschäftsart: Ertrag");
+        DocumentType type = new DocumentType("Gesch.ftsart: Ertrag");
         this.addDocumentTyp(type);
 
         Block block = new Block("^Gesch.ftsart: Ertrag$");
@@ -170,7 +170,7 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
                 .section("isin", "name", "name1", "currency")
                 .match("^Titel: (?<isin>[\\w]{12}) (?<name>.*)$")
                 .match("^(?<name1>.*)$")
-                .match("^(Dividende|Ertrag): [\\-\\.,\\d]+ (?<currency>[\\w]{3})(.*)?$")
+                .match("^(Dividende|Ertrag): (\\-)?[\\.,\\d]+ (?<currency>[\\w]{3})(.*)?$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Kurs"))
                         v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
@@ -185,12 +185,12 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
 
                 // Valuta 6.9.2017
                 .section("date")
-                .match("Valuta (?<date>[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4})(.*)?")
+                .match("^Valuta (?<date>[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4})(.*)?$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                 // Zu Gunsten IBAN AT44 1925 0654 0668 9002 48,71 EUR 
-                .section("amount", "currency").optional()
-                .match("Zu Gunsten .* (?<amount>[\\-\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .section("amount", "currency")
+                .match("^Zu Gunsten .* (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(v.get("currency"));
@@ -264,7 +264,7 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
                 .match("^(?<name1>.*)$")
                 .match("^steuerlicher Anschaffungswert: [\\-\\.,\\d]+ (?<currency>[\\w]{3})(.*)?$")
                 .assign((t, v) -> {
-                    if (!v.get("name1").startsWith("Kurs")|| !v.get("name1").startsWith("Verwahrart"))
+                    if (!v.get("name1").startsWith("Kurs") || !v.get("name1").startsWith("Verwahrart"))
                         v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
                     
                     t.setSecurity(getOrCreateSecurity(v));
