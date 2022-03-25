@@ -918,7 +918,7 @@ public final class SecuritiesTable implements ModificationListener
         if (selection.size() > 1)
         {
             manager.add(new SimpleAction(MessageFormat.format(Messages.SecurityMenuUpdateQuotesMultipleSecurities, selection.size()), a  ->            
-                new UpdateQuotesJob(getClient(), Arrays.asList(selection.toArray()).toArray(new Security[0])).schedule()
+                new UpdateQuotesJob(getClient(), Arrays.stream(selection.toArray()).map(Security.class::cast).collect(Collectors.toList())).schedule()
             ));
         }
 

@@ -3,7 +3,6 @@ package name.abuchen.portfolio.ui.jobs;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
@@ -125,9 +124,9 @@ public final class UpdateQuotesJob extends AbstractClientJob
         this(client, s -> s.equals(security), EnumSet.allOf(Target.class));
     }
 
-    public UpdateQuotesJob(Client client, Security[] security)
+    public UpdateQuotesJob(Client client, List<Security> securities)
     {
-        this(client, s -> Arrays.asList(security).contains(s), EnumSet.allOf(Target.class));
+        this(client, securities::contains, EnumSet.allOf(Target.class));
     }
 
     public UpdateQuotesJob(Client client, Predicate<Security> filter, Set<Target> target)
