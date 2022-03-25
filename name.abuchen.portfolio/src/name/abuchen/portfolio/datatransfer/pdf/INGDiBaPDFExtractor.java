@@ -24,9 +24,9 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 {
-    private static final String IS_JOINT_ACCOUNT = "isjointaccount"; //$NON-NLS-1$
+    private static final String isJointAccount = "isJointAccount"; //$NON-NLS-1$
 
-    BiConsumer<Map<String, String>, String[]> isJointAccount = (context, lines) -> {
+    BiConsumer<Map<String, String>, String[]> jointAccount = (context, lines) -> {
         Pattern pJointAccount = Pattern.compile("KapSt anteilig 50,00 %.*"); //$NON-NLS-1$
         Boolean bJointAccount = false;
 
@@ -35,14 +35,14 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
             Matcher m = pJointAccount.matcher(line);
             if (m.matches())
             {
-                context.put(IS_JOINT_ACCOUNT, Boolean.TRUE.toString());
+                context.put(isJointAccount, Boolean.TRUE.toString());
                 bJointAccount = true;
                 break;
             }
         }
 
         if (!bJointAccount)
-            context.put(IS_JOINT_ACCOUNT, Boolean.FALSE.toString());
+            context.put(isJointAccount, Boolean.FALSE.toString());
 
     };
 
@@ -63,7 +63,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("(Wertpapierabrechnung (Kauf|Bezug|Verkauf|Verk. Teil-/Bezugsr.)|Rückzahlung)", isJointAccount);
+        DocumentType type = new DocumentType("(Wertpapierabrechnung (Kauf|Bezug|Verkauf|Verk\\. Teil\\-\\/Bezugsr\\.)|R.ckzahlung)", jointAccount);
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -73,14 +73,14 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^(Wertpapierabrechnung (Kauf|Bezug|Verkauf|Verk. Teil-\\/Bezugsr\\.)|R.ckzahlung).*$");
+        Block firstRelevantLine = new Block("^(Wertpapierabrechnung (Kauf|Bezug|Verkauf|Verk. Teil\\-\\/Bezugsr\\.)|R.ckzahlung).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
                 // Is type --> "Verkauf" change from BUY to SELL
                 .section("type").optional()
-                .match("^(Wertpapierabrechnung )?(?<type>(Kauf|Bezug|Verkauf|Verk. Teil-\\/Bezugsr\\.)|R.ckzahlung).*$")
+                .match("^(Wertpapierabrechnung )?(?<type>(Kauf|Bezug|Verkauf|Verk. Teil\\-\\/Bezugsr\\.)|R.ckzahlung).*$")
                 .assign((t, v) -> {                    
                     if (v.get("type").equals("Verkauf")
                             || v.get("type").equals("Verk. Teil-/Bezugsr.")
@@ -115,14 +115,14 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 // Ausführungstag / -zeit 17.11.2015 um 16:17:32 Uhr
                 // Schlusstag / -zeit 20.03.2012 um 19:35:40 Uhr
                 .section("time").optional()
-                .match("^(Ausf.hrungstag \\/ \\-zeit|Ausf.hrungstag|Schlusstag \\/ \\-zeit|Schlusstag|F.lligkeit) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* (?<time>\\d+:\\d+:\\d+) .*$")
+                .match("^(Ausf.hrungstag|Schlusstag) \\/ \\-zeit [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) .*$")
                 .assign((t, v) -> type.getCurrentContext().put("time", v.get("time")))
                 
                 // Ausführungstag 15.12.2015
-                // Schlusstag 01.02.2012
+                // Schlusstag / -zeit 20.03.2012 um 19:35:40 Uhr
                 // Fälligkeit 25.05.2017
                 .section("date").multipleTimes()
-                .match("^(Ausf.hrungstag \\/ -zeit|Ausf.hrungstag|Schlusstag \\/ -zeit|Schlusstag|F.lligkeit) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})( .*)?$")
+                .match("^(Ausf.hrungstag|Schlusstag|F.lligkeit)( \\/ -zeit)? (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})( .*)?$")
                 .assign((t, v) -> {
                     if (type.getCurrentContext().get("time") != null)
                         t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
@@ -133,7 +133,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 // Endbetrag zu Ihren Lasten EUR 533,39
                 // Endbetrag zu Ihren Gunsten EUR 1.887,64
                 // Endbetrag EUR 256,66
-                .section("amount", "currency")
+                .section("currency", "amount")
                 .match("^Endbetrag( zu Ihren (Lasten|Gunsten))? (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -142,13 +142,13 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 
                 // Kurswert USD 1.503,75
                 // umger. zum Devisenkurs EUR 1.311,99 (USD = 1,146163)
-                .section("currency", "amount", "fxcurrency", "fxamount", "exchangeRate").optional()
-                .match("^Kurswert (?<fxcurrency>[\\w]{3}) (?<fxamount>[\\.,\\d]+)$")
-                .match("^.* Devisenkurs (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+) \\([\\w]{3} = (?<exchangeRate>[.,\\d]+)\\)$")
+                .section("fxCurrency", "fxAmount", "currency", "amount", "exchangeRate").optional()
+                .match("^Kurswert (?<fxCurrency>[\\w]{3}) (?<fxAmount>[\\.,\\d]+)$")
+                .match("^.* Devisenkurs (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+) \\([\\w]{3} = (?<exchangeRate>[\\.,\\d]+)\\)$")
                 .assign((t, v) -> {                   
                     // read the forex currency, exchange rate and gross
                     // amount in forex currency
-                    String forex = asCurrencyCode(v.get("fxcurrency"));
+                    String forex = asCurrencyCode(v.get("fxCurrency"));
                     if (t.getPortfolioTransaction().getSecurity().getCurrencyCode().equals(forex))
                     {
                         BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
@@ -156,7 +156,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                         RoundingMode.HALF_DOWN);
 
                         // gross given in forex currency
-                        long fxAmount = asAmount(v.get("fxamount"));
+                        long fxAmount = asAmount(v.get("fxAmount"));
                         long amount = reverseRate.multiply(BigDecimal.valueOf(fxAmount))
                                         .setScale(0, RoundingMode.HALF_DOWN).longValue();
 
@@ -170,7 +170,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 
                 // umger. zum Devisenkurs EUR 1.311,99 (USD = 1,146163)
                 .section("exchangeRate").optional()
-                .match("^.* Devisenkurs [\\w]{3} [\\.,\\d]+ \\([\\w]{3} = (?<exchangeRate>[.,\\d]+)\\)$")
+                .match("^.* Devisenkurs [\\w]{3} [\\.,\\d]+ \\([\\w]{3} = (?<exchangeRate>[\\.,\\d]+)\\)$")
                 .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                     type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
@@ -184,6 +184,11 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                     t.setNote(trim(v.get("note1")) + ": " + trim(v.get("note2")));   
                 })
 
+                // Rückzahlung
+                .section("note").optional()
+                .match("^(?<note>R.ckzahlung)$")
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
                 .wrap(BuySellEntryItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
@@ -192,7 +197,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("(Dividendengutschrift|Ertragsgutschrift|Zinsgutschrift)", isJointAccount);
+        DocumentType type = new DocumentType("(Dividendengutschrift|Ertragsgutschrift|Zinsgutschrift)", jointAccount);
         this.addDocumentTyp(type);
 
         Block block = new Block("^(Dividendengutschrift|Ertragsgutschrift|Zinsgutschrift)(.*)?$");
@@ -209,7 +214,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 // Wertpapierbezeichnung McDonald's Corp.
                 // Registered Shares DL-,01
                 // Zins-/Dividendensatz 0,94 USD
-                .section("wkn", "isin", "name", "name1", "currency").optional()
+                .section("isin", "wkn", "name", "name1", "currency").optional()
                 .match("^ISIN \\(WKN\\) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
                 .match("^Wertpapierbezeichnung (?<name>.*)$")
                 .match("^(?<name1>.*)$")
@@ -225,7 +230,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 // Wertpapierbezeichnung 7,25000% posterXXL AG
                 // Inh.-Schv.v.2012(2015/2017)
                 // Nominale 1.000,00 EUR
-                .section("wkn", "isin", "name", "name1", "currency").optional()
+                .section("isin", "wkn", "name", "name1", "currency").optional()
                 .match("^ISIN \\(WKN\\) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
                 .match("^Wertpapierbezeichnung (?<name>.*)$")
                 .match("^(?<name1>.*)$")
@@ -270,8 +275,8 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                  * Is the total amount negative, 
                  * then change from DIVIDENDS to TAXES
                  */
-                //Gesamtbetrag zu Ihren Lasten EUR - 20,03
-                .section("amount", "currency").optional()
+                // Gesamtbetrag zu Ihren Lasten EUR - 20,03
+                .section("currency", "amount").optional()
                 .match("^Gesamtbetrag zu Ihren Lasten (?<currency>[\\w]{3}) \\- (?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {                    
                     t.setType(AccountTransaction.Type.TAXES);
@@ -282,7 +287,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 
                 // Brutto USD 62,04
                 // Umg. z. Dev.-Kurs (1,049623) EUR 50,24
-                .section("fxAmount", "fxCurrency", "currency", "exchangeRate").optional()
+                .section("fxCurrency", "fxAmount", "exchangeRate", "currency").optional()
                 .match("^Brutto (?<fxCurrency>[\\w]{3}) (?<fxAmount>[\\.,\\d]+)")
                 .match("^Umg\\. z\\. Dev\\.\\-Kurs \\((?<exchangeRate>[\\.,\\d]+)\\) (?<currency>[\\w]{3}) [\\.,\\d]+$")
                 .assign((t, v) -> {
@@ -336,7 +341,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 // Reg. Shs HGD EUR Acc. oN
                 // Nominale 378,00 Stück
                 // Vorabpauschale per Stück 0,00245279 EUR
-                .section("wkn", "isin", "name", "name1", "currency")
+                .section("isin", "wkn", "name", "name1", "currency")
                 .match("^ISIN \\(WKN\\) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
                 .match("^Wertpapierbezeichnung (?<name>.*)$")
                 .match("^(?<name1>.*)$")
@@ -359,10 +364,10 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                 // Gesamtbetrag zu Ihren Lasten EUR - 0,16
-                .section("currency", "tax", "sign").optional()
-                .match("^Gesamtbetrag zu Ihren Lasten (?<currency>[\\w]{3}) (?<sign>[\\-\\s]+)?(?<tax>[.,\\d]+)$")
+                .section("currency", "sign", "amount")
+                .match("^Gesamtbetrag zu Ihren Lasten (?<currency>[\\w]{3}) (?<sign>[\\-\\s]+)?(?<amount>[.,\\d]+)$")
                 .assign((t, v) -> {
-                    t.setAmount(asAmount(v.get("tax")));
+                    t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
 
                     String sign = trim(v.get("sign"));
@@ -386,10 +391,10 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 // Kapitalertragsteuer (Account)
                 // Kapitalertragsteuer 25,00 % EUR 18,32
                 // Kapitalertragsteuer 25,00% EUR 5,91
-                .section("tax", "currency").optional()
+                .section("currency", "tax").optional()
                 .match("^Kapitalertragsteuer [\\.,\\d]+([\\s]+)?% (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    if (!Boolean.parseBoolean(type.getCurrentContext().get(IS_JOINT_ACCOUNT)))
+                    if (!Boolean.parseBoolean(type.getCurrentContext().get(isJointAccount)))
                     {
                         processTaxEntries(t, v, type);
                     }
@@ -398,11 +403,11 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 // Kapitalerstragsteuer (Joint Account)
                 // KapSt anteilig 50,00 % 24,45% EUR 79,46
                 // KapSt anteilig 50,00 % 24,45 % EUR 79,46
-                .section("tax1", "currency1", "tax2", "currency2").optional()
+                .section("currency1", "tax1", "currency2", "tax2").optional()
                 .match("^KapSt anteilig [\\.,\\d]+([\\s]+)?% [\\.,\\d]+([\\s]+)?% (?<currency1>[\\w]{3}) (?<tax1>[\\.,\\d]+)$")
                 .match("^KapSt anteilig [\\.,\\d]+([\\s]+)?% [\\.,\\d]+([\\s]+)?% (?<currency2>[\\w]{3}) (?<tax2>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    if (Boolean.parseBoolean(type.getCurrentContext().get(IS_JOINT_ACCOUNT)))
+                    if (Boolean.parseBoolean(type.getCurrentContext().get(isJointAccount)))
                     {
                         // Account 1
                         v.put("currency", v.get("currency1"));
@@ -419,10 +424,10 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 // Solidaritätszuschlag (Account)
                 // Solidarit‰tszuschlag 5,50 % EUR 1,00
                 // Solidaritätszuschlag 5,50% EUR 0,32
-                .section("tax", "currency").optional()
+                .section("currency", "tax").optional()
                 .match("^Solidarit.tszuschlag [\\.,\\d]+([\\s]+)?% (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    if (!Boolean.parseBoolean(type.getCurrentContext().get(IS_JOINT_ACCOUNT)))
+                    if (!Boolean.parseBoolean(type.getCurrentContext().get(isJointAccount)))
                     {
                         processTaxEntries(t, v, type);
                     }
@@ -431,11 +436,11 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 // Solitaritätszuschlag (Joint Account)
                 // Solidaritätszuschlag 5,50% EUR 4,37
                 // Solidaritätszuschlag 5,50 % EUR 4,37
-                .section("tax1", "currency1", "tax2", "currency2").optional()
+                .section("currency1", "tax1", "currency2", "tax2").optional()
                 .match("^Solidarit.tszuschlag [\\.,\\d]+([\\s]+)?% (?<currency1>[\\w]{3}) (?<tax1>[\\.,\\d]+)$")
                 .match("^Solidarit.tszuschlag [\\.,\\d]+([\\s]+)?% (?<currency2>[\\w]{3}) (?<tax2>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    if (Boolean.parseBoolean(type.getCurrentContext().get(IS_JOINT_ACCOUNT)))
+                    if (Boolean.parseBoolean(type.getCurrentContext().get(isJointAccount)))
                     {
                         // Account 1
                         v.put("currency", v.get("currency1"));
@@ -452,10 +457,10 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 // Kirchensteuer (Account)
                 // Kirchensteuer 5,50 % EUR 1,00      
                 // Kirchensteuer 5,50% EUR 0,32
-                .section("tax", "currency").optional()
+                .section("currency", "tax").optional()
                 .match("^Kirchensteuer [\\.,\\d]+([\\s]+)?% (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    if (!Boolean.parseBoolean(type.getCurrentContext().get(IS_JOINT_ACCOUNT)))
+                    if (!Boolean.parseBoolean(type.getCurrentContext().get(isJointAccount)))
                     {
                         processTaxEntries(t, v, type);
                     }
@@ -464,11 +469,11 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 // Kirchensteuer (Joint Account)
                 // Kirchensteuer 9,00 % EUR 7,15
                 // Kirchensteuer 9,00% EUR 7,15
-                .section("tax1", "currency1", "tax2", "currency2").optional()
+                .section("currency1", "tax1", "currency2", "tax2").optional()
                 .match("^Kirchensteuer [\\.,\\d]+([\\s]+)?% (?<currency1>[\\w]{3}) (?<tax1>[\\.,\\d]+)$")
                 .match("^Kirchensteuer [\\.,\\d]+([\\s]+)?% (?<currency2>[\\w]{3}) (?<tax2>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    if (Boolean.parseBoolean(type.getCurrentContext().get(IS_JOINT_ACCOUNT)))
+                    if (Boolean.parseBoolean(type.getCurrentContext().get(isJointAccount)))
                     {
                         // Account 1
                         v.put("currency", v.get("currency1"));
@@ -483,12 +488,12 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 })
 
                 // QuSt 15,00 % (EUR 8,87) USD 9,31
-                .section("withHoldingTax", "currency").optional()
+                .section("currency", "withHoldingTax").optional()
                 .match("^QuSt [\\.,\\d]+([\\s]+)?% \\((?<currency>[\\w]{3}) (?<withHoldingTax>[\\.,\\d]+)\\) [\\w]{3} [\\.,\\d]+$")
                 .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                 // QuSt 30,00 % EUR 16,50
-                .section("withHoldingTax", "currency").optional()
+                .section("currency", "withHoldingTax").optional()
                 .match("^QuSt [\\.,\\d]+([\\s]+)?% (?<currency>[\\w]{3}) (?<withHoldingTax>[\\.,\\d]+)$")
                 .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type));
     }
