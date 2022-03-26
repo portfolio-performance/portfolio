@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -38,6 +39,7 @@ import name.abuchen.portfolio.ui.util.viewers.CellItemImageClickedListener;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.ImageAttributeEditingSupport;
+import name.abuchen.portfolio.util.Pair;
 
 public class AttributeColumn extends Column
 {
@@ -150,6 +152,74 @@ public class AttributeColumn extends Column
 
             Attributes attributes = attributable.getAttributes();
             return Optional.ofNullable((Boolean) attributes.get(attribute));
+        }
+    }
+
+    public static final class LimitPriceComparator implements Comparator<Object>
+    {
+        private final AttributeType attribute;
+
+        private LimitPriceComparator(AttributeType attribute)
+        {
+            this.attribute = attribute;
+        }
+
+        @Override
+        public int compare(Object o1, Object o2)
+        {
+            Pair<String, Supplier<Double>> pair1 = getCompareValues(o1);
+            Pair<String, Supplier<Double>> pair2 = getCompareValues(o2);
+
+            if (pair1 == null && pair2 == null)
+                return 0;
+            else if (pair1 == null)
+                return -1;
+            else if (pair2 == null)
+                return 1;
+
+            // order by comparator...
+            int operatorCompare = pair1.getLeft().compareTo(pair2.getLeft());
+            if(operatorCompare != 0)
+                return operatorCompare;
+
+            // operators are the same, now calculate the normalized distance
+            Double distance1 = pair1.getRight().get();
+            Double distance2 = pair2.getRight().get();
+
+            // checks in case one or both distance(s) not available
+            if (distance1 == null && distance2 == null)
+                return 0;
+            else if (distance1 == null)
+                return -1;
+            else if (distance2 == null)
+                return 1;
+
+            // ...then by distance
+            return Double.compare(distance1, distance2);
+        }
+
+        private Pair<String, Supplier<Double>> getCompareValues(Object o)
+        {
+            Security s = Adaptor.adapt(Security.class, o);
+            if (s == null)
+                return null;
+
+            LimitPrice l = Adaptor.adapt(LimitPrice.class, s.getAttributes().get(attribute));
+            if (l == null)
+                return null;
+
+            SecurityPrice p = s.getSecurityPrice(LocalDate.now());
+            if (p == null)
+                return new Pair<>(l.getRelationalOperator().getOperatorString(), () -> null); // no price, no distance
+
+            return new Pair<>(l.getRelationalOperator().getOperatorString(), () -> calculateNormalizedDistance(l, p));
+        }
+
+        public static Double calculateNormalizedDistance(LimitPrice limit, SecurityPrice latest)
+        {
+            // "normalized relative distance": relative distance, but if exceeded then as positive value, otherwise as negative value
+            double relativeDistanceAbs = Math.abs(limit.calculateRelativeDistance(latest.getValue()));
+            return  limit.isExceeded(latest) ? relativeDistanceAbs : -relativeDistanceAbs;
         }
     }
 
@@ -304,6 +374,7 @@ public class AttributeColumn extends Column
         {
             setStyle(SWT.RIGHT);
             setLabelProvider(new LimitPriceLabelProvider(attribute));
+            setComparator(new LimitPriceComparator(attribute));
             new AttributeEditingSupport(attribute).attachTo(this);
         }
         else if (attribute.getType() == Bookmark.class)
