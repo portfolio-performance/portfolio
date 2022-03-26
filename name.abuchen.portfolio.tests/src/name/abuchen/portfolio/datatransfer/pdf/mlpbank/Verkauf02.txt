@@ -1,0 +1,65 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+MLP Banking AG · Alte Heerstraße 40 · 69168 Wiesloch Seite 1 von 2
+Depotnummer 8505679654
+Kundennummer 9999999
+Max Mustermann
+Auftragsnummer 638328/43.00
+Max Mustermann Datum 21.02.2022
+Musterstraße 10 Rechnungsnummer W00866-00001111111/22
+11111 Musterstadt Umsatzsteuer-ID DE111111111
+Vermögensdepot
+0016
+Wertpapier Abrechnung Verkauf
+Auftrag vom 16.02.2022 10:07:58 Uhr
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 163,269 AB SICAV I-AMERICAN GROWTH PTF LU0079474960 (986838)
+ACTIONS NOM. A O.N.
+Handels-/Ausführungsplatz Außerbörslich
+Schlusstag 16.02.2022
+Ausführungskurs 167,82 USD
+Wertpapierrechnung Lagerland Luxemburg
+Devisenkurs (EUR/USD) 1,141 vom 18.02.2022
+Kurswert 24.013,85 EUR
+Ermittlung steuerrelevante Erträge
+Veräußerungsgewinn (nach Teilfreistellung) 2.809,62 EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 2.809,62 EUR
+Steuerberechnung
+Kapitalertragsteuer 25,00% auf 2.809,62 EUR 702,41- EUR
+Solidaritätszuschlag 5,50% auf 702,41 EUR 38,63- EUR
+Ausmachender Betrag 23.272,81 EUR
+Den Gegenwert buchen wir mit Valuta 22.02.2022 zu Gunsten des Kontos 1111111111111
+(IBAN DE11 1111 0000 0111 1111 11), BLZ 67230000 (BIC MLPBDE61XXX).
+Die Wertpapiere entnehmen wir Ihrem Depotkonto.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+0866.02220819.0002871OR07
+Seite 2 von 2
+Depotnummer 8505679654
+Kundennummer 9999999
+Auftragsnummer 638328/43.00
+Datum 21.02.2022
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verlustverrechnungstöpfe 2022 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 25.554,21
+Verkauf 0,00 0,00 0,00 0,00 2.809,62
+Nachher 0,00 0,00 0,00 0,00 28.363,83
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäft Auftragsnr. Ausführ.-tag Whr./St. Nennwert/Stück AS-Kosten Erlös Teilfrei- ant. Ergebnis
+stellung
+Kauf 5676107400 17.11.2020 Stück 33,1020 3.999,94- 4.868,41 260,54- 607,93 (D)
+Fondskorrekturfaktoren *) zur Anschaffung: VAP: 0,42
+Kauf 5857561400 01.12.2020 Stück 32,9340 3.999,91- 4.843,84 253,18- 590,75 (D)
+Fondskorrekturfaktoren *) zur Anschaffung: VAP: 0,42
+Kauf 6251034600 04.01.2021 Stück 33,0870 3.999,92- 4.866,49 259,97- 606,60 (D)
+Fondskorrekturfaktoren *) zur Anschaffung: VAP: 0,42
+Kauf 6670656600 01.02.2021 Stück 32,2260 4.000,00- 4.739,85 221,95- 517,90 (D)
+Fondskorrekturfaktoren *) zur Anschaffung: VAP: 0,42
+Kauf 7099905600 01.03.2021 Stück 31,9200 3.999,92- 4.694,84 208,48- 486,44 (D)
+Fondskorrekturfaktoren *) zur Anschaffung: VAP: 0,42
+Summe aller Erträge nach Differenzmethode und/oder Ersatzbemessungsgrundlage 2.809,62
+*VAP: Vorabpauschale (verringert den anteiligen Veräußerungserlös)
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0866.02220819.0002872OR07
