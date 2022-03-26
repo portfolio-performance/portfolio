@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -911,6 +912,14 @@ public final class SecuritiesTable implements ModificationListener
                     markDirty();
                 }));
             }
+        }
+
+        // update quotes for multiple securities
+        if (selection.size() > 1)
+        {
+            manager.add(new SimpleAction(MessageFormat.format(Messages.SecurityMenuUpdateQuotesMultipleSecurities, selection.size()), a  ->            
+                new UpdateQuotesJob(getClient(), Arrays.stream(selection.toArray()).map(Security.class::cast).collect(Collectors.toList())).schedule()
+            ));
         }
 
         // if any retired security in selection, add "unretire/activate all"

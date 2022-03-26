@@ -124,6 +124,11 @@ public final class UpdateQuotesJob extends AbstractClientJob
         this(client, s -> s.equals(security), EnumSet.allOf(Target.class));
     }
 
+    public UpdateQuotesJob(Client client, List<Security> securities)
+    {
+        this(client, securities::contains, EnumSet.allOf(Target.class));
+    }
+
     public UpdateQuotesJob(Client client, Predicate<Security> filter, Set<Target> target)
     {
         super(client, Messages.JobLabelUpdateQuotes);

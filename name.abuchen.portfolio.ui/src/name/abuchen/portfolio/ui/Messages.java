@@ -1090,6 +1090,7 @@ public class Messages extends NLS
     public static String SecurityMenuLabelNumberOfDecimalPlaces;
     public static String SecurityMenuTransfer;
     public static String SecurityMenuUpdateQuotes;
+    public static String SecurityMenuUpdateQuotesMultipleSecurities;
     public static String SecurityTabChart;
     public static String SecurityTabChart10Y;
     public static String SecurityTabChart10YToolTip;
