@@ -29,10 +29,6 @@ Auslands-KESt           -38,78 USD  DevKurs        1,118600/8.1.2020
 ISIN IE00B5BMR087 ISHSVII-CORE S+P500 DLACC              45,00000 STK
 Kurs                      0,000000  KEST                    -75,05 USD
 Auslands-KESt           -31,29 USD  DevKurs        1,118600/8.1.2020
-13.01 Kauf                             Depot    0123456789/20200110-45863315 13.01 1.002,31-
-ISIN IE00B4L5YC18 ISHSIII-MSCI EM USD(ACC)               30,00000 STK
-Kurs                     33,064000  KURSWERT              -991,92 EUR
-Handelsspesen            -3,70 EUR  DADAT Handelsspesen     -6,69 EUR
 Neuer Saldo zu Ihren Lasten 137,10-
 AT41 1234 1234 1234 1234 BSSWATWW 01 1234 1/1
 IBAN BIC Filiale Auszug Blatt/Gesamt
