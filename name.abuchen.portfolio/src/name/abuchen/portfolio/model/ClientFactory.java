@@ -764,6 +764,8 @@ public class ClientFactory
                 // added properties to attribute types
             case 53:
                 fixSourceAttributeOfTransactions(client);
+            case 54:
+                moveFixedSmaIntervalsToDynamic(client);
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
@@ -773,6 +775,22 @@ public class ClientFactory
                 break;
         }
     }
+    
+    
+    
+    private static void moveFixedSmaIntervalsToDynamic(Client client)
+    {
+        IntervalSettings intervalSettings = client.getSettings().getIntervalSettingsSMA(); 
+        // TODO: mabye use enum/constant from SecuritiesChart instead of string (enum/constants must be moved to other package)
+        String prop = client.getProperty("security-chart-details"); //$NON-NLS-1$
+                      
+        intervalSettings.clear();
+        // parse default intervals with their colors and configured isActive flag to dynamic setting list
+        ClientSettings.getDefaultSmaColors().forEach((interval, color) ->
+            intervalSettings.add(interval, color, prop != null && prop.contains("SMA_" + interval +"DAYS"))); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+    
+    
 
     private static void fixAssetClassTypes(Client client)
     {

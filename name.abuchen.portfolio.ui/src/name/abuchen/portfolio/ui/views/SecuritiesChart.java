@@ -22,7 +22,9 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
@@ -47,6 +49,7 @@ import com.ibm.icu.text.MessageFormat;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.IntervalSettings;
 import name.abuchen.portfolio.model.LimitPrice;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
@@ -65,6 +68,7 @@ import name.abuchen.portfolio.snapshot.security.SecurityPerformanceIndicator;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.dialogs.EditSmaIntervalsDialog;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
@@ -311,13 +315,6 @@ public class SecuritiesChart
     private static final Color colorFifoPurchasePrice = Colors.getColor(226, 122, 121);
     private static final Color colorMovingAveragePurchasePrice = Colors.getColor(150, 82, 81);
     private static final Color colorBollingerBands = Colors.getColor(201, 141, 68);
-    private static final Color colorSMA1 = Colors.getColor(179, 107, 107); // #B36B6B
-    private static final Color colorSMA2 = Colors.getColor(179, 167, 107); // #B3A76B
-    private static final Color colorSMA3 = Colors.getColor(131, 179, 107); // #83B36B
-    private static final Color colorSMA4 = Colors.getColor(107, 179, 143); // #6BB38F
-    private static final Color colorSMA5 = Colors.getColor(107, 155, 179); // #6B9BB3
-    private static final Color colorSMA6 = Colors.getColor(119, 107, 179); // #776BB3
-    private static final Color colorSMA7 = Colors.getColor(179, 107, 179); // #B36BB3
 
     private static final Color colorEMA1 = Colors.getColor(200, 107, 107); // #C86B6B
     private static final Color colorEMA2 = Colors.getColor(200, 167, 107); // #C8A76B
@@ -587,7 +584,6 @@ public class SecuritiesChart
         MenuManager subMenuChartMarker = new MenuManager(Messages.LabelChartDetailMarker, null);
         MenuManager subMenuChartIndicator = new MenuManager(Messages.LabelChartDetailIndicator, null);
         MenuManager subMenuChartMovingAverage = new MenuManager(Messages.LabelChartDetailMovingAverage, null);
-        MenuManager subMenuChartMovingAverageSMA = new MenuManager(Messages.LabelChartDetailMovingAverageSMA, null);
         MenuManager subMenuChartMovingAverageEMA = new MenuManager(Messages.LabelChartDetailMovingAverageEMA, null);
         MenuManager subMenuChartSettings = new MenuManager(Messages.LabelChartDetailSettings, null);
 
@@ -603,14 +599,6 @@ public class SecuritiesChart
         subMenuChartMarker.add(addMenuAction(ChartDetails.FLOATINGAVGPURCHASE));
         subMenuChartMarker.add(addMenuAction(ChartDetails.SHOW_LIMITS));
         subMenuChartIndicator.add(addMenuAction(ChartDetails.BOLLINGERBANDS));
-        subMenuChartMovingAverageSMA.add(addMenuAction(ChartDetails.SMA_5DAYS));
-        subMenuChartMovingAverageSMA.add(addMenuAction(ChartDetails.SMA_20DAYS));
-        subMenuChartMovingAverageSMA.add(addMenuAction(ChartDetails.SMA_30DAYS));
-        subMenuChartMovingAverageSMA.add(addMenuAction(ChartDetails.SMA_38DAYS));
-        subMenuChartMovingAverageSMA.add(addMenuAction(ChartDetails.SMA_50DAYS));
-        subMenuChartMovingAverageSMA.add(addMenuAction(ChartDetails.SMA_90DAYS));
-        subMenuChartMovingAverageSMA.add(addMenuAction(ChartDetails.SMA_100DAYS));
-        subMenuChartMovingAverageSMA.add(addMenuAction(ChartDetails.SMA_200DAYS));
         subMenuChartMovingAverageEMA.add(addMenuAction(ChartDetails.EMA_5DAYS));
         subMenuChartMovingAverageEMA.add(addMenuAction(ChartDetails.EMA_20DAYS));
         subMenuChartMovingAverageEMA.add(addMenuAction(ChartDetails.EMA_30DAYS));
@@ -627,11 +615,50 @@ public class SecuritiesChart
         manager.add(subMenuChartMarker);
         manager.add(subMenuChartIndicator);
         manager.add(subMenuChartMovingAverage);
-        subMenuChartMovingAverage.add(subMenuChartMovingAverageSMA);
+        subMenuChartMovingAverage.add(createSubMenuSMA());
         subMenuChartMovingAverage.add(subMenuChartMovingAverageEMA);
         manager.add(subMenuChartSettings);
     }
+    
+    private MenuManager createSubMenuSMA()
+    {
+        MenuManager menu = new MenuManager(Messages.LabelChartDetailMovingAverageSMA, null);
+        IntervalSettings smaSettings = ReadOnlyClient.unwrap(client).getSettings().getIntervalSettingsSMA();
+        IntervalSettings.IntervalSetting[] smaIntervals = smaSettings.getAll();
+        Arrays.sort(smaIntervals, new IntervalSettings.SortIntervalSetting());
+        for (IntervalSettings.IntervalSetting it : smaIntervals)
+        {
+            Action action = new SimpleAction(MessageFormat.format(Messages.LabelChartDetailMovingAverage_Xdays, it.getInterval()), a -> {
+                it.setIsActive(!it.getIsActive()); // write back inverted value
+                ReadOnlyClient.unwrap(client).touch();
+                updateChart();
+            });
+            action.setChecked(it.getIsActive());
+            menu.add(action);
+        }
 
+        if(smaSettings.getAll().length > 0)
+            menu.add(new Separator());
+        
+        // Edit SMA intervals button
+        Action action = new SimpleAction(Messages.EditSmaIntervalDialog_ManageLabel, a -> {
+            EditSmaIntervalsDialog dlg = new EditSmaIntervalsDialog(Display.getDefault().getActiveShell(), smaSettings);
+            if(dlg.open() == Window.OK)
+            {
+                // update settings
+                smaSettings.clear();
+                for(IntervalSettings.IntervalSetting i : dlg.getIntervals())
+                    smaSettings.add(i.getInterval(), i.getRGB(), i.getIsActive());
+                
+                ReadOnlyClient.unwrap(client).touch();
+                updateChart();
+            }
+        });
+        menu.add(action);
+        
+        return menu;
+    }
+    
     private Action addMenuAction(ChartDetails detail)
     {
         Action action = new SimpleAction(detail.toString(), a -> {
@@ -855,43 +882,21 @@ public class SecuritiesChart
             chart.redraw();
         }
     }
-
+   
     private void addChartMarkerBackground(ChartInterval chartInterval, ChartRange range)
     {
         if (chartConfig.contains(ChartDetails.BOLLINGERBANDS))
             addBollingerBandsMarkerLines(chartInterval, 20, 2);
 
-        if (chartConfig.contains(ChartDetails.SMA_5DAYS))
-            addSMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageSMA,
-                            Messages.LabelChartDetailMovingAverage_5days, 5, colorSMA1);
-
-        if (chartConfig.contains(ChartDetails.SMA_20DAYS))
-            addSMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageSMA,
-                            Messages.LabelChartDetailMovingAverage_20days, 20, colorSMA2);
-
-        if (chartConfig.contains(ChartDetails.SMA_30DAYS))
-            addSMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageSMA,
-                            Messages.LabelChartDetailMovingAverage_30days, 30, colorSMA3);
-
-        if (chartConfig.contains(ChartDetails.SMA_38DAYS))
-            addSMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageSMA,
-                            Messages.LabelChartDetailMovingAverage_38days, 38, colorSMA4);
-
-        if (chartConfig.contains(ChartDetails.SMA_50DAYS))
-            addSMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageSMA,
-                            Messages.LabelChartDetailMovingAverage_50days, 50, colorSMA4);
-
-        if (chartConfig.contains(ChartDetails.SMA_90DAYS))
-            addSMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageSMA,
-                            Messages.LabelChartDetailMovingAverage_90days, 90, colorSMA5);
-
-        if (chartConfig.contains(ChartDetails.SMA_100DAYS))
-            addSMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageSMA,
-                            Messages.LabelChartDetailMovingAverage_100days, 100, colorSMA6);
-
-        if (chartConfig.contains(ChartDetails.SMA_200DAYS))
-            addSMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageSMA,
-                            Messages.LabelChartDetailMovingAverage_200days, 200, colorSMA7);
+        IntervalSettings.IntervalSetting[] smaIntervals = ReadOnlyClient.unwrap(client).getSettings().getIntervalSettingsSMA().getAll();
+        Arrays.sort(smaIntervals, new IntervalSettings.SortIntervalSetting());
+        for (IntervalSettings.IntervalSetting it : smaIntervals)
+        {
+            if (it.getIsActive() && it.getInterval() > 0)
+            {
+                addSMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageSMA, String.valueOf(it.getInterval()),  it.getInterval(), new Color(it.getRGB()));
+            }
+        }
 
         if (chartConfig.contains(ChartDetails.EMA_5DAYS))
             addEMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageEMA,
