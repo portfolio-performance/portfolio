@@ -7,18 +7,19 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityEvent;
 import name.abuchen.portfolio.ui.util.BindingHelper;
 
-public class CustomEventModel extends BindingHelper.Model
+public class SecurityEventModel extends BindingHelper.Model
 {
     private Security security;
     private LocalDate date = LocalDate.now();
-    private SecurityEvent.Type type = SecurityEvent.Type.NOTE;
+    private SecurityEvent.Type type;
     private String message = ""; //$NON-NLS-1$
 
-    public CustomEventModel(Client client, Security security)
+    public SecurityEventModel(Client client, Security security, SecurityEvent.Type type)
     {
         super(client);
 
         this.security = security;
+        this.type = type;
     }
 
     public Security getSecurity()
@@ -49,6 +50,16 @@ public class CustomEventModel extends BindingHelper.Model
     public void setMessage(String message)
     {
         firePropertyChange("message", this.message, this.message = message); //$NON-NLS-1$
+    }
+
+    public SecurityEvent.Type getType()
+    {
+        return type;
+    }
+
+    public void setType(SecurityEvent.Type type)
+    {
+        firePropertyChange("type", this.type, this.type = type); //$NON-NLS-1$
     }
 
     @Override

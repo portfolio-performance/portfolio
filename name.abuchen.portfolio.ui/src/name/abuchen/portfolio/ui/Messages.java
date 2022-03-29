@@ -397,6 +397,7 @@ public class Messages extends NLS
     public static String EditWizardQuoteFeedMsgErrorOrNoData;
     public static String EditWizardQuoteFeedMsgLoading;
     public static String EditWizardQuoteFeedTitle;
+    public static String EventListWidgetTitle;
     public static String ExportWizardAccountTransactions;
     public static String ExportWizardAllTransactionsAktienfreundeNet;
     public static String ExportWizardDescription;
@@ -915,6 +916,7 @@ public class Messages extends NLS
     public static String MsgErrorTradeCollectionWithErrors;
     public static String MsgErrorUpdating;
     public static String MsgHintNoAttributesConfigured;
+    public static String MsgHintNoEvents;
     public static String MsgIncorrectConvertedSubTotal;
     public static String MsgIncorrectSubTotal;
     public static String MsgIncorrectTotal;
@@ -1129,8 +1131,20 @@ public class Messages extends NLS
     public static String SplitWizardReviewQuotesTitle;
     public static String SplitWizardReviewTransactionsDescription;
     public static String SplitWizardReviewTransactionsTitle;
-    public static String EventWizardTitle;
-    public static String EventWizardDescription;
+    public static String EventWizardTitleDividendDeclaration;
+    public static String EventWizardDescriptionDividendDeclaration;
+    public static String EventWizardTitleDividendRecord;
+    public static String EventWizardDescriptionDividendRecord;
+    public static String EventWizardTitleEarningsReport;
+    public static String EventWizardDescriptionEarningsReport;
+    public static String EventWizardTitleExDividend;
+    public static String EventWizardDescriptionExDividend;
+    public static String EventWizardTitleNote;
+    public static String EventWizardDescriptionNote;
+    public static String EventWizardTitlePayday;
+    public static String EventWizardDescriptionPayday;
+    public static String EventWizardTitleShareholderMeeting;
+    public static String EventWizardDescriptionShareholderMeeting;
     public static String EventWizardLabelMessage;
     public static String SystemMenuChangelog;
     public static String SystemMenuCheckForUpdates;

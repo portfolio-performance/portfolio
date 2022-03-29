@@ -15,8 +15,6 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.window.Window;
-import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -29,10 +27,11 @@ import name.abuchen.portfolio.model.SecurityEvent.DividendEvent;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.ContextMenu;
+import name.abuchen.portfolio.ui.util.EventMenu;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
-import name.abuchen.portfolio.ui.util.swt.ActiveShell;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
@@ -40,7 +39,6 @@ import name.abuchen.portfolio.ui.util.viewers.DateEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.DateLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
-import name.abuchen.portfolio.ui.wizards.events.CustomEventWizard;
 
 public class SecurityEventsPane implements InformationPanePage
 {
@@ -49,6 +47,9 @@ public class SecurityEventsPane implements InformationPanePage
 
     @Inject
     private IPreferenceStore preferences;
+    
+    @Inject
+    private AbstractFinanceView view;
 
     private Security security;
     private TableViewer events;
@@ -182,17 +183,7 @@ public class SecurityEventsPane implements InformationPanePage
         if (security == null)
             return;
 
-        manager.add(new Action(Messages.SecurityMenuAddEvent)
-        {
-            @Override
-            public void run()
-            {
-                CustomEventWizard wizard = new CustomEventWizard(client, security);
-                WizardDialog dialog = new WizardDialog(ActiveShell.get(), wizard);
-                if (dialog.open() == Window.OK)
-                    client.markDirty();
-            }
-        });
+        manager.add(new EventMenu(view, security));
 
         IStructuredSelection selection = events.getStructuredSelection();
         if (selection.isEmpty())

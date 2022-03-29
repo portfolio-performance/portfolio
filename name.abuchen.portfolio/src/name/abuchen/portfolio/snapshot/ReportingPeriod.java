@@ -2,7 +2,9 @@ package name.abuchen.portfolio.snapshot;
 
 import static java.time.temporal.IsoFields.DAY_OF_QUARTER;
 import static java.time.temporal.TemporalAdjusters.firstDayOfMonth;
+import static java.time.temporal.TemporalAdjusters.firstDayOfYear;
 import static java.time.temporal.TemporalAdjusters.lastDayOfMonth;
+import static java.time.temporal.TemporalAdjusters.lastDayOfYear;
 import static java.time.temporal.TemporalAdjusters.previousOrSame;
 
 import java.io.IOException;
@@ -529,12 +531,10 @@ public abstract class ReportingPeriod
         @Override
         public Interval toInterval(LocalDate relativeTo)
         {
-            LocalDate startDate = LocalDate.now().withDayOfMonth(1).minusDays(1);
-
-            if (startDate.isBefore(relativeTo))
-                return Interval.of(startDate, relativeTo);
-            else
-                return Interval.of(startDate, startDate); // FIXME
+            LocalDate startDate = relativeTo.withDayOfMonth(1);
+            LocalDate endDate = relativeTo.with(lastDayOfMonth());
+            
+            return Interval.of(startDate.minusDays(1), endDate);            
         }
 
         @Override
@@ -599,14 +599,12 @@ public abstract class ReportingPeriod
         @Override
         public Interval toInterval(LocalDate relativeTo)
         {
+            LocalDate startDate = relativeTo.with(firstDayOfYear());
+            LocalDate endDate = relativeTo.with(lastDayOfYear());
+
             // a reporting period is half-open, i.e. it excludes the first day
             // but includes the last day
-            LocalDate startDate = LocalDate.now().withDayOfMonth(1).withMonth(1).minusDays(1);
-
-            if (startDate.isBefore(relativeTo))
-                return Interval.of(startDate, relativeTo);
-            else
-                return Interval.of(startDate, startDate); // FIXME
+            return Interval.of(startDate.minusDays(1), endDate);
         }
 
         @Override
