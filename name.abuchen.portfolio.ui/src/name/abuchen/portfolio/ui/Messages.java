@@ -453,12 +453,14 @@ public class Messages extends NLS
     public static String InvestmentPlanMenuGenerateTransactions;
     public static String InvestmentPlanOptionDelivery;
     public static String InvestmentPlanOptionDeposit;
+    public static String InvestmentPlanOptionRemoval;
     public static String InvestmentPlanTitleEditPlan;
     public static String InvestmentPlanTitleNewPlan;
     public static String InvestmentPlanTxCreated;
     public static String InvestmentPlanTxForMultiplePlansCreated;
     public static String InvestmentPlanTypeBuyDelivery;
     public static String InvestmentPlanTypeDeposit;
+    public static String InvestmentPlanTypeRemoval;
     public static String JobLabelAutoSave;
     public static String JobLabelSyncSecuritiesOnline;
     public static String JobLabelUpdateCPI;
