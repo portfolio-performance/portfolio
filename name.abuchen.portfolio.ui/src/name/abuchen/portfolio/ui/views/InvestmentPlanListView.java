@@ -116,7 +116,7 @@ public class InvestmentPlanListView extends AbstractFinanceView implements Modif
             manager.add(new OpenDialogAction(this, Messages.InvestmentPlanTypeDeposit) //
                             .type(InvestmentPlanDialog.class) //
                             .parameters(InvestmentPlan.Type.DEPOSIT));
-            manager.add(new OpenDialogAction(this, "Entnahme") //
+            manager.add(new OpenDialogAction(this, Messages.InvestmentPlanTypeRemoval) //
                             .type(InvestmentPlanDialog.class) //
                             .parameters(InvestmentPlan.Type.REMOVAL));
         }));
@@ -207,7 +207,7 @@ public class InvestmentPlanListView extends AbstractFinanceView implements Modif
                     if (plan.getPlanType() == Type.DEPOSIT)
                         return Messages.InvestmentPlanOptionDeposit;
                     else
-                        return "(Entnahme)";
+                        return Messages.InvestmentPlanOptionRemoval;
                 }
             }
 

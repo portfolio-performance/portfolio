@@ -58,7 +58,12 @@ public class InvestmentPlanModel extends AbstractModel
     @Override
     public String getHeading()
     {
-        return source != null ? Messages.InvestmentPlanTitleEditPlan : Messages.InvestmentPlanTitleNewPlan;
+        String additioanlText = ""; //$NON-NLS-1$
+        if (planType == InvestmentPlan.Type.DEPOSIT)
+            additioanlText = ": " + Messages.InvestmentPlanTypeDeposit; //$NON-NLS-1$
+        else if (planType == InvestmentPlan.Type.REMOVAL)
+            additioanlText = ": " + Messages.InvestmentPlanTypeRemoval; //$NON-NLS-1$
+        return (source != null ? Messages.InvestmentPlanTitleEditPlan : Messages.InvestmentPlanTitleNewPlan) + additioanlText;
     }
 
     @Override
