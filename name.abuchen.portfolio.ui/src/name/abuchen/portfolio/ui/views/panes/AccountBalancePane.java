@@ -10,6 +10,7 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.chart.TimelineChart.ThousandsNumberFormat;
 import name.abuchen.portfolio.ui.views.AccountBalanceChart;
 
 public class AccountBalancePane implements InformationPanePage
@@ -34,6 +35,9 @@ public class AccountBalancePane implements InformationPanePage
     {
         chart = new AccountBalanceChart(parent);
         stylingEngine.style(chart);
+
+        chart.getAxisSet().getYAxis(0).getTick().setFormat(new ThousandsNumberFormat());
+
         return chart;
     }
 
