@@ -50,9 +50,28 @@ import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
 public class IBFlexStatementExtractor implements Extractor
 {
     private final Client client;
-    private List<Security> allSecurities;
+    private final List<Security> allSecurities;
 
-    private Map<String, String> exchanges;
+    private final Map<String, String> exchanges;
+    private static final Map<String, String> CFD_MAPPING;
+
+    static
+    {
+        Map<String, String> m = new HashMap<String, String>();
+        m.put("IBUS500", "^GSPC");
+        m.put("IBUS30", "^DJI");
+        m.put("IBUST100", "^IXIC");
+
+        m.put("IBGB100", "^FTSE");
+        m.put("IBEU50", "^STOXX50E");
+        m.put("IBDE30", "^GDAXI");
+        m.put("IBFR40", "^FCHI");
+        m.put("IBNL25", "^AEX");
+
+        m.put("IBJP225", "^N225");
+        m.put("IBAU200", "^AXJO");
+        CFD_MAPPING = Collections.unmodifiableMap(m);
+    }
 
     public IBFlexStatementExtractor(Client client)
     {
@@ -160,11 +179,11 @@ public class IBFlexStatementExtractor implements Extractor
     private class IBFlexStatementExtractorResult
     {
         private Document document;
-        private List<Exception> errors = new ArrayList<>();
-        private List<Item> results = new ArrayList<>();
+        private final List<Exception> errors = new ArrayList<>();
+        private final List<Item> results = new ArrayList<>();
         private String ibAccountCurrency = null;
 
-        private Function<Element, Item> importAccountInformation = element -> {
+        private final Function<Element, Item> importAccountInformation = element -> {
             String currency = asCurrencyUnit(element.getAttribute("currency"));
             if (currency != null && !currency.isEmpty())
             {
@@ -177,7 +196,7 @@ public class IBFlexStatementExtractor implements Extractor
             return null;
         };
 
-        private Function<Element, Item> buildAccountTransaction = element -> {
+        private final Function<Element, Item> buildAccountTransaction = element -> {
             AccountTransaction transaction = new AccountTransaction();
 
             // New Format dateTime has now also Time [YYYYMMDD;HHMMSS], I cut
@@ -313,7 +332,11 @@ public class IBFlexStatementExtractor implements Extractor
             }
 
             amount = Math.abs(amount);
-            setAmount(element, transaction, amount, currency);
+            transaction.setMonetaryAmount(convertAmountToMoney(element, amount, currency));
+            if (ibAccountCurrency != null && !ibAccountCurrency.equals(currency))
+            {
+                transaction.addUnit(createUnit(element, Unit.Type.GROSS_VALUE, amount, currency));
+            }
 
             transaction.setNote(element.getAttribute("description"));
 
@@ -323,10 +346,10 @@ public class IBFlexStatementExtractor implements Extractor
         /**
          * Construct a BuySellEntry based on Trade object defined in eElement
          */
-        private Function<Element, Item> buildPortfolioTransaction = element -> {
+        private final Function<Element, Item> buildPortfolioTransaction = element -> {
             String assetCategory = element.getAttribute("assetCategory");
 
-            if (!Arrays.asList("STK", "OPT").contains(assetCategory))
+            if (!Arrays.asList("STK", "OPT", "CFD").contains(assetCategory))
                 return null;
 
             // Unused Information from Flexstatement Trades, to be used in the
@@ -371,26 +394,66 @@ public class IBFlexStatementExtractor implements Extractor
             // transaction currency
             String currency = asCurrencyUnit(element.getAttribute("currency"));
 
-            // Set the Amount which is "netCash"
-            Double amount = Math.abs(Double.parseDouble(element.getAttribute("netCash")));
-            setAmount(element, transaction.getPortfolioTransaction(), amount, currency);
-            setAmount(element, transaction.getAccountTransaction(), amount, currency, false);
+            /* Set the Amount (from a real life example):
+             *  * For STK (and OPT?) BUY
+             *      quantity
+             *      tradePrice = 95
+             *      closePrice = 95.84
+             *      commission = fee (-5.8)
+             *      cost = quantity * tradePrice - commission (955.8)
+             *      netCash = -cost                          (-955.8)
+             *      tradeMoney = quantity * tradePrice        (950)
+             *      proceeds = -tradeMoney                   (-950)
+             *
+             *  * For CFD BUY
+             *      quantity = 3
+             *      tradePrice = 409.75
+             *      closePrice = 409.75
+             *      commission = fee (-5.8)
+             *      cost = quantity * tradePrice - commission (1235.05)
+             *      netCash = commission                        (-5.8)
+             *      tradeMoney = quantity * tradePrice        (1229.25)
+             *      proceeds = -tradeMoney                   (-1229.25)
+             *
+             * Warnings:
+             * for SELL-transaction the cost attribute == cost attribute of the BUY-transaction!
+             * for CFD the netCash == commission
+             */
+            Double gross = Math.abs(Double.parseDouble(element.getAttribute("tradeMoney"))); // gross
+            Double fees = Math.abs(Double.parseDouble(element.getAttribute("ibCommission")));
+            Double taxes = Math.abs(Double.parseDouble(element.getAttribute("taxes")));
 
-            // Share Quantity
-            Double qty = Math.abs(Double.parseDouble(element.getAttribute("quantity")));
-            Double multiplier = Double.parseDouble(Optional.ofNullable(element.getAttribute("multiplier")).orElse("1"));
-            transaction.setShares(Math.round(qty.doubleValue() * Values.Share.factor() * multiplier.doubleValue()));
+            Double total;
+            if (transaction.getPortfolioTransaction().getType().isPurchase())
+            {
+                total = gross + fees + taxes;
+            }
+            else
+            {
+                total = gross - fees - taxes;
+            }
+            Money totalMoney = convertAmountToMoney(element, total, currency);
+            transaction.getPortfolioTransaction().setMonetaryAmount(totalMoney);
+            if (ibAccountCurrency != null && !ibAccountCurrency.equals(currency))
+            {
+                transaction.getPortfolioTransaction()
+                                .addUnit(createUnit(element, Unit.Type.GROSS_VALUE, gross, currency));
+            }
+            transaction.getAccountTransaction().setMonetaryAmount(totalMoney);
 
             // fees
-            double fees = Math.abs(Double.parseDouble(element.getAttribute("ibCommission")));
             String feesCurrency = asCurrencyUnit(element.getAttribute("ibCommissionCurrency"));
             Unit feeUnit = createUnit(element, Unit.Type.FEE, fees, feesCurrency);
             transaction.getPortfolioTransaction().addUnit(feeUnit);
 
             // taxes
-            double taxes = Math.abs(Double.parseDouble(element.getAttribute("taxes")));
             Unit taxUnit = createUnit(element, Unit.Type.TAX, taxes, currency);
             transaction.getPortfolioTransaction().addUnit(taxUnit);
+
+            // Share Quantity
+            Double qty = Math.abs(Double.parseDouble(element.getAttribute("quantity")));
+            Double multiplier = Double.parseDouble(Optional.ofNullable(element.getAttribute("multiplier")).orElse("1"));
+            transaction.setShares(Math.round(qty.doubleValue() * Values.Share.factor() * multiplier.doubleValue()));
 
             transaction.setSecurity(this.getOrCreateSecurity(element, true));
 
@@ -403,7 +466,7 @@ public class IBFlexStatementExtractor implements Extractor
          * Constructs a Transaction object for a Corporate Transaction defined
          * in eElement.
          */
-        private Function<Element, Item> buildCorporateTransaction = eElement -> {
+        private final Function<Element, Item> buildCorporateTransaction = eElement -> {
             Money proceeds = Money.of(asCurrencyUnit(eElement.getAttribute("currency")),
                             Values.Amount.factorize(Double.parseDouble(eElement.getAttribute("proceeds"))));
 
@@ -491,48 +554,41 @@ public class IBFlexStatementExtractor implements Extractor
             return unit;
         }
 
-        private void setAmount(Element element, Transaction transaction, Double amount, String currency)
-        {
-            setAmount(element, transaction, amount, currency, true);
-        }
-
-        private void setAmount(Element element, Transaction transaction, Double amount, String currency,
-                        boolean addUnit)
+        Money convertAmountToMoney(Element element, Double amount, String currency)
         {
             if (ibAccountCurrency != null && !ibAccountCurrency.equals(currency))
             {
                 // only required when a account currency is available
-                String fxRateToBaseString = element.getAttribute("fxRateToBase");
-                BigDecimal fxRateToBase;
-                if (fxRateToBaseString != null && !fxRateToBaseString.isEmpty())
-                {
-                    fxRateToBase = BigDecimal.valueOf(Double.parseDouble(fxRateToBaseString));
-                }
-                else
-                {
-                    fxRateToBase = new BigDecimal(1);
-                }
-                BigDecimal inverseRate = BigDecimal.ONE.divide(fxRateToBase, 10, RoundingMode.HALF_DOWN);
-
-                BigDecimal baseCurrencyMoney = BigDecimal.valueOf(amount.doubleValue() * Values.Amount.factor())
-                                .divide(inverseRate, RoundingMode.HALF_DOWN);
-                transaction.setAmount(Math.round(baseCurrencyMoney.doubleValue()));
-                transaction.setCurrencyCode(ibAccountCurrency);
-                if (addUnit)
-                {
-                    Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, transaction.getMonetaryAmount(),
-                                    Money.of(currency, Math.round(amount.doubleValue() * Values.Amount.factor())),
-                                    fxRateToBase);
-
-                    transaction.addUnit(grossValue);
-                }
+                return convertCurrencies(element, Values.Amount.factorize(amount));
             }
             else
-
             {
-                transaction.setAmount(Math.round(amount.doubleValue() * Values.Amount.factor()));
-                transaction.setCurrencyCode(currency);
+                return Money.of(currency, Values.Amount.factorize(amount));
             }
+        }
+
+        private Money convertCurrencies(Element element, Long amount)
+        {
+            return convertCurrencies(element, amount, ibAccountCurrency);
+        }
+
+        private Money convertCurrencies(Element element, Long amount, String targetCurrencyCode)
+        {
+            String fxRateToBaseString = element.getAttribute("fxRateToBase");
+            BigDecimal fxRateToBase;
+            if (fxRateToBaseString != null && !fxRateToBaseString.isEmpty())
+            {
+                fxRateToBase = BigDecimal.valueOf(Double.parseDouble(fxRateToBaseString));
+            }
+            else
+            {
+                fxRateToBase = new BigDecimal(1);
+            }
+            BigDecimal inverseRate = BigDecimal.ONE.divide(fxRateToBase, 10, RoundingMode.HALF_DOWN);
+
+            BigDecimal baseCurrencyMoney = BigDecimal.valueOf(amount).divide(inverseRate, RoundingMode.HALF_DOWN);
+
+            return Money.of(targetCurrencyCode, baseCurrencyMoney.longValue());
         }
 
         /**
@@ -599,14 +655,17 @@ public class IBFlexStatementExtractor implements Extractor
         {
             // Lookup the Exchange Suffix for Yahoo
             Optional<String> tickerSymbol = Optional.ofNullable(element.getAttribute("symbol"));
+            Optional<String> underlyingSymbol = Optional.ofNullable(element.getAttribute("underlyingSymbol"));
+            Optional<String> underlyingSecurityID = Optional.ofNullable(element.getAttribute("underlyingSecurityID"));
             String assetCategory = element.getAttribute("assetCategory");
             String exchange = element.getAttribute("exchange");
             String quoteFeed = QuoteFeed.MANUAL;
 
-            // yahoo uses '-' instead of ' '
             String currency = asCurrencyUnit(element.getAttribute("currency"));
             String isin = element.getAttribute("isin");
             String cusip = element.getAttribute("cusip");
+
+            // yahoo uses '-' instead of ' '
             Optional<String> computedTickerSymbol = tickerSymbol.map(t -> t.replaceAll(" ", "-"));
 
             // Store cusip in isin if isin is not available
@@ -623,8 +682,7 @@ public class IBFlexStatementExtractor implements Extractor
                 if (computedTickerSymbol.filter(p -> p.matches(".*\\d{6}[CP]\\d{8}")).isPresent())
                     quoteFeed = YahooFinanceQuoteFeed.ID;
             }
-
-            if ("STK".equals(assetCategory))
+            else if ("STK".equals(assetCategory))
             {
                 computedTickerSymbol = tickerSymbol;
                 if (!"USD".equals(currency))
@@ -650,6 +708,38 @@ public class IBFlexStatementExtractor implements Extractor
                 }
                 // For Stock, lets use Alphavante quote feed by default
                 quoteFeed = AlphavantageQuoteFeed.ID;
+            }
+            else if ("CFD".equals(assetCategory))
+            {
+                // For CFD, lets use Alphavante quote feed by default
+                quoteFeed = AlphavantageQuoteFeed.ID;
+
+                if (underlyingSecurityID.isPresent())
+                    isin = underlyingSecurityID.get();
+
+                if (underlyingSymbol.isPresent())
+                {
+
+                    // use underlyingSymbol instead of symbol for CFD
+                    if (CFD_MAPPING.containsKey(underlyingSymbol.get()))
+                    {
+                        computedTickerSymbol = Optional.of(CFD_MAPPING.get(underlyingSymbol.get()));
+                        quoteFeed = YahooFinanceQuoteFeed.ID;
+                    }
+                    else
+                    {
+                        computedTickerSymbol = underlyingSymbol;
+                    }
+                }
+                else
+                {
+
+                    // some symbols in IB included the exchange as lower key
+                    // without "." at the end, e.g. BMWd for BMW trading at d
+                    // (Xetra, DE), so we'll get rid of this
+                    computedTickerSymbol = tickerSymbol.map(t -> t.replaceAll("[a-z]*$", ""));
+                }
+
             }
 
             Security s2 = null;
