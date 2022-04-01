@@ -162,6 +162,31 @@ public class InvestmentPlanTest
     }
 
     @Test
+    public void testGenerationOfRemovalTransaction() throws IOException
+    {
+        // Negative amount => REMOVAL transaction
+        investmentPlan.setAmount(Values.Amount.factorize(-100));
+        
+        investmentPlan.setAccount(account);
+        investmentPlan.setStart(LocalDateTime.parse("2022-03-29T00:00"));
+
+        investmentPlan.generateTransactions(new TestCurrencyConverter());
+
+        List<Transaction> tx = investmentPlan.getTransactions().stream()
+                        .filter(t -> t.getDateTime().getYear() == 2022 && t.getDateTime().getMonth() == Month.MARCH)
+                        .collect(Collectors.toList());
+
+        assertThat(investmentPlan.getPlanType(), is(InvestmentPlan.Type.REMOVAL));
+        
+        assertThat(tx.isEmpty(), is(false));
+        assertThat(tx.size(), is(1));
+
+        assertThat(tx.get(0), instanceOf(AccountTransaction.class));
+        assertThat(tx.get(0).getDateTime(), is(LocalDateTime.parse("2022-03-29T00:00")));
+        assertThat(((AccountTransaction) tx.get(0)).getType(), is(AccountTransaction.Type.REMOVAL));
+    }
+
+    @Test
     public void testNoGenerationWithStartInFuture() throws IOException
     {
         investmentPlan.setAccount(account);
