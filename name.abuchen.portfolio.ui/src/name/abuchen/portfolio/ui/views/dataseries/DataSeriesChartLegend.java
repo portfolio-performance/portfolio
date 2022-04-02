@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
@@ -39,6 +41,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
+import org.swtchart.ILineSeries;
 import org.swtchart.LineStyle;
 
 import name.abuchen.portfolio.ui.Images;
@@ -242,6 +245,21 @@ public class DataSeriesChartLegend extends Composite implements ISelectionProvid
                 });
                 actionShowArea.setChecked(series.isShowArea());
                 manager.add(actionShowArea);
+                
+             
+                MenuManager lineWidth = new MenuManager("Line Width");
+                IntStream.range(1, 3).forEach(i ->{
+                    Action action = new SimpleAction(i+" px", a -> { //$NON-NLS-1$
+                        series.setLineWidth(i);
+                        configurator.fireUpdate();
+                    });
+                    action.setChecked(i==series.getLineWidth());
+                    lineWidth.add(action);
+  
+                });
+                manager.add(lineWidth);
+              
+                
             }
 
             if (configurator.getSelectedDataSeries().size() > 1)
