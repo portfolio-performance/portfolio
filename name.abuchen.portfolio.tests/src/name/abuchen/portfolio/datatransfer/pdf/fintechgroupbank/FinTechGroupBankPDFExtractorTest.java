@@ -2,7 +2,6 @@ package name.abuchen.portfolio.datatransfer.pdf.fintechgroupbank;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertNull;
 
@@ -17,6 +16,7 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
+import name.abuchen.portfolio.datatransfer.Extractor.NonImportableItem;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
@@ -70,7 +70,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2014-01-28T12:50")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(150)));
         assertThat(entry.getSource(), is("FinTechSammelabrechnung01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 678984193"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5893.10))));
@@ -91,7 +91,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2014-01-28T12:58")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
         assertThat(entry.getSource(), is("FinTechSammelabrechnung01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 678985130"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5954.80))));
@@ -112,7 +112,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2014-01-28T12:58")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
         assertThat(entry.getSource(), is("FinTechSammelabrechnung01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 678985130"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5943.00))));
@@ -132,7 +132,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2014-01-28T12:58")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(100)));
         assertThat(transaction.getSource(), is("FinTechSammelabrechnung01.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Transaktion-Nr.: 678985130"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100.00))));
@@ -176,7 +176,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-11-01T14:41")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4550.00)));
         assertThat(entry.getSource(), is("FinTechSammelabrechnung02.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1301138113"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3008.90))));
@@ -197,7 +197,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-11-01T14:46")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(745)));
         assertThat(entry.getSource(), is("FinTechSammelabrechnung02.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1301140879"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3000.80))));
@@ -218,7 +218,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-11-01T14:46")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4100)));
         assertThat(entry.getSource(), is("FinTechSammelabrechnung02.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1301141388"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3039.90))));
@@ -239,7 +239,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-11-01T14:48")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2870)));
         assertThat(entry.getSource(), is("FinTechSammelabrechnung02.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1301141655"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3019.40))));
@@ -260,7 +260,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-11-01T14:51")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4300)));
         assertThat(entry.getSource(), is("FinTechSammelabrechnung02.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1301143554"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3015.90))));
@@ -281,7 +281,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-11-01T14:53")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2050)));
         assertThat(entry.getSource(), is("FinTechSammelabrechnung02.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1301143813"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3019.40))));
@@ -302,7 +302,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-11-01T15:09")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2470)));
         assertThat(entry.getSource(), is("FinTechSammelabrechnung02.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1301160198"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2992.60))));
@@ -323,7 +323,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-11-01T15:30")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2280)));
         assertThat(entry.getSource(), is("FinTechSammelabrechnung02.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1301175761"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3015.50))));
@@ -344,7 +344,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-11-01T15:31")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1145)));
         assertThat(entry.getSource(), is("FinTechSammelabrechnung02.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1301175892"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3017.25))));
@@ -365,7 +365,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-11-01T15:52")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1247)));
         assertThat(entry.getSource(), is("FinTechSammelabrechnung02.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1301188569"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5417.88))));
@@ -409,7 +409,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-01-09T15:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.025361)));
         assertThat(entry.getSource(), is("FinTechSammelabrechnung03.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1344625752"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.72))));
@@ -453,7 +453,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-08-13T16:20")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2000)));
         assertThat(entry.getSource(), is("FinTechSammelabrechnung04.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1234567895"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1023.90))));
@@ -497,7 +497,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-01-02T13:15")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1750)));
         assertThat(entry.getSource(), is("FinTechSammelabrechnung05.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1147218952"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1036.40))));
@@ -518,7 +518,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-01-02T14:55")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1250)));
         assertThat(entry.getSource(), is("FinTechSammelabrechnung05.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1147259184"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1003.90))));
@@ -539,7 +539,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-01-02T16:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1750)));
         assertThat(entry.getSource(), is("FinTechSammelabrechnung05.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1147293642"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1232.40))));
@@ -560,7 +560,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-01-02T16:07")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1250)));
         assertThat(entry.getSource(), is("FinTechSammelabrechnung05.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1147294899"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(844.10))));
@@ -580,7 +580,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-01-02T16:07")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1250)));
         assertThat(transaction.getSource(), is("FinTechSammelabrechnung05.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Transaktion-Nr.: 1147294899"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(44.72))));
@@ -624,7 +624,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-09-08T08:32")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(460)));
         assertThat(entry.getSource(), is("FinTechSammelabrechnung06.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1087224318"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1253.15))));
@@ -644,7 +644,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-09-08T08:32")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(460)));
         assertThat(transaction.getSource(), is("FinTechSammelabrechnung06.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Transaktion-Nr.: 1087224318"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(463.04))));
@@ -687,7 +687,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-12-03T13:59")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(10)));
         assertThat(entry.getSource(), is("biwAGKauf01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 999999999"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50.30))));
@@ -730,7 +730,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-08-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.460378)));
         assertThat(entry.getSource(), is("biwAGKauf02.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1071613216"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(250.00))));
@@ -772,7 +772,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getDateTime(), is(LocalDateTime.parse("2015-11-24T00:00")));
         assertThat(entry.getShares(), is(Values.Share.factorize(250)));
         assertThat(entry.getSource(), is("biwAGWertpapierEingang01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 952921288"));
 
         assertThat(entry.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7517.50))));
@@ -846,7 +846,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-12-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(19.334524)));
         assertThat(entry.getSource(), is("FinTechKauf01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1137201681"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1050.00))));
@@ -889,7 +889,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-06-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(13.268957)));
         assertThat(entry.getSource(), is("FinTechKauf02.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1234211246"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(800.00))));
@@ -932,7 +932,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-06-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5.082011)));
         assertThat(entry.getSource(), is("FinTechKauf03.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1233799247"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(400.00))));
@@ -975,7 +975,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-06-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(9.703363)));
         assertThat(entry.getSource(), is("FinTechKauf04.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1234387912"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000.00))));
@@ -1018,7 +1018,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-01-09T15:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.099044)));
         assertThat(entry.getSource(), is("FinTechKauf05.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1344974056"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(6.16))));
@@ -1061,7 +1061,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-01-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(7.979324)));
         assertThat(entry.getSource(), is("FinTechKauf06.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1342424242"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000.00))));
@@ -1104,7 +1104,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-01-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(22.973458)));
         assertThat(entry.getSource(), is("FinTechKauf07.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1340886542"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000.00))));
@@ -1147,7 +1147,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-01-03T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.43414)));
         assertThat(entry.getSource(), is("FinTechKauf08.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1555928306"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(52.50))));
@@ -1190,7 +1190,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-01-17T17:52")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(61)));
         assertThat(entry.getSource(), is("FinTechKauf09.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1111111111"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1279.55))));
@@ -1233,7 +1233,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-12-04T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(8.205431)));
         assertThat(entry.getSource(), is("FinTechKauf10.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1321692761"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(400.00))));
@@ -1253,7 +1253,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-12-04T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(8.205431)));
         assertThat(transaction.getSource(), is("FinTechKauf10.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Transaktion-Nr.: 1321692761"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.01))));
@@ -1275,9 +1275,19 @@ public class FinTechGroupBankPDFExtractorTest
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FinTechKaufStorno01.txt"),
                         errors);
 
-        assertThat(errors.size(), is(1));
-        assertThat(errors.get(0).getMessage(), containsString(Messages.MsgErrorOrderCancellationUnsupported));
-        assertThat(results, empty());
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check cancellation (Storno) transaction
+        NonImportableItem Cancelations = (NonImportableItem) results.stream()
+                        .filter(NonImportableItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(Cancelations.getTypeInformation(), is(Messages.MsgErrorOrderCancellationUnsupported));
+        assertNull(Cancelations.getSecurity());
+        assertNull(Cancelations.getDate());
+        assertThat(Cancelations.getNote(), is("FinTechKaufStorno01.txt"));
     }
 
     @Test
@@ -1311,7 +1321,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-01-22T16:14")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(250)));
         assertThat(entry.getSource(), is("FinTechVerkauf01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 980001189"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(16508.16))));
@@ -1354,7 +1364,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-07-04T14:23")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(121)));
         assertThat(entry.getSource(), is("FinTechVerkauf02.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1242877942"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4840.15))));
@@ -1397,7 +1407,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-01-09T15:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.007229)));
         assertThat(entry.getSource(), is("FinTechVerkauf03.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1344971210"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.95))));
@@ -1440,7 +1450,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-02-06T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.089051)));
         assertThat(entry.getSource(), is("FinTechVerkauf04.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1574141471"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9.48))));
@@ -1783,7 +1793,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-12-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(325)));
         assertThat(entry.getSource(), is("FinTechWertpapierAusgang01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 197409035"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2867.88))));
@@ -1826,7 +1836,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2011-07-18T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(200)));
         assertThat(entry.getSource(), is("FinTechWertpapierAusgang02.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 376762270"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.20))));
@@ -1869,7 +1879,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2010-03-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2000)));
         assertThat(entry.getSource(), is("FinTechWertpapierAusgang03.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 223770199"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
@@ -1890,7 +1900,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2010-03-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1250)));
         assertThat(entry.getSource(), is("FinTechWertpapierAusgang03.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 223770243"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
@@ -1911,7 +1921,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2010-03-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(750)));
         assertThat(entry.getSource(), is("FinTechWertpapierAusgang03.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 223770249"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
@@ -1955,7 +1965,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-09-28T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(83)));
         assertThat(entry.getSource(), is("FinTechWertpapierAusgang04.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktionsnummer: 921414163"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(111.22))));
@@ -1999,7 +2009,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-25T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(400)));
         assertThat(entry.getSource(), is("FinTechWertpapierAusgang05.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1234567890"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(305.20))));
@@ -2019,7 +2029,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-06-25T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(400)));
         assertThat(transaction.getSource(), is("FinTechWertpapierAusgang05.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Transaktion-Nr.: 1234567890"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(88.53))));
@@ -2068,7 +2078,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-09-18T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(310)));
         assertThat(entry.getSource(), is("FinTechWertpapierAusgang06.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 9876543211"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
@@ -2089,7 +2099,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-09-18T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(118)));
         assertThat(entry.getSource(), is("FinTechWertpapierAusgang06.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 9876543210"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
@@ -2131,7 +2141,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getDateTime(), is(LocalDateTime.parse("2015-02-16T00:00")));
         assertThat(entry.getShares(), is(Values.Share.factorize(0.052)));
         assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461796"));
 
         assertThat(entry.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.50))));
@@ -2151,7 +2161,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getDateTime(), is(LocalDateTime.parse("2015-02-20T00:00")));
         assertThat(entry.getShares(), is(Values.Share.factorize(0.003)));
         assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461797"));
 
         assertThat(entry.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.30))));
@@ -2171,7 +2181,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getDateTime(), is(LocalDateTime.parse("2015-03-16T00:00")));
         assertThat(entry.getShares(), is(Values.Share.factorize(0.432)));
         assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461798"));
 
         assertThat(entry.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(49.99))));
@@ -2191,7 +2201,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getDateTime(), is(LocalDateTime.parse("2015-04-15T00:00")));
         assertThat(entry.getShares(), is(Values.Share.factorize(0.424)));
         assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461799"));
 
         assertThat(entry.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(49.98))));
@@ -2210,7 +2220,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getDateTime(), is(LocalDateTime.parse("2015-05-15T00:00")));
         assertThat(entry.getShares(), is(Values.Share.factorize(0.446)));
         assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461800"));
 
         assertThat(entry.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(49.99))));
@@ -2230,7 +2240,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getDateTime(), is(LocalDateTime.parse("2015-06-15T00:00")));
         assertThat(entry.getShares(), is(Values.Share.factorize(0.467)));
         assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461801"));
 
         assertThat(entry.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(49.98))));
@@ -2250,7 +2260,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getDateTime(), is(LocalDateTime.parse("2015-07-15T00:00")));
         assertThat(entry.getShares(), is(Values.Share.factorize(0.447)));
         assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461802"));
 
         assertThat(entry.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(49.98))));
@@ -2270,7 +2280,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getDateTime(), is(LocalDateTime.parse("2015-08-17T00:00")));
         assertThat(entry.getShares(), is(Values.Share.factorize(0.462)));
         assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461803"));
 
         assertThat(entry.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(49.98))));
@@ -2290,7 +2300,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getDateTime(), is(LocalDateTime.parse("2015-09-15T00:00")));
         assertThat(entry.getShares(), is(Values.Share.factorize(0.504)));
         assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461804"));
 
         assertThat(entry.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(49.99))));
@@ -2310,7 +2320,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getDateTime(), is(LocalDateTime.parse("2015-10-15T00:00")));
         assertThat(entry.getShares(), is(Values.Share.factorize(0.504)));
         assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461805"));
 
         assertThat(entry.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(49.99))));
@@ -2330,7 +2340,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getDateTime(), is(LocalDateTime.parse("2015-11-16T00:00")));
         assertThat(entry.getShares(), is(Values.Share.factorize(0.474)));
         assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461806"));
 
         assertThat(entry.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(49.98))));
@@ -2350,7 +2360,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getDateTime(), is(LocalDateTime.parse("2015-12-15T00:00")));
         assertThat(entry.getShares(), is(Values.Share.factorize(0.49)));
         assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461807"));
 
         assertThat(entry.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(49.98))));
@@ -2370,7 +2380,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getDateTime(), is(LocalDateTime.parse("2016-01-15T00:00")));
         assertThat(entry.getShares(), is(Values.Share.factorize(0.525)));
         assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461808"));
 
         assertThat(entry.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(49.99))));
@@ -2390,7 +2400,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getDateTime(), is(LocalDateTime.parse("2016-02-15T00:00")));
         assertThat(entry.getShares(), is(Values.Share.factorize(0.551)));
         assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461809"));
 
         assertThat(entry.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(49.99))));
@@ -2410,7 +2420,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getDateTime(), is(LocalDateTime.parse("2016-02-19T00:00")));
         assertThat(entry.getShares(), is(Values.Share.factorize(0.117)));
         assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461810"));
 
         assertThat(entry.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.12))));
@@ -2430,7 +2440,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getDateTime(), is(LocalDateTime.parse("2016-03-15T00:00")));
         assertThat(entry.getShares(), is(Values.Share.factorize(0.523)));
         assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461811"));
 
         assertThat(entry.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(49.98))));
@@ -2450,7 +2460,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getDateTime(), is(LocalDateTime.parse("2016-04-15T00:00")));
         assertThat(entry.getShares(), is(Values.Share.factorize(0.517)));
         assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461812"));
 
         assertThat(entry.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(49.99))));
@@ -2470,7 +2480,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getDateTime(), is(LocalDateTime.parse("2016-05-17T00:00")));
         assertThat(entry.getShares(), is(Values.Share.factorize(0.521)));
         assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461813"));
 
         assertThat(entry.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50.00))));
@@ -2489,7 +2499,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getDateTime(), is(LocalDateTime.parse("2016-06-15T00:00")));
         assertThat(entry.getShares(), is(Values.Share.factorize(0.541)));
         assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461814"));
 
         assertThat(entry.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(49.99))));
@@ -2673,7 +2683,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-04-10T17:30")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(29)));
         assertThat(entry.getSource(), is("FlatExKauf01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1609519682"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(760.09))));
@@ -2716,7 +2726,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-09-01T21:59")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(66)));
         assertThat(entry.getSource(), is("FlatExKauf02.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 2008664208"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3437.43))));
@@ -2759,7 +2769,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-06-20T09:08")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(151)));
         assertThat(entry.getSource(), is("FlatExVerkauf01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 1234140149"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9529.81))));
@@ -2908,7 +2918,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-11T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(476)));
         assertThat(transaction.getSource(), is("FlatExVorabpauschale01.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Transaktion-Nr.: 1776319005"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.69))));
@@ -3268,7 +3278,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-11T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(50)));
         assertThat(transaction.getSource(), is("FlatExDividende05.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Transaktion-Nr. : 1111111111"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(16.73))));
@@ -3312,7 +3322,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-11T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(50)));
         assertThat(transaction.getSource(), is("FlatExDividende05.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Transaktion-Nr. : 1111111111"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(16.73))));
@@ -3360,7 +3370,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-11T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(50)));
         assertThat(transaction.getSource(), is("FlatExDividende06.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Transaktion-Nr. : 1111111111"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(18.99))));
@@ -3741,7 +3751,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-04-09T16:52")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(540)));
         assertThat(entry.getSource(), is("FlatExSammelabrechnung01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 123456789"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4416.52))));
@@ -3783,7 +3793,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-30T18:09")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
         assertThat(entry.getSource(), is("FlatExSammelabrechnung02.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 2101694078"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(4773.36))));
@@ -3804,7 +3814,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-30T18:09")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(20)));
         assertThat(entry.getSource(), is("FlatExSammelabrechnung02.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 2101694102"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(955.98))));
@@ -4230,7 +4240,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-12-09T14:14")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(25)));
         assertThat(entry.getSource(), is("FlatExDeGiroSammelabrechnung02.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 2592937917"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3456.41))));
