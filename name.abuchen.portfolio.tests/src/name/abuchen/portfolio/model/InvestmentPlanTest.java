@@ -65,6 +65,8 @@ public class InvestmentPlanTest
                         .filter(t -> t.getDateTime().getYear() == 2016 && t.getDateTime().getMonth() == Month.MAY)
                         .collect(Collectors.toList());
 
+        assertThat(investmentPlan.getPlanType(), is(InvestmentPlan.Type.BUY_OR_DELIVERY));
+        
         // May 2016 should contain two transactions:
         // one "spilled over" from April as 30 April is a Saturday
         // and the regular one from 31 May
@@ -114,6 +116,8 @@ public class InvestmentPlanTest
                         .filter(t -> t.getDateTime().getYear() == 2016 && t.getDateTime().getMonth() == Month.MAY)
                         .collect(Collectors.toList());
 
+        assertThat(investmentPlan.getPlanType(), is(InvestmentPlan.Type.BUY_OR_DELIVERY));
+
         // May 2016 should contain two transactions:
         // one "spilled over" from April as 30 April is a Saturday
         // and the regular one from 31 May
@@ -144,6 +148,8 @@ public class InvestmentPlanTest
         tx = investmentPlan.getTransactions().stream()
                         .filter(t -> t.getDateTime().getYear() == 2016 && t.getDateTime().getMonth() == Month.MAY)
                         .collect(Collectors.toList());
+
+        assertThat(investmentPlan.getPlanType(), is(InvestmentPlan.Type.DEPOSIT));
 
         // May 2016 should contain two transactions:
         // one "spilled over" from April as 30 April is a Saturday

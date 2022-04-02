@@ -48,6 +48,5 @@ public class InvestmentPlanModelTest
         
         assertThat(model.getAmount(), is(100L));
         assertThat(model.getCalculationStatus(), is(Status.OK_STATUS));
-        
     }
 }
