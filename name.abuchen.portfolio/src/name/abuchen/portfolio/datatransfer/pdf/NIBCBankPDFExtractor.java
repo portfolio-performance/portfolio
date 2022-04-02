@@ -57,7 +57,7 @@ public class NIBCBankPDFExtractor extends AbstractPDFExtractor
         pdfTransaction
                 // Is type --> "Verkauf" change from BUY to SELL
                 .section("type").optional()
-                .match("Wertpapier Abrechnung (?<type>Verkauf).*$")
+                .match("Wertpapier Abrechnung (?<type>(Kauf|Verkauf)).*$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("Verkauf"))
                     {
@@ -70,24 +70,32 @@ public class NIBCBankPDFExtractor extends AbstractPDFExtractor
                 // ACCIONES NOM. EO -,10
                 // Handels-/Ausführungsplatz Quotrix (gemäß Weisung)
                 // Kurswert 1.029,99- EUR
-                .section("shares", "name", "isin", "wkn", "name1", "currency")
-                .match("^St.ck (?<shares>[\\.,\\d]+) (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
+                .section("name", "isin", "wkn", "name1", "currency")
+                .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
                 .match("^(?<name1>.*)$")
                 .match("^Kurswert [\\.,\\d]+([\\-])? (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Handels-/Ausführungsplatz"))
                         v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
 
-                    v.put("name", v.get("name"));
-                    t.setShares(asShares(v.get("shares")));
                     t.setSecurity(getOrCreateSecurity(v));
 
                     // Handshake, if there is a tax refund
                     context.put("name", v.get("name"));
                     context.put("isin", v.get("isin"));
                     context.put("wkn", v.get("wkn"));
+                })
+
+                // Stück 13 VANGUARD FTSE ALL-WORLD U.ETF      IE00B3RBWM25 (A1JX52)
+                .section("shares")
+                .match("^St.ck (?<shares>[\\.,\\d]+) .*$")
+                .assign((t, v) -> {
+                    t.setShares(asShares(v.get("shares")));
+
+                    // Handshake, if there is a tax refund
                     context.put("shares", v.get("shares"));
                 })
+
 
                 // Schlusstag/-Zeit 13.01.2020 11:42:59 Auftraggeber Vornamen Nachnamen
                 .section("date", "time")
@@ -116,7 +124,7 @@ public class NIBCBankPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("(Dividendengutschrift|Ausschüttung Investmentfonds|Ertragsgutschrift)");
+        DocumentType type = new DocumentType("(Dividendengutschrift|Aussch.ttung Investmentfonds|Ertragsgutschrift)");
         this.addDocumentTyp(type);
 
         Block block = new Block("^(Dividendengutschrift|Aussch.ttung Investmentfonds|Ertragsgutschrift .*)$");
@@ -131,18 +139,21 @@ public class NIBCBankPDFExtractor extends AbstractPDFExtractor
                 // Stück 100 VANGUARD FTSE ALL-WORLD U.ETF IE00B3RBWM25 (A1JX52)
                 // REGISTERED SHARES USD DIS.ON
                 // Zahlbarkeitstag 27.12.2019 Ausschüttung pro St. 0,297309000 USD
-                .section("shares", "name", "isin", "wkn", "name1", "currency")
-                .match("^St.ck (?<shares>[\\.,\\d]+) (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
+                .section("name", "isin", "wkn", "name1", "currency")
+                .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
                 .match("^(?<name1>.*)$")
                 .match("^.* ((Dividende|Ertrag) ([\\s]+)?pro St.ck|Aussch.ttung pro St\\.) [\\.,\\d]+ (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Zahlbarkeitstag"))
-                        v.put("name", v.get("name").trim() + " " + v.get("name1").trim());
+                        v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
 
-                    v.put("name", v.get("name").trim());
-                    t.setShares(asShares(v.get("shares")));
                     t.setSecurity(getOrCreateSecurity(v));
                 })
+
+                // Stück 100 VANGUARD FTSE ALL-WORLD U.ETF IE00B3RBWM25 (A1JX52)
+                .section("shares")
+                .match("^St.ck (?<shares>[\\.,\\d]+) .*$")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 // Den Betrag buchen wir mit Wertstellung 31.12.2019 zu Gunsten des Kontos 8000000000 (IBAN DE12 0000 0000 8000
                 .section("date")
@@ -150,8 +161,8 @@ public class NIBCBankPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                 // Ausmachender Betrag 24,03+ EUR
-                .section("amount", "currency").optional()
-                .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+)[\\-|\\+] (?<currency>[\\w]{3})$")
+                .section("amount", "currency")
+                .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+)\\+ (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(v.get("currency"));
@@ -160,7 +171,7 @@ public class NIBCBankPDFExtractor extends AbstractPDFExtractor
                 // Devisenkurs EUR / USD  1,1227
                 // Ausschüttung 29,73 USD 26,48+ EUR
                 .section("exchangeRate", "fxAmount", "fxCurrency", "amount", "currency").optional()
-                .match("^Devisenkurs (?<fxCurrency>[\\w]{3}) \\/ (?<currency>[\\w]{3}) ([\\s]+)?(?<exchangeRate>[\\.,\\d]+)$")
+                .match("^Devisenkurs [\\w]{3} \\/ [\\w]{3} ([\\s]+)?(?<exchangeRate>[\\.,\\d]+)$")
                 .match("^(Dividendengutschrift|Aussch.ttung) (?<fxAmount>[\\.,\\d]+) (?<fxCurrency>[\\w]{3}) (?<amount>[\\.,\\d]+)\\+ (?<currency>[\\w]{3})")
                 .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
