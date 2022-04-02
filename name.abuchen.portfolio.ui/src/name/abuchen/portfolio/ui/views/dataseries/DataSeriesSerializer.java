@@ -55,7 +55,8 @@ public class DataSeriesSerializer
                     s.setLineStyle(LineStyle.valueOf(data[2]));
                     s.setShowArea(Boolean.parseBoolean(data[3]));
                 }
-                if(data.length == 5) {
+                if(data.length == 5)
+                {
                     s.setLineWidth(Integer.parseInt(data[4]));   
                 }
             }
