@@ -2,6 +2,8 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
+import java.math.BigDecimal;
+
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -48,7 +50,7 @@ public class SelfWealthPDFExtractor extends AbstractPDFExtractor
         pdfTransaction
                 // Is type --> "Sell" change from BUY to SELL
                 .section("type").optional() //
-                .match("^(?<type>Sell) Confirmation$")
+                .match("^(?<type>(Buy|Sell)) Confirmation$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("Sell"))
                     {
@@ -56,22 +58,24 @@ public class SelfWealthPDFExtractor extends AbstractPDFExtractor
                     }
                 })
 
-                // 1 LONG ROAD Trade Date: 1 Jul 2021
-                .section("date")
-                .match("^.* Trade Date: (?<date>[\\d]+ [\\D]{3} [\\d]{4})$")
-                .assign((t, v) -> t.setDate(asDate(v.get("date"))))
-
                 // 25 UMAX BETA S&P500 YIELDMAX 12.40 $312.50 AUD
                 .section("shares", "tickerSymbol", "name", "amount", "currency")
-                .match("^(?<shares>[\\.,\\d]+) (?<tickerSymbol>[\\w]{3,4}) (?<name>.*) [\\.,\\d]+ \\D(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
-                .assign((t, v) -> {
-                    t.setShares(asShares(v.get("shares")));
-                    t.setSecurity(getOrCreateSecurity(v));
-                })
+                .match("^(?<shares>[\\.,\\d]+) (?<tickerSymbol>[\\w]{3,4}) (?<name>.*) [\\.,\\d]+ \\p{Sc}(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                // 25 UMAX BETA S&P500 YIELDMAX 12.40 $312.50 AUD
+                .section("shares")
+                .match("^(?<shares>[\\.,\\d]+) [\\w]{3,4} .* [\\.,\\d]+ \\p{Sc}[\\.,\\d]+ [\\w]{3}$")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                // 1 LONG ROAD Trade Date: 1 Jul 2021
+                .section("date")
+                .match("^.* Trade Date: (?<date>[\\d]+ .* [\\d]{4})$")
+                .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                 // Net Value $322.00 AUD
                 .section("amount", "currency")
-                .match("^Net Value \\D(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^Net Value \\p{Sc}(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -92,12 +96,12 @@ public class SelfWealthPDFExtractor extends AbstractPDFExtractor
         transaction
                 // Brokerage* $9.50 AUD
                 .section("fee", "currency").optional()
-                .match("^Brokerage\\* \\D(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^Brokerage\\* \\p{Sc}(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Adviser Fee* $0.00 AUD
                 .section("fee", "currency").optional()
-                .match("^Adviser Fee\\* \\D(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^Adviser Fee\\* \\p{Sc}(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
@@ -111,5 +115,11 @@ public class SelfWealthPDFExtractor extends AbstractPDFExtractor
     protected long asShares(String value)
     {
         return PDFExtractorUtils.convertToNumberLong(value, Values.Share, "en", "AU");
+    }
+
+    @Override
+    protected BigDecimal asExchangeRate(String value)
+    {
+        return PDFExtractorUtils.convertToNumberBigDecimal(value, Values.Share, "en", "AU");
     }
 }
