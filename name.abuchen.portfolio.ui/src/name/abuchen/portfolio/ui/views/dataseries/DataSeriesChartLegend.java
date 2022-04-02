@@ -246,10 +246,9 @@ public class DataSeriesChartLegend extends Composite implements ISelectionProvid
                 actionShowArea.setChecked(series.isShowArea());
                 manager.add(actionShowArea);
                 
-             
-                MenuManager lineWidth = new MenuManager("Line Width");
+                MenuManager lineWidth = new MenuManager(Messages.ChartSeriesPickerLineWidth);
                 IntStream.range(1, 3).forEach(i ->{
-                    Action action = new SimpleAction(i+" px", a -> { //$NON-NLS-1$
+                    Action action = new SimpleAction(i + " px", a -> { //$NON-NLS-1$
                         series.setLineWidth(i);
                         configurator.fireUpdate();
                     });
@@ -259,7 +258,6 @@ public class DataSeriesChartLegend extends Composite implements ISelectionProvid
                 });
                 manager.add(lineWidth);
               
-                
             }
 
             if (configurator.getSelectedDataSeries().size() > 1)
