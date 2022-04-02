@@ -54,18 +54,19 @@ public class SantanderConsumerBankAGPDFExtractor extends AbstractPDFExtractor
                 // Stück 2 3M CO. US88579Y1010 (851745)
                 // REGISTERED SHARES DL -,01
                 // Kurswert 317,96- EUR
-                .section("shares", "name", "isin", "wkn", "nameContinued", "currency")
+                .section("name", "isin", "wkn", "nameContinued", "currency")
                 .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)")
-                .match("^St.ck (?<shares>[\\.,\\d]+) (?<name>.*) (?<isin>[\\w]{12}) (\\((?<wkn>.*)\\))$")
+                .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[\\w]{12}) (\\((?<wkn>.*)\\))$")
                 .match("^(?<nameContinued>.*)$")
                 .match("^Kurswert [\\.,\\d]+\\- (?<currency>[\\w]{3})$")
-                .assign((t, v) -> {
-                    t.setShares(asShares(v.get("shares")));
-                    t.setSecurity(getOrCreateSecurity(v));
-                })
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-                // Schlusstag/-Zeit 17.03.2021 16:53:45 Auftraggeber
-                // NACHNAME VORNAME
+                // Stück 13 VANGUARD FTSE ALL-WORLD U.ETF      IE00B3RBWM25 (A1JX52)
+                .section("shares")
+                .match("^St.ck (?<shares>[\\.,\\d]+) .*$")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                // Schlusstag/-Zeit 17.03.2021 16:53:45 Auftraggeber NACHNAME VORNAME
                 .section("date", "time")
                 .match("^Schlusstag\\/\\-Zeit (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) .*$")
                 .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
@@ -95,18 +96,18 @@ public class SantanderConsumerBankAGPDFExtractor extends AbstractPDFExtractor
 
         Block block = new Block("^Dividendengutschrift$");
         type.addBlock(block);
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>().subject(() -> {
-            AccountTransaction entry = new AccountTransaction();
-            entry.setType(AccountTransaction.Type.DIVIDENDS);
-            return entry;
-        });
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>()
+            .subject(() -> {
+                AccountTransaction entry = new AccountTransaction();
+                entry.setType(AccountTransaction.Type.DIVIDENDS);
+                return entry;
+            });
 
         pdfTransaction
                 // Nominale Wertpapierbezeichnung ISIN (WKN)
                 // Stück 2 3M CO. US88579Y1010 (851745)
                 // REGISTERED SHARES DL -,01
-                // Zahlbarkeitstag 14.06.2021 Dividende pro Stück 1,48
-                // USD
+                // Zahlbarkeitstag 14.06.2021 Dividende pro Stück 1,48 USD
                 .section("shares", "name", "isin", "wkn", "nameContinued", "currency")
                 .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)")
                 .match("^St.ck (?<shares>[\\.,\\d]+) (?<name>.*) (?<isin>[\\w]{12}) (\\((?<wkn>.*)\\))$")
@@ -117,9 +118,7 @@ public class SantanderConsumerBankAGPDFExtractor extends AbstractPDFExtractor
                     t.setSecurity(getOrCreateSecurity(v));
                 })
 
-                // Den Betrag buchen wir mit Wertstellung 16.06.2021 zu
-                // Gunsten des Kontos 0000000000 (IBAN XX00 0000 0000
-                // 0000
+                // Den Betrag buchen wir mit Wertstellung 16.06.2021 zu Gunsten des Kontos 0000000000 (IBAN XX00 0000 0000 0000
                 .section("date")
                 .match("^Den Betrag buchen wir mit Wertstellung (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
@@ -135,7 +134,7 @@ public class SantanderConsumerBankAGPDFExtractor extends AbstractPDFExtractor
                 // Devisenkurs EUR / USD 1,2137
                 // Dividendengutschrift 2,96 USD 2,44+ EUR
                 .section("exchangeRate", "fxAmount", "fxCurrency", "amount", "currency").optional()
-                .match("^Devisenkurs .* (?<exchangeRate>[\\.,\\d]+)$")
+                .match("^Devisenkurs [\\w]{3} \\/ [\\w]{3} ([\\s]+)?(?<exchangeRate>[\\.,\\d]+)$")
                 .match("^Dividendengutschrift (?<fxAmount>[\\.,\\d]+) (?<fxCurrency>[\\w]{3}) (?<amount>[\\.,\\d]+)\\+ (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
@@ -143,7 +142,6 @@ public class SantanderConsumerBankAGPDFExtractor extends AbstractPDFExtractor
                     {
                         exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
                     }
-
                     type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
 
                     if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
