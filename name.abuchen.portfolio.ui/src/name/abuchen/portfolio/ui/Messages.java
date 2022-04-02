@@ -989,12 +989,6 @@ public class Messages extends NLS
     public static String PortfolioMenuDeactivate;
     public static String PortfolioMenuDelete;
     public static String PortfolioMenuDeleteConfirm;
-    public static String PortfolioReportSession;
-    public static String PortfolioReportConfigDescription;
-    public static String PortfolioReportConfigSessionKey;
-    public static String PortfolioReportSessionKey;
-    public static String PortfolioReportSessionKeySecret;
-    public static String PortfolioReportAPIURL;
     public static String PrefAlphaVantageAPIKey;
     public static String PrefAlphaVantageCallFrequencyLimit;
     public static String PrefCheckOnStartup;
@@ -1022,6 +1016,12 @@ public class Messages extends NLS
     public static String PrefMsgCalendar;
     public static String PrefNoteIndirectQuotation;
     public static String PrefNoteStoreSettingsNextToFile;
+    public static String PrefPortfolioReportSession;
+    public static String PrefPortfolioReportConfigDescription;
+    public static String PrefPortfolioReportConfigSessionKey;
+    public static String PrefPortfolioReportSessionKey;
+    public static String PrefPortfolioReportSessionKeySecret;
+    public static String PrefPortfolioReportAPIURL;
     public static String PrefQuandlAPIKey;
     public static String PrefStoreSettingsNextToFile;
     public static String PrefUpdateQuotesAfterFileOpen;

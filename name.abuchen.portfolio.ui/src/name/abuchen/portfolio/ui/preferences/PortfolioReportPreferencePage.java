@@ -22,7 +22,7 @@ public class PortfolioReportPreferencePage extends FieldEditorPreferencePage
         super(GRID);
 
         setTitle("Portfolio Report"); //$NON-NLS-1$
-        setDescription(Messages.PortfolioReportConfigDescription);
+        setDescription(Messages.PrefPortfolioReportConfigDescription);
     }
 
     @Override
@@ -41,13 +41,13 @@ public class PortfolioReportPreferencePage extends FieldEditorPreferencePage
         });
 
         addField(new StringFieldEditor(UIConstants.Preferences.PORTFOLIO_REPORT_API_URL, //
-                        Messages.PortfolioReportAPIURL, getFieldEditorParent()));
+                        Messages.PrefPortfolioReportAPIURL, getFieldEditorParent()));
 
         addField(new StringFieldEditor(UIConstants.Preferences.PORTFOLIO_REPORT_API_KEY, //
-                        Messages.PortfolioReportSessionKey, getFieldEditorParent()));
+                        Messages.PrefPortfolioReportSessionKey, getFieldEditorParent()));
 
         Composite note = createNoteComposite(getFieldEditorParent().getFont(), getFieldEditorParent(), //
-                        Messages.PrefLabelNote, Messages.PortfolioReportSessionKeySecret);
+                        Messages.PrefLabelNote, Messages.PrefPortfolioReportSessionKeySecret);
         GridDataFactory.fillDefaults().span(2, 1).grab(true, false).applyTo(note);
     }
 }

@@ -41,7 +41,7 @@ public class SyncPortfolioReportHandler
     {
         if (portfolioReportApiKey == null)
         {
-            MessageDialog.openInformation(shell, Messages.LabelInfo, Messages.PortfolioReportConfigSessionKey);
+            MessageDialog.openInformation(shell, Messages.LabelInfo, Messages.PrefPortfolioReportConfigSessionKey);
             return;
         }
 
