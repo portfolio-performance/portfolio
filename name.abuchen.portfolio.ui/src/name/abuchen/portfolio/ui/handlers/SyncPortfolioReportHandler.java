@@ -41,7 +41,7 @@ public class SyncPortfolioReportHandler
     {
         if (portfolioReportApiKey == null)
         {
-            MessageDialog.openInformation(shell, Messages.LabelInfo, "First configure session token in preferences");
+            MessageDialog.openInformation(shell, Messages.LabelInfo, Messages.PortfolioReportConfigSessionKey);
             return;
         }
 

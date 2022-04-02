@@ -306,7 +306,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
     {
         if (enableExperimentalFeatures)
         {
-            toolBar.add(new DropDown("Sync", Images.CLOUD, SWT.NONE, manager -> {
+            toolBar.add(new DropDown("Sync", Images.CLOUD, SWT.NONE, manager -> { //$NON-NLS-1$
 
                 String source = taxonomy.getSource();
 

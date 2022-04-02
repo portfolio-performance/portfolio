@@ -21,8 +21,8 @@ public class PortfolioReportPreferencePage extends FieldEditorPreferencePage
     {
         super(GRID);
 
-        setTitle("Portfolio Report");
-        setDescription("Sync data with server portfolio");
+        setTitle("Portfolio Report"); //$NON-NLS-1$
+        setDescription(Messages.PortfolioReportConfigDescription);
     }
 
     @Override
@@ -41,13 +41,13 @@ public class PortfolioReportPreferencePage extends FieldEditorPreferencePage
         });
 
         addField(new StringFieldEditor(UIConstants.Preferences.PORTFOLIO_REPORT_API_URL, //
-                        "Portfolio Report API URL", getFieldEditorParent()));
+                        Messages.PortfolioReportAPIURL, getFieldEditorParent()));
 
         addField(new StringFieldEditor(UIConstants.Preferences.PORTFOLIO_REPORT_API_KEY, //
-                        "Portfolio Report Session Key", getFieldEditorParent()));
+                        Messages.PortfolioReportSessionKey, getFieldEditorParent()));
 
         Composite note = createNoteComposite(getFieldEditorParent().getFont(), getFieldEditorParent(), //
-                        Messages.PrefLabelNote, "Keep the session key secret!");
+                        Messages.PrefLabelNote, Messages.PortfolioReportSessionKeySecret);
         GridDataFactory.fillDefaults().span(2, 1).grab(true, false).applyTo(note);
     }
 }

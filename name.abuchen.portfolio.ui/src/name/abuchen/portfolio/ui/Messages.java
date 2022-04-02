@@ -989,6 +989,12 @@ public class Messages extends NLS
     public static String PortfolioMenuDeactivate;
     public static String PortfolioMenuDelete;
     public static String PortfolioMenuDeleteConfirm;
+    public static String PortfolioReportSession;
+    public static String PortfolioReportConfigDescription;
+    public static String PortfolioReportConfigSessionKey;
+    public static String PortfolioReportSessionKey;
+    public static String PortfolioReportSessionKeySecret;
+    public static String PortfolioReportAPIURL;
     public static String PrefAlphaVantageAPIKey;
     public static String PrefAlphaVantageCallFrequencyLimit;
     public static String PrefCheckOnStartup;
