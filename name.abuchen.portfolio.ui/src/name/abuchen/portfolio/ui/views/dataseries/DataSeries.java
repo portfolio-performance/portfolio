@@ -81,7 +81,7 @@ public final class DataSeries implements Adaptable
     private boolean isLineChart = true;
     private boolean isBenchmark = false;
     private int lineWidth = 2;
-    
+
     private RGB color;
 
     private boolean showArea;
