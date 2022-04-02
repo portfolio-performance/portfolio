@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetTax;
+
 import java.math.BigDecimal;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -12,7 +14,6 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
@@ -148,9 +149,9 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                                                     t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
                                                     t.setSecurity(getOrCreateSecurity(v));
 
-                                                    t.addUnit(new Unit(Unit.Type.TAX,
-                                                                    Money.of(asCurrencyCode(CurrencyUnit.USD),
-                                                                                    asAmount(v.get("tax")))));
+                                                    Money tax = Money.of(asCurrencyCode(CurrencyUnit.USD), asAmount(v.get("tax")));
+                                                    checkAndSetTax(tax, t, type);
+//                                                    processTaxEntries(t, v, type);
                                                 })
                                         ,
                                         section -> section
