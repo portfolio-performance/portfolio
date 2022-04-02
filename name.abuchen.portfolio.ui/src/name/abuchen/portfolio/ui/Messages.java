@@ -75,6 +75,7 @@ public class Messages extends NLS
     public static String ChartSeriesPickerColor;
     public static String ChartSeriesPickerDialogMsg;
     public static String ChartSeriesPickerLineStyle;
+    public static String ChartSeriesPickerLineWidth;
     public static String ChartSeriesPickerRemove;
     public static String ChartSeriesPickerShowArea;
     public static String ChartSeriesPickerTitle;

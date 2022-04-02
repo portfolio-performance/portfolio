@@ -49,11 +49,15 @@ public class DataSeriesSerializer
             {
                 series.add(s);
 
-                if (data.length == 4)
+                if (data.length >= 4)
                 {
                     s.setColor(ColorConversion.hex2RGB(data[1]));
                     s.setLineStyle(LineStyle.valueOf(data[2]));
                     s.setShowArea(Boolean.parseBoolean(data[3]));
+                }
+                if (data.length >= 5)
+                {
+                    s.setLineWidth(Integer.parseInt(data[4]));
                 }
             }
         }
@@ -69,7 +73,8 @@ public class DataSeriesSerializer
             buf.append(s.getUUID()).append(';');
             buf.append(Colors.toHex(s.getColor())).append(';');
             buf.append(s.getLineStyle().name()).append(';');
-            buf.append(s.isShowArea());
+            buf.append(s.isShowArea()).append(';');
+            buf.append(s.getLineWidth());
         }
         return buf.toString();
     }
