@@ -247,12 +247,12 @@ public class DataSeriesChartLegend extends Composite implements ISelectionProvid
                 manager.add(actionShowArea);
                 
                 MenuManager lineWidth = new MenuManager(Messages.ChartSeriesPickerLineWidth);
-                IntStream.range(1, 3).forEach(i ->{
+                IntStream.range(1, 3).forEach(i -> {
                     Action action = new SimpleAction(i + " px", a -> { //$NON-NLS-1$
                         series.setLineWidth(i);
                         configurator.fireUpdate();
                     });
-                    action.setChecked(i==series.getLineWidth());
+                    action.setChecked(i == series.getLineWidth());
                     lineWidth.add(action);
   
                 });
