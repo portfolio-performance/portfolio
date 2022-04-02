@@ -49,13 +49,13 @@ public class DataSeriesSerializer
             {
                 series.add(s);
 
-                if (data.length >=4 && data.length <=5)
+                if (data.length >=4)
                 {
                     s.setColor(ColorConversion.hex2RGB(data[1]));
                     s.setLineStyle(LineStyle.valueOf(data[2]));
                     s.setShowArea(Boolean.parseBoolean(data[3]));
                 }
-                if(data.length == 5)
+                if(data.length >= 5)
                 {
                     s.setLineWidth(Integer.parseInt(data[4]));   
                 }
