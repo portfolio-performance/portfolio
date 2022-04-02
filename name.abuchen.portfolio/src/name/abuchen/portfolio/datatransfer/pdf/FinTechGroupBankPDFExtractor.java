@@ -86,10 +86,13 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
                 // Storno Wertpapierabrechnung Kauf Fonds/Zertifikate
                 // Stornierung Wertpapierabrechnung Kauf Fonds
-                .section().optional()
-                .match("^(Storno|Stornierung) Wertpapierabrechnung.*$")
+                .section("type").optional()
+                .match("^(?<type>(Storno|Stornierung)) Wertpapierabrechnung .*$")
                 .assign((t, v) -> {
-                    throw new IllegalArgumentException(Messages.MsgErrorOrderCancellationUnsupported);
+                    if (v.get("type").equals("Storno") || v.get("type").equals("Stornierung"))
+                    {
+                        t.setNote(Messages.MsgErrorOrderCancellationUnsupported);
+                    }
                 })
 
                 // Nr.121625906/1     Kauf        IS C.MSCI EMIMI U.ETF DLA (IE00BKM4GZ66/A111X9)
@@ -258,7 +261,36 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 .match("^.* \\*\\*\\*Einbeh\\. SichSt ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?\\-(?<taxRefund>[\\.,\\d]+)$")
                 .assign(this::extractTaxRefundDifferentCurrency)
 
-                .wrap(BuySellEntryItem::new);
+                //   unter der Transaktion-Nr.: 132465978
+                //   unter der Transaktion-Nr. : 1111111111
+                // Transaktionsnummer: 921414163
+                .section("note").optional()
+                .match("^(.* )?(?<note>(Transaktion\\-Nr\\.([\\s]+)?|Transaktionsnummer): [\\d]+)(.*)?$")
+                .assign((t, v) -> {
+                    if (t.getNote() == null)
+                        t.setNote(trim(v.get("note")));
+                })
+
+                //     Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+                // 1301138113.
+                .section("note1", "note2").optional()
+                .match("^.* (?<note1>(Transaktion\\-Nr\\.([\\s]+)?|Transaktionsnummer):)$")
+                .match("^([\\s]+)?(?<note2>[\\d]+)\\.$")
+                .assign((t, v) -> {
+                    if (t.getNote() == null)
+                        t.setNote(trim(v.get("note1")) + " " + trim(v.get("note2")));
+                })
+
+                .wrap(t -> {
+                    if (t.getPortfolioTransaction().getCurrencyCode() != null && t.getPortfolioTransaction().getAmount() != 0)
+                    {
+                        if (t.getPortfolioTransaction().getNote() == null || !t.getPortfolioTransaction().getNote().equals(Messages.MsgErrorOrderCancellationUnsupported))
+                            return new BuySellEntryItem(t);
+                        else
+                            return new NonImportableItem(Messages.MsgErrorOrderCancellationUnsupported);
+                    }
+                    return null;
+                });
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
@@ -389,6 +421,20 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 .match("^Devisenkurs ([\\s]+)?: (?<exchangeRate>[\\.,\\d]+).*$")
                 .match("^.* \\*\\*Einbeh\\. Steuer([\\s]+)?: ([\\s]+)?\\-(?<taxRefund>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign(this::extractTaxRefundDifferentCurrency)
+
+                //   unter der Transaktion-Nr.: 132465978
+                //   unter der Transaktion-Nr. : 1111111111
+                // Transaktionsnummer: 921414163
+                .section("note").optional()
+                .match("^(.* )?(?<note>(Transaktion\\-Nr\\.([\\s]+)?|Transaktionsnummer): [\\d]+)(.*)?$")
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                //     Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+                // 1301138113.
+                .section("note1", "note2").optional()
+                .match("^.* (?<note1>(Transaktion\\-Nr\\.([\\s]+)?|Transaktionsnummer):)$")
+                .match("^([\\s]+)?(?<note2>[\\d]+)\\.$")
+                .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + trim(v.get("note2"))))
 
                 .wrap(BuySellEntryItem::new);
 
@@ -564,9 +610,18 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 })
 
                 //   unter der Transaktion-Nr.: 132465978
+                //   unter der Transaktion-Nr. : 1111111111
+                // Transaktionsnummer: 921414163
                 .section("note").optional()
-                .match("^.* (?<note>Transaktion-Nr\\.: [\\d]+)(.*)?$")
+                .match("^(.* )?(?<note>(Transaktion\\-Nr\\.([\\s]+)?|Transaktionsnummer): [\\d]+)(.*)?$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                //     Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+                // 1301138113.
+                .section("note1", "note2").optional()
+                .match("^.* (?<note1>(Transaktion\\-Nr\\.([\\s]+)?|Transaktionsnummer):)$")
+                .match("^([\\s]+)?(?<note2>[\\d]+)\\.$")
+                .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + trim(v.get("note2"))))
 
                 .wrap(TransactionItem::new);
 
@@ -658,9 +713,18 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 })
 
                 //   unter der Transaktion-Nr.: 132465978
+                //   unter der Transaktion-Nr. : 1111111111
+                // Transaktionsnummer: 921414163
                 .section("note").optional()
-                .match("^.* (?<note>Transaktion-Nr\\.: [\\d]+)(.*)?$")
+                .match("^(.* )?(?<note>(Transaktion\\-Nr\\.([\\s]+)?|Transaktionsnummer): [\\d]+)(.*)?$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                //     Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+                // 1301138113.
+                .section("note1", "note2").optional()
+                .match("^.* (?<note1>(Transaktion\\-Nr\\.([\\s]+)?|Transaktionsnummer):)$")
+                .match("^([\\s]+)?(?<note2>[\\d]+)\\.$")
+                .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + trim(v.get("note2"))))
 
                 .wrap(t -> {
                     if (t.getCurrencyCode() != null && t.getAmount() != 0)
@@ -939,9 +1003,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
         pdfTransaction.subject(() -> {
             BuySellEntry entry = new BuySellEntry();
-            String date = type.getCurrentContext().get("date");
-            if (date == null) throw new IllegalArgumentException("document date is null, parsing must have failed");
-            entry.setDate(asDate(date));
+            entry.setDate(asDate(type.getCurrentContext().get("date").toString()));
             entry.setType(PortfolioTransaction.Type.SELL);
             return entry;
         });
@@ -1043,6 +1105,20 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                     t.setAmount(t.getPortfolioTransaction().getAmount() - asAmount(v.get("taxRefund")));
                 })
 
+                //   unter der Transaktion-Nr.: 132465978
+                //   unter der Transaktion-Nr. : 1111111111
+                // Transaktionsnummer: 921414163
+                .section("note").optional()
+                .match("^(.* )?(?<note>(Transaktion\\-Nr\\.([\\s]+)?|Transaktionsnummer): [\\d]+)(.*)?$")
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                //     Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+                // 1301138113.
+                .section("note1", "note2").optional()
+                .match("^.* (?<note1>(Transaktion\\-Nr\\.([\\s]+)?|Transaktionsnummer):)$")
+                .match("^([\\s]+)?(?<note2>[\\d]+)\\.$")
+                .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + trim(v.get("note2"))))
+
                 .wrap(BuySellEntryItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
@@ -1118,6 +1194,20 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                     t.setAmount(t.getAmount() - asAmount(v.get("taxRefund")));
                 })
 
+                //   unter der Transaktion-Nr.: 132465978
+                //   unter der Transaktion-Nr. : 1111111111
+                // Transaktionsnummer: 921414163
+                .section("note").optional()
+                .match("^(.* )?(?<note>(Transaktion\\-Nr\\.([\\s]+)?|Transaktionsnummer): [\\d]+)(.*)?$")
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                //     Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+                // 1301138113.
+                .section("note1", "note2").optional()
+                .match("^.* (?<note1>(Transaktion\\-Nr\\.([\\s]+)?|Transaktionsnummer):)$")
+                .match("^([\\s]+)?(?<note2>[\\d]+)\\.$")
+                .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + trim(v.get("note2"))))
+
                 .wrap(TransactionItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
@@ -1173,6 +1263,20 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode("currency"));
                 })
+
+                //   unter der Transaktion-Nr.: 132465978
+                //   unter der Transaktion-Nr. : 1111111111
+                // Transaktionsnummer: 921414163
+                .section("note").optional()
+                .match("^(.* )?(?<note>(Transaktion\\-Nr\\.([\\s]+)?|Transaktionsnummer): [\\d]+)(.*)?$")
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                //     Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+                // 1301138113.
+                .section("note1", "note2").optional()
+                .match("^.* (?<note1>(Transaktion\\-Nr\\.([\\s]+)?|Transaktionsnummer):)$")
+                .match("^([\\s]+)?(?<note2>[\\d]+)\\.$")
+                .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + trim(v.get("note2"))))
 
                 .wrap(t -> {
                     if (t.getAmount() != 0)
@@ -1353,6 +1457,20 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                     }
                 })
 
+                //   unter der Transaktion-Nr.: 132465978
+                //   unter der Transaktion-Nr. : 1111111111
+                // Transaktionsnummer: 921414163
+                .section("note").optional()
+                .match("^(.* )?(?<note>(Transaktion\\-Nr\\.([\\s]+)?|Transaktionsnummer): [\\d]+)(.*)?$")
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                //     Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+                // 1301138113.
+                .section("note1", "note2").optional()
+                .match("^.* (?<note1>(Transaktion\\-Nr\\.([\\s]+)?|Transaktionsnummer):)$")
+                .match("^([\\s]+)?(?<note2>[\\d]+)\\.$")
+                .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + trim(v.get("note2"))))
+
                 .wrap(t -> {
                     if (t.getCurrencyCode() != null && t.getAmount() != 0)
                         return new TransactionItem(t);
@@ -1441,6 +1559,20 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                     }
                 })
 
+                //   unter der Transaktion-Nr.: 132465978
+                //   unter der Transaktion-Nr. : 1111111111
+                // Transaktionsnummer: 921414163
+                .section("note").optional()
+                .match("^(.* )?(?<note>(Transaktion\\-Nr\\.([\\s]+)?|Transaktionsnummer): [\\d]+)(.*)?$")
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                //     Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+                // 1301138113.
+                .section("note1", "note2").optional()
+                .match("^.* (?<note1>(Transaktion\\-Nr\\.([\\s]+)?|Transaktionsnummer):)$")
+                .match("^([\\s]+)?(?<note2>[\\d]+)\\.$")
+                .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + trim(v.get("note2"))))
+
                 .wrap(t -> {
                     if (t.getCurrencyCode() != null && t.getAmount() != 0)
                         return new TransactionItem(t);
@@ -1524,6 +1656,20 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
                 })
+
+                //   unter der Transaktion-Nr.: 132465978
+                //   unter der Transaktion-Nr. : 1111111111
+                // Transaktionsnummer: 921414163
+                .section("note").optional()
+                .match("^(.* )?(?<note>(Transaktion\\-Nr\\.([\\s]+)?|Transaktionsnummer): [\\d]+)(.*)?$")
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                //     Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+                // 1301138113.
+                .section("note1", "note2").optional()
+                .match("^.* (?<note1>(Transaktion\\-Nr\\.([\\s]+)?|Transaktionsnummer):)$")
+                .match("^([\\s]+)?(?<note2>[\\d]+)\\.$")
+                .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + trim(v.get("note2"))))
 
                 .wrap(t -> {
                     if (t.getCurrencyCode() != null && t.getAmount() != 0)
