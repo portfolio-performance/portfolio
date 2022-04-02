@@ -13,6 +13,7 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
@@ -38,15 +39,16 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
     {
         /***
          * Information:
-         * In the documents we do not find any currency with three letters, 
-         * so we assume that the currency is the base currency.
+         * Score Priority is a US-based financial services company.
+         * The currency is US$.
+         * 
+         * All security currencies are USD.
          * 
          * CUSIP Number:
          * The CUSIP number is the WKN number.
          * 
          * Dividend transactions:
          * The amount of dividends is reported in gross.
-         *  
          */
 
         final DocumentType type = new DocumentType("ACCOUNT STATEMENT", (context, lines) -> {
@@ -94,11 +96,12 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
 
                             Map<String, String> context = type.getCurrentContext();
                             v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
+                            v.put("currency", CurrencyUnit.USD);
 
                             t.setDate(asDate(v.get("date")));
                             t.setShares(asShares(v.get("shares")));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(getClient().getBaseCurrency());
+                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
                             t.setSecurity(getOrCreateSecurity(v));
                         })
 
@@ -137,15 +140,16 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                                                 .assign((t, v) -> {
                                                     Map<String, String> context = type.getCurrentContext();
                                                     v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
+                                                    v.put("currency", CurrencyUnit.USD);
 
                                                     t.setDateTime(asDate(v.get("date")));
                                                     t.setShares(asShares(v.get("shares")));
                                                     t.setAmount(asAmount(v.get("amount")) - asAmount(v.get("tax")));
-                                                    t.setCurrencyCode(getClient().getBaseCurrency());
+                                                    t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
                                                     t.setSecurity(getOrCreateSecurity(v));
 
                                                     t.addUnit(new Unit(Unit.Type.TAX,
-                                                                    Money.of(asCurrencyCode(getClient().getBaseCurrency()),
+                                                                    Money.of(asCurrencyCode(CurrencyUnit.USD),
                                                                                     asAmount(v.get("tax")))));
                                                 })
                                         ,
@@ -155,11 +159,12 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                                                 .assign((t, v) -> {
                                                     Map<String, String> context = type.getCurrentContext();
                                                     v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
+                                                    v.put("currency", CurrencyUnit.USD);
 
                                                     t.setDateTime(asDate(v.get("date")));
                                                     t.setShares(asShares(v.get("shares")));
                                                     t.setAmount(asAmount(v.get("amount")));
-                                                    t.setCurrencyCode(getClient().getBaseCurrency());
+                                                    t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
                                                     t.setSecurity(getOrCreateSecurity(v));
                                                 })
                                 )
@@ -195,11 +200,12 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
                             v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
+                            v.put("currency", CurrencyUnit.USD);
 
                             t.setDateTime(asDate(v.get("date")));
                             t.setShares(asShares(v.get("shares")));
                             t.setAmount(0L);
-                            t.setCurrencyCode(getClient().getBaseCurrency());
+                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
                             t.setSecurity(getOrCreateSecurity(v));
                         })
 
@@ -231,10 +237,11 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
                             v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
+                            v.put("currency", CurrencyUnit.USD);
 
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(getClient().getBaseCurrency());
+                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
                             t.setSecurity(getOrCreateSecurity(v));
 
                             // if CUSIP lenght != 9
@@ -245,7 +252,7 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                         .wrap(t -> {
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)
                                 return new TransactionItem(t);
-                            return new NonImportableItem("CUSIP is maybe incorrect. " + " " + t.getDateTime() + " " + t.getSecurity());
+                            return new NonImportableItem("CUSIP is maybe incorrect. " + t.getDateTime() + " " + t.getSecurity());
                         }));
 
 
@@ -272,11 +279,12 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
                             v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
+                            v.put("currency", CurrencyUnit.USD);
 
                             t.setDateTime(asDate(v.get("date")));
                             t.setShares(0L);
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(getClient().getBaseCurrency());
+                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
                             t.setSecurity(getOrCreateSecurity(v));
                         })
 
@@ -307,10 +315,11 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
                             v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
+                            v.put("currency", CurrencyUnit.USD);
 
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(getClient().getBaseCurrency());
+                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
                         })
 
                         .wrap(t -> {
@@ -340,10 +349,11 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
                             v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
+                            v.put("currency", CurrencyUnit.USD);
 
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(getClient().getBaseCurrency());
+                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
                         })
 
                         .wrap(t -> {
