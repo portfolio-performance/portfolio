@@ -38,11 +38,9 @@
             <parameters xmi:id="_mxBVcPOhEeOnWptkJg3Yig" elementId="" name="name.abuchen.portfolio.ui.param.file-type" value="xml+aes256"/>
           </children>
           <children xsi:type="menu:HandledMenuItem" xmi:id="_REyEIPHXEeuopduiCvRhUQ" elementId="name.abuchen.portfolio.ui.menu.file.saveAs.xml" label="Binary (Experimental)" tooltip="" command="_48Q94POhEeOtWc3KvKMOyw">
-            <visibleWhen xsi:type="ui:ImperativeExpression" xmi:id="_XGWlAPHXEeuopduiCvRhUQ" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.preferences.ExperimentalFeaturesEnabledExpression"/>
             <parameters xmi:id="_REyEIfHXEeuopduiCvRhUQ" elementId="" name="name.abuchen.portfolio.ui.param.file-type" value="binary"/>
           </children>
           <children xsi:type="menu:HandledMenuItem" xmi:id="_KeMT4P0KEeuEto77o9qFWg" elementId="name.abuchen.portfolio.ui.menu.file.saveAs.xml" label="Binary password-protected (Experimental)" tooltip="" command="_48Q94POhEeOtWc3KvKMOyw">
-            <visibleWhen xsi:type="ui:ImperativeExpression" xmi:id="_KeMT4f0KEeuEto77o9qFWg" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.preferences.ExperimentalFeaturesEnabledExpression"/>
             <parameters xmi:id="_KeMT4v0KEeuEto77o9qFWg" elementId="" name="name.abuchen.portfolio.ui.param.file-type" value="binary+aes256"/>
           </children>
         </children>
