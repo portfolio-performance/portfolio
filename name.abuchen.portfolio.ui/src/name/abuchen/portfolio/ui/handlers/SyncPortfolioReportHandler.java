@@ -39,9 +39,16 @@ public class SyncPortfolioReportHandler
                     @org.eclipse.e4.core.di.annotations.Optional @Preference(value = UIConstants.Preferences.PORTFOLIO_REPORT_API_URL) String portfolioReportApiUrl,
                     @org.eclipse.e4.core.di.annotations.Optional @Preference(value = UIConstants.Preferences.PORTFOLIO_REPORT_API_KEY) String portfolioReportApiKey)
     {
-        if (portfolioReportApiKey == null)
+
+        if (portfolioReportApiUrl == null || portfolioReportApiUrl.trim().length() == 0)
         {
-            MessageDialog.openInformation(shell, Messages.LabelInfo, "First configure session token in preferences");
+            MessageDialog.openError(shell, Messages.LabelError, Messages.PortfolioReportMissingAPIURL);
+            return;
+        }
+
+        if (portfolioReportApiKey == null || portfolioReportApiKey.trim().length() == 0)
+        {
+            MessageDialog.openError(shell, Messages.LabelError, Messages.PortfolioReportMissingAPIKey);
             return;
         }
 
@@ -54,7 +61,7 @@ public class SyncPortfolioReportHandler
         IRunnableWithProgress operation = monitor -> {
             try
             {
-                new PortfolioReportSync(portfolioReportApiUrl, portfolioReportApiKey, clientInput.getClient(),
+                new PortfolioReportSync(portfolioReportApiUrl.trim(), portfolioReportApiKey.trim(), clientInput.getClient(),
                                 clientInput.getLabel()).sync(monitor);
             }
             catch (IOException e)
