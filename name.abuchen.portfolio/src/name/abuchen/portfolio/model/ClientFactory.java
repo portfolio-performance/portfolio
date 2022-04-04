@@ -1374,10 +1374,13 @@ public class ClientFactory
     private static void copyClassificationKeys(Classification from, Classification to)
     {
         to.setKey(from.getKey());
+        
         Map<String, Classification> fromChildren = from.getChildren().stream()
-                        .collect(Collectors.toMap(Classification::getName, Function.identity()));
+                        .collect(Collectors.toMap(Classification::getName, Function.identity(), (r,l) -> null));
+        
         Map<String, Classification> toChildren = to.getChildren().stream()
-                        .collect(Collectors.toMap(Classification::getName, Function.identity()));
+                        .collect(Collectors.toMap(Classification::getName, Function.identity(), (r,l) -> null));
+        
         for (Map.Entry<String, Classification> entry : fromChildren.entrySet())
         {
             String key = entry.getKey();
