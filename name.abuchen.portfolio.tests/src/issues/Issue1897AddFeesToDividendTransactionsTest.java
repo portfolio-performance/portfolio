@@ -34,7 +34,7 @@ import name.abuchen.portfolio.snapshot.filter.ClientSecurityFilter;
 import name.abuchen.portfolio.snapshot.filter.WithoutTaxesFilter;
 import name.abuchen.portfolio.util.Interval;
 
-public class Issue1897AddFeesToDividendTransactions
+public class Issue1897AddFeesToDividendTransactionsTest
 {
     private static Client client;
     private static CurrencyConverter converter = new TestCurrencyConverter();
@@ -44,7 +44,7 @@ public class Issue1897AddFeesToDividendTransactions
     @BeforeClass
     public static void setup() throws IOException
     {
-        client = ClientFactory.load(Issue371PurchaseValueWithTransfers.class
+        client = ClientFactory.load(Issue371PurchaseValueWithTransfersTest.class
                         .getResourceAsStream("Issue1897AddFeesToDividendTransactions.xml")); //$NON-NLS-1$
     }
 

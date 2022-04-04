@@ -21,12 +21,12 @@ import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
 import name.abuchen.portfolio.util.Interval;
 
-public class Issue672CapitalGainsIfSecurityIsTransferred
+public class Issue672CapitalGainsIfSecurityIsTransferredTest
 {
     @Test
     public void testPurchaseValueOfSecurityPositionWithTransfers() throws IOException
     {
-        Client client = ClientFactory.load(Issue371PurchaseValueWithTransfers.class
+        Client client = ClientFactory.load(Issue371PurchaseValueWithTransfersTest.class
                         .getResourceAsStream("Issue672CapitalGainsIfSecurityIsTransferred.xml")); //$NON-NLS-1$
 
         CurrencyConverter converter = new TestCurrencyConverter();

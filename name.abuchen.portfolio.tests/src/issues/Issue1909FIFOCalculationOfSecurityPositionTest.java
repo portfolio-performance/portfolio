@@ -22,12 +22,12 @@ import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
 import name.abuchen.portfolio.util.Interval;
 
-public class Issue1909FIFOCalculationOfSecurityPosition
+public class Issue1909FIFOCalculationOfSecurityPositionTest
 {
     @Test
     public void testDefaultSnapshot() throws IOException
     {
-        Client client = ClientFactory.load(Issue1909FIFOCalculationOfSecurityPosition.class
+        Client client = ClientFactory.load(Issue1909FIFOCalculationOfSecurityPositionTest.class
                         .getResourceAsStream("Issue1909FIFOCalculationOfSecurityPosition.xml")); //$NON-NLS-1$
 
         Security security = client.getSecurities().get(0);

@@ -18,7 +18,7 @@ public class IssueMigrationOfClassificationKeysTest
     @Test
     public void testMigrationOfClassificationKeys() throws IOException
     {
-        Client client = ClientFactory.load(Issue1498FifoCrossPortfolio.class
+        Client client = ClientFactory.load(Issue1498FifoCrossPortfolioTest.class
                         .getResourceAsStream("IssueMigrationOfClassificationKeys.xml")); //$NON-NLS-1$
 
         assertThat(client.getFileVersionAfterRead(), is(54));

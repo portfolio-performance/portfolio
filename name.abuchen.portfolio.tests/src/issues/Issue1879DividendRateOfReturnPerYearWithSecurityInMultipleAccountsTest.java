@@ -18,12 +18,12 @@ import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
 import name.abuchen.portfolio.util.Interval;
 
-public class Issue1879DividendRateOfReturnPerYearWithSecurityInMultipleAccounts
+public class Issue1879DividendRateOfReturnPerYearWithSecurityInMultipleAccountsTest
 {
     @Test
     public void testPurchaseValueOfSecurityPositionWithTransfers() throws IOException
     {
-        Client client = ClientFactory.load(Issue1879DividendRateOfReturnPerYearWithSecurityInMultipleAccounts.class
+        Client client = ClientFactory.load(Issue1879DividendRateOfReturnPerYearWithSecurityInMultipleAccountsTest.class
                         .getResourceAsStream("Issue1879DividendRateOfReturnPerYearWithSecurityInMultipleAccounts.xml")); //$NON-NLS-1$
 
         CurrencyConverter converter = new TestCurrencyConverter();
