@@ -48,6 +48,7 @@ import com.google.common.collect.Streams;
 
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.InvestmentPlan;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
@@ -1043,7 +1044,7 @@ public final class SecuritiesTable implements ModificationListener
 
         new OpenDialogAction(view, Messages.InvestmentPlanMenuCreate) //
                         .type(InvestmentPlanDialog.class) //
-                        .parameters(PortfolioTransaction.class) //
+                        .parameters(InvestmentPlan.Type.BUY_OR_DELIVERY) //
                         .with(security) //
                         .addTo(manager);
 
