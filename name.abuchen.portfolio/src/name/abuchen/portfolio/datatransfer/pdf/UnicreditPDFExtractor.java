@@ -52,9 +52,7 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
                 .section("type").optional()
                 .match("^W e r t p a p i e r \\- A b r e c h n u n g ([\\s]+)?(?<type>(K a u f| V e r k a u f))( .*)?$")
                 .assign((t, v) -> {
-                    v.put("type", stripBlanks(v.get("type")));
-
-                    if (v.get("type").equals("Verkauf"))
+                    if (stripBlanks(v.get("type")).equals("Verkauf"))
                     {
                         t.setType(PortfolioTransaction.Type.SELL);
                     }
@@ -65,14 +63,14 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
                 // ST 22
                 // ACTIONS PORT. EO 2 FR0000120578
                 // Kurswert EUR 1.547,26
-                .section("name", "wkn", "isin", "shares", "currency").optional()
+                .section("name", "wkn", "name1", "isin", "currency").optional()
                 .find("Nennbetrag Wertpapierbezeichnung Wertpapierkennnummer\\/ISIN.*")
-                .match("^(?<name>.*) (?<wkn>[^ ][\\w]+)$")
-                .match("^ST (?<shares>[\\.,\\d]+)$")
-                .match("^.* (?<isin>[\\w]{12})$")
+                .match("^(?<name>.*) (?<wkn>[\\w]{6})$")
+                .match("^(?<name1>.*) (?<isin>[\\w]{12})$")
                 .match("^Kurswert (?<currency>[\\w]{3}) [\\.,\\d]+.*$")
                 .assign((t, v) -> {
-                    t.setShares(asShares(v.get("shares")));
+                    v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
+
                     t.setSecurity(getOrCreateSecurity(v));
                 })
 
@@ -80,16 +78,21 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
                 // ST 25 FIRST EAGLE AMUNDI-INTERNATIO. A1JQVV ACTIONS
                 // NOM. AE-C O.N. LU0565135745
                 // Kurswert EUR 4.803,50
-                .section("name", "name1", "wkn", "isin", "shares").optional()
-                .find("Nennbetrag Wertpapierbezeichnung ([\\s]+)?Wertpapierkennnummer\\/ISIN.*")
-                .match("^ST (?<shares>[\\.,\\d]+) (?<name>.*) ([\\s]+)?(?<wkn>[\\w]{6}) ([\\s]+)?(?<name1>.*) (?<isin>[\\w]{12})$")
-                .match("^Kurswert (?<currency>[\\w]{3}) [\\.,\\d]+.*$") //
+                .section("name", "name1", "wkn", "isin").optional()
+                .find("Nennbetrag Wertpapierbezeichnung ([\\s]+)?Wertpapierkennnummer\\/ISIN(.*)?")
+                .match("^ST [\\.,\\d]+ (?<name>.*) (?<wkn>[\\w]{6})[\\s]{2,}(?<name1>.*) (?<isin>[\\w]{12})$")
+                .match("^Kurswert (?<currency>[\\w]{3}) [\\.,\\d]+(.*)?$")
                 .assign((t, v) -> {
                     v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
 
-                    t.setShares(asShares(v.get("shares")));
                     t.setSecurity(getOrCreateSecurity(v));
                 })
+
+                // ST 22
+                // ST 25 FIRST EAGLE AMUNDI-INTERNATIO. A1JQVV ACTIONS
+                .section("shares")
+                .match("^ST (?<shares>[\\.,\\d]+)(.*)?$")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 // Zum Kurs von Ausführungstag/Zeit Ausführungsort Verwahrart
                 // EUR 192,14 20.04.2021 03.53.15 WP-Rechnung GS
@@ -175,7 +178,7 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
                 // INHABER-ANTEILE C
                 // Geschäftsjahr 2020/2021
                 // zahlbar mit EUR  15,00 Bruttobetrag   EUR 0,99
-                .section("name", "wkn", "isin", "name1", "currency").optional()
+                .section("name", "wkn", "isin", "name1", "currency")
                 .match("^(?<name>.*) Wertpapierkennnummer ([\\s]+)(?<wkn>.*) \\/ (?<isin>[\\w]{12})$")
                 .match("^(?<name1>.*)$")
                 .match("^zahlbar mit (?<currency>[\\w]{3}) ([\\s]+)?[\\.,\\d]+ .*$")
@@ -215,22 +218,22 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
     {
         transaction
                 // Brokerkommission* EUR 0,27
-                .section("fee", "currency").optional()
+                .section("currency", "fee").optional()
                 .match("^Brokerkommission\\* (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)(\\-)?( .*)?$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Transaktionsentgelt* EUR 3,09
-                .section("fee", "currency").optional()
+                .section("currency", "fee").optional()
                 .match("^Transaktionsentgelt\\* (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)(\\-)?( .*)?$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Provision EUR 10,21
-                .section("fee", "currency").optional()
+                .section("currency", "fee").optional()
                 .match("^Provision (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)(\\-)?( .*)?$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Wertpapierprovision* EUR 41,09- 
-                .section("fee", "currency").optional()
+                .section("currency", "fee").optional()
                 .match("^Wertpapierprovision\\* (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)(\\-)?( .*)?$")
                 .assign((t, v) -> processFeeEntries(t, v, type));
     }
