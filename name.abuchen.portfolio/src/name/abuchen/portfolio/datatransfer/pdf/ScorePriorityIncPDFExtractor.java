@@ -151,7 +151,6 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
 
                                                     Money tax = Money.of(asCurrencyCode(CurrencyUnit.USD), asAmount(v.get("tax")));
                                                     checkAndSetTax(tax, t, type);
-//                                                    processTaxEntries(t, v, type);
                                                 })
                                         ,
                                         section -> section

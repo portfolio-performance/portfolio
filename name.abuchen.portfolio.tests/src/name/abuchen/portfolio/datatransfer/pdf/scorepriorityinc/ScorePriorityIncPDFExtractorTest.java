@@ -34,23 +34,23 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class ScorePriorityIncPDFExtractorTest
 {
+    /***
+     * Information:
+     * Score Priority is a US-based financial services company.
+     * The currency is US$.
+     * 
+     * All security currencies are USD.
+     * 
+     * CUSIP Number:
+     * The CUSIP number is the WKN number.
+     * 
+     * Dividend transactions:
+     * The amount of dividends is reported in gross.
+     */
+
     @Test
     public void testAccountStatement01()
     {
-        /***
-         * Information:
-         * Score Priority is a US-based financial services company.
-         * The currency is US$.
-         * 
-         * All security currencies are USD.
-         * 
-         * CUSIP Number:
-         * The CUSIP number is the WKN number.
-         * 
-         * Dividend transactions:
-         * The amount of dividends is reported in gross.
-         */
-
         ScorePriorityIncPDFExtractor extractor = new ScorePriorityIncPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
@@ -313,11 +313,6 @@ public class ScorePriorityIncPDFExtractorTest
     @Test
     public void testAccountStatement02()
     {
-        /***
-         * Information: In the documents we do not find any currency with three
-         * letters, so we assume that the currency is the base currency.
-         */
-
         ScorePriorityIncPDFExtractor extractor = new ScorePriorityIncPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
@@ -363,11 +358,6 @@ public class ScorePriorityIncPDFExtractorTest
     @Test
     public void testAccountStatement03()
     {
-        /***
-         * Information: In the documents we do not find any currency with three
-         * letters, so we assume that the currency is the base currency.
-         */
-
         ScorePriorityIncPDFExtractor extractor = new ScorePriorityIncPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
@@ -717,11 +707,6 @@ public class ScorePriorityIncPDFExtractorTest
     @Test
     public void testAccountStatement04()
     {
-        /***
-         * Information: In the documents we do not find any currency with three
-         * letters, so we assume that the currency is the base currency.
-         */
-
         ScorePriorityIncPDFExtractor extractor = new ScorePriorityIncPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
