@@ -67,11 +67,13 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                     }
                 })
 
-                // Stück 158 XTR.(IE) - MSCI WORLD IE00BJ0KDQ92 (A1XB5U)
+                // Stück 158 XTR.(IE) - MSCI WORLD              IE00BJ0KDQ92 (A1XB5U)
                 // REGISTERED SHARES 1C O.N.
-                .section("isin", "wkn", "name", "name1")
+                // Ausführungskurs 62,821 EUR
+                .section("name", "isin", "wkn", "name1", "currency")
                 .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
                 .match("^(?<name1>.*)$")
+                .match("^(Ausf.hrungskurs|Abrech\\.\\-Preis) [\\.,\\d]+ (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Handels-/Ausführungsplatz"))
                         v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
@@ -112,6 +114,40 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                     t.setCurrencyCode(v.get("currency"));
                 })
 
+                // Devisenkurs (EUR/USD) 1,06386 vom 12.12.2016
+                // Kurswert 1.289,64 EUR
+                .section("fxCurrency", "exchangeRate", "amount", "currency").optional()
+                .match("^Devisenkurs \\([\\w]{3}\\/(?<fxCurrency>[\\w]{3})\\) (?<exchangeRate>[\\.,\\d]+) .*$")
+                .match("^Kurswert (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                    if (t.getPortfolioTransaction().getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
+                    {
+                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+                    }
+                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
+
+                    // read the forex currency, exchange rate and gross
+                    // amount in forex currency
+                    String forex = asCurrencyCode(v.get("fxCurrency"));
+                    if (t.getPortfolioTransaction().getSecurity().getCurrencyCode().equals(forex))
+                    {
+                        BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
+                                        RoundingMode.HALF_DOWN);
+
+                        // gross given in account currency
+                        long amount = asAmount(v.get("amount"));
+                        long fxAmount = exchangeRate.multiply(BigDecimal.valueOf(amount))
+                                        .setScale(0, RoundingMode.HALF_DOWN).longValue();
+
+                        Unit grossValue = new Unit(Unit.Type.GROSS_VALUE,
+                                        Money.of(asCurrencyCode(v.get("currency")), amount),
+                                        Money.of(forex, fxAmount), inverseRate);
+
+                        t.getPortfolioTransaction().addUnit(grossValue);
+                    }
+                })
+
                 // Limit 43,00 EUR 
                 .section("note").optional()
                 .match("^(?<note>Limit .*)$")
@@ -144,7 +180,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                 // Stück 12 JOHNSON & JOHNSON SHARES US4781601046 (853260)
                 // REGISTERED SHARES DL 1
                 // Zahlbarkeitstag 14.01.2022 Ausschüttung pro St. 1,390000000 USD
-                .section("isin", "wkn", "name", "name1", "currency")
+                .section("name", "isin", "wkn", "name1", "currency")
                 .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[\\w]{12}.*) \\((?<wkn>.*)\\)$")
                 .match("(?<name1>.*)")
                 .match("^.* (Aussch.ttung|Dividende|Ertrag) ([\\s]+)?pro (St\\.|St.ck) [\\.,\\d]+ (?<currency>[\\w]{3})$")
