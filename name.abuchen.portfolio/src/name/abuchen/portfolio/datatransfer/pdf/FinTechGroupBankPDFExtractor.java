@@ -502,71 +502,83 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         })
                                 ,
 
-                                /***
-                                 * If we have a negative amount, 
-                                 * we first post the dividends received 
-                                 * and then the tax charge
-                                 */
                                 // Extag           :    07.10.2021        Bruttothesaurierung:        78,81 USD
                                 // Zuflusstag      :    08.10.2021        Devisenkurs        :         1,156200
                                 //                                        Endbetrag          :       -15,24 EUR
                                 section -> section
-                                        .attributes("fxAmount", "fxCurrency", "exchangeRate", "currency")
-                                        .match("^.* (Bruttodividende|Bruttoaussch.ttung|Bruttothesaurierung)([\\s]+)?: ([\\s]+)?(?<fxAmount>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
+                                        .attributes("type", "fxAmount", "fxCurrency", "exchangeRate", "currency")
+                                        .match("^.* (?<type>(Bruttodividende|Bruttoaussch.ttung|Bruttothesaurierung))([\\s]+)?: ([\\s]+)?(?<fxAmount>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
                                         .match("^(.* )?Devisenkurs([\\s]+)?: ([\\s]+)?(?<exchangeRate>[\\.,\\d]+).*$")
                                         .match("^.* Endbetrag([\\s]+)?: ([\\s]+)?\\-[\\.,\\d]+ (?<currency>[\\w]{3})$")
                                         .assign((t, v) -> {
                                             type.getCurrentContext().put("negative", "X");
-
                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
 
-                                            Money fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxAmount")));
-
-                                            BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                                            if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
+                                            /***
+                                             * If we have a negative amount and no gross reinvestment,
+                                             * we first book the dividends received and then the tax charge
+                                             */
+                                            if (v.get("type").equals("Bruttothesaurierung"))
                                             {
-                                                exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+                                                t.setAmount(0L);
                                             }
-                                            type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
-
-                                            // Calculate gross amount in account currency
-                                            Money gross = Money.of(v.get("currency"), 
-                                                            Math.round(fxAmount.getAmount() / exchangeRate.doubleValue()));
-
-                                            // Set amount
-                                            t.setAmount(gross.getAmount());
-
-                                            if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
+                                            else
                                             {
-                                                BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
-                                                                RoundingMode.HALF_DOWN);
+                                                Money fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxAmount")));
 
-                                                // check, if forex currency is transaction
-                                                // currency or not and swap amount, if necessary
-                                                Unit grossValue;
-                                                if (!asCurrencyCode(v.get("fxCurrency")).equals(t.getCurrencyCode()))
+                                                BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                                                if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
                                                 {
-                                                    grossValue = new Unit(Unit.Type.GROSS_VALUE, gross, fxAmount, inverseRate);
+                                                    exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
                                                 }
-                                                else
+                                                type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
+
+                                                // Calculate gross amount in account currency
+                                                Money gross = Money.of(v.get("currency"), 
+                                                                Math.round(fxAmount.getAmount() / exchangeRate.doubleValue()));
+
+                                                // Set amount
+                                                t.setAmount(gross.getAmount());
+
+                                                if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
                                                 {
-                                                    grossValue = new Unit(Unit.Type.GROSS_VALUE, fxAmount, gross, inverseRate);
-                                                }
-                                                t.addUnit(grossValue);
+                                                    BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
+                                                                    RoundingMode.HALF_DOWN);
+
+                                                    // check, if forex currency is transaction
+                                                    // currency or not and swap amount, if necessary
+                                                    Unit grossValue;
+                                                    if (!asCurrencyCode(v.get("fxCurrency")).equals(t.getCurrencyCode()))
+                                                    {
+                                                        grossValue = new Unit(Unit.Type.GROSS_VALUE, gross, fxAmount, inverseRate);
+                                                    }
+                                                    else
+                                                    {
+                                                        grossValue = new Unit(Unit.Type.GROSS_VALUE, fxAmount, gross, inverseRate);
+                                                    }
+                                                    t.addUnit(grossValue);
+                                                }   
                                             }
                                         })
                                 ,
                                 // Extag           :    20.01.2020        Bruttothesaurierung:        23,19 EUR
                                 //                                        Endbetrag          :        -8,26 EUR
                                 section -> section
-                                        .attributes("amount", "currency")
-                                        .match("^.* (Bruttodividende|Bruttoaussch.ttung|Bruttothesaurierung)([\\s]+)?: ([\\s]+)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                                        .attributes("type", "amount", "currency")
+                                        .match("^.* (?<type>(Bruttodividende|Bruttoaussch.ttung|Bruttothesaurierung))([\\s]+)?: ([\\s]+)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                                         .match("^.* Endbetrag([\\s]+)?: ([\\s]+)?\\-[\\.,\\d]+ [\\w]{3}$")
                                         .assign((t, v) -> {
                                             type.getCurrentContext().put("negative", "X");
-
                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                            t.setAmount(asAmount(v.get("amount")));
+
+                                            /***
+                                             * If we have a negative amount and no gross reinvestment,
+                                             * we first book the dividends received and then the tax charge
+                                             */
+                                            if (v.get("type").equals("Bruttothesaurierung"))
+                                                t.setAmount(0L);
+                                            else
+                                                t.setAmount(asAmount(v.get("amount")));   
                                         })
                         )
 
@@ -623,7 +635,11 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 .match("^([\\s]+)?(?<note2>[\\d]+)\\.$")
                 .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + trim(v.get("note2"))))
 
-                .wrap(TransactionItem::new);
+                .wrap(t -> {
+                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                        return new TransactionItem(t);
+                    return null;
+                });
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);

@@ -3387,6 +3387,10 @@ public class FinTechGroupBankPDFExtractorTest
     {
         /***
          * This test is a dividend transaction with negative amount.
+         * 
+         * If we have a negative amount and no gross reinvestment,
+         * we first book the dividends received and then the tax charge
+         * 
          * Taxes must be paid.
          */
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
@@ -3396,7 +3400,7 @@ public class FinTechGroupBankPDFExtractorTest
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDividende07.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(3));
+        assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
@@ -3407,29 +3411,9 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getName(), is("PICTET-GL.MEGAT.SEL.P EO"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
-        // check dividends transaction
+        // check dividends tax transaction
         AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-21T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(10)));
-        assertThat(transaction.getSource(), is("FlatExDividende07.txt"));
-        assertThat(transaction.getNote(), is("Transaktion-Nr.: 1784953069"));
-
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(23.19))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(23.19))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-
-        // check dividends tax transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .skip(1).findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
 
@@ -3454,6 +3438,10 @@ public class FinTechGroupBankPDFExtractorTest
     {
         /***
          * This test is a dividend transaction with negative amount.
+         * 
+         * If we have a negative amount and no gross reinvestment,
+         * we first book the dividends received and then the tax charge
+         * 
          * Taxes must be paid.
          */
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
@@ -3464,7 +3452,7 @@ public class FinTechGroupBankPDFExtractorTest
                         errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(3));
+        assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
@@ -3475,32 +3463,9 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getName(), is("SPDR MSCI WORLD ETF"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
-        // check dividends transaction
+        // check dividends tax transaction
         AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-10-08T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(168.90)));
-        assertThat(transaction.getSource(), is("FlatExDegiroDividende01.txt"));
-        assertThat(transaction.getNote(), is("Transaktion-Nr.: 123456789"));
-
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(78.81 / 1.156200))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(78.81 / 1.156200))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-
-        Unit grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(78.81))));
-
-        // check dividends tax transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .skip(1).findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
 
@@ -3517,11 +3482,22 @@ public class FinTechGroupBankPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        Unit grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(17.62))));
     }
 
     @Test
     public void testFlatExDegiroDividende01WithNegativeAmountAndSecurityInEUR()
     {
+        /***
+         * This test is a dividend transaction with negative amount.
+         * 
+         * If we have a negative amount and no gross reinvestment,
+         * we first book the dividends received and then the tax charge
+         * 
+         * Taxes must be paid.
+         */
         Security security = new Security("SPDR MSCI WORLD ETF", CurrencyUnit.EUR);
         security.setIsin("IE00BFY0GT14");
         security.setWkn("A2N6CW");
@@ -3536,32 +3512,12 @@ public class FinTechGroupBankPDFExtractorTest
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroDividende01.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(2));
+        assertThat(results.size(), is(1));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
-        // check dividends transaction
+        // check dividends tax transaction
         AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-10-08T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(168.90)));
-        assertThat(transaction.getSource(), is("FlatExDegiroDividende01.txt"));
-        assertThat(transaction.getNote(), is("Transaktion-Nr.: 123456789"));
-
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(78.81 / 1.156200))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(78.81 / 1.156200))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-
-        // check dividends tax transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .skip(1).findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
 
