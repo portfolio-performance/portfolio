@@ -40,7 +40,7 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
     {
         /***
          * Information:
-         * Score Priority is a US-based financial services company.
+         * Lime Trading Corp. is a US-based financial services company.
          * The currency is US$.
          * 
          * All security currencies are USD.
