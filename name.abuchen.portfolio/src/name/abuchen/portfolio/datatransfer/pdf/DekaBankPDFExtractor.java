@@ -2,6 +2,8 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -9,10 +11,13 @@ import java.util.regex.Pattern;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.Money;
 
 @SuppressWarnings("nls")
 public class DekaBankPDFExtractor extends AbstractPDFExtractor
@@ -26,6 +31,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
         addBuySellTransaction();
         addSwapBuyTransaction();
         addSwapSellTransaction();
+        addDividendeTransaction();
         addDepotStatementTransaction();
     }
 
@@ -37,7 +43,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("(LASTSCHRIFTEINZUG|VERKAUF)");
+        DocumentType type = new DocumentType("(LASTSCHRIFTEINZUG|VERKAUF|KAUF AUS ERTRAG)");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -47,14 +53,14 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^(LASTSCHRIFTEINZUG|VERKAUF)( .*)?$");
+        Block firstRelevantLine = new Block("^(LASTSCHRIFTEINZUG|VERKAUF|KAUF AUS ERTRAG)( .*)?$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
                 // Is type --> "Verkauf" change from BUY to SELL
                 .section("type").optional()
-                .match("^(?<type>(LASTSCHRIFTEINZUG|VERKAUF)) .*$")
+                .match("^(?<type>(LASTSCHRIFTEINZUG|VERKAUF|KAUF AUS ERTRAG)) .*$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("VERKAUF"))
                     {
@@ -96,8 +102,9 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
 
                 // Einzugsbetrag EUR 4.000,00 Kurs/Kaufpreis Bestand alt: 11,291
                 // Auszahlungsbetrag EUR 2.355,09
+                // Abrechnungsbetrag EUR 1,00 EUR 1,00 EUR 96,576000 Anteilumsatz: 0,010
                 .section("currency", "amount")
-                .match("^(Einzugsbetrag|Auszahlungsbetrag) (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)( .*)?$")
+                .match("^(Einzugsbetrag|Auszahlungsbetrag|Abrechnungsbetrag) (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)( .*)?$")
                 .assign((t, v) -> {
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
@@ -167,6 +174,44 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> {
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
+                })
+
+                // Abrechnungsbetrag EUR 6,22 USD 6,88 USD 102,155229 Anteilumsatz: 0,067
+                // USD 1,106630
+                .section("fxCurrency", "fxAmount", "exchangeRate").optional()
+                .match("^Abrechnungsbetrag [\\w]{3} [\\.,\\d]+ (?<fxCurrency>[\\w]{3}) (?<fxAmount>[\\.,\\d]+) .*$")
+                .find("Devisenkurs .*$")
+                .match("^[\\w]{3} (?<exchangeRate>[\\.,\\d]+)$")
+                .assign((t, v) -> {
+                    // read the forex currency, exchange rate and gross
+                    // amount in forex currency
+                    String forex = asCurrencyCode(v.get("fxCurrency"));
+                    if (t.getPortfolioTransaction().getSecurity().getCurrencyCode().equals(forex))
+                    {
+                        BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                        BigDecimal reverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
+                                        RoundingMode.HALF_DOWN);
+
+                        // gross given in forex currency
+                        long fxAmount = asAmount(v.get("fxAmount"));
+                        long amount = reverseRate.multiply(BigDecimal.valueOf(fxAmount))
+                                        .setScale(0, RoundingMode.HALF_DOWN).longValue();
+
+                        Unit grossValue = new Unit(Unit.Type.GROSS_VALUE,
+                                        Money.of(t.getPortfolioTransaction().getCurrencyCode(), amount),
+                                        Money.of(forex, fxAmount), reverseRate);
+
+                        t.getPortfolioTransaction().addUnit(grossValue);
+                    }
+                })
+
+                // Valutatag: 08. Dezember 2009 Devisenkurs: 0,6654265
+                .section("exchangeRate").optional()
+                .find("Devisenkurs .*$")
+                .match("^[\\w]{3} (?<exchangeRate>[\\.,\\d]+)$")
+                .assign((t, v) -> {
+                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
                 })
 
                 .wrap(BuySellEntryItem::new);
@@ -241,6 +286,55 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                 .wrap(BuySellEntryItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
+    }
+
+    private void addDividendeTransaction()
+    {
+        DocumentType type = new DocumentType("ERTRAGSAUSSCH.TTUNG");
+        this.addDocumentTyp(type);
+
+        Block block = new Block("^ERTRAGSAUSSCH.TTUNG$", "^Bestand neu: .*$");
+        type.addBlock(block);
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>()
+            .subject(() -> {
+                AccountTransaction entry = new AccountTransaction();
+                entry.setType(AccountTransaction.Type.DIVIDENDS);
+                return entry;
+            });
+
+        pdfTransaction
+                // Ausschüttung (pro Anteil EUR 0,2292000): EUR 0,14
+                // Bezeichnung: iShares J.P. Morgan USD EM Bond EUR Hedged UCITS ETF (Dist)
+                // ISIN: IE00B9M6RS56 Unterdepot: 00 Auftragsnummer: 9302 2538
+                .section("currency", "name", "isin").optional()
+                .match("^Aussch.ttung .* (?<currency>[\\w]{3}) [\\.,\\d]+$")
+                .match("^Bezeichnung: (?<name>.*)$")
+                .match("^ISIN: (?<isin>[\\w]{12})( .*)?$")
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+        
+                // Anteilbestand am Ertragstermin: 0,619
+                .section("shares")
+                .match("^Anteilbestand am Ertragstermin: (?<shares>[\\.,\\d]+)$")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+        
+                // Verwahrart: GiroSammel Abrechnungstag: 31.03.2022
+                .section("date")
+                .match("^.* Abrechnungstag: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
+                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+        
+                // Ausschüttung EUR 0,14 Kurs Bestand alt: 0,739
+                .section("currency", "amount")
+                .match("^Aussch.ttung (?<currency>[\\w]{3}) (?<amount>[.,\\d]+) .*$")
+                .assign((t, v) -> {
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                    t.setAmount(asAmount(v.get("amount")));
+                })
+
+                .wrap(TransactionItem::new);
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
+
+        block.set(pdfTransaction);
     }
 
     public void addDepotStatementTransaction()
