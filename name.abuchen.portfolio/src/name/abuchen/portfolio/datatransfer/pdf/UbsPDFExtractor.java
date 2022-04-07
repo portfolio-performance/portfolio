@@ -51,12 +51,12 @@ public class UbsPDFExtractor extends AbstractPDFExtractor
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
-        pdfTransaction.section("name", "isin", "nameContinued")
+        pdfTransaction.section("name", "isin", "nameContinued", "currency")
                         // Whrg. Anzahl/Betrag Beschreibung Valor/ISIN Laufzeit
                         .match("^Whrg\\. Anzahl/Betrag.*$")
 
                         // USD 2'180 UBS (Lux) Fund Solutions - MSCI 21966836
-                        .match("^[A-Z]{3} [0-9'\\.]+ (?<name>.*) " + VALOR_PATTERN + "$")
+                        .match("^(?<currency>[A-Z]{3}) [0-9'\\.]+ (?<name>.*) " + VALOR_PATTERN + "$")
 
                         // Emerging Markets UCITS ETF LU0950674175
                         .match("^(?<nameContinued>[\\w ]*) (?<isin>" + ISIN_PATTERN + ")$").assign((t, v) -> {
