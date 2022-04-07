@@ -64,8 +64,8 @@ public class WeberbankPDFExtractor extends AbstractPDFExtractor
                 // Stück 4.440 NEL ASA NO0010081235 (A0B733)
                 // NAVNE-AKSJER NK -,20
                 // Kurswert 9.657,00- EUR
-                .section("shares", "name", "isin", "wkn", "name1", "currency")
-                .match("^St.ck (?<shares>[\\.,\\d]+) (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
+                .section("name", "isin", "wkn", "name1", "currency")
+                .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
                 .match("^(?<name1>.*)$")
                 .match("^Kurswert [\\.,\\d]+(\\-)? (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
@@ -73,8 +73,12 @@ public class WeberbankPDFExtractor extends AbstractPDFExtractor
                         v.put("name", v.get("name") + " " + v.get("name1"));
 
                     t.setSecurity(getOrCreateSecurity(v));
-                    t.setShares(asShares(v.get("shares")));
                 })
+
+                // Stück 4.440 NEL ASA NO0010081235 (A0B733)
+                .section("shares")
+                .match("^St.ck (?<shares>[\\.,\\d]+) .*$")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 // Schlusstag/-Zeit 26.03.2021 15:12:58 Auftraggeber XXXXXXXXXXXXX
                 .section("date", "time")
@@ -118,17 +122,20 @@ public class WeberbankPDFExtractor extends AbstractPDFExtractor
                 // Nominale Wertpapierbezeichnung ISIN (WKN)
                 // Stück 107 APPLE INC. US0378331005 (865985)
                 // Dividendengutschrift 87,74 USD 74,05+ EUR
-                .section("shares", "name", "isin", "wkn", "name1", "currency")
-                .match("^St.ck (?<shares>[\\.,\\d]+) (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
+                .section("name", "isin", "wkn", "name1", "currency")
+                .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
                 .match("(?<name1>.*)")
                 .match("^Dividendengutschrift [\\.,\\d]+ (?<currency>[\\w]{3}) .*$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Zahlbarkeitstag"))
                         v.put("name", v.get("name") + " " + v.get("name1"));
 
-                    t.setShares(asShares(v.get("shares")));
                     t.setSecurity(getOrCreateSecurity(v));
                 })
+
+                .section("shares")
+                .match("^St.ck (?<shares>[\\.,\\d]+) .*$")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 // Zahlbarkeitstag 13.08.2020 Dividende pro Stück 0,82 USD
                 .section("date")
