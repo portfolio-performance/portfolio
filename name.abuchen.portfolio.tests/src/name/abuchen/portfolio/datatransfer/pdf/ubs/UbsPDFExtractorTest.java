@@ -1,8 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf.ubs;
 
-
-
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
@@ -32,29 +29,26 @@ public class UbsPDFExtractorTest
     @Test
     public void testWertpapierKauf01()
     {
-        
+
         UbsPDFExtractor extractor = new UbsPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
 
-       
         assertThat(errors, empty());
-       
-        
+
         assertThat(results.size(), is(2));
-       
-       // new AssertImportActions().check(results, "USD");
-        
+
+        // new AssertImportActions().check(results, "USD");
+
         // check security
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0950674175"));
         assertThat(security.getName(), is("UBS (Lux) Fund Solutions - MSCI Emerging Markets UCITS ETF"));
-       // assertThat(security.getCurrencyCode(), is("USD"));
+        // assertThat(security.getCurrencyCode(), is("USD"));
 
-        
         // check buy sell transaction
         BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
@@ -62,51 +56,45 @@ public class UbsPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        
-
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-03-08T15:02:13")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(450)));
         assertThat(entry.getSource(), is("Kauf01.txt"));
-       
-       // assertThat(entry.getNote(), is("Valorennummer 906020"));
+
+        // assertThat(entry.getNote(), is("Valorennummer 906020"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("USD", Values.Amount.factorize(4890.60))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
                         is(Money.of("USD", Values.Amount.factorize(4846.25))));
-      
+
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("USD", Values.Amount.factorize(7.34 + 37.01))));
-       
-                 
+
     }
-   
+
     @Test
     public void testWertpapierVerkauf01()
     {
-        
+
         UbsPDFExtractor extractor = new UbsPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
 
-       
         assertThat(errors, empty());
-       
-        
+
         assertThat(results.size(), is(2));
-       
-       // new AssertImportActions().check(results, "USD");
-        
+
+        // new AssertImportActions().check(results, "USD");
+
         // check security
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BX7RRJ27"));
         assertThat(security.getName(), is("UBS (Irl) ETF Plc - Factor MSCI USA Quality UCITS ETF"));
-       // assertThat(security.getCurrencyCode(), is("USD"));
+        // assertThat(security.getCurrencyCode(), is("USD"));
 
-        
         // check buy sell transaction
         BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
@@ -114,23 +102,20 @@ public class UbsPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        
-
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-11-29T14:19:04")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(265)));
         assertThat(entry.getSource(), is("Verkauf01.txt"));
-       
-       // assertThat(entry.getNote(), is("Valorennummer 906020"));
+
+        // assertThat(entry.getNote(), is("Valorennummer 906020"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("USD", Values.Amount.factorize(11116.75))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
                         is(Money.of("USD", Values.Amount.factorize(11203.46))));
-      
+
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("USD", Values.Amount.factorize(16.68 + 70.03))));
-       
-                 
+
     }
 
 }
