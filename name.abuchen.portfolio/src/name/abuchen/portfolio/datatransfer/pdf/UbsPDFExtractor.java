@@ -1,19 +1,23 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import java.util.Map;
+
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
 public class UbsPDFExtractor extends AbstractPDFExtractor
 {
 
-    private final static String ISIN_PATTERN = "[A-Z]{2}[A-Z0-9]{9}[0-9]{1}";
-    private final static String VALOR_PATTERN = "[0-9]{6,9}";
+    private final static String ISIN_PATTERN = "[A-Z]{2}[A-Z0-9]{9}[0-9]{1}"; //$NON-NLS-1$
+    private final static String VALOR_PATTERN = "[0-9]{6,9}"; //$NON-NLS-1$
+    private final static Map<String, Type> txTypes = Map.of("Kauf", Type.BUY, "Verkauf", Type.SELL); //$NON-NLS-1$
 
     public UbsPDFExtractor(Client client)
     {
@@ -33,7 +37,7 @@ public class UbsPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("Börse Kauf Komptant");
+        DocumentType type = new DocumentType("Börse (Kauf|Verkauf) Komptant");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -59,8 +63,8 @@ public class UbsPDFExtractor extends AbstractPDFExtractor
                             t.setSecurity(getOrCreateSecurity(v));
                         })
 
-                        .section("currency", "amount", "date", "time", "shares")
-                        .match("^Abschluss (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})  (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) Börse Kauf Komptant (?<shares>[\\d.,]+) (?<currency>[\\w]{3}) [\\.',\\d]+$")
+                        .section("currency", "amount", "date", "time", "shares", "type")
+                        .match("^Abschluss (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})  (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) Börse (?<type>Kauf|Verkauf) Komptant \\-{0,1}(?<shares>[\\d.,']+) (?<currency>[\\w]{3}) [\\.',\\d]+$")
 
                         // Transaktionswert USD 4'890.60 4'532
                         .match("^Transaktionswert [A-Z]{3} (?<amount>[0-9'\\.]+) .*$").assign((t, v) -> {
@@ -68,6 +72,9 @@ public class UbsPDFExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                             t.setDate(asDate(v.get("date"), v.get("time")));
                             t.setShares(asShares(v.get("shares")));
+
+                            Type txType = txTypes.getOrDefault(v.get("type"), null);
+                            t.setType(txType);
 
                         })
 
@@ -83,7 +90,7 @@ public class UbsPDFExtractor extends AbstractPDFExtractor
         transaction.section("currency", "fee").optional().match("^Diverse (?<currency>[A-Z]{3}) (?<fee>[0-9'\\.\\-]*)")
                         .assign((t, v) -> processFeeEntries(t, v, type));
 
-        // Courtage USD -22.01
+        // Courtage USD -37.01
         transaction.section("currency", "fee").optional().match("^Courtage (?<currency>[A-Z]{3}) (?<fee>[0-9'\\.\\-]*)")
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }

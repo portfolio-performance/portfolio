@@ -73,16 +73,14 @@ public class UbsPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("USD", Values.Amount.factorize(4890.60))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("USD", Values.Amount.factorize(4861.25))));
+                        is(Money.of("USD", Values.Amount.factorize(4846.25))));
       
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("USD", Values.Amount.factorize(7.34 + 22.01))));
+                        is(Money.of("USD", Values.Amount.factorize(7.34 + 37.01))));
        
                  
     }
-    
-/*
-    
+   
     @Test
     public void testWertpapierVerkauf01()
     {
@@ -104,8 +102,8 @@ public class UbsPDFExtractorTest
         // check security
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("LU0950674175"));
-        assertThat(security.getName(), is("UBS (Lux) Fund Solutions - MSCI Emerging Markets UCITS ETF"));
+        assertThat(security.getIsin(), is("IE00BX7RRJ27"));
+        assertThat(security.getName(), is("UBS (Irl) ETF Plc - Factor MSCI USA Quality UCITS ETF"));
        // assertThat(security.getCurrencyCode(), is("USD"));
 
         
@@ -113,26 +111,26 @@ public class UbsPDFExtractorTest
         BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-03-08T15:02:13")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(450)));
-        assertThat(entry.getSource(), is("Kauf01.txt"));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-11-29T14:19:04")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(265)));
+        assertThat(entry.getSource(), is("Verkauf01.txt"));
        
        // assertThat(entry.getNote(), is("Valorennummer 906020"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("USD", Values.Amount.factorize(4890.60))));
+                        is(Money.of("USD", Values.Amount.factorize(11116.75))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("USD", Values.Amount.factorize(4861.25))));
+                        is(Money.of("USD", Values.Amount.factorize(11203.46))));
       
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("USD", Values.Amount.factorize(7.34 + 22.01))));
+                        is(Money.of("USD", Values.Amount.factorize(16.68 + 70.03))));
        
                  
     }
-*/
+
 }
