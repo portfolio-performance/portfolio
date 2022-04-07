@@ -75,7 +75,7 @@ Der Aufbau der Importer erfolgt nach folgendem Schema:
 * Fremdwährung (Brutto)
   * fxAmount --> Betrag
   * fxCurrency --> Fremdwährung 
-  * Wechselkurs
+* Wechselkurs
   * exchangeRate --> Wechselkurs der Fremdwährung
 * Notizen (Optional)
   * note --> Notiz z.B Quartalsdividende
