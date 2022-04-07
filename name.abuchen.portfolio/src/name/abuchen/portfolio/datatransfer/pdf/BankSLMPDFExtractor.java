@@ -60,20 +60,25 @@ public class BankSLMPDFExtractor extends AbstractPDFExtractor
                     }
                 })
 
-                // 17'000 Inhaber-Aktien Nokia Corp
+                // 17'000 Inhaber-Aktien 
+                // Nokia Corp
                 // Valor: 472672
                 // Total Kurswert EUR -74'120.00
-                .section("shares", "name1", "name", "wkn", "currency")
-                .match("^(?<shares>[\\.',\\d]+) (?<name1>.*)$")
+                .section("name1", "name", "wkn", "currency")
+                .match("^[\\.',\\d]+ (?<name1>.*)$")
                 .match("^(?<name>.*)$")
                 .match("^Valor: (?<wkn>.*)$")
                 .match("^Total Kurswert (?<currency>[\\w]{3}) .*$")
                 .assign((t, v) -> {
                     v.put("name", v.get("name") + " " + v.get("name1"));
 
-                    t.setShares(asShares(v.get("shares")));
                     t.setSecurity(getOrCreateSecurity(v));
                 })
+
+                // 17'000 Inhaber-Aktien Nokia Corp
+                .section("shares")
+                .match("^(?<shares>[\\.',\\d]+) (?<name1>.*)$")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 // Wir haben für Sie am 03.09.2013 gekauft.
                 // Wir haben für Sie am 22.08.2013 verkauft.
@@ -144,18 +149,22 @@ public class BankSLMPDFExtractor extends AbstractPDFExtractor
                 // Valor: 135186
                 // ISIN: CH0001351862
                 // Brutto (1 * CHF 28.00) CHF 28.00
-                .section("name1", "name", "wkn", "isin", "shares", "currency")
+                .section("name1", "name", "wkn", "isin", "currency")
                 .match("^(?<name1>.*) Ex Datum: [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$")
                 .match("^(?<name>.*)$")
                 .match("^Valor: (?<wkn>.*)$")
                 .match("^ISIN: (?<isin>.*)$")
-                .match("^Brutto \\((?<shares>[\\.',\\d]+) \\* [\\w]{3} [\\.',\\d]+\\) (?<currency>[\\w]{3}) [\\.',\\d]+$")
+                .match("^Brutto \\([\\.',\\d]+ \\* [\\w]{3} [\\.',\\d]+\\) (?<currency>[\\w]{3}) [\\.',\\d]+$")
                 .assign((t, v) -> {
                     v.put("name", v.get("name") + " " + v.get("name1"));
 
-                    t.setShares(asShares(v.get("shares")));
                     t.setSecurity(getOrCreateSecurity(v));
                 })
+
+                // Brutto (1 * CHF 28.00) CHF 28.00
+                .section("shares")
+                .match("^Brutto \\((?<shares>[\\.',\\d]+) \\* .*$")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 // Am 02.05.2016 wurde folgende Dividende gutgeschrieben:
                 .section("date")
