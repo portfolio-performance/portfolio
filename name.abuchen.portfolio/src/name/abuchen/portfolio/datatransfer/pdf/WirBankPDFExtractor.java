@@ -237,23 +237,35 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
             });
 
         pdfTransaction
-                .section("shares", "name", "isin", "currency")
-                .match("^(?<shares>[\\.,\\d]+) (Ant|Qty) (?<name>.*)$")
+                // 47.817 Ant UBS ETF MSCI USA SRI
+                // ISIN: LU0629460089
+                // Ausschüttung: USD 0.72
+                .section("name", "isin", "currency")
+                .match("^[\\.,\\d]+ (Ant|Qty) (?<name>.*)$")
                 .match("^ISIN: (?<isin>[\\w]{12})$")
                 .match("^(Aussch.ttung|Dividend payment): (?<currency>[\\w]{3}) .*$")
-                .assign((t, v) -> {
-                    t.setSecurity(getOrCreateSecurity(v));
-                    t.setShares(asShares(v.get("shares")));
-                })
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-                .section("date", "amount", "currency")
-                .match("^(Gutgeschriebener Betrag: Valuta|Amount credited: Value date) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d]+)$")
+                // 47.817 Ant UBS ETF MSCI USA SRI
+                .section("shares")
+                .match("^(?<shares>[\\.,\\d]+) (Ant|Qty) .*$")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                // Gutgeschriebener Betrag: Valuta 04.02.2022 CHF 31.44
+                .section("date")
+                .match("^(Gutgeschriebener Betrag: Valuta|Amount credited: Value date) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$")
+                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                // Gutgeschriebener Betrag: Valuta 04.02.2022 CHF 31.44
+                .section("currency", "amount")
+                .match("^(Gutgeschriebener Betrag: Valuta|Amount credited: Value date) .* (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d]+)$")
                 .assign((t, v) -> {
-                    t.setDateTime(asDate(v.get("date")));
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 })
 
+                // Betrag CAD 0.20
+                // Umrechnungskurs CHF/CAD 0.7466 CHF 0.15
                 .section("currency", "amount", "exchangeRate", "fxCurrency", "fxAmount").optional()
                 .match("^(Betrag|Amount) (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d]+)$")
                 .match("^(Umrechnungskurs|Exchange rate) [\\w]{3}\\/[\\w]{3} (?<exchangeRate>[\\.,'\\d]+) (?<fxCurrency>[\\w]{3}) (?<fxAmount>[\\.,'\\d]+)$")
@@ -293,9 +305,12 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                     }
                 })
 
+                // Betrag USD 34.26
+                // Umrechnungskurs CHF/USD 
+                // 0.91759 CHF 31.44
                 .section("currency", "amount", "exchangeRate", "fxCurrency", "fxAmount").optional()
                 .match("^(Betrag|Amount) (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d]+)$")
-                .match("^(Umrechnungskurs|Exchange rate) [\\w]{3}\\/[\\w]{3} $")
+                .match("^(Umrechnungskurs|Exchange rate) [\\w]{3}\\/[\\w]{3}(.*)?$")
                 .match("^(?<exchangeRate>[\\.,'\\d]+) (?<fxCurrency>[\\w]{3}) (?<fxAmount>[\\.,'\\d]+)$")
                 .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
@@ -333,6 +348,11 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                     }
                 })
 
+                // Dividendenart: Ordentliche Dividende
+                .section("note").optional()
+                .match("^Dividendenart: (?<note>.*)")
+                .assign((t, v) -> t.setNote(v.get("note")))
+
                 .wrap(TransactionItem::new);
 
         block.set(pdfTransaction);
@@ -351,19 +371,23 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
             return transaction;
         })
 
-                        .section("shares", "name", "isin", "currency")
-                        .match("^(?<shares>[\\.,\\d]+) (Ant|Qty) (?<name>.*)$")
+                        .section("name", "isin", "currency")
+                        .match("^[\\.,\\d]+ (Ant|Qty) (?<name>.*)$")
                         .match("^ISIN: (?<isin>[\\w]{12})$")
                         .match("^(Aussch.ttung|Dividend payment): (?<currency>[\\w]{3}) .*$")
-                        .assign((t, v) -> {
-                            t.setSecurity(getOrCreateSecurity(v));
-                            t.setShares(asShares(v.get("shares")));
-                        })
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-                        .section("date", "amount", "currency")
-                        .match("^(Gutgeschriebener Betrag: Valuta|Amount credited: Value date) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d]+)$")
+                        .section("shares")
+                        .match("^(?<shares>[\\.,\\d]+) (Ant|Qty) .*$")
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        .section("date")
+                        .match("^(Gutgeschriebener Betrag: Valuta|Amount credited: Value date) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$")
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                        .section("currency", "amount")
+                        .match("^(Gutgeschriebener Betrag: Valuta|Amount credited: Value date) .* (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d]+)$")
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
 

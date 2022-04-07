@@ -814,7 +814,7 @@ public class WirBankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-05-21T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.242)));
         assertThat(transaction.getSource(), is("Dividend01.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Ordentliche Dividende"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(0.04))));
@@ -857,7 +857,7 @@ public class WirBankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-05-21T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.176)));
         assertThat(transaction.getSource(), is("Dividend02.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Ordentliche Dividende"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(0.15))));
@@ -899,7 +899,7 @@ public class WirBankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-05-21T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.176)));
         assertThat(transaction.getSource(), is("Dividend02.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Ordentliche Dividende"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(0.15))));
@@ -1168,7 +1168,7 @@ public class WirBankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-02-04T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(47.817)));
         assertThat(transaction.getSource(), is("Dividend07.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Ordentliche Dividende"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(31.44))));
@@ -1210,7 +1210,7 @@ public class WirBankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-02-04T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(47.817)));
         assertThat(transaction.getSource(), is("Dividend07.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Ordentliche Dividende"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(31.44))));
