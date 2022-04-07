@@ -28,6 +28,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("Raiffeisenbank"); //$NON-NLS-1$
         addBankIdentifier("RB Augsburger Land West eG"); //$NON-NLS-1$
         addBankIdentifier("Raiffeisenlandesbank"); //$NON-NLS-1$
+        addBankIdentifier("Freisinger Bank eG"); //$NON-NLS-1$
 
         addBuySellTransaction();
         addDividendeTransaction();
@@ -126,14 +127,6 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 })
 
-                // Devisenkurs: 1,406 (20.01.2022) -1.093,40 EUR 
-                .section("exchangeRate").optional()
-                .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}\\) (\\-)?[\\.,\\d]+ [\\w]{3}(.*)?$")
-                .assign((t, v) -> {
-                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
-                })
-
                 // -1.537,32 CAD 
                 // Devisenkurs: 1,406 (20.01.2022) -1.093,40 EUR 
                 .section("fxCurrency", "fxAmount", "exchangeRate").optional()
@@ -160,6 +153,14 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
 
                         t.getPortfolioTransaction().addUnit(grossValue);
                     }
+                })
+
+                // Devisenkurs: 1,406 (20.01.2022) -1.093,40 EUR 
+                .section("exchangeRate").optional()
+                .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}\\) (\\-)?[\\.,\\d]+ [\\w]{3}(.*)?$")
+                .assign((t, v) -> {
+                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
                 })
 
                 // Limit bestens
@@ -361,7 +362,8 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                 + "|GUTSCHRIFT"
                                 + "|Kartenzahlung"
                                 + "|Auszahlung"
-                                + "|LOHN\\/GEHALT)"
+                                + "|LOHN\\/GEHALT"
+                                + "|.berweisung SEPA)"
                                 + ") .* "
                                 + "(?<amount>[\\.,\\d]+) [S|H]$")
                 .match("^(?![\\s]+ [Dividende]).*$")
@@ -385,10 +387,18 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                     // Formatting some notes
                     if ("LOHN/GEHALT".equals(v.get("note")))
                         v.put("note", "Lohn/Gehalt");
-                    else if ("EURO-UEBERWEISUNG".equals(v.get("note")))
+
+                    if ("EURO-UEBERWEISUNG".equals(v.get("note")))
                         v.put("note", "EURO-Überweisung");
-                    else
-                        v.put("note", v.get("note").substring(0, 1).toUpperCase() + v.get("note").substring(1, v.get("note").length()).toLowerCase());
+
+                    if ("BASISLASTSCHRIFT".equals(v.get("note")))
+                        v.put("note", "Basislastschrift");
+
+                    if ("DAUERAUFTRAG".equals(v.get("note")))
+                        v.put("note", "Dauerauftrag");
+
+                    if ("GUTSCHRIFT".equals(v.get("note")))
+                        v.put("note", "Gutschrift");
 
                     t.setNote(v.get("note"));
                 })
