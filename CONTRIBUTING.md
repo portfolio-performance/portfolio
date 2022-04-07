@@ -114,6 +114,10 @@ Ein fertigen PDF-Importer als Grundlage wäre z.B. der [V-Bank AG](https://githu
 ### Regular expressions
 Die Regular expressions sollten korrekt und genau erstellt werden.
 
+Alle Sonderzeichen (```\.[]{}()<>*+-=!?^$|```) sind zu escapen. 
+
+Alle Umlaute (```äöüÄÖÜß```), sowie z.B. Zirkumflex o.a. sind durch ein ```.``` (Punkt) escapen.
+
 **Datum: 01.01.1970**
 ```
 Falsch
