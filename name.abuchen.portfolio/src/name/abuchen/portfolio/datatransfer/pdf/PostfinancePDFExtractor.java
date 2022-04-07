@@ -1,7 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import static name.abuchen.portfolio.util.TextUtil.trim;
 import static name.abuchen.portfolio.util.TextUtil.stripBlanks;
+import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -58,7 +58,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("Börsentransaktion: (Kauf|Verkauf)");
+        DocumentType type = new DocumentType("B.rsentransaktion: (Kauf|Verkauf)");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -90,16 +90,16 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                 .match("^[\\.,'\\d\\s]+ [\\.,'\\d\\s]+ (?<currency>[\\w]{3}) [\\.,'\\d\\s]+(.*)?$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
+                // 60 47.29 EUR 2'837.40
+                .section("shares")
+                .match("^(?<shares>[\\.,'\\d\\s]+) [\\.,'\\d\\s]+ [\\w]{3} [\\.,'\\d\\s]+(.*)?$")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
                 // Gemäss Ihrem Kaufauftrag vom 25.09.2018 haben wir folgende Transaktionen vorgenommen:
                 // Gemäss Ihrem Verkaufsauftrag vom 20.09.2018 haben wirfolgende Transaktionen vorgenommen:
                 .section("date")
                 .match("^.* (Kaufauftrag|Verkaufsauftrag) vom (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$")
                 .assign((t, v) -> t.setDate(asDate(v.get("date"))))
-
-                // 60 47.29 EUR 2'837.40
-                .section("shares")
-                .match("^(?<shares>[\\.,'\\d\\s]+) [\\.,'\\d\\s]+ [\\w]{3} [\\.,'\\d\\s]+(.*)?$")
-                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 // Zu Ihren Lasten EUR 2'850.24
                 // Zu Ihren Gunsten CHF 7'467.50
@@ -112,7 +112,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
 
                 // Total EUR 2'737.40
                 // Wechselkurs 1.08279
-                .section("exchangeRate", "fxCurrency", "fxAmount").optional()
+                .section("fxCurrency", "fxAmount", "exchangeRate").optional()
                 .match("^Total (?<fxCurrency>[\\w]{3}) (?<fxAmount>[\\.,'\\d\\s]+)(.*)?$")
                 .match("^Wechselkurs (?<exchangeRate>[\\.,'\\d\\s]+)(.*)?$")
                 .assign((t, v) -> {
@@ -176,20 +176,20 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
         pdfTransaction
                 // Pictet - Japan Index - I JPY 1.441 JPY 23 608.200 
                 // ISIN LU0188802960 
-                .section("name", "isin", "currency")
+                .section("name", "currency", "isin")
                 .match("^(?<name>.*) [\\w]{3} [\\.,'\\d\\s]+ (?<currency>[\\w]{3}) [\\.,'\\d\\s]+(.*)?$")
                 .match("^ISIN (?<isin>[\\w]{12})(.*)?$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
-
-                // E-Vermögensverwaltung Datum: 20.12.2021 
-                .section("date")
-                .match("^E\\-Vermögensverwaltung Datum: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})(.*)?$")
-                .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                 // Pictet - Japan Index - I JPY 1.441 JPY 23 608.200 
                 .section("shares")
                 .match("^(?<name>.*) [\\w]{3} (?<shares>[\\.,'\\d\\s]+) [\\w]{3} [\\.,'\\d\\s]+(.*)?$")
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                // E-Vermögensverwaltung Datum: 20.12.2021 
+                .section("date")
+                .match("^E\\-Verm.gensverwaltung Datum: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})(.*)?$")
+                .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                 // Der Totalbetrag von CHF 280.91 wurde Ihrem Konto CH11 0100 0000 1111 1111 1 mit Valuta 21.12.2021 belastet. 
                 .section("currency", "amount")
@@ -201,7 +201,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
 
                 // Total JPY 34 070.00
                 // Total in Kontowährung zum Kurs von JPY/CHF 0.0082450 CHF 280.91 
-                .section("exchangeRate", "fxCurrency", "fxAmount").optional()
+                .section("fxCurrency", "fxAmount", "exchangeRate").optional()
                 .match("^Total (?<fxCurrency>[\\w]{3}) (?<fxAmount>[\\.,'\\d\\s]+)(.*)?$")
                 .match("^Total in Kontow.hrung zum Kurs von [\\w]{3}\\/[\\w]{3} (?<exchangeRate>[\\.,'\\d\\s]+) [\\w]{3} [\\.,'\\d\\s]+(.*)?$")
                 .assign((t, v) -> {
@@ -228,7 +228,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                 })
 
                 // Total in Kontowährung zum Kurs von JPY/CHF 0.0082450 CHF 280.91 
-                .section("exchangeRate", "currency").optional()
+                .section("currency", "exchangeRate").optional()
                 .match("^Total in Kontow.hrung zum Kurs von [\\w]{3}\\/(?<currency>[\\w]{3}) (?<exchangeRate>[\\.,'\\d\\s]+) [\\w]{3} [\\.,'\\d\\s]+(.*)?$")
                 .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
@@ -281,15 +281,15 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                 .match("^(Dividende|Kapitalgewinn) [\\.,'\\d\\s]+ (?<currency>[\\w]{3})(.*)?$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-                // Valutadatum 05.06.2019
-                .section("date")
-                .match("^Valutadatum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})(.*)?$")
-                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
-
                 // Anzahl 60
                 .section("shares")
                 .match("^Anzahl (?<shares>[\\.,'\\d\\s]+)(.*)?$")
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                // Valutadatum 05.06.2019
+                .section("date")
+                .match("^Valutadatum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})(.*)?$")
+                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                 // Total EUR 20.93
                 .section("currency", "amount")
@@ -323,7 +323,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
 
     private void addAnnualFeesTransaction()
     {
-        DocumentType type = new DocumentType("Jahresgebühr");
+        DocumentType type = new DocumentType("Jahresgeb.hr");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
@@ -401,7 +401,11 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                 .oneOf(
                             section -> section
                                     .attributes("note", "date", "amount")
-                                    .match("^(?<note>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-|\\–) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})) [\\.,'\\d\\s]+(%| %) (?<amount>[\\.,'\\d\\s]+)(.*)?$")
+                                    .match("^(?<note>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-|\\–) "
+                                                    + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})) "
+                                                    + "[\\.,'\\d\\s]+(%| %) "
+                                                    + "(?<amount>[\\.,'\\d\\s]+)"
+                                                    + "(.*)?$")
                                     .assign((t, v) -> {
                                         Map<String, String> context = type.getCurrentContext();
 
@@ -412,7 +416,9 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                                     }),
                             section -> section
                                     .attributes("date1", "date2", "amount")
-                                    .match("^(?<date1>[\\d]{6}) (\\-|\\–) (?<date2>[\\d]{6}) [\\.,'\\d\\s]+(%| %) (?<amount>[\\.,'\\d\\s]+)(.*)?$")
+                                    .match("^(?<date1>[\\d]{6}) (\\-|\\–) "
+                                                    + "(?<date2>[\\d]{6}) [\\.,'\\d\\s]+(%| %) "
+                                                    + "(?<amount>[\\.,'\\d\\s]+)(.*)?$")
                                     .assign((t, v) -> {
                                         Map<String, String> context = type.getCurrentContext();
 
@@ -459,8 +465,12 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                 // Zusammenstellung der belasteten Kontoführungsgebühr:
                 // CHF 60.00
                 .section("note", "date", "currency", "amount")
-                .match("^(?i:Geb.hrenausweis) (?<note>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-|\\–) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}))(.*)?$")
-                .match("^Zusammenstellung der belasteten Kontof.hrungsgeb.hr: (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d\\s]+)(.*)$")
+                .match("^(?i:Geb.hrenausweis) "
+                                + "(?<note>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
+                                + "(\\-|\\–) "
+                                + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}))(.*)?$")
+                .match("^Zusammenstellung der belasteten Kontof.hrungsgeb.hr: "
+                                + "(?<currency>[\\w]{3}) (?<amount>[\\.,'\\d\\s]+)(.*)$")
                 .assign((t, v) -> {
                     t.setDateTime(asDate(v.get("date")));
                     t.setAmount(asAmount(v.get("amount")));
@@ -941,17 +951,17 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
     {
         transaction
                 // Abgabe (Eidg. Stempelsteuer) EUR 4.26
-                .section("tax", "currency").optional()
+                .section("currency", "tax").optional()
                 .match("^Abgabe \\(Eidg\\. Stempelsteuer\\) (?<currency>[\\w]{3}) (?<tax>[\\.,'\\d\\s]+)(.*)?$")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
                 // Quellensteuer 15.00% (NL) EUR 3.69
-                .section("withHoldingTax", "currency").optional()
+                .section("currency", "withHoldingTax").optional()
                 .match("^Quellensteuer [\\.,'\\d\\s]+(%| %) \\(.*\\) (?<currency>[\\w]{3}) (?<withHoldingTax>[\\.,'\\d\\s]+)(.*)?$")
                 .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                 // Verrechnungssteuer 35% (CH) CHF 19.75
-                .section("tax", "currency").optional()
+                .section("currency", "tax").optional()
                 .match("^Verrechnungssteuer [\\.,'\\d\\s]+(%| %) \\(.*\\) (?<currency>[\\w]{3}) (?<tax>[\\.,'\\d\\s]+)(.*)?$")
                 .assign((t, v) -> processTaxEntries(t, v, type));
     }
@@ -960,22 +970,22 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
     {
         transaction
                 // Kommission EUR 8.58
-                .section("fee", "currency").optional()
+                .section("currency", "fee").optional()
                 .match("^Kommission (?<currency>[\\w]{3}) (?<fee>[\\.,'\\d\\s]+)(.*)?$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Börsengebühren CHF 1.50
-                .section("fee", "currency").optional()
+                .section("currency", "fee").optional()
                 .match("^B.rsengeb.hren (?<currency>[\\w]{3}) (?<fee>[\\.,'\\d\\s]+)(.*)?$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Börsengebühren und sonstige Spesen EUR 0.60
-                .section("fee", "currency").optional()
+                .section("currency", "fee").optional()
                 .match("^B.rsengeb.hren und sonstige Spesen (?<currency>[\\w]{3}) (?<fee>[\\.,'\\d\\s]+)(.*)?$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Umsatzabgabe JPY 51.00 
-                .section("fee", "currency").optional()
+                .section("currency", "fee").optional()
                 .match("^Umsatzabgabe (?<currency>[\\w]{3}) (?<fee>[\\.,'\\d\\s]+)(.*)?$")
                 .assign((t, v) -> processFeeEntries(t, v, type));
     }
