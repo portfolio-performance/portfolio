@@ -22,13 +22,13 @@ import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
 import name.abuchen.portfolio.util.Interval;
 
-public class Issue1498FifoCrossPortfolio
+public class Issue1498FifoCrossPortfolioTest
 {
     @Test
     public void testPurchaseValueOfSecurityPositionWithTransfers() throws IOException
     {
         Client client = ClientFactory
-                        .load(Issue1498FifoCrossPortfolio.class.getResourceAsStream("Issue1498FifoCrossPortfolio.xml")); //$NON-NLS-1$
+                        .load(Issue1498FifoCrossPortfolioTest.class.getResourceAsStream("Issue1498FifoCrossPortfolio.xml")); //$NON-NLS-1$
 
         Security lufthansa = client.getSecurities().get(0);
         assertThat(lufthansa.getName(), is("Deutsche Lufthansa AG")); //$NON-NLS-1$

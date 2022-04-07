@@ -927,6 +927,27 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                     t.setNote(v.get("note"));
                 })
 
+                // 24.03. 23.03. REF: 000137060674 42,42+
+                // Erst. BGH-Urteil Sonstige
+                .section("note", "date", "amount").optional()
+                .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. REF: [\\d]+ (?<amount>[\\.,\\d]+).*$")
+                .match("^(?<note>Erst\\. .*)$").assign((t, v) -> {
+                    t.setType(AccountTransaction.Type.FEES_REFUND);
+
+                    t.setDateTime(asDate(v.get("date") + type.getCurrentContext().get("year")));
+                    t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("currency")));
+                    t.setAmount(asAmount(v.get("amount")));
+
+                    t.setNote(v.get("note"));
+                })
+
+                // 2. Quartal 2021
+                .section("note2").optional()
+                .match("^(?<note2>[\\d]{1}\\. Quartal [\\d]{4})$")
+                .assign((t, v) -> {
+                    t.setNote(t.getNote() + " " + v.get("note2"));
+                })
+
                 .wrap(t -> {
                     if (t.getCurrencyCode() != null && t.getAmount() != 0)
                         return new TransactionItem(t);

@@ -19,12 +19,12 @@ import name.abuchen.portfolio.snapshot.trades.Trade;
 import name.abuchen.portfolio.snapshot.trades.TradeCollector;
 import name.abuchen.portfolio.snapshot.trades.TradeCollectorException;
 
-public class Issue1898TradeIRRwithPortfolioTransfers
+public class Issue1898TradeIRRwithPortfolioTransfersTest
 {
     @Test
     public void testPurchaseValueOfSecurityPositionWithTransfers() throws IOException, TradeCollectorException
     {
-        Client client = ClientFactory.load(Issue1898TradeIRRwithPortfolioTransfers.class
+        Client client = ClientFactory.load(Issue1898TradeIRRwithPortfolioTransfersTest.class
                         .getResourceAsStream("Issue1898TradeIRRwithPortfolioTransfers.xml")); //$NON-NLS-1$
 
         CurrencyConverter converter = new TestCurrencyConverter();

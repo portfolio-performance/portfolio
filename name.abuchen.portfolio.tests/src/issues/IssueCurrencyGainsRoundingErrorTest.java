@@ -20,12 +20,12 @@ import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
 import name.abuchen.portfolio.snapshot.trail.Trail;
 import name.abuchen.portfolio.util.Interval;
 
-public class IssueCurrencyGainsRoundingError
+public class IssueCurrencyGainsRoundingErrorTest
 {
     @Test
     public void testPurchaseValueOfSecurityPositionWithTransfers() throws IOException
     {
-        Client client = ClientFactory.load(IssueCurrencyGainsRoundingError.class
+        Client client = ClientFactory.load(IssueCurrencyGainsRoundingErrorTest.class
                         .getResourceAsStream("IssueCurrencyGainsRoundingError.xml")); //$NON-NLS-1$
 
         Interval period = Interval.of(LocalDate.parse("2015-01-09"), //$NON-NLS-1$

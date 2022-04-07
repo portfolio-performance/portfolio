@@ -24,12 +24,12 @@ import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
 import name.abuchen.portfolio.util.Interval;
 
-public class Issue371PurchaseValueWithTransfers
+public class Issue371PurchaseValueWithTransfersTest
 {
     @Test
     public void testPurchaseValueOfSecurityPositionWithTransfers() throws IOException
     {
-        Client client = ClientFactory.load(Issue371PurchaseValueWithTransfers.class
+        Client client = ClientFactory.load(Issue371PurchaseValueWithTransfersTest.class
                         .getResourceAsStream("Issue371PurchaseValueWithTransfers.xml")); //$NON-NLS-1$
 
         Security adidas = client.getSecurities().get(0);

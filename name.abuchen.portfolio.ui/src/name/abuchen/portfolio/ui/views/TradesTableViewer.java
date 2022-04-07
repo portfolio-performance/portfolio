@@ -34,7 +34,10 @@ import name.abuchen.portfolio.ui.util.viewers.MoneyColorLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.NumberColorLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
+import name.abuchen.portfolio.ui.views.columns.SymbolColumn;
+import name.abuchen.portfolio.ui.views.columns.WknColumn;
 import name.abuchen.portfolio.util.TextUtil;
 
 public class TradesTableViewer
@@ -258,6 +261,21 @@ public class TradesTableViewer
             }
         });
         column.setSorter(ColumnViewerSorter.create(e -> ((Trade) e).getPortfolio().getName()));
+        column.setVisible(false);
+        support.addColumn(column);
+        
+        column = new IsinColumn();
+        column.getEditingSupport().addListener(new TouchClientListener(view.getClient()));
+        column.setVisible(false);
+        support.addColumn(column);
+
+        column = new SymbolColumn();
+        column.getEditingSupport().addListener(new TouchClientListener(view.getClient()));
+        column.setVisible(false);
+        support.addColumn(column);
+
+        column = new WknColumn();
+        column.getEditingSupport().addListener(new TouchClientListener(view.getClient()));
         column.setVisible(false);
         support.addColumn(column);
     }

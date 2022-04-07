@@ -1,0 +1,58 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Herr
+Max Mustermann Unsere Postanschrift:
+Musterstr. 1 Postfach 10 08 60
+99999 Ort 99999 Ort
+Kundenservice:
+Telefon: +49 (0) 69 7107 - 530
+Fax +49 (0) 69 7107 - 100
+Mo-Fr 8:00 - 19:00 Uhr
+service@onvista-bank.de
+Ihre Bankverbindung für Überweisungen:
+IBAN DE99999999999999999999
+BIC BOURDEFF
+Kontoauszug Nr. 2022 / 1 und Rechnungsabschluss zum 31.03.2022
+EUR - Verrechnungskonto: 0 123456 789
+Alter Saldo 1234,56 H
+Neuer Saldo 1288,09 H
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig.
+Nähere Informationen können dem "Informationsbogen für den Einleger", der unter www.onvista-bank.de
+im Menü "Service - Formulare" abgelegt ist, entnommen werden.
+Der Ihnen angezeigte Saldo kann Kontobewegungen berücksichtigen, deren tatsächliche
+Wertstellung (Valuta) noch nicht erfolgt ist. Bitte beachten Sie dies bei Ihrer Gelddisposition, da
+ansonsten Sollzinsen / Überziehungszinsen anfallen könnten. Das Datum der Wertstellung (Valuta)
+können Sie auf den folgenden Seiten zur jeweiligen Buchung entnehmen.
+Einwendungen wegen Unrichtigkeit oder Unvollständigkeit eines Rechnungsabschlusses sind gem. Nr. 7
+Abs. 2 unserer Allgemeinen Geschäftsbedingungen spätestens vor Ablauf von sechs Wochen nach
+Zugang des Rechnungsabschlusses zu erheben. Sofern Sie Ihre Einwendungen schriftlich geltend
+machen, richten Sie diese bitte unter Angabe der oben genannten Kontonummer an die onvista
+bank, Interne Revision, Solmsstraße 83, 60486 Frankfurt am Main. Es genügt die Absendung
+innerhalb der Sechs-Wochen-Frist. Das Unterlassen rechtzeitiger Einwendungen gilt als
+Genehmigung.
+Bei Zahlungen größer 12.500 EUR bitte Meldepflichten nach dem Außenwirtschaftsrecht beachten.
+Hinweis: Mit Urteil vom 27. April 2021 (XI ZR 26/20) hat der Bundesgerichtshof die Klauseln zum
+Vertragsänderungsmechanismus in Nr. 1 Abs. 2 und Nr. 12 Abs. 5 AGB-Banken bei Verträgen mit
+Verbrauchern für unzulässig bewertet. Die Bank wird sich auf die Klauseln nicht mehr berufen. Bei der
+Entgeltabrechnung konnte das Urteil noch nicht berücksichtigt werden.
+onvist a bank - eine Marke der Commerzbank AG · Solmsst raße 83 · 6 0 486 Frankfur t am Main
+Kundenservice: +49 ( 0 )69-7107-530 · T: +49 ( 0 )69-7107- 0 · F: +49 ( 0 )69-7107-10 0 · E: in fo@onvist a -bank.de · W: www.onvist a -bank.de
+Commerzbank AG · 60261 Frankfur t am Main · AG Frankfur t am Main HRB 32000 · Vorstand: Manf red Knof (Vorsitzender), Marcus Chromik, Michael Kotzbauer,
+Jörg Oliveri del Castillo-Schulz, Bet t ina Orlopp, Thomas Schaufler, Sabine Schmit t roth · Vorsitzender des Aufsichtsrates: Helmut Got tschalk
+Seite 2 von 2
+Kontoauszug Nr. 2022 / 1 und Rechnungsabschluss zum 31.03.2022
+EUR - Verrechnungskonto: 0 123456 789
+Buchungs- Valuta Buchungstext Soll in EUR Haben in EUR
+datum
+Alter Kontostand vom 31.12.21 1234,56+
+24.03. 23.03. REF: 000123456789 42,42+
+Erst. BGH-Urteil Sonstige
+2. Quartal 2021
+24.03. 23.03. REF: 000123456789 11,11+
+Erst. BGH-Urteil Sonstige
+3. Quartal 2021
+Neuer Kontostand zum 31.03.2022 1288,09+
+onvist a bank - eine Marke der Commerzbank AG · Solmsst raße 83 · 6 0 486 Frankfur t am Main
+Kundenservice: +49 ( 0 )69-7107-530 · T: +49 ( 0 )69-7107- 0 · F: +49 ( 0 )69-7107-10 0 · E: in fo@onvist a -bank.de · W: www.onvist a -bank.de
+Commerzbank AG · 60261 Frankfur t am Main · AG Frankfur t am Main HRB 32000 · Vorstand: Manf red Knof (Vorsitzender), Marcus Chromik, Michael Kotzbauer,
+Jörg Oliveri del Castillo-Schulz, Bet t ina Orlopp, Thomas Schaufler, Sabine Schmit t roth · Vorsitzender des Aufsichtsrates: Helmut Got tschalk
