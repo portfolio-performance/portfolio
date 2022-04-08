@@ -144,7 +144,7 @@ Für die String-, oder Text-Manipulation ist der statischen Import der [TextUtil
 
 <a name="Generelle_Regeln_der_TestCases"></a>
 ### Generelle Regeln der TestCases
-1. TestCase-Dokumente (xyz.txt) werden nicht verändert oder Teile hinzugefügt oder entfernt.
+1. TestCase-Dokumente (xyz.txt) werden nicht verändert, Teile hinzugefügt oder entfernt.
 2. Die PDF-Debugs als Textdatei sind über Portfolio Performance über Datei --> Importieren --> Debug: Text aus PDF extrahieren... zu erzeugen.
 3. Die PDF-Debugs als Textdatei sind wiefolg zu benennen (Grundnamen, ggf. auch in Fremdsprache)
 	* Kauf01.txt, Verkauf01.txt --> Kauf und Verkauf (Einzelabrechnungen) (e.g. Buy01.txt oder Sell01.txt)
