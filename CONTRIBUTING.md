@@ -170,7 +170,6 @@ Für die String-, oder Text-Manipulation ist der statischen Import der [TextUtil
  	* `testWertpapierVerkauf01WithSecurityInEUR()` --> Verkauf in Fremdwährung
  	* `testDividende01()` --> Dividenden, Erträgnisgutschriften
  	* `testDividende01WithSecurityInEUR()()` -->  Dividenden, Erträgnisgutschriften in Fremdwährung
- 	* `testDividendeWithTaxTreatmentForDividende01()` --> 
  	* `testVorabsteuerpauschale01()` --> Vorabpauschalen
  	* `testGiroKontoauszug01()` --> Girokontoabrechnung
  	* `testKreditKontoauszug01()` --> Kreditkartenabrechnung
