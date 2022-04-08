@@ -151,7 +151,8 @@ Für die String-, oder Text-Manipulation ist der statischen Import der [TextUtil
 ### Generelle Regeln der TestCases
 1. TestCase-Dokumente (xyz.txt) werden nicht verändert, Teile hinzugefügt oder entfernt.
 2. Die PDF-Debugs als Textdatei sind über Portfolio Performance über Datei --> Importieren --> Debug: Text aus PDF extrahieren... zu erzeugen.
-3. Die PDF-Debugs als Textdatei sind wiefolg zu benennen (Grundnamen, ggf. auch in Fremdsprache)
+3. Upload der PDF-Debugs (Textdateien) im UTF-8 Format.
+4. Die PDF-Debugs als Textdatei sind wiefolg zu benennen (Grundnamen, ggf. auch in Fremdsprache)
 	* `Kauf01.txt, Verkauf01.txt` --> Kauf und Verkauf (Einzelabrechnungen) (e.g. Buy01.txt oder Sell01.txt)
 	* `Dividende01.txt` --> Dividenden, Erträgnisgutschriften (Einzelabrechnungen)
 	* `SteuermitteilungDividende01.txt` --> Steuerliche Abrechnung für Dividenden (Einzelabrechnung)
@@ -162,7 +163,7 @@ Für die String-, oder Text-Manipulation ist der statischen Import der [TextUtil
 	* `GiroKontoauzug01.txt` --> Girokontoabrechnung
 	* `KreditKontoauszug01.txt` --> Kreditkartenabrechnung
 	* `Depotauszug01.txt` --> Depottransaktionen (Verrechnungkonto)
-4. TestCase-Namen
+5. TestCase-Namen
  	* `testWertpapierKauf01()` --> Kauf
  	* `testWertpapierVerkauf01()` --> Verkauf
  	* `testWertpapierKauf01WithSecurityInEUR()` --> Kauf in Fremdwährung
@@ -173,17 +174,17 @@ Für die String-, oder Text-Manipulation ist der statischen Import der [TextUtil
  	* `testGiroKontoauszug01()` --> Girokontoabrechnung
  	* `testKreditKontoauszug01()` --> Kreditkartenabrechnung
  	* `testDepotauszug01()` --> Depottransaktionen (Verrechnungkonto)
-5. TestCases sind vollständig zu erstellen 
+6. TestCases sind vollständig zu erstellen 
 	* Beispiel: [Erste Bank Gruppe](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/erstebank/erstebankPDFExtractorTest.java)
 		* `testWertpapierKauf06()`
 		* `testDividende05();`
-6. Wenn ein Wertpapier in einer Fremdwährung (Kontowährung = EUR || Wertpapierwährung = USD), dann sind zwei TestCases zu erstellen. Einmal in Kontowährung und einmal in Wertpapierwährung
+7. Wenn ein Wertpapier in einer Fremdwährung (Kontowährung = EUR || Wertpapierwährung = USD), dann sind zwei TestCases zu erstellen. Einmal in Kontowährung und einmal in Wertpapierwährung
 	* Beispiel: [Erste Bank Gruppe](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/erstebank/erstebankPDFExtractorTest.java)
 		* `testWertpapierKauf09();`
 		* `testWertpapierKauf09WithSecurityInEUR();`
 		* `testDividende10();`
 		* `testDividende10WithSecurityInEUR();`
-7. Für Konto-, Kredit- oder Depottransaktionen
+8. Für Konto-, Kredit- oder Depottransaktionen
    	* Beispiel: [DKB AG](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/dkb/DkbPDFExtractorTest.java)
 		* `testGiroKontoauszug01();`
 
