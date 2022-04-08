@@ -78,7 +78,7 @@ Der Aufbau der Importer erfolgt nach folgendem Schema:
   	* `addTaxesSectionsTransaction();` --> Steuerbehandlung
   	* `addFeesSectionsTransaction();` --> Gebührenbehandlung
 * Variablenmanipulation (@Override aus [AbstractPDFExtractor.java](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/AbstractPDFExtractor.java))
-	* z.B. `asAmount()`, `asShares()`, `asExchangeRate()`
+	* z.B. `asAmount()`, `asShares()`, `asExchangeRate()`, ...
 * Prozessmanipulation (@Override aus [Extractor.java](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/Extractor.java))
 	* `postProcessing();`
 		* Beispiel: [Comdirect](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/ComdirectPDFExtractor.java)
