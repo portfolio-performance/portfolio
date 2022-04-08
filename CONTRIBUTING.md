@@ -56,27 +56,32 @@ Beispiel: Deutsche Bank
 
 Der Aufbau der Importer erfolgt nach folgendem Schema:
 * Client
-  * `addBankIdentifier();` -> einzigartiges Erkennungsmerkmal des PDF-Debugs
+	* `addBankIdentifier();` -> einzigartiges Erkennungsmerkmal des PDF-Debugs
 * Transaktionsarten (Grundtypen)
-  * `addBuySellTransaction()` --> Kauf und Verkauf (Einzelnabrechnung)
-  * `addSummaryStatementBuySellTransaction();`  --> Kauf und Verkauf (Sammelabrechnungen)
-  * `addBuyTransactionFundsSavingsPlan();` --> Sparpläne
-  * `addDividendeTransaction();` --> Dividenden und Erträgnisgutschriften
-  * `addAdvanceTaxTransaction();` --> Vorabpauschalen
-  * `addCreditcardStatementTransaction();` --> Kreditkartentransaktionen
-  * `addAccountStatementTransaction();` --> Girokontotransaktionen
-  * `addDepotStatementTransaction();` --> Depottransaktionen (Verrechnungskonto)
-  * `addTaxStatementTransaction();` --> Steuerabrechnung etc.
-  * `addDeliveryInOutBoundTransaction();` --> Ein- und Auslieferungen
-  * `addTransferInOutBoundTransaction();` --> Ein- und Auslieferungen (Umbuchung)
-  * `addReinvestTransaction();` --> Ertragsthesaurierung
-  * `addTaxReturnBlock();` --> Steuererstattung
-  * `addFeeReturnBlock();` --> Gebührenerstattung
+	* `addBuySellTransaction()` --> Kauf und Verkauf (Einzelnabrechnung)
+	* `addSummaryStatementBuySellTransaction();`  --> Kauf und Verkauf (Sammelabrechnungen)
+	* `addBuyTransactionFundsSavingsPlan();` --> Sparpläne
+	* `addDividendeTransaction();` --> Dividenden und Erträgnisgutschriften
+	* `addAdvanceTaxTransaction();` --> Vorabpauschalen
+  	* `addCreditcardStatementTransaction();` --> Kreditkartentransaktionen
+  	* `addAccountStatementTransaction();` --> Girokontotransaktionen
+  	* `addDepotStatementTransaction();` --> Depottransaktionen (Verrechnungskonto)
+  	* `addTaxStatementTransaction();` --> Steuerabrechnung etc.
+  	* `addDeliveryInOutBoundTransaction();` --> Ein- und Auslieferungen
+  	* `addTransferInOutBoundTransaction();` --> Ein- und Auslieferungen (Umbuchung)
+  	* `addReinvestTransaction();` --> Ertragsthesaurierung
+  	* `addTaxReturnBlock();` --> Steuererstattung
+  	* `addFeeReturnBlock();` --> Gebührenerstattung
 * Ausgabelabel (Visualisierung)
-  * `getLabel()` --> Bank/Broker mit vollständiger Kennung z.B. Deutsche Bank Privat- und Geschäftskunden AG
+  	* `getLabel()` --> Bank/Broker mit vollständiger Kennung z.B. Deutsche Bank Privat- und Geschäftskunden AG
 * Steuern und Gebühren
-  * `addTaxesSectionsTransaction();` --> Steuerbehandlung
-  * `addFeesSectionsTransaction();` --> Gebührenbehandlung
+  	* `addTaxesSectionsTransaction();` --> Steuerbehandlung
+  	* `addFeesSectionsTransaction();` --> Gebührenbehandlung
+* Variablenmanipulation (@Override aus [AbstractPDFExtractor.java](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/AbstractPDFExtractor.java))
+	* z.B. asAmount(), asShares(), asExchangeRate()
+* Prozessmanipulation (@Override aus [Extractor.java](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/Extractor.java))
+	* `postProcessing()`
+		* Beispiel: [Comdirect](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/ComdirectPDFExtractor.java)
 
 ---
 
