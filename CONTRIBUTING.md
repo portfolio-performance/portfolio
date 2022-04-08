@@ -127,8 +127,8 @@ Ein fertigen PDF-Importer als Grundlage wäre z.B. der [V-Bank AG](https://githu
 <a name="Hilfsklasse_der_Importer"></a>
 ### Hilfsklasse der Importer
 
-Die Hilfsklasse über Standardisierte Umrechnungen "Importerübergreifend", wird vom [AbstractPDFExtractor.java](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/AbstractPDFExtractor.java) aufgerufen
-und in den [PDFExtractorUtils.java](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/PDFExtractorUtils.java) verarbeiet.
+Die Hilfsklasse über standardisierte Umrechnungen "Importerübergreifend", wird vom [AbstractPDFExtractor.java](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/AbstractPDFExtractor.java) aufgerufen
+und in den [PDFExtractorUtils.java](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/PDFExtractorUtils.java) verarbeitet.
 
 ---
 
