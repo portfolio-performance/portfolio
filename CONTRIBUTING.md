@@ -195,5 +195,5 @@ Als guten Online-Editor können wir [https://regex101.com/](https://regex101.com
 | Währungen		| EUR			| `\\w+`			| `[\\w]{3}`					|
 | 	 		| 			| 				| `[A-Z]{3}`					|
 | Währungen		| € oder $		| `\\D`				| `\\p{Sc}`					|
-| Text			| foo maybe bar		| ```foo.*```			| ```^foo( maybe bar)?```			|
-| 			| FOO, Foo		| ```(Foo|foo)```		| ```(?i)foo```					|
+| Text			| foo maybe bar		| ```foo.*```			| ```foo( maybe bar)?```			|
+| 			| FOO, Foo		| 				| ```(?i)foo```					|
