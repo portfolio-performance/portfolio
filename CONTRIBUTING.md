@@ -11,10 +11,13 @@
 	- [Generelle Regeln der TestCases](#Generelle_Regeln_der_TestCases)
 	- [Regular expressions](#Regular_expressions)
 
+---
+
 <a name="PDF-Importer"></a>
 ## PDF-Importer
 Die Importer sind nach Banken/Brokern zu erstellen.
 
+---
 
 <a name="Pfad_zum_Importer"></a>
 ### Pfad zum Importer
@@ -31,6 +34,7 @@ Beispiel: Deutsche Bank
 - Importer --> `DeutscheBankPDFExtractor.java`
 - TestCase --> `DeutscheBankPDFExtractorTest.java`
 
+---
 
 <a name="Transaktions_Paare"></a>
 ### Transaktions-Paare (Wertpapiertransaktion)
@@ -42,6 +46,11 @@ Beispiel: Deutsche Bank
 * FEES, FEES_REFUND
 * BUY, SELL
 * TRANSFER_IN, TRANSFER_OUT
+
+---
+
+<a name="Transaktionsklassen_Wertpapiertransaktion"></a>
+### Transaktionsklassen (Wertpapiertransaktion)
 
 Der Aufbau der Importer erfolgt nach folgendem Schema:
 * Client
@@ -67,9 +76,7 @@ Der Aufbau der Importer erfolgt nach folgendem Schema:
   * `addTaxesSectionsTransaction();` --> Steuerbehandlung
   * `addFeesSectionsTransaction();` --> Gebührenbehandlung
 
-<a name="Transaktionsklassen_Wertpapiertransaktion"></a>
-### Transaktionsklassen (Wertpapiertransaktion)
-
+---
 
 <a name="Sektionen_der_Transaktionsklasse_Wertpapiertransaktion_"></a>
 ### Sektionen der Transaktionsklasse (Wertpapiertransaktion)
@@ -108,31 +115,34 @@ Der Aufbau der Importer erfolgt nach folgendem Schema:
 
 Ein fertigen PDF-Importer als Grundlage wäre z.B. der [V-Bank AG](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/VBankAGPDFExtractor.java) PDF-Importer.
 
+---
 
 <a name="Mathematische_Rechnungen_von_Beträgen"></a>
 ### Mathematische Rechnungen von Beträgen
 
-1. Bei Berechnungen von Beträge welche Währungsgleich sind, ist die (Money-Klasse)[https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/money/Money.java] zu verwenden.
+1. Bei Berechnungen von Beträge welche Währungsgleich sind, ist die [Money-Klasse](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/money/Money.java) zu verwenden.
 2. Bei Berechnungen von Beträge welche Währungsungleich sind, sind die Beträge in `BigDecimal` zu konvertieren.
 
+---
 
 <a name="Generelle_Regeln_der_TestCases"></a>
 ### Generelle Regeln der TestCases
 1. TestCase-Dokumente (xyz.txt) werden nicht verändert oder Teile hinzugefügt oder entfernt.
 2. TestCases sind vollständig zu erstellen 
-   * Beispiel: [Erste Bank Gruppe](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/erstebank/erstebankPDFExtractorTest.java)
-	* testWertpapierKauf06();
-	* testDividende05()
+	* Beispiel: [Erste Bank Gruppe](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/erstebank/erstebankPDFExtractorTest.java)
+		* testWertpapierKauf06();
+		* testDividende05()
 3. Wenn ein Wertpapier in einer Fremdwährung (Kontowährung = EUR || Wertpapierwährung = USD), dann sind zwei TestCases zu erstellen. Einmal in Kontowährung und einmal in Wertpapierwährung
-   * Beispiel: [Erste Bank Gruppe](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/erstebank/erstebankPDFExtractorTest.java)
-	* testWertpapierKauf09();
-	* testWertpapierKauf09WithSecurityInEUR();
-	* testDividende10();
-	* testDividende10WithSecurityInEUR()
-4. Für Konto-, Kredit oder Depottransaktionen
-   * Beispiel: [DKB AG](name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/dkb/DkbPDFExtractorTest.java)
-	* testGiroKontoauszug01()
+	* Beispiel: [Erste Bank Gruppe](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/erstebank/erstebankPDFExtractorTest.java)
+		* testWertpapierKauf09();
+		* testWertpapierKauf09WithSecurityInEUR();
+		* testDividende10();
+		* testDividende10WithSecurityInEUR()
+4. Für Konto-, Kredit- oder Depottransaktionen
+   	* Beispiel: [DKB AG](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/dkb/DkbPDFExtractorTest.java)
+		* testGiroKontoauszug01()
 
+---
 
 <a name="Regular_expressions"></a>
 ### Regular expressions
