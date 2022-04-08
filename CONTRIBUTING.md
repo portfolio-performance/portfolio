@@ -8,6 +8,8 @@
 	- [Transaktions-Paare](#Transaktions_Paare)
 	- [Sektionen der Transaktionsklasse (Wertpapiertransaktion)](#Sektionen_der_Transaktionsklasse_Wertpapiertransaktion_)
 	- [Mathematische Rechnungen von Beträgen](#Mathematische_Rechnungen_von_Beträgen)
+	- [Hilfsklasse der Importer](#Hilfsklasse_der_Importer)
+	- [String-Manipulation](#String_Manipulation)
 	- [Generelle Regeln der TestCases](#Generelle_Regeln_der_TestCases)
 	- [Regular expressions](#Regular_expressions)
 
@@ -117,11 +119,26 @@ Ein fertigen PDF-Importer als Grundlage wäre z.B. der [V-Bank AG](https://githu
 
 ---
 
+<a name="Hilfsklasse_der_Importer"></a>
+### Hilfsklasse der Importer
+
+Die Hilfsklasse über Standardisierte Umrechnungen "Importerübergreifend", wird vom [AbstractPDFExtractor.java](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/AbstractPDFExtractor.java) aufgerufen
+und in den [PDFExtractorUtils.java](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/PDFExtractorUtils.java) verarbeiet.
+
+---
+
 <a name="Mathematische_Rechnungen_von_Beträgen"></a>
 ### Mathematische Rechnungen von Beträgen
 
 1. Bei Berechnungen von Beträge welche Währungsgleich sind, ist die [Money-Klasse](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/money/Money.java) zu verwenden.
 2. Bei Berechnungen von Beträge welche Währungsungleich sind, sind die Beträge in `BigDecimal` zu konvertieren.
+
+---
+
+<a name="String-Manipulation"></a>
+### String-Manipulation
+
+Für die String-, oder Text-Manipulation ist der statischen Import der [TextUtil.java](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/util/TextUtil.java) zu verwenden.
 
 ---
 
