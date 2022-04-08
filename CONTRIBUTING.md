@@ -87,7 +87,7 @@ Der Aufbau der Importer erfolgt nach folgendem Schema:
 
 <a name="Sektionen_der_Transaktionsklasse_Wertpapiertransaktion_"></a>
 ### Sektionen der Transaktionsklasse (Wertpapiertransaktion)
-Der Aufbau der Importer erfolgt nach folgendem Schema:
+Der Aufbau der Importer erfolgt nach folgendem Schema und die Mapping-Variabeln sind möglichst einzuhalten:
 * Type (Optional)
   * `type` --> Tausch des Transaktions-Paars (z.B von Kauf zu Verkauf)
 * Wertpapieridentifizierung
