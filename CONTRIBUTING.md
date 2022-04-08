@@ -170,6 +170,7 @@ Für die String-, oder Text-Manipulation ist der statischen Import der [TextUtil
  	* `testWertpapierVerkauf01WithSecurityInEUR()` --> Verkauf in Fremdwährung
  	* `testDividende01()` --> Dividenden, Erträgnisgutschriften
  	* `testDividende01WithSecurityInEUR()()` -->  Dividenden, Erträgnisgutschriften in Fremdwährung
+ 	* `testDividendeWithTaxTreatmentForDividende01()` --> 
  	* `testVorabsteuerpauschale01()` --> Vorabpauschalen
  	* `testGiroKontoauszug01()` --> Girokontoabrechnung
  	* `testKreditKontoauszug01()` --> Kreditkartenabrechnung
@@ -177,16 +178,20 @@ Für die String-, oder Text-Manipulation ist der statischen Import der [TextUtil
 6. TestCases sind vollständig zu erstellen 
 	* Beispiel: [Erste Bank Gruppe](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/erstebank/erstebankPDFExtractorTest.java)
 		* `testWertpapierKauf06()`
-		* `testDividende05();`
-7. Wenn ein Wertpapier in einer Fremdwährung (Kontowährung = EUR || Wertpapierwährung = USD), dann sind zwei TestCases zu erstellen. Einmal in Kontowährung und einmal in Wertpapierwährung
+		* `testDividende05()`
+7. Wenn ein Wertpapier in einer Fremdwährung z.B. Kontowährung = EUR und Wertpapierwährung = USD, sind zwei TestCases zu erstellen. Einmal in Kontowährung und einmal in Wertpapierwährung
 	* Beispiel: [Erste Bank Gruppe](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/erstebank/erstebankPDFExtractorTest.java)
-		* `testWertpapierKauf09();`
-		* `testWertpapierKauf09WithSecurityInEUR();`
-		* `testDividende10();`
-		* `testDividende10WithSecurityInEUR();`
+		* `testWertpapierKauf09()`
+		* `testWertpapierKauf09WithSecurityInEUR()`
+		* `testDividende10()`
+		* `testDividende10WithSecurityInEUR()`
 8. Für Konto-, Kredit- oder Depottransaktionen
    	* Beispiel: [DKB AG](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/dkb/DkbPDFExtractorTest.java)
-		* `testGiroKontoauszug01();`
+		* `testGiroKontoauszug01()`
+9. Für TestCases, wo der `postProcessing()` verändert wird, z.B. zwei PDF-Debugs verglichen werden, sind zwei TestCases zu erstellen.
+	* Beispiel: [Comdirect](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/comdirect/ComdirectPDFExtractorTest.java)
+		* `testDividendeWithTaxTreatmentForDividende01()`
+		* `testDividendeWithTaxTreatmentReversedForDividende01()`
 
 ---
 
