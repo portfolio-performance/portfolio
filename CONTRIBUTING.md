@@ -78,9 +78,9 @@ Der Aufbau der Importer erfolgt nach folgendem Schema:
   	* `addTaxesSectionsTransaction();` --> Steuerbehandlung
   	* `addFeesSectionsTransaction();` --> Gebührenbehandlung
 * Variablenmanipulation (@Override aus [AbstractPDFExtractor.java](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/AbstractPDFExtractor.java))
-	* z.B. asAmount(), asShares(), asExchangeRate()
+	* z.B. `asAmount()`, `asShares()`, `asExchangeRate()`
 * Prozessmanipulation (@Override aus [Extractor.java](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/Extractor.java))
-	* `postProcessing()`
+	* `postProcessing();`
 		* Beispiel: [Comdirect](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/ComdirectPDFExtractor.java)
 
 ---
@@ -136,7 +136,7 @@ und in den [PDFExtractorUtils.java](https://github.com/buchen/portfolio/blob/fe2
 ### Mathematische Rechnungen von Beträgen
 
 1. Bei Berechnungen von Beträge welche Währungsgleich sind, ist die [Money-Klasse](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/money/Money.java) zu verwenden.
-2. Bei Berechnungen von Beträge welche Währungsungleich sind, sind die Beträge in `BigDecimal` zu konvertieren.
+2. Bei Berechnungen von Beträge welche Währungsungleich sind, sind die Beträge in `BigDecimal` zu berechnen und als `Money` zurück zu konvertieren.
 
 ---
 
@@ -152,27 +152,40 @@ Für die String-, oder Text-Manipulation ist der statischen Import der [TextUtil
 1. TestCase-Dokumente (xyz.txt) werden nicht verändert, Teile hinzugefügt oder entfernt.
 2. Die PDF-Debugs als Textdatei sind über Portfolio Performance über Datei --> Importieren --> Debug: Text aus PDF extrahieren... zu erzeugen.
 3. Die PDF-Debugs als Textdatei sind wiefolg zu benennen (Grundnamen, ggf. auch in Fremdsprache)
-	* Kauf01.txt, Verkauf01.txt --> Kauf und Verkauf (Einzelabrechnungen) (e.g. Buy01.txt oder Sell01.txt)
-	* Dividende01.txt --> Dividenden, Erträgnisgutschriften (Einzelabrechnungen)
-	* Wertpapiereingang01.txt --> Wertpapiereingang
-	* Wertpapierausgang01.txt --> Wertpapierausgang
-	* Vorabpauschale01.txt --> Vorabpauschalen
-	* GiroKontoauzug01.txt --> Girokontoabrechnung
-	* KreditKontoauszug01.txt --> Kreditkartenabrechnung
-	* Depotauszug.txt --> Depottransaktionen (Verrechnungkonto
-4. TestCases sind vollständig zu erstellen 
+	* `Kauf01.txt, Verkauf01.txt` --> Kauf und Verkauf (Einzelabrechnungen) (e.g. Buy01.txt oder Sell01.txt)
+	* `Dividende01.txt` --> Dividenden, Erträgnisgutschriften (Einzelabrechnungen)
+	* `SteuermitteilungDividende01.txt` --> Steuerliche Abrechnung für Dividenden (Einzelabrechnung)
+	* `SammelabrechnungKaufVerkauf01.txt` --> Kauf und Verkauf (mehrere Abrechnungen)
+	* `Wertpapiereingang01.txt` --> Wertpapiereingang
+	* `Wertpapierausgang01.txt` --> Wertpapierausgang
+	* `Vorabpauschale01.txt` --> Vorabpauschalen
+	* `GiroKontoauzug01.txt` --> Girokontoabrechnung
+	* `KreditKontoauszug01.txt` --> Kreditkartenabrechnung
+	* `Depotauszug01.txt` --> Depottransaktionen (Verrechnungkonto)
+4. TestCase-Namen
+ 	* `testWertpapierKauf01()` --> Kauf
+ 	* `testWertpapierVerkauf01()` --> Verkauf
+ 	* `testWertpapierKauf01WithSecurityInEUR()` --> Kauf in Fremdwährung
+ 	* `testWertpapierVerkauf01WithSecurityInEUR()` --> Verkauf in Fremdwährung
+ 	* `testDividende01()` --> Dividenden, Erträgnisgutschriften
+ 	* `testDividende01WithSecurityInEUR()()` -->  Dividenden, Erträgnisgutschriften in Fremdwährung
+ 	* `testVorabsteuerpauschale01()` --> Vorabpauschalen
+ 	* `testGiroKontoauszug01()` --> Girokontoabrechnung
+ 	* `testKreditKontoauszug01()` --> Kreditkartenabrechnung
+ 	* `testDepotauszug01()` --> Depottransaktionen (Verrechnungkonto)
+5. TestCases sind vollständig zu erstellen 
 	* Beispiel: [Erste Bank Gruppe](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/erstebank/erstebankPDFExtractorTest.java)
-		* testWertpapierKauf06();
-		* testDividende05()
-5. Wenn ein Wertpapier in einer Fremdwährung (Kontowährung = EUR || Wertpapierwährung = USD), dann sind zwei TestCases zu erstellen. Einmal in Kontowährung und einmal in Wertpapierwährung
+		* `testWertpapierKauf06()`
+		* `testDividende05();`
+6. Wenn ein Wertpapier in einer Fremdwährung (Kontowährung = EUR || Wertpapierwährung = USD), dann sind zwei TestCases zu erstellen. Einmal in Kontowährung und einmal in Wertpapierwährung
 	* Beispiel: [Erste Bank Gruppe](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/erstebank/erstebankPDFExtractorTest.java)
-		* testWertpapierKauf09();
-		* testWertpapierKauf09WithSecurityInEUR();
-		* testDividende10();
-		* testDividende10WithSecurityInEUR()
-6. Für Konto-, Kredit- oder Depottransaktionen
+		* `testWertpapierKauf09();`
+		* `testWertpapierKauf09WithSecurityInEUR();`
+		* `testDividende10();`
+		* `testDividende10WithSecurityInEUR();`
+7. Für Konto-, Kredit- oder Depottransaktionen
    	* Beispiel: [DKB AG](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/dkb/DkbPDFExtractorTest.java)
-		* testGiroKontoauszug01()
+		* `testGiroKontoauszug01();`
 
 ---
 
