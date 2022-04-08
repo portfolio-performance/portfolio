@@ -5,7 +5,9 @@
 	- [Pfad zum Importer](#Pfad_zum_Importer)
 	- [Dateinamen der Importer](#Dateinamen_der_Importer)
 	- [Transaktionsklassen (Wertpapiertransaktion)](#Transaktionsklassen_Wertpapiertransaktion)
+	- [Transaktions-Paare](#Transaktions_Paare)
 	- [Sektionen der Transaktionsklasse (Wertpapiertransaktion)](#Sektionen_der_Transaktionsklasse_Wertpapiertransaktion_)
+	- [Mathematische Rechnungen von Beträgen](#Mathematische_Rechnungen_von_Beträgen)
 	- [Generelle Regeln der TestCases](#Generelle_Regeln_der_TestCases)
 	- [Regular expressions](#Regular_expressions)
 
@@ -29,8 +31,17 @@ Beispiel: Deutsche Bank
 - Importer --> `DeutscheBankPDFExtractor.java`
 - TestCase --> `DeutscheBankPDFExtractorTest.java`
 
-<a name="Transaktionsklassen_Wertpapiertransaktion"></a>
-### Transaktionsklassen (Wertpapiertransaktion)
+
+<a name="Transaktions_Paare"></a>
+### Transaktions-Paare (Wertpapiertransaktion)
+
+* DEPOSIT, REMOVAL
+* INTEREST, INTEREST_CHARGE
+* DIVIDENDS
+* TAXES, TAX_REFUND
+* FEES, FEES_REFUND
+* BUY, SELL
+* TRANSFER_IN, TRANSFER_OUT
 
 Der Aufbau der Importer erfolgt nach folgendem Schema:
 * Client
@@ -41,7 +52,7 @@ Der Aufbau der Importer erfolgt nach folgendem Schema:
   * `addBuyTransactionFundsSavingsPlan();` --> Sparpläne
   * `addDividendeTransaction();` --> Dividenden und Erträgnisgutschriften
   * `addAdvanceTaxTransaction();` --> Vorabpauschalen
-  * `addCreditcardStatementTransaction();` --> Keditkartentransaktionen
+  * `addCreditcardStatementTransaction();` --> Kreditkartentransaktionen
   * `addAccountStatementTransaction();` --> Girokontotransaktionen
   * `addDepotStatementTransaction();` --> Depottransaktionen (Verrechnungskonto)
   * `addTaxStatementTransaction();` --> Steuerabrechnung etc.
@@ -56,6 +67,9 @@ Der Aufbau der Importer erfolgt nach folgendem Schema:
   * `addTaxesSectionsTransaction();` --> Steuerbehandlung
   * `addFeesSectionsTransaction();` --> Gebührenbehandlung
 
+<a name="Transaktionsklassen_Wertpapiertransaktion"></a>
+### Transaktionsklassen (Wertpapiertransaktion)
+
 
 <a name="Sektionen_der_Transaktionsklasse_Wertpapiertransaktion_"></a>
 ### Sektionen der Transaktionsklasse (Wertpapiertransaktion)
@@ -63,9 +77,10 @@ Der Aufbau der Importer erfolgt nach folgendem Schema:
 * Type (Optional)
   * `type` --> Tausch des Transaktions-Paars (z.B von Kauf zu Verkauf)
 * Wertpapieridentifizierung
-  * `name` --> Name des Wertpapiers
+  * `name` --> Wertpapiername
   * `isin` --> International Securities Identification Number
   * `wkn` --> Wertpapier-Kennnummer
+  * `tickerSymbol` --> Ticker-Symbol
   * `currency` --> Währung des Wertpapiers
 * Anteile der Transaktion
   * `shares` --> Anteile
@@ -92,6 +107,13 @@ Der Aufbau der Importer erfolgt nach folgendem Schema:
    * `currency` --> Währung
 
 Ein fertigen PDF-Importer als Grundlage wäre z.B. der [V-Bank AG](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/VBankAGPDFExtractor.java) PDF-Importer.
+
+
+<a name="Mathematische_Rechnungen_von_Beträgen"></a>
+### Mathematische Rechnungen von Beträgen
+
+1. Bei Berechnungen von Beträge welche Währungsgleich sind, ist die (Money-Klasse)[https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/money/Money.java] zu verwenden.
+2. Bei Berechnungen von Beträge welche Währungsungleich sind, sind die Beträge in `BigDecimal` zu konvertieren.
 
 
 <a name="Generelle_Regeln_der_TestCases"></a>
@@ -121,9 +143,8 @@ Als guten Online-Editor können wir [https://regex101.com/](https://regex101.com
 - Alle Umlaute (`äöüÄÖÜß`), sowie z.B. Zirkumflex o.a. sind durch ein ```.``` (Punkt) escapen.
 - Group Constructs `( ... )` so gering wie möglich zu halten.
 - Quantifiers `[ ... ]` falls nötig, passend zu wählen
-- Bei jedem `.match(" ... ")` wird mit einem Anchors `^` begonnen und mit `$` beendet
-- Bei jedem `.find(" ... ")` nicht mit Anchors gearbeitet. Diese sind bereits enthalten.
-- Bei jedem `.find(" ... ")` nicht mit Anchors gearbeitet. Diese sind bereits enthalten.
+- Bei `.match(" ... ")` wird mit einem Anchors `^` begonnen und mit `$` beendet
+- Bei `.find(" ... ")` wird nicht mit Anchors gearbeitet. Diese sind bereits enthalten.
 
 | 	RegEx		|	Beispiel	|  	Falsch			|	Richtig					|
 | :------------- 	| :-------------	| :-------------		| :-------------				|
