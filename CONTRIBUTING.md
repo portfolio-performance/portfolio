@@ -1,6 +1,11 @@
 # Standards von Portfolio Performance
 
 ## Inhaltsverzeichnis
+- [Eclipse](#Eclipse)
+	- [Voraussetzungen](#Voraussetzungen)
+	- [Installation](#Install)
+	- [Plugin's](#Plugins)
+	- [Erster Start](#First_Run)
 - [PDF-Importer](#PDF-Importer)
 	- [Pfad zum Importer](#Pfad_zum_Importer)
 	- [Dateinamen der Importer](#Dateinamen_der_Importer)
@@ -12,6 +17,55 @@
 	- [String-Manipulation](#String_Manipulation)
 	- [Generelle Regeln der TestCases](#Generelle_Regeln_der_TestCases)
 	- [Regular expressions](#Regular_expressions)
+
+---
+
+<a name="Eclipse"></a>
+## Eclipse
+
+<a name="Voraussetzungen"></a>
+### Voraussetzungen
+- Eclipse IDE
+- Java 11
+
+<a name="Install"></a>
+### Installation
+1. Download [Eclipse IDE](https://www.eclipse.org)
+2. Installiere Eclipse IDE
+3. Installiere Java 11 (Open JDK)[https://www.azul.com/downloads/]
+
+---
+
+<a name="Plugins"></a>
+### Plugin's
+Für Eclipse benötigen wir noch folgenden Plugins, welche über den Marktplatz installiert werden müssen.
+
+1. [Eclipse PDE (Plug-in Development Environment)](https://marketplace.eclipse.org/content/eclipse-pde-plug-development-environment)
+2. [Infinitest](https://marketplace.eclipse.org/content/infinitest)
+3. [ResourceBundle Editor](https://marketplace.eclipse.org/content/resourcebundle-editor)
+4. [Checkstyle Plug-In](https://marketplace.eclipse.org/content/checkstyle-plug)
+5. [SonarLint](https://marketplace.eclipse.org/content/sonarlint)
+6. [Launch Configuration DSL](https://marketplace.eclipse.org/content/launch-configuration-dsl)
+
+---
+
+<a name="First_Run"></a>
+### Erster Start
+
+Hilfestellung können wir geben im [Forum](https://forum.portfolio-performance.info/t/verbesserungen-im-source-code-in-github-einbringen/7063).
+
+1. `Menü` --> `Window` --> `Preference` --> `Java` --> `Editor` --> `Installed JREs` --> `Execution Environments`
+	- Klicke auf `JavaSE-11`
+	- Aktiviere die Kompatible Java-Version (Java 11)
+2. `Menü` -> `Window` --> `Preference` --> `Java` --> `Editor` --> `Save Actions`
+ 	- Aktiviere `Organize imports`
+3. Downlod des Git Repository von Portfolio Performance
+4. Importieren des Repository in dein Workspace
+5. Öffne die `portfolio-target-definition.target`
+	- Wenn sich nur die XML-Datei öffnet, klicke mit der rechten Maustaste auf `portfolio-target-definition.target` und wähle `Öffnen im Target-Editor`
+6. Klicke nun im Editor (rechts oben) auf `Set as Active Target Platform`. (Dies kann eine weile dauern, da nun alle erforderlichen Abhängigkeiten konfiguriert werden. Cirka 10 - 30 Minuten)
+7. `Menü` --> `Window` --> `Show View` --> `Other…` --> `Debug` --> `Launch Configuration`
+	- Rechte Maustaste --> `(Re-)generate Eclipse launch configuration`
 
 ---
 
@@ -41,13 +95,19 @@ Beispiel: Deutsche Bank
 <a name="Transaktions_Paare"></a>
 ### Transaktions-Paare (Wertpapiertransaktion)
 
+[PortfolioTransaction.java*(https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/model/PortfolioTransaction.java)
+* BUY, SELL
+* TRANSFER_IN, TRANSFER_OUT
+* DELIVERY_INBOUND, DELIVERY_OUTBOUND
+
+[AccountTransaction.java](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/model/AccountTransaction.java)
 * DEPOSIT, REMOVAL
 * INTEREST, INTEREST_CHARGE
 * DIVIDENDS
 * TAXES, TAX_REFUND
 * FEES, FEES_REFUND
-* BUY, SELL
-* TRANSFER_IN, TRANSFER_OUT
+
+Die Transaktionspaare 
 
 ---
 
