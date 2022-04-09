@@ -73,7 +73,8 @@ Hilfestellung können wir geben im [Forum](https://forum.portfolio-performance.i
 
 <a name="Translations"></a>
 ## Übersetzungen
-Für Übersetzungen und Sprachpakete von Portfolio Performance benutzen wir [POEditor](https://poeditor.com/join/project?hash=4lYKLpEWOY)
+Für Übersetzungen und Sprachpakete von Portfolio Performance benutzen wir [POEditor](https://poeditor.com/join/project?hash=4lYKLpEWOY).
+
 Wenn du die Übersetzungen korrigieren oder auch eine neue Sprache für Portfolio Performance hinzufügen möchtest, bitten wir dich, Übersetzungen
 zu erstellen, wenn du der Sprache mächtig bist. (Muttersprache) 
 Eine Übersetzung via Google Translate oder ähnlichem ist nicht förderlich. Nichts ist schlimmer, als falsche Übersetzungen in denen der Sinn verzerrt wird.
@@ -84,6 +85,9 @@ Eine Übersetzung via Google Translate oder ähnlichem ist nicht förderlich. Ni
 2. Join translations
 3. Logge dich mit deinem Account ein
 4. Starte deine Übersetzung in deiner Sprache
+
+Natürlich kannst du auch Übersetzungen via GitHub als Pull-Request hinzufügen. 
+Nutze dazu bitte den ResourceBundle Editor in deiner Eclipse-Installation.
 
 ---
 
