@@ -8,6 +8,8 @@
 	- [Plugin's](#Plugins)
 		- [Hilfreiche Einstellungen in Eclipse](#Settings_in_Eclipse)
 	- [Erster Start](#First_Run)
+- [Pull Request](#Pull_Request)
+	- [Pull Request mit Github Desktop](#Pull_Request_Github_Desktop)
 - [Übersetzungen](#Translations)
 	- [Tritt dem Übesetzungs-Team bei](#Start_Translations)
 - [PDF-Importer](#PDF-Importer)
@@ -33,13 +35,13 @@
 - Eclipse IDE
 - Java 11
 
+---
+
 <a name="Install"></a>
 ### Installation
 1. Download [Eclipse IDE](https://www.eclipse.org)
 2. Installiere Eclipse IDE
 3. Installiere Java 11 [Open JDK](https://www.azul.com/downloads/)
-
----
 
 <a name="Install_Language"></a>
 #### Sprache ändern von Eclipse
@@ -94,6 +96,29 @@ Hilfestellung können wir geben im [Forum](https://forum.portfolio-performance.i
 		- `name.abuchen.portfolio.util`
 ---
 
+<a name="Pull_Request"></a>
+## Pull-Requests
+Es gibt viele Möglichkeiten einen Pull-Request in Portfolio Performance zu starten. Natürlich kann Eclipse dies auch selber.
+
+Eine alternative Möglichkeit zu Eclipse ist, von [GitHub Desktop](https://desktop.github.com/), welche hier erläutert wird.
+
+
+<a name="Pull_Request_Github_Desktop"></a>
+#### Pull Request mit Github Desktop
+
+Ein ausführliches Tutorial findest du [hier](https://docs.github.com/en/desktop/installing-and-configuring-github-desktop/overview/creating-your-first-repository-using-github-desktop).
+
+1. Download von [GitHub Desktop](https://desktop.github.com/)
+2. Installiere GitHub Desktop
+3. `Menü` -> `File` --> `Clone repository`
+4. Selektiere dein Repository (Fork von Portfolio Performance) und klicke auf `Clone`
+5. Erstelle einen neuen Branch über `Menü` -> `Branch` --> `New Branch` und gib diesem einen Namen
+6. Kopiere nun deine Änderungen in den neuen Branch auf deinem Laufwerk
+7. Klicke auf `Commit to ...` um deine Änderungen zu pushen und anschließen zu pullen
+8. Gehe nun in deinem Webbrowser auf [GitHub.com](https://github.com) um anschließden deinen Pull-Request auszuführen.
+
+---
+
 <a name="Translations"></a>
 ## Übersetzungen
 Für Übersetzungen und Sprachpakete von Portfolio Performance benutzen wir [POEditor](https://poeditor.com/join/project?hash=4lYKLpEWOY).
@@ -101,8 +126,6 @@ Für Übersetzungen und Sprachpakete von Portfolio Performance benutzen wir [POE
 Wenn du die Übersetzungen korrigieren oder auch eine neue Sprache für Portfolio Performance hinzufügen möchtest, bitten wir dich, Übersetzungen
 zu erstellen, wenn du der Sprache mächtig bist. (Muttersprache) 
 Eine Übersetzung via Google Translate oder ähnlichem ist nicht förderlich. Nichts ist schlimmer, als falsche Übersetzungen in denen der Sinn verzerrt wird.
-
----
 
 <a name="Start_Translations"></a>
 ### Tritt dem Übesetzungs-Team bei
@@ -120,7 +143,6 @@ Nutze dazu bitte den ResourceBundle Editor in deiner Eclipse-Installation.
 ## PDF-Importer
 Die Importer sind nach Banken/Brokern zu erstellen.
 
----
 
 <a name="Pfad_zum_Importer"></a>
 ### Pfad zum Importer
@@ -137,7 +159,6 @@ Beispiel: Deutsche Bank
 - Importer --> `DeutscheBankPDFExtractor.java`
 - TestCase --> `DeutscheBankPDFExtractorTest.java`
 
----
 
 <a name="Transaktions_Paare"></a>
 ### Transaktions-Paare (Wertpapiertransaktion)
@@ -154,7 +175,6 @@ Beispiel: Deutsche Bank
 * TAXES, TAX_REFUND
 * FEES, FEES_REFUND
 
----
 
 <a name="Transaktionsklassen_Wertpapiertransaktion"></a>
 ### Transaktionsklassen (Wertpapiertransaktion)
@@ -188,7 +208,6 @@ Der Aufbau der Importer erfolgt nach folgendem Schema:
 	* `postProcessing();`
 		* Beispiel: [Comdirect](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/ComdirectPDFExtractor.java)
 
----
 
 <a name="Sektionen_der_Transaktionsklasse_Wertpapiertransaktion_"></a>
 ### Sektionen der Transaktionsklasse (Wertpapiertransaktion)
@@ -227,7 +246,6 @@ Der Aufbau der Importer erfolgt nach folgendem Schema und die Mapping-Variabeln 
 
 Ein fertigen PDF-Importer als Grundlage wäre z.B. der [V-Bank AG](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/VBankAGPDFExtractor.java) PDF-Importer.
 
----
 
 <a name="Hilfsklasse_der_Importer"></a>
 ### Hilfsklasse der Importer
@@ -235,7 +253,6 @@ Ein fertigen PDF-Importer als Grundlage wäre z.B. der [V-Bank AG](https://githu
 Die Hilfsklasse über standardisierte Umrechnungen "Importerübergreifend", wird vom [AbstractPDFExtractor.java](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/AbstractPDFExtractor.java) aufgerufen
 und in den [PDFExtractorUtils.java](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/PDFExtractorUtils.java) verarbeitet.
 
----
 
 <a name="Mathematische_Rechnungen_von_Beträgen"></a>
 ### Mathematische Rechnungen von Beträgen
@@ -243,14 +260,12 @@ und in den [PDFExtractorUtils.java](https://github.com/buchen/portfolio/blob/fe2
 1. Bei Berechnungen von Beträge welche Währungsgleich sind, ist die [Money-Klasse](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/money/Money.java) zu verwenden.
 2. Bei Berechnungen von Beträge welche Währungsungleich sind, sind die Beträge in `BigDecimal` zu berechnen und als `Money` zurück zu konvertieren.
 
----
 
 <a name="String_Manipulation"></a>
 ### String-Manipulation
 
 Für die String-, oder Text-Manipulation ist der statischen Import der [TextUtil.java](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/util/TextUtil.java) zu verwenden.
 
----
 
 <a name="Formatting_source"></a>
 ### Formatierung des Source
@@ -265,7 +280,7 @@ Als Beispiel [V-Bank AG](https://github.com/buchen/portfolio/blob/master/name.ab
 
 
 **Beispiel Eclipse Formatierung vs. manuelle Formatierung**
-```
+```Java
 // Autoformatierung Eclipse
 // Courtage USD -22.01
 transaction.section("currency", "fee").optional().match("^Courtage (?<currency>[\\w]{3}) \\-(?<fee>[\\.,\\d])")
@@ -280,7 +295,7 @@ transaction
 	.assign((t, v) -> processFeeEntries(t, v, type));
 }
 ```
-```
+```Java
 // Autoformatierung Eclipse
 .oneOf(
 		// Endbetrag EUR -50,30
@@ -326,7 +341,7 @@ transaction
 			})
 	)
 ```
-```
+```Java
 // Autoformatierung Eclipse
 /**
  * Information: Lime Trading Corp. is a US-based financial services
@@ -348,23 +363,6 @@ transaction
  * 
  * Dividend transactions:
  * The amount of dividends is reported in gross.
- */
-```
-```
- // Autoformatierung Eclipse
-/***
- * Formatting: Date | Effective Description | CUSIP | Type of Activity |
- * Quantity Market Price | Net Settlement Amount
- * ------------------------------------- Dec 31 .05000% 3 Days,Bal=
- * $71000 Credit Interest 0.30
- */
-
-// Manuelle Formatierung
-/**
- * Formatting:
- * Date | Effective Description | CUSIP | Type of Activity | Quantity Market Price | Net Settlement Amount
- * -------------------------------------
- * Dec 31 .05000% 3 Days,Bal=   $71000 Credit Interest 0.30
  */
 ```
 
@@ -415,7 +413,6 @@ transaction
 		* `testDividendeWithTaxTreatmentForDividende01()`
 		* `testDividendeWithTaxTreatmentReversedForDividende01()`
 
----
 
 <a name="Regular_expressions"></a>
 ### Regular expressions
