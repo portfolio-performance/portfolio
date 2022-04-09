@@ -32,7 +32,7 @@
 ### Installation
 1. Download [Eclipse IDE](https://www.eclipse.org)
 2. Installiere Eclipse IDE
-3. Installiere Java 11 (Open JDK)[https://www.azul.com/downloads/]
+3. Installiere Java 11 [Open JDK](https://www.azul.com/downloads/)
 
 ---
 
