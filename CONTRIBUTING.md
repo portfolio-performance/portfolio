@@ -4,6 +4,7 @@
 - [Eclipse](#Eclipse)
 	- [Voraussetzungen](#Voraussetzungen)
 	- [Installation](#Install)
+		- - [Sprache ändern von Eclipse](#Install_Language)
 	- [Plugin's](#Plugins)
 	- [Erster Start](#First_Run)
 - [Übersetzungen](#Translations)
@@ -36,6 +37,19 @@
 1. Download [Eclipse IDE](https://www.eclipse.org)
 2. Installiere Eclipse IDE
 3. Installiere Java 11 [Open JDK](https://www.azul.com/downloads/)
+
+---
+
+<a name="Install_Language"></a>
+#### Sprache ändern von Eclipse
+1. `Menü` --> `Help` --> `Install New Software`
+2. Kopiere in `Work with:` folgenden Link https://download.eclipse.org/technology/babel/update-site/latest/
+3. Starte die Installation
+4. Wähle dein Sprachpaket aus
+5. Ändere im Start-Icon auf deinem Desktop die Zielausführung
+	- `eclipse.exe -nl en` --> Englisch
+	- `eclipse.exe -nl de` --> Deutsch
+	- ...
 
 ---
 
