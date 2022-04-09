@@ -79,6 +79,8 @@ Wenn du die Übersetzungen korrigieren oder auch eine neue Sprache für Portfoli
 zu erstellen, wenn du der Sprache mächtig bist. (Muttersprache) 
 Eine Übersetzung via Google Translate oder ähnlichem ist nicht förderlich. Nichts ist schlimmer, als falsche Übersetzungen in denen der Sinn verzerrt wird.
 
+---
+
 <a name="Start_Translations"></a>
 ### Tritt dem Übesetzungs-Team bei
 1. [POEditor.com](https://poeditor.com/join/project?hash=4lYKLpEWOY)
