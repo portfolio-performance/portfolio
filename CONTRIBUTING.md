@@ -236,10 +236,13 @@ Eclipse biete mit der Tastenkombination [STRG]+[SHIFT]+[F] die Möglichkeit den 
 
 Das Ergebnis ist zum Teil recht schlecht lesbar. Auch werden Kommentare o.ä., sowie hilfreiche Informationen, Erklärungen oder
 Beispiel in der Formatierung zerstört. Wir bitte daher (ausschließlich bei den PDF-Importern) auf die Autoformatierung von Eclipse zu verzichten.
-Beachten bitte dabei, dass das Checkstyle Plug-In dir Hilfestellung gibt, wo Formatierungen nicht korrekt sind.
+Beachten bitte dabei, dass das Checkstyle Plug-In dir Hilfestellung gibt.
+
+Bitte schau dir dazu in den anderen PDF-Importern die Formatierung und den Aufbau an!
+Als Beispiel [V-Bank AG](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/VBankAGPDFExtractor.java)
 
 
-Beispiel der Eclipse Formatierung vs. manuelle Formatierung
+**Beispiel Eclipse Formatierung vs. manuelle Formatierung**
 ```
 // Autoformatierung Eclipse
 // Courtage USD -22.01
@@ -349,7 +352,7 @@ transaction
 ### Generelle Regeln der TestCases
 1. TestCase-Dokumente (xyz.txt) werden nicht verändert, Teile hinzugefügt oder entfernt.
 2. Die PDF-Debugs als Textdatei sind über Portfolio Performance über Datei --> Importieren --> Debug: Text aus PDF extrahieren... zu erzeugen.
-3. Upload der PDF-Debugs (Textdateien) im UTF-8 Format.
+3. Upload der PDF-Debugs (Textdateien) erfolgt im UTF-8 Format.
 4. Die PDF-Debugs als Textdatei sind wiefolg zu benennen (Grundnamen, ggf. auch in Fremdsprache)
 	* `Kauf01.txt, Verkauf01.txt` --> Kauf und Verkauf (Einzelabrechnungen) (e.g. Buy01.txt oder Sell01.txt)
 	* `Dividende01.txt` --> Dividenden, Erträgnisgutschriften (Einzelabrechnungen)
