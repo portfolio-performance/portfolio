@@ -6,6 +6,8 @@
 	- [Installation](#Install)
 	- [Plugin's](#Plugins)
 	- [Erster Start](#First_Run)
+- [Übersetzungen](#Translations)
+	- [Tritt dem Übesetzungs-Team bei](#Start_Translations)
 - [PDF-Importer](#PDF-Importer)
 	- [Pfad zum Importer](#Pfad_zum_Importer)
 	- [Dateinamen der Importer](#Dateinamen_der_Importer)
@@ -66,6 +68,22 @@ Hilfestellung können wir geben im [Forum](https://forum.portfolio-performance.i
 6. Klicke nun im Editor (rechts oben) auf `Set as Active Target Platform`. (Dies kann eine weile dauern, da nun alle erforderlichen Abhängigkeiten konfiguriert werden. Cirka 10 - 30 Minuten)
 7. `Menü` --> `Window` --> `Show View` --> `Other…` --> `Debug` --> `Launch Configuration`
 	- Rechte Maustaste --> `(Re-)generate Eclipse launch configuration`
+
+---
+
+<a name="Translations"></a>
+## Übersetzungen
+Für Übersetzungen und Sprachpakete von Portfolio Performance benutzen wir [POEditor](https://poeditor.com/join/project?hash=4lYKLpEWOY)
+Wenn du die Übersetzungen korrigieren oder auch eine neue Sprache für Portfolio Performance hinzufügen möchtest, bitten wir dich, Übersetzungen
+zu erstellen, wenn du der Sprache mächtig bist. (Muttersprache) 
+Eine Übersetzung via Google Translate oder ähnlichem ist nicht förderlich. Nichts ist schlimmer, als falsche Übersetzungen in denen der Sinn verzerrt wird.
+
+<a name="Start_Translations"></a>
+### Tritt dem Übesetzungs-Team bei
+1. [POEditor.com](https://poeditor.com/join/project?hash=4lYKLpEWOY)
+2. Join translations
+3. Logge dich mit deinem Account ein
+4. Starte deine Übersetzung in deiner Sprache
 
 ---
 
