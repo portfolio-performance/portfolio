@@ -204,6 +204,9 @@ Der Aufbau der Importer erfolgt nach folgendem Schema:
   	* `addFeesSectionsTransaction();` --> Gebührenbehandlung
 * Variablenmanipulation (@Override aus [AbstractPDFExtractor.java](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/AbstractPDFExtractor.java) --> [PDFExtractorUtils.java](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/PDFExtractorUtils.java))
 	* z.B. `asAmount()`, `asShares()`, `asExchangeRate()`, ...
+		* Sollten Beträge und Zahlen nicht dem Standard-Format 1123,25 ensprechen, sind diese einzufügen.
+		* Beispiel: [Bank SLM](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/BankSLMPDFExtractor.java) (de_CH)
+		* Beispiel: [Baader Bank AG](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/BaaderBankPDFExtractor.java) (de_DE + en_US)
 * Prozessmanipulation (@Override aus [Extractor.java](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/Extractor.java))
 	* `postProcessing();`
 		* Beispiel: [Comdirect](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/ComdirectPDFExtractor.java)
@@ -429,12 +432,15 @@ Als guten Online-Editor können wir [https://regex101.com/](https://regex101.com
 | 	RegEx		|	Beispiel	|  	Falsch			|	Richtig					|
 | :------------- 	| :-------------	| :-------------		| :-------------				|
 | Datum 		| 01.01.1970		| `\\d+.\\d+.\\d{4}`		| `[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}`		|
+| Zeit	 		| 12:01			| `\\d+:\\d+`			| `[\\d]{2}\\:[\\d]{2}}`			|
 | ISIN 			| IE00BKM4GZ66		| `\\w+`			| `[\\w]{12}`					|
 |  			| 			| 				| `[A-Z]{2}[A-Z0-9]{9}[0-9]` 			|
 | WKN 			| A111X9		| `\\w+`			| `[\\w]{6}`					|
 | 	 		| 			| 				| `[A-Z0-9]{6}`					|
 | Beträge		| 751,68		| `[\\d,.]+`			| `[\\.,\\d]+`					|
-| 	 		| 			| 				| `[\\.\\d]+,[\\d]{2}`				|
+| 		 	| 			| 				| `[\\.\\d]+,[\\d]{2}`				|
+| 		 	| 74'120.00		| `[\\d.']+`			| `[\\.',\\d]+`					|
+| 		 	| 20 120.00		| `[\\d.\\s]+`			| `[\\.\\d\\s]+`				|
 | Währungen		| EUR			| `\\w+`			| `[\\w]{3}`					|
 | 	 		| 			| 				| `[A-Z]{3}`					|
 | Währungen		| € oder $		| `\\D`				| `\\p{Sc}`					|
