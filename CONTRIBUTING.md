@@ -6,6 +6,7 @@
 	- [Installation](#Install)
 		- [Sprache ändern von Eclipse](#Install_Language)
 	- [Plugin's](#Plugins)
+		- [Hilfreiche Einstellungen in Eclipse](#Settings_in_Eclipse)
 	- [Erster Start](#First_Run)
 - [Übersetzungen](#Translations)
 	- [Tritt dem Übesetzungs-Team bei](#Start_Translations)
@@ -74,16 +75,23 @@ Hilfestellung können wir geben im [Forum](https://forum.portfolio-performance.i
 1. `Menü` --> `Window` --> `Preference` --> `Java` --> `Editor` --> `Installed JREs` --> `Execution Environments`
 	- Klicke auf `JavaSE-11`
 	- Aktiviere die Kompatible Java-Version (Java 11)
-2. `Menü` -> `Window` --> `Preference` --> `Java` --> `Editor` --> `Save Actions`
- 	- Aktiviere `Organize imports`
-3. Downlod des Git Repository von Portfolio Performance
-4. Importiere das Repository in dein Workspace
-5. Öffne die `portfolio-target-definition.target`
+2. Downlod des Git Repository von Portfolio Performance
+3. Importiere das Repository in dein Workspace
+4. Öffne die `portfolio-target-definition.target`
 	- Wenn sich nur die XML-Datei öffnet, klicke mit der rechten Maustaste auf `portfolio-target-definition.target` und wähle `Öffnen im Target-Editor`
-6. Klicke nun im Editor (rechts oben) auf `Set as Active Target Platform`. (Dies kann eine weile dauern, da nun alle erforderlichen Abhängigkeiten konfiguriert werden. Cirka 10 - 30 Minuten)
-7. `Menü` --> `Window` --> `Show View` --> `Other…` --> `Debug` --> `Launch Configuration`
+5. Klicke nun im Editor (rechts oben) auf `Set as Active Target Platform`. (Dies kann eine weile dauern, da nun alle erforderlichen Abhängigkeiten konfiguriert werden. Cirka 10 - 30 Minuten)
+6. `Menü` --> `Window` --> `Show View` --> `Other…` --> `Debug` --> `Launch Configuration`
 	- Rechte Maustaste --> `(Re-)generate Eclipse launch configuration`
 
+<a name="Settings_in_Eclipse"></a>
+#### Hilfreiche Einstellungen in Eclipse
+1. `Menü` -> `Window` --> `Preference` --> `Java` --> `Editor` --> `Save Actions`
+ 	- Aktiviere `Organize imports`
+2. `Menü` -> `Window` --> `Preference` --> `Java` --> `Editor` --> `Content Assist`
+	- Aktiviere `Add import insted of qualified name`
+	- Aktiviere `Use static imports`
+	- Klicke auf New Type... und füge folgende Favoriten hinzu
+		- name.abuchen.portfolio.util
 ---
 
 <a name="Translations"></a>
