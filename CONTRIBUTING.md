@@ -95,19 +95,17 @@ Beispiel: Deutsche Bank
 <a name="Transaktions_Paare"></a>
 ### Transaktions-Paare (Wertpapiertransaktion)
 
-[PortfolioTransaction.java*(https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/model/PortfolioTransaction.java)
+[PortfolioTransaction](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/model/PortfolioTransaction.java)
 * BUY, SELL
 * TRANSFER_IN, TRANSFER_OUT
 * DELIVERY_INBOUND, DELIVERY_OUTBOUND
 
-[AccountTransaction.java](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/model/AccountTransaction.java)
+[AccountTransaction](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/model/AccountTransaction.java)
 * DEPOSIT, REMOVAL
 * INTEREST, INTEREST_CHARGE
 * DIVIDENDS
 * TAXES, TAX_REFUND
 * FEES, FEES_REFUND
-
-Die Transaktionspaare 
 
 ---
 
