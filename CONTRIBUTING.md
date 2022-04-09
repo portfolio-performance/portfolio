@@ -60,7 +60,7 @@ Hilfestellung können wir geben im [Forum](https://forum.portfolio-performance.i
 2. `Menü` -> `Window` --> `Preference` --> `Java` --> `Editor` --> `Save Actions`
  	- Aktiviere `Organize imports`
 3. Downlod des Git Repository von Portfolio Performance
-4. Importieren des Repository in dein Workspace
+4. Importiere das Repository in dein Workspace
 5. Öffne die `portfolio-target-definition.target`
 	- Wenn sich nur die XML-Datei öffnet, klicke mit der rechten Maustaste auf `portfolio-target-definition.target` und wähle `Öffnen im Target-Editor`
 6. Klicke nun im Editor (rechts oben) auf `Set as Active Target Platform`. (Dies kann eine weile dauern, da nun alle erforderlichen Abhängigkeiten konfiguriert werden. Cirka 10 - 30 Minuten)
