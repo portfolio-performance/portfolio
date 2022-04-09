@@ -4,7 +4,7 @@
 - [Eclipse](#Eclipse)
 	- [Voraussetzungen](#Voraussetzungen)
 	- [Installation](#Install)
-		- - [Sprache ändern von Eclipse](#Install_Language)
+		- [Sprache ändern von Eclipse](#Install_Language)
 	- [Plugin's](#Plugins)
 	- [Erster Start](#First_Run)
 - [Übersetzungen](#Translations)
