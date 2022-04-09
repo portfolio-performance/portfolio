@@ -512,10 +512,9 @@ public class IBFlexStatementExtractor implements Extractor
                 {
                     fxRateToBase = new BigDecimal(1);
                 }
-                BigDecimal inverseRate = BigDecimal.ONE.divide(fxRateToBase, 10, RoundingMode.HALF_DOWN);
 
                 BigDecimal baseCurrencyMoney = BigDecimal.valueOf(amount.doubleValue() * Values.Amount.factor())
-                                .divide(inverseRate, RoundingMode.HALF_DOWN);
+                                .multiply(fxRateToBase);
                 transaction.setAmount(Math.round(baseCurrencyMoney.doubleValue()));
                 transaction.setCurrencyCode(ibAccountCurrency);
                 if (addUnit)
@@ -532,6 +531,45 @@ public class IBFlexStatementExtractor implements Extractor
             {
                 transaction.setAmount(Math.round(amount.doubleValue() * Values.Amount.factor()));
                 transaction.setCurrencyCode(currency);
+
+                if (addUnit && transaction.getSecurity() != null
+                                && !transaction.getSecurity().getCurrencyCode().equals(currency))
+                {
+                    // If the transaction currency is different from the
+                    // security currency (as stored in PP) we need to supply the
+                    // gross value in the security currency. We assume that the
+                    // security currency is the same that IB thinks of as base
+                    // currency for this transaction (fxRateToBase).
+                    String fxRateToBaseString = element.getAttribute("fxRateToBase");
+                    BigDecimal fxRateToBase;
+                    if (fxRateToBaseString != null && !fxRateToBaseString.isEmpty())
+                    {
+                        fxRateToBase = BigDecimal.valueOf(Double.parseDouble(fxRateToBaseString));
+                    }
+                    else
+                    {
+                        fxRateToBase = new BigDecimal(1);
+                    }
+                    // To back out the amount in the security currency we could
+                    // multiply with fxRateToBase. Instead, we calculate the
+                    // inverse rate and divide by it as we need to supply the
+                    // inverse rate for the gross value below (which converts
+                    // from security currency to original
+                    // transaction currency).
+                    BigDecimal inverseRate = BigDecimal.ONE.divide(fxRateToBase, 10, RoundingMode.HALF_DOWN);
+
+                    BigDecimal securityCurrencyMoney = BigDecimal.valueOf(amount.doubleValue() * Values.Amount.factor())
+                                    .divide(inverseRate, RoundingMode.HALF_DOWN);
+
+                    // Gross value with conversion information for the security
+                    // currency.
+                    Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, transaction.getMonetaryAmount(),
+                                    Money.of(transaction.getSecurity().getCurrencyCode(),
+                                                    Math.round(securityCurrencyMoney.doubleValue())),
+                                    inverseRate);
+                    transaction.addUnit(grossValue);
+                }
+
             }
         }
 
