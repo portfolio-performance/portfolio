@@ -17,6 +17,7 @@
 	- [Mathematische Rechnungen von Beträgen](#Mathematische_Rechnungen_von_Beträgen)
 	- [Hilfsklasse der Importer](#Hilfsklasse_der_Importer)
 	- [String-Manipulation](#String_Manipulation)
+	- [Formatierung des Source](#Formatting_source)
 	- [Generelle Regeln der TestCases](#Generelle_Regeln_der_TestCases)
 	- [Regular expressions](#Regular_expressions)
 
@@ -226,6 +227,121 @@ und in den [PDFExtractorUtils.java](https://github.com/buchen/portfolio/blob/fe2
 ### String-Manipulation
 
 Für die String-, oder Text-Manipulation ist der statischen Import der [TextUtil.java](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/util/TextUtil.java) zu verwenden.
+
+---
+
+<a name="Formatting_source"></a>
+### Formatierung des Source
+Eclipse biete mit der Tastenkombination [STRG]+[SHIFT]+[F] die Möglichkeit den Source zu formatieren.
+
+Das Ergebnis ist zum Teil recht schlecht lesbar. Auch werden Kommentare o.ä., sowie hilfreiche Informationen, Erklärungen oder
+Beispiel in der Formatierung zerstört. Wir bitte daher (ausschließlich bei den PDF-Importern) auf die Autoformatierung von Eclipse zu verzichten.
+Beachten bitte dabei, dass das Checkstyle Plug-In dir Hilfestellung gibt, wo Formatierungen nicht korrekt sind.
+
+
+Beispiel der Eclipse Formatierung vs. manuelle Formatierung
+```
+// Autoformatierung Eclipse
+// Courtage USD -22.01
+transaction.section("currency", "fee").optional().match("^Courtage (?<currency>[\\w]{3}) \\-(?<fee>[\\.,\\d])")
+		.assign((t, v) -> processFeeEntries(t, v, type));
+}
+
+// Manuelle Formatierung
+transaction
+	// Courtage USD -22.01
+	.section("currency", "fee").optional()
+	.match("^Courtage (?<currency>[\\w]{3}) \\-(?<fee>[\\.,\\d]+)")
+	.assign((t, v) -> processFeeEntries(t, v, type));
+}
+```
+```
+// Autoformatierung Eclipse
+.oneOf(
+		// Endbetrag EUR -50,30
+		section -> section.attributes("amount", "currency").match(
+				"^.* Endbetrag ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(\\-)?(?<amount>[\\.,\\d]+)$")
+				.assign((t, v) -> {
+				    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+				    t.setAmount(asAmount(v.get("amount")));
+				}),
+		// Endbetrag -52,50 EUR
+		// Endbetrag : -760,09 EUR
+		// Gewinn/Verlust -267,59 EUR Endbetrag
+		// EUR 16.508,16
+		// Endbetrag EUR 0,95
+		section -> section.attributes("amount", "currency").match(
+				"^(.* )?Endbetrag ([:\\s]+)?(\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+				.assign((t, v) -> {
+				    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+				    t.setAmount(asAmount(v.get("amount")));
+				}))
+
+// Manuelle Formatierung
+.oneOf(
+		// Endbetrag      EUR               -50,30
+		section -> section
+			.attributes("amount", "currency")
+			.match("^.* Endbetrag ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(\\-)?(?<amount>[\\.,\\d]+)$")
+			.assign((t, v) -> {
+			    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+			    t.setAmount(asAmount(v.get("amount")));
+			})
+		,
+		//        Endbetrag                   -52,50 EUR
+		// Endbetrag     :            -760,09 EUR
+		// Gewinn/Verlust -267,59 EUR             Endbetrag      EUR            16.508,16
+		//                                        Endbetrag      EUR                 0,95
+		section -> section
+			.attributes("amount", "currency")
+			.match("^(.* )?Endbetrag ([:\\s]+)?(\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+			.assign((t, v) -> {
+			    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+			    t.setAmount(asAmount(v.get("amount")));
+			})
+	)
+```
+```
+// Autoformatierung Eclipse
+/**
+ * Information: Lime Trading Corp. is a US-based financial services
+ * company. The currency is US$. All security currencies are USD. CUSIP
+ * Number: The CUSIP number is the WKN number. Dividend transactions:
+ * The amount of dividends is reported in gross.
+ */
+
+// Manuelle Formatierung
+/**
+ * Information:
+ * Lime Trading Corp. is a US-based financial services company.
+ * The currency is US$.
+ * 
+ * All security currencies are USD.
+ * 
+ * CUSIP Number:
+ * The CUSIP number is the WKN number.
+ * 
+ * Dividend transactions:
+ * The amount of dividends is reported in gross.
+ */
+```
+```
+ // Autoformatierung Eclipse
+/***
+ * Formatting: Date | Effective Description | CUSIP | Type of Activity |
+ * Quantity Market Price | Net Settlement Amount
+ * ------------------------------------- Dec 31 .05000% 3 Days,Bal=
+ * $71000 Credit Interest 0.30
+ */
+
+// Manuelle Formatierung
+/**
+ * Formatting:
+ * Date | Effective Description | CUSIP | Type of Activity | Quantity Market Price | Net Settlement Amount
+ * -------------------------------------
+ * Dec 31 .05000% 3 Days,Bal=   $71000 Credit Interest 0.30
+ */
+```
 
 ---
 
