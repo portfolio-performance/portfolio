@@ -90,8 +90,8 @@ Hilfestellung können wir geben im [Forum](https://forum.portfolio-performance.i
 2. `Menü` -> `Window` --> `Preference` --> `Java` --> `Editor` --> `Content Assist`
 	- Aktiviere `Add import insted of qualified name`
 	- Aktiviere `Use static imports`
-	- Klicke auf New Type... und füge folgende Favoriten hinzu
-		- name.abuchen.portfolio.util
+	- Klicke auf `New Type...` und füge folgende Favoriten hinzu
+		- `name.abuchen.portfolio.util`
 ---
 
 <a name="Translations"></a>
