@@ -195,7 +195,7 @@ public class VBankAGPDFExtractor extends AbstractPDFExtractor
 
                 // Solidaritätszuschlag EUR - 21,23
                 .section("currency", "tax").optional()
-                .match("^Solidaritätszuschlag (?<currency>[\\w]{3}) ([\\-\\s]+)?(?<tax>[\\.,\\d]+)")
+                .match("^Solidarit.tszuschlag (?<currency>[\\w]{3}) ([\\-\\s]+)?(?<tax>[\\.,\\d]+)")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
                 // Kirchensteuer EUR - 11,11
@@ -209,12 +209,12 @@ public class VBankAGPDFExtractor extends AbstractPDFExtractor
         transaction
                 // Bank-Provision EUR - 30,00
                 .section("currency", "fee").optional()
-                .match("^Bank-Provision ([\\*\\s]+)?(?<currency>[\\w]{3}) ([\\-\\s]+)?(?<fee>[\\.,\\d]+)$")
+                .match("^Bank\\-Provision ([\\*\\s]+)?(?<currency>[\\w]{3}) ([\\-\\s]+)?(?<fee>[\\.,\\d]+)$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Abwicklungsgebühren * EUR - 2,00
                 .section("currency", "fee").optional()
-                .match("^Abwicklungsgebühren ([\\*\\s]+)?(?<currency>[\\w]{3}) ([\\-\\s]+)?(?<fee>[\\.,\\d]+)$")
+                .match("^Abwicklungsgeb.hren ([\\*\\s]+)?(?<currency>[\\w]{3}) ([\\-\\s]+)?(?<fee>[\\.,\\d]+)$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Spesen * EUR - 1,00
