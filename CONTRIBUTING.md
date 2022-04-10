@@ -2,27 +2,31 @@
 
 ## Inhaltsverzeichnis
 - [Eclipse](#Eclipse)
-	- [Voraussetzungen](#Voraussetzungen)
+	- [Voraussetzungen](#Requirements)
 	- [Installation](#Install)
 		- [Sprache ändern von Eclipse](#Install_Language)
 	- [Plugin's](#Plugins)
 		- [Hilfreiche Einstellungen in Eclipse](#Settings_in_Eclipse)
 	- [Erster Start](#First_Run)
+		- [Starten mit LCDSL-Plugin](#Run_PP_Application_with_LCDSL)
+		- [Starten ohne LCDSL-Plugin](#Run_PP_Application_without_LCDSL)
+		- [TestCases mit LCDSL-Plugin starten](#Run_JunitPP_Application_with_LCDSL)
+		- [TestCases ohne LCDSL-Plugin starten](#Run_JunitPP_Application_without_LCDSL)
 - [Pull Request](#Pull_Request)
 	- [Pull Request mit Github Desktop](#Pull_Request_Github_Desktop)
 - [Übersetzungen](#Translations)
 	- [Tritt dem Übesetzungs-Team bei](#Start_Translations)
 - [PDF-Importer](#PDF-Importer)
-	- [Pfad zum Importer](#Pfad_zum_Importer)
-	- [Dateinamen der Importer](#Dateinamen_der_Importer)
-	- [Transaktionsklassen (Wertpapiertransaktion)](#Transaktionsklassen_Wertpapiertransaktion)
-	- [Transaktions-Paare](#Transaktions_Paare)
-	- [Sektionen der Transaktionsklasse (Wertpapiertransaktion)](#Sektionen_der_Transaktionsklasse_Wertpapiertransaktion_)
-	- [Mathematische Rechnungen von Beträgen](#Mathematische_Rechnungen_von_Beträgen)
-	- [Hilfsklasse der Importer](#Hilfsklasse_der_Importer)
-	- [String-Manipulation](#String_Manipulation)
+	- [Pfad zum Importer](#Path_to_Importer)
+	- [Dateinamen der Importer](#Filenames_of_the_Importer)
+	- [Transaktions-Paare](#Transactions_pairs)
+	- [Transaktionsklassen (Wertpapiertransaktion)](#TransactionClasses_securities_transaction_)
+	- [Sektionen der Transaktionsklasse (Wertpapiertransaktion)](#Sections_of_TransactionClasses_Securities_Transaction_)
+	- [Mathematische Rechnungen von Beträgen](#Mathematical_calculations_of_amounts)
+	- [Hilfsklasse der Importer](#Auxiliary_classes_of_the_importer)
+	- [String-Manipulation](#String_manipulation)
 	- [Formatierung des Source](#Formatting_source)
-	- [Generelle Regeln der TestCases](#Generelle_Regeln_der_TestCases)
+	- [Generelle Regeln der TestCases](#General_rules_of_TestCases)
 	- [Regular expressions](#Regular_expressions)
 
 ---
@@ -30,7 +34,7 @@
 <a name="Eclipse"></a>
 ## Eclipse
 
-<a name="Voraussetzungen"></a>
+<a name="Requirements"></a>
 ### Voraussetzungen
 - Eclipse IDE
 - Java 11
@@ -81,9 +85,36 @@ Hilfestellung können wir geben im [Forum](https://forum.portfolio-performance.i
 3. Importiere das Repository in dein Workspace
 4. Öffne die `portfolio-target-definition.target`
 	- Wenn sich nur die XML-Datei öffnet, klicke mit der rechten Maustaste auf `portfolio-target-definition.target` und wähle `Öffnen im Target-Editor`
-5. Klicke nun im Editor (rechts oben) auf `Set as Active Target Platform`. (Dies kann eine weile dauern, da nun alle erforderlichen Abhängigkeiten konfiguriert werden. Cirka 10 - 30 Minuten)
-6. `Menü` --> `Window` --> `Show View` --> `Other…` --> `Debug` --> `Launch Configuration`
-	- Rechte Maustaste --> `(Re-)generate Eclipse launch configuration`
+5. Klicke nun im Editor (rechts oben) auf `Set as Active Target Platform`. 
+ 	- Dies kann eine weile dauern, da nun alle erforderlichen Abhängigkeiten konfiguriert werden. Cirka 10 - 30 Minuten. Den Status kannst du im `Progress` sehen. `Menü` --> `Window` --> `Show View` --> `Progress`
+
+<a name="Run_PP_Application_with_LCDSL"></a>
+#### Starten mit LCDSL-Plugin
+1. `Menü` --> `Window` --> `Show View` --> `Other…` --> `Debug` --> `Launch Configuration`
+2. Selektiere unter `Eclipse Application` --> `PortfolioPerformance`
+3. Klicke im Reitermenü auf `Plug-ins` --> `Add Required Plug-ins`
+4. Klicke auf `Apply` danach auf `Run`
+
+<a name="Run_PP_Application_without_LCDSL"></a>
+#### Starten ohne LCDSL-Plugin
+1. `Menü` --> `Run` --> `Run Configurations`
+2. Selektiere unter `Eclipse Application` --> `PortfolioPerformance`
+3. Rechte Maustaste --> `(Re-)generate Eclipse launch configuration`
+4. Rechte Maustaste --> `Run`
+
+<a name="Run_JunitPP_Application_with_LCDSL"></a>
+#### TestCases mit LCDSL-Plugin starten
+1. `Menü` --> `Window` --> `Show View` --> `Other…` --> `Debug` --> `Launch Configuration`
+2. Selektiere unter `Junit Plug-in Test` --> `PortfolioPerformance_Tests` oder `PortfolioPerformance_UI_Tests`
+3. Rechte Maustaste --> `(Re-)generate Eclipse launch configuration`
+4. Rechte Maustaste --> `Run`
+
+<a name="Run_JunitPP_Application_without_LCDSL"></a>
+#### TestCases ohne LCDSL-Plugin starten
+1. `Menü` --> `Run` --> `Run Configurations`
+2. Selektiere unter `Junit Plug-in Test` --> `PortfolioPerformance_Tests` oder `PortfolioPerformance_UI_Tests`
+3. Klicke im Reitermenü auf `Plug-ins` --> `Add Required Plug-ins`
+4. Klicke auf `Apply` danach auf `Run`
 
 <a name="Settings_in_Eclipse"></a>
 #### Hilfreiche Einstellungen in Eclipse
@@ -125,6 +156,7 @@ Für Übersetzungen und Sprachpakete von Portfolio Performance benutzen wir [POE
 
 Wenn du die Übersetzungen korrigieren oder auch eine neue Sprache für Portfolio Performance hinzufügen möchtest, bitten wir dich, Übersetzungen
 zu erstellen, wenn du der Sprache mächtig bist. (Muttersprache) 
+
 Eine Übersetzung via Google Translate oder ähnlichem ist nicht förderlich. Nichts ist schlimmer, als falsche Übersetzungen in denen der Sinn verzerrt wird.
 
 <a name="Start_Translations"></a>
@@ -144,7 +176,7 @@ Nutze dazu bitte den ResourceBundle Editor in deiner Eclipse-Installation.
 Die Importer sind nach Banken/Brokern zu erstellen.
 
 
-<a name="Pfad_zum_Importer"></a>
+<a name="Path_to_Importer"></a>
 ### Pfad zum Importer
 Importer
 ```
@@ -152,7 +184,7 @@ name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/
 name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/
 ```
 
-<a name="Dateinamen_der_Importer"></a>
+<a name="Filenames_of_the_Importer"></a>
 ### Dateinamen der Importer
 Die Importerbezeichnungen sind eindeutig zu wählen.
 Beispiel: Deutsche Bank 
@@ -160,7 +192,7 @@ Beispiel: Deutsche Bank
 - TestCase --> `DeutscheBankPDFExtractorTest.java`
 
 
-<a name="Transaktions_Paare"></a>
+<a name="Transactions_pairs"></a>
 ### Transaktions-Paare (Wertpapiertransaktion)
 
 [PortfolioTransaction](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/model/PortfolioTransaction.java)
@@ -176,14 +208,14 @@ Beispiel: Deutsche Bank
 * FEES, FEES_REFUND
 
 
-<a name="Transaktionsklassen_Wertpapiertransaktion"></a>
+<a name="TransactionClasses_securities_transaction_"></a>
 ### Transaktionsklassen (Wertpapiertransaktion)
 
 Der Aufbau der Importer erfolgt nach folgendem Schema:
 * Client
 	* `addBankIdentifier();` -> einzigartiges Erkennungsmerkmal des PDF-Debugs
 * Transaktionsarten (Grundtypen)
-	* `addBuySellTransaction()` --> Kauf und Verkauf (Einzelnabrechnung)
+	* `addBuySellTransaction();` --> Kauf und Verkauf (Einzelnabrechnung)
 	* `addSummaryStatementBuySellTransaction();`  --> Kauf und Verkauf (Sammelabrechnungen)
 	* `addBuyTransactionFundsSavingsPlan();` --> Sparpläne
 	* `addDividendeTransaction();` --> Dividenden und Erträgnisgutschriften
@@ -198,7 +230,7 @@ Der Aufbau der Importer erfolgt nach folgendem Schema:
   	* `addTaxReturnBlock();` --> Steuererstattung
   	* `addFeeReturnBlock();` --> Gebührenerstattung
 * Ausgabelabel (Visualisierung)
-  	* `getLabel()` --> Bank/Broker mit vollständiger Kennung z.B. Deutsche Bank Privat- und Geschäftskunden AG
+  	* `getLabel();` --> Bank/Broker mit vollständiger Kennung z.B. Deutsche Bank Privat- und Geschäftskunden AG
 * Steuern und Gebühren
   	* `addTaxesSectionsTransaction();` --> Steuerbehandlung
   	* `addFeesSectionsTransaction();` --> Gebührenbehandlung
@@ -212,7 +244,7 @@ Der Aufbau der Importer erfolgt nach folgendem Schema:
 		* Beispiel: [Comdirect](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/ComdirectPDFExtractor.java)
 
 
-<a name="Sektionen_der_Transaktionsklasse_Wertpapiertransaktion_"></a>
+<a name="Sections_of_TransactionClasses_Securities_Transaction_"></a>
 ### Sektionen der Transaktionsklasse (Wertpapiertransaktion)
 Der Aufbau der Importer erfolgt nach folgendem Schema und die Mapping-Variabeln sind möglichst einzuhalten:
 * Type (Optional)
@@ -250,21 +282,21 @@ Der Aufbau der Importer erfolgt nach folgendem Schema und die Mapping-Variabeln 
 Ein fertigen PDF-Importer als Grundlage wäre z.B. der [V-Bank AG](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/VBankAGPDFExtractor.java) PDF-Importer.
 
 
-<a name="Hilfsklasse_der_Importer"></a>
+<a name="Auxiliary_classes_of_the_importer"></a>
 ### Hilfsklasse der Importer
 
 Die Hilfsklasse über standardisierte Umrechnungen "Importerübergreifend", wird vom [AbstractPDFExtractor.java](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/AbstractPDFExtractor.java) aufgerufen
 und in den [PDFExtractorUtils.java](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/PDFExtractorUtils.java) verarbeitet.
 
 
-<a name="Mathematische_Rechnungen_von_Beträgen"></a>
+<a name="Mathematical_calculations_of_amounts"></a>
 ### Mathematische Rechnungen von Beträgen
 
 1. Bei Berechnungen von Beträge welche Währungsgleich sind, ist die [Money-Klasse](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/money/Money.java) zu verwenden.
 2. Bei Berechnungen von Beträge welche Währungsungleich sind, sind die Beträge in `BigDecimal` zu berechnen und als `Money` zurück zu konvertieren.
 
 
-<a name="String_Manipulation"></a>
+<a name="String_manipulation"></a>
 ### String-Manipulation
 
 Für die String-, oder Text-Manipulation ist der statischen Import der [TextUtil.java](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/util/TextUtil.java) zu verwenden.
@@ -371,10 +403,10 @@ transaction
 
 ---
 
-<a name="Generelle_Regeln_der_TestCases"></a>
+<a name="General_rules_of_TestCases"></a>
 ### Generelle Regeln der TestCases
 1. TestCase-Dokumente (xyz.txt) werden nicht verändert, Teile hinzugefügt oder entfernt.
-2. Die PDF-Debugs als Textdatei sind über Portfolio Performance über Datei --> Importieren --> Debug: Text aus PDF extrahieren... zu erzeugen.
+2. Die PDF-Debugs als Textdatei sind über Portfolio Performance über `Datei` --> `Importieren` --> `Debug: Text aus PDF extrahieren...` zu erzeugen.
 3. Upload der PDF-Debugs (Textdateien) erfolgt im UTF-8 Format.
 4. Die PDF-Debugs als Textdatei sind wiefolg zu benennen (Grundnamen, ggf. auch in Fremdsprache)
 	* `Kauf01.txt, Verkauf01.txt` --> Kauf und Verkauf (Einzelabrechnungen) (e.g. Buy01.txt oder Sell01.txt)
@@ -423,9 +455,10 @@ Als guten Online-Editor können wir [https://regex101.com/](https://regex101.com
 
 - Die Regular expressions sollten korrekt und genau erstellt werden.
 - Alle Sonderzeichen (`\.[]{}()<>*+-=!?^$|`) sind zu escapen. 
-- Alle Umlaute (`äöüÄÖÜß`), sowie z.B. Zirkumflex o.a. sind durch ein ```.``` (Punkt) escapen.
+- Alle Umlaute (`äöüÄÖÜß`), sowie z.B. Zirkumflex o.a. sind durch ein `.` (Punkt) escapen.
 - Group Constructs `( ... )` so gering wie möglich zu halten.
-- Quantifiers `[ ... ]` falls nötig, passend zu wählen
+- Quantifiers `a{3,6}` falls nötig, passend zu wählen.
+- Character Classes `[ ... ]` falls nötig, passend zu wählen.
 - Bei `.match(" ... ")` wird mit einem Anchors `^` begonnen und mit `$` beendet
 - Bei `.find(" ... ")` wird nicht mit Anchors gearbeitet. Diese sind bereits enthalten.
 
@@ -439,7 +472,7 @@ Als guten Online-Editor können wir [https://regex101.com/](https://regex101.com
 | 	 		| 			| 				| `[A-Z0-9]{6}`					|
 | Beträge		| 751,68		| `[\\d,.]+`			| `[\\.,\\d]+`					|
 | 		 	| 			| 				| `[\\.\\d]+,[\\d]{2}`				|
-| 		 	| 74'120.00		| `[\\d.']+`			| `[\\.',\\d]+`					|
+| 		 	| 74'120.00		| `[\\d.']+`			| `[\\.'\\d]+`					|
 | 		 	| 20 120.00		| `[\\d.\\s]+`			| `[\\.\\d\\s]+`				|
 | Währungen		| EUR			| `\\w+`			| `[\\w]{3}`					|
 | 	 		| 			| 				| `[A-Z]{3}`					|
