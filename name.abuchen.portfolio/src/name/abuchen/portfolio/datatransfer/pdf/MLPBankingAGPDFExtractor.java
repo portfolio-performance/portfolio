@@ -24,8 +24,10 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
         super(client);
 
         addBankIdentifier("MLP Banking AG"); //$NON-NLS-1$
+        addBankIdentifier("MLP FDL AG"); //$NON-NLS-1$
 
         addBuySellTransaction();
+        addDividendeTransaction();
     }
 
     @Override
@@ -67,8 +69,8 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
                 // Stück 4,929 SAUREN GLOBAL BALANCED LU0106280836 (930920)
                 // INHABER-ANTEILE A O.N
                 // Ausführungskurs 20,29 EUR
-                .section("shares", "name", "isin", "wkn", "name1", "currency")
-                .match("^St.ck (?<shares>[\\.,\\d]+) (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
+                .section("name", "isin", "wkn", "name1", "currency")
+                .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
                 .match("^(?<name1>.*)$")
                 .match("^Ausf.hrungskurs [\\.,\\d]+ (?<currency>[\\w]{3})")
                 .assign((t, v) -> {
@@ -151,6 +153,102 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
         addTaxReturnBlock(context, type);
+    }
+
+    private void addDividendeTransaction()
+    {
+        DocumentType type = new DocumentType("(Gutschrift von .*|Aussch.ttung Investmentfonds|Dividendengutschrift)");
+        this.addDocumentTyp(type);
+
+        Block block = new Block("^(Gutschrift von .*|Aussch.ttung Investmentfonds|Dividendengutschrift)$");
+        type.addBlock(block);
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>().subject(() -> {
+            AccountTransaction entry = new AccountTransaction();
+            entry.setType(AccountTransaction.Type.DIVIDENDS);
+            return entry;
+        });
+
+        pdfTransaction
+                // Stück 920 ISHSIV-FA.AN.HI.YI.CO.BD U.ETF IE00BYM31M36 (A2AFCX)
+                // REGISTERED SHARES USD O.N.
+                // Zahlbarkeitstag 29.12.2017 Ertrag pro St. 0,123000000 USD
+                .section("name", "isin", "wkn", "name1", "currency")
+                .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
+                .match("(?<name1>.*)")
+                .match("^Zahlbarkeitstag [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Aussch.ttung|Dividende|Ertrag) pro (St\\.|St.ck) [\\.,\\d]+ (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    if (!v.get("name1").startsWith("Zahlbarkeitstag"))
+                        v.put("name", v.get("name") + " " + v.get("name1"));
+
+                    t.setSecurity(getOrCreateSecurity(v));
+                })
+
+                // Stück 920 ISHSIV-FA.AN.HI.YI.CO.BD U.ETF IE00BYM31M36 (A2AFCX)
+                .section("shares")
+                .match("^St.ck (?<shares>[\\.,\\d]+) .*$")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                // Ausmachender Betrag 68,87+ EUR
+                .section("currency", "amount")
+                .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+)\\+ (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(v.get("currency"));
+                })
+
+                // Den Betrag buchen wir mit Wertstellung 03.01.2018 zu Gunsten des Kontos xxxxxxxxxx (IBAN DExx xxxx xxxx xxxx
+                .section("date")
+                .match("^Den Betrag buchen wir mit Wertstellung (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$")
+                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                // Devisenkurs EUR / USD 1,2095
+                // Devisenkursdatum 02.01.2018
+                // Ausschüttung 113,16 USD 93,56+ EUR
+                .section("exchangeRate", "fxAmount", "fxCurrency", "amount", "currency").optional()
+                .match("^Devisenkurs .* (?<exchangeRate>[\\.,\\d]+)$")
+                .match("^(Aussch.ttung|Dividendengutschrift) (?<fxAmount>[\\.,\\d]+) (?<fxCurrency>[\\w]{3}) (?<amount>[\\.,\\d]+)\\+ (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                    if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
+                    {
+                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+                    }
+                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
+
+                    if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
+                    {
+                        BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
+                                        RoundingMode.HALF_DOWN);
+
+                        // check, if forex currency is transaction
+                        // currency or not and swap amount, if necessary
+                        Unit grossValue;
+                        if (!asCurrencyCode(v.get("fxCurrency")).equals(t.getCurrencyCode()))
+                        {
+                            Money fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")),
+                                            asAmount(v.get("fxAmount")));
+                            Money amount = Money.of(asCurrencyCode(v.get("currency")),
+                                            asAmount(v.get("amount")));
+                            grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
+                        }
+                        else
+                        {
+                            Money amount = Money.of(asCurrencyCode(v.get("fxCurrency")),
+                                            asAmount(v.get("fxAmount")));
+                            Money fxAmount = Money.of(asCurrencyCode(v.get("currency")),
+                                            asAmount(v.get("amount")));
+                            grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
+                        }
+                        t.addUnit(grossValue);
+                    }
+                })
+
+                .wrap(TransactionItem::new);
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
+        addFeesSectionsTransaction(pdfTransaction, type);
+
+        block.set(pdfTransaction);
     }
 
     private void addTaxReturnBlock(Map<String, String> context, DocumentType type)
