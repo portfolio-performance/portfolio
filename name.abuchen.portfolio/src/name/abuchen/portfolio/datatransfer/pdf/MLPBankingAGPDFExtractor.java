@@ -105,15 +105,15 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
                 .section("amount", "currency")
                 .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+)(\\-)? (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(v.get("currency"));
                 })
 
                 // Devisenkurs (EUR/USD) 1,141 vom 18.02.2022
                 // Kurswert 24.013,85 EUR
                 .section("fxCurrency", "exchangeRate", "amount", "currency").optional()
                 .match("^Devisenkurs \\([\\w]{3}\\/(?<fxCurrency>[\\w]{3})\\) (?<exchangeRate>[\\.,\\d]+) .*$")
-                .match("^Kurswert (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^Kurswert (?<amount>[\\.,\\d]+)(\\-)? (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                     if (t.getPortfolioTransaction().getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
@@ -157,10 +157,10 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("(Gutschrift von .*|Aussch.ttung Investmentfonds|Dividendengutschrift)");
+        DocumentType type = new DocumentType("(Gutschrift von .*|Aussch.ttung Investmentfonds|Dividendengutschrift|Thesaurierung von Investmentertr.gen)");
         this.addDocumentTyp(type);
 
-        Block block = new Block("^(Gutschrift von .*|Aussch.ttung Investmentfonds|Dividendengutschrift)$");
+        Block block = new Block("^(Gutschrift von .*|Aussch.ttung Investmentfonds|Dividendengutschrift|Thesaurierung von Investmentertr.gen)$");
         type.addBlock(block);
         Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>().subject(() -> {
             AccountTransaction entry = new AccountTransaction();
@@ -175,9 +175,12 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
                 .section("name", "isin", "wkn", "name1", "currency")
                 .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
                 .match("(?<name1>.*)")
-                .match("^Zahlbarkeitstag [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Aussch.ttung|Dividende|Ertrag) pro (St\\.|St.ck) [\\.,\\d]+ (?<currency>[\\w]{3})$")
+                .match("^(Zahlbarkeitstag|Tag des Zuflusses) "
+                                + "[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
+                                + "(Aussch.ttung|Dividende|Ertrag|Thesaurierung brutto) pro (St\\.|St.ck) [\\.,\\d]+ "
+                                + "(?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    if (!v.get("name1").startsWith("Zahlbarkeitstag"))
+                    if (!v.get("name1").startsWith("Zahlbarkeitstag") || !v.get("name1").startsWith("Tag"))
                         v.put("name", v.get("name") + " " + v.get("name1"));
 
                     t.setSecurity(getOrCreateSecurity(v));
@@ -188,18 +191,32 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
                 .match("^St.ck (?<shares>[\\.,\\d]+) .*$")
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                // Ausmachender Betrag 68,87+ EUR
-                .section("currency", "amount")
-                .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+)\\+ (?<currency>[\\w]{3})$")
-                .assign((t, v) -> {
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(v.get("currency"));
-                })
-
                 // Den Betrag buchen wir mit Wertstellung 03.01.2018 zu Gunsten des Kontos xxxxxxxxxx (IBAN DExx xxxx xxxx xxxx
                 .section("date")
                 .match("^Den Betrag buchen wir mit Wertstellung (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                // Ausmachender Betrag 68,87+ EUR
+                .section("type", "amount", "sign", "currency")
+                .match("^.* (?<type>(Aussch.ttung|Dividende|Ertrag|Thesaurierung brutto)) pro (St\\.|St.ck) [\\.,\\d]+ [\\w]{3}$")
+                .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+)(?<sign>(\\+|\\-))? (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+
+                    /***
+                     * If we have a positive amount and a gross reinvestment,
+                     * there is a tax refund.
+                     * If the amount is negative, then it is taxes.
+                     */
+                    if (v.get("sign").equals("+") && v.get("type").equals("Thesaurierung brutto"))
+                        t.setType(AccountTransaction.Type.TAX_REFUND);
+
+                    if (v.get("sign").equals("-") && v.get("type").equals("Thesaurierung brutto"))
+                        t.setType(AccountTransaction.Type.TAXES);
+
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                    t.setAmount(asAmount(v.get("amount")));
+                })
 
                 // Devisenkurs EUR / USD 1,2095
                 // Devisenkursdatum 02.01.2018
