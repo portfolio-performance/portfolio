@@ -169,6 +169,22 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
         });
 
         pdfTransaction
+                /***
+                 * If we have a positive amount and a gross reinvestment,
+                 * there is a tax refund.
+                 * If the amount is negative, then it is taxes.
+                 */
+                .section("type", "sign").optional()
+                .match("^.* (?<type>(Aussch.ttung|Dividende|Ertrag|Thesaurierung brutto)) pro (St\\.|St.ck) [\\.,\\d]+ [\\w]{3}$")
+                .match("^Ausmachender Betrag [\\.,\\d]+(?<sign>(\\+|\\-))? (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    if (v.get("type").equals("Thesaurierung brutto") && v.get("sign").equals("+"))
+                        t.setType(AccountTransaction.Type.TAX_REFUND);
+
+                    if (v.get("type").equals("Thesaurierung brutto") && v.get("sign").equals("-"))
+                        t.setType(AccountTransaction.Type.TAXES);
+                })
+
                 // Stück 920 ISHSIV-FA.AN.HI.YI.CO.BD U.ETF IE00BYM31M36 (A2AFCX)
                 // REGISTERED SHARES USD O.N.
                 // Zahlbarkeitstag 29.12.2017 Ertrag pro St. 0,123000000 USD
@@ -197,23 +213,9 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                 // Ausmachender Betrag 68,87+ EUR
-                .section("type", "amount", "sign", "currency")
-                .match("^.* (?<type>(Aussch.ttung|Dividende|Ertrag|Thesaurierung brutto)) pro (St\\.|St.ck) [\\.,\\d]+ [\\w]{3}$")
-                .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+)(?<sign>(\\+|\\-))? (?<currency>[\\w]{3})$")
+                .section("amount", "currency")
+                .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+)(\\+|\\-)? (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-
-                    /***
-                     * If we have a positive amount and a gross reinvestment,
-                     * there is a tax refund.
-                     * If the amount is negative, then it is taxes.
-                     */
-                    if (v.get("sign").equals("+") && v.get("type").equals("Thesaurierung brutto"))
-                        t.setType(AccountTransaction.Type.TAX_REFUND);
-
-                    if (v.get("sign").equals("-") && v.get("type").equals("Thesaurierung brutto"))
-                        t.setType(AccountTransaction.Type.TAXES);
-
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
                 })
