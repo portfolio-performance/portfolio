@@ -211,7 +211,7 @@ public class SecuritiesChart
         PURCHASEPRICE(Messages.LabelChartDetailChartDevelopmentClosingFIFO), //
         INVESTMENT(Messages.LabelChartDetailMarkerInvestments), //
         DIVIDENDS(Messages.LabelChartDetailMarkerDividends), //
-        EVENTS(Messages.LabelChartDetailMarkerSplits), //
+        EVENTS(Messages.LabelChartDetailMarkerEvents), //
         EXTREMES(Messages.LabelChartDetailMarkerHighLow), //
         FIFOPURCHASE(Messages.LabelChartDetailMarkerPurchaseFIFO), //
         FLOATINGAVGPURCHASE(Messages.LabelChartDetailMarkerPurchaseMovingAverage), //
