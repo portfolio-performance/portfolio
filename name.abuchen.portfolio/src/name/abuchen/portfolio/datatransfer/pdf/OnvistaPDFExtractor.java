@@ -1340,7 +1340,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
         /***
-         * if we have a tax refunds,
+         * If we have a tax refunds,
          * we set a flag and don't book tax below
          */
         transaction
@@ -1351,7 +1351,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 });
 
         /***
-         * if we have a tax refunds,
+         * If we have a gross reinvestment,
          * we set a flag and don't book tax below
          */
         transaction
