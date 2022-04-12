@@ -3298,7 +3298,7 @@ public class OnvistaPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-11-23T00:00")));
         assertThat(transaction.getSource(), is("Umtausch02.txt"));
-        assertNull(entry.getNote());
+        assertNull(transaction.getNote());
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(11.23 + 0.62 + 1.01))));
@@ -3383,7 +3383,7 @@ public class OnvistaPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-02-22T00:00")));
         assertThat(transaction.getSource(), is("Umtausch03.txt"));
-        assertNull(entry.getNote());
+        assertNull(transaction.getNote());
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.27))));
