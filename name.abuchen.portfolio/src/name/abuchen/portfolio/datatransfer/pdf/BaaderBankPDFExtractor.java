@@ -205,10 +205,10 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("(Fondsausschüttung"
+        DocumentType type = new DocumentType("(Fondsaussch.ttung"
                         + "|Ertragsthesaurierung"
                         + "|Dividendenabrechnung"
-                        + "|Ausschüttung aus"
+                        + "|Aussch.ttung aus"
                         + "|Wahldividende)");
         this.addDocumentTyp(type);
 
@@ -218,10 +218,33 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
             .subject(() -> {
                 AccountTransaction entry = new AccountTransaction();
                 entry.setType(AccountTransaction.Type.DIVIDENDS);
+
+                /***
+                 * If we have multiple entries in the document,
+                 * then the "noTax" flag must be removed.
+                 */
+                type.getCurrentContext().remove("noTax");
+
                 return entry;
             });
 
         pdfTransaction
+                /***
+                 * If we have a positive amount and a gross reinvestment,
+                 * there is a tax refund.
+                 * If the amount is negative, then it is taxes.
+                 */
+                .section("type", "sign").optional()
+                .match("^Nominale ISIN: .* (?<type>(Aussch.ttung|Thesaurierung brutto))$")
+                .match("^Zu (?<sign>(Gunsten|Lasten)) Konto [\\d]+ Valuta: [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\w]{3} [\\.\\d]+,[\\d]{2}$")
+                .assign((t, v) -> {
+                    if (v.get("type").equals("Thesaurierung brutto") && v.get("sign").equals("Gunsten"))
+                        t.setType(AccountTransaction.Type.TAX_REFUND);
+
+                    if (v.get("type").equals("Thesaurierung brutto") && v.get("sign").equals("Lasten"))
+                        t.setType(AccountTransaction.Type.TAXES);
+                })
+
                 // Nominale ISIN: FR0000130577 WKN: 859386 Ausschüttung
                 // STK 57 Publicis Groupe S.A. EUR 2,00 p.STK
                 .section("isin", "wkn", "name", "name1", "currency")
@@ -240,13 +263,16 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 .match("^STK (?<shares>[\\.,\\d]+) .*$")
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
+                .section("date")
+                .match("^Zu Gunsten Konto [\\d]+ Valuta: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\w]{3} [\\.\\d]+,[\\d]{2}$")
+                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
                 // Zu Gunsten Konto 1111111111 Valuta: 06.07.2021 EUR 68,22
-                .section("date", "currency", "amount").optional()
-                .match("^Zu Gunsten Konto [\\d]+ Valuta: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<currency>[\\w]{3}) (?<amount>[\\.\\d]+,[\\d]{2})$")
+                .section("currency", "amount").optional()
+                .match("^Zu Gunsten Konto [\\d]+ Valuta: [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[\\w]{3}) (?<amount>[\\.\\d]+,[\\d]{2})$")
                 .assign((t, v) -> {
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
-                    t.setDateTime(asDate(v.get("date")));
                 })
 
                 // Umrechnungskurs: EUR/USD 1,1452
@@ -291,11 +317,6 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         t.addUnit(grossValue);
                     }
                 })
-
-                // Ausschüttungsgleicher Ertrag EUR 20,96
-                .section("note").optional()
-                .match("^(?<note>Aussch.ttungsgleicher Ertrag .*)$")
-                .assign((t, v) -> t.setNote(v.get("note")))
 
                 .wrap(TransactionItem::new);
 
@@ -676,32 +697,69 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
+        /***
+         * If we have a gross reinvestment,
+         * we set a flag and don't book tax below
+         */
+        transaction
+                .section("n").optional()
+                .match("^Ertragsthesaurierung .*$")
+                .match("Steuerliquidität (?<n>.*)")
+                .assign((t, v) -> {
+                    type.getCurrentContext().put("noTax", "X");
+                });
+
         transaction
                 // Span. Finanztransaktionssteuer EUR 1,97
                 .section("tax", "currency").optional()
                 .match("^.* Finanztransaktionssteuer (?<currency>[\\w]{3}) (?<tax>[\\.\\d]+,[\\d]{2})$")
-                .assign((t, v) -> processTaxEntries(t, v, type))
+                .assign((t, v) -> {
+                    if (!"X".equals(type.getCurrentContext().get("noTax")))
+                    {
+                        processTaxEntries(t, v, type);
+                    }
+                })
 
                 // Kapitalertragsteuer EUR 127,73 -
                 .section("tax", "currency").optional()
                 .match("^Kapitalertragsteuer (?<currency>[\\w]{3}) (?<tax>[\\.\\d]+,[\\d]{2}) \\-$")
-                .assign((t, v) -> processTaxEntries(t, v, type))
+                .assign((t, v) -> {
+                    if (!"X".equals(type.getCurrentContext().get("noTax")))
+                    {
+                        processTaxEntries(t, v, type);
+                    }
+                })
 
                 // Kirchensteuer EUR 11,49 -
                 .section("tax", "currency").optional()
                 .match("^Kirchensteuer (?<currency>[\\w]{3}) (?<tax>[\\.\\d]+,[\\d]{2}) \\-$")
-                .assign((t, v) -> processTaxEntries(t, v, type))
+                .assign((t, v) -> {
+                    if (!"X".equals(type.getCurrentContext().get("noTax")))
+                    {
+                        processTaxEntries(t, v, type);
+                    }
+                })
 
                 // Solidaritätszuschlag EUR 7,02 -
                 .section("tax", "currency").optional()
                 .match("^Solidarit.tszuschlag (?<currency>[\\w]{3}) (?<tax>[\\.\\d]+,[\\d]{2}) \\-$")
-                .assign((t, v) -> processTaxEntries(t, v, type))
+                .assign((t, v) -> {
+                    if (!"X".equals(type.getCurrentContext().get("noTax")))
+                    {
+                        processTaxEntries(t, v, type);
+                    }
+                })
 
                 // Quellensteuer EUR 30,21 -
                 // US-Quellensteuer EUR 0,17 -
                 .section("withHoldingTax", "currency").optional()
                 .match("^(US-)?Quellensteuer (?<currency>[\\w]{3}) (?<withHoldingTax>[\\.\\d]+,[\\d]{2}) \\-$")
-                .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type));
+                .assign((t, v) -> {
+                    if (!"X".equals(type.getCurrentContext().get("noTax")))
+                    {
+                        processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
+                    }
+                });
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)

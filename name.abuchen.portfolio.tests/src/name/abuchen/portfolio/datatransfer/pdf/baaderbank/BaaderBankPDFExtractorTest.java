@@ -967,23 +967,23 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getName(), is("iShares Core DAX UCITS ETF DE Inhaber-Anteile"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
-        // check dividends transaction
+        // check dividends tax transaction
         AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-05-12T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(11)));
         assertThat(transaction.getSource(), is("Dividende02.txt"));
-        assertThat(transaction.getNote(), is("Ausschüttungsgleicher Ertrag EUR 20,96"));
+        assertNull(transaction.getNote());
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.24))));
         assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.87))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.24))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.09 + 0.32 + 0.22))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
     }
