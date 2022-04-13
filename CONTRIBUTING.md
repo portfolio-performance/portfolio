@@ -124,7 +124,7 @@ Hilfestellung können wir geben im [Forum](https://forum.portfolio-performance.i
 	- Aktiviere `Add import insted of qualified name`
 	- Aktiviere `Use static imports`
 	- Klicke auf `New Type...` und füge folgende Favoriten hinzu
-		- `name.abuchen.portfolio.util`
+		- `name.abuchen.portfolio.util.TextUtil`
 ---
 
 <a name="Pull_Request"></a>
