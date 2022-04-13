@@ -32,7 +32,7 @@ public final class TaxonomyTemplate
     {
         this.id = id;
 
-        ResourceBundle bundle = ResourceBundle.getBundle("META-INF/taxonomy/" + id); //$NON-NLS-1$
+        ResourceBundle bundle = ResourceBundle.getBundle("name.abuchen.portfolio.model.taxonomy_templates." + id); //$NON-NLS-1$
         this.name = getString(bundle, "name"); //$NON-NLS-1$
     }
 
@@ -99,7 +99,7 @@ public final class TaxonomyTemplate
      */
     /* package */Taxonomy buildFromTemplate()
     {
-        ResourceBundle bundle = ResourceBundle.getBundle("META-INF/taxonomy/" + id); //$NON-NLS-1$
+        ResourceBundle bundle = ResourceBundle.getBundle("name.abuchen.portfolio.model.taxonomy_templates." + id); //$NON-NLS-1$
 
         Taxonomy taxonomy = new Taxonomy(id, name);
 
