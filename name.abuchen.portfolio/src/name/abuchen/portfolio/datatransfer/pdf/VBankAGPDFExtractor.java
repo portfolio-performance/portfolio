@@ -62,18 +62,18 @@ public class VBankAGPDFExtractor extends AbstractPDFExtractor
                 // Wertpapierbezeichnung Deut. Börse Commodities GmbH Xetra-Gold IHS 2007(09/Und)
                 // ISIN DE000A0S9GB0
                 // WKN A0S9GB
-                // Nominal / Stück 300 ST
                 // Kurs EUR 36,906
-                .section("name", "isin", "wkn", "shares", "currency")
+                .section("name", "isin", "wkn", "currency")
                 .match("^Wertpapierbezeichnung (?<name>.*)$")
                 .match("^ISIN (?<isin>[\\w]{12})$")
                 .match("^WKN (?<wkn>.*)$")
-                .match("^Nominal \\/ St.ck (?<shares>[\\.,\\d]+) ST$")
                 .match("^Kurs (?<currency>[\\w]{3}) [\\.,\\d]+$")
-                .assign((t, v) -> {
-                    t.setShares(asShares(v.get("shares")));
-                    t.setSecurity(getOrCreateSecurity(v));
-                })
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                // Nominal / Stück 300 ST
+                .section("shares")
+                .match("^Nominal \\/ St.ck (?<shares>[\\.,\\d]+) ST$")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 // Handelstag / Zeit 08.05.2019 09:36:23
                 .section("date", "time")
@@ -152,16 +152,17 @@ public class VBankAGPDFExtractor extends AbstractPDFExtractor
                 // WKN A1J4YZ
                 // Nominal/Stück 16 ST
                 // Währung EUR
-                .section("name", "isin", "wkn", "shares", "currency")
+                .section("name", "isin", "wkn", "currency")
                 .match("^Wertpapierbezeichnung (?<name>.*)$")
                 .match("^ISIN (?<isin>[\\w]{12})$")
                 .match("^WKN (?<wkn>.*)$")
-                .match("^Nominal\\/St.ck (?<shares>[\\.,\\d]+) ST$")
                 .match("^W.hrung (?<currency>[\\w]{3})$")
-                .assign((t, v) -> {
-                    t.setShares(asShares(v.get("shares")));
-                    t.setSecurity(getOrCreateSecurity(v));
-                })
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                // Nominal/Stück 16 ST
+                .section("shares")
+                .match("^Nominal\\/St.ck (?<shares>[\\.,\\d]+) ST$")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 // Zahlungstag 11.12.2019
                 .section("date")
@@ -194,7 +195,7 @@ public class VBankAGPDFExtractor extends AbstractPDFExtractor
 
                 // Solidaritätszuschlag EUR - 21,23
                 .section("currency", "tax").optional()
-                .match("^Solidaritätszuschlag (?<currency>[\\w]{3}) ([\\-\\s]+)?(?<tax>[\\.,\\d]+)")
+                .match("^Solidarit.tszuschlag (?<currency>[\\w]{3}) ([\\-\\s]+)?(?<tax>[\\.,\\d]+)")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
                 // Kirchensteuer EUR - 11,11
@@ -208,12 +209,12 @@ public class VBankAGPDFExtractor extends AbstractPDFExtractor
         transaction
                 // Bank-Provision EUR - 30,00
                 .section("currency", "fee").optional()
-                .match("^Bank-Provision ([\\*\\s]+)?(?<currency>[\\w]{3}) ([\\-\\s]+)?(?<fee>[\\.,\\d]+)$")
+                .match("^Bank\\-Provision ([\\*\\s]+)?(?<currency>[\\w]{3}) ([\\-\\s]+)?(?<fee>[\\.,\\d]+)$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Abwicklungsgebühren * EUR - 2,00
                 .section("currency", "fee").optional()
-                .match("^Abwicklungsgebühren ([\\*\\s]+)?(?<currency>[\\w]{3}) ([\\-\\s]+)?(?<fee>[\\.,\\d]+)$")
+                .match("^Abwicklungsgeb.hren ([\\*\\s]+)?(?<currency>[\\w]{3}) ([\\-\\s]+)?(?<fee>[\\.,\\d]+)$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Spesen * EUR - 1,00
