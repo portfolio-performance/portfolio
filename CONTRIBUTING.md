@@ -90,17 +90,17 @@ Hilfestellung können wir geben im [Forum](https://forum.portfolio-performance.i
 
 <a name="Run_PP_Application_with_LCDSL"></a>
 #### Starten mit LCDSL-Plugin
-1. `Menü` --> `Window` --> `Show View` --> `Other…` --> `Debug` --> `Launch Configuration`
-2. Selektiere unter `Eclipse Application` --> `PortfolioPerformance`
-3. Klicke im Reitermenü auf `Plug-ins` --> `Add Required Plug-ins`
-4. Klicke auf `Apply` danach auf `Run`
-
-<a name="Run_PP_Application_without_LCDSL"></a>
-#### Starten ohne LCDSL-Plugin
 1. `Menü` --> `Run` --> `Run Configurations`
 2. Selektiere unter `Eclipse Application` --> `PortfolioPerformance`
 3. Rechte Maustaste --> `(Re-)generate Eclipse launch configuration`
 4. Rechte Maustaste --> `Run`
+
+<a name="Run_PP_Application_without_LCDSL"></a>
+#### Starten ohne LCDSL-Plugin
+1. `Menü` --> `Window` --> `Show View` --> `Other…` --> `Debug` --> `Launch Configuration`
+2. Selektiere unter `Eclipse Application` --> `PortfolioPerformance`
+3. Klicke im Reitermenü auf `Plug-ins` --> `Add Required Plug-ins`
+4. Klicke auf `Apply` danach auf `Run`
 
 <a name="Run_JunitPP_Application_with_LCDSL"></a>
 #### TestCases mit LCDSL-Plugin starten
