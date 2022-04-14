@@ -934,7 +934,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 // Überweisungseingang SEPA Max Mustermann
                 .section("date", "amount", "note", "sign").optional()
                 .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. .* (?<amount>[\\.,\\d]+)(?<sign>([\\+|\\-]))$")
-                .match("^(?<note>.berweisungseingang SEPA) .*$")
+                .match("^(?<note>.berweisung(seingang|ausgang) SEPA)( .*)?$")
                 .assign((t, v) -> {
                     // Is sign is negative change to REMOVAL
                     if (v.get("sign").equals("-"))
@@ -950,7 +950,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 // Saldenübernahme Nordnet
                 .section("date", "amount", "note").optional()
                 .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. .* (?<amount>[\\.,\\d]+)$")
-                .match("^(?<note>Salden.bernahme) .*$")
+                .match("^(?<note>Salden.bernahme)( .*)?$")
                 .assign((t, v) -> {
                     t.setDateTime(asDate(v.get("date") + type.getCurrentContext().get("year")));
                     t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("currency")));
