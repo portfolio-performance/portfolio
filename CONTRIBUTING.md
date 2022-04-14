@@ -129,13 +129,15 @@ Hilfestellung können wir geben im [Forum](https://forum.portfolio-performance.i
 
 <a name="Pull_Request"></a>
 ## Pull-Requests
-Es gibt viele Möglichkeiten einen Pull-Request in Portfolio Performance zu starten. Natürlich kann Eclipse dies auch selber.
-
-Eine alternative Möglichkeit zu Eclipse ist, von [GitHub Desktop](https://desktop.github.com/), welche hier erläutert wird.
-
+1. Kommentare und Erläuterungen im Source sind in Englisch zu hinterlegen.
+2. Änderungen sind, wenn möglich mit TestCases zu validieren.
+3. Variabeln, Klassen, Methoden und neue Funktionen sind eindeutig zu wählen. (Stichwort OOP)
 
 <a name="Pull_Request_Github_Desktop"></a>
 #### Pull Request mit Github Desktop
+Es gibt viele Möglichkeiten einen Pull-Request in Portfolio Performance zu starten. Natürlich kann Eclipse dies auch selber.
+
+Eine alternative Möglichkeit zu Eclipse ist, von [GitHub Desktop](https://desktop.github.com/), welche hier erläutert wird.
 
 Ein ausführliches Tutorial findest du [hier](https://docs.github.com/en/desktop/installing-and-configuring-github-desktop/overview/creating-your-first-repository-using-github-desktop).
 
