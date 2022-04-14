@@ -13,6 +13,7 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.InvestmentPlan;
 
+@SuppressWarnings("nls")
 public class InvestmentPlanModelTest
 {
 
@@ -42,10 +43,10 @@ public class InvestmentPlanModelTest
         investmentPlan.setStart(LocalDateTime.parse("2022-03-29T00:00:00"));
         investmentPlan.setAccount(new Account("Test Account"));
         investmentPlan.setAmount(-100L);
-        
+
         InvestmentPlanModel model = new InvestmentPlanModel(new Client(), InvestmentPlan.Type.REMOVAL);
         model.setSource(investmentPlan);
-        
+
         assertThat(model.getAmount(), is(100L));
         assertThat(model.getCalculationStatus(), is(Status.OK_STATUS));
     }

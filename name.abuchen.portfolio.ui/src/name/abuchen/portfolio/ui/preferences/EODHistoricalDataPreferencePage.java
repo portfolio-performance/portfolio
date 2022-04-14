@@ -19,7 +19,7 @@ public class EODHistoricalDataPreferencePage extends FieldEditorPreferencePage
     {
         super(GRID);
 
-        setTitle(Messages.PrefTitleEODHistoricalData); //$NON-NLS-1$
+        setTitle(Messages.PrefTitleEODHistoricalData);
         setDescription(Messages.PrefDescriptionEODHistoricalData);
         setImageDescriptor(Images.EODHISTORICALDATA_LOGO.descriptor());
     }
