@@ -664,6 +664,7 @@ public class Messages extends NLS
     public static String LabelPortfolioFeeRate;
     public static String LabelPortfolioPerformance;
     public static String LabelPortfolioPerformanceFile;
+    public static String LabelPortfolioRateNotAvailable;
     public static String LabelPortfolios;
     public static String LabelPortfolioTaxRate;
     public static String LabelPortfolioTimeMachine;

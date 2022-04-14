@@ -18,7 +18,7 @@ public abstract class AbstractIndicatorWidget<D> extends WidgetDelegate<D>
     protected Label title;
     protected ColoredLabel indicator;
 
-    public AbstractIndicatorWidget(Widget widget, DashboardData dashboardData, boolean supportsBenchmarks)
+    protected AbstractIndicatorWidget(Widget widget, DashboardData dashboardData, boolean supportsBenchmarks)
     {
         super(widget, dashboardData);
 
