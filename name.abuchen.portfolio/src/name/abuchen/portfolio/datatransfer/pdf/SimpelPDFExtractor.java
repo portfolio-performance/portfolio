@@ -69,7 +69,7 @@ public class SimpelPDFExtractor extends AbstractPDFExtractor
                 // Kauf Standortfonds Österreich 10.00 € 140.59 € 0.071
                 // AT0000A1QA38 10.01.2022 5.123
                 .section("name", "isin")
-                .match("^([\\s]+)?(Kauf|Verkauf) (?<name>.*) ['\\.\\d]+ \\D ([\\s]+)?['\\.\\d]+ \\D ([\\s]+)?[\\.\\d\\s]+$")
+                .match("^([\\s]+)?(Kauf|Verkauf) (?<name>.*) ['\\.\\d]+ \\p{Sc} ([\\s]+)?['\\.\\d]+ \\p{Sc} ([\\s]+)?[\\.\\d\\s]+$")
                 .match("^(?<isin>[\\w]{12}) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} ['\\.\\d]+$")
                 .assign((t, v) -> {
                     v.put("currency", CurrencyUnit.EUR);
@@ -79,7 +79,7 @@ public class SimpelPDFExtractor extends AbstractPDFExtractor
                 // Kauf Standortfonds Österreich 10.00 € 140.59 € 0.071
                 // Verkauf Standortfonds Deutschland 880.29 € 133.58 € 6.590
                 .section("shares")
-                .match("^([\\s]+)?(Kauf|Verkauf) .* ['\\.\\d]+ \\D ([\\s]+)?['\\.\\d]+ \\D ([\\s]+)?(?<shares>[\\.\\d\\s]+)$")
+                .match("^([\\s]+)?(Kauf|Verkauf) .* ['\\.\\d]+ \\p{Sc} ([\\s]+)?['\\.\\d]+ \\p{Sc} ([\\s]+)?(?<shares>[\\.\\d\\s]+)$")
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 // AT0000A1QA38 10.01.2022 5.123
@@ -90,7 +90,7 @@ public class SimpelPDFExtractor extends AbstractPDFExtractor
                 // Abrechnungsbetrag: 10.00 €
                 // Auszahlungsbetrag: 848.68 €
                 .section("amount")
-                .match("^(Abrechnungsbetrag|Auszahlungsbetrag): ([\\s]+)?(?<amount>['\\.\\d]+) \\D$")
+                .match("^(Abrechnungsbetrag|Auszahlungsbetrag): ([\\s]+)?(?<amount>['\\.\\d]+) \\p{Sc}$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(CurrencyUnit.EUR));
@@ -180,7 +180,7 @@ public class SimpelPDFExtractor extends AbstractPDFExtractor
         transaction
                 // abgeführte Kapitalertragssteuer: 31.61 €
                 .section("tax").optional()
-                .match("^abgef.hrte Kapitalertragssteuer: (?<tax>['\\.\\d]+) \\D$")
+                .match("^abgef.hrte Kapitalertragssteuer: (?<tax>['\\.\\d]+) \\p{Sc}$")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
                 // Kapitalertragssteuer (KESt) gesamt: 4.28
