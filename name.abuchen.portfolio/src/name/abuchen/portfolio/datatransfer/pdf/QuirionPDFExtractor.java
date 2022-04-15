@@ -1,9 +1,10 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetTax;
 
+import java.text.MessageFormat;
+
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -11,9 +12,9 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 
+@SuppressWarnings("nls")
 public class QuirionPDFExtractor extends AbstractPDFExtractor
 {
     public QuirionPDFExtractor(Client client)
@@ -22,369 +23,321 @@ public class QuirionPDFExtractor extends AbstractPDFExtractor
 
         addBankIdentifier("Quirin Privatbank AG"); //$NON-NLS-1$
 
-        addPeriodenauszugTransactions();
+        addDepotStatementTransaction();
     }
 
     @Override
     public String getLabel()
     {
-        return "Quirion"; //$NON-NLS-1$
+        return "Quirin Privatbank AG"; //$NON-NLS-1$
     }
 
-    @SuppressWarnings("nls")
-    private void addPeriodenauszugTransactions()
+    private void addDepotStatementTransaction()
     {
-        final DocumentType type = new DocumentType("(Kontoauszug)", (context, lines) -> {
-            Pattern pCurrency = Pattern.compile("(Vermögensverwaltungskonto in )(\\w{3})\\n");
-            // read the current context here
-            for (String line : lines)
-            {
-                Matcher m = pCurrency.matcher(line);
-                if (m.matches())
-                {
-                    context.put("currency", m.group(1));
-                }
-            }
-        });
+        DocumentType type = new DocumentType("Kontoauszug");
         this.addDocumentTyp(type);
 
-// @formatter:off
+        Block buySellBlock = new Block("^Wertpapier (Kauf|Verkauf), Ref.: [\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-)?[\\.,\\d]+ [\\w]{3}$");
+        type.addBlock(buySellBlock);
+        buySellBlock.setMaxSize(4);
+        buySellBlock.set(new Transaction<BuySellEntry>()
 
-//Kontoübertrag 1197537 28.05.2019 28.05.2019 3.000,00 EUR
-//Ref.: 86991330
-        
-//Sammelgutschrift 19.12.2019 19.12.2019 5.000,00 EUR
-//DE00000000000000000000
-//Ref.: 105892216
-//AWV-Meldepflicht beachten - Tel.-Nr.08001234111
-        
-//Interne Buchung 31.01.2020 31.01.2020 2,84 EUR
-//Ref.: 110934428
-//Kulanzzahlung
-        
-//Überweisungsgutschrift Inland 27.12.2019 27.12.2019 2.000,00 EUR
-//Ref.: 106509889
-//Konto Inhaber DE00000000000000000000
-//Verwendungszweck
+                .subject(() -> {
+                    BuySellEntry entry = new BuySellEntry();
+                    entry.setType(PortfolioTransaction.Type.BUY);
+                    return entry;
+                })
 
-// @formatter:on
+                // Is type --> "Verkauf" change from BUY to SELL
+                .section("type").optional()
+                .match("^Wertpapier (?<type>(Kauf|Verkauf)), Ref\\.: [\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-)?[\\.,\\d]+ [\\w]{3}$")
+                .assign((t, v) -> {
+                    if (v.get("type").equals("Verkauf"))
+                    {
+                        t.setType(PortfolioTransaction.Type.SELL);
+                    }
+                })
 
-        Block depositBlock = new Block(
-                        "^((Kontoübertrag (\\d+))|(Sammelgutschrift)|(Interne Buchung)|(Überweisungsgutschrift Inland)) (\\d+\\.\\d+\\.\\d{4}) (\\d+\\.\\d+\\.\\d{4}) ([\\d.]+,\\d{2}) (\\w{3})");
+                // Wertpapier Kauf, Ref.: 133305911 03.06.2020 05.06.2020 -408,26 EUR
+                // AIS-Amundi MSCI EMERG.MARKETS Namens-Anteile C Cap.EUR
+                // o.N.
+                // LU1681045370, ST 102,054
+                .section("name", "nameContinued", "isin", "currency").optional()
+                .match("^Wertpapier (Kauf|Verkauf), Ref\\.: [\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-)?[\\.,\\d]+ (?<currency>[\\w]{3})$")
+                .match("^(?<name>.*)$")
+                .match("^(?<nameContinued>.*)$")
+                .match("^(?<isin>[\\w]{12}), ST (\\-)?[\\.,\\d]+$")
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                // Wertpapier Kauf, Ref.: 174680182 10.12.2020 14.12.2020 -428,06 EUR
+                // Xtr.(IE)MSCI World Value Registered Shares 1C USD o.N.
+                // IE00BL25JM42, ST 16,091
+                .section("name", "isin", "currency").optional()
+                .match("^Wertpapier (Kauf|Verkauf), Ref\\.: [\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-)?[\\.,\\d]+ (?<currency>[\\w]{3})$")
+                .match("^(?<name>.*)$")
+                .match("^(?<isin>[\\w]{12}), ST (\\-)?[\\.,\\d]+$")
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                // IE00BCBJG560, ST 3,648
+                // IE00B42THM37, ST -10,763
+                .section("shares")
+                .match("^[\\w]{12}, ST (\\-)?(?<shares>[\\.,\\d]+)$")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                // Wertpapier Kauf, Ref.: 133305911 03.06.2020 05.06.2020 -408,26 EUR
+                .section("date")
+                .match("^Wertpapier (Kauf|Verkauf), Ref\\.: [\\d]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-)?[\\.,\\d]+ [\\w]{3}$")
+                .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+
+                // Wertpapier Kauf, Ref.: 133305911 03.06.2020 05.06.2020 -408,26 EUR
+                .section("amount", "currency").optional()
+                .match("^Wertpapier (Kauf|Verkauf), Ref\\.: [\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                    t.setAmount(asAmount(v.get("amount")));
+                })
+
+                .wrap(BuySellEntryItem::new));
+
+        Block dividendeBlock = new Block("^(Ertr.gnisabrechnung|Thesaurierung), Ref.: [\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-)?[\\.,\\d]+ [\\w]{3}$");
+        type.addBlock(dividendeBlock);
+        dividendeBlock.setMaxSize(5);
+        dividendeBlock.set(new Transaction<AccountTransaction>()
+
+                .subject(() -> {
+                    AccountTransaction entry = new AccountTransaction();
+                    entry.setType(AccountTransaction.Type.DIVIDENDS);
+
+                    /***
+                     * If we have multiple entries in the document,
+                     * then the "taxCurrency" flag must be removed.
+                     */
+                    type.getCurrentContext().remove("taxCurrency");
+                    
+                    return entry;
+                })
+
+                // Is type --> "Thesaurierung" change from DIVIDENDS to TAXES
+                .section("type").optional()
+                .match("^(?<type>(Ertr.gnisabrechnung|Thesaurierung)), Ref\\.: [\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-)?[\\.,\\d]+ [\\w]{3}$")
+                .assign((t, v) -> {
+                    if (v.get("type").equals("Thesaurierung"))
+                    {
+                        t.setType(AccountTransaction.Type.TAXES);
+                    }
+                })
+
+                // Thesaurierung, Ref.: 111727648 25.02.2020 03.01.2020 -0,49 EUR
+                // AIS-Amundi MSCI EMERG.MARKETS Namens-Anteile C Cap.EUR
+                // o.N.
+                // LU1681045370, ST 449,231
+                .section("name", "nameContinued", "isin", "currency").optional()
+                .match("^(Ertr.gnisabrechnung|Thesaurierung), Ref\\.: [\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-)?[\\.,\\d]+ (?<currency>[\\w]{3})$")
+                .match("^(?<name>.*)$")
+                .match("^(?<nameContinued>.*)$")
+                .match("^(?<isin>[\\w]{12}), ST [\\.,\\d]+$")
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                // Erträgnisabrechnung, Ref.: 108905624 30.01.2020 29.01.2020 5,35 EUR
+                // iShsIII-EO Corp Bd 1-5yr U.ETF Registered Shares o.N.
+                // IE00B4L60045, ST 21,296
+                .section("name", "isin", "currency")
+                .match("^(Ertr.gnisabrechnung|Thesaurierung), Ref\\.: [\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-)?[\\.,\\d]+ (?<currency>[\\w]{3})$")
+                .match("^(?<name>.*)$")
+                .match("^(?<isin>[\\w]{12}), ST [\\.,\\d]+$")
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                // IE00B4L60045, ST 21,296
+                .section("shares")
+                .match("^[\\w]{12}, ST (?<shares>[\\.,\\d]+)$")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                // Erträgnisabrechnung, Ref.: 108905624 30.01.2020 29.01.2020 5,35 EUR
+                // Thesaurierung, Ref.: 111353113 25.02.2020 02.01.2020 -0,40 EUR
+                .section("date")
+                .match("^(Ertr.gnisabrechnung|Thesaurierung), Ref\\.: [\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (\\-)?[\\.,\\d]+ [\\w]{3}$")
+                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                // Erträgnisabrechnung, Ref.: 108905624 30.01.2020 29.01.2020 5,35 EUR
+                .section("amount", "currency").optional()
+                .match("^(Ertr.gnisabrechnung|Thesaurierung), Ref\\.: [\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                    t.setAmount(asAmount(v.get("amount")));
+                })
+
+                /***
+                 * The exchange rate is missing in the documents.
+                 * If taxes or fees are specified in foreign currency,
+                 * they cannot be converted.
+                 * 
+                 * The transaction is not recorded
+                 * 
+                 * Erträgnisabrechnung, Ref.: 119876044 09.04.2020 08.04.2020 0,94 EUR
+                 * KEST: USD -0,22, SOLI: USD -0,01
+                 */
+
+                // KEST: EUR -1,81, SOLI: EUR -0,09
+                .section("currency", "tax").optional()
+                .match("^Ertr.gnisabrechnung, .*$")
+                .match("^KEST: (?<currency>[\\w]{3}) \\-(?<tax>[\\.,\\d]+)( .*)?$")
+                .assign((t, v) -> {
+                    Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                    
+                    if (t.getMonetaryAmount().getCurrencyCode().equals(tax.getCurrencyCode()))
+                        checkAndSetTax(tax, t, type);
+                    else
+                    {
+                        t.setNote(MessageFormat.format(Messages.MsgNoExchangeRateAvailableForConversionTaxFee, tax.getCurrencyCode(),
+                                        t.getMonetaryAmount().getCurrencyCode()));
+
+                        type.getCurrentContext().put("taxCurrency", v.get("currency"));   
+                    }
+                })
+
+                // KEST: EUR -1,81, SOLI: EUR -0,09
+                .section("currency", "tax").optional()
+                .match("^Ertr.gnisabrechnung, .*$")
+                .match("^.*, SOLI: (?<currency>[\\w]{3}) \\-(?<tax>[\\.,\\d]+)$")
+                .assign((t, v) -> {
+                    Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                    
+                    if (t.getMonetaryAmount().getCurrencyCode().equals(tax.getCurrencyCode()))
+                        checkAndSetTax(tax, t, type);
+                    else
+                    {
+                        t.setNote(MessageFormat.format(Messages.MsgNoExchangeRateAvailableForConversionTaxFee, tax.getCurrencyCode(),
+                                        t.getMonetaryAmount().getCurrencyCode()));
+
+                        type.getCurrentContext().put("taxCurrency", v.get("currency"));   
+                    }
+                })
+
+                .wrap(t -> {
+                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                    {
+                        if (t.getNote() == null || !t.getNote().equals(MessageFormat.format(Messages.MsgNoExchangeRateAvailableForConversionTaxFee, type.getCurrentContext().get("taxCurrency"),
+                                        t.getMonetaryAmount().getCurrencyCode())))
+                            return new TransactionItem(t);
+                        else
+                            return new NonImportableItem(MessageFormat.format(Messages.MsgNoExchangeRateAvailableForConversionTaxFee, type.getCurrentContext().get("taxCurrency"),
+                                            t.getMonetaryAmount().getCurrencyCode()));
+                    }
+                    return null;
+                }));
+
+        // Kontoübertrag 1197537 28.05.2019 28.05.2019 3.000,00 EUR
+        // Sammelgutschrift 19.12.2019 19.12.2019 5.000,00 EUR
+        // Überweisungsgutschrift Inland 27.12.2019 27.12.2019 2.000,00 EUR
+        // Interne Buchung 31.01.2020 31.01.2020 2,84 EUR
+        Block depositBlock = new Block("^(Konto.bertrag [\\d]+|"
+                        + "Sammelgutschrift|"
+                        + "Interne Buchung|"
+                        + ".berweisungsgutschrift Inland) "
+                        + "[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
+                        + "[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
+                        + "[\\.,\\d]+ [\\w]{3}");
         type.addBlock(depositBlock);
-        depositBlock.set(new Transaction<AccountTransaction>().subject(() -> {
-            AccountTransaction t = new AccountTransaction();
-            t.setType(AccountTransaction.Type.DEPOSIT);
-            return t;
-        })
+        depositBlock.set(new Transaction<AccountTransaction>()
 
-                        .section("valuta", "amount")
-                        .match("^((Kontoübertrag (\\d+))|(Sammelgutschrift)|(Interne Buchung)|(Überweisungsgutschrift Inland)) (\\d+\\.\\d+\\.\\d{4}) (?<valuta>\\d+\\.\\d+\\.\\d{4}) (?<amount>[\\d.]+,\\d{2}) (\\w{3})")
-                        .assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
-                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                            t.setDateTime(asDate(v.get("valuta")));
-                            t.setAmount(asAmount(v.get("amount")));
-                        }).wrap(t -> new TransactionItem(t)));
+                .subject(() -> {
+                    AccountTransaction t = new AccountTransaction();
+                    t.setType(AccountTransaction.Type.DEPOSIT);
+                    return t;
+                })
 
-     // @formatter:off
+                .section("note1", "note2", "date", "amount", "currency")
+                .match("^(?<note1>(Konto.bertrag [\\d]+|"
+                                + "Sammelgutschrift|"
+                                + "Interne Buchung|"
+                                + ".berweisungsgutschrift Inland)) "
+                                + "[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
+                                + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) "
+                                + "(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})")
+                .match("^(?<note2>Ref\\.: [\\d]+)$")
+                .assign((t, v) -> {
+                    t.setDateTime(asDate(v.get("date")));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setNote(v.get("note1") + " " + v.get("note2"));
+                })
 
-//Steueroptimierung 12.06.2020 12.06.2020 36,82 EUR
-//Ref.: 135435928
+                .wrap(t -> new TransactionItem(t)));
 
-     // @formatter:on
-
-        Block taxReturnBlock = new Block(
-                        "^Steueroptimierung (\\d+.\\d+.\\d{4}+) (\\d+.\\d+.\\d{4}+) ([\\d.]+,\\d{2}).*");
-        type.addBlock(taxReturnBlock);
-        taxReturnBlock.set(new Transaction<AccountTransaction>().subject(() -> {
-            AccountTransaction t = new AccountTransaction();
-            t.setType(AccountTransaction.Type.TAX_REFUND);
-            return t;
-        })
-
-                        .section("amount", "currency", "date")
-                        .match("^Steueroptimierung (\\d+.\\d+.\\d{4}+) (?<date>\\d+.\\d+.\\d{4}+) (?<amount>[\\d.]+,\\d{2}) (?<currency>\\w{3}).*")
-                        .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
-                        })
-
-                        .wrap(t -> new TransactionItem(t)));
-
-     // @formatter:off
-
-//Rücküberweisung Inland 23.12.2019 19.12.2019 -5.002,84 EUR
-//Ref.: 106317528
-//Kontoinhaber DE00000000000000000000
-//Verwendungszweck             laenge
-//r Verrechnungskontonummer
-//5fx3t8k485f104a-39000
-
-     // @formatter:on
-
-        Block removalBlock = new Block(
-                        "^(Rücküberweisung Inland) (\\d+\\.\\d+\\.\\d{4}) (\\d+\\.\\d+\\.\\d{4}) -([\\d.]+,\\d{2}) (\\w{3})");
+        // Rücküberweisung Inland 23.12.2019 19.12.2019 -5.002,84 EUR
+        Block removalBlock = new Block("^R.cküberweisung Inland [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\-[\\.,\\d]+ [\\w]{3}$");
         type.addBlock(removalBlock);
-        removalBlock.set(new Transaction<AccountTransaction>().subject(() -> {
-            AccountTransaction t = new AccountTransaction();
-            t.setType(AccountTransaction.Type.REMOVAL);
-            return t;
-        })
+        removalBlock.set(new Transaction<AccountTransaction>()
 
-                        .section("valuta", "amount")
-                        .match("^(Rücküberweisung Inland) (\\d+\\.\\d+\\.\\d{4}) (?<valuta>\\d+\\.\\d+\\.\\d{4}) -(?<amount>[\\d.]+,\\d{2}) (\\w{3})")
-                        .assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
-                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                            t.setDateTime(asDate(v.get("valuta")));
-                            t.setAmount(asAmount(v.get("amount")));
-                        }).wrap(t -> new TransactionItem(t)));
-        
-    // @formatter:off
-        
-//Vermögensverwaltungshonorar 0000000000, 01.09.2019 - 30.09.2019 30.09.2019 30.09.2019 -6,98 EUR
-//Bemessungsgrundlage 27.703,80 EUR
-//Betrag inkl. USt: -6,98 EUR (Netto: -5,87 EUR, USt: -1,11 EUR)
-//Ref.: 97492689
-        
-//Vermögensverwaltungshonorar 31.08.2019 31.08.2019 -5,75 EUR
-//0000000000, 01.08.2019 - 31.08.2019
-//Bemessungsgrundlage 24.095,47 EUR
-//Betrag inkl. USt: -5,75 EUR (Netto: -4,83 EUR, USt: -0,92 EUR)
-//Ref.: 94613532
+                .subject(() -> {
+                    AccountTransaction t = new AccountTransaction();
+                    t.setType(AccountTransaction.Type.REMOVAL);
+                    return t;
+                })
 
-    // @formatter:on
-        
-        Block feesBlock = new Block(
-                        "(Vermögensverwaltungshonorar)(.*) (\\d+\\.\\d+\\.\\d{4}) (\\d+\\.\\d+\\.\\d{4}) (-[\\d.]+,\\d{2}) (\\w{3})");
+                .section("note1", "note2", "date", "amount")
+                .match("^(?<note1>R.cküberweisung Inland) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
+                                + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) "
+                                + "\\-(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^(?<note2>Ref\\.: [\\d]+)$")
+                .assign((t, v) -> {
+                    t.setDateTime(asDate(v.get("date")));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setNote(v.get("note1") + " " + v.get("note2"));
+                })
+
+                .wrap(t -> new TransactionItem(t)));
+
+        // Steueroptimierung 12.06.2020 12.06.2020 36,82 EUR
+        Block taxReturnBlock = new Block("^Steueroptimierung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+ [\\w]{3}$");
+        type.addBlock(taxReturnBlock);
+        taxReturnBlock.set(new Transaction<AccountTransaction>()
+
+                .subject(() -> {
+                    AccountTransaction t = new AccountTransaction();
+                    t.setType(AccountTransaction.Type.TAX_REFUND);
+                    return t;
+                })
+
+                .section("note1", "note2", "date", "amount", "currency")
+                .match("^(?<note1>Steueroptimierung) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
+                                + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) "
+                                + "(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^(?<note2>Ref\\.: [\\d]+)$")
+                .assign((t, v) -> {
+                    t.setDateTime(asDate(v.get("date")));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setNote(v.get("note1") + " " + v.get("note2"));
+                })
+
+                .wrap(t -> new TransactionItem(t)));
+
+        // Vermögensverwaltungshonorar 31.08.2019 31.08.2019 -5,75 EUR
+        // Vermögensverwaltungshonorar 0000000000, 01.09.2019 - 30.09.2019 30.09.2019 30.09.2019 -6,98 EUR
+        Block feesBlock = new Block("^Verm.gensverwaltungshonorar( .*)? [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\- )?[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\-[\\.,\\d]+ [\\w]{3}$");
         type.addBlock(feesBlock);
-        feesBlock.set(new Transaction<AccountTransaction>().subject(() -> {
-            AccountTransaction t = new AccountTransaction();
-            t.setType(AccountTransaction.Type.FEES);
-            return t;
-        })
+        feesBlock.set(new Transaction<AccountTransaction>()
 
-                        .section("valuta", "amount")
-                        .match("(Vermögensverwaltungshonorar)(.*) (\\d+\\.\\d+\\.\\d{4}) (?<valuta>\\d+\\.\\d+\\.\\d{4}) -(?<amount>[\\d.]+,\\d{2}) (\\w{3})")
-                        .assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
-                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                            t.setDateTime(asDate(v.get("valuta")));
-                            t.setAmount(asAmount(v.get("amount")));
-                        }).wrap(t -> new TransactionItem(t)));
+                .subject(() -> {
+                    AccountTransaction t = new AccountTransaction();
+                    t.setType(AccountTransaction.Type.FEES);
+                    return t;
+                })
 
-     // @formatter:off
+                .section("note1", "note2", "date", "amount", "currency")
+                .match("^(?<note1>Verm.gensverwaltungshonorar)( .*)? [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\- )?"
+                                + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) "
+                                + "\\-(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^(?<note2>Ref\\.: [\\d]+)$")
+                .assign((t, v) -> {
+                    t.setDateTime(asDate(v.get("date")));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setNote(v.get("note1") + " " + v.get("note2"));
+                })
 
-//Wertpapier Kauf, Ref.: 174680182 10.12.2020 14.12.2020 -428,06 EUR
-//Xtr.(IE)MSCI World Value Registered Shares 1C USD o.N.
-//IE00BL25JM42, ST 16,091
-        
-//Wertpapier Kauf, Ref.: 133305911 03.06.2020 05.06.2020 -408,26 EUR
-//AIS-Amundi MSCI EMERG.MARKETS Namens-Anteile C Cap.EUR
-//o.N.
-//LU1681045370, ST 102,054
-        
-     // @formatter:on
-
-        Block buyBlock = new Block(
-                        "(Wertpapier Kauf, Ref.: \\d+) (\\d+.\\d+.\\d{4}+) (\\d+.\\d+.\\d{4}+) (-[\\d.]+,\\d{2}) (\\w{3}).*");
-        type.addBlock(buyBlock);
-        buyBlock.set(new Transaction<BuySellEntry>().subject(() -> {
-            BuySellEntry entry = new BuySellEntry();
-            entry.setType(PortfolioTransaction.Type.BUY);
-            return entry;
-        })
-
-                        .section("isin", "name")
-                        .match("(Wertpapier Kauf, Ref.: \\d+) (\\d+.\\d+.\\d{4}+) (\\d+.\\d+.\\d{4}+) (-[\\d.]+,\\d{2}) (\\w{3}).*")
-                        .match("^(?<name>.*)$").match("((^o.N.\\n)|(^))(?<isin>.{12}).*").assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
-                            v.put("currency", context.get("currency"));
-                            t.setSecurity(getOrCreateSecurity(v));
-                        })
-
-                        .section("amount", "date", "shares")
-                        .match("(Wertpapier Kauf, Ref.: \\d+) (\\d+.\\d+.\\d{4}+) (?<date>\\d+.\\d+.\\d{4}+) -(?<amount>[\\d.]+,\\d{2}) (\\w{3}).*")
-                        .match("^(.*)$").match("^(.{12}, ST) (?<shares>[\\d.,]+).*").assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
-                            t.setDate(asDate(v.get("date")));
-                            t.setShares(asShares(v.get("shares")));
-                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
-                        }).wrap(BuySellEntryItem::new));
-
-     // @formatter:off
-
-//Thesaurierung, Ref.: 111353113 25.02.2020 02.01.2020 -0,40 EUR
-//SPDR MSCI Wrld Small Cap U.ETF Registered Shares o.N.
-//IE00BCBJG560, ST 28,476
-//KEST: EUR -0,38, SOLI: EUR -0,02
-
-//Thesaurierung, Ref.: 111727648 25.02.2020 02.01.2020 -0,49 EUR
-//AIS-Amundi MSCI EMERG.MARKETS Namens-Anteile C Cap.EUR
-//o.N.
-//LU1681045370, ST 449,231
-//KEST: EUR -0,47, SOLI: EUR -0,02
-
-     // @formatter:on
-
-        Block taxpayblock = new Block(
-                        "(Thesaurierung, Ref.: \\d+) (\\d+.\\d+.\\d{4}+) (\\d+.\\d+.\\d{4}+) (-[\\d.]+,\\d{2}) (\\w{3}).*");
-        type.addBlock(taxpayblock);
-
-        Transaction<AccountTransaction> taxVorabpauschaleTransaction = new Transaction<AccountTransaction>()
-
-                        .subject(() -> {
-                            AccountTransaction entry = new AccountTransaction();
-                            entry.setType(AccountTransaction.Type.TAXES);
-                            return entry;
-                        })
-
-                        .section("name", "isin", "date") //
-                        .match("(Thesaurierung, Ref.: \\d+) (\\d+.\\d+.\\d{4}+) (?<date>\\d+.\\d+.\\d{4}+) (-[\\d.]+,\\d{2}) (\\w{3}).*")
-                        .match("^(?<name>.*)$").match("((^o.N.\\n)|(^))(?<isin>.{12}).*") //
-                        .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
-                            t.setSecurity(getOrCreateSecurity(v));
-                        })
-
-                        .section("tax", "currency").optional()
-                        .match("(Thesaurierung, Ref.: \\d+) (\\d+.\\d+.\\d{4}+) (\\d+.\\d+.\\d{4}+) (?<tax>-[\\d.]+,\\d{2}) (?<currency>\\w{3}).*")
-                        .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("tax")));
-                        })
-
-                        .wrap(t -> t.getAmount() != 0 ? new TransactionItem(t)
-                                        : new NonImportableItem("Steuerpflichtige Vorabpauschale mit 0 "
-                                                        + t.getCurrencyCode()));
-
-        taxpayblock.set(taxVorabpauschaleTransaction);
-
-     // @formatter:off
-
-//Erträgnisabrechnung, Ref.: 169958419 30.11.2020 27.11.2020 156,33 EUR
-//Amundi Index Solu.-A.PRIME GL. Nam.-Ant.UCI.ETF DR USD Dis.oN
-//LU1931974692, ST 481,99
-//KEST: EUR -1,81, SOLI: EUR -0,09
-
-//Erträgnisabrechnung, Ref.: 169992104 27.11.2020 27.11.2020 54,86 EUR
-//Amundi I.S.-A.PRIME EURO CORP. Nam.-Ant.UC.ETF DR EUR
-//Dis.oN
-//LU1931975079, ST 189,172
-//KEST: EUR -0,01
-
-//Erträgnisabrechnung, Ref.: 87991231 27.06.2019 27.06.2019 11,54 EUR
-//I.M.-I.S&P 500 UETF Reg.Shares Dist o.N.
-//IE00BYML9W36, ST 106,167
-//KEST: USD -2,83, SOLI: USD -0,15
-
-     // @formatter:on
-
-        Block dividendBlock = new Block(
-                        "^Erträgnisabrechnung, Ref.: \\d+ (\\d+.\\d+.\\d{4}+) (\\d+.\\d+.\\d{4}+) ([\\d.]+,\\d{2}).*");
-        dividendBlock.setMaxSize(5);
-        type.addBlock(dividendBlock);
-        dividendBlock.set(new Transaction<AccountTransaction>().subject(() -> {
-            AccountTransaction t = new AccountTransaction();
-            t.setType(AccountTransaction.Type.DIVIDENDS);
-            return t;
-        })
-
-                        .section("isin", "name")
-                        .match("^Erträgnisabrechnung, Ref.: \\d+ (\\d+.\\d+.\\d{4}+) (\\d+.\\d+.\\d{4}+) ([\\d.]+,\\d{2})(.*)$")
-                        .match("^(?<name>.*)$").match("((^Dis.oN\\n)|(^))(?<isin>.{12})(.*)").assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
-                            v.put("currency", context.get("currency"));
-                            t.setSecurity(getOrCreateSecurity(v));
-                        })
-
-                        .section("amount", "date", "shares")
-                        .match("^Erträgnisabrechnung, Ref.: \\d+ (\\d+.\\d+.\\d{4}+) (?<date>\\d+.\\d+.\\d{4}+) (?<amount>[\\d.]+,\\d{2})(.*)$")
-                        .match("^(.*)$").match("((^Dis.oN\\n)|(^))(.{12}, ST) (?<shares>[\\d.,]+)(.*)")
-                        .assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
-                            t.setDateTime(asDate(v.get("date")));
-                            t.setShares(asShares(v.get("shares")));
-                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
-                        })
-
-                        .section("tax", "currency") //
-                        .optional().match("^(.*)(KEST: )(?<currency>\\w{3}) -(?<tax>[\\d.]+,\\d{2}).*") //
-                        .assign((t, v) -> {
-
-                            Money taxes = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-                            if (taxes.getCurrencyCode().equals(t.getCurrencyCode()))
-                                t.addUnit(new Unit(Unit.Type.TAX, taxes));
-                        })
-
-                        .section("tax", "currency").optional()
-                        .match("^(.*)(SOLI: )(?<currency>\\w{3}) -(?<tax>[\\d.]+,\\d{2})(.*)$").assign((t, v) -> {
-
-                            Money taxes = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-                            if (taxes.getCurrencyCode().equals(t.getCurrencyCode()))
-                                t.addUnit(new Unit(Unit.Type.TAX, taxes));
-                        })
-
-                        .wrap(TransactionItem::new));
-
-     // @formatter:off
-
-//Wertpapier Kauf, Ref.: 85249245 08.05.2019 10.05.2019 -235,86 EUR
-//SPDR MSCI Wrld Small Cap U.ETF Registered Shares o.N.
-//IE00BCBJG560, ST 3,648
-
-     // @formatter:on
-
-        Block sellBlock = new Block(
-                        "(Wertpapier Verkauf, Ref.: \\d+) (\\d+.\\d+.\\d{4}+) (\\d+.\\d+.\\d{4}+) ([\\d.]+,\\d{2}) (\\w{3}).*");
-        sellBlock.setMaxSize(4);
-        type.addBlock(sellBlock);
-        sellBlock.set(new Transaction<BuySellEntry>().subject(() -> {
-            BuySellEntry entry = new BuySellEntry();
-            entry.setType(PortfolioTransaction.Type.SELL);
-            return entry;
-        })
-
-                        .section("isin", "name", "amount", "date", "shares")
-                        .match("(Wertpapier Verkauf, Ref.: \\d+) (\\d+.\\d+.\\d{4}+) (?<date>\\d+.\\d+.\\d{4}+) (?<amount>[\\d.]+,\\d{2}) (\\w{3}).*")
-                        .match("^(?<name>.*)$") //
-                        .match("^((Dis.oN\\n)|())((?<isin>.{12}), ST) -(?<shares>[\\d.,]+)(.*)")
-
-                        .assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
-                            v.put("currency", context.get("currency"));
-                            t.setSecurity(getOrCreateSecurity(v));
-                            t.setDate(asDate(v.get("date")));
-                            t.setShares(asShares(v.get("shares")));
-                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
-                        })
-
-                        .section("kest", "currency") //
-                        .optional().match("^(KEST: )(?<currency>\\w{3}) -(?<kest>[\\d.]+,\\d{2}).*$")
-
-                        .assign((t, v) -> {
-                            Money kest = Money.of(asCurrencyCode("EUR"), asAmount(v.get("kest")));
-                            if (!kest.isZero() && kest.getCurrencyCode()
-                                            .equals(t.getPortfolioTransaction().getCurrencyCode()))
-                                t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX, kest));
-                        })
-
-                        .section("soli", "currency") //
-                        .optional().match(".*(SOLI: )(?<currency>\\w{3}) -(?<soli>[\\d.]+,\\d{2}).*$")
-
-                        .assign((t, v) -> {
-                            Money soli = Money.of(asCurrencyCode("EUR"), asAmount(v.get("soli")));
-                            if (!soli.isZero() && soli.getCurrencyCode()
-                                            .equals(t.getPortfolioTransaction().getCurrencyCode()))
-                                t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX, soli));
-                        })
-
-                        .wrap(BuySellEntryItem::new));
-
+                .wrap(t -> new TransactionItem(t)));
     }
 }
