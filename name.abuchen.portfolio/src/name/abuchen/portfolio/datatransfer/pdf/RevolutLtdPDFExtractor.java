@@ -68,7 +68,7 @@ public class RevolutLtdPDFExtractor extends AbstractPDFExtractor
                 // TSLA Tesla Sell 2 1,166.121 01 Nov 2021 15:51:47 GMT XOFF
                 .section("tickerSymbol", "name", "isin", "shares", "date")
                 .find("Symbol Company ISIN Type Quantity Price Settlement date")
-                .match("^(?<tickerSymbol>.*) (?<name>.*) (?<isin>[\\w]{12}) Sell (?<shares>[\\.,\\d]+) \\D[\\.,\\d]+ (?<date>[\\d]{2} .* [\\d]{4})$")
+                .match("^(?<tickerSymbol>.*) (?<name>.*) (?<isin>[\\w]{12}) Sell (?<shares>[\\.,\\d]+) \\p{Sc}[\\.,\\d]+ (?<date>[\\d]{2} .* [\\d]{4})$")
                 .assign((t, v) -> {
                     v.put("currency", CurrencyUnit.USD);
                     t.setShares(asShares(v.get("shares")));
@@ -79,7 +79,7 @@ public class RevolutLtdPDFExtractor extends AbstractPDFExtractor
                 // TSLA Tesla US88160R1014 Sell 2.1451261 $1,166.12 03 Nov 2021
                 .section("amount")
                 .find("Symbol Company ISIN Type Quantity Price Settlement date")
-                .match("^.* [\\.,\\d]+ \\D(?<amount>[\\.,\\d]+) [\\d]{2} .* [\\d]{4}$")
+                .match("^.* [\\.,\\d]+ \\p{Sc}(?<amount>[\\.,\\d]+) [\\d]{2} .* [\\d]{4}$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(CurrencyUnit.USD);
@@ -139,7 +139,7 @@ public class RevolutLtdPDFExtractor extends AbstractPDFExtractor
         transaction
                 // Total Fee charged $0.02
                 .section("fee").optional()
-                .match("^Total Fee charged \\D(?<fee>[\\.,\\d]+)$")
+                .match("^Total Fee charged \\p{Sc}(?<fee>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     v.put("currency", CurrencyUnit.USD);
                     processFeeEntries(t, v, type);

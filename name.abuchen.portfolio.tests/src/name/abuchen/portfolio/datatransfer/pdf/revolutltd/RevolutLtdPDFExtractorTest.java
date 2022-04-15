@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.pdf.revolutltd;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -46,7 +47,7 @@ public class RevolutLtdPDFExtractorTest
         new AssertImportActions().check(results, CurrencyUnit.USD);
 
         // check security
-        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst()
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US88160R1014"));
         assertThat(security.getTickerSymbol(), is("TSLA"));
@@ -54,7 +55,7 @@ public class RevolutLtdPDFExtractorTest
         new AssertImportActions().check(results, CurrencyUnit.USD);
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst()
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
@@ -63,6 +64,7 @@ public class RevolutLtdPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-11-03T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.1451261)));
         assertThat(entry.getSource(), is("Verkauf01.txt"));
+        assertNull(entry.getNote());
         
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1166.12))));
@@ -89,7 +91,7 @@ public class RevolutLtdPDFExtractorTest
 
         // check transaction
         // get transactions
-        Iterator<Extractor.Item> iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
+        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
         assertThat(results.stream().filter(i -> i instanceof TransactionItem).count(), is(2L));
 
         if (iter.hasNext())
@@ -102,6 +104,7 @@ public class RevolutLtdPDFExtractorTest
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-07-08T00:00")));
             assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(460.85))));
             assertThat(transaction.getSource(), is("AccountStatement01.txt"));
+            assertNull(transaction.getNote());
         }
 
         if (iter.hasNext())
@@ -114,6 +117,7 @@ public class RevolutLtdPDFExtractorTest
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-07-15T00:00")));
             assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(204.15))));
             assertThat(transaction.getSource(), is("AccountStatement01.txt"));
+            assertNull(transaction.getNote());
         }
     }
 }
