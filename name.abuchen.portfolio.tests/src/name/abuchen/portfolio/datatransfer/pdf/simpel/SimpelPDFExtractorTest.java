@@ -7,7 +7,6 @@ import static org.hamcrest.collection.IsEmptyCollection.empty;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.junit.Test;
 
@@ -52,8 +51,8 @@ public class SimpelPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance)
-                        .collect(Collectors.toList()).get(0).getSubject();
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
@@ -64,13 +63,13 @@ public class SimpelPDFExtractorTest
         assertThat(entry.getNote(), is("Auftrags-Nummer: 20220106123456789000000612345"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.00))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.0))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.0))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -94,8 +93,8 @@ public class SimpelPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance)
-                        .collect(Collectors.toList()).get(0).getSubject();
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
@@ -112,7 +111,7 @@ public class SimpelPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(31.61))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -137,8 +136,8 @@ public class SimpelPDFExtractorTest
         assertThat(security.getName(), is("Standortfonds Deutschland"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
-        // check dividend transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+        // check dividends transaction
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
