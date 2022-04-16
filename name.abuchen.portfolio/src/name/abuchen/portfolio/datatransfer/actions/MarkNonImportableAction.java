@@ -13,6 +13,6 @@ public class MarkNonImportableAction implements ImportAction
     public Status process(NonImportableItem item)
     {
         return new Status(Code.ERROR, MessageFormat.format(Messages.MsgErrorTransactionTypeNotSupported,
-                        "\n" + item.getTypeInformation()));
+                        "\n" + item.getTypeInformation())); //$NON-NLS-1$
     }
 }
