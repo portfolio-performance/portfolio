@@ -512,12 +512,9 @@ public class IBFlexStatementExtractor implements Extractor
                 {
                     fxRateToBase = new BigDecimal(1);
                 }
-                // TODO why are we dividing by the inverse rate instead of
-                // multiplying with fxRateToBase?
-                BigDecimal inverseRate = BigDecimal.ONE.divide(fxRateToBase, 10, RoundingMode.HALF_DOWN);
 
                 BigDecimal baseCurrencyMoney = BigDecimal.valueOf(amount.doubleValue() * Values.Amount.factor())
-                                .divide(inverseRate, RoundingMode.HALF_DOWN);
+                                .multiply(fxRateToBase);
                 transaction.setAmount(Math.round(baseCurrencyMoney.doubleValue()));
                 transaction.setCurrencyCode(ibAccountCurrency);
                 if (addUnit)
@@ -566,11 +563,13 @@ public class IBFlexStatementExtractor implements Extractor
 
                     // Gross value with conversion information for the security
                     // currency.
-                    Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, transaction.getMonetaryAmount(), Money
-                                    .of(transaction.getSecurity().getCurrencyCode(), securityCurrencyMoney.longValue()),
+                    Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, transaction.getMonetaryAmount(),
+                                    Money.of(transaction.getSecurity().getCurrencyCode(),
+                                                    Math.round(securityCurrencyMoney.doubleValue())),
                                     inverseRate);
                     transaction.addUnit(grossValue);
                 }
+
             }
         }
 
