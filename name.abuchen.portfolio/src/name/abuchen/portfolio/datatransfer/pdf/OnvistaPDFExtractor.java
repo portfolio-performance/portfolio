@@ -980,6 +980,24 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                     t.setNote(v.get("note1") + " " + v.get("note2"));
                 })
 
+                // 31.03. 30.03. REF: 000137802265 0,77-
+                // Überziehungszinsen
+                .section("date", "amount", "sign", "note").optional()
+                .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. REF: [\\d]+ (?<amount>[\\.,\\d]+)(?<sign>([\\+|\\-]))$")
+                .match("^(?<note>.berziehungszinsen)$")
+                .assign((t, v) -> {
+                    // Is sign is positiv change to INTEREST
+                    if (v.get("sign").equals("-"))
+                        t.setType(AccountTransaction.Type.INTEREST_CHARGE);
+                    else
+                        t.setType(AccountTransaction.Type.INTEREST);
+
+                    t.setDateTime(asDate(v.get("date") + type.getCurrentContext().get("year")));
+                    t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("currency")));
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setNote(v.get("note"));
+                })
+
                 .wrap(t -> {
                     if (t.getCurrencyCode() != null && t.getAmount() != 0)
                         return new TransactionItem(t);
