@@ -221,6 +221,7 @@ Der Aufbau der Importer erfolgt nach folgendem Schema:
 	* `addSummaryStatementBuySellTransaction();`  --> Kauf und Verkauf (Sammelabrechnungen)
 	* `addBuyTransactionFundsSavingsPlan();` --> Sparpläne
 	* `addDividendeTransaction();` --> Dividenden und Erträgnisgutschriften
+	* `addTaxTreatmentForDividendeTransaction();` --> Steuerliche Behandlung für Dividenden und Erträgnisgutschriften
 	* `addAdvanceTaxTransaction();` --> Vorabpauschalen
   	* `addCreditcardStatementTransaction();` --> Kreditkartentransaktionen
   	* `addAccountStatementTransaction();` --> Girokontotransaktionen
