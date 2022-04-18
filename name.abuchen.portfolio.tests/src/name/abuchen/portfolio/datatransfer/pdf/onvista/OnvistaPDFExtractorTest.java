@@ -3528,9 +3528,9 @@ public class OnvistaPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-04-04T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(200.00)));
             assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
             assertThat(transaction.getNote(), is("Überweisungseingang SEPA"));
-            assertThat(transaction.getAmount(), is(Values.Amount.factorize(200)));
         }
 
         if (iter.hasNext())
@@ -3542,9 +3542,9 @@ public class OnvistaPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-05-03T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(200.00)));
             assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
             assertThat(transaction.getNote(), is("Überweisungseingang SEPA"));
-            assertThat(transaction.getAmount(), is(Values.Amount.factorize(200)));
         }
 
         if (iter.hasNext())
@@ -3556,9 +3556,9 @@ public class OnvistaPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-06-01T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(100.00)));
             assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
             assertThat(transaction.getNote(), is("Überweisungseingang SEPA"));
-            assertThat(transaction.getAmount(), is(Values.Amount.factorize(100)));
         }
 
         if (iter.hasNext())
@@ -3570,9 +3570,9 @@ public class OnvistaPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-06-02T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(200.00)));
             assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
             assertThat(transaction.getNote(), is("Überweisungseingang SEPA"));
-            assertThat(transaction.getAmount(), is(Values.Amount.factorize(200)));
         }
 
         if (iter.hasNext())
@@ -3584,9 +3584,9 @@ public class OnvistaPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-06-26T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(300.00)));
             assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
             assertThat(transaction.getNote(), is("Überweisungseingang SEPA"));
-            assertThat(transaction.getAmount(), is(Values.Amount.factorize(300)));
         }
 
         if (iter.hasNext())
@@ -3598,9 +3598,9 @@ public class OnvistaPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-06-26T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(200.00)));
             assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
             assertThat(transaction.getNote(), is("Überweisungseingang SEPA"));
-            assertThat(transaction.getAmount(), is(Values.Amount.factorize(200)));
         }
     }
 
@@ -3629,9 +3629,9 @@ public class OnvistaPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-07T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.62)));
             assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
             assertThat(transaction.getNote(), is("Portogebühren 03/15"));
-            assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.62)));
         }
     }
 
@@ -3660,9 +3660,9 @@ public class OnvistaPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-10-31T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(37.66)));
             assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
             assertThat(transaction.getNote(), is("Saldenübernahme"));
-            assertThat(transaction.getAmount(), is(Values.Amount.factorize(37.66)));
         }
     }
 
@@ -3692,9 +3692,9 @@ public class OnvistaPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-03-24T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(42.42)));
             assertThat(transaction.getSource(), is("Kontoauszug04.txt"));
             assertThat(transaction.getNote(), is("Erst. BGH-Urteil Sonstige 2. Quartal 2021"));
-            assertThat(transaction.getAmount(), is(Values.Amount.factorize(42.42)));
         }
         if (iter.hasNext())
         {
@@ -3705,9 +3705,811 @@ public class OnvistaPDFExtractorTest
             assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-03-24T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(11.11)));
             assertThat(transaction.getSource(), is("Kontoauszug04.txt"));
             assertThat(transaction.getNote(), is("Erst. BGH-Urteil Sonstige 3. Quartal 2021"));
-            assertThat(transaction.getAmount(), is(Values.Amount.factorize(11.11)));
+        }
+    }
+
+    @Test
+    public void testKontoauszug05()
+    {
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "Kontoauszug05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(12));
+
+        // check transaction
+        // get transactions
+        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
+        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(12L));
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-01-03T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(100.00)));
+            assertThat(transaction.getSource(), is("Kontoauszug05.txt"));
+            assertThat(transaction.getNote(), is("Überweisungseingang SEPA"));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-01-17T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(500.00)));
+            assertThat(transaction.getSource(), is("Kontoauszug05.txt"));
+            assertThat(transaction.getNote(), is("Überweisungseingang SEPA"));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-01-19T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(2700.00)));
+            assertThat(transaction.getSource(), is("Kontoauszug05.txt"));
+            assertThat(transaction.getNote(), is("Überweisungseingang SEPA"));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-02-03T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(100.00)));
+            assertThat(transaction.getSource(), is("Kontoauszug05.txt"));
+            assertThat(transaction.getNote(), is("Überweisungseingang SEPA"));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-02-16T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(500.00)));
+            assertThat(transaction.getSource(), is("Kontoauszug05.txt"));
+            assertThat(transaction.getNote(), is("Überweisungseingang SEPA"));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-02-21T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(190.00)));
+            assertThat(transaction.getSource(), is("Kontoauszug05.txt"));
+            assertThat(transaction.getNote(), is("Überweisungseingang SEPA"));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-02-28T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(5000.00)));
+            assertThat(transaction.getSource(), is("Kontoauszug05.txt"));
+            assertThat(transaction.getNote(), is("Überweisungausgang SEPA"));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-03-16T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(750.00)));
+            assertThat(transaction.getSource(), is("Kontoauszug05.txt"));
+            assertThat(transaction.getNote(), is("Überweisungseingang SEPA"));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-03-21T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(1500.00)));
+            assertThat(transaction.getSource(), is("Kontoauszug05.txt"));
+            assertThat(transaction.getNote(), is("Überweisungausgang SEPA"));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-03-24T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.04)));
+            assertThat(transaction.getSource(), is("Kontoauszug05.txt"));
+            assertThat(transaction.getNote(), is("Erst. BGH-Urteil Sonstige 2. Quartal 2021"));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-03-24T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.12)));
+            assertThat(transaction.getSource(), is("Kontoauszug05.txt"));
+            assertThat(transaction.getNote(), is("Erst. BGH-Urteil Sonstige 3. Quartal 2021"));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-03-24T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.04)));
+            assertThat(transaction.getSource(), is("Kontoauszug05.txt"));
+            assertThat(transaction.getNote(), is("Erst. BGH-Urteil Sonstige 4. Quartal 2021"));
+        }
+    }
+
+    @Test
+    public void testKontoauszug06()
+    {
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "Kontoauszug06.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(9));
+
+        // check transaction
+        // get transactions
+        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
+        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(9L));
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-10-04T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(100.00)));
+            assertThat(transaction.getSource(), is("Kontoauszug06.txt"));
+            assertThat(transaction.getNote(), is("Überweisungseingang SEPA"));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-10-18T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(500.00)));
+            assertThat(transaction.getSource(), is("Kontoauszug06.txt"));
+            assertThat(transaction.getNote(), is("Überweisungseingang SEPA"));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-10-18T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(500.00)));
+            assertThat(transaction.getSource(), is("Kontoauszug06.txt"));
+            assertThat(transaction.getNote(), is("Überweisungausgang SEPA"));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-10-25T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(1000.00)));
+            assertThat(transaction.getSource(), is("Kontoauszug06.txt"));
+            assertThat(transaction.getNote(), is("Überweisungausgang SEPA"));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-11-03T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(100.00)));
+            assertThat(transaction.getSource(), is("Kontoauszug06.txt"));
+            assertThat(transaction.getNote(), is("Überweisungseingang SEPA"));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-11-16T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(500.00)));
+            assertThat(transaction.getSource(), is("Kontoauszug06.txt"));
+            assertThat(transaction.getNote(), is("Überweisungseingang SEPA"));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-12-03T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(100.00)));
+            assertThat(transaction.getSource(), is("Kontoauszug06.txt"));
+            assertThat(transaction.getNote(), is("Überweisungseingang SEPA"));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-12-15T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(500.00)));
+            assertThat(transaction.getSource(), is("Kontoauszug06.txt"));
+            assertThat(transaction.getNote(), is("Überweisungausgang SEPA"));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-12-16T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(500.00)));
+            assertThat(transaction.getSource(), is("Kontoauszug06.txt"));
+            assertThat(transaction.getNote(), is("Überweisungseingang SEPA"));
+        }
+    }
+
+    @Test
+    public void testKontoauszug07()
+    {
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "Kontoauszug07.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(7));
+
+        // check transaction
+        // get transactions
+        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
+        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(7L));
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-07-28T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(50.00)));
+            assertThat(transaction.getSource(), is("Kontoauszug07.txt"));
+            assertThat(transaction.getNote(), is("Überweisungseingang SEPA"));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-07-28T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(50.00)));
+            assertThat(transaction.getSource(), is("Kontoauszug07.txt"));
+            assertThat(transaction.getNote(), is("Überweisungseingang SEPA"));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-08-15T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(1000.00)));
+            assertThat(transaction.getSource(), is("Kontoauszug07.txt"));
+            assertThat(transaction.getNote(), is("Überweisungseingang SEPA"));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-09-12T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(250.00)));
+            assertThat(transaction.getSource(), is("Kontoauszug07.txt"));
+            assertThat(transaction.getNote(), is("Überweisungseingang SEPA"));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-09-26T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(150.00)));
+            assertThat(transaction.getSource(), is("Kontoauszug07.txt"));
+            assertThat(transaction.getNote(), is("Überweisungseingang SEPA"));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-09-28T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(50.00)));
+            assertThat(transaction.getSource(), is("Kontoauszug07.txt"));
+            assertThat(transaction.getNote(), is("Überweisungseingang SEPA"));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-09-28T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(50.00)));
+            assertThat(transaction.getSource(), is("Kontoauszug07.txt"));
+            assertThat(transaction.getNote(), is("Überweisungseingang SEPA"));
+        }
+    }
+
+    @Test
+    public void testKontoauszug08()
+    {
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "Kontoauszug08.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(6));
+
+        // check transaction
+        // get transactions
+        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
+        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(6L));
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-01T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(1000.00)));
+            assertThat(transaction.getSource(), is("Kontoauszug08.txt"));
+            assertThat(transaction.getNote(), is("Überweisungseingang SEPA"));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-17T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(600.00)));
+            assertThat(transaction.getSource(), is("Kontoauszug08.txt"));
+            assertThat(transaction.getNote(), is("Überweisungseingang SEPA"));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-01T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(1100.00)));
+            assertThat(transaction.getSource(), is("Kontoauszug08.txt"));
+            assertThat(transaction.getNote(), is("Überweisungseingang SEPA"));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-01T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(200.00)));
+            assertThat(transaction.getSource(), is("Kontoauszug08.txt"));
+            assertThat(transaction.getNote(), is("Überweisungseingang SEPA"));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-25T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(100.00)));
+            assertThat(transaction.getSource(), is("Kontoauszug08.txt"));
+            assertThat(transaction.getNote(), is("Überweisungseingang SEPA"));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-31T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(150.00)));
+            assertThat(transaction.getSource(), is("Kontoauszug08.txt"));
+            assertThat(transaction.getNote(), is("Überweisungseingang SEPA"));
+        }
+    }
+
+    @Test
+    public void testKontoauszug09()
+    {
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "Kontoauszug09.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(3));
+
+        // check transaction
+        // get transactions
+        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
+        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(3L));
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-03T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(350.00)));
+            assertThat(transaction.getSource(), is("Kontoauszug09.txt"));
+            assertThat(transaction.getNote(), is("Überweisungseingang SEPA"));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-03-02T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(350.00)));
+            assertThat(transaction.getSource(), is("Kontoauszug09.txt"));
+            assertThat(transaction.getNote(), is("Überweisungseingang SEPA"));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-03-23T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(1000.00)));
+            assertThat(transaction.getSource(), is("Kontoauszug09.txt"));
+            assertThat(transaction.getNote(), is("Überweisungseingang SEPA"));
+        }
+    }
+
+    @Test
+    public void testKontoauszug10()
+    {
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "Kontoauszug10.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(3));
+
+        // check transaction
+        // get transactions
+        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
+        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(3L));
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-01-02T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(66.67)));
+            assertThat(transaction.getSource(), is("Kontoauszug10.txt"));
+            assertThat(transaction.getNote(), is("Überweisungseingang SEPA"));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-02-01T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(66.67)));
+            assertThat(transaction.getSource(), is("Kontoauszug10.txt"));
+            assertThat(transaction.getNote(), is("Überweisungseingang SEPA"));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-03-01T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(66.67)));
+            assertThat(transaction.getSource(), is("Kontoauszug10.txt"));
+            assertThat(transaction.getNote(), is("Überweisungseingang SEPA"));
+        }
+    }
+
+    @Test
+    public void testKontoauszug11()
+    {
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "Kontoauszug11.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(3));
+
+        // check transaction
+        // get transactions
+        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
+        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(3L));
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-01-25T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(2926.19)));
+            assertThat(transaction.getSource(), is("Kontoauszug11.txt"));
+            assertThat(transaction.getNote(), is("Überweisungausgang SEPA"));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-03-24T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.67)));
+            assertThat(transaction.getSource(), is("Kontoauszug11.txt"));
+            assertThat(transaction.getNote(), is("Erst. BGH-Urteil Sonstige 3. Quartal 2021"));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST_CHARGE));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-03-31T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.77)));
+            assertThat(transaction.getSource(), is("Kontoauszug11.txt"));
+            assertThat(transaction.getNote(), is("Überziehungszinsen"));
+        }
+    }
+
+    @Test
+    public void testKontoauszug12()
+    {
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "Kontoauszug12.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(4));
+
+        // check transaction
+        // get transactions
+        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
+        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(4L));
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-01-05T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(50.00)));
+            assertThat(transaction.getSource(), is("Kontoauszug12.txt"));
+            assertThat(transaction.getNote(), is("Überweisungseingang SEPA"));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-02-05T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(50.00)));
+            assertThat(transaction.getSource(), is("Kontoauszug12.txt"));
+            assertThat(transaction.getNote(), is("Überweisungseingang SEPA"));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-03-05T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(50.00)));
+            assertThat(transaction.getSource(), is("Kontoauszug12.txt"));
+            assertThat(transaction.getNote(), is("Überweisungseingang SEPA"));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-03-05T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(50.00)));
+            assertThat(transaction.getSource(), is("Kontoauszug12.txt"));
+            assertThat(transaction.getNote(), is("Überweisungseingang SEPA"));
         }
     }
 }

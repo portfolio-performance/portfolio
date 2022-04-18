@@ -1,0 +1,195 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Seite 1 von 4
+Eheleute Unsere Postanschrift:
+Mustermann, Max onvista bank
+Mustermann, Mäxchen Postfach 10 08 60
+Musterstraße 1 60008 Frankfurt
+11111 Musterstadt
+Kundenservice:
+Telefon: +49 (0) 69 7107 - 530
+Fax +49 (0) 69 7107 - 100
+Mo-Fr 8:00 - 17:30 Uhr
+service@onvista-bank.de
+Ihre Bankverbindung für Überweisungen:
+IBAN DE75514108000123123123
+BIC BOURDEFF
+Kontoauszug Nr. 2021 / 4 und Rechnungsabschluss zum 31.12.2021
+EUR - Verrechnungskonto: 0 123123123
+Alter Saldo 251,66 H
+Neuer Saldo 532,38 H
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig.
+Nähere Informationen können dem "Informationsbogen für den Einleger", der unter www.onvista-bank.de
+im Menü "Service - Formulare" abgelegt ist, entnommen werden.
+Der Ihnen angezeigte Saldo kann Kontobewegungen berücksichtigen, deren tatsächliche
+Wertstellung (Valuta) noch nicht erfolgt ist. Bitte beachten Sie dies bei Ihrer Gelddisposition, da
+ansonsten Sollzinsen / Überziehungszinsen anfallen könnten. Das Datum der Wertstellung (Valuta)
+können Sie auf den folgenden Seiten zur jeweiligen Buchung entnehmen.
+Einwendungen wegen Unrichtigkeit oder Unvollständigkeit eines Rechnungsabschlusses sind gem. Nr. 7
+Abs. 2 unserer Allgemeinen Geschäftsbedingungen spätestens vor Ablauf von sechs Wochen nach
+Zugang des Rechnungsabschlusses zu erheben. Sofern Sie Ihre Einwendungen schriftlich geltend
+machen, richten Sie diese bitte unter Angabe der oben genannten Kontonummer an die onvista
+bank, Interne Revision, Solmsstraße 83, 60486 Frankfurt am Main. Es genügt die Absendung
+innerhalb der Sechs-Wochen-Frist. Das Unterlassen rechtzeitiger Einwendungen gilt als
+Genehmigung.
+Bei Zahlungen größer 12.500 EUR bitte Meldepflichten nach dem Außenwirtschaftsrecht beachten.
+Hinweis: Mit Urteil vom 27. April 2021 (XI ZR 26/20) hat der Bundesgerichtshof die Klauseln zum
+Vertragsänderungsmechanismus in Nr. 1 Abs. 2 und Nr. 12 Abs. 5 AGB-Banken bei Verträgen mit
+Verbrauchern für unzulässig bewertet. Die Bank wird sich auf die Klauseln nicht mehr berufen. Bei der
+Entgeltabrechnung konnte das Urteil noch nicht berücksichtigt werden.
+onvist a bank - eine Marke der Commerzbank AG · Solmsst raße 83 · 6 0 486 Frankfur t am Main
+Kundenservice: +49 ( 0 )69-7107-530 · T: +49 ( 0 )69-7107- 0 · F: +49 ( 0 )69-7107-10 0 · E: in fo@onvist a -bank.de · W: www.onvist a -bank.de
+Commerzbank AG · 60261 Frankfur t am Main · AG Frankfur t am Main HRB 32000 · Vorstand: Manf red Knof (Vorsitzender),
+Marcus Chromik, Michael Kotzbauer, Bet t ina Orlopp, Thomas Schaufler, Sabine Schmit t roth · Vorsitzender des Aufsichtsrates: Helmut Got tschalk
+Seite 2 von 4
+Kontoauszug Nr. 2021 / 4 und Rechnungsabschluss zum 31.12.2021
+EUR - Verrechnungskonto: 0 123123123
+Buchungs- Valuta Buchungstext Soll in EUR Haben in EUR
+datum
+Alter Kontostand vom 30.09.21 251,66+
+01.10. 01.10. REF: 000126391142 0,75+
+Zinsen/Dividenden
+ALBEMARLE CORP. DL-,01
+STK: 3
+ISIN: US0126531013
+ABR: 2246031420211001
+04.10. 04.10. REF: 000126598858 100,00+
+Überweisungseingang SEPA
+SPAREN
+NOTPROVIDED
+LTW212770000500002-008
+06.10. 04.10. REF: 000126728477 43,01+
+Zinsen/Dividenden
+VALE S.A.
+STK: 45
+ISIN: BRVALEACNOR0
+ABR: 1736011920211006
+18.10. 19.10. REF: 000127274673 250,00-
+Wertpapierkauf
+ISHSIII-CORE MSCI WLD DLA
+STK: 3,3827
+ISIN: IE00B4L5Y983
+ABR: 8741922820211015
+18.10. 18.10. REF: 000127302934 500,00+
+Überweisungseingang SEPA
+SPAREN
+NOTPROVIDED
+LTW212910000600002-008
+18.10. 18.10. REF: 000127303912 500,00-
+Überweisungausgang SEPA
+Urlaub
+ATOS_Id: C110170275
+CRM_Id: 9406429642
+25.10. 25.10. REF: 000127615665 1.000,00-
+Überweisungausgang SEPA
+Ausgleich Coba-Urlaub.Gardinen
+ATOS_Id: C110240185
+CRM_Id: 9461942483
+29.10. 01.11. REF: 000127836932 1.071,00-
+Wertpapierkauf
+LUCID GROUP INC. A -,0001
+STK: 35
+ISIN: US5494981039
+ABR: 9817980420211028
+onvist a bank - eine Marke der Commerzbank AG · Solmsst raße 83 · 6 0 486 Frankfur t am Main
+Kundenservice: +49 ( 0 )69-7107-530 · T: +49 ( 0 )69-7107- 0 · F: +49 ( 0 )69-7107-10 0 · E: in fo@onvist a -bank.de · W: www.onvist a -bank.de
+Commerzbank AG · 60261 Frankfur t am Main · AG Frankfur t am Main HRB 32000 · Vorstand: Manf red Knof (Vorsitzender),
+Marcus Chromik, Michael Kotzbauer, Bet t ina Orlopp, Thomas Schaufler, Sabine Schmit t roth · Vorsitzender des Aufsichtsrates: Helmut Got tschalk
+Seite 3 von 4
+Kontoauszug Nr. 2021 / 4 und Rechnungsabschluss zum 31.12.2021
+EUR - Verrechnungskonto: 0 123123123
+Buchungs- Valuta Buchungstext Soll in EUR Haben in EUR
+datum
+03.11. 03.11. REF: 000128204130 100,00+
+Überweisungseingang SEPA
+SPAREN
+NOTPROVIDED
+LTW213070000800002-008
+11.11. 11.11. REF: 000128640690 4,49+
+Zinsen/Dividenden
+APPLE INC.
+STK: 32
+ISIN: US0378331005
+ABR: 9469760420211111
+12.11. 12.11. REF: 000128752143 10,72+
+Zinsen/Dividenden
+ASML HOLDING EO -,09
+STK: 8
+ISIN: NL0010273215
+ABR: 2447088320211112
+15.11. 15.11. REF: 000128813711 4,44+
+Zinsen/Dividenden
+HORMEL FOODS DL-,01465
+STK: 28
+ISIN: US4404521001
+ABR: 3964262420211113
+16.11. 17.11. REF: 000128995226 250,00-
+Wertpapierkauf
+ISHSIII-CORE MSCI WLD DLA
+STK: 3,1999
+ISIN: IE00B4L5Y983
+ABR: 8321304720211115
+16.11. 16.11. REF: 000129018220 500,00+
+Überweisungseingang SEPA
+SPAREN
+NOTPROVIDED
+LTW213200000800004-008
+23.11. 24.11. REF: 000129354164 1.041,00+
+Wertpapierverkauf
+TELADOC HEALTH INC.DL-001
+STK: 10
+ISIN: US87918A1051
+ABR: 8996042120211122
+02.12. 02.12. REF: 000130073490 9,10+
+Zinsen/Dividenden
+LVMH EO 0,3
+STK: 5
+ISIN: FR0000121014
+ABR: 7460703920211202
+onvist a bank - eine Marke der Commerzbank AG · Solmsst raße 83 · 6 0 486 Frankfur t am Main
+Kundenservice: +49 ( 0 )69-7107-530 · T: +49 ( 0 )69-7107- 0 · F: +49 ( 0 )69-7107-10 0 · E: in fo@onvist a -bank.de · W: www.onvist a -bank.de
+Commerzbank AG · 60261 Frankfur t am Main · AG Frankfur t am Main HRB 32000 · Vorstand: Manf red Knof (Vorsitzender),
+Marcus Chromik, Michael Kotzbauer, Bet t ina Orlopp, Thomas Schaufler, Sabine Schmit t roth · Vorsitzender des Aufsichtsrates: Helmut Got tschalk
+Seite 4 von 4
+Kontoauszug Nr. 2021 / 4 und Rechnungsabschluss zum 31.12.2021
+EUR - Verrechnungskonto: 0 123123123
+Buchungs- Valuta Buchungstext Soll in EUR Haben in EUR
+datum
+03.12. 03.12. REF: 000130255613 100,00+
+Überweisungseingang SEPA
+SPAREN
+NOTPROVIDED
+LTW213370001000002-008
+15.12. 15.12. REF: 000130928351 500,00-
+Überweisungausgang SEPA
+Umbuchung Kamera
+ATOS_Id: C112143197
+CRM_Id: 9883229664
+16.12. 17.12. REF: 000130938426 250,00-
+Wertpapierkauf
+ISHSIII-CORE MSCI WLD DLA
+STK: 3,2295
+ISIN: IE00B4L5Y983
+ABR: 9079888320211215
+16.12. 16.12. REF: 000131050733 500,00+
+Überweisungseingang SEPA
+SPAREN
+NOTPROVIDED
+LTW213500001000002-008
+17.12. 17.12. REF: 000131124959 9,46+
+Zinsen/Dividenden
+KRAFT HEINZ CO.DL -,01
+STK: 36
+ISIN: US5007541064
+ABR: 6953537120211217
+22.12. 23.12. REF: 000131326783 1.178,75+
+Wertpapierverkauf
+LUCID GROUP INC. A -,0001
+STK: 35
+ISIN: US5494981039
+ABR: 2834923520211221
+Neuer Kontostand zum 31.12.2021 532,38+
+onvist a bank - eine Marke der Commerzbank AG · Solmsst raße 83 · 6 0 486 Frankfur t am Main
+Kundenservice: +49 ( 0 )69-7107-530 · T: +49 ( 0 )69-7107- 0 · F: +49 ( 0 )69-7107-10 0 · E: in fo@onvist a -bank.de · W: www.onvist a -bank.de
+Commerzbank AG · 60261 Frankfur t am Main · AG Frankfur t am Main HRB 32000 · Vorstand: Manf red Knof (Vorsitzender),
+Marcus Chromik, Michael Kotzbauer, Bet t ina Orlopp, Thomas Schaufler, Sabine Schmit t roth · Vorsitzender des Aufsichtsrates: Helmut Got tschalk
