@@ -63,7 +63,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
         pdfTransaction
                 // Is type --> "Verkauf" change from BUY to SELL
                 .section("type").optional()
-                .match("^(Wertpapierabrechnung|Transaction Statement): (?<type>(Kauf|Verkauf|Purchase|Sale))(.*)?$")
+                .match("^(Wertpapierabrechnung|Transaction Statement): (?<type>(Kauf|Verkauf|Purchase|Sale)).*$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("Verkauf") || v.get("type").equals("Sale"))
                     {
@@ -86,7 +86,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 // Registered Shares o.N.
                 // Kurswert EUR 208,74
                 .section("isin", "wkn", "name", "nameContinued", "currency").optional()
-                .match("^(Nominale ISIN|Quantity ISIN): (?<isin>[\\w]{12}) WKN: (?<wkn>.*) (Kurs|Bezugspreis|Barabfindung|Price)(.*)?$")
+                .match("^(Nominale ISIN|Quantity ISIN): (?<isin>[\\w]{12}) WKN: (?<wkn>.*) (Kurs|Bezugspreis|Barabfindung|Price).*$")
                 .match("^(STK|Units) [\\.,\\d]+ (?<name>.*) (?<currency>[\\w]{3}) .*$")
                 .match("^(?<nameContinued>.*)$")
                 .assign((t, v) -> {
@@ -108,7 +108,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                 section -> section
                                         .attributes("date", "time")
                                         .find("Handelsdatum Handelsuhrzeit")
-                                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2})(.*)?")
+                                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}).*")
                                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
                                 ,
                                 // Handels- Handels- 
@@ -116,7 +116,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                 section -> section
                                         .attributes("date", "time")
                                         .find("Handels- Handels- ")
-                                        .match("^.* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2})(.*)?$")
+                                        .match("^.* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}).*$")
                                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
                                 ,
                                 // Einbuchung in Depot yyyyyyyyyy per 09.03.2021
@@ -390,7 +390,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^(.*)?Seite 1\\/[\\d]$");
+        Block firstRelevantLine = new Block("^.*Seite 1\\/[\\d]$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
