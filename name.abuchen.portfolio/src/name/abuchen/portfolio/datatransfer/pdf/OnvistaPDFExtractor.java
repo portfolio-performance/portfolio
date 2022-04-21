@@ -701,7 +701,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^(Einbuchung:|Ausbuchung:|Wir erhielten zu Gunsten Ihres Depots)(.*)?");
+        Block firstRelevantLine = new Block("^(Einbuchung:|Ausbuchung:|Wir erhielten zu Gunsten Ihres Depots).*");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -721,7 +721,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 // Nominal Ex-Tag
                 // STK 12,000 04.07.2017
                 .section("name", "isin", "name1", "shares")
-                .find("(Einbuchung:|Ausbuchung:|Wir erhielten zu Gunsten Ihres Depots)(.*)?")
+                .find("(Einbuchung:|Ausbuchung:|Wir erhielten zu Gunsten Ihres Depots).*")
                 .find("Gattungsbezeichnung ISIN")
                 .match("^(?<name>.*) (?<isin>[\\w]{12})$")
                 .match("^(?<name1>.*)")
@@ -742,7 +742,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 // STK 12,000 04.07.2017
                 // STK 28,000 02.12.2011 02.12.2011
                 .section("date").optional()
-                .match("^STK [\\.,\\d]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})(.*)?$")
+                .match("^STK [\\.,\\d]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                 // Kapitalherabsetzung im Verhältnis 10:1. Weitere Informationen finden Sie im elektronischen Bundesanzeiger
@@ -1212,7 +1212,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^Ausbuchung:(.*)?");
+        Block firstRelevantLine = new Block("^Ausbuchung:.*");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -1222,7 +1222,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 // Nominal Ex-Tag
                 // STK 12,000 04.07.2017
                 .section("name", "isin", "name1")
-                .find("(Einbuchung:|Ausbuchung:|Wir erhielten zu Gunsten Ihres Depots)(.*)?")
+                .find("(Einbuchung:|Ausbuchung:|Wir erhielten zu Gunsten Ihres Depots).*")
                 .find("Gattungsbezeichnung ISIN")
                 .match("^(?<name>.*) (?<isin>[\\w]{12})$")
                 .match("^(?<name1>.*)")
@@ -1241,7 +1241,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 // STK 12,000 04.07.2017
                 // STK 28,000 02.12.2011 02.12.2011
                 .section("date").optional()
-                .match("^[\\w]{3} [\\.,\\d]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})(.*)?$")
+                .match("^[\\w]{3} [\\.,\\d]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                 // STK 33,000 06.06.2011
@@ -1389,7 +1389,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 // einbehaltene Kapitalertragsteuer EUR 1,81
                 // einbehaltene Kapitalertragsteuer EUR              0,39     
                 .section("tax", "currency").optional()
-                .match("^einbehaltene Kapitalertragsteuer ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<tax>[\\.,\\d]+)(.*)?$")
+                .match("^einbehaltene Kapitalertragsteuer ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<tax>[\\.,\\d]+).*$")
                 .assign((t, v) -> {
                     if (!"X".equals(type.getCurrentContext().get("negative")) && !"X".equals(type.getCurrentContext().get("noTax")))
                     {
@@ -1400,7 +1400,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 // einbehaltener Solidaritätszuschlag EUR 0,10
                 // einbehaltener Solidaritätszuschlag  EUR              0,02     
                 .section("tax", "currency").optional()
-                .match("^einbehaltener Solidarit.tszuschlag ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<tax>[\\.,\\d]+)(.*)?$")
+                .match("^einbehaltener Solidarit.tszuschlag ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<tax>[\\.,\\d]+).*$")
                 .assign((t, v) -> {
                     if (!"X".equals(type.getCurrentContext().get("negative")) && !"X".equals(type.getCurrentContext().get("noTax")))
                     {
@@ -1411,7 +1411,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 // einbehaltene Kirchensteuer EUR 5,86
                 // einbehaltener Kirchensteuer  EUR              0,02 
                 .section("tax", "currency").optional()
-                .match("^einbehaltene Kirchensteuer(  Ehegatte\\/Lebenspartner)? ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<tax>[\\.,\\d]+)(.*)?$")
+                .match("^einbehaltene Kirchensteuer(  Ehegatte\\/Lebenspartner)? ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<tax>[\\.,\\d]+).*$")
                 .assign((t, v) -> {
                     if (!"X".equals(type.getCurrentContext().get("negative")) && !"X".equals(type.getCurrentContext().get("noTax")))
                     {
@@ -1421,7 +1421,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
                 // einbehaltene Kirchensteuer Ehegatte/Lebenspartner EUR 1,09
                 .section("tax", "currency").optional()
-                .match("^einbehaltene Kirchensteuer Ehegatte\\/Lebenspartner ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<tax>[\\.,\\d]+)(.*)?$")
+                .match("^einbehaltene Kirchensteuer Ehegatte\\/Lebenspartner ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<tax>[\\.,\\d]+).*$")
                 .assign((t, v) -> {
                     if (!"X".equals(type.getCurrentContext().get("negative")) && !"X".equals(type.getCurrentContext().get("noTax")))
                     {

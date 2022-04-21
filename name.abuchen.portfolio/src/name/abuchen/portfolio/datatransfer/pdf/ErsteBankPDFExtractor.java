@@ -364,7 +364,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                 // WP-Bestand : 20,286
                                 section -> section
                                         .attributes("shares")
-                                        .match("^WP\\-Bestand : (?<shares>[\\.',\\d\\s]+)(.*)?$")
+                                        .match("^WP\\-Bestand : (?<shares>[\\.',\\d\\s]+).*$")
                                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
                         )
 
@@ -378,7 +378,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                 // Zahltag : 29. April 2010
                                 section -> section
                                         .attributes("date")
-                                        .match("^Zahltag : (?<date>[\\d]{2}\\. .* [\\d]{4})(.*)?$")
+                                        .match("^Zahltag : (?<date>[\\d]{2}\\. .* [\\d]{4}).*$")
                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
                         )
 

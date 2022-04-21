@@ -79,9 +79,9 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
                 // NOM. AE-C O.N. LU0565135745
                 // Kurswert EUR 4.803,50
                 .section("name", "name1", "wkn", "isin").optional()
-                .find("Nennbetrag Wertpapierbezeichnung ([\\s]+)?Wertpapierkennnummer\\/ISIN(.*)?")
+                .find("Nennbetrag Wertpapierbezeichnung ([\\s]+)?Wertpapierkennnummer\\/ISIN.*")
                 .match("^ST [\\.,\\d]+ (?<name>.*) (?<wkn>[\\w]{6})[\\s]{2,}(?<name1>.*) (?<isin>[\\w]{12})$")
-                .match("^Kurswert (?<currency>[\\w]{3}) [\\.,\\d]+(.*)?$")
+                .match("^Kurswert (?<currency>[\\w]{3}) [\\.,\\d]+.*$")
                 .assign((t, v) -> {
                     v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
 
@@ -91,7 +91,7 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
                 // ST 22
                 // ST 25 FIRST EAGLE AMUNDI-INTERNATIO. A1JQVV ACTIONS
                 .section("shares")
-                .match("^ST (?<shares>[\\.,\\d]+)(.*)?$")
+                .match("^ST (?<shares>[\\.,\\d]+).*$")
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 // Zum Kurs von Ausführungstag/Zeit Ausführungsort Verwahrart
