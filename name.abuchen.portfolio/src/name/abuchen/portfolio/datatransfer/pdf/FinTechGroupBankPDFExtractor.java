@@ -265,7 +265,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 //   unter der Transaktion-Nr. : 1111111111
                 // Transaktionsnummer: 921414163
                 .section("note").optional()
-                .match("^(.* )?(?<note>(Transaktion\\-Nr\\.([\\s]+)?|Transaktionsnummer): [\\d]+)(.*)?$")
+                .match("^(.* )?(?<note>(Transaktion\\-Nr\\.([\\s]+)?|Transaktionsnummer): [\\d]+).*$")
                 .assign((t, v) -> {
                     if (t.getNote() == null)
                         t.setNote(trim(v.get("note")));
@@ -426,7 +426,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 //   unter der Transaktion-Nr. : 1111111111
                 // Transaktionsnummer: 921414163
                 .section("note").optional()
-                .match("^(.* )?(?<note>(Transaktion\\-Nr\\.([\\s]+)?|Transaktionsnummer): [\\d]+)(.*)?$")
+                .match("^(.* )?(?<note>(Transaktion\\-Nr\\.([\\s]+)?|Transaktionsnummer): [\\d]+).*$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                 //     Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
@@ -625,7 +625,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 //   unter der Transaktion-Nr. : 1111111111
                 // Transaktionsnummer: 921414163
                 .section("note").optional()
-                .match("^(.* )?(?<note>(Transaktion\\-Nr\\.([\\s]+)?|Transaktionsnummer): [\\d]+)(.*)?$")
+                .match("^(.* )?(?<note>(Transaktion\\-Nr\\.([\\s]+)?|Transaktionsnummer): [\\d]+).*$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                 //     Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
@@ -732,7 +732,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 //   unter der Transaktion-Nr. : 1111111111
                 // Transaktionsnummer: 921414163
                 .section("note").optional()
-                .match("^(.* )?(?<note>(Transaktion\\-Nr\\.([\\s]+)?|Transaktionsnummer): [\\d]+)(.*)?$")
+                .match("^(.* )?(?<note>(Transaktion\\-Nr\\.([\\s]+)?|Transaktionsnummer): [\\d]+).*$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                 //     Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
@@ -1024,7 +1024,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^(Depotausgang|Bestandsausbuchung|Gutschrifts\\- \\/ Belastungsanzeige)(.*)?$");
+        Block firstRelevantLine = new Block("^(Depotausgang|Bestandsausbuchung|Gutschrifts\\- \\/ Belastungsanzeige).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -1074,7 +1074,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 // Fälligkeitstag   : 02.12.2009                  Letzter Handelstag:  20.11.2009
                 // Fälligkeitstag                                                  25.06.2021
                 .section("date").optional()
-                .match("^F.lligkeitstag([:\\s]+)? (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})(.*)?$")
+                .match("^F.lligkeitstag([:\\s]+)? (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
                 .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                 // Verwahrart      : GS-Verwahrung        Geldgegenwert***:              0,20 EUR
@@ -1125,7 +1125,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 //   unter der Transaktion-Nr. : 1111111111
                 // Transaktionsnummer: 921414163
                 .section("note").optional()
-                .match("^(.* )?(?<note>(Transaktion\\-Nr\\.([\\s]+)?|Transaktionsnummer): [\\d]+)(.*)?$")
+                .match("^(.* )?(?<note>(Transaktion\\-Nr\\.([\\s]+)?|Transaktionsnummer): [\\d]+).*$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                 //     Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
@@ -1154,7 +1154,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^Depoteingang(.*)?$");
+        Block firstRelevantLine = new Block("^Depoteingang.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -1214,7 +1214,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 //   unter der Transaktion-Nr. : 1111111111
                 // Transaktionsnummer: 921414163
                 .section("note").optional()
-                .match("^(.* )?(?<note>(Transaktion\\-Nr\\.([\\s]+)?|Transaktionsnummer): [\\d]+)(.*)?$")
+                .match("^(.* )?(?<note>(Transaktion\\-Nr\\.([\\s]+)?|Transaktionsnummer): [\\d]+).*$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                 //     Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
@@ -1284,7 +1284,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 //   unter der Transaktion-Nr. : 1111111111
                 // Transaktionsnummer: 921414163
                 .section("note").optional()
-                .match("^(.* )?(?<note>(Transaktion\\-Nr\\.([\\s]+)?|Transaktionsnummer): [\\d]+)(.*)?$")
+                .match("^(.* )?(?<note>(Transaktion\\-Nr\\.([\\s]+)?|Transaktionsnummer): [\\d]+).*$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                 //     Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
@@ -1477,7 +1477,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 //   unter der Transaktion-Nr. : 1111111111
                 // Transaktionsnummer: 921414163
                 .section("note").optional()
-                .match("^(.* )?(?<note>(Transaktion\\-Nr\\.([\\s]+)?|Transaktionsnummer): [\\d]+)(.*)?$")
+                .match("^(.* )?(?<note>(Transaktion\\-Nr\\.([\\s]+)?|Transaktionsnummer): [\\d]+).*$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                 //     Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
@@ -1579,7 +1579,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 //   unter der Transaktion-Nr. : 1111111111
                 // Transaktionsnummer: 921414163
                 .section("note").optional()
-                .match("^(.* )?(?<note>(Transaktion\\-Nr\\.([\\s]+)?|Transaktionsnummer): [\\d]+)(.*)?$")
+                .match("^(.* )?(?<note>(Transaktion\\-Nr\\.([\\s]+)?|Transaktionsnummer): [\\d]+).*$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                 //     Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
@@ -1604,7 +1604,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
          * addTransferOutTransaction();
          * addTransferInTransaction();
          */
-        Block block = new Block("^(Depoteingang|Depotausgang|Bestandsausbuchung|Gutschrifts\\- \\/ Belastungsanzeige)(.*)?$");
+        Block block = new Block("^(Depoteingang|Depotausgang|Bestandsausbuchung|Gutschrifts\\- \\/ Belastungsanzeige).*$");
         type.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
 
@@ -1653,7 +1653,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 // Fälligkeitstag                                                  25.06.2021
                 // Fälligkeitstag: 18.07.2011 letzter Handel am: 11.07.2011
                 .section("date").optional()
-                .match("^(F.lligkeitstag|Datum)([:\\s]+)? (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})(.*)?$")
+                .match("^(F.lligkeitstag|Datum)([:\\s]+)? (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                 // Stk./Nominale  : 325,000000 Stk         Einbeh. Steuer*:           -382,12 EUR
@@ -1677,7 +1677,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 //   unter der Transaktion-Nr. : 1111111111
                 // Transaktionsnummer: 921414163
                 .section("note").optional()
-                .match("^(.* )?(?<note>(Transaktion\\-Nr\\.([\\s]+)?|Transaktionsnummer): [\\d]+)(.*)?$")
+                .match("^(.* )?(?<note>(Transaktion\\-Nr\\.([\\s]+)?|Transaktionsnummer): [\\d]+).*$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                 //     Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
