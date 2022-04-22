@@ -169,11 +169,26 @@ public interface UIConstants
          * Preference key whether to store settings (standard calendar)
          */
         String CALENDAR = "CALENDAR"; //$NON-NLS-1$
-        
+
         /**
          * Preference key for preset time in new transactions.
          */
         String PRESET_VALUE_TIME = "PRESET_VALUE_TIME"; //$NON-NLS-1$
+
+        /**
+         * Preference key for the mode of the backup
+         */
+        String BACKUP_MODE = "BACKUP_MODE"; //$NON-NLS-1$
+
+        /**
+         * Preference key for the backup folder relative to the data file
+         */
+        String BACKUP_FOLDER_RELATIVE = "BACKUP_FOLDER_RELATIVE"; //$NON-NLS-1$
+
+        /**
+         * Preference key for the absolute backup
+         */
+        String BACKUP_FOLDER_ABSOLUTE = "BACKUP_FOLDER_ABSOLUTE"; //$NON-NLS-1$
     }
 
     interface CSS // NOSONAR

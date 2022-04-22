@@ -62,6 +62,49 @@ public class ClientInput
     // compatibility: the value used to be stored in the AbstractHistoricView
     private static final String REPORTING_PERIODS_KEY = "AbstractHistoricView"; //$NON-NLS-1$
 
+    public static final String DEFAULT_RELATIVE_BACKUP_FOLDER = "backups"; //$NON-NLS-1$
+
+    public enum BACKUP_MODE
+    {
+        // TODO Translations
+        NEXT_TO_FILE("Next to file"), ABSOLUTE_FOLDER("Absolute directory"), RELATIVE_FOLDER("Relative directory");
+
+        private String title;
+
+        private BACKUP_MODE(String title)
+        {
+            this.title = title;
+        }
+
+        public String getTitle()
+        {
+            return title;
+        }
+
+        public String getPreferenceValue()
+        {
+            return getClass().getSimpleName() + "_" + name(); //$NON-NLS-1$
+        }
+
+        public static BACKUP_MODE byValue(String preferenceValue)
+        {
+            for (BACKUP_MODE mode : values())
+            {
+                if (mode.getPreferenceValue().equalsIgnoreCase(preferenceValue))
+                {
+                    return mode;
+                }
+            }
+
+            return null;
+        }
+
+        public static BACKUP_MODE getDefault()
+        {
+            return NEXT_TO_FILE;
+        }
+    }
+
     private String label;
     private File clientFile;
     private Client client;
@@ -328,9 +371,9 @@ public class ClientInput
             // keep original extension in order to be able to open the backup
             // file directly from within PP
             String backupName = constructFilename(file, suffix);
-
             Path sourceFile = file.toPath();
-            Path backupFile = sourceFile.resolveSibling(backupName);
+            Path backupFile = getBackupFilePath(sourceFile, backupName);
+
             Files.copy(sourceFile, backupFile, StandardCopyOption.REPLACE_EXISTING);
         }
         catch (IOException e)
@@ -339,6 +382,70 @@ public class ClientInput
             Display.getDefault().asyncExec(() -> MessageDialog.openError(Display.getDefault().getActiveShell(),
                             Messages.LabelError, e.getMessage()));
         }
+    }
+
+    private Path getBackupFilePath(Path sourceFile, String backupName)
+    {
+        BACKUP_MODE backupMode = BACKUP_MODE.byValue(preferences.get(UIConstants.Preferences.BACKUP_MODE, null));
+        BACKUP_MODE resultingBackupMode = backupMode == null ? BACKUP_MODE.getDefault() : backupMode;
+
+        if (resultingBackupMode == BACKUP_MODE.ABSOLUTE_FOLDER)
+        {
+            String folderAbsolute = preferences.get(UIConstants.Preferences.BACKUP_FOLDER_ABSOLUTE, null);
+
+            if (folderAbsolute != null && !folderAbsolute.isBlank())
+            {
+                Path absolutePath = Path.of(folderAbsolute);
+                File absoluteFile = absolutePath.toFile();
+
+                if (absoluteFile.exists() && absoluteFile.isDirectory())
+                {
+                    return Path.of(folderAbsolute).resolve(backupName);
+                }
+            }
+
+            // Folder is not specified or directory does not exist -> fall back
+            resultingBackupMode = BACKUP_MODE.NEXT_TO_FILE;
+        }
+
+        if (resultingBackupMode == BACKUP_MODE.RELATIVE_FOLDER)
+        {
+            String folderRelative = preferences.get(UIConstants.Preferences.BACKUP_FOLDER_RELATIVE, null);
+
+            if (folderRelative == null || folderRelative.isBlank())
+            {
+                folderRelative = DEFAULT_RELATIVE_BACKUP_FOLDER;
+            }
+
+            Path relativePath = sourceFile.resolveSibling(folderRelative).normalize();
+            File relativeFile = relativePath.toFile();
+            boolean directoryExists;
+
+            if (relativeFile.exists() && relativeFile.isDirectory())
+            {
+                directoryExists = true;
+            }
+            else
+            {
+                directoryExists = relativeFile.mkdirs();
+            }
+
+            if (directoryExists)
+            {
+                return relativePath.resolve(backupName);
+            }
+
+            // Folder is not specified or directory does not exist and could not
+            // be created -> fall back
+            resultingBackupMode = BACKUP_MODE.NEXT_TO_FILE;
+        }
+
+        if (resultingBackupMode == BACKUP_MODE.NEXT_TO_FILE)
+        {
+            return sourceFile.resolveSibling(backupName);
+        }
+
+        throw new RuntimeException("Unsupported backup mode: " + resultingBackupMode.name()); //$NON-NLS-1$
     }
 
     private String constructFilename(File file, String suffix)

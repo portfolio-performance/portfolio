@@ -1024,6 +1024,7 @@ public class Messages extends NLS
     public static String PrefLabelUseSWTChartLibrary;
     public static String PrefMsgConfigureUpdates;
     public static String PrefMsgLanguageConfig;
+    public static String PrefMsgBackup;
     public static String PrefMsgCalendar;
     public static String PrefNoteIndirectQuotation;
     public static String PrefNoteStoreSettingsNextToFile;
@@ -1041,6 +1042,7 @@ public class Messages extends NLS
     public static String PrefTitleLanguage;
     public static String PrefTitlePresentation;
     public static String PrefTitleProxy;
+    public static String PrefTitleBackup;
     public static String PrefTitleCalendar;
     public static String PrefTitleDivvyDiary;
     public static String PrefTitleEODHistoricalData;
