@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetFee;
+import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
@@ -16,7 +17,6 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 
 @SuppressWarnings("nls")
@@ -70,22 +70,22 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                 .match("^Abrechnung: (?<type>Verkauf) von Wertpapieren$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("Verkauf"))
-                    {
                         t.setType(PortfolioTransaction.Type.SELL);
-                    }
                 })
 
                 // 123 1234567 00 BASF SE
                 // WKN BASF11 Nominal ST 19
                 // ISIN DE000BASF111 Kurs EUR 35,00
-                .section("name", "wkn", "shares", "isin", "currency")
+                .section("name", "wkn", "isin", "currency")
                 .match("^[\\d]{3} [\\d]+ [\\d]{2} (?<name>.*)$")
-                .match("^WKN (?<wkn>.*) Nominal ST (?<shares>[\\.,\\d]+)$")
+                .match("^WKN (?<wkn>.*) Nominal ST [\\.,\\d]+$")
                 .match("^ISIN (?<isin>[\\w]{12}) Kurs (?<currency>[\\w]{3}) .*$")
-                .assign((t, v) -> {
-                    t.setShares(asShares(v.get("shares")));
-                    t.setSecurity(getOrCreateSecurity(v));
-                })
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                // WKN BASF11 Nominal ST 19
+                .section("shares")
+                .match("^.* Nominal ST (?<shares>[\\.,\\d]+)$")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 .oneOf(
                                 // Belegnummer 1694278628 / 24281 Schlusstag 20.08.2019
@@ -134,14 +134,16 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                 // 380,000000 878841 US17275R1023
                 // CISCO SYSTEMS INC.REGISTERED SHARES DL-,001
                 // Dividende pro Stück 0,2600000000 USD Zahlbar 15.12.2014
-                .section("shares", "wkn", "isin", "name", "currency")
-                .match("^(?<shares>[\\.,\\d]+) (?<wkn>.*) (?<isin>[\\w]{12})$")
+                .section("wkn", "isin", "name", "currency")
+                .match("^[\\.,\\d]+ (?<wkn>.*) (?<isin>[\\w]{12})$")
                 .match("^(?<name>.*)$")
                 .match("^(Dividende|Aussch.ttung) pro St.ck [\\.,\\d]+ (?<currency>[\\w]{3}) .*$")
-                .assign((t, v) -> {
-                    t.setShares(asShares(v.get("shares")));
-                    t.setSecurity(getOrCreateSecurity(v));
-                })
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                // 380,000000 878841 US17275R1023
+                .section("shares")
+                .match("^(?<shares>[\\.,\\d]+) .* [\\w]{12}$")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 // Gutschrift mit Wert 15.12.2014 64,88 EUR
                 .section("date", "amount", "currency")
@@ -154,8 +156,8 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
 
                 // Bruttoertrag 98,80 USD 87,13 EUR
                 // Umrechnungskurs USD zu EUR 1,1339000000
-                .section("exchangeRate", "fxAmount", "fxCurrency", "amount", "currency").optional()
-                .match("^Bruttoertrag (?<fxAmount>[\\.,\\d]+) (?<fxCurrency>[\\w]{3}) (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .section("fxGross", "fxCurrency", "gross", "currency", "exchangeRate").optional()
+                .match("^Bruttoertrag (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3}) (?<gross>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .match("^Umrechnungskurs [\\w]{3} zu [\\w]{3} (?<exchangeRate>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
@@ -165,32 +167,10 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                     }
                     type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
 
-                    if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
-                    {
-                        BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
-                                        RoundingMode.HALF_DOWN);
-
-                        // check, if forex currency is transaction
-                        // currency or not and swap amount, if necessary
-                        Unit grossValue;
-                        if (!asCurrencyCode(v.get("fxCurrency")).equals(t.getCurrencyCode()))
-                        {
-                            Money fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")),
-                                            asAmount(v.get("fxAmount")));
-                            Money amount = Money.of(asCurrencyCode(v.get("currency")),
-                                            asAmount(v.get("amount")));
-                            grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
-                        }
-                        else
-                        {
-                            Money amount = Money.of(asCurrencyCode(v.get("fxCurrency")), 
-                                            asAmount(v.get("fxAmount")));
-                            Money fxAmount = Money.of(asCurrencyCode(v.get("currency")), 
-                                            asAmount(v.get("amount")));
-                            grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
-                        }
-                        t.addUnit(grossValue);
-                    }
+                    Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
+                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                    
+                    checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
                 
                 .conclude(PDFExtractorUtils.fixGrossValue())
@@ -213,16 +193,11 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
             {
                 Matcher m = pCurrency.matcher(line);
                 if (m.matches())
-                {
                     context.put("currency", m.group("currency"));
-                }
 
                 m = pYear.matcher(line);
                 if (m.matches())
-                {
-                    // Read year
                     context.put("year", m.group("year"));
-                }
             }
         });
         this.addDocumentTyp(type);
@@ -276,9 +251,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                     Map<String, String> context = type.getCurrentContext();
                     // Is sign --> "-" change from DEPOSIT to REMOVAL
                     if (v.get("sign").equals("-"))
-                    {
                         t.setType(AccountTransaction.Type.REMOVAL);
-                    }
 
                     // Formatting some notes
                     if (!v.get("note1").startsWith("Verwendungszweck"))
