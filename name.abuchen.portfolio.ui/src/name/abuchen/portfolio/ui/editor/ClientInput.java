@@ -331,26 +331,9 @@ public class ClientInput
             // file directly from within PP
             String backupName = constructFilename(file, suffix);
             Path sourceFile = file.toPath();
+            Path backupFile = getBackupFilePath(sourceFile, backupName);
 
-            File oldBackupFile = sourceFile.resolveSibling(backupName).toFile();
-            File backupFile;
-
-            if (oldBackupFile.exists() && oldBackupFile.isFile()) {
-                // Use the old variant (backup in same folder than original file)
-                backupFile = oldBackupFile;
-            } else {
-                // Write backups to a sub directory
-                Path backupSubdir = sourceFile.resolveSibling(DEFAULT_BACKUP_FOLDER);
-                File directory = backupSubdir.toFile();
-                if (!directory.exists())
-                {
-                    directory.mkdir();
-                }
-
-                backupFile = backupSubdir.resolve(backupName).toFile();
-            }
-
-            Files.copy(sourceFile, backupFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(sourceFile, backupFile, StandardCopyOption.REPLACE_EXISTING);
         }
         catch (IOException e)
         {
@@ -358,6 +341,49 @@ public class ClientInput
             Display.getDefault().asyncExec(() -> MessageDialog.openError(Display.getDefault().getActiveShell(),
                             Messages.LabelError, e.getMessage()));
         }
+    }
+
+    private Path getBackupFilePath(Path sourceFile, String backupName)
+    {
+        File oldBackupFile = sourceFile.resolveSibling(backupName).toFile();
+
+        if (oldBackupFile.exists() && oldBackupFile.isFile())
+        {
+            // Use the old variant (backup in same folder than original file)
+            return oldBackupFile.toPath();
+        }
+
+        // Absolute path set in preferences
+        String folderAbsolute = preferences.get(UIConstants.Preferences.BACKUP_FOLDER_ABSOLUTE, null);
+
+        if (null != folderAbsolute && !folderAbsolute.trim().equals("")) //$NON-NLS-1$
+        {
+            Path absolutePath = Path.of(folderAbsolute);
+            File absoluteFile = absolutePath.toFile();
+
+            if (absoluteFile.exists() && absoluteFile.isDirectory())
+            {
+                return Path.of(folderAbsolute).resolve(backupName);
+            }
+        }
+
+        // Relative path set in preferences
+        String relativePath = preferences.get(UIConstants.Preferences.BACKUP_FOLDER_RELATIVE, null);
+
+        if (null == relativePath || relativePath.trim().equals("")) //$NON-NLS-1$
+        {
+            // If not set in preferences use default folder
+            relativePath = DEFAULT_BACKUP_FOLDER;
+        }
+
+        Path backupSubdir = sourceFile.resolveSibling(relativePath);
+        File directory = backupSubdir.toFile();
+        if (!directory.exists() || !directory.isDirectory())
+        {
+            directory.mkdir();
+        }
+
+        return backupSubdir.resolve(backupName);
     }
 
     private String constructFilename(File file, String suffix)
