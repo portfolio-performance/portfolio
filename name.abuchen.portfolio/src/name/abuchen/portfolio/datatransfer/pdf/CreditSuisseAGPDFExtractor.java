@@ -264,7 +264,7 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                 .section("currency", "amount").optional()
                 .match("^Internet-Verg.nstigung (?<currency>[\\w]{3}) (-\\ )?(?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    t.setCurrencyCode(v.get("currency"));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
                 })
 
