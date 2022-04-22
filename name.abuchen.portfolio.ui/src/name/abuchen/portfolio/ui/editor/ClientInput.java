@@ -62,6 +62,8 @@ public class ClientInput
     // compatibility: the value used to be stored in the AbstractHistoricView
     private static final String REPORTING_PERIODS_KEY = "AbstractHistoricView"; //$NON-NLS-1$
 
+    public static final String DEFAULT_BACKUP_FOLDER = "backups"; //$NON-NLS-1$
+
     private String label;
     private File clientFile;
     private Client client;
@@ -328,10 +330,27 @@ public class ClientInput
             // keep original extension in order to be able to open the backup
             // file directly from within PP
             String backupName = constructFilename(file, suffix);
-
             Path sourceFile = file.toPath();
-            Path backupFile = sourceFile.resolveSibling(backupName);
-            Files.copy(sourceFile, backupFile, StandardCopyOption.REPLACE_EXISTING);
+
+            File oldBackupFile = sourceFile.resolveSibling(backupName).toFile();
+            File backupFile;
+
+            if (oldBackupFile.exists() && oldBackupFile.isFile()) {
+                // Use the old variant (backup in same folder than original file)
+                backupFile = oldBackupFile;
+            } else {
+                // Write backups to a sub directory
+                Path backupSubdir = sourceFile.resolveSibling(DEFAULT_BACKUP_FOLDER);
+                File directory = backupSubdir.toFile();
+                if (!directory.exists())
+                {
+                    directory.mkdir();
+                }
+
+                backupFile = backupSubdir.resolve(backupName).toFile();
+            }
+
+            Files.copy(sourceFile, backupFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         }
         catch (IOException e)
         {
