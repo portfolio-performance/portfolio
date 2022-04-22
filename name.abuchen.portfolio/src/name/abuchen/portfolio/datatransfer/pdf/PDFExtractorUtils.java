@@ -62,6 +62,42 @@ class PDFExtractorUtils
     {
     }
 
+    public static void checkAndSetGrossUnit(Money gross, Money fxGross, Object transaction, DocumentType type)
+    {
+        if (transaction instanceof name.abuchen.portfolio.model.Transaction)
+            PDFExtractorUtils.checkAndSetGrossUnit(gross, fxGross, (name.abuchen.portfolio.model.Transaction) transaction, type);
+        else if (transaction instanceof BuySellEntry)
+            PDFExtractorUtils.checkAndSetGrossUnit(gross, fxGross, ((BuySellEntry) transaction).getPortfolioTransaction(), type);
+        else
+            throw new UnsupportedOperationException();
+    }
+
+    @SuppressWarnings("nls")
+    public static void checkAndSetGrossUnit(Money gross, Money fxGross, name.abuchen.portfolio.model.Transaction t, DocumentType type)
+    {
+        if (type.getCurrentContext().containsKey("exchangeRate"))
+        {
+            if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
+            {
+                BigDecimal exchangeRate = new BigDecimal(type.getCurrentContext().get("exchangeRate"));
+                BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+
+                /**
+                 * check, if forex currency is transaction currency or not and
+                 * swap amount, if necessary
+                 */
+                if (fxGross.getCurrencyCode().equals(t.getCurrencyCode()))
+                {
+                    t.addUnit(new Unit(Unit.Type.GROSS_VALUE, fxGross, gross, inverseRate));
+                }
+                else
+                {
+                    t.addUnit(new Unit(Unit.Type.GROSS_VALUE, gross, fxGross, inverseRate));
+                } 
+            }
+        }
+    }
+
     public static void checkAndSetTax(Money tax, Object transaction, DocumentType type)
     {
         if (transaction instanceof name.abuchen.portfolio.model.Transaction)
