@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetGrossUnit;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
@@ -10,7 +12,6 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 
 @SuppressWarnings("nls")
@@ -128,30 +129,27 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
 
                 // Splittkauf Betrag UBS Msci Pacific exJap.U ETF A 1,77 EUR 44,4324 USD 0,045
                 // 2536717769 A0X97T / LU0446734526 1,125168 USD 16.04.2019 1,334
-                .section("amount", "currency", "fxCurrency", "exchangeRate").optional()
-                .match("^(Splittkauf|Splitkauf|Wiederanlage|Kauf|Verkauf)( Betrag)? .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+ (?<fxCurrency>[\\w]{3}) ([\\-|\\+])?[\\.,\\d]+$")
+                // UBS (Luxembourg) S.A. 1,99 USD 0,0000 EUR 1,379
+                .section("currency", "exchangeRate", "fxGross", "fxCurrency").optional()
+                .match("^(Splittkauf|Splitkauf|Wiederanlage|Kauf|Verkauf)( Betrag)? .* [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3} ([\\-|\\+])?[\\.,\\d]+$")
                 .match("^[\\d]+ .* \\/ .* (?<exchangeRate>[\\.,\\d]+) [\\w]{3} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+$")
+                .match("^.* (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3}) [\\.,\\d]+ [\\w]{3} [\\.,\\d]+$")
                 .assign((t, v) -> {
-                    // read the forex currency, exchange rate, account
-                    // currency and gross amount in account currency
-                    String forex = asCurrencyCode(v.get("fxCurrency"));
-                    if (t.getPortfolioTransaction().getSecurity().getCurrencyCode().equals(forex))
+                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                    if (t.getPortfolioTransaction().getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
                     {
-                        BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                        BigDecimal reverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
-                                        RoundingMode.HALF_DOWN);
-
-                        // gross given in account currency
-                        long amount = asAmount(v.get("amount"));
-                        long fxAmount = exchangeRate.multiply(BigDecimal.valueOf(amount))
-                                        .setScale(0, RoundingMode.HALF_DOWN).longValue();
-
-                        Unit grossValue = new Unit(Unit.Type.GROSS_VALUE,
-                                        Money.of(asCurrencyCode(v.get("currency")), amount),
-                                        Money.of(forex, fxAmount), reverseRate);
-
-                        t.getPortfolioTransaction().addUnit(grossValue);
+                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
                     }
+                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
+
+                    BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+
+                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                    Money gross = Money.of(asCurrencyCode(v.get("currency")),
+                                    BigDecimal.valueOf(fxGross.getAmount()).multiply(inverseRate)
+                                                    .setScale(0, RoundingMode.HALF_UP).longValue());
+
+                    checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
 
                 .wrap(BuySellEntryItem::new);
@@ -236,30 +234,23 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
 
                 // Entgeltbelastung UBS-MSCI WLD.SOC.RESP.A.D.E. 1,01 EUR 98,1753 USD -0,011
                 // 2540818151 A1JA1R / LU0629459743 1,113832 USD 15.10.2019 17,187
-                .section("amount", "currency", "fxCurrency", "exchangeRate").optional()
-                .match("^Entgeltbelastung .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+ (?<fxCurrency>[\\w]{3}) \\-[\\.,\\d]+$")
+                .section("gross", "currency", "fxCurrency", "exchangeRate").optional()
+                .match("^Entgeltbelastung .* (?<gross>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+ (?<fxCurrency>[\\w]{3}) \\-[\\.,\\d]+$")
                 .match("^[\\d]+ .* \\/ .* (?<exchangeRate>[\\.,\\d]+) [\\w]{3} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+$")
                 .assign((t, v) -> {
-                    // read the forex currency, exchange rate, account
-                    // currency and gross amount in account currency
-                    String forex = asCurrencyCode(v.get("fxCurrency"));
-                    if (t.getPortfolioTransaction().getSecurity().getCurrencyCode().equals(forex))
+                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                    if (t.getPortfolioTransaction().getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
                     {
-                        BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                        BigDecimal reverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
-                                        RoundingMode.HALF_DOWN);
-
-                        // gross given in account currency
-                        long amount = asAmount(v.get("amount"));
-                        long fxAmount = exchangeRate.multiply(BigDecimal.valueOf(amount))
-                                        .setScale(0, RoundingMode.HALF_DOWN).longValue();
-
-                        Unit grossValue = new Unit(Unit.Type.GROSS_VALUE,
-                                        Money.of(asCurrencyCode(v.get("currency")), amount),
-                                        Money.of(forex, fxAmount), reverseRate);
-
-                        t.getPortfolioTransaction().addUnit(grossValue);
+                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
                     }
+                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
+
+                    Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
+                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")),
+                                    BigDecimal.valueOf(gross.getAmount()).multiply(exchangeRate)
+                                                    .setScale(0, RoundingMode.HALF_UP).longValue());
+
+                    checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
 
                 .wrap(BuySellEntryItem::new);
@@ -330,30 +321,23 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
 
                 // Entgeltbelastung UBS-MSCI WLD.SOC.RESP.A.D.E. 1,01 EUR 98,1753 USD -0,011
                 // 2540818151 A1JA1R / LU0629459743 1,113832 USD 15.10.2019 17,187
-                .section("amount", "currency", "fxCurrency", "exchangeRate").optional()
-                .match("^Entgeltbelastung .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+ (?<fxCurrency>[\\w]{3}) \\-[\\.,\\d]+$")
+                .section("gross", "currency", "fxCurrency", "exchangeRate").optional()
+                .match("^Entgeltbelastung .* (?<gross>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+ (?<fxCurrency>[\\w]{3}) \\-[\\.,\\d]+$")
                 .match("^[\\d]+ .* \\/ .* (?<exchangeRate>[\\.,\\d]+) [\\w]{3} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+$")
                 .assign((t, v) -> {
-                    // read the forex currency, exchange rate, account
-                    // currency and gross amount in account currency
-                    String forex = asCurrencyCode(v.get("fxCurrency"));
-                    if (t.getSecurity().getCurrencyCode().equals(forex))
+                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                    if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
                     {
-                        BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                        BigDecimal reverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
-                                        RoundingMode.HALF_DOWN);
-
-                        // gross given in account currency
-                        long amount = asAmount(v.get("amount"));
-                        long fxAmount = exchangeRate.multiply(BigDecimal.valueOf(amount))
-                                        .setScale(0, RoundingMode.HALF_DOWN).longValue();
-
-                        Unit grossValue = new Unit(Unit.Type.GROSS_VALUE,
-                                        Money.of(asCurrencyCode(v.get("currency")), amount),
-                                        Money.of(forex, fxAmount), reverseRate);
-
-                        t.addUnit(grossValue);
+                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
                     }
+                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
+
+                    Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
+                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")),
+                                    BigDecimal.valueOf(gross.getAmount()).multiply(exchangeRate)
+                                                    .setScale(0, RoundingMode.HALF_UP).longValue());
+
+                    checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
 
                 // Depotführungsentgelt 2018 25,00 EUR
@@ -416,21 +400,25 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                 .match("^Fondsname .* Datum der Aussch.ttung (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
-                // Folgender Betrag wurde zugunsten Ihrer Referenzbankverbindung überwiesen 0,03 EUR
-                .section("amount", "currency").optional()
-                .match("^Folgender Betrag wurde zugunsten Ihrer Referenzbankverbindung .berwiesen (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
-                .assign((t, v) -> {
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                })
-
-                // zur Wiederanlage zur Verfügung stehend 15,67 EUR
-                .section("amount", "currency").optional()
-                .match("^zur Wiederanlage zur Verf.gung stehend (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
-                .assign((t, v) -> {
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                })
+                .oneOf(
+                                // Folgender Betrag wurde zugunsten Ihrer Referenzbankverbindung überwiesen 0,03 EUR
+                                section -> section
+                                        .attributes("amount", "currency")
+                                        .match("^Folgender Betrag wurde zugunsten Ihrer Referenzbankverbindung .berwiesen (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                                        .assign((t, v) -> {
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                        })
+                                ,
+                                // zur Wiederanlage zur Verfügung stehend 15,67 EUR
+                                section -> section
+                                        .attributes("currency", "amount")
+                                        .match("^zur Wiederanlage zur Verf.gung stehend (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                                        .assign((t, v) -> {
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                        })
+                        )
 
                 .wrap(TransactionItem::new);
 
@@ -448,9 +436,7 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                 .match("^Kapitalertragsteuer ([\\s]+)?(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     if (!"X".equals(type.getCurrentContext().get("sale")))
-                    {
                         processTaxEntries(t, v, type);
-                    }
                 })
 
                 // abgeführte Kapitalertragsteuer 21,15 EUR
@@ -458,9 +444,7 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                 .match("^abgef.hrte Kapitalertragsteuer ([\\s]+)?(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     if ("X".equals(type.getCurrentContext().get("sale")))
-                    {
                         processTaxEntries(t, v, type);
-                    }
                 })
 
                 // Solidaritätszuschlag               0,00 EUR
@@ -468,9 +452,7 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                 .match("^Solidarit.tszuschlag ([\\s]+)(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     if (!"X".equals(type.getCurrentContext().get("sale")))
-                    {
                         processTaxEntries(t, v, type);
-                    }
                 })
 
                 // abgeführter Solidaritätszuschlag 1,16 EUR
@@ -478,9 +460,7 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                 .match("^abgeführter Solidarit.tszuschlag ([\\s]+)?(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     if ("X".equals(type.getCurrentContext().get("sale")))
-                    {
                         processTaxEntries(t, v, type);
-                    }
                 })
 
                 // Kirchensteuer               0,00 EURR
@@ -488,9 +468,7 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                 .match("^Kirchensteuer ([\\s]+)(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     if (!"X".equals(type.getCurrentContext().get("sale")))
-                    {
                         processTaxEntries(t, v, type);
-                    }
                 })
 
                 // abgeführte Kirchensteuer 0,91 EUR
@@ -498,9 +476,7 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                 .match("^abgef.hrte Kirchensteuer ([\\s]+)?(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     if ("X".equals(type.getCurrentContext().get("sale")))
-                    {
                         processTaxEntries(t, v, type);
-                    }
                 });
     }
 
