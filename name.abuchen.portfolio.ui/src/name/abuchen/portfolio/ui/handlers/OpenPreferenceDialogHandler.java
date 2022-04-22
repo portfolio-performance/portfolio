@@ -19,6 +19,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.preferences.AlphaVantagePreferencePage;
+import name.abuchen.portfolio.ui.preferences.BackupsPreferencePage;
 import name.abuchen.portfolio.ui.preferences.CalendarPreferencePage;
 import name.abuchen.portfolio.ui.preferences.DivvyDiaryPreferencePage;
 import name.abuchen.portfolio.ui.preferences.EODHistoricalDataPreferencePage;
@@ -59,12 +60,13 @@ public class OpenPreferenceDialogHandler
         PreferenceManager pm = new PreferenceManager('/');
         pm.addToRoot(new PreferenceNode("general", new GeneralPreferencePage())); //$NON-NLS-1$
         pm.addTo("general", new PreferenceNode("presets", new PresetsPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
-        
+        pm.addTo("general", new PreferenceNode("backups", new BackupsPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
+
         pm.addToRoot(new PreferenceNode("presentation", new PresentationPreferencePage())); // NOSONAR //$NON-NLS-1$
         pm.addTo("presentation", new PreferenceNode("language", new LanguagePreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
         pm.addTo("presentation", new PreferenceNode("theme", new ThemePreferencePage(themeEngine))); //$NON-NLS-1$ //$NON-NLS-2$
         pm.addTo("presentation", new PreferenceNode("formatting", new FormattingPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
-        
+
         pm.addToRoot(new PreferenceNode("calendar", new CalendarPreferencePage())); //$NON-NLS-1$
 
         pm.addToRoot(new PreferenceNode("api", new APIKeyPreferencePage())); //$NON-NLS-1$
