@@ -30,7 +30,7 @@ Handelszeit 09:59*
 Börse Gettex/GDM
 Verwahrart Girosammelverwahrung
 Wert Konto-Nr. Betrag zu Ihren Gunsten
-02.12.2020  EUR 679,50
+02.12.2020 1234567890 EUR 679,50
 Hinweise zur steuerlichen Verrechnung: vorher aktuell
 Veräußerungsverlust Aktien EUR 6,00
 Aktienverlusttopf EUR 0,00 6,00
@@ -100,7 +100,7 @@ Börse Gettex/GDM
 Verwahrart Wertpapierrechnung
 Lagerland USA
 Wert Konto-Nr. Betrag zu Ihren Lasten
-01.12.2020  EUR 619,92
+01.12.2020 1234567890 EUR 619,92
 * Die angegebene Zeit entspricht den Angaben der Handelspartner gemäß der lokalen Zeit in Deutschland
   (Mitteleuropäische Zeit bzw. Mitteleuropäische Sommerzeit).
 Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
@@ -137,7 +137,7 @@ Handelszeit 19:25*
 Börse Gettex/GDM
 Verwahrart Girosammelverwahrung
 Wert Konto-Nr. Betrag zu Ihren Lasten
-26.11.2020  EUR 585,70
+26.11.2020 1234567890 EUR 585,70
 Wir werden in Ihrem Depot wie angegeben buchen.
 * Die angegebene Zeit entspricht den Angaben der Handelspartner gemäß der lokalen Zeit in Deutschland
   (Mitteleuropäische Zeit bzw. Mitteleuropäische Sommerzeit).
@@ -175,7 +175,7 @@ Handelszeit 14:21*
 Börse Gettex/GDM
 Verwahrart Girosammelverwahrung
 Wert Konto-Nr. Betrag zu Ihren Lasten
-26.11.2020  EUR 573,02
+26.11.2020 1234567890 EUR 573,02
 Wir werden in Ihrem Depot wie angegeben buchen.
 * Die angegebene Zeit entspricht den Angaben der Handelspartner gemäß der lokalen Zeit in Deutschland
   (Mitteleuropäische Zeit bzw. Mitteleuropäische Sommerzeit).
@@ -213,7 +213,7 @@ Handelszeit 20:41*
 Börse Gettex/GDM
 Verwahrart Girosammelverwahrung
 Wert Konto-Nr. Betrag zu Ihren Lasten
-24.11.2020  EUR 685,50
+24.11.2020 1234567890 EUR 685,50
 Wir werden in Ihrem Depot wie angegeben buchen.
 * Die angegebene Zeit entspricht den Angaben der Handelspartner gemäß der lokalen Zeit in Deutschland
   (Mitteleuropäische Zeit bzw. Mitteleuropäische Sommerzeit).
@@ -252,7 +252,7 @@ Börse Sekunden-Handel Aktien L&S
 Verwahrart Wertpapierrechnung
 Lagerland USA
 Wert Konto-Nr. Betrag zu Ihren Lasten
-24.11.2020  EUR 565,10
+24.11.2020 1234567890 EUR 565,10
 * Die angegebene Zeit entspricht den Angaben der Handelspartner gemäß der lokalen Zeit in Deutschland
   (Mitteleuropäische Zeit bzw. Mitteleuropäische Sommerzeit).
 Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
