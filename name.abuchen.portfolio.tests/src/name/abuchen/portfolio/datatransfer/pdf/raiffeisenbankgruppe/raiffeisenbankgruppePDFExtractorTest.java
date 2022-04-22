@@ -205,12 +205,11 @@ public class raiffeisenbankgruppePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize((73.00 / 1.406) + 25.00 + 3.00))));
 
         Unit grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(),
-                        is(Money.of("CAD", Values.Amount.factorize(1537.32))));
+        assertThat(grossValueUnit.getForex(), is(Money.of("CAD", Values.Amount.factorize(1464.32))));
     }
 
     @Test
-    public void testKauf04WithSecurityInEUR()
+    public void testWertpapierKauf04WithSecurityInEUR()
     {
         Security security = new Security("Canadian Natural Resources Ltd Registered Shares o.N.", CurrencyUnit.EUR);
         security.setIsin("CA1363851017");
