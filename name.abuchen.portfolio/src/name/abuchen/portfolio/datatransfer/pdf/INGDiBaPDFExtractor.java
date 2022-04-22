@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetFee;
+import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
@@ -17,7 +18,6 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
@@ -142,47 +142,28 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 
                 // Kurswert USD 1.503,75
                 // umger. zum Devisenkurs EUR 1.311,99 (USD = 1,146163)
-                .section("fxCurrency", "fxAmount", "currency", "amount", "exchangeRate").optional()
-                .match("^Kurswert (?<fxCurrency>[\\w]{3}) (?<fxAmount>[\\.,\\d]+)$")
-                .match("^.* Devisenkurs (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+) \\([\\w]{3} = (?<exchangeRate>[\\.,\\d]+)\\)$")
+                .section("fxCurrency", "fxGross", "currency", "gross", "exchangeRate").optional()
+                .match("^Kurswert (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,\\d]+)$")
+                .match("^.* Devisenkurs (?<currency>[\\w]{3}) (?<gross>[\\.,\\d]+) \\([\\w]{3} = (?<exchangeRate>[\\.,\\d]+)\\)$")
                 .assign((t, v) -> {                   
-                    // read the forex currency, exchange rate and gross
-                    // amount in forex currency
-                    String forex = asCurrencyCode(v.get("fxCurrency"));
-                    if (t.getPortfolioTransaction().getSecurity().getCurrencyCode().equals(forex))
-                    {
-                        BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                        BigDecimal reverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
-                                        RoundingMode.HALF_DOWN);
-
-                        // gross given in forex currency
-                        long fxAmount = asAmount(v.get("fxAmount"));
-                        long amount = reverseRate.multiply(BigDecimal.valueOf(fxAmount))
-                                        .setScale(0, RoundingMode.HALF_DOWN).longValue();
-
-                        Unit grossValue = new Unit(Unit.Type.GROSS_VALUE,
-                                        Money.of(t.getPortfolioTransaction().getCurrencyCode(), amount),
-                                        Money.of(forex, fxAmount), reverseRate);
-
-                        t.getPortfolioTransaction().addUnit(grossValue);
-                    }
-                })
-
-                // umger. zum Devisenkurs EUR 1.311,99 (USD = 1,146163)
-                .section("exchangeRate").optional()
-                .match("^.* Devisenkurs [\\w]{3} [\\.,\\d]+ \\([\\w]{3} = (?<exchangeRate>[\\.,\\d]+)\\)$")
-                .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                    if (t.getPortfolioTransaction().getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
+                    {
+                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+                    }
                     type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
+
+                    Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
+                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+
+                    checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
 
                 // Diese Order wurde mit folgendem Limit / -typ erteilt: 38,10 EUR
                 // Diese Order wurde mit folgendem Limit / -typ erteilt: 57,00 EUR / Dynamisches Stop / Abstand 6,661 EUR
                 .section("note1", "note2").optional()
                 .match("^Diese Order wurde mit folgendem (?<note1>Limit) .*: (?<note2>[\\.,\\d]+ [\\w]{3})( .*)?$")
-                .assign((t, v) -> {
-                    t.setNote(trim(v.get("note1")) + ": " + trim(v.get("note2")));   
-                })
+                .assign((t, v) -> t.setNote(trim(v.get("note1")) + ": " + trim(v.get("note2"))))
 
                 // Rückzahlung
                 .section("note").optional()
@@ -248,14 +229,10 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 .match("^Nominale (?<shares>[\\.,\\d]+) (?<notation>(St.ck|[\\w]{3}))$")
                 .assign((t, v) -> {
                     if (v.get("notation") != null && !v.get("notation").equalsIgnoreCase("Stück"))
-                    {
                         // Prozent-Notierung, Workaround..
                         t.setShares((asShares(v.get("shares")) / 100));
-                    }
                     else
-                    {
                         t.setShares(asShares(v.get("shares")));
-                    }
                 })
 
                 // Valuta 15.12.2016
@@ -278,7 +255,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 // Gesamtbetrag zu Ihren Lasten EUR - 20,03
                 .section("currency", "amount").optional()
                 .match("^Gesamtbetrag zu Ihren Lasten (?<currency>[\\w]{3}) \\- (?<amount>[\\.,\\d]+)$")
-                .assign((t, v) -> {                    
+                .assign((t, v) -> {
                     t.setType(AccountTransaction.Type.TAXES);
 
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -287,27 +264,25 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 
                 // Brutto USD 62,04
                 // Umg. z. Dev.-Kurs (1,049623) EUR 50,24
-                .section("fxCurrency", "fxAmount", "exchangeRate", "currency").optional()
-                .match("^Brutto (?<fxCurrency>[\\w]{3}) (?<fxAmount>[\\.,\\d]+)")
+                .section("fxCurrency", "fxGross", "exchangeRate", "currency").optional()
+                .match("^Brutto (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,\\d]+)")
                 .match("^Umg\\. z\\. Dev\\.\\-Kurs \\((?<exchangeRate>[\\.,\\d]+)\\) (?<currency>[\\w]{3}) [\\.,\\d]+$")
                 .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                    if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
+                    {
+                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+                    }
                     type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
 
-                    if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
-                    {
-                        BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
-                                        RoundingMode.HALF_DOWN);
+                    BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
 
-                        Unit grossValue;
-                        Money fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")),
-                                        asAmount(v.get("fxAmount")));
-                        Money amount = Money.of(asCurrencyCode(v.get("currency")),
-                                        BigDecimal.valueOf(fxAmount.getAmount()).multiply(inverseRate)
-                                                        .setScale(0, RoundingMode.HALF_UP).longValue());
-                        grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
-                        t.addUnit(grossValue);
-                    }
+                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                    Money gross = Money.of(asCurrencyCode(v.get("currency")),
+                                    BigDecimal.valueOf(fxGross.getAmount()).multiply(inverseRate)
+                                                    .setScale(0, RoundingMode.HALF_UP).longValue());
+
+                    checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
 
                 .wrap(TransactionItem::new);
@@ -363,6 +338,10 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 .match("^Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
+                /***
+                 * Is the amount negative, 
+                 * then change from TAXES to TAX_REFUND
+                 */
                 // Gesamtbetrag zu Ihren Lasten EUR - 0,16
                 .section("currency", "sign", "amount")
                 .match("^Gesamtbetrag zu Ihren Lasten (?<currency>[\\w]{3}) (?<sign>[\\-\\s]+)?(?<amount>[.,\\d]+)$")
@@ -370,12 +349,8 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
 
-                    String sign = trim(v.get("sign"));
-                    if ("".equals(sign))
-                    {
-                        // change type for withdrawals
+                    if ("".equals(trim(v.get("sign"))))
                         t.setType(AccountTransaction.Type.TAX_REFUND);
-                    }
                 })
 
                 .wrap(t -> {
@@ -395,9 +370,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 .match("^Kapitalertragsteuer [\\.,\\d]+([\\s]+)?% (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     if (!Boolean.parseBoolean(type.getCurrentContext().get(isJointAccount)))
-                    {
                         processTaxEntries(t, v, type);
-                    }
                 })
 
                 // Kapitalerstragsteuer (Joint Account)
@@ -428,9 +401,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 .match("^Solidarit.tszuschlag [\\.,\\d]+([\\s]+)?% (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     if (!Boolean.parseBoolean(type.getCurrentContext().get(isJointAccount)))
-                    {
                         processTaxEntries(t, v, type);
-                    }
                 })
 
                 // Solitaritätszuschlag (Joint Account)
@@ -461,9 +432,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 .match("^Kirchensteuer [\\.,\\d]+([\\s]+)?% (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     if (!Boolean.parseBoolean(type.getCurrentContext().get(isJointAccount)))
-                    {
                         processTaxEntries(t, v, type);
-                    }
                 })
 
                 // Kirchensteuer (Joint Account)
