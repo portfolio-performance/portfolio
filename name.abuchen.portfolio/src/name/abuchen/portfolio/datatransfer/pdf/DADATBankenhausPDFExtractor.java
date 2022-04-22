@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
@@ -14,7 +15,6 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 
 @SuppressWarnings("nls")
@@ -108,9 +108,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
             {
                 Matcher m = pCurrency.matcher(line);
                 if (m.matches())
-                {
-                    context.put("accountCurrency", m.group("currency"));
-                }
+                    context.put("currency", m.group("currency"));
             }
         });
         this.addDocumentTyp(type);
@@ -132,9 +130,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                 .match("^[\\d]{1,2}\\.[\\d]{1,2} (?<type>(Kauf|Kauf aus Dauerauftrag|Verkauf)) .*$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("Verkauf"))
-                    {
                         t.setType(PortfolioTransaction.Type.SELL);
-                    }
                 })
 
                 // 16.12 Kauf aus Dauerauftrag            Depot    7800000000/20191216-45514943 18.12 99,68-
@@ -155,7 +151,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                 .section("amount")
                 .match("^[\\d]{1,2}\\.[\\d]{1,2} (Kauf|Kauf aus Dauerauftrag|Verkauf) ([\\s]+)?Depot ([\\s]+)?[\\d]+\\/[\\d]{4}[\\d]+\\-[\\d]+ [\\d]{1,2}\\.[\\d]{1,2} (?<amount>[\\.,\\d]+)(\\-)?$")
                 .assign((t, v) -> {
-                    t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("accountCurrency")));
+                    t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
                 })
 
@@ -163,8 +159,8 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                 // DevKurs        1,187100/3.9.2020    DADAT Handelsspesen      -7,87 EUR
                 // Kurs                    206,940000  KURSWERT             -1.448,58 USD
                 // Handelsspesen            -5,06 USD  DevKurs        1,170500/30.7.2020
-                .section("fxAmount", "fxCurrency", "exchangeRate").optional()
-                .match("^.* KURSWERT ([\\s]+)?(\\-)?(?<fxAmount>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
+                .section("fxGross", "fxCurrency", "exchangeRate").optional()
+                .match("^.* KURSWERT ([\\s]+)?(\\-)?(?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
                 .match("^(.*)?DevKurs ([\\s]+)?(?<exchangeRate>[\\.,\\d]+)\\/.*$")
                 .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
@@ -174,25 +170,14 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                     }
                     type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
 
-                    // read the forex currency, exchange rate and gross
-                    // amount in forex currency
-                    String forex = asCurrencyCode(v.get("fxCurrency"));
-                    if (t.getPortfolioTransaction().getSecurity().getCurrencyCode().equals(forex))
-                    {
-                        BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
-                                        RoundingMode.HALF_DOWN);
+                    BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
 
-                        // gross given in forex currency
-                        long fxAmount = asAmount(v.get("fxAmount"));
-                        long amount = inverseRate.multiply(BigDecimal.valueOf(fxAmount))
-                                        .setScale(0, RoundingMode.HALF_DOWN).longValue();
+                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                    Money gross = Money.of(asCurrencyCode(v.get("currency")),
+                                    BigDecimal.valueOf(fxGross.getAmount()).multiply(inverseRate)
+                                                    .setScale(0, RoundingMode.HALF_UP).longValue());
 
-                        Unit grossValue = new Unit(Unit.Type.GROSS_VALUE,
-                                        Money.of(t.getPortfolioTransaction().getCurrencyCode(), amount),
-                                        Money.of(forex, fxAmount), inverseRate);
-
-                        t.getPortfolioTransaction().addUnit(grossValue);
-                    }
+                    checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
 
                 .wrap(BuySellEntryItem::new);
@@ -251,10 +236,10 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                 // ZINSERTRAG: 12,39 USD
                 // Devisenkurs: 1,197 (22.3.2021) 7,51 EUR
                 // Ertrag: 10,35 EUR
-                .section("fxAmount", "fxCurrency", "exchangeRate", "amount", "currency").optional()
-                .match("^ZINSERTRAG: (?<fxAmount>[\\.,\\d]+) (?<fxCurrency>[\\w]{3}).*$")
+                .section("fxGross", "fxCurrency", "exchangeRate", "gross", "currency").optional()
+                .match("^ZINSERTRAG: (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3}).*$")
                 .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\([\\d]{1,2}\\.[\\d]{1,2}.\\d{4}\\) [\\.,\\d]+ [\\w]{3}.*$")
-                .match("^Ertrag: (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
+                .match("^Ertrag: (?<gross>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                     if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
@@ -263,32 +248,10 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                     }
                     type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
 
-                    if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
-                    {
-                        BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
-                                        RoundingMode.HALF_DOWN);
+                    Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
+                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
 
-                        // check, if forex currency is transaction
-                        // currency or not and swap amount, if necessary
-                        Unit grossValue;
-                        if (!asCurrencyCode(v.get("fxCurrency")).equals(t.getCurrencyCode()))
-                        {
-                            Money fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")),
-                                            asAmount(v.get("fxAmount")));
-                            Money amount = Money.of(asCurrencyCode(v.get("currency")),
-                                            asAmount(v.get("amount")));
-                            grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
-                        }
-                        else
-                        {
-                            Money amount = Money.of(asCurrencyCode(v.get("fxCurrency")),
-                                            asAmount(v.get("fxAmount")));
-                            Money fxAmount = Money.of(asCurrencyCode(v.get("currency")),
-                                            asAmount(v.get("amount")));
-                            grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
-                        }
-                        t.addUnit(grossValue);
-                    }
+                    checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
 
                 .wrap(TransactionItem::new);
@@ -308,9 +271,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
             {
                 Matcher m = pCurrency.matcher(line);
                 if (m.matches())
-                {
-                    context.put("accountCurrency", m.group("currency"));
-                }
+                    context.put("currency", m.group("currency"));
             }
         });
         this.addDocumentTyp(type);
@@ -338,7 +299,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
 
                     t.setSecurity(getOrCreateSecurity(v));
 
-                    t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("accountCurrency")));
+                    t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
                 })
 
@@ -346,10 +307,10 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                 // ISIN US00206R1023 AT + T INC.          DL 1             200,00000 STK
                 // Kurs                      0,520000  ZINSERTRAG              104,00 USD
                 // DevKurs        1,195900/30.7.2021
-                .section("date", "year", "amount", "isin", "name", "shares", "fxAmount", "fxCurrency", "exchangeRate").optional()
+                .section("date", "year", "amount", "isin", "name", "shares", "fxGross", "fxCurrency", "exchangeRate").optional()
                 .match("^(?<date>[\\d]{1,2}\\.[\\d]{1,2}) Ertrag ([\\s]+)?Depot ([\\s]+)?[\\d]+\\/(?<year>[\\d]{4})[\\d]+\\-[\\d]+ [\\d]{1,2}\\.[\\d]{1,2} (?<amount>[\\.,\\d]+)(\\-)?$")
                 .match("^ISIN (?<isin>[\\w]{12}) (?<name>.*) ([\\s]+)?(?<shares>[\\.,\\d]+) STK$")
-                .match("^.* ZINSERTRAG ([\\s]+)?(\\-)?(?<fxAmount>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
+                .match("^.* ZINSERTRAG ([\\s]+)?(\\-)?(?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
                 .match("^(.*)?DevKurs ([\\s]+)?(?<exchangeRate>[\\.,\\d]+)\\/.*$")
                 .assign((t, v) -> {
                     t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
@@ -357,7 +318,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
 
                     t.setSecurity(getOrCreateSecurity(v));
 
-                    t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("accountCurrency")));
+                    t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
 
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
@@ -367,34 +328,14 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                     }
                     type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
 
-                    if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
-                    {
-                        // check, if forex currency is transaction
-                        // currency or not and swap amount, if necessary
-                        Unit grossValue;
-                        if (!asCurrencyCode(v.get("fxCurrency")).equals(t.getCurrencyCode()))
-                        {
-                            Money fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")),
-                                            asAmount(v.get("fxAmount")));
-                            Money amount = Money.of(t.getCurrencyCode(),
-                                            BigDecimal.valueOf(fxAmount.getAmount()).multiply(exchangeRate)
-                                                            .setScale(0, RoundingMode.HALF_UP).longValue());
+                    BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
 
-                            grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, exchangeRate);
-                        }
-                        else
-                        {
-                            Money amount = Money.of(asCurrencyCode(v.get("fxCurrency")),
-                                            asAmount(v.get("fxAmount")));
-                            Money fxAmount = Money.of(t.getCurrencyCode(),
-                                            BigDecimal.valueOf(amount.getAmount()).multiply(exchangeRate)
-                                                            .setScale(0, RoundingMode.HALF_UP).longValue());
+                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                    Money gross = Money.of(asCurrencyCode(v.get("currency")),
+                                    BigDecimal.valueOf(fxGross.getAmount()).multiply(inverseRate)
+                                                    .setScale(0, RoundingMode.HALF_UP).longValue());
 
-                            grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, exchangeRate);
-                        }
-
-                        t.addUnit(grossValue);
-                    }
+                    checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
 
                 .wrap(TransactionItem::new);
@@ -414,9 +355,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
             {
                 Matcher m = pCurrency.matcher(line);
                 if (m.matches())
-                {
-                    context.put("accountCurrency", m.group("currency"));
-                }
+                    context.put("currency", m.group("currency"));
             }
         });
         this.addDocumentTyp(type);
@@ -435,8 +374,8 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                 // ISIN LU0378449770 COMST.-NASDAQ-100 U.ETF I               1,22000 STK
                 // Kurs                      0,000000  KEST                     -1,51 USD
                 // DevKurs        1,123200/2.1.2020
-                .section("date", "year", "amount", "isin", "name", "shares", "fxCurrency", "exchangeRate")
-                .match("^(?<date>[\\d]{1,2}\\.[\\d]{1,2}) (Steuern aussch.ttungsgl. Ertr.ge|Steuerdividende) ([\\s]+)?Depot ([\\s]+)?[\\d]+\\/(?<year>[\\d]{4})[\\d]+\\-[\\d]+ [\\d]{1,2}\\.[\\d]{1,2} (?<amount>[\\.,\\d]+)(\\-)?$")
+                .section("date", "year", "gross", "isin", "name", "shares", "fxCurrency", "exchangeRate")
+                .match("^(?<date>[\\d]{1,2}\\.[\\d]{1,2}) (Steuern aussch.ttungsgl. Ertr.ge|Steuerdividende) ([\\s]+)?Depot ([\\s]+)?[\\d]+\\/(?<year>[\\d]{4})[\\d]+\\-[\\d]+ [\\d]{1,2}\\.[\\d]{1,2} (?<gross>[\\.,\\d]+)(\\-)?$")
                 .match("^ISIN (?<isin>[\\w]{12}) (?<name>.*) ([\\s]+)?(?<shares>[\\.,\\d]+) STK$")
                 .match("^(.*)?KEST ([\\s]+)?\\-[\\.,\\d]+ (?<fxCurrency>[\\w]{3})$")
                 .match("^(.*)?DevKurs ([\\s]+)?(?<exchangeRate>[\\.,\\d]+)\\/.*")
@@ -448,7 +387,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                     t.setSecurity(getOrCreateSecurity(v));
 
                     t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("currency")));
-                    t.setAmount(asAmount(v.get("amount")));
+                    t.setAmount(asAmount(v.get("gross")));
 
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                     if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
@@ -457,38 +396,12 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                     }
                     type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
 
-                    if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
-                    {
-                        BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
-                                        RoundingMode.HALF_DOWN);
+                    Money gross = Money.of(asCurrencyCode(type.getCurrentContext().get("currency")), asAmount(v.get("gross")));
+                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")),
+                                    BigDecimal.valueOf(gross.getAmount()).multiply(exchangeRate)
+                                                    .setScale(0, RoundingMode.HALF_UP).longValue());
 
-                        // check, if forex currency is transaction
-                        // currency or not and swap amount, if necessary
-                        Unit grossValue;
-                        if (!asCurrencyCode(v.get("fxCurrency")).equals(t.getCurrencyCode()))
-                        {
-                            Money amount = Money.of(
-                                            asCurrencyCode(type.getCurrentContext().get("accountCurrency")),
-                                            asAmount(v.get("amount")));
-                            Money fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")),
-                                            BigDecimal.valueOf(amount.getAmount()).multiply(exchangeRate)
-                                                            .setScale(0, RoundingMode.HALF_UP).longValue());
-
-                            grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
-                        }
-                        else
-                        {
-                            Money fxAmount = Money.of(
-                                            asCurrencyCode(type.getCurrentContext().get("accountCurrency")),
-                                            asAmount(v.get("amount")));
-                            Money amount = Money.of(t.getCurrencyCode(),
-                                            BigDecimal.valueOf(fxAmount.getAmount()).multiply(exchangeRate)
-                                                            .setScale(0, RoundingMode.HALF_UP).longValue());
-
-                            grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
-                        }
-                        t.addUnit(grossValue);
-                    }
+                    checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
 
                 .wrap(t -> {
@@ -552,15 +465,11 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
             {
                 Matcher m = pCurrency.matcher(line);
                 if (m.matches())
-                {
-                    context.put("accountCurrency", m.group("currency"));
-                }
+                    context.put("currency", m.group("currency"));
 
                 m = pYear.matcher(line);
                 if (m.matches())
-                {
                     context.put("year", m.group("year"));
-                }
             }
         });
         this.addDocumentTyp(type);
@@ -584,7 +493,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                 .match("^AB (?<year>[\\d]{4})\\-[\\d]{1,2}\\-[\\d]{1,2} ([\\s]+)?[\\.,\\d]+% ([\\s]+)?(?<amount>[\\.,\\d]+)\\-$")
                 .assign((t, v) -> {
                     t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
-                    t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("accountCurrency")));
+                    t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
                     t.setNote(v.get("note"));
                 })
@@ -596,7 +505,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                 .match("^(?<note>Sollzinsen) ([\\s]+)?(?<amount>[\\.,\\d]+)\\-$")
                 .assign((t, v) -> {
                     t.setDateTime(asDate(v.get("date") + "." + type.getCurrentContext().get("year")));
-                    t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("accountCurrency")));
+                    t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
                     t.setNote(v.get("note"));
                 })
@@ -620,15 +529,11 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
             {
                 Matcher m = pCurrency.matcher(line);
                 if (m.matches())
-                {
-                    context.put("accountCurrency", m.group("currency"));
-                }
+                    context.put("currency", m.group("currency"));
 
                 m = pYear.matcher(line);
                 if (m.matches())
-                {
                     context.put("year", m.group("year"));
-                }
             }
         });
         this.addDocumentTyp(type);
@@ -650,7 +555,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                 .match("^(?<note>Kontof.hrungsgeb.hr) ([\\s]+)?(?<amount>[\\.,\\d]+)\\-$")
                 .assign((t, v) -> {
                     t.setDateTime(asDate(v.get("date") + "." + type.getCurrentContext().get("year")));
-                    t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("accountCurrency")));
+                    t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
                     t.setNote(v.get("note"));
                 })
@@ -662,7 +567,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                 .match("^(?<note>Spesen) ([\\s]+)?(?<amount>[\\.,\\d]+)\\-$")
                 .assign((t, v) -> {
                     t.setDateTime(asDate(v.get("date") + "." + type.getCurrentContext().get("year")));
-                    t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("accountCurrency")));
+                    t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
                     t.setNote(v.get("note"));
                 })
@@ -672,7 +577,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                 .match("^(?<date>[\\d]{1,2}\\.[\\d]{1,2}) (?<note>Depotgeb.hrenabrechnung per [\\d]{1,2}\\.[\\d]{1,2}.[\\d]{4}) ([\\s]+)?(?<year>[\\d]{4})[\\d]+ ([\\s]+)?[\\d]+ [\\d]{1,2}\\.[\\d]{1,2} (?<amount>[\\.,\\d]+)\\-$")
                 .assign((t, v) -> {
                     t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
-                    t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("accountCurrency")));
+                    t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
                     t.setNote(v.get("note"));
                 })
@@ -696,15 +601,11 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
             {
                 Matcher m = pCurrency.matcher(line);
                 if (m.matches())
-                {
-                    context.put("accountCurrency", m.group("currency"));
-                }
+                    context.put("currency", m.group("currency"));
 
                 m = pYear.matcher(line);
                 if (m.matches())
-                {
                     context.put("year", m.group("year"));
-                }
             }
         });
         this.addDocumentTyp(type);
@@ -726,7 +627,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                 .match("^(IBAN: .*|Transfer)$")
                 .assign((t, v) -> {
                     t.setDateTime(asDate(v.get("date") + "." + type.getCurrentContext().get("year")));
-                    t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("accountCurrency")));
+                    t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
                     t.setNote(v.get("note"));
                 })
@@ -736,7 +637,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                 .match("^(?<date>[\\d]{1,2}\\.[\\d]{1,2}) (?<note>Werbebonus) [\\d]{1,2}\\.[\\d]{1,2} (?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     t.setDateTime(asDate(v.get("date") + "." + type.getCurrentContext().get("year")));
-                    t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("accountCurrency")));
+                    t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
                     t.setNote(v.get("note"));
                 })
@@ -751,7 +652,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                     t.setType(AccountTransaction.Type.REMOVAL);
 
                     t.setDateTime(asDate(v.get("date") + "." + type.getCurrentContext().get("year")));
-                    t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("accountCurrency")));
+                    t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
                     t.setNote(v.get("note"));
                 })
