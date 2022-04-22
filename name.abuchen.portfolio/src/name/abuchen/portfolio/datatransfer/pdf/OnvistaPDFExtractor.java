@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetGrossUnit;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Map;
@@ -222,40 +224,27 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                         })
                         )
 
-                // Verwahrart Wertpapierrechnung Ausmachender Betrag USD 1.693,74-
+                // Handelstag 19.08.2019 Kurswert USD 1.677,20-
                 // 21.08.2019 372650044 EUR/USD 1,1026 EUR 1.536,13
-                .section("fxCurrency", "fxAmount", "exchangeRate", "amount", "currency").optional()
-                .match("^.* Ausmachender Betrag (?<fxCurrency>[\\w]{3}) (?<fxAmount>[\\.,\\d]+)([-\\s])?$")
-                .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\w]{3}\\/[\\w]{3} (?<exchangeRate>[\\.,\\d]+) (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
-                .assign((t, v) -> {
-                    // read the forex currency, exchange rate and gross
-                    // amount in forex currency
-                    String forex = asCurrencyCode(v.get("fxCurrency"));
-                    if (t.getPortfolioTransaction().getSecurity().getCurrencyCode().equals(forex))
-                    {
-                        BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                        BigDecimal reverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
-                                        RoundingMode.HALF_DOWN);
-
-                        // gross given in forex currency
-                        long fxAmount = asAmount(v.get("fxAmount"));
-                        long amount = reverseRate.multiply(BigDecimal.valueOf(fxAmount))
-                                        .setScale(0, RoundingMode.HALF_DOWN).longValue();
-
-                        Unit grossValue = new Unit(Unit.Type.GROSS_VALUE,
-                                        Money.of(t.getPortfolioTransaction().getCurrencyCode(), amount),
-                                        Money.of(forex, fxAmount), reverseRate);
-
-                        t.getPortfolioTransaction().addUnit(grossValue);
-                    }
-                })
-
-                // 21.08.2019 372650044 EUR/USD 1,1026 EUR 1.536,13
-                .section("exchangeRate").optional()
-                .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\w]{3}\\/[\\w]{3} (?<exchangeRate>[\\.,\\d]+) [\\w]{3} [\\.,\\d]+$")
+                .section("fxCurrency", "fxGross", "exchangeRate", "currency").optional()
+                .match("^.* Kurswert (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,\\d]+)([-\\s])?$")
+                .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\w]{3}\\/[\\w]{3} (?<exchangeRate>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+$")
                 .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                    if (t.getPortfolioTransaction().getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
+                    {
+                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+                    }
                     type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
+
+                    BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+
+                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                    Money gross = Money.of(asCurrencyCode(v.get("currency")),
+                                    BigDecimal.valueOf(fxGross.getAmount()).multiply(inverseRate)
+                                                    .setScale(0, RoundingMode.HALF_UP).longValue());
+
+                    checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
 
                 // Zwangsabfindung gemäß Hauptversammlungsbeschluss vom 22. Juli 2015. Der Übertragungsbeschluss wurde am 15.
@@ -383,9 +372,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 .section("type").optional()
                 .match("^(?<type>Ertragsthesaurierung) .*$")
                 .match("^Steuerliquidität [\\w]{3} [\\.,\\d]+$")
-                .assign((t, v) -> {
-                    t.setType(AccountTransaction.Type.TAXES);
-                })
+                .assign((t, v) -> t.setType(AccountTransaction.Type.TAXES))
 
                 // Gattungsbezeichnung ISIN
                 // Commerzbank AG Inhaber-Aktien o.N. DE000CBK1001
@@ -532,9 +519,9 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
                 // 15.07.2019 123456789 EUR/USD 1,1327 EUR 13,47
                 // ausländische Dividende EUR 18,10
-                .section("fxCurrency", "exchangeRate", "currency", "amount").optional()
+                .section("fxCurrency", "exchangeRate", "currency", "gross").optional()
                 .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\w]{3}\\/(?<fxCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+) [\\w]{3} [\\.,\\d]+$")
-                .match("^ausl.ndische Dividende (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
+                .match("^ausl.ndische Dividende (?<currency>[\\w]{3}) (?<gross>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                     if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
@@ -543,32 +530,19 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                     }
                     type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
 
-                    // read the forex currency, exchange rate, account
-                    // currency and gross amount in account currency
-                    String forex = asCurrencyCode(v.get("fxCurrency"));
-                    if (t.getSecurity().getCurrencyCode().equals(forex))
-                    {
-                        BigDecimal reverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
-                                        RoundingMode.HALF_DOWN);
+                    Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
+                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")),
+                                    BigDecimal.valueOf(gross.getAmount()).multiply(exchangeRate)
+                                                    .setScale(0, RoundingMode.HALF_UP).longValue());
 
-                        // gross given in account currency
-                        long amount = asAmount(v.get("amount"));
-                        long fxAmount = exchangeRate.multiply(BigDecimal.valueOf(amount))
-                                        .setScale(0, RoundingMode.HALF_DOWN).longValue();
-
-                        Unit grossValue = new Unit(Unit.Type.GROSS_VALUE,
-                                        Money.of(asCurrencyCode(v.get("currency")), amount),
-                                        Money.of(forex, fxAmount), reverseRate);
-
-                        t.addUnit(grossValue);
-                    }
+                    checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
 
                 // 05.02.2019 000000000 EUR/USD 1,1474 EUR 39,60
                 // Ertrag für 2018 USD 45,44
-                .section("exchangeRate", "currency", "fxCurrency", "fxAmount").optional()
+                .section("exchangeRate", "currency", "fxCurrency", "fxGross").optional()
                 .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\w]{3}\\/[\\w]{3} (?<exchangeRate>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+$")
-                .match("^Ertrag für [\\d]{4}(\\/[\\d]{2})? (?<fxCurrency>[\\w]{3}) (?<fxAmount>[\\.,\\d]+)$")
+                .match("^Ertrag für [\\d]{4}(\\/[\\d]{2})? (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                     if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
@@ -577,31 +551,14 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                     }
                     type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
 
-                    if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
-                    {
-                        // check, if forex currency is transaction
-                        // currency or not and swap amount, if necessary
-                        Unit grossValue;
-                        if (!asCurrencyCode(v.get("fxCurrency")).equals(t.getCurrencyCode()))
-                        {
-                            Money fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")),
-                                            asAmount(v.get("fxAmount")));
-                            long localAmount = exchangeRate.multiply(BigDecimal.valueOf(fxAmount.getAmount()))
-                                            .longValue();
-                            Money amount = Money.of(asCurrencyCode(v.get("currency")), localAmount);
-                            grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, exchangeRate);
-                        }
-                        else
-                        {
-                            Money amount = Money.of(asCurrencyCode(v.get("fxCurrency")),
-                                            asAmount(v.get("fxAmount")));
-                            long forexAmount = exchangeRate.multiply(BigDecimal.valueOf(amount.getAmount()))
-                                            .longValue();
-                            Money fxAmount = Money.of(asCurrencyCode(v.get("currency")), forexAmount);
-                            grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, exchangeRate);
-                        }
-                        t.addUnit(grossValue);
-                    }
+                    BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+
+                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                    Money gross = Money.of(asCurrencyCode(v.get("currency")),
+                                    BigDecimal.valueOf(fxGross.getAmount()).multiply(inverseRate)
+                                                    .setScale(0, RoundingMode.HALF_UP).longValue());
+
+                    checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
 
                 // Die Dividende wurde wie folgt in neue Aktien reinvestiert:
@@ -678,7 +635,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(v.get("currency"));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 })
 
                 /***
@@ -1179,14 +1136,6 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
                         )
 
-                // 17.12.2020 241462046 EUR/USD 1,2239 EUR 3.965,72
-                .section("exchangeRate").optional()
-                .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\w]{3}\\/[\\w]{3} (?<exchangeRate>[\\.,\\d]+) [\\w]{3} [\\.,\\d]+$")
-                .assign((t, v) -> {
-                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
-                })
-
                 // Wert Konto-Nr. Abrechnungs-Nr. Betrag zu Ihren Gunsten
                 // 16.12.2020 241462046 59592727 EUR 14,10
                 .section("amount", "currency").optional()
@@ -1194,28 +1143,30 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\d]+ (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(v.get("currency"));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                })
 
-                    /***
-                     * If the currency of the security 
-                     * differs from the account currency
-                     */
-                    if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
+                // Handelstag 15.12.2020 Kurswert USD 4.872,01 
+                // 17.12.2020 241462046 EUR/USD 1,2239 EUR 3.965,72
+                .section("fxCurrency", "fxGross", "exchangeRate", "currency").optional()
+                .match("^.* Kurswert (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,\\d]+)([-\\s])?$")
+                .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\w]{3}\\/[\\w]{3} (?<exchangeRate>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+$")
+                .assign((t, v) -> {
+                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                    if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
                     {
-                        BigDecimal exchangeRate = new BigDecimal(type.getCurrentContext().get("exchangeRate"));
-                        BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
-                                        RoundingMode.HALF_DOWN);
-
-                        Money amount = Money.of(t.getCurrencyCode(), asAmount(v.get("amount")));
-
-                        // convert gross to security currency using exchangeRate
-                        long gross = exchangeRate.multiply(BigDecimal.valueOf(asAmount(v.get("amount")))
-                                        .setScale(0, RoundingMode.HALF_DOWN)).longValue();
-
-                        Money fxAmount = Money.of(t.getSecurity().getCurrencyCode(), gross);
-
-                        t.addUnit(new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate));
+                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
                     }
+                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
+
+                    BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+
+                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                    Money gross = Money.of(asCurrencyCode(v.get("currency")),
+                                    BigDecimal.valueOf(fxGross.getAmount()).multiply(inverseRate)
+                                                    .setScale(0, RoundingMode.HALF_UP).longValue());
+
+                    checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
 
                 // Steuerausgleich nach § 43a EStG:
@@ -1312,7 +1263,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(v.get("currency"));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 })
 
                 // Ausmachender Betrag USD 0,30-
@@ -1324,7 +1275,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\w]{3}\\/[\\w]{3} (?<exchangeRate>[\\.,\\d]+) (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(v.get("currency"));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
 
                     // read the forex currency, exchange rate and gross
                     // amount in forex currency
