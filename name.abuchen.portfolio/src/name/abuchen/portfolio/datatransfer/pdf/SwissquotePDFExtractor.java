@@ -56,9 +56,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                 .match("^B.rsentransaktion: (?<type>Verkauf) .*$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("Verkauf"))
-                    {
                         t.setType(PortfolioTransaction.Type.SELL);
-                    }
                 })
 
                 // APPLE ORD ISIN: US0378331005 NASDAQ New York
@@ -85,71 +83,45 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                 .match("^Zu Ihren (Lasten|Gunsten) (?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+)$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(v.get("currency"));
-                })
-
-                // Total DKK 37'301.50
-                // Wechselkurs 15.0198
-                .section("fxCurrency", "fxAmount", "exchangeRate").optional()
-                .match("^Total (?<fxCurrency>[\\w]{3}) ([\\s]+)?(?<fxAmount>[\\.'\\d]+)$")
-                .match("^Wechselkurs (?<exchangeRate>[\\.'\\d]+)$")
-                .assign((t, v) -> {
-                    // read the forex currency, exchange rate and gross
-                    // amount in forex currency
-                    String forex = asCurrencyCode(v.get("fxCurrency"));
-                    if (t.getPortfolioTransaction().getSecurity().getCurrencyCode().equals(forex))
-                    {
-                        BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                        BigDecimal reverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
-                                        RoundingMode.HALF_DOWN);
-
-                        // gross given in forex currency
-                        long fxAmount = asAmount(v.get("fxAmount"));
-                        long amount = reverseRate.multiply(BigDecimal.valueOf(fxAmount))
-                                        .setScale(0, RoundingMode.HALF_DOWN).longValue();
-
-                        Unit grossValue = new Unit(Unit.Type.GROSS_VALUE,
-                                        Money.of(t.getPortfolioTransaction().getCurrencyCode(), amount),
-                                        Money.of(forex, fxAmount), reverseRate);
-
-                        t.getPortfolioTransaction().addUnit(grossValue);
-                    }
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 })
 
                 // Total DKK 35'410.5
                 // Wechselkurs 14.9827
                 // CHF 5'305.45
-                .section("amount", "currency", "exchangeRate", "fxCurrency", "fxAmount").optional()
-                .match("^Total (?<fxCurrency>[\\w]{3}) (?<fxAmount>[\\.'\\d]+)$")
+                .section("fxCurrency", "fxGross", "exchangeRate", "currency", "gross").optional()
+                .match("^Total (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.'\\d]+)$")
                 .match("^Wechselkurs (?<exchangeRate>[\\.'\\d]+)$")
-                .match("^(?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+)$")
+                .match("^(?<currency>[\\w]{3}) (?<gross>[\\.'\\d]+)$")
                 .assign((t, v) -> {
-                    Money forex = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxAmount")));
-                    Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
-
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                    if (t.getPortfolioTransaction().getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
+                    {
+                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+                    }
                     type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
 
-                    if (forex.getCurrencyCode().equals(t.getPortfolioTransaction().getSecurity().getCurrencyCode()))
+                    Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
+                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+
+                    /***
+                     * Swissquote sometimes uses scaled exchanges rates (such as DKK/CHF 15.42),
+                     * instead of 0.1542, hence we try to extract and if we fail,
+                     * we calculate the exchange rate
+                     */
+                    if (fxGross.getCurrencyCode().equals(t.getPortfolioTransaction().getSecurity().getCurrencyCode()))
                     {
-                        Unit unit;
-                        // Swissquote sometimes uses scaled exchanges
-                        // rates (such as DKK/CHF 15.42, instead of
-                        // 0.1542,
-                        // hence we try to extract and if we fail, we
-                        // calculate the exchange rate
                         try
                         {
-                            unit = new Unit(Unit.Type.GROSS_VALUE, gross, forex, exchangeRate);
+                            t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.GROSS_VALUE, gross, fxGross, exchangeRate));
                         }
                         catch (IllegalArgumentException e)
                         {
-                            exchangeRate = BigDecimal.valueOf(((double) gross.getAmount()) / forex.getAmount());
+                            exchangeRate = BigDecimal.valueOf(((double) gross.getAmount()) / fxGross.getAmount());                            
                             type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
 
-                            unit = new Unit(Unit.Type.GROSS_VALUE, gross, forex, exchangeRate);
+                            t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.GROSS_VALUE, gross, fxGross, exchangeRate));
                         }
-                        t.getPortfolioTransaction().addUnit(unit);
                     }
                 })
 
@@ -196,7 +168,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                 .match("^Total (?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+)")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(v.get("currency"));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 })
 
                 .wrap(TransactionItem::new);
