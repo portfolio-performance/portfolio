@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
@@ -15,7 +16,6 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
@@ -66,9 +66,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 .match("^(Wertpapierabrechnung|Transaction Statement): (?<type>(Kauf|Verkauf|Purchase|Sale))(.*)?$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("Verkauf") || v.get("type").equals("Sale"))
-                    {
                         t.setType(PortfolioTransaction.Type.SELL);
-                    }
                 })
 
                 // Is type --> "Spitzenregulierung" change from BUY to SELL
@@ -76,9 +74,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 .match("^(?<type>Spitzenregulierung)( .*)?$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("Spitzenregulierung"))
-                    {
                         t.setType(PortfolioTransaction.Type.SELL);
-                    }
                 })
 
                 // Nominale ISIN: IE0032895942 WKN: 911950 Kurs 
@@ -93,7 +89,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                     if (v.get("nameContinued").endsWith("p.STK"))
                         v.put("nameContinued", v.get("nameContinued").replace("p.STK", ""));
 
-                    t.setSecurity(getOrCreateSecurity(v));   
+                    t.setSecurity(getOrCreateSecurity(v));
                 })
 
                 // STK 2 iShs DL Corp Bond UCITS ETF EUR 104,37
@@ -162,29 +158,22 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         )
 
                 // Kurswert Umrechnungskurs CAD/EUR: 1,4595 EUR 8,85
-                .section("forex", "exchangeRate", "currency", "amount").optional()
-                .match("^Kurswert Umrechnungskurs (?<forex>[\\w]{3})\\/[\\w]{3}: (?<exchangeRate>[\\.,\\d]+) (?<currency>[\\w]{3}) (?<amount>[\\.\\d]+,[\\d]{2})$")
+                .section("fxCurrency", "exchangeRate", "currency", "gross").optional()
+                .match("^Kurswert Umrechnungskurs (?<fxCurrency>[\\w]{3})\\/[\\w]{3}: (?<exchangeRate>[\\.,\\d]+) (?<currency>[\\w]{3}) (?<gross>[\\.\\d]+,[\\d]{2})$")
                 .assign((t, v) -> {
-                    // read the forex currency, exchange rate, account
-                    // currency and gross amount in account currency
-                    String forex = asCurrencyCode(v.get("forex"));
-                    if (t.getPortfolioTransaction().getSecurity().getCurrencyCode().equals(forex))
+                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                    if (t.getPortfolioTransaction().getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
                     {
-                        BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                        BigDecimal reverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
-                                        RoundingMode.HALF_DOWN);
-
-                        // gross given in account currency
-                        long amount = asAmount(v.get("amount"));
-                        long fxAmount = exchangeRate.multiply(BigDecimal.valueOf(amount))
-                                        .setScale(0, RoundingMode.HALF_DOWN).longValue();
-
-                        Unit grossValue = new Unit(Unit.Type.GROSS_VALUE,
-                                        Money.of(asCurrencyCode(v.get("currency")), amount),
-                                        Money.of(forex, fxAmount), reverseRate);
-
-                        t.getPortfolioTransaction().addUnit(grossValue);
+                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
                     }
+                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
+
+                    Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
+                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")),
+                                    BigDecimal.valueOf(gross.getAmount()).multiply(exchangeRate)
+                                                    .setScale(0, RoundingMode.HALF_UP).longValue());
+
+                    checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
 
                 // Verhältnis: 1 : 1 
@@ -278,10 +267,10 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 // Umrechnungskurs: EUR/USD 1,1452
                 // Bruttobetrag USD 3,94
                 // Bruttobetrag EUR 3,44
-                .section("exchangeRate", "fxAmount", "fxCurrency", "amount", "currency").optional()
+                .section("exchangeRate", "fxGross", "fxCurrency", "gross", "currency").optional()
                 .match("^Umrechnungskurs: [\\w]{3}\\/[\\w]{3} (?<exchangeRate>[\\.,\\d]+)$")
-                .match("^Bruttobetrag (?<fxCurrency>[\\w]{3}) (?<fxAmount>[\\.\\d]+,[\\d]{2})$")
-                .match("^Bruttobetrag (?<currency>[\\w]{3}) (?<amount>[\\.\\d]+,[\\d]{2})$")
+                .match("^Bruttobetrag (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.\\d]+,[\\d]{2})$")
+                .match("^Bruttobetrag (?<currency>[\\w]{3}) (?<gross>[\\.\\d]+,[\\d]{2})$")
                 .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                     if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
@@ -290,32 +279,10 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                     }
                     type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
 
-                    if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
-                    {
-                        BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
-                                        RoundingMode.HALF_DOWN);
+                    Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
+                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
 
-                        // check, if forex currency is transaction
-                        // currency or not and swap amount, if necessary
-                        Unit grossValue;
-                        if (!asCurrencyCode(v.get("fxCurrency")).equals(t.getCurrencyCode()))
-                        {
-                            Money fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")),
-                                            asAmount(v.get("fxAmount")));
-                            Money amount = Money.of(asCurrencyCode(v.get("currency")),
-                                            asAmount(v.get("amount")));
-                            grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
-                        }
-                        else
-                        {
-                            Money amount = Money.of(asCurrencyCode(v.get("fxCurrency")), 
-                                            asAmount(v.get("fxAmount")));
-                            Money fxAmount = Money.of(asCurrencyCode(v.get("currency")), 
-                                            asAmount(v.get("amount")));
-                            grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
-                        }
-                        t.addUnit(grossValue);
-                    }
+                    checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
 
                 .wrap(TransactionItem::new);
@@ -426,9 +393,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
             {
                 Matcher m = pCurrency.matcher(line);
                 if (m.matches())
-                {
                     context.put("currency", m.group("currency"));
-                }
             }
         });
         this.addDocumentTyp(type);
@@ -527,9 +492,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> {
                     // Is type --> "Verkauf" change from BUY to SELL
                     if (v.get("type").equals("Verkauf"))
-                    {
                         t.setType(PortfolioTransaction.Type.SELL);
-                    }
 
                     Map<String, String> context = type.getCurrentContext();
                     t.setDate(asDate(v.get("date")));
@@ -637,9 +600,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 .match("^(?<type>Einbuchung) in Depot .* per [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("Einbuchung"))
-                    {
                         t.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
-                    }
                 })
 
                 // Ausbuchung aus Depot yyyyyyyyyy per 09.03.2021
@@ -705,9 +666,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 .section("n").optional()
                 .match("^Ertragsthesaurierung .*$")
                 .match("Steuerliquidität (?<n>.*)")
-                .assign((t, v) -> {
-                    type.getCurrentContext().put("noTax", "X");
-                });
+                .assign((t, v) -> type.getCurrentContext().put("noTax", "X"));
 
         transaction
                 // Span. Finanztransaktionssteuer EUR 1,97
@@ -715,9 +674,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 .match("^.* Finanztransaktionssteuer (?<currency>[\\w]{3}) (?<tax>[\\.\\d]+,[\\d]{2})$")
                 .assign((t, v) -> {
                     if (!"X".equals(type.getCurrentContext().get("noTax")))
-                    {
                         processTaxEntries(t, v, type);
-                    }
                 })
 
                 // Kapitalertragsteuer EUR 127,73 -
@@ -725,9 +682,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 .match("^Kapitalertragsteuer (?<currency>[\\w]{3}) (?<tax>[\\.\\d]+,[\\d]{2}) \\-$")
                 .assign((t, v) -> {
                     if (!"X".equals(type.getCurrentContext().get("noTax")))
-                    {
                         processTaxEntries(t, v, type);
-                    }
                 })
 
                 // Kirchensteuer EUR 11,49 -
@@ -735,9 +690,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 .match("^Kirchensteuer (?<currency>[\\w]{3}) (?<tax>[\\.\\d]+,[\\d]{2}) \\-$")
                 .assign((t, v) -> {
                     if (!"X".equals(type.getCurrentContext().get("noTax")))
-                    {
                         processTaxEntries(t, v, type);
-                    }
                 })
 
                 // Solidaritätszuschlag EUR 7,02 -
@@ -745,9 +698,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 .match("^Solidarit.tszuschlag (?<currency>[\\w]{3}) (?<tax>[\\.\\d]+,[\\d]{2}) \\-$")
                 .assign((t, v) -> {
                     if (!"X".equals(type.getCurrentContext().get("noTax")))
-                    {
                         processTaxEntries(t, v, type);
-                    }
                 })
 
                 // Quellensteuer EUR 30,21 -
@@ -756,9 +707,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 .match("^(US-)?Quellensteuer (?<currency>[\\w]{3}) (?<withHoldingTax>[\\.\\d]+,[\\d]{2}) \\-$")
                 .assign((t, v) -> {
                     if (!"X".equals(type.getCurrentContext().get("noTax")))
-                    {
                         processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
-                    }
                 });
     }
 
