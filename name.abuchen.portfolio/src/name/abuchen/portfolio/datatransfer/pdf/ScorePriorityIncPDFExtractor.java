@@ -21,6 +21,20 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
 {
+    /***
+     * Information:
+     * Score Priority is a US-based financial services company.
+     * The currency is US$.
+     * 
+     * All security currencies are USD.
+     * 
+     * CUSIP Number:
+     * The CUSIP number is the WKN number.
+     * 
+     * Dividend transactions:
+     * The amount of dividends is reported in gross.
+     */
+
     public ScorePriorityIncPDFExtractor(Client client)
     {
         super(client);
@@ -38,20 +52,6 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction()
     {
-        /***
-         * Information:
-         * Score Priority is a US-based financial services company.
-         * The currency is US$.
-         * 
-         * All security currencies are USD.
-         * 
-         * CUSIP Number:
-         * The CUSIP number is the WKN number.
-         * 
-         * Dividend transactions:
-         * The amount of dividends is reported in gross.
-         */
-
         final DocumentType type = new DocumentType("ACCOUNT STATEMENT", (context, lines) -> {
             Pattern pYear = Pattern.compile("^.* STATEMENT PERIOD: .*, (?<year>[\\d]{4})$");
             // read the current context here
@@ -59,9 +59,7 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
             {
                 Matcher m = pYear.matcher(line);
                 if (m.matches())
-                {
                     context.put("year", m.group("year"));
-                }
             }
         });
         this.addDocumentTyp(type);
@@ -91,9 +89,7 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             // Is type --> "Sell" change from BUY to SELL
                             if (v.get("type").equals("Sell"))
-                            {
                                 t.setType(PortfolioTransaction.Type.SELL);
-                            }
 
                             Map<String, String> context = type.getCurrentContext();
                             v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
