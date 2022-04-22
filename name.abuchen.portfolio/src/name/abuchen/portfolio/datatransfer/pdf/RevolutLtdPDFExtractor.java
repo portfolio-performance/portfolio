@@ -16,6 +16,11 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class RevolutLtdPDFExtractor extends AbstractPDFExtractor
 {
+    /***
+     * Information:
+     * The currency of Revolut Trading Ltd. is always USD.
+     */
+
     public RevolutLtdPDFExtractor(Client client)
     {
         super(client);
@@ -34,11 +39,6 @@ public class RevolutLtdPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        /***
-         * Information:
-         * The currency of Revolut Trading Ltd. is always USD.
-         */
-
         DocumentType type = new DocumentType("Order details");
         this.addDocumentTyp(type);
 
@@ -59,9 +59,7 @@ public class RevolutLtdPDFExtractor extends AbstractPDFExtractor
                 .match("^.* (?<type>Sell) .*$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("Sell"))
-                    {
                         t.setType(PortfolioTransaction.Type.SELL);
-                    }
                 })
 
                 // Symbol Company Type Quantity Price Execution time Execution venue
@@ -124,7 +122,7 @@ public class RevolutLtdPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date"), Locale.UK));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(v.get("currency"));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
                         .wrap(t -> {
