@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetFee;
+import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
@@ -13,7 +14,6 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
@@ -58,9 +58,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                 .match("^Wertpapier Abrechnung (?<type>(Kauf|Verkauf|(Ausgabe|R.cknahme) Investmentfonds))(.*)?$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("Verkauf") || v.get("type").equals("Rücknahme Investmentfonds"))
-                    {
                         t.setType(PortfolioTransaction.Type.SELL);
-                    }
                 })
 
                 // Stück 13 COMSTA.-MSCI EM.MKTS.TRN U.ETF LU0635178014 (ETF127)
@@ -105,14 +103,14 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                 .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+)([\\-|\\+])? (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(v.get("currency"));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 })
 
                 // Devisenkurs (EUR/USD) 1,1987 vom 02.03.2021
                 // Kurswert 52,50- EUR
-                .section("fxCurrency", "exchangeRate", "amount", "currency").optional()
+                .section("fxCurrency", "exchangeRate", "gross", "currency").optional()
                 .match("^Devisenkurs \\([\\w]{3}\\/(?<fxCurrency>[\\w]{3})\\) (?<exchangeRate>[\\.,\\d]+) .*$")
-                .match("^Kurswert (?<amount>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
+                .match("^Kurswert (?<gross>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                     if (t.getPortfolioTransaction().getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
@@ -121,25 +119,12 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                     }
                     type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
 
-                    // read the forex currency, exchange rate and gross
-                    // amount in forex currency
-                    String forex = asCurrencyCode(v.get("fxCurrency"));
-                    if (t.getPortfolioTransaction().getSecurity().getCurrencyCode().equals(forex))
-                    {
-                        BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
-                                        RoundingMode.HALF_DOWN);
+                    Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
+                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")),
+                                    BigDecimal.valueOf(gross.getAmount()).multiply(exchangeRate)
+                                                    .setScale(0, RoundingMode.HALF_UP).longValue());
 
-                        // gross given in account currency
-                        long amount = asAmount(v.get("amount"));
-                        long fxAmount = exchangeRate.multiply(BigDecimal.valueOf(amount))
-                                        .setScale(0, RoundingMode.HALF_DOWN).longValue();
-
-                        Unit grossValue = new Unit(Unit.Type.GROSS_VALUE,
-                                        Money.of(asCurrencyCode(v.get("currency")), amount),
-                                        Money.of(forex, fxAmount), inverseRate);
-
-                        t.getPortfolioTransaction().addUnit(grossValue);
-                    }
+                    checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
 
                 // Limit 40,99 EUR AN
@@ -186,25 +171,25 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                 .match("^St.ck (?<shares>[\\.,\\d]+) .*$")
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                // Ausmachender Betrag 68,87+ EUR
-                .section("currency", "amount")
-                .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+)\\+ (?<currency>[\\w]{3})$")
-                .assign((t, v) -> {
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(v.get("currency"));
-                })
-
                 // Den Betrag buchen wir mit Wertstellung 03.01.2018 zu Gunsten des Kontos xxxxxxxxxx (IBAN DExx xxxx xxxx xxxx
                 .section("date")
                 .match("^Den Betrag buchen wir mit Wertstellung (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
+                // Ausmachender Betrag 68,87+ EUR
+                .section("currency", "amount")
+                .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+)\\+ (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                })
+
                 // Devisenkurs EUR / USD 1,2095
                 // Devisenkursdatum 02.01.2018
                 // Ausschüttung 113,16 USD 93,56+ EUR
-                .section("exchangeRate", "fxAmount", "fxCurrency", "amount", "currency").optional()
+                .section("exchangeRate", "fxGross", "fxCurrency", "gross", "currency").optional()
                 .match("^Devisenkurs .* (?<exchangeRate>[\\.,\\d]+)$")
-                .match("^(Aussch.ttung|Dividendengutschrift) (?<fxAmount>[\\.,\\d]+) (?<fxCurrency>[\\w]{3}) (?<amount>[\\.,\\d]+)\\+ (?<currency>[\\w]{3})$")
+                .match("^(Aussch.ttung|Dividendengutschrift) (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3}) (?<gross>[\\.,\\d]+)\\+ (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                     if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
@@ -213,32 +198,10 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                     }
                     type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
 
-                    if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
-                    {
-                        BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
-                                        RoundingMode.HALF_DOWN);
+                    Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
+                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
 
-                        // check, if forex currency is transaction
-                        // currency or not and swap amount, if necessary
-                        Unit grossValue;
-                        if (!asCurrencyCode(v.get("fxCurrency")).equals(t.getCurrencyCode()))
-                        {
-                            Money fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")),
-                                            asAmount(v.get("fxAmount")));
-                            Money amount = Money.of(asCurrencyCode(v.get("currency")),
-                                            asAmount(v.get("amount")));
-                            grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
-                        }
-                        else
-                        {
-                            Money amount = Money.of(asCurrencyCode(v.get("fxCurrency")),
-                                            asAmount(v.get("fxAmount")));
-                            Money fxAmount = Money.of(asCurrencyCode(v.get("currency")),
-                                            asAmount(v.get("amount")));
-                            grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
-                        }
-                        t.addUnit(grossValue);
-                    }
+                    checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
 
                 .wrap(TransactionItem::new);
