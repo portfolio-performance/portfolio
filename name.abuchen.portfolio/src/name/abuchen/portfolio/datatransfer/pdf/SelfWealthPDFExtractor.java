@@ -49,18 +49,16 @@ public class SelfWealthPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction
                 // Is type --> "Sell" change from BUY to SELL
-                .section("type").optional() //
+                .section("type").optional()
                 .match("^(?<type>(Buy|Sell)) Confirmation$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("Sell"))
-                    {
                         t.setType(PortfolioTransaction.Type.SELL);
-                    }
                 })
 
                 // 25 UMAX BETA S&P500 YIELDMAX 12.40 $312.50 AUD
-                .section("shares", "tickerSymbol", "name", "amount", "currency")
-                .match("^(?<shares>[\\.,\\d]+) (?<tickerSymbol>[\\w]{3,4}) (?<name>.*) [\\.,\\d]+ \\p{Sc}(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .section("tickerSymbol", "name", "currency")
+                .match("^[\\.,\\d]+ (?<tickerSymbol>[\\w]{3,4}) (?<name>.*) [\\.,\\d]+ \\p{Sc}[\\.,\\d]+ (?<currency>[\\w]{3})$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // 25 UMAX BETA S&P500 YIELDMAX 12.40 $312.50 AUD
