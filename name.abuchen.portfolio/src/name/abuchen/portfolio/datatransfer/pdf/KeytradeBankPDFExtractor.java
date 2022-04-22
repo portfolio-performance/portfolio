@@ -1,6 +1,9 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetGrossUnit;
+
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -12,7 +15,6 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
@@ -78,9 +80,7 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                 .match("^(Num.ro.*)?(?<type>(Kauf|Achat|Vente|Verkauf)) .*$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("Verkauf") || v.get("type").equals("Vente"))
-                    {
                         t.setType(PortfolioTransaction.Type.SELL);
-                    }
                 })
 
                 .oneOf(
@@ -145,42 +145,28 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                 .match("^(Gutschrift|Cr.dit|Lastschrift|D.bit) (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(v.get("currency"));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 })
 
-                /***
-                 * Only add gross value with forex if the security is actually denoted in the foreign currency
-                 * (often users actually have the quotes in their home country currency)
-                 */
+                // Bruttobetrag 924,00 USD
                 // Wechselkurs EUR/USD 1.123000 849,47 EUR
-                // Lastschrift 953,95 USD Valutadatum 21/06/2016
-                .section("exchangeRate", "fxAmount", "fxCurrency", "amount", "currency").optional()
-                .match("^Wechselkurs [\\w]{3}\\/[\\w]{3} (?<exchangeRate>[\\.,\\d]+) (?<fxAmount>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
-                .match("^(Gutschrift|Cr.dit|Lastschrift|D.bit) (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
-                .assign((t, v) -> {
-                    // read the forex currency, exchange rate and gross
-                    // amount in forex currency
-                    String forex = asCurrencyCode(v.get("fxCurrency"));
-                    if (t.getPortfolioTransaction().getSecurity().getCurrencyCode().equals(forex))
-                    {
-                        BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-
-                        Money fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")),
-                                        asAmount(v.get("fxAmount")));
-                        Money amount = Money.of(asCurrencyCode(v.get("currency")),
-                                        asAmount(v.get("amount")));
-
-                        Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, exchangeRate);
-
-                        t.getPortfolioTransaction().addUnit(grossValue);
-                    }
-                })
-
-                .section("exchangeRate").optional()
-                .match("^Wechselkurs [\\w]{3}\\/[\\w]{3} (?<exchangeRate>[\\.,\\d]+) [\\.,\\d]+ [\\w]{3}$")
+                .section("gross", "currency", "exchangeRate", "fxCurrency").optional()
+                .match("^Bruttobetrag (?<gross>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .match("^Wechselkurs [\\w]{3}\\/[\\w]{3} (?<exchangeRate>[\\.,\\d]+) [\\.,\\d]+ (?<fxCurrency>[\\w]{3})$")
                 .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                    if (t.getPortfolioTransaction().getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
+                    {
+                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+                    }
                     type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
+
+                    Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
+                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")),
+                                    BigDecimal.valueOf(gross.getAmount()).multiply(exchangeRate)
+                                                    .setScale(0, RoundingMode.HALF_UP).longValue());
+
+                    checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
 
                 // Auftragstyp : Limit (16 EUR)
@@ -288,7 +274,7 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                                         .match("^(Nettoguthaben|Net CREDIT) (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
                                         .assign((t, v) -> {
                                             t.setAmount(asAmount(v.get("amount")));
-                                            t.setCurrencyCode(v.get("currency"));
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                         })
                                 ,
                                 // Net CREDIT
@@ -299,49 +285,29 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                                         .match("^(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                                         .assign((t, v) -> {
                                             t.setAmount(asAmount(v.get("amount")));
-                                            t.setCurrencyCode(v.get("currency"));
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                         })
                         )
 
                 // Bruttobetrag 1,25 USD
                 // Wechselkurs 1,05 1,01 EUR
-                .section("exchangeRate", "fxAmount", "fxCurrency", "amount", "currency").optional()
-                .match("^Wechselkurs (?<exchangeRate>[\\.,\\d]+) (?<fxAmount>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
-                .match("^(Nettoguthaben|Net CREDIT) (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
-                .assign((t, v) -> {
-                    if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
-                    {
-                        BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-
-                        // check, if forex currency is transaction
-                        // currency or not and swap amount, if necessary
-                        Unit grossValue;
-                        if (!asCurrencyCode(v.get("fxCurrency")).equals(t.getCurrencyCode()))
-                        {
-                            Money fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")),
-                                            asAmount(v.get("fxAmount")));
-                            Money amount = Money.of(asCurrencyCode(v.get("currency")),
-                                            asAmount(v.get("amount")));
-                            grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, exchangeRate);
-                        }
-                        else
-                        {
-                            Money amount = Money.of(asCurrencyCode(v.get("fxCurrency")),
-                                            asAmount(v.get("fxAmount")));
-                            Money fxAmount = Money.of(asCurrencyCode(v.get("currency")),
-                                            asAmount(v.get("amount")));
-                            grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, exchangeRate);
-                        }
-                        t.addUnit(grossValue);
-                    }
-                })
-
-                // Wechselkurs 1,05 1,01 EUR
-                .section("exchangeRate").optional()
-                .match("^Wechselkurs [\\w]{3}\\/[\\w]{3} (?<exchangeRate>[\\.,\\d]+) [\\.,\\d]+ [\\w]{3}$")
+                .section("gross", "currency", "exchangeRate", "fxCurrency").optional()
+                .match("^Bruttobetrag (?<gross>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .match("^Wechselkurs (?<exchangeRate>[\\.,\\d]+) [\\.,\\d]+ (?<fxCurrency>[\\w]{3})$")
                 .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                    if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
+                    {
+                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+                    }
                     type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
+
+                    Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
+                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")),
+                                    BigDecimal.valueOf(gross.getAmount()).multiply(exchangeRate)
+                                                    .setScale(0, RoundingMode.HALF_UP).longValue());
+
+                    checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
 
                 .wrap(TransactionItem::new);
