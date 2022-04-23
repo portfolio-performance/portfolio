@@ -176,6 +176,11 @@ public interface UIConstants
         String PRESET_VALUE_TIME = "PRESET_VALUE_TIME"; //$NON-NLS-1$
 
         /**
+         * Preference key mode of the folder (absolute (false) or relative (true))
+         */
+        String BACKUP_FOLDER_MODE = "BACKUP_FOLDER_MODE"; //$NON-NLS-1$
+
+        /**
          * Preference key for the backup folder relative to the data file
          */
         String BACKUP_FOLDER_RELATIVE = "BACKUP_FOLDER_RELATIVE"; //$NON-NLS-1$
