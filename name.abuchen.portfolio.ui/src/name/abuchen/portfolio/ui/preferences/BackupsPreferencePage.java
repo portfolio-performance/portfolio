@@ -14,8 +14,8 @@ public class BackupsPreferencePage extends FieldEditorPreferencePage
     {
         super(GRID);
 
-        setTitle("Backup"); // TODO Messages...
-        setDescription("Backup bla bla"); // TODO Messages...
+        setTitle(Messages.PrefTitleBackup);
+        setDescription(Messages.PrefMsgBackup);
     }
 
     @Override
