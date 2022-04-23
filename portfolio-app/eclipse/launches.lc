@@ -8,7 +8,7 @@ eclipse configuration PortfolioPerformance {
 	feature org.eclipse.emf.ecore;
 	feature org.eclipse.emf.common;
 	feature org.eclipse.equinox.p2.core.feature;
-	feature org.eclipse.ecf.filetransfer.httpclient45.feature;
+	feature org.eclipse.ecf.filetransfer.httpclient5.feature;	
 	feature org.eclipse.ecf.core.ssl.feature;
 	feature org.eclipse.ecf.filetransfer.ssl.feature;
 	feature org.eclipse.ecf.core.feature;
@@ -50,7 +50,7 @@ abstract junit-plugin configuration TestBase {
 	feature org.eclipse.emf.ecore;
 	feature org.eclipse.emf.common;
 	feature org.eclipse.equinox.p2.core.feature;
-	feature org.eclipse.ecf.filetransfer.httpclient45.feature;
+	feature org.eclipse.ecf.filetransfer.httpclient5.feature;	
 	feature org.eclipse.ecf.core.ssl.feature;
 	feature org.eclipse.ecf.filetransfer.ssl.feature;
 	feature org.eclipse.ecf.core.feature;

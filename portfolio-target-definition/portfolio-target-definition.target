@@ -3,57 +3,48 @@
 <target name="portfolio-target-definition" sequenceNumber="26">
 <locations>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<repository location="https://download.eclipse.org/eclipse/updates/4.21/R-4.21-202109060500/"/>
-		<unit id="org.eclipse.e4.rcp.feature.group" version="4.21.0.v20210906-0842"/>
-		<unit id="org.eclipse.e4.rcp.source.feature.group" version="4.21.0.v20210906-0842"/>
-		<unit id="org.eclipse.equinox.executable" version="3.8.1300.v20210828-0802"/>
-		<unit id="org.eclipse.equinox.executable.feature.group" version="3.8.1300.v20210828-0802"/>
-		<unit id="org.eclipse.pde.feature.group" version="3.14.900.v20210906-0500"/>
-		<unit id="org.eclipse.platform.feature.group" version="4.21.0.v20210906-0842"/>
+		<repository location="https://download.eclipse.org/eclipse/updates/4.23/R-4.23-202203080310/"/>
+		<unit id="org.eclipse.e4.rcp.feature.group" version="4.23.0.v20220308-0630"/>
+		<unit id="org.eclipse.e4.rcp.source.feature.group" version="4.23.0.v20220308-0630"/>
+		<unit id="org.eclipse.equinox.executable" version="3.8.1500.v20220210-1108"/>
+		<unit id="org.eclipse.equinox.executable.feature.group" version="3.8.1500.v20220210-1108"/>
+		<unit id="org.eclipse.platform.feature.group" version="4.23.0.v20220308-0722"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<repository location="https://download.eclipse.org/tools/orbit/downloads/drops/R20200529191137/repository"/>
-		<unit id="net.bytebuddy.byte-buddy-agent.source" version="1.9.0.v20181106-1534"/>
-		<unit id="net.bytebuddy.byte-buddy.source" version="1.9.0.v20181107-1410"/>
-		<unit id="org.bouncycastle.bcpg" version="1.65.0.v20200527-1955"/>
-		<unit id="org.bouncycastle.bcpg.source" version="1.65.0.v20200527-1955"/>
-		<unit id="org.bouncycastle.bcpkix" version="1.65.0.v20200527-1955"/>
-		<unit id="org.bouncycastle.bcpkix.source" version="1.65.0.v20200527-1955"/>
-		<unit id="org.hamcrest" version="1.1.0.v20090501071000"/>
-		<unit id="org.hamcrest.core" version="1.1.0.v20090501071000"/>
-		<unit id="org.hamcrest.core" version="1.3.0.v20180420-1519"/>
-		<unit id="org.hamcrest.core.source" version="1.1.0.v20090501071000"/>
-		<unit id="org.hamcrest.core.source" version="1.3.0.v20180420-1519"/>
-		<unit id="org.hamcrest.integration" version="1.3.0.v201305210900"/>
-		<unit id="org.hamcrest.integration.source" version="1.3.0.v201305210900"/>
-		<unit id="org.hamcrest.library" version="1.3.0.v20180524-2246"/>
+		<repository location="https://download.eclipse.org/tools/orbit/downloads/drops/R20220302172233/repository"/>
 		<unit id="org.junit" version="4.12.0.v201504281640"/>
 		<unit id="org.junit.source" version="4.12.0.v201504281640"/>
-		<unit id="org.objectweb.asm" version="5.0.1.v201404251740"/>
-		<unit id="org.objenesis" version="2.6.0.v20180420-1519"/>
-		<unit id="org.objenesis.source" version="2.6.0.v20180420-1519"/>
+		<unit id="org.bouncycastle.bcpg" version="1.70.0.v20220105-1522"/>
+		<unit id="org.bouncycastle.bcpg.source" version="1.70.0.v20220105-1522"/>
+		<unit id="org.bouncycastle.bcpkix" version="1.70.0.v20220105-1522"/>
+		<unit id="org.bouncycastle.bcpkix.source" version="1.70.0.v20220105-1522"/>
+		<unit id="net.bytebuddy.byte-buddy" version="1.9.0.v20181107-1410"/>
+		<unit id="net.bytebuddy.byte-buddy.source" version="1.9.0.v20181107-1410"/>
+		<unit id="org.apache.commons.math3" version="3.6.1.v20200817-1830"/>
+		<unit id="org.apache.commons.math3.source" version="3.6.1.v20200817-1830"/>
+		<unit id="org.hamcrest.library" version="1.3.0.v20180524-2246"/>
+		<unit id="org.hamcrest.library.source" version="1.3.0.v20180524-2246"/>
 		<unit id="org.mockito" version="2.23.0.v20200310-1642"/>
 		<unit id="org.mockito.source" version="2.23.0.v20200310-1642"/>
-		<unit id="org.apache.commons.math3" version="3.5.0.v20190611-1023"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<repository location="https://download.eclipse.org/nebula/releases/2.5.0"/>
 		<unit id="org.eclipse.nebula.widgets.cdatetime.feature.feature.group" version="1.5.0.202106201019"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<repository location="https://buchen.github.io/portfolio-deps/1.6.0"/>
-		<unit id="name.abuchen.portfolio.dependencies.feature.feature.group" version="1.6.0"/>
+		<repository location="https://www.portfolio-performance.info/portfolio-deps/1.7.0"/>
+		<unit id="name.abuchen.portfolio.dependencies.feature.feature.group" version="1.7.0"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<repository location="https://download.eclipse.org/technology/babel/update-site/R0.19.1/2021-09/"/>
-		<unit id="org.eclipse.babel.nls_eclipse_de.feature.group" version="4.21.0.v20210925020001"/>
-		<unit id="org.eclipse.babel.nls_eclipse_es.feature.group" version="4.21.0.v20210925020001"/>
-		<unit id="org.eclipse.babel.nls_eclipse_fr.feature.group" version="4.21.0.v20210925020001"/>
-		<unit id="org.eclipse.babel.nls_eclipse_it.feature.group" version="4.21.0.v20210925020001"/>
-		<unit id="org.eclipse.babel.nls_eclipse_nl.feature.group" version="4.21.0.v20210925020001"/>
-		<unit id="org.eclipse.babel.nls_eclipse_pt.feature.group" version="4.21.0.v20210925020001"/>
-		<unit id="org.eclipse.babel.nls_eclipse_cs.feature.group" version="4.21.0.v20210925020001"/>
-		<unit id="org.eclipse.babel.nls_eclipse_ru.feature.group" version="4.21.0.v20210925020001"/>
+		<repository location="https://download.eclipse.org/technology/babel/update-site/R0.19.2/2021-12/"/>
+		<unit id="org.eclipse.babel.nls_eclipse_de.feature.group" version="4.22.0.v20211218020001"/>
+		<unit id="org.eclipse.babel.nls_eclipse_es.feature.group" version="4.22.0.v20211218020001"/>
+		<unit id="org.eclipse.babel.nls_eclipse_fr.feature.group" version="4.22.0.v20211218020001"/>
+		<unit id="org.eclipse.babel.nls_eclipse_it.feature.group" version="4.22.0.v20211218020001"/>
+		<unit id="org.eclipse.babel.nls_eclipse_nl.feature.group" version="4.22.0.v20211218020001"/>
+		<unit id="org.eclipse.babel.nls_eclipse_pt.feature.group" version="4.22.0.v20211218020001"/>
+		<unit id="org.eclipse.babel.nls_eclipse_cs.feature.group" version="4.22.0.v20211218020001"/>
+		<unit id="org.eclipse.babel.nls_eclipse_ru.feature.group" version="4.22.0.v20211218020001"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<repository location="https://download.eclipse.org/swtchart/releases/0.13.0/repository"/>

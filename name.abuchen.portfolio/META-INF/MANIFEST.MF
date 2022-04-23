@@ -63,10 +63,10 @@ Import-Package: com.google.common.base,
 Bundle-ClassPath: .
 Bundle-Vendor: %Bundle-Vendor
 Require-Bundle: org.eclipse.core.runtime,
- org.apache.httpcomponents.httpclient,
- org.apache.httpcomponents.httpcore,
+ org.apache.httpcomponents.client5.httpclient5,
+ org.apache.httpcomponents.core5.httpcore5,
  org.apache.pdfbox,
- com.jayway.jsonpath.json-path,
+ json-path,
  com.google.gson
 Automatic-Module-Name: name.abuchen.portfolio
 Eclipse-ExtensibleAPI: true
