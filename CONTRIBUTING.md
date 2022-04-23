@@ -70,6 +70,12 @@ Für Eclipse benötigen wir noch folgenden Plugins, welche über den Marktplatz 
 4. [Checkstyle Plug-In](https://marketplace.eclipse.org/content/checkstyle-plug)
 5. [SonarLint](https://marketplace.eclipse.org/content/sonarlint)
 6. [Launch Configuration DSL](https://marketplace.eclipse.org/content/launch-configuration-dsl)
+7. Standardmäßig werden die "Eclipse e4 Tools Developer Resources"	nicht mit installiert. Dies sollte nachgeholt werden.
+	- `Menü` --> `Help` --> `Install New Software`
+	- Öffne das Dropdown-Menü von `Work with:`
+	- Wähle die Eclipse Installation aus
+	- Selektiere unter `General Purpose Tools` die `Eclipse e4 Tools Developer Resources`
+	- Klicke auf `Next`, danach auf `Installieren`
 
 ---
 
