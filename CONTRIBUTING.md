@@ -266,9 +266,11 @@ Der Aufbau der Importer erfolgt nach folgendem Schema und die Mapping-Variabeln 
 * Endbetrag (Netto)
   * `amount` --> Betrag z.b. 123,15
   * `currency` --> Währung des Endbetrags
-* Fremdwährung (Brutto)
-  * `fxAmount` --> Betrag
-  * `fxCurrency` --> Fremdwährung 
+* Fremdwährung
+  * `gross` --> Betrag (Brutto)
+  * `currency` --> Wahrung des Endbetrags
+  * `fxGross` --> Fremdwährung (Brutto)
+  * `fxCurrency` --> Währung
 * Wechselkurs
   * `exchangeRate` --> Wechselkurs der Fremdwährung
 * Notizen (Optional)
