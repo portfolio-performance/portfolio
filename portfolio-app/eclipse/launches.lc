@@ -61,20 +61,18 @@ abstract junit-plugin configuration TestBase {
 	ignore org.eclipse.jdt.annotation;
 	ignore org.eclipse.ui;
 	ignore org.eclipse.ui.workbench;
-	
-    test {
-        runner junit4;
-    }
 }
 
 junit-plugin configuration PortfolioPerformance_Tests:TestBase {
     test {
         container '/name.abuchen.portfolio.tests';
+        runner junit4;
     }
 }
 
 junit-plugin configuration PortfolioPerformance_UI_Tests:TestBase {
     test {
         container '/name.abuchen.portfolio.ui.tests';
+        runner junit4;
     }
 }
