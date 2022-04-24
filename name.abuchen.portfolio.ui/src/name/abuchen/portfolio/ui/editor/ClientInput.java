@@ -91,7 +91,9 @@ public class ClientInput
             for (BACKUP_MODE mode : values())
             {
                 if (mode.getPreferenceValue().equalsIgnoreCase(preferenceValue))
-                { return mode; }
+                {
+                    return mode;
+                }
             }
 
             return null;
@@ -397,7 +399,9 @@ public class ClientInput
                 File absoluteFile = absolutePath.toFile();
 
                 if (absoluteFile.exists() && absoluteFile.isDirectory())
-                { return Path.of(folderAbsolute).resolve(backupName); }
+                {
+                    return Path.of(folderAbsolute).resolve(backupName);
+                }
             }
 
             // Folder is not specified or directory does not exist -> fall back
@@ -427,7 +431,9 @@ public class ClientInput
             }
 
             if (directoryExists)
-            { return relativePath.resolve(backupName); }
+            {
+                return relativePath.resolve(backupName);
+            }
 
             // Folder is not specified or directory does not exist and could not
             // be created -> fall back
@@ -435,7 +441,9 @@ public class ClientInput
         }
 
         if (resultingBackupMode == BACKUP_MODE.NEXT_TO_FILE)
-        { return sourceFile.resolveSibling(backupName); }
+        {
+            return sourceFile.resolveSibling(backupName);
+        }
 
         throw new RuntimeException("Unsupported backup mode: " + resultingBackupMode.name()); //$NON-NLS-1$
     }
