@@ -59,39 +59,49 @@ class PDFExtractorUtils
     {
     }
 
-    public static void checkAndSetGrossUnit(Money gross, Money fxGross, Object transaction, DocumentType type)
+    public static void checkAndSetGrossUnit(Money gross, Money fxGross, BigDecimal exchangeRate, Object transaction)
     {
         if (transaction instanceof name.abuchen.portfolio.model.Transaction)
-            PDFExtractorUtils.checkAndSetGrossUnit(gross, fxGross, (name.abuchen.portfolio.model.Transaction) transaction, type);
+            PDFExtractorUtils.checkAndSetGrossUnit(gross, fxGross, exchangeRate,
+                            (name.abuchen.portfolio.model.Transaction) transaction);
         else if (transaction instanceof BuySellEntry)
-            PDFExtractorUtils.checkAndSetGrossUnit(gross, fxGross, ((BuySellEntry) transaction).getPortfolioTransaction(), type);
+            PDFExtractorUtils.checkAndSetGrossUnit(gross, fxGross, exchangeRate,
+                            ((BuySellEntry) transaction).getPortfolioTransaction());
         else
             throw new UnsupportedOperationException();
     }
 
-    @SuppressWarnings("nls")
-    public static void checkAndSetGrossUnit(Money gross, Money fxGross, name.abuchen.portfolio.model.Transaction t, DocumentType type)
+    public static void checkAndSetGrossUnit(Money gross, Money fxGross, BigDecimal exchangeRate,
+                    name.abuchen.portfolio.model.Transaction t)
     {
-        if (type.getCurrentContext().containsKey("exchangeRate"))
-        {
-            if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
-            {
-                BigDecimal exchangeRate = new BigDecimal(type.getCurrentContext().get("exchangeRate"));
-                BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+        if (exchangeRate == null)
+            return;
 
-                /**
-                 * check, if forex currency is transaction currency or not and
-                 * swap amount, if necessary
-                 */
-                if (fxGross.getCurrencyCode().equals(t.getCurrencyCode()))
-                {
-                    t.addUnit(new Unit(Unit.Type.GROSS_VALUE, fxGross, gross, inverseRate));
-                }
-                else
-                {
-                    t.addUnit(new Unit(Unit.Type.GROSS_VALUE, gross, fxGross, inverseRate));
-                } 
-            }
+        // if transaction currency equals to the currency of the security, then
+        // there is no forex information required
+        if (t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
+            return;
+
+        // if the forex information from the transaction does not fit, then the
+        // info is not usable --> do not set
+        if (!fxGross.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
+            return;
+
+        // check if the reported gross value fits to the expected gross value
+        Money grossValue = t.getGrossValue();
+
+        if (grossValue.equals(gross))
+        {
+            t.addUnit(new Unit(Unit.Type.GROSS_VALUE, gross, fxGross, exchangeRate));
+        }
+        else
+        {
+            long caculatedGrossValue = BigDecimal.valueOf(grossValue.getAmount()) //
+                            .divide(exchangeRate, Values.MC) //
+                            .setScale(0, RoundingMode.HALF_EVEN).longValue();
+
+            t.addUnit(new Unit(Unit.Type.GROSS_VALUE, grossValue,
+                            Money.of(fxGross.getCurrencyCode(), caculatedGrossValue), exchangeRate));
         }
     }
 
