@@ -159,12 +159,12 @@ public abstract class Transaction implements Annotated, Adaptable
 
             if (t1 instanceof AccountTransaction && t2 instanceof AccountTransaction)
             {
-                compareTo = ((AccountTransaction)t1).getType().compareTo(((AccountTransaction)t2).getType());
+                compareTo = ((AccountTransaction) t1).getType().compareTo(((AccountTransaction) t2).getType());
                 if (compareTo != 0)
                     return compareTo;
             }
 
-            return Integer.compare(t1.hashCode(), t2.hashCode());            
+            return Integer.compare(t1.hashCode(), t2.hashCode());
         }
     }
 
@@ -425,6 +425,8 @@ public abstract class Transaction implements Annotated, Adaptable
                                 return unit.getAmount().with(converter.at(date));
                         }));
     }
+
+    public abstract Money getGrossValue();
 
     public static final <E extends Transaction> List<E> sortByDate(List<E> transactions)
     {

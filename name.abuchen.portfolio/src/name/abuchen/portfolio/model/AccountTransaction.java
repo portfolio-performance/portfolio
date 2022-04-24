@@ -88,6 +88,7 @@ public class AccountTransaction extends Transaction
      * Returns the gross value, i.e. the value before taxes are applied. At the
      * moment, only dividend transactions are supported.
      */
+    @Override
     public Money getGrossValue()
     {
         return Money.of(getCurrencyCode(), getGrossValueAmount());
