@@ -1,8 +1,8 @@
 package name.abuchen.portfolio.ui.preferences;
 
-import java.nio.file.Paths;
-import java.text.MessageFormat;
+import java.util.regex.Pattern;
 
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.DirectoryFieldEditor;
@@ -11,18 +11,19 @@ import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IntegerFieldEditor;
 import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.ClientInput;
-import name.abuchen.portfolio.ui.editor.ClientInput.BACKUP_MODE;
 
 public class BackupsPreferencePage extends FieldEditorPreferencePage
 {
-    private ComboFieldEditor backupModeEditor;
-    private DirectoryFieldEditor backupFolderAbsoluteEditor;
-    private StringFieldEditor backupFolderRelativeEditor;
+    private ComboFieldEditor backupMode;
+    private DirectoryFieldEditor backupFolderAbsolute;
+    private StringFieldEditor backupFolderRelative;
 
     public BackupsPreferencePage()
     {
@@ -35,38 +36,52 @@ public class BackupsPreferencePage extends FieldEditorPreferencePage
     @Override
     protected void createFieldEditors()
     {
-        addField(new IntegerFieldEditor(UIConstants.Preferences.AUTO_SAVE_FILE, Messages.PrefAutoSaveFrequency,
-                        getFieldEditorParent()));
-
         addField(new BooleanFieldEditor(UIConstants.Preferences.CREATE_BACKUP_BEFORE_SAVING, //
                         Messages.PrefCreateBackupBeforeSaving, getFieldEditorParent()));
 
-        backupModeEditor = createBackupModeSelect(getFieldEditorParent());
-        addField(backupModeEditor);
+        backupMode = createBackupModeSelect(getFieldEditorParent());
+        addField(backupMode);
 
-        backupFolderAbsoluteEditor = new DirectoryFieldEditor(UIConstants.Preferences.BACKUP_FOLDER_ABSOLUTE,
-                        "Absoluter Backup Ordner", getFieldEditorParent());
-        addField(backupFolderAbsoluteEditor);
+        backupFolderAbsolute = new DirectoryFieldEditor(UIConstants.Preferences.BACKUP_FOLDER_ABSOLUTE,
+                        Messages.PrefBackupDirectory, getFieldEditorParent());
+        addField(backupFolderAbsolute);
 
-        String relativeEditorMessage = MessageFormat.format("Relativer Backup Order (z.B. {0})",
-                        Paths.get(".", "back").toString()); //$NON-NLS-1$ //$NON-NLS-2$
-        backupFolderRelativeEditor = new StringFieldEditor(UIConstants.Preferences.BACKUP_FOLDER_RELATIVE,
-                        relativeEditorMessage, getFieldEditorParent());
-        addField(backupFolderRelativeEditor);
+        backupFolderRelative = new StringFieldEditor(UIConstants.Preferences.BACKUP_FOLDER_RELATIVE,
+                        Messages.PrefRelativeBackupDirectoryName, getFieldEditorParent())
+        {
+            @Override
+            protected boolean doCheckState()
+            {
+                return Pattern.matches("[a-zA-Z][a-zA-Z0-9_.-]*", getStringValue()); //$NON-NLS-1$
+            }
+
+        };
+        addField(backupFolderRelative);
+
+        Label separator = new Label(getFieldEditorParent(), SWT.SEPARATOR | SWT.HORIZONTAL);
+        GridDataFactory.fillDefaults().span(3, 1).applyTo(separator);
+
+        addField(new IntegerFieldEditor(UIConstants.Preferences.AUTO_SAVE_FILE, Messages.PrefLabelAutoSaveFrequency,
+                        getFieldEditorParent()));
+
+        Label hint = new Label(getFieldEditorParent(), SWT.NONE);
+        hint.setText(Messages.PrefAutoSaveFrequency);
+        GridDataFactory.fillDefaults().span(3, 1).applyTo(hint);
     }
 
     protected static ComboFieldEditor createBackupModeSelect(Composite parent)
     {
-        BACKUP_MODE[] backupModes = BACKUP_MODE.values();
+        BackupMode[] backupModes = BackupMode.values();
         String[][] entryNamesAndValues = new String[backupModes.length][2];
 
-        for (int i = 0; i < backupModes.length; i++)
+        for (int ii = 0; ii < backupModes.length; ii++)
         {
-            entryNamesAndValues[i][0] = backupModes[i].getTitle();
-            entryNamesAndValues[i][1] = backupModes[i].getPreferenceValue();
+            entryNamesAndValues[ii][0] = backupModes[ii].getTitle();
+            entryNamesAndValues[ii][1] = backupModes[ii].name();
         }
 
-        return new ComboFieldEditor(UIConstants.Preferences.BACKUP_MODE, "Backup mode", entryNamesAndValues, parent);
+        return new ComboFieldEditor(UIConstants.Preferences.BACKUP_MODE, Messages.PrefBackupLocation,
+                        entryNamesAndValues, parent);
     }
 
     @Override
@@ -74,14 +89,12 @@ public class BackupsPreferencePage extends FieldEditorPreferencePage
     {
         super.initialize();
 
-        updateBackupFolderEditors(BACKUP_MODE.byValue(
-                        backupModeEditor.getPreferenceStore().getString(backupModeEditor.getPreferenceName())));
+        enableDirectoryPickers(
+                        BackupMode.valueOf(backupMode.getPreferenceStore().getString(backupMode.getPreferenceName())));
 
-        String relativeFolder = backupFolderRelativeEditor.getStringValue();
+        String relativeFolder = backupFolderRelative.getStringValue();
         if (relativeFolder == null || relativeFolder.isBlank())
-        {
-            backupFolderRelativeEditor.setStringValue(ClientInput.DEFAULT_RELATIVE_BACKUP_FOLDER);
-        }
+            backupFolderRelative.setStringValue(ClientInput.DEFAULT_RELATIVE_BACKUP_FOLDER);
     }
 
     @Override
@@ -89,35 +102,18 @@ public class BackupsPreferencePage extends FieldEditorPreferencePage
     {
         super.propertyChange(event);
 
-        if (event.getProperty().equals(FieldEditor.VALUE) && event.getSource().equals(backupModeEditor))
+        if (event.getProperty().equals(FieldEditor.VALUE) && event.getSource().equals(backupMode))
         {
-            updateBackupFolderEditors(BACKUP_MODE.byValue((String) event.getNewValue()));
+            enableDirectoryPickers(BackupMode.valueOf((String) event.getNewValue()));
         }
     }
 
-    private void updateBackupFolderEditors(BACKUP_MODE mode)
+    private void enableDirectoryPickers(BackupMode mode)
     {
         if (mode == null)
-        {
-            mode = BACKUP_MODE.getDefault();
-        }
+            mode = BackupMode.getDefault();
 
-        switch (mode)
-        {
-            case NEXT_TO_FILE:
-                backupFolderAbsoluteEditor.setEnabled(false, getFieldEditorParent());
-                backupFolderRelativeEditor.setEnabled(false, getFieldEditorParent());
-                return;
-            case ABSOLUTE_FOLDER:
-                backupFolderAbsoluteEditor.setEnabled(true, getFieldEditorParent());
-                backupFolderRelativeEditor.setEnabled(false, getFieldEditorParent());
-                return;
-            case RELATIVE_FOLDER:
-                backupFolderAbsoluteEditor.setEnabled(false, getFieldEditorParent());
-                backupFolderRelativeEditor.setEnabled(true, getFieldEditorParent());
-                return;
-            default:
-                throw new RuntimeException("Unsupported backup mode: " + mode.name()); //$NON-NLS-1$
-        }
+        backupFolderAbsolute.setEnabled(mode == BackupMode.ABSOLUTE_FOLDER, getFieldEditorParent());
+        backupFolderRelative.setEnabled(mode == BackupMode.RELATIVE_FOLDER, getFieldEditorParent());
     }
 }

@@ -504,6 +504,9 @@ public class Messages extends NLS
     public static String LabelAssetChart;
     public static String LabelAvailableAttributes;
     public static String LabelAverageHoldingPeriod;
+    public static String LabelBackupModeAbsoluteDirectory;
+    public static String LabelBackupModeNextToFile;
+    public static String LabelBackupModeRelativeDirectory;
     public static String LabelBeforeTaxAndFees;
     public static String LabelBenchmarks;
     public static String LabelBiggerSize;
@@ -1003,6 +1006,8 @@ public class Messages extends NLS
     public static String PrefCheckOnStartup;
     public static String PrefCreateBackupBeforeSaving;
     public static String PrefAutoSaveFrequency;
+    public static String PrefBackupDirectory;
+    public static String PrefBackupLocation;
     public static String PrefDescriptionAlphaVantage;
     public static String PrefDescriptionDivvyDiary;
     public static String PrefDescriptionEODHistoricalData;
@@ -1013,6 +1018,7 @@ public class Messages extends NLS
     public static String PrefDivvyDiaryAPIKey;
     public static String PrefEODHistoricalDataAPIKey;
     public static String PrefFinnhubAPIKey;
+    public static String PrefLabelAutoSaveFrequency;
     public static String PrefLabelEnableExperimentalFeatures;
     public static String PrefLabelKeepYourAPIKeyPrivate;
     public static String PrefLabelNote;
@@ -1031,6 +1037,7 @@ public class Messages extends NLS
     public static String PrefPortfolioReportAPIKey;
     public static String PrefPortfolioReportAPIURL;
     public static String PrefQuandlAPIKey;
+    public static String PrefRelativeBackupDirectoryName;
     public static String PrefStoreSettingsNextToFile;
     public static String PrefUpdateQuotesAfterFileOpen;
     public static String PrefUpdateSite;

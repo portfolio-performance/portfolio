@@ -55,6 +55,7 @@ import name.abuchen.portfolio.ui.jobs.CreateInvestmentPlanTxJob;
 import name.abuchen.portfolio.ui.jobs.SyncOnlineSecuritiesJob;
 import name.abuchen.portfolio.ui.jobs.UpdateDividendsJob;
 import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
+import name.abuchen.portfolio.ui.preferences.BackupMode;
 import name.abuchen.portfolio.ui.wizards.client.ClientMigrationDialog;
 
 public class ClientInput
@@ -63,47 +64,6 @@ public class ClientInput
     private static final String REPORTING_PERIODS_KEY = "AbstractHistoricView"; //$NON-NLS-1$
 
     public static final String DEFAULT_RELATIVE_BACKUP_FOLDER = "backups"; //$NON-NLS-1$
-
-    public enum BACKUP_MODE
-    {
-        // TODO Translations
-        NEXT_TO_FILE("Next to file"), ABSOLUTE_FOLDER("Absolute directory"), RELATIVE_FOLDER("Relative directory");
-
-        private String title;
-
-        private BACKUP_MODE(String title)
-        {
-            this.title = title;
-        }
-
-        public String getTitle()
-        {
-            return title;
-        }
-
-        public String getPreferenceValue()
-        {
-            return getClass().getSimpleName() + "_" + name(); //$NON-NLS-1$
-        }
-
-        public static BACKUP_MODE byValue(String preferenceValue)
-        {
-            for (BACKUP_MODE mode : values())
-            {
-                if (mode.getPreferenceValue().equalsIgnoreCase(preferenceValue))
-                {
-                    return mode;
-                }
-            }
-
-            return null;
-        }
-
-        public static BACKUP_MODE getDefault()
-        {
-            return NEXT_TO_FILE;
-        }
-    }
 
     private String label;
     private File clientFile;
@@ -386,66 +346,57 @@ public class ClientInput
 
     private Path getBackupFilePath(Path sourceFile, String backupName)
     {
-        BACKUP_MODE backupMode = BACKUP_MODE.byValue(preferences.get(UIConstants.Preferences.BACKUP_MODE, null));
-        BACKUP_MODE resultingBackupMode = backupMode == null ? BACKUP_MODE.getDefault() : backupMode;
+        BackupMode mode = BackupMode.getDefault();
 
-        if (resultingBackupMode == BACKUP_MODE.ABSOLUTE_FOLDER)
+        try
         {
-            String folderAbsolute = preferences.get(UIConstants.Preferences.BACKUP_FOLDER_ABSOLUTE, null);
-
-            if (folderAbsolute != null && !folderAbsolute.isBlank())
-            {
-                Path absolutePath = Path.of(folderAbsolute);
-                File absoluteFile = absolutePath.toFile();
-
-                if (absoluteFile.exists() && absoluteFile.isDirectory())
-                {
-                    return Path.of(folderAbsolute).resolve(backupName);
-                }
-            }
-
-            // Folder is not specified or directory does not exist -> fall back
-            resultingBackupMode = BACKUP_MODE.NEXT_TO_FILE;
+            mode = BackupMode.valueOf(preferences.get(UIConstants.Preferences.BACKUP_MODE, mode.name()));
+        }
+        catch (IllegalArgumentException ignore)
+        {
+            // use the standard backup mode instead
         }
 
-        if (resultingBackupMode == BACKUP_MODE.RELATIVE_FOLDER)
+        if (mode == BackupMode.ABSOLUTE_FOLDER)
         {
-            String folderRelative = preferences.get(UIConstants.Preferences.BACKUP_FOLDER_RELATIVE, null);
+            String folder = preferences.get(UIConstants.Preferences.BACKUP_FOLDER_ABSOLUTE, null);
 
-            if (folderRelative == null || folderRelative.isBlank())
+            if (folder != null && !folder.isBlank())
             {
-                folderRelative = DEFAULT_RELATIVE_BACKUP_FOLDER;
+                Path path = Path.of(folder);
+                if (Files.exists(path) && Files.isDirectory(path))
+                    return path.resolve(backupName);
             }
+        }
+        else if (mode == BackupMode.RELATIVE_FOLDER)
+        {
+            String folderName = preferences.get(UIConstants.Preferences.BACKUP_FOLDER_RELATIVE,
+                            DEFAULT_RELATIVE_BACKUP_FOLDER);
 
-            Path relativePath = sourceFile.resolveSibling(folderRelative).normalize();
-            File relativeFile = relativePath.toFile();
-            boolean directoryExists;
+            Path folder = sourceFile.resolveSibling(folderName).normalize();
 
-            if (relativeFile.exists() && relativeFile.isDirectory())
+            if (Files.exists(folder))
             {
-                directoryExists = true;
+                if (Files.isDirectory(folder))
+                    return folder.resolve(backupName);
             }
             else
             {
-                directoryExists = relativeFile.mkdirs();
-            }
+                try
+                {
+                    return Files.createDirectories(folder).resolve(backupName);
+                }
+                catch (IOException | SecurityException e)
+                {
+                    PortfolioPlugin.log(e);
 
-            if (directoryExists)
-            {
-                return relativePath.resolve(backupName);
+                    // in case of error, we continue and write backup as a
+                    // sibling (default mode)
+                }
             }
-
-            // Folder is not specified or directory does not exist and could not
-            // be created -> fall back
-            resultingBackupMode = BACKUP_MODE.NEXT_TO_FILE;
         }
 
-        if (resultingBackupMode == BACKUP_MODE.NEXT_TO_FILE)
-        {
-            return sourceFile.resolveSibling(backupName);
-        }
-
-        throw new RuntimeException("Unsupported backup mode: " + resultingBackupMode.name()); //$NON-NLS-1$
+        return sourceFile.resolveSibling(backupName);
     }
 
     private String constructFilename(File file, String suffix)
