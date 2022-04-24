@@ -62,7 +62,46 @@ public class ClientInput
     // compatibility: the value used to be stored in the AbstractHistoricView
     private static final String REPORTING_PERIODS_KEY = "AbstractHistoricView"; //$NON-NLS-1$
 
-    public static final String DEFAULT_BACKUP_FOLDER = "backups"; //$NON-NLS-1$
+    public static final String DEFAULT_RELATIVE_BACKUP_FOLDER = "backups"; //$NON-NLS-1$
+
+    public enum BACKUP_MODE
+    {
+        // TODO Translations
+        NEXT_TO_FILE("Next to file"), ABSOLUTE_FOLDER("Absolute directory"), RELATIVE_FOLDER("Relative directory");
+
+        private String title;
+
+        private BACKUP_MODE(String title)
+        {
+            this.title = title;
+        }
+
+        public String getTitle()
+        {
+            return title;
+        }
+
+        public String getPreferenceValue()
+        {
+            return getClass().getSimpleName() + "_" + name(); //$NON-NLS-1$
+        }
+
+        public static BACKUP_MODE byValue(String preferenceValue)
+        {
+            for (BACKUP_MODE mode : values())
+            {
+                if (mode.getPreferenceValue().equalsIgnoreCase(preferenceValue))
+                { return mode; }
+            }
+
+            return null;
+        }
+
+        public static BACKUP_MODE getDefault()
+        {
+            return NEXT_TO_FILE;
+        }
+    }
 
     private String label;
     private File clientFile;
@@ -345,45 +384,60 @@ public class ClientInput
 
     private Path getBackupFilePath(Path sourceFile, String backupName)
     {
-        File oldBackupFile = sourceFile.resolveSibling(backupName).toFile();
+        BACKUP_MODE backupMode = BACKUP_MODE.byValue(preferences.get(UIConstants.Preferences.BACKUP_MODE, null));
+        BACKUP_MODE resultingBackupMode = backupMode == null ? BACKUP_MODE.getDefault() : backupMode;
 
-        if (oldBackupFile.exists() && oldBackupFile.isFile())
+        if (resultingBackupMode == BACKUP_MODE.ABSOLUTE_FOLDER)
         {
-            // Use the old variant (backup in same folder than original file)
-            return oldBackupFile.toPath();
-        }
+            String folderAbsolute = preferences.get(UIConstants.Preferences.BACKUP_FOLDER_ABSOLUTE, null);
 
-        // Absolute path set in preferences
-        String folderAbsolute = preferences.get(UIConstants.Preferences.BACKUP_FOLDER_ABSOLUTE, null);
-
-        if (null != folderAbsolute && !folderAbsolute.trim().equals("")) //$NON-NLS-1$
-        {
-            Path absolutePath = Path.of(folderAbsolute);
-            File absoluteFile = absolutePath.toFile();
-
-            if (absoluteFile.exists() && absoluteFile.isDirectory())
+            if (folderAbsolute != null && !folderAbsolute.isBlank())
             {
-                return Path.of(folderAbsolute).resolve(backupName);
+                Path absolutePath = Path.of(folderAbsolute);
+                File absoluteFile = absolutePath.toFile();
+
+                if (absoluteFile.exists() && absoluteFile.isDirectory())
+                { return Path.of(folderAbsolute).resolve(backupName); }
             }
+
+            // Folder is not specified or directory does not exist -> fall back
+            resultingBackupMode = BACKUP_MODE.NEXT_TO_FILE;
         }
 
-        // Relative path set in preferences
-        String relativePath = preferences.get(UIConstants.Preferences.BACKUP_FOLDER_RELATIVE, null);
-
-        if (null == relativePath || relativePath.trim().equals("")) //$NON-NLS-1$
+        if (resultingBackupMode == BACKUP_MODE.RELATIVE_FOLDER)
         {
-            // If not set in preferences use default folder
-            relativePath = DEFAULT_BACKUP_FOLDER;
+            String folderRelative = preferences.get(UIConstants.Preferences.BACKUP_FOLDER_RELATIVE, null);
+
+            if (folderRelative == null || folderRelative.isBlank())
+            {
+                folderRelative = DEFAULT_RELATIVE_BACKUP_FOLDER;
+            }
+
+            Path relativePath = sourceFile.resolveSibling(folderRelative).normalize();
+            File relativeFile = relativePath.toFile();
+            boolean directoryExists;
+
+            if (relativeFile.exists() && relativeFile.isDirectory())
+            {
+                directoryExists = true;
+            }
+            else
+            {
+                directoryExists = relativeFile.mkdirs();
+            }
+
+            if (directoryExists)
+            { return relativePath.resolve(backupName); }
+
+            // Folder is not specified or directory does not exist and could not
+            // be created -> fall back
+            resultingBackupMode = BACKUP_MODE.NEXT_TO_FILE;
         }
 
-        Path backupSubdir = sourceFile.resolveSibling(relativePath);
-        File directory = backupSubdir.toFile();
-        if (!directory.exists() || !directory.isDirectory())
-        {
-            directory.mkdir();
-        }
+        if (resultingBackupMode == BACKUP_MODE.NEXT_TO_FILE)
+        { return sourceFile.resolveSibling(backupName); }
 
-        return backupSubdir.resolve(backupName);
+        throw new RuntimeException("Unsupported backup mode: " + resultingBackupMode.name()); //$NON-NLS-1$
     }
 
     private String constructFilename(File file, String suffix)
