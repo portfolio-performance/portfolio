@@ -4,7 +4,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.util.regex.Matcher;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.money.Values;
@@ -12,10 +12,13 @@ import name.abuchen.portfolio.ui.Messages;
 
 public class StringToCurrencyConverter implements IValidatingConverter<String, Long>
 {
-    private final Pattern pattern;
     private final NumberFormat full;
 
     private final int factor;
+    private boolean acceptNegativeValues;
+
+    private String decimalPattern;
+    private String groupingPattern;
 
     public StringToCurrencyConverter(Values<?> type)
     {
@@ -25,18 +28,14 @@ public class StringToCurrencyConverter implements IValidatingConverter<String, L
     public StringToCurrencyConverter(Values<?> type, boolean acceptNegativeValues)
     {
         this.factor = type.factor();
-
-        StringBuilder patternString = new StringBuilder();
-        patternString.append("^("); //$NON-NLS-1$
-
-        if (acceptNegativeValues)
-            patternString.append("-?"); //$NON-NLS-1$
+        this.acceptNegativeValues = acceptNegativeValues;
 
         DecimalFormatSymbols symbols = new DecimalFormatSymbols();
-        patternString.append("[\\d").append(symbols.getGroupingSeparator()).append("]*)(") //$NON-NLS-1$ //$NON-NLS-2$
-                        .append(symbols.getDecimalSeparator()).append("(\\d*))?$"); //$NON-NLS-1$
+        char groupingSeperator = symbols.getGroupingSeparator();
+        char decimalSeperator = symbols.getDecimalSeparator();
 
-        pattern = Pattern.compile(patternString.toString());
+        this.decimalPattern = Pattern.quote(Character.toString(decimalSeperator));
+        this.groupingPattern = String.format("[ ,\\.%s]", Pattern.quote(Character.toString(groupingSeperator))); //$NON-NLS-1$
         full = new DecimalFormat("#,###"); //$NON-NLS-1$
     }
 
@@ -74,30 +73,82 @@ public class StringToCurrencyConverter implements IValidatingConverter<String, L
 
     private long convertToLong(String part) throws ParseException
     {
-        Matcher m = pattern.matcher(String.valueOf(part));
-        if (!m.matches())
+        // Split the value in the decimal parts
+        String[] parts = part.split(this.decimalPattern);
+        if (parts.length == 0)
+            throw new IllegalArgumentException(String.format(Messages.CellEditor_NotANumber, part));
+        if (parts.length > 2)
             throw new IllegalArgumentException(String.format(Messages.CellEditor_NotANumber, part));
 
-        String strBefore = m.group(1);
-        Number before = strBefore.trim().length() > 0 ? full.parse(strBefore) : Long.valueOf(0);
-        boolean isNegative = strBefore.contains("-"); //$NON-NLS-1$
+        String numberPart = parts[0];
 
-        String strAfter = m.group(3);
+        // remove the grouping separators
+        numberPart = numberPart.replaceAll(this.groupingPattern, ""); //$NON-NLS-1$
+
+        Number before = numberPart.trim().length() > 0 ? full.parse(numberPart) : Long.valueOf(0);
+        boolean isNegative = numberPart.contains("-"); //$NON-NLS-1$
+
+        if (!this.acceptNegativeValues && isNegative)
+            throw new IllegalArgumentException(String.format(Messages.CellEditor_NotANumber, part));
+
+        // Check if the number contains decimal parts
         long after = 0;
-        if (strAfter != null && strAfter.length() > 0)
+        if (parts.length == 2)
         {
-            int length = (int) Math.log10(factor);
+            String decimalPart = parts[1];
 
-            if (strAfter.length() > length)
-                strAfter = strAfter.substring(0, length);
+            // remove the grouping separators
+            decimalPart = decimalPart.replaceAll(this.groupingPattern, ""); //$NON-NLS-1$
 
-            after = Long.parseLong(strAfter);
+            after = convertStringToDecimals(decimalPart);
+        }
+        else
+        {
+            // the input has no decimal part
+            if ("BE".equals(Locale.getDefault().getCountry())) //$NON-NLS-1$
+            {
+                // In some culture (eg. fr_be and nl_be) it is normal do use the
+                // dot character as the decimal separator in the input field
+                // Other applications like Excel convert this automatically to
+                // the correct value
+                // So we check if there is only one grouping separator in the
+                // string
 
-            for (int ii = strAfter.length(); ii < length; ii++)
-                after *= 10;
+                String[] groups = parts[0].split(Pattern.quote(".")); //$NON-NLS-1$
+                if (groups.length == 2)
+                {
+                    // We found only one grouping separator so we assume this is
+                    // the decimal separator
+
+                    // remove the grouping separators
+                    numberPart = groups[0].replaceAll(this.groupingPattern, ""); //$NON-NLS-1$
+
+                    before = numberPart.trim().length() > 0 ? full.parse(numberPart) : Long.valueOf(0);
+
+                    // remove the grouping separators
+                    String decimalPart = groups[1].replaceAll(this.groupingPattern, ""); //$NON-NLS-1$
+
+                    after = convertStringToDecimals(decimalPart);
+                }
+            }
         }
 
         // For negative numbers: subtract decimal digits instead of adding them
         return before.longValue() * factor + (isNegative ? -after : after);
+    }
+
+    private long convertStringToDecimals(String strDecimals)
+    {
+        int length = (int) Math.log10(factor);
+
+        if (strDecimals.length() > length)
+            strDecimals = strDecimals.substring(0, length);
+
+        long after = Long.parseLong(strDecimals);
+
+        for (int ii = strDecimals.length(); ii < length; ii++)
+            after *= 10;
+
+        return after;
     }
 }
