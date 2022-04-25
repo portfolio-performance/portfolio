@@ -13,9 +13,12 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
@@ -248,5 +251,43 @@ class PDFExtractorUtils
         }
 
         throw new DateTimeParseException(Messages.MsgErrorNotAValidDate, value, 0);
+    }
+    
+    public static Consumer<AccountTransaction> fixGrossValue()
+    {
+        return t -> {
+            // if transaction currency equals to the currency of
+            // the security, then there is no forex information required
+            if (t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
+                return;
+
+            // check if the reported gross value fits to the
+            // expected gross value
+            Optional<Unit> actualGross = t.getUnit(Unit.Type.GROSS_VALUE);
+
+            if (actualGross.isPresent())
+            {
+                Unit grossUnit = actualGross.get();
+                Money expectedGross = t.getGrossValue();
+
+                if (!expectedGross.equals(grossUnit.getAmount()))
+                {
+                    long caculatedGrossValue = BigDecimal.valueOf(expectedGross.getAmount()) //
+                                    .divide(grossUnit.getExchangeRate(), Values.MC) //
+                                    .setScale(0, RoundingMode.HALF_EVEN).longValue();
+
+                    t.removeUnit(grossUnit);
+                    t.addUnit(new Unit(Unit.Type.GROSS_VALUE, expectedGross, Money
+                                    .of(grossUnit.getForex().getCurrencyCode(), caculatedGrossValue),
+                                    grossUnit.getExchangeRate()));
+                }
+            }
+            else
+            {
+                // create gross value once we know forex
+                // currency (if currency is stored with base and
+                // term currency in context)
+            }
+        };
     }
 }

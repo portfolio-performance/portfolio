@@ -109,7 +109,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 })
-
+                
                 .wrap(BuySellEntryItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
@@ -192,6 +192,8 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                         t.addUnit(grossValue);
                     }
                 })
+                
+                .conclude(PDFExtractorUtils.fixGrossValue())
 
                 .wrap(TransactionItem::new);
 

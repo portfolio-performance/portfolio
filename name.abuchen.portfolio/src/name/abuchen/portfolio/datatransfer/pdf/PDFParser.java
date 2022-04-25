@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
@@ -194,6 +195,7 @@ import name.abuchen.portfolio.model.TypedMap;
         private Supplier<T> supplier;
         private Function<T, Item> wrapper;
         private List<Section<T>> sections = new ArrayList<>();
+        private List<Consumer<T>> concludes = new ArrayList<>();
 
         public Transaction<T> subject(Supplier<T> supplier)
         {
@@ -250,6 +252,12 @@ import name.abuchen.portfolio.model.TypedMap;
             return this;
         }
 
+        public Transaction<T> conclude(Consumer<T> conclude)
+        {
+            this.concludes.add(conclude);
+            return this;
+        }
+
         public Transaction<T> wrap(Function<T, Item> wrapper)
         {
             this.wrapper = wrapper;
@@ -265,6 +273,9 @@ import name.abuchen.portfolio.model.TypedMap;
             for (Section<T> section : sections)
                 section.parse(filename, lines, lineNoStart, lineNoEnd, txContext, target);
 
+            for (Consumer<T> conclude : concludes)
+                conclude.accept(target);
+            
             if (wrapper == null)
                 throw new IllegalArgumentException("Wrapping function missing"); //$NON-NLS-1$
 
