@@ -87,12 +87,12 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                 // 60 47.29 EUR 2'837.40
                 .section("name", "isin", "currency")
                 .match("^(?<name>.*) ISIN: (?<isin>[\\w]{12}) .*$")
-                .match("^[\\.,'\\d\\s]+ [\\.,'\\d\\s]+ (?<currency>[\\w]{3}) [\\.,'\\d\\s]+.*$")
+                .match("^[\\.,'\\d\\s]+ [\\.,'\\d\\s]+ (?<currency>[\\w]{3}) [\\.,'\\d\\s]+(.*)?$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // 60 47.29 EUR 2'837.40
                 .section("shares")
-                .match("^(?<shares>[\\.,'\\d\\s]+) [\\.,'\\d\\s]+ [\\w]{3} [\\.,'\\d\\s]+.*$")
+                .match("^(?<shares>[\\.,'\\d\\s]+) [\\.,'\\d\\s]+ [\\w]{3} [\\.,'\\d\\s]+(.*)?$")
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 // Gemäss Ihrem Kaufauftrag vom 25.09.2018 haben wir folgende Transaktionen vorgenommen:
@@ -104,7 +104,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                 // Zu Ihren Lasten EUR 2'850.24
                 // Zu Ihren Gunsten CHF 7'467.50
                 .section("currency", "amount")
-                .match("^Zu Ihren (Lasten|Gunsten) (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d\\s]+).*$")
+                .match("^Zu Ihren (Lasten|Gunsten) (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d\\s]+)(.*)?$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(v.get("currency"));
@@ -113,8 +113,8 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                 // Total EUR 2'737.40
                 // Wechselkurs 1.08279
                 .section("fxCurrency", "fxAmount", "exchangeRate").optional()
-                .match("^Total (?<fxCurrency>[\\w]{3}) (?<fxAmount>[\\.,'\\d\\s]+).*$")
-                .match("^Wechselkurs (?<exchangeRate>[\\.,'\\d\\s]+).*$")
+                .match("^Total (?<fxCurrency>[\\w]{3}) (?<fxAmount>[\\.,'\\d\\s]+)(.*)?$")
+                .match("^Wechselkurs (?<exchangeRate>[\\.,'\\d\\s]+)(.*)?$")
                 .assign((t, v) -> {
                     // read the forex currency, exchange rate and gross
                     // amount in forex currency
@@ -140,7 +140,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
 
                 // Wechselkurs 1.08279
                 .section("exchangeRate").optional()
-                .match("^Wechselkurs (?<exchangeRate>[\\.,'\\d\\s]+).*$")
+                .match("^Wechselkurs (?<exchangeRate>[\\.,'\\d\\s]+)(.*)?$")
                 .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                     type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
@@ -177,18 +177,18 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                 // Pictet - Japan Index - I JPY 1.441 JPY 23 608.200 
                 // ISIN LU0188802960 
                 .section("name", "currency", "isin")
-                .match("^(?<name>.*) [\\w]{3} [\\.,'\\d\\s]+ (?<currency>[\\w]{3}) [\\.,'\\d\\s]+.*$")
-                .match("^ISIN (?<isin>[\\w]{12}).*$")
+                .match("^(?<name>.*) [\\w]{3} [\\.,'\\d\\s]+ (?<currency>[\\w]{3}) [\\.,'\\d\\s]+(.*)?$")
+                .match("^ISIN (?<isin>[\\w]{12})(.*)?$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // Pictet - Japan Index - I JPY 1.441 JPY 23 608.200 
                 .section("shares")
-                .match("^(?<name>.*) [\\w]{3} (?<shares>[\\.,'\\d\\s]+) [\\w]{3} [\\.,'\\d\\s]+.*$")
+                .match("^(?<name>.*) [\\w]{3} (?<shares>[\\.,'\\d\\s]+) [\\w]{3} [\\.,'\\d\\s]+(.*)?$")
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 // E-Vermögensverwaltung Datum: 20.12.2021 
                 .section("date")
-                .match("^E\\-Verm.gensverwaltung Datum: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
+                .match("^E\\-Verm.gensverwaltung Datum: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})(.*)?$")
                 .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                 // Der Totalbetrag von CHF 280.91 wurde Ihrem Konto CH11 0100 0000 1111 1111 1 mit Valuta 21.12.2021 belastet. 
@@ -202,8 +202,8 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                 // Total JPY 34 070.00
                 // Total in Kontowährung zum Kurs von JPY/CHF 0.0082450 CHF 280.91 
                 .section("fxCurrency", "fxAmount", "exchangeRate").optional()
-                .match("^Total (?<fxCurrency>[\\w]{3}) (?<fxAmount>[\\.,'\\d\\s]+).*$")
-                .match("^Total in Kontow.hrung zum Kurs von [\\w]{3}\\/[\\w]{3} (?<exchangeRate>[\\.,'\\d\\s]+) [\\w]{3} [\\.,'\\d\\s]+.*$")
+                .match("^Total (?<fxCurrency>[\\w]{3}) (?<fxAmount>[\\.,'\\d\\s]+)(.*)?$")
+                .match("^Total in Kontow.hrung zum Kurs von [\\w]{3}\\/[\\w]{3} (?<exchangeRate>[\\.,'\\d\\s]+) [\\w]{3} [\\.,'\\d\\s]+(.*)?$")
                 .assign((t, v) -> {
                     // read the forex currency, exchange rate and gross
                     // amount in forex currency
@@ -229,7 +229,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
 
                 // Total in Kontowährung zum Kurs von JPY/CHF 0.0082450 CHF 280.91 
                 .section("currency", "exchangeRate").optional()
-                .match("^Total in Kontow.hrung zum Kurs von [\\w]{3}\\/(?<currency>[\\w]{3}) (?<exchangeRate>[\\.,'\\d\\s]+) [\\w]{3} [\\.,'\\d\\s]+.*$")
+                .match("^Total in Kontow.hrung zum Kurs von [\\w]{3}\\/(?<currency>[\\w]{3}) (?<exchangeRate>[\\.,'\\d\\s]+) [\\w]{3} [\\.,'\\d\\s]+(.*)?$")
                 .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                     if (t.getPortfolioTransaction().getCurrencyCode().contentEquals(asCurrencyCode(v.get("currency"))))
@@ -269,31 +269,31 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                 // UNILEVER DUTCH CERT NKN: 2560588 60
                 // Dividende 0.4104 EUR
                 .section("isin", "name", "currency").optional()
-                .match("^ISIN: (?<isin>[\\w]{12}).*$")
-                .match("^(?<name>.*) NKN: [\\d]+ [\\.,'\\d\\s]+.*$")
-                .match("^(Dividende|Kapitalgewinn) [\\.,'\\d\\s]+ (?<currency>[\\w]{3}).*$")
+                .match("^ISIN: (?<isin>[\\w]{12})(.*)?$")
+                .match("^(?<name>.*) NKN: [\\d]+ [\\.,'\\d\\s]+(.*)?$")
+                .match("^(Dividende|Kapitalgewinn) [\\.,'\\d\\s]+ (?<currency>[\\w]{3})(.*)?$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // UBS ETF CH - SLI CHF A ISIN: CH0032912732NKN: 3291273 34
                 // Dividende 1.66 CHF
                 .section("name", "isin", "currency").optional()
-                .match("^(?<name>.*) ISIN: (?<isin>[\\w]{12})([\\s]+)?NKN: [\\d]+ [\\.,'\\d\\s]+.*$")
-                .match("^(Dividende|Kapitalgewinn) [\\.,'\\d\\s]+ (?<currency>[\\w]{3}).*$")
+                .match("^(?<name>.*) ISIN: (?<isin>[\\w]{12})([\\s]+)?NKN: [\\d]+ [\\.,'\\d\\s]+(.*)?$")
+                .match("^(Dividende|Kapitalgewinn) [\\.,'\\d\\s]+ (?<currency>[\\w]{3})(.*)?$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // Anzahl 60
                 .section("shares")
-                .match("^Anzahl (?<shares>[\\.,'\\d\\s]+).*$")
+                .match("^Anzahl (?<shares>[\\.,'\\d\\s]+)(.*)?$")
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 // Valutadatum 05.06.2019
                 .section("date")
-                .match("^Valutadatum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
+                .match("^Valutadatum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})(.*)?$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                 // Total EUR 20.93
                 .section("currency", "amount")
-                .match("^Total (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d\\s]+).*$")
+                .match("^Total (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d\\s]+)(.*)?$")
                 .assign((t, v) -> {
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
@@ -301,7 +301,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
 
                 // Wechselkurs EUR / CHF : 1.11652
                 .section("exchangeRate").optional()
-                .match("^Wechselkurs [\\w]{3} \\/ [\\w]{3} : (?<exchangeRate>[\\.,'\\d\\s]+).*$")
+                .match("^Wechselkurs [\\w]{3} \\/ [\\w]{3} : (?<exchangeRate>[\\.,'\\d\\s]+)(.*)?$")
                 .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                     type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
@@ -343,8 +343,8 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                 // Betrag belastet CHF 90.00
                 .section("date", "currency", "amount")
                 .find("Jahresgeb.hr .*")
-                .match("^Valutadatum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
-                .match("^Betrag belastet (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d\\s]+).*$")
+                .match("^Valutadatum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})(.*)?$")
+                .match("^Betrag belastet (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d\\s]+)(.*)?$")
                 .assign((t, v) -> {
                     t.setDateTime(asDate(v.get("date")));
                     t.setAmount(asAmount(v.get("amount")));
@@ -366,7 +366,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
     private void addInterestTransaction()
     {
         final DocumentType type = new DocumentType("Zinsabschluss", (context, lines) -> {
-            Pattern pCurrency = Pattern.compile("^(Kontonummer|IBAN) .* (?<currency>[A-Z]{3}).*$");
+            Pattern pCurrency = Pattern.compile("^(Kontonummer|IBAN) .* (?<currency>[A-Z]{3})(.*)?$");
             Pattern pYear = Pattern.compile("^[\\d]{2}\\.[\\d]{2}\\.(?<year>[\\d]{4}) Kontostand nach Zinsabschluss .*$");
             // read the current context here
             for (String line : lines)
@@ -393,7 +393,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{6}) (\\-|\\–) ([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{6}) [\\.,'\\d\\s]+(%| %) [\\.,'\\d\\s]+.*$");
+        Block firstRelevantLine = new Block("^([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{6}) (\\-|\\–) ([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{6}) [\\.,'\\d\\s]+(%| %) [\\.,'\\d\\s]+(.*)?$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -405,7 +405,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                                                     + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})) "
                                                     + "[\\.,'\\d\\s]+(%| %) "
                                                     + "(?<amount>[\\.,'\\d\\s]+)"
-                                                    + ".*$")
+                                                    + "(.*)?$")
                                     .assign((t, v) -> {
                                         Map<String, String> context = type.getCurrentContext();
 
@@ -418,7 +418,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                                     .attributes("date1", "date2", "amount")
                                     .match("^(?<date1>[\\d]{6}) (\\-|\\–) "
                                                     + "(?<date2>[\\d]{6}) [\\.,'\\d\\s]+(%| %) "
-                                                    + "(?<amount>[\\.,'\\d\\s]+).*$")
+                                                    + "(?<amount>[\\.,'\\d\\s]+)(.*)?$")
                                     .assign((t, v) -> {
                                         Map<String, String> context = type.getCurrentContext();
 
@@ -456,7 +456,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^(?i:Geb.hrenausweis) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-|\\–) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*$");
+        Block firstRelevantLine = new Block("^(?i:Geb.hrenausweis) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-|\\–) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}(.*)?$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -468,7 +468,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                 .match("^(?i:Geb.hrenausweis) "
                                 + "(?<note>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
                                 + "(\\-|\\–) "
-                                + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})).*$")
+                                + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}))(.*)?$")
                 .match("^Zusammenstellung der belasteten Kontof.hrungsgeb.hr: "
                                 + "(?<currency>[\\w]{3}) (?<amount>[\\.,'\\d\\s]+)(.*)$")
                 .assign((t, v) -> {
@@ -488,7 +488,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
     private void addTaxesTransaction()
     {
         final DocumentType type = new DocumentType("Zinsabschluss", (context, lines) -> {
-            Pattern pCurrency = Pattern.compile("^(Kontonummer|IBAN) .* (?<currency>[A-Z]{3}).*$");
+            Pattern pCurrency = Pattern.compile("^(Kontonummer|IBAN) .* (?<currency>[A-Z]{3})(.*)?$");
             Pattern pNote = Pattern.compile("^Zinsabschluss (?<note>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-|\\–) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$");
             // read the current context here
             for (String line : lines)
@@ -515,7 +515,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^(?i:Verrechnungssteuer) [\\.,'\\d\\s]+(%| %) [\\.,'\\d\\s]+.*$");
+        Block firstRelevantLine = new Block("^(?i:Verrechnungssteuer) [\\.,'\\d\\s]+(%| %) [\\.,'\\d\\s]+(.*)?$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -523,7 +523,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                 // Verrechnungssteuer 35.00% 40.83
                 // 31.12.2019 Kontostand nach Zinsabschluss 10 075.83
                 .section("amount", "date")
-                .match("^(?i:Verrechnungssteuer) [\\.,'\\d\\s]+(%| %) (?<amount>[\\.,'\\d\\s]+).*$")
+                .match("^(?i:Verrechnungssteuer) [\\.,'\\d\\s]+(%| %) (?<amount>[\\.,'\\d\\s]+)(.*)?$")
                 .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Kontostand nach Zinsabschluss .*$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
@@ -544,7 +544,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
     private void addAccountStatementTransaction()
     {
         DocumentType type = new DocumentType("Kontoauszug", (context, lines) -> {
-            Pattern pCurrency = Pattern.compile("^(Kontonummer|IBAN){1} (.*) (?<currency>[A-Z]{3}).*$");
+            Pattern pCurrency = Pattern.compile("^(Kontonummer|IBAN){1} (.*) (?<currency>[A-Z]{3})(.*)?$");
             Pattern pYear = Pattern.compile("^Kontoauszug [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-|\\–) [\\d]{2}\\.[\\d]{2}\\.(?<year>[\\d]{4}) .*$");
             for (String line : lines)
             {
@@ -565,7 +565,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
         });
         this.addDocumentTyp(type);
 
-        Block removalBlock = new Block("^.* [\\.,'\\d\\s]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{2}.*$");
+        Block removalBlock = new Block("^.* [\\.,'\\d\\s]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{2}(.*)?$");
         type.addBlock(removalBlock);
         removalBlock.set(new Transaction<AccountTransaction>()
 
@@ -580,7 +580,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                                 + "(?<note>.BERTRAG) "
                                 + "(?<amount>[\\.,'\\d\\s]+) "
                                 + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2})"
-                                + ".*$")
+                                + "(.*)?$")
                 .match("^AUF KONTO .*$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
@@ -615,7 +615,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                                 + ") "
                                 + "(?<amount>[\\.,'\\d\\s]+) "
                                 + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2})"
-                                + ".*$")
+                                + "(.*)?$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
 
@@ -719,7 +719,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                     return null;
                 }));
 
-        Block depositBlock = new Block("^.* [\\.,'\\d\\s]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{2}.*$");
+        Block depositBlock = new Block("^.* [\\.,'\\d\\s]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{2}(.*)?$");
         type.addBlock(depositBlock);
         depositBlock.set(new Transaction<AccountTransaction>()
 
@@ -734,7 +734,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                                 + "(?<note>.BERTRAG) "
                                 + "(?<amount>[\\.,'\\d\\s]+) "
                                 + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2})"
-                                + ".*$")
+                                + "(.*)?$")
                 .match("^AUS KONTO .*$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
@@ -764,7 +764,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                                 + ") "
                                 + "(?<amount>[\\.,'\\d\\s]+) "
                                 + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2})"
-                                + ".*$")
+                                + "(.*)?$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
 
@@ -815,7 +815,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                     return null;
                 }));
 
-        Block feesBlock = new Block("^.* [\\.,'\\d\\s]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{2}.*$");
+        Block feesBlock = new Block("^.* [\\.,'\\d\\s]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{2}(.*)?$");
         type.addBlock(feesBlock);
         feesBlock.set(new Transaction<AccountTransaction>()
 
@@ -837,7 +837,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                                 + ")([\\s]+)? "
                                 + "(?<amount>[\\.,'\\d\\s]+) "
                                 + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2})"
-                                + ".*$")
+                                + "(.*)?$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
 
@@ -886,7 +886,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                     return null;
                 }));
 
-        Block interestBlock = new Block("^.* [\\.,'\\d\\s]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{2}.*$");
+        Block interestBlock = new Block("^.* [\\.,'\\d\\s]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{2}(.*)?$");
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
 
@@ -902,7 +902,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                                 + ")([\\s]+)? "
                                 + "(?<amount>[\\.,'\\d\\s]+) "
                                 + "[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}"
-                                + ".*$")
+                                + "(.*)?$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
 
@@ -920,7 +920,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                                 + "([\\s]+)? "
                                 + "(?<amount>[\\.,'\\d\\s]+) "
                                 + "[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}"
-                                + ".*$")
+                                + "(.*)?$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
 
@@ -952,17 +952,17 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
         transaction
                 // Abgabe (Eidg. Stempelsteuer) EUR 4.26
                 .section("currency", "tax").optional()
-                .match("^Abgabe \\(Eidg\\. Stempelsteuer\\) (?<currency>[\\w]{3}) (?<tax>[\\.,'\\d\\s]+).*$")
+                .match("^Abgabe \\(Eidg\\. Stempelsteuer\\) (?<currency>[\\w]{3}) (?<tax>[\\.,'\\d\\s]+)(.*)?$")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
                 // Quellensteuer 15.00% (NL) EUR 3.69
                 .section("currency", "withHoldingTax").optional()
-                .match("^Quellensteuer [\\.,'\\d\\s]+(%| %) \\(.*\\) (?<currency>[\\w]{3}) (?<withHoldingTax>[\\.,'\\d\\s]+).*$")
+                .match("^Quellensteuer [\\.,'\\d\\s]+(%| %) \\(.*\\) (?<currency>[\\w]{3}) (?<withHoldingTax>[\\.,'\\d\\s]+)(.*)?$")
                 .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                 // Verrechnungssteuer 35% (CH) CHF 19.75
                 .section("currency", "tax").optional()
-                .match("^Verrechnungssteuer [\\.,'\\d\\s]+(%| %) \\(.*\\) (?<currency>[\\w]{3}) (?<tax>[\\.,'\\d\\s]+).*$")
+                .match("^Verrechnungssteuer [\\.,'\\d\\s]+(%| %) \\(.*\\) (?<currency>[\\w]{3}) (?<tax>[\\.,'\\d\\s]+)(.*)?$")
                 .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
@@ -971,22 +971,22 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
         transaction
                 // Kommission EUR 8.58
                 .section("currency", "fee").optional()
-                .match("^Kommission (?<currency>[\\w]{3}) (?<fee>[\\.,'\\d\\s]+).*$")
+                .match("^Kommission (?<currency>[\\w]{3}) (?<fee>[\\.,'\\d\\s]+)(.*)?$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Börsengebühren CHF 1.50
                 .section("currency", "fee").optional()
-                .match("^B.rsengeb.hren (?<currency>[\\w]{3}) (?<fee>[\\.,'\\d\\s]+).*$")
+                .match("^B.rsengeb.hren (?<currency>[\\w]{3}) (?<fee>[\\.,'\\d\\s]+)(.*)?$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Börsengebühren und sonstige Spesen EUR 0.60
                 .section("currency", "fee").optional()
-                .match("^B.rsengeb.hren und sonstige Spesen (?<currency>[\\w]{3}) (?<fee>[\\.,'\\d\\s]+).*$")
+                .match("^B.rsengeb.hren und sonstige Spesen (?<currency>[\\w]{3}) (?<fee>[\\.,'\\d\\s]+)(.*)?$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Umsatzabgabe JPY 51.00 
                 .section("currency", "fee").optional()
-                .match("^Umsatzabgabe (?<currency>[\\w]{3}) (?<fee>[\\.,'\\d\\s]+).*$")
+                .match("^Umsatzabgabe (?<currency>[\\w]{3}) (?<fee>[\\.,'\\d\\s]+)(.*)?$")
                 .assign((t, v) -> processFeeEntries(t, v, type));
     }
 

@@ -114,7 +114,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                 section -> section
                                         .attributes("date", "time")
                                         .match("^Handelstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$")
-                                        .match("^Handelszeit (?<time>[\\d]{2}:[\\d]{2}).*$")
+                                        .match("^Handelszeit (?<time>[\\d]{2}:[\\d]{2})(.*)?$")
                                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
                                 ,
                                 // Schlusstag/-Zeit 14.10.2021 09:00:12 Auftraggeber XXXXXX XXXXXXX
@@ -333,7 +333,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
 
     private void addTaxReturnBlock(DocumentType type)
     {
-        Block block = new Block("^(Kauf.*|Verkauf.*|Wertpapier Abrechnung Ausgabe Investmentfonds)$");
+        Block block = new Block("^(Kauf(.*)?|Verkauf(.*)?|Wertpapier Abrechnung Ausgabe Investmentfonds)$");
         type.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
 

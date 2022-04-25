@@ -49,7 +49,7 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^(F.lligkeit\\/Verfall|Wertpapier Abrechnung|WERTPAPIERABRECHNUNG).*$", "^Ausmachender Betrag.*$");
+        Block firstRelevantLine = new Block("^(F.lligkeit\\/Verfall|Wertpapier Abrechnung|WERTPAPIERABRECHNUNG)(.*)?$", "^Ausmachender Betrag.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -110,7 +110,7 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
                 // Stück 53 ISHSII-DEV.MKTS PROP.YLD U.ETF IE00B1FZS350 (A0LEW8)
                 // Anzahl/Nominale 9,00
                 .section("shares")
-                .match("^(St.ck|Anzahl)(\\/Nominale(:)?)? (?<shares>[\\.,\\d]+).*$")
+                .match("^(St.ck|Anzahl)(\\/Nominale(:)?)? (?<shares>[\\.,\\d]+)(.*)?$")
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 // Orderausführung Datum/Zeit: 31 Jul 2020 21:00:15
@@ -526,7 +526,7 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
                                                     + "|Kontof.hrungs\\-u\\.Depotgeb.hren"
                                                     + "|Depot\\- u\\. Verwaltgeb.hr"
                                                     + "|Kontof.hrungsgeb.hr))"
-                                                    + ".*$")
+                                                    + "(.*)?$")
                                     .assign((t, v) -> {
                                         t.setDateTime(asDate(v.get("date")));
 

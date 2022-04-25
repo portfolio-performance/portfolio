@@ -53,7 +53,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^(Gesch.ftsart:|Wertpapier Abrechnung) (Kauf|Verkauf).*$");
+        Block firstRelevantLine = new Block("^(Gesch.ftsart:|Wertpapier Abrechnung) (Kauf|Verkauf)(.*)?$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -101,7 +101,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                 // Abgang: 4.500 Stk  
                                 section -> section
                                         .attributes("shares")
-                                        .match("^(Zugang|Abgang): (?<shares>[\\.,\\d]+).*$")
+                                        .match("^(Zugang|Abgang): (?<shares>[\\.,\\d]+)(.*)?$")
                                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
                                 ,
                                 // Stück 100 QUALCOMM INC.                      US7475251036 (883121)
@@ -114,14 +114,14 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                 // Handelszeit: 03.05.2021 13:45:18
                 // Schlusstag/-Zeit 09.11.2021 09:58:45 Auftraggeber Muster 
                 .section("date", "time")
-                .match("^(Handelszeit:|Schlusstag\\/\\-Zeit) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$")
+                .match("^(Handelszeit:|Schlusstag\\/\\-Zeit) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2})(.*)?$")
                 .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
 
                 // Zu Lasten IBAN AT99 9999 9000 0011 1110 -107,26 EUR  
                 // Zu Gunsten IBAN AT27 3284 2000 0011 1111 36.115,76 EUR
                 // Ausmachender Betrag 14.399,34- EUR
                 .section("amount", "currency")
-                .match("^(Zu (Lasten|Gunsten) .*|Ausmachender Betrag) (\\-)?(?<amount>[\\.,\\d]+)(\\-)? (?<currency>[\\w]{3}).*$")
+                .match("^(Zu (Lasten|Gunsten) .*|Ausmachender Betrag) (\\-)?(?<amount>[\\.,\\d]+)(\\-)? (?<currency>[\\w]{3})(.*)?$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -130,8 +130,8 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                 // -1.537,32 CAD 
                 // Devisenkurs: 1,406 (20.01.2022) -1.093,40 EUR 
                 .section("fxCurrency", "fxAmount", "exchangeRate").optional()
-                .match("^(\\-)?(?<fxAmount>[\\.,\\d]+) (?<fxCurrency>[\\w]{3}).*$")
-                .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}\\) (\\-)?[\\.,\\d]+ [\\w]{3}.*$")
+                .match("^(\\-)?(?<fxAmount>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})(.*)?$")
+                .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}\\) (\\-)?[\\.,\\d]+ [\\w]{3}(.*)?$")
                 .assign((t, v) -> {
                     // read the forex currency, exchange rate and gross
                     // amount in forex currency
@@ -157,7 +157,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
 
                 // Devisenkurs: 1,406 (20.01.2022) -1.093,40 EUR 
                 .section("exchangeRate").optional()
-                .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}\\) (\\-)?[\\.,\\d]+ [\\w]{3}.*$")
+                .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}\\) (\\-)?[\\.,\\d]+ [\\w]{3}(.*)?$")
                 .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                     type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
@@ -221,7 +221,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                 // 90 Stk  
                                 section -> section
                                         .attributes("shares")
-                                        .match("^(?<shares>[\\.,\\d]+) Stk.*$")
+                                        .match("^(?<shares>[\\.,\\d]+) Stk(.*)?$")
                                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
                                 ,
                                 // Stück 100 QUALCOMM INC. US7475251036 (883121)
@@ -248,7 +248,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                 // Zu Gunsten IBAN AT99 9999 9000 0011 1111 110,02 EUR 
                 // Ausmachender Betrag 50,88+ EUR
                 .section("amount", "currency")
-                .match("^(Zu Gunsten .*|Ausmachender Betrag) (?<amount>[\\.,\\d]+)(\\+)? (?<currency>[\\w]{3}).*$")
+                .match("^(Zu Gunsten .*|Ausmachender Betrag) (?<amount>[\\.,\\d]+)(\\+)? (?<currency>[\\w]{3})(.*)?$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(v.get("currency"));
@@ -558,17 +558,17 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
         transaction
                 // Quellensteuer: -47,48 EUR 
                 .section("tax", "currency").optional()
-                .match("^Quellensteuer: \\-(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
+                .match("^Quellensteuer: \\-(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
                 // Auslands-KESt: -22,50 EUR 
                 .section("tax", "currency").optional()
-                .match("^Auslands\\-KESt: \\-(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
+                .match("^Auslands\\-KESt: \\-(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
                 // Kursgewinn-KESt: -696,65 EUR 
                 .section("tax", "currency").optional()
-                .match("^Kursgewinn\\-KESt: \\-(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
+                .match("^Kursgewinn\\-KESt: \\-(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
                 // Einbehaltene Quellensteuer 15 % auf 68,00 USD 8,98- EUR
@@ -587,37 +587,37 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
         transaction
                 // Serviceentgelt: -0,32 EUR 
                 .section("fee", "currency").optional()
-                .match("^Serviceentgelt: \\-(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
+                .match("^Serviceentgelt: \\-(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Provision 0,2000 % vom Kurswert 28,74- EUR
                 .section("fee", "currency").optional()
-                .match("^Provision [\\.,\\d]+ % .* (?<fee>[\\.,\\d]+)\\- (?<currency>[\\w]{3}).*$")
+                .match("^Provision [\\.,\\d]+ % .* (?<fee>[\\.,\\d]+)\\- (?<currency>[\\w]{3})(.*)?$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Eigene Spesen 2,50- EUR
                 .section("fee", "currency").optional()
-                .match("^Eigene Spesen (?<fee>[\\.,\\d]+)\\- (?<currency>[\\w]{3}).*$")
+                .match("^Eigene Spesen (?<fee>[\\.,\\d]+)\\- (?<currency>[\\w]{3})(.*)?$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Übertragungs-/Liefergebühr 0,10- EUR
                 .section("fee", "currency").optional()
-                .match("^.bertragungs\\-\\/Liefergeb.hr (?<fee>[\\.,\\d]+)\\- (?<currency>[\\w]{3}).*$")
+                .match("^.bertragungs\\-\\/Liefergeb.hr (?<fee>[\\.,\\d]+)\\- (?<currency>[\\w]{3})(.*)?$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Handelsortentgelt inkl. Fremdspesen: -4,00 EUR 
                 .section("fee", "currency").optional()
-                .match("^Handelsortentgelt inkl\\. Fremdspesen: \\-(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
+                .match("^Handelsortentgelt inkl\\. Fremdspesen: \\-(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Gebühren: -25,00 EUR 
                 .section("fee", "currency").optional()
-                .match("^Geb.hren: \\-(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
+                .match("^Geb.hren: \\-(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Orderleitgebühr: -3,00 EUR 
                 .section("fee", "currency").optional()
-                .match("^Orderleitgeb.hr: \\-(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
+                .match("^Orderleitgeb.hr: \\-(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
                 .assign((t, v) -> processFeeEntries(t, v, type));
     }
 }

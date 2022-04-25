@@ -46,7 +46,7 @@ public class SantanderConsumerBankAGPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^Wertpapier Abrechnung Kauf.*$");
+        Block firstRelevantLine = new Block("^Wertpapier Abrechnung Kauf(.*)?$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
