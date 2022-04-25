@@ -173,7 +173,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                     checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
                 
-                .conclude(PDFExtractorUtils.fixGrossValue())
+                .conclude(PDFExtractorUtils.fixGrossValueA())
 
                 .wrap(TransactionItem::new);
 

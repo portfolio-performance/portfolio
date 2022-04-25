@@ -241,6 +241,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                     if (t.getPortfolioTransaction().getCurrencyCode().equals(stripBlanksAndUnderscores(v.get("currency"))))
                         t.setMonetaryAmount(t.getPortfolioTransaction().getMonetaryAmount().subtract(taxRefund));
                 })
+                
+                .conclude(PDFExtractorUtils.fixGrossValueBuySell())
 
                 .wrap(BuySellEntryItem::new);
 
@@ -380,6 +382,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                 .match("^zahlbar ab [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} ([\\s]+)?(?<note>(?i).*dividende)(.*)?$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
+                .conclude(PDFExtractorUtils.fixGrossValueA())
+                
                 .wrap(TransactionItem::new);
 
         addFeesSectionsTransaction(pdfTransaction, type);

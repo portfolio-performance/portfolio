@@ -20,6 +20,7 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
+import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
@@ -289,7 +290,7 @@ class PDFExtractorUtils
         throw new DateTimeParseException(Messages.MsgErrorNotAValidDate, value, 0);
     }
     
-    public static Consumer<AccountTransaction> fixGrossValue()
+    public static Consumer<Transaction> fixGrossValue()
     {
         return t -> {
             // if transaction currency equals to the currency of
@@ -325,5 +326,16 @@ class PDFExtractorUtils
                 // term currency in context)
             }
         };
+    }
+
+    
+    public static Consumer<AccountTransaction> fixGrossValueA()
+    {
+        return t -> fixGrossValue().accept(t);
+    }
+    
+    public static Consumer<BuySellEntry> fixGrossValueBuySell()
+    {
+        return t -> fixGrossValue().accept(t.getPortfolioTransaction());
     }
 }
