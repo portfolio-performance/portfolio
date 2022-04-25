@@ -4,6 +4,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,6 +17,8 @@ public class StringToCurrencyConverter implements IValidatingConverter<String, L
     private final NumberFormat full;
 
     private final int factor;
+    private char groupingSeperator;
+    private char decimalSeperator;
 
     public StringToCurrencyConverter(Values<?> type)
     {
@@ -33,8 +36,11 @@ public class StringToCurrencyConverter implements IValidatingConverter<String, L
             patternString.append("-?"); //$NON-NLS-1$
 
         DecimalFormatSymbols symbols = new DecimalFormatSymbols();
-        patternString.append("[\\d").append(symbols.getGroupingSeparator()).append("]*)(") //$NON-NLS-1$ //$NON-NLS-2$
-                        .append(symbols.getDecimalSeparator()).append("(\\d*))?$"); //$NON-NLS-1$
+        this.groupingSeperator = symbols.getGroupingSeparator();
+        this.decimalSeperator = symbols.getDecimalSeparator();
+        
+        patternString.append("[\\d").append(this.groupingSeperator).append("]*)(") //$NON-NLS-1$ //$NON-NLS-2$
+                        .append(this.decimalSeperator).append("(\\d*))?$"); //$NON-NLS-1$
 
         pattern = Pattern.compile(patternString.toString());
         full = new DecimalFormat("#,###"); //$NON-NLS-1$
@@ -84,20 +90,44 @@ public class StringToCurrencyConverter implements IValidatingConverter<String, L
 
         String strAfter = m.group(3);
         long after = 0;
-        if (strAfter != null && strAfter.length() > 0)
-        {
-            int length = (int) Math.log10(factor);
-
-            if (strAfter.length() > length)
-                strAfter = strAfter.substring(0, length);
-
-            after = Long.parseLong(strAfter);
-
-            for (int ii = strAfter.length(); ii < length; ii++)
-                after *= 10;
+        if(strAfter == null) {
+            // the input has no decimal part
+            if ("BE".equals(Locale.getDefault().getCountry())) { //$NON-NLS-1$
+            
+                // In some culture (eg. fr_be and nl_be) it is normal do use the group separator as the decimal separator in the input field
+                // Other applications like Excel convert this automatically to the correct value
+                // So we check if there is only one grouping separator in the string
+                
+                String[] groups = strBefore.split(Pattern.quote(Character.toString(this.groupingSeperator)));
+                if(groups.length == 2) {
+                    // We found only one grouping separator so we assume this is the decimal separator
+                    before = full.parse(groups[0]);
+                    after = convertStringToDecimals(groups[1]);
+                }
+            }
+            
         }
-
+        else if (strAfter.length() > 0)
+        {
+            after = convertStringToDecimals(strAfter);
+        }
+        
+        
         // For negative numbers: subtract decimal digits instead of adding them
         return before.longValue() * factor + (isNegative ? -after : after);
+    }
+    
+    private long convertStringToDecimals(String strDecimals) {
+        int length = (int) Math.log10(factor);
+
+        if (strDecimals.length() > length)
+            strDecimals = strDecimals.substring(0, length);
+
+        long after = Long.parseLong(strDecimals);
+
+        for (int ii = strDecimals.length(); ii < length; ii++)
+            after *= 10;
+        
+        return after;
     }
 }
