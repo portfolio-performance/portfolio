@@ -381,11 +381,13 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 })
 
-                // Zahlungsbetrag in Fremdwährung 0,32 USD
+                // ISIN Anteilsbestand Betrag je Anteil Betrag
+                // DE000A0D8Q49 1,000000 0,394130 USD 0,39 USD
                 // Zahlungsbetrag nach Währungskonvertierung mit Devisenkurs 1,104600 0,29 EUR
-                .section("fxGross", "fxCurrency", "exchangeRate", "gross", "currency").optional()
-                .match("^Zahlungsbetrag in Fremdw.hrung (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
-                .match("^Zahlungsbetrag nach W.hrungskonvertierung .* (?<exchangeRate>[\\.,\\d]+) (?<gross>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .section("fxGross", "fxCurrency", "exchangeRate", "currency").optional()
+                .find("ISIN Anteilsbestand Betrag je Anteil Betrag")
+                .match("^.* [\\.,\\d]+ [\\.,\\d]+ [\\w]{3} (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
+                .match("^Zahlungsbetrag nach W.hrungskonvertierung .* (?<exchangeRate>[\\.,\\d]+) [\\.,\\d]+ (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                     if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
@@ -394,8 +396,12 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                     }
                     type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
 
-                    Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
+                    BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+
                     Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                    Money gross = Money.of(asCurrencyCode(v.get("currency")),
+                                    BigDecimal.valueOf(fxGross.getAmount()).multiply(inverseRate)
+                                                    .setScale(0, RoundingMode.HALF_UP).longValue());
 
                     checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
@@ -405,7 +411,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                 .match("^[\\.,\\d]+ (?<localCurrency>[\\w]{3}) [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3} (?<exchangeRate>[\\.,\\d]+) [\\.,\\d]+ [\\w]{3}$")
                 .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                    if (!t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("localCurrency"))))
+                    if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("localCurrency"))))
                     {
                         exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
                     }

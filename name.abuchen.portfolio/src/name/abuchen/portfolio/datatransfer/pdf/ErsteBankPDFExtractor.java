@@ -204,7 +204,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                 .match("^(Valutatag: .* )?Devisenkurs: (?<exchangeRate>[\\.',\\d\\s]+)$")
                 .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                    if (t.getPortfolioTransaction().getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
+                    if (!t.getPortfolioTransaction().getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
                     {
                         exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
                     }

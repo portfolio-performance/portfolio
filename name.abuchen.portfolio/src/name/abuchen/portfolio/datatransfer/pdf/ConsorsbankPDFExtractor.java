@@ -119,7 +119,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 // Preis pro Anteil 25,640000 EUR  
                 .section("name", "wkn", "isin", "currency").optional()
                 .match("^(?<name>.*) (?<wkn>.*) (?<isin>[\\w]{12})([\\s]+)?$")
-                .match("^(Kurs|Preis pro Anteil) [\\.,\\d]+ (?<currency>[\\w]{3})(.*)?$")
+                .match("^(Kurs|Preis pro Anteil) [\\.,\\d]+ (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // ST 15,75243 WKN: 625952
@@ -171,7 +171,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 // ST 1.000,00000 Letzte Fälligkeit 01.09.2021
                 //       ST                        50,00000               WKN: 851144
                 .section("shares")
-                .match("^([\\s]+)?ST ([\\s]+)?(?<shares>[\\.,\\d]+)(.*)?$")
+                .match("^([\\s]+)?ST ([\\s]+)?(?<shares>[\\.,\\d]+).*$")
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 // KAUF AM 15.01.2015  UM 08:13:35 MUENCHEN NR. 12345670.001
@@ -324,7 +324,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
         Block block = new Block("^(DIVIDENDENGUTSCHRIFT"
                         + "|Dividendengutschrift"
                         + "|ERTRAGSGUTSCHRIFT"
-                        + "|Ertragsgutschrift)(.*)?$");
+                        + "|Ertragsgutschrift).*$");
         type.addBlock(block);
         Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>()
             .subject(() -> {
@@ -338,10 +338,10 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 //            COMS.-MSCI WORL.T.U.ETF I                                    
                 //            Namens-Aktien o.N.                                           
                 .section("wkn", "name", "nameContinued", "currency").optional()
-                .match("^ST ([\\s]+)?[\\.,\\d]+ ([\\s]+)?WKN: ([\\s]+)?(?<wkn>.*)(.*)?$")
+                .match("^ST ([\\s]+)?[\\.,\\d]+ ([\\s]+)?WKN: ([\\s]+)?(?<wkn>.*).*$")
                 .match("^(?<name>.*)$")
                 .match("^(?<nameContinued>.*)$")
-                .match("^(ZINS-\\/DIVIDENDENSATZ|ERTRAGSAUSSCHUETTUNG P\\. ST\\.) .* ([\\s]+)?(?<currency>[\\w]{3}) SCHLUSSTAG PER [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}(.*)?$")
+                .match("^(ZINS-\\/DIVIDENDENSATZ|ERTRAGSAUSSCHUETTUNG P\\. ST\\.) .* ([\\s]+)?(?<currency>[\\w]{3}) SCHLUSSTAG PER [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // OMNICOM GROUP INC. Registered Shares DL -,15 871706 US6819191064
@@ -384,7 +384,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                 // WERT 08.05.2015                               EUR                326,90 
                                 section -> section
                                         .attributes("currency", "amount")
-                                        .match("^(?i)WERT (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<amount>[\\.,\\d]+)(.*)?$")
+                                        .match("^(?i)WERT (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<amount>[\\.,\\d]+).*$")
                                         .assign((t, v) -> {
                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                             t.setAmount(asAmount(v.get("amount")));
@@ -403,7 +403,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                 // UMGER.ZUM DEV.-KURS                 1,093000  EUR                285,60 
                                 section -> section
                                         .attributes("currency", "amount")
-                                        .match("^(?i)UMGER\\.ZUM DEV\\.\\-KURS ([\\s]+)?[\\.,\\d]+ ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<amount>[\\.,\\d]+)(.*)?$")
+                                        .match("^(?i)UMGER\\.ZUM DEV\\.\\-KURS ([\\s]+)?[\\.,\\d]+ ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<amount>[\\.,\\d]+).*$")
                                         .assign((t, v) -> {
                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                             t.setAmount(asAmount(v.get("amount")));
@@ -414,9 +414,9 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 // UMGER.ZUM DEV.-KURS                 1,104300  EUR                138,55 
                 // KAPST-PFLICHTIGER KAPITALERTRAG               EUR                64,08  
                 .section("fxCurrency", "fxGross", "exchangeRate", "currency", "gross").optional()
-                .match("^BRUTTO ([\\s]+)?(?<fxCurrency>[\\w]{3}) ([\\s]+)?(?<fxGross>[\\.,\\d]+)(.*)?$")
-                .match("^UMGER\\.ZUM DEV\\.\\-KURS ([\\s]+)?(?<exchangeRate>[\\.,\\d]+) ([\\s]+)?[\\w]{3} ([\\s]+)?[\\.,\\d]+(.*)?$")
-                .match("^KAPST\\-PFLICHTIGER KAPITALERTRAG ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<gross>[\\.,\\d]+)(.*)?$")
+                .match("^BRUTTO ([\\s]+)?(?<fxCurrency>[\\w]{3}) ([\\s]+)?(?<fxGross>[\\.,\\d]+).*$")
+                .match("^UMGER\\.ZUM DEV\\.\\-KURS ([\\s]+)?(?<exchangeRate>[\\.,\\d]+) ([\\s]+)?[\\w]{3} ([\\s]+)?[\\.,\\d]+.*$")
+                .match("^KAPST\\-PFLICHTIGER KAPITALERTRAG ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<gross>[\\.,\\d]+).*$")
                 .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                     if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
@@ -653,7 +653,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 // Kapitalertragsteuer (Account)
                 // KAPST                                 25,00 % EUR                111,00 
                 .section("tax", "currency").optional()
-                .match("^KAPST ([\\s]+)?[\\.,\\d]+ % ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<tax>[\\.,\\d]+)(.*)?$")
+                .match("^KAPST ([\\s]+)?[\\.,\\d]+ % ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<tax>[\\.,\\d]+).*$")
                 .assign((t, v) -> {
                     if (!Boolean.parseBoolean(type.getCurrentContext().get(IS_JOINT_ACCOUNT)))
                         processTaxEntries(t, v, type);
@@ -740,7 +740,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 // Solitaritätszuschlag (Account)
                 // SOLZ                                   5,50 % EUR                  6,10 
                 .section("tax", "currency").optional()
-                .match("^SOLZ ([\\s]+)?[\\.,\\d]+ % ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<tax>[\\.,\\d]+)(.*)?$")
+                .match("^SOLZ ([\\s]+)?[\\.,\\d]+ % ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<tax>[\\.,\\d]+).*$")
                 .assign((t, v) -> {
                     if (!Boolean.parseBoolean(type.getCurrentContext().get(IS_JOINT_ACCOUNT)))
                         processTaxEntries(t, v, type);
@@ -827,7 +827,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 // Kirchensteuer (Account)
                 // KIST                                   5,50 % EUR                  6,10 
                 .section("tax", "currency").optional()
-                .match("^KIST ([\\s]+)?[\\.,\\d]+ % ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<tax>[\\.,\\d]+)(.*)?$")
+                .match("^KIST ([\\s]+)?[\\.,\\d]+ % ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<tax>[\\.,\\d]+).*$")
                 .assign((t, v) -> {
                     if (!Boolean.parseBoolean(type.getCurrentContext().get(IS_JOINT_ACCOUNT)))
                         processTaxEntries(t, v, type);
@@ -1004,7 +1004,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
                 // FREMDE SPESEN                                 USD                  1,91 
                 .section("fee", "currency").optional()
-                .match("^(abzgl\\. )?FREMDE SPESEN [\\s]+(?<currency>[\\w]{3}) [\\s]+(?<fee>[\\.,\\d]+)(.*)?$")
+                .match("^(abzgl\\. )?FREMDE SPESEN [\\s]+(?<currency>[\\w]{3}) [\\s]+(?<fee>[\\.,\\d]+).*$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // abzgl. Fremde Spesen 0,07 USD

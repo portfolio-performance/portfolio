@@ -273,7 +273,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                 // 0.91759 CHF 31.44
                 .section("fxCurrency", "fxGross", "exchangeRate", "currency", "gross").optional()
                 .match("^(Betrag|Amount) (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,'\\d]+)$")
-                .match("^(Umrechnungskurs|Exchange rate) [\\w]{3}\\/[\\w]{3}(.*)?$")
+                .match("^(Umrechnungskurs|Exchange rate) [\\w]{3}\\/[\\w]{3}.*$")
                 .match("^(?<exchangeRate>[\\.,'\\d]+) (?<currency>[\\w]{3}) (?<gross>[\\.,'\\d]+)$")
                 .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));

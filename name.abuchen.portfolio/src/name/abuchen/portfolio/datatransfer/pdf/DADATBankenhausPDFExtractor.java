@@ -161,7 +161,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                 // Handelsspesen            -5,06 USD  DevKurs        1,170500/30.7.2020
                 .section("fxGross", "fxCurrency", "exchangeRate").optional()
                 .match("^.* KURSWERT ([\\s]+)?(\\-)?(?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
-                .match("^(.*)?DevKurs ([\\s]+)?(?<exchangeRate>[\\.,\\d]+)\\/.*$")
+                .match("^.*DevKurs ([\\s]+)?(?<exchangeRate>[\\.,\\d]+)\\/.*$")
                 .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                     if (t.getPortfolioTransaction().getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
@@ -311,7 +311,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                 .match("^(?<date>[\\d]{1,2}\\.[\\d]{1,2}) Ertrag ([\\s]+)?Depot ([\\s]+)?[\\d]+\\/(?<year>[\\d]{4})[\\d]+\\-[\\d]+ [\\d]{1,2}\\.[\\d]{1,2} (?<amount>[\\.,\\d]+)(\\-)?$")
                 .match("^ISIN (?<isin>[\\w]{12}) (?<name>.*) ([\\s]+)?(?<shares>[\\.,\\d]+) STK$")
                 .match("^.* ZINSERTRAG ([\\s]+)?(\\-)?(?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
-                .match("^(.*)?DevKurs ([\\s]+)?(?<exchangeRate>[\\.,\\d]+)\\/.*$")
+                .match("^.*DevKurs ([\\s]+)?(?<exchangeRate>[\\.,\\d]+)\\/.*$")
                 .assign((t, v) -> {
                     t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
                     t.setShares(asShares(v.get("shares")));
@@ -377,8 +377,8 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                 .section("date", "year", "gross", "isin", "name", "shares", "fxCurrency", "exchangeRate")
                 .match("^(?<date>[\\d]{1,2}\\.[\\d]{1,2}) (Steuern aussch.ttungsgl. Ertr.ge|Steuerdividende) ([\\s]+)?Depot ([\\s]+)?[\\d]+\\/(?<year>[\\d]{4})[\\d]+\\-[\\d]+ [\\d]{1,2}\\.[\\d]{1,2} (?<gross>[\\.,\\d]+)(\\-)?$")
                 .match("^ISIN (?<isin>[\\w]{12}) (?<name>.*) ([\\s]+)?(?<shares>[\\.,\\d]+) STK$")
-                .match("^(.*)?KEST ([\\s]+)?\\-[\\.,\\d]+ (?<fxCurrency>[\\w]{3})$")
-                .match("^(.*)?DevKurs ([\\s]+)?(?<exchangeRate>[\\.,\\d]+)\\/.*")
+                .match("^.*KEST ([\\s]+)?\\-[\\.,\\d]+ (?<fxCurrency>[\\w]{3})$")
+                .match("^.*DevKurs ([\\s]+)?(?<exchangeRate>[\\.,\\d]+)\\/.*")
                 .assign((t, v) -> {
                     t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
                     t.setShares(asShares(v.get("shares")));
@@ -671,27 +671,27 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
         transaction
                 // QUELLENSTEUER: -1,86 USD
                 .section("withHoldingTax", "currency").optional()
-                .match("^QUELLENSTEUER: ([\\s]+)?\\-(?<withHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .match("^QUELLENSTEUER: ([\\s]+)?\\-(?<withHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                 // QUELLENSTEUER           -15,60 USD  Auslands-KESt           -13,00 USD
                 .section("withHoldingTax", "currency").optional()
-                .match("^QUELLENSTEUER ([\\s]+)?\\-(?<withHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .match("^QUELLENSTEUER ([\\s]+)?\\-(?<withHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                 // Auslands-KESt: -1,54 USD
                 .section("tax", "currency").optional()
-                .match("^Auslands\\-KESt: \\-(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .match("^Auslands\\-KESt: \\-(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
                 // QUELLENSTEUER            -3,77 USD  Auslands-KESt            -3,13 USD
                 .section("tax", "currency").optional()
-                .match("^.* Auslands\\-KESt ([\\s]+)?\\-(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .match("^.* Auslands\\-KESt ([\\s]+)?\\-(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
                 // KEST                   -140,27 USD  Handelsspesen            -5,07 USD
                 .section("tax", "currency").optional()
-                .match("^KEST ([\\s]+)?\\-(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .match("^KEST ([\\s]+)?\\-(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
@@ -700,32 +700,32 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
         transaction
                 // Handelsspesen            -3,66 EUR  DADAT Handelsspesen      -6,36 EUR
                 .section("fee", "currency").optional()
-                .match("^(.*)?  DADAT Handelsspesen ([\\s]+)?\\-(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .match("^.*  DADAT Handelsspesen ([\\s]+)?\\-(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // DADAT Handelsspesen      -1,67 EUR
                 .section("fee", "currency").optional()
-                .match("^DADAT Handelsspesen ([\\s]+)?\\-(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .match("^DADAT Handelsspesen ([\\s]+)?\\-(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // KEST                   -140,27 USD  Handelsspesen            -5,07 USD
                 .section("fee", "currency").optional()
-                .match("^(.*)?  Handelsspesen ([\\s]+)?\\-(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .match("^.*  Handelsspesen ([\\s]+)?\\-(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Handelsspesen            -3,66 EUR  DADAT Handelsspesen      -6,36 EUR
                 .section("fee", "currency").optional()
-                .match("^Handelsspesen ([\\s]+)?\\-(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .match("^Handelsspesen ([\\s]+)?\\-(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Clearing Gebühr          -1,00 EUR
                 .section("fee", "currency").optional()
-                .match("^Clearing Geb.hr ([\\s]+)?\\-(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .match("^Clearing Geb.hr ([\\s]+)?\\-(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // DADAT Handelsspesen      -7,12 EUR  Clearing Gebühr          -1,00 EUR
                 .section("fee", "currency").optional()
-                .match("^.*  Clearing Geb.hr ([\\s]+)?\\-(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .match("^.*  Clearing Geb.hr ([\\s]+)?\\-(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processFeeEntries(t, v, type));
     }
 }

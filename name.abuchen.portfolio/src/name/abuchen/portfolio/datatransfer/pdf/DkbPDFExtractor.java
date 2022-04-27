@@ -142,7 +142,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                 .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)")
                 .match("^(St.ck|[\\w]{3}) [\\.,\\d]+ (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
                 .match("^(?<nameContinued>.*)$")
-                .match("^(Kurswert|R.ckzahlungsbetrag) [\\.,\\d]+([\\+|\\-])? (?<currency>[\\w]{3})(.*)?$")
+                .match("^(Kurswert|R.ckzahlungsbetrag) [\\.,\\d]+([\\+|\\-])? (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> {
                     t.setSecurity(getOrCreateSecurity(v));
 
@@ -212,7 +212,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                 // Limit 1,75 EUR
                 // Rückzahlungskurs 100 % Rückzahlungsdatum 31.07.2014
                 .section("note").optional()
-                .match("^(?<note>(Limit|R.ckzahlungskurs) [\\.,\\d]+ ([\\w]{3}|%))(.*)?$")
+                .match("^(?<note>(Limit|R.ckzahlungskurs) [\\.,\\d]+ ([\\w]{3}|%)).*$")
                 .assign((t, v) -> t.setNote(v.get("note")))
 
                 .wrap(BuySellEntryItem::new);
@@ -308,7 +308,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                 // Devisenkurs EUR / CHF 1,1959
                 // Ausschüttung 51,00 CHF 42,65+ EUR
                 .section("exchangeRate", "fxGross", "fxCurrency", "gross", "currency").optional()
-                .match("^Devisenkurs [\\w]{3} \\/ [\\w]{3} (?<exchangeRate>[\\.,\\d]+)(.*)?$")
+                .match("^Devisenkurs [\\w]{3} \\/ [\\w]{3} (?<exchangeRate>[\\.,\\d]+).*$")
                 .match("^(Aussch.ttung|Dividendengutschrift|Kurswert) (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3}) (?<gross>[\\.,\\d]+)\\+ (?<currency>[\\w]{3})")
                 .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
@@ -798,7 +798,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                 .match("^[\\d]{2}\\.(?<month1>[\\d]{2})\\. (?<day>[\\d]{2})\\.(?<month2>[\\d]{2})\\. "
                                 + "(?<note1>Rechnung) "
                                 + "(?<amount>[\\.,\\d]+)$")
-                .match("^(.*)?(?<note2>(Bargeldeinzahlung|R.ckruf\\/Nachforschung)).*$")
+                .match("^.*(?<note2>(Bargeldeinzahlung|R.ckruf\\/Nachforschung)).*$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
                     // since year is not within the date correction

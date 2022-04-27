@@ -418,7 +418,7 @@ public class EbasePDFExtractorTest
 
         Unit grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
         assertThat(grossValueUnit.getForex(),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.29 * 1.104600))));
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.35 * 1.104600))));
     }
 
     @Test
@@ -550,9 +550,9 @@ public class EbasePDFExtractorTest
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1.79))));
         assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(2.18))));
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(2.10))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize((0.34 + 0.01) * 1.117800))));
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize((0.34 + 0.01) / 1.117800))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
     }
@@ -716,9 +716,9 @@ public class EbasePDFExtractorTest
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(10.25))));
         assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(13.94))));
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(12.91))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize((2.97 + 0.16) * 1.177700))));
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize((2.97 + 0.16) / 1.177700))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
 
@@ -903,9 +903,9 @@ public class EbasePDFExtractorTest
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(6.16))));
         assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(7.94))));
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(7.62))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize((1.53 + 0.08) * 1.103900))));
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize((1.53 + 0.08) / 1.103900))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
 
@@ -3333,9 +3333,9 @@ public class EbasePDFExtractorTest
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of("GBP", Values.Amount.factorize(3.03))));
         assertThat(transaction.getGrossValue(),
-                        is(Money.of("GBP", Values.Amount.factorize(3.73))));
+                        is(Money.of("GBP", Values.Amount.factorize(3.88))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of("GBP", Values.Amount.factorize(0.70))));
+                        is(Money.of("GBP", Values.Amount.factorize(0.85))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of("GBP", Values.Amount.factorize(0.00))));
     }
@@ -3662,9 +3662,9 @@ public class EbasePDFExtractorTest
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of("GBP", Values.Amount.factorize(3.03))));
         assertThat(transaction.getGrossValue(),
-                        is(Money.of("GBP", Values.Amount.factorize(3.73))));
+                        is(Money.of("GBP", Values.Amount.factorize(3.88))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of("GBP", Values.Amount.factorize(0.70))));
+                        is(Money.of("GBP", Values.Amount.factorize(0.85))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of("GBP", Values.Amount.factorize(0.00))));
     }

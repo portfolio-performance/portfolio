@@ -66,7 +66,7 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
                 .section("isin", "name", "name1", "currency")
                 .match("^Titel: (?<isin>[\\w]{12}) (?<name>.*)$")
                 .match("^(?<name1>.*)$")
-                .match("^Kurs: [\\-\\.,\\d]+ (?<currency>[\\w]{3})(.*)?$")
+                .match("^Kurs: [\\-\\.,\\d]+ (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Kurs"))
                         v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
@@ -77,12 +77,12 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
                 // Handelszeit: 11.5.2021
                 // Handelszeit: 30.6.2017 um 09:00:10 Uhr
                 .section("time").optional()
-                .match("^Handelszeit: .* (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2})(.*)?$")
+                .match("^Handelszeit: .* (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$")
                 .assign((t, v) -> type.getCurrentContext().put("time", v.get("time")))
 
                 // Handelszeit: 11.5.2021
                 .section("date")
-                .match("^Handelszeit: (?<date>[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4})(.*)?$")
+                .match("^Handelszeit: (?<date>[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}).*$")
                 .assign((t, v) -> {
                     if (type.getCurrentContext().get("time") != null)
                         t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
@@ -92,12 +92,12 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
 
                 // Zugang: 74 Stk Teilausführung
                 .section("shares")
-                .match("^(Zugang|Abgang): (?<shares>[\\.,\\d]+) Stk(.*)?$")
+                .match("^(Zugang|Abgang): (?<shares>[\\.,\\d]+) Stk.*$")
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 // Zu Lasten IBAN AT44 1925 0654 0668 9002 -1.118,80 EUR 
                 .section("amount", "currency")
-                .match("^(Zu Lasten|Zu Gunsten) .* (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .match("^(Zu Lasten|Zu Gunsten) .* (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -107,8 +107,8 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
                 // -10.360,-- NOK 
                 // Devisenkurs: 9,486 (3.7.2017) -1.092,14 EUR 
                 .section("fxGross", "fxCurrency", "exchangeRate").optional()
-                .match("^Kurswert: (?<fxGross>[\\-\\.,\\d]+) (?<fxCurrency>[\\w]{3})(.*)?$")
-                .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\([\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}\\) [\\-\\.,\\d]+ [\\w]{3}(.*)?$")
+                .match("^Kurswert: (?<fxGross>[\\-\\.,\\d]+) (?<fxCurrency>[\\w]{3}).*$")
+                .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\([\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}\\) [\\-\\.,\\d]+ [\\w]{3}.*$")
                 .assign((t, v) -> {                   
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                     if (t.getPortfolioTransaction().getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
@@ -155,7 +155,7 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
                 .section("isin", "name", "name1", "currency")
                 .match("^Titel: (?<isin>[\\w]{12}) (?<name>.*)$")
                 .match("^(?<name1>.*)$")
-                .match("^(Dividende|Ertrag): (\\-)?[\\.,\\d]+ (?<currency>[\\w]{3})(.*)?$")
+                .match("^(Dividende|Ertrag): (\\-)?[\\.,\\d]+ (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Kurs"))
                         v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
@@ -165,17 +165,17 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
 
                 // 200 Stk
                 .section("shares")
-                .match("^(Abgang: )?(?<shares>[\\.,\\d]+) Stk(.*)?$")
+                .match("^(Abgang: )?(?<shares>[\\.,\\d]+) Stk.*$")
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 // Valuta 6.9.2017
                 .section("date")
-                .match("^Valuta (?<date>[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4})(.*)?$")
+                .match("^Valuta (?<date>[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}).*$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                 // Zu Gunsten IBAN AT44 1925 0654 0668 9002 48,71 EUR 
                 .section("amount", "currency")
-                .match("^Zu Gunsten .* (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .match("^Zu Gunsten .* (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -184,8 +184,8 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
                 // Bruttoertrag: 640,-- NOK 
                 // Devisenkurs: 9,308 (5.9.2017) 49,85 EUR 
                 .section("fxGross", "fxCurrency", "exchangeRate").optional()
-                .match("^Bruttoertrag: (?<fxGross>[\\-\\.,\\d]+) (?<fxCurrency>[\\w]{3})(.*)?$")
-                .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\([\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}\\) [\\-\\.,\\d]+ [\\w]{3}(.*)?$")
+                .match("^Bruttoertrag: (?<fxGross>[\\-\\.,\\d]+) (?<fxCurrency>[\\w]{3}).*$")
+                .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\([\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}\\) [\\-\\.,\\d]+ [\\w]{3}.*$")
                 .assign((t, v) -> {                   
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                     if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
@@ -234,7 +234,7 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
                 .section("isin", "name", "name1", "currency")
                 .match("^Titel: (?<isin>\\S*) (?<name>.*)$")
                 .match("^(?<name1>.*)$")
-                .match("^steuerlicher Anschaffungswert: [\\-\\.,\\d]+ (?<currency>[\\w]{3})(.*)?$")
+                .match("^steuerlicher Anschaffungswert: [\\-\\.,\\d]+ (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Kurs") || !v.get("name1").startsWith("Verwahrart"))
                         v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
@@ -244,17 +244,17 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
 
                 // Zugang: 80 Stk
                 .section("shares")
-                .match("^Zugang: (?<shares>[\\.,\\d]+) Stk(.*)?$")
+                .match("^Zugang: (?<shares>[\\.,\\d]+) Stk.*$")
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 // Kassatag: 29.3.2017
                 .section("date")
-                .match("^Kassatag: (?<date>[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4})(.*)?$")
+                .match("^Kassatag: (?<date>[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}).*$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                 // steuerlicher Anschaffungswert: 3.225,37 EUR
                 .section("amount", "currency")
-                .match("^steuerlicher Anschaffungswert: (?<amount>[\\-\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .match("^steuerlicher Anschaffungswert: (?<amount>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -269,27 +269,27 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
         transaction
                 // Kapitalertragsteuer: -254,10 AUD 
                 .section("tax", "currency").optional()
-                .match("^Kapitalertragsteuer: \\-(?<tax>[\\-\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .match("^Kapitalertragsteuer: \\-(?<tax>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
                 // KESt Ausländische Dividende: -176,01 NOK 
                 .section("tax", "currency").optional()
-                .match("^KESt Ausl.ndische Dividende: \\-(?<tax>[\\-\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .match("^KESt Ausl.ndische Dividende: \\-(?<tax>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
                 // Quellensteuer US-Emittent: -3,05 USD 
                 .section("withHoldingTax", "currency").optional()
-                .match("^Quellensteuer US\\-Emittent: \\-(?<withHoldingTax>[\\-\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .match("^Quellensteuer US\\-Emittent: \\-(?<withHoldingTax>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                 // Quellensteuer: -8,81 EUR 
                 .section("withHoldingTax", "currency").optional()
-                .match("^Quellensteuer: \\-(?<withHoldingTax>[\\-\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .match("^Quellensteuer: \\-(?<withHoldingTax>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                 // Umsatzsteuer: -0,19 EUR 
                 .section("tax", "currency").optional()
-                .match("^Umsatzsteuer: \\-(?<tax>[\\-\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .match("^Umsatzsteuer: \\-(?<tax>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
@@ -299,22 +299,22 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
         transaction
                 // Fremde Spesen: -25,20 EUR 
                 .section("fee", "currency").optional()
-                .match("^Fremde Spesen: \\-(?<fee>[\\-\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .match("^Fremde Spesen: \\-(?<fee>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Eigene Spesen: -6,42 EUR 
                 .section("fee", "currency").optional()
-                .match("^Eigene Spesen: \\-(?<fee>[\\-\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .match("^Eigene Spesen: \\-(?<fee>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Inkassoprovision: -0,95 EUR 
                 .section("fee", "currency").optional()
-                .match("^Inkassoprovision: \\-(?<fee>[\\-\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .match("^Inkassoprovision: \\-(?<fee>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Grundgebühr: -1,46 EUR 
                 .section("fee", "currency").optional()
-                .match("^Grundgeb.hr: \\-(?<fee>[\\-\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .match("^Grundgeb.hr: \\-(?<fee>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processFeeEntries(t, v, type));
     }
 }

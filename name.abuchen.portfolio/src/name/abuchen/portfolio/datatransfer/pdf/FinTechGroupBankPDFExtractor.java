@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
@@ -16,7 +17,6 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
@@ -506,8 +506,8 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                 // Zuflusstag      :    08.10.2021        Devisenkurs        :         1,156200
                                 //                                        Endbetrag          :       -15,24 EUR
                                 section -> section
-                                        .attributes("type", "fxAmount", "fxCurrency", "exchangeRate", "currency")
-                                        .match("^.* (?<type>(Bruttodividende|Bruttoaussch.ttung|Bruttothesaurierung))([\\s]+)?: ([\\s]+)?(?<fxAmount>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
+                                        .attributes("type", "fxGross", "fxCurrency", "exchangeRate", "currency")
+                                        .match("^.* (?<type>(Bruttodividende|Bruttoaussch.ttung|Bruttothesaurierung))([\\s]+)?: ([\\s]+)?(?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
                                         .match("^(.* )?Devisenkurs([\\s]+)?: ([\\s]+)?(?<exchangeRate>[\\.,\\d]+).*$")
                                         .match("^.* Endbetrag([\\s]+)?: ([\\s]+)?\\-[\\.,\\d]+ (?<currency>[\\w]{3})$")
                                         .assign((t, v) -> {
@@ -524,8 +524,6 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                             }
                                             else
                                             {
-                                                Money fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxAmount")));
-
                                                 BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                                                 if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
                                                 {
@@ -533,31 +531,15 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                 }
                                                 type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
 
-                                                // Calculate gross amount in account currency
-                                                Money gross = Money.of(v.get("currency"), 
-                                                                Math.round(fxAmount.getAmount() / exchangeRate.doubleValue()));
+                                                BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+
+                                                Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                                                Money gross = Money.of(asCurrencyCode(v.get("currency")),
+                                                                BigDecimal.valueOf(fxGross.getAmount()).multiply(inverseRate)
+                                                                                .setScale(0, RoundingMode.HALF_UP).longValue());
 
                                                 // Set amount
-                                                t.setAmount(gross.getAmount());
-
-                                                if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
-                                                {
-                                                    BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
-                                                                    RoundingMode.HALF_DOWN);
-
-                                                    // check, if forex currency is transaction
-                                                    // currency or not and swap amount, if necessary
-                                                    Unit grossValue;
-                                                    if (!asCurrencyCode(v.get("fxCurrency")).equals(t.getCurrencyCode()))
-                                                    {
-                                                        grossValue = new Unit(Unit.Type.GROSS_VALUE, gross, fxAmount, inverseRate);
-                                                    }
-                                                    else
-                                                    {
-                                                        grossValue = new Unit(Unit.Type.GROSS_VALUE, fxAmount, gross, inverseRate);
-                                                    }
-                                                    t.addUnit(grossValue);
-                                                }   
+                                                t.setAmount(gross.getAmount()); 
                                             }
                                         })
                                 ,
@@ -584,8 +566,8 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
                 // Extag : 08.08.2017 Bruttodividende : 26,25 USD
                 // Devisenkurs     :    1,180800         *Einbeh. Steuer  :         1,11 EUR
-                .section("fxAmount", "fxCurrency", "exchangeRate").optional()
-                .match("^(.* )?(Bruttoaussch.ttung|Bruttodividende|Bruttothesaurierung)([\\s]+)?: ([\\s]+)?(?<fxAmount>[\\.,\\d]+) (?<fxCurrency>[\\w]{3}).*$")
+                .section("fxGross", "fxCurrency", "exchangeRate").optional()
+                .match("^(.* )?(Bruttoaussch.ttung|Bruttodividende|Bruttothesaurierung)([\\s]+)?: ([\\s]+)?(?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3}).*$")
                 .match("^(.* )?Devisenkurs([\\s]+)?: ([\\s]+)?(?<exchangeRate>[\\.,\\d]+).*$")
                 .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
@@ -595,30 +577,14 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                     }
                     type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
 
-                    // create gross value unit only, 
-                    // if transaction currency is different to security currency
-                    if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
-                    {
-                        // create a Unit only, 
-                        // if security and transaction currency are different
-                        if (!t.getCurrencyCode().equalsIgnoreCase(asCurrencyCode(v.get("fxCurrency"))))
-                        {
-                            // get exchange rate (in Fx/EUR) and
-                            // calculate inverse exchange rate (in EUR/Fx)
-                            BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
-                                            RoundingMode.HALF_DOWN);
+                    BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
 
-                            // get gross amount and calculate equivalent in EUR
-                            Money fxAmountGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxAmount")));
-                            BigDecimal amount = BigDecimal.valueOf(fxAmountGross.getAmount())
-                                                .divide(exchangeRate, 10, RoundingMode.HALF_DOWN)
-                                                .setScale(0, RoundingMode.HALF_DOWN);
+                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                    Money gross = Money.of(asCurrencyCode(t.getCurrencyCode()),
+                                    BigDecimal.valueOf(fxGross.getAmount()).multiply(inverseRate)
+                                                    .setScale(0, RoundingMode.HALF_UP).longValue());
 
-                            Money fxAmount = Money.of(t.getCurrencyCode(), amount.longValue());
-                            t.addUnit(new Unit(Unit.Type.GROSS_VALUE, fxAmount, fxAmountGross,
-                                            inverseRate));
-                        }
-                    }
+                    checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
 
                 //   unter der Transaktion-Nr.: 132465978
@@ -701,31 +667,24 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 // Extag           :    07.10.2021        Bruttothesaurierung:        78,81 USD
                 // Zuflusstag      :    08.10.2021        Devisenkurs        :         1,156200
                 //                                        Endbetrag          :       -15,24 EUR
-                .section("fxCurrency", "exchangeRate", "currency", "amount").optional()
+                .section("fxCurrency", "exchangeRate", "gross", "currency").optional()
                 .match("^.* (Bruttodividende|Bruttoaussch.ttung|Bruttothesaurierung)([\\s]+)?: ([\\s]+)?[\\.,\\d]+ (?<fxCurrency>[\\w]{3})$")
                 .match("^(.* )?Devisenkurs([\\s]+)?: ([\\s]+)?(?<exchangeRate>[\\.,\\d]+).*$")
-                .match("^.* Endbetrag([\\s]+)?: ([\\s]+)?\\-(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^.* Endbetrag([\\s]+)?: ([\\s]+)?\\-(?<gross>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    // read the forex currency, exchange rate, account
-                    // currency and gross amount in account currency
-                    String forex = asCurrencyCode(v.get("fxCurrency"));
-                    if (t.getSecurity().getCurrencyCode().equals(forex))
+                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                    if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
                     {
-                        BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                        BigDecimal reverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
-                                        RoundingMode.HALF_DOWN);
-
-                        // gross given in account currency
-                        long amount = asAmount(v.get("amount"));
-                        long fxAmount = exchangeRate.multiply(BigDecimal.valueOf(amount))
-                                        .setScale(0, RoundingMode.HALF_DOWN).longValue();
-
-                        Unit grossValue = new Unit(Unit.Type.GROSS_VALUE,
-                                        Money.of(asCurrencyCode(v.get("currency")), amount),
-                                        Money.of(forex, fxAmount), reverseRate);
-
-                        t.addUnit(grossValue);
+                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
                     }
+                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
+
+                    Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
+                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")),
+                                    BigDecimal.valueOf(gross.getAmount()).multiply(exchangeRate)
+                                                    .setScale(0, RoundingMode.HALF_UP).longValue());
+
+                    checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
 
                 //   unter der Transaktion-Nr.: 132465978
@@ -741,6 +700,8 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 .match("^.* (?<note1>(Transaktion\\-Nr\\.([\\s]+)?|Transaktionsnummer):)$")
                 .match("^([\\s]+)?(?<note2>[\\d]+)\\.$")
                 .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + trim(v.get("note2"))))
+
+                .conclude(PDFExtractorUtils.fixGrossValueA())
 
                 .wrap(t -> {
                     if (t.getCurrencyCode() != null && t.getAmount() != 0)

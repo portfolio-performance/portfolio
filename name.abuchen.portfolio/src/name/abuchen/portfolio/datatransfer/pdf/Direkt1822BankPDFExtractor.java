@@ -127,6 +127,8 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                     checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
 
+                .conclude(PDFExtractorUtils.fixGrossValueBuySell())
+
                 // Limit 40,99 EUR AN
                 .section("note").optional()
                 .match("^(?<note>Limit [\\.,\\d]+ [\\w]{3})( .*)?$")

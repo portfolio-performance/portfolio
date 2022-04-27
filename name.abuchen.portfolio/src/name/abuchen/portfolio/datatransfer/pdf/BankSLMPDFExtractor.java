@@ -101,7 +101,7 @@ public class BankSLMPDFExtractor extends AbstractPDFExtractor
                 .match("^Change [\\w]{3}/(?<currency>[\\w]{3}) (?<exchangeRate>[\\.',\\d]+) [\\w]{3} (\\-)?[\\.',\\d]+$")
                 .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                    if (t.getPortfolioTransaction().getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
+                    if (!t.getPortfolioTransaction().getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
                     {
                         exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
                     }

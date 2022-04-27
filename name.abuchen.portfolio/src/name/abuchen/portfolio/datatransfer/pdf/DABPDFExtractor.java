@@ -229,7 +229,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("(Dividendengutschrift|Ertr.gnisgutschrift)");
         this.addDocumentTyp(type);
 
-        Block block = new Block("^(Dividendengutschrift|Ertr.gnisgutschrift(?! (aus|VERSANDARTENSCHLUESSEL)))(.*)?$");
+        Block block = new Block("^(Dividendengutschrift|Ertr.gnisgutschrift(?! (aus|VERSANDARTENSCHLUESSEL))).*$");
         type.addBlock(block);
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
         pdfTransaction.subject(() -> {
@@ -322,7 +322,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                                 // Netto zugunsten IBAN DE11 7603 0080 0111 1111 14 437,22 EUR
                                 section -> section
                                         .attributes("amount", "currency")
-                                        .match("^Netto (.*)?zugunsten IBAN .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                                        .match("^Netto .*zugunsten IBAN .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                                         .assign((t, v) -> {
                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                             t.setAmount(asAmount(v.get("amount")));
@@ -783,7 +783,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 // davon anrechenbare Quellensteuer Fondseingangsseite EUR 1,62
                 // davon anrechenbare US-Quellensteuer  15% USD             2,430     
                 .section("creditableWithHoldingTax", "currency").optional()
-                .match("^(.*)?davon anrechenbare (US\\-)?Quellensteuer .* ([\\s]+)?(?<currency>[\\w]{3})([\\s]+)? (?<creditableWithHoldingTax>[\\.,\\d]+)(\\-|[\\s]+)?$")
+                .match("^.*davon anrechenbare (US\\-)?Quellensteuer .* ([\\s]+)?(?<currency>[\\w]{3})([\\s]+)? (?<creditableWithHoldingTax>[\\.,\\d]+)(\\-|[\\s]+)?$")
                 .assign((t, v) -> {
                     if (!"X".equals(type.getCurrentContext().get("negative")))
                         processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type);

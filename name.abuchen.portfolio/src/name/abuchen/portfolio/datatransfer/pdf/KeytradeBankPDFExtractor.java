@@ -40,7 +40,7 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
     private void addBuySellTransaction()
     {
         final DocumentType type = new DocumentType("(Kauf|Achat|Vente|Verkauf)", (context, lines) -> {
-            Pattern pTransaction = Pattern.compile("^Num.ro.*(Achat|Vente) (?<shares>[\\.,\\d]+) (?<name>.*) \\((?<isin>[\\w]{12})\\) .* [\\.,\\d]+ (?<currency>[\\w]{3})(.*)?$");
+            Pattern pTransaction = Pattern.compile("^Num.ro.*(Achat|Vente) (?<shares>[\\.,\\d]+) (?<name>.*) \\((?<isin>[\\w]{12})\\) .* [\\.,\\d]+ (?<currency>[\\w]{3}).*$");
             // read the current context here
 
             /***
@@ -119,19 +119,19 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                                 // Date et heure d'exécution : 19/10/2020 11:53:03 CET 
                                 section -> section
                                         .attributes("date", "time")
-                                        .match("^(Ausf.hrungsdatum und \\-zeit|Date et heure d.ex.cution)([\\s]+)?: (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2})(.*)?$")
+                                        .match("^(Ausf.hrungsdatum und \\-zeit|Date et heure d.ex.cution)([\\s]+)?: (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$")
                                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
                                 ,
                                 // Ordre créé à: 26/P11/2021L10:05:13 CETDate et heure d'exécution: 26/11/2021 13:25:24 CETDate de comptabilisation: 26/11/2021Date valeur: 30/11/2021Lieu d'exécution: EURONEXT - EURONEXT BRUSS
                                 section -> section
                                         .attributes("date", "time")
-                                        .match("^Ordre cr.. .([\\s]+)?: .*Date et heure d.ex.cution([\\s]+)?: (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2})(.*)?$")
+                                        .match("^Ordre cr.. .([\\s]+)?: .*Date et heure d.ex.cution([\\s]+)?: (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$")
                                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
                                 ,
                                 // Ordre créé à: 05/11/2020 11:25:43 CET
                                 section -> section
                                         .attributes("date", "time")
-                                        .match("^Ordre cr.. .([\\s]+)?: (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2})(.*)?$")
+                                        .match("^Ordre cr.. .([\\s]+)?: (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$")
                                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
                         )
 
@@ -142,7 +142,7 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                 // Crédit 908,64 EUR
                 // Débit 1.502,72 EUR
                 .section("amount", "currency")
-                .match("^(Gutschrift|Cr.dit|Lastschrift|D.bit) (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .match("^(Gutschrift|Cr.dit|Lastschrift|D.bit) (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -151,7 +151,7 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                 // Bruttobetrag 924,00 USD
                 // Wechselkurs EUR/USD 1.123000 849,47 EUR
                 .section("gross", "currency", "exchangeRate", "fxCurrency").optional()
-                .match("^Bruttobetrag (?<gross>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .match("^Bruttobetrag (?<gross>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .match("^Wechselkurs [\\w]{3}\\/[\\w]{3} (?<exchangeRate>[\\.,\\d]+) [\\.,\\d]+ (?<fxCurrency>[\\w]{3})$")
                 .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
@@ -174,7 +174,7 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                 // Type d'ordre: Market
                 // Type d'ordre: Market I
                 .section("note").optional()
-                .match("^(Auftragstyp|Type d'([\\s]+)?ordre)([\\s]+)?: (?<note>(Limit \\([\\.,\\d]+ [\\w]{3}\\)|Market))(.*)?$")
+                .match("^(Auftragstyp|Type d'([\\s]+)?ordre)([\\s]+)?: (?<note>(Limit \\([\\.,\\d]+ [\\w]{3}\\)|Market)).*$")
                 .assign((t, v) -> t.setNote(v.get("note")))
 
                 .wrap(BuySellEntryItem::new);
@@ -186,7 +186,7 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
     private void addDividendeTransaction()
     {
         final DocumentType type = new DocumentType("(Einkommensart|Nature des revenus)", (context, lines) -> {
-            Pattern pTransaction = Pattern.compile("^CREDIT COUPON NR .*: (?<shares>[\\.,\\d]+) (?<name>.*) \\((?<isin>[\\w]{12})\\) .* [\\.,\\d]+ (?<currency>[\\w]{3})(.*)?$");
+            Pattern pTransaction = Pattern.compile("^CREDIT COUPON NR .*: (?<shares>[\\.,\\d]+) (?<name>.*) \\((?<isin>[\\w]{12})\\) .* [\\.,\\d]+ (?<currency>[\\w]{3}).*$");
             // read the current context here
 
             /***
@@ -262,7 +262,7 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                                 // Date valeur: 17/11/2021 C
                                 section -> section
                                         .attributes("date")
-                                        .match("^Date valeur([\\s]+)?: (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4})(.*)?$")
+                                        .match("^Date valeur([\\s]+)?: (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}).*$")
                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
                         )
 
@@ -271,7 +271,7 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                                 // Net CREDIT 45,65 EUR Date  03/02/2021
                                 section -> section
                                         .attributes("amount", "currency")
-                                        .match("^(Nettoguthaben|Net CREDIT) (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                                        .match("^(Nettoguthaben|Net CREDIT) (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                                         .assign((t, v) -> {
                                             t.setAmount(asAmount(v.get("amount")));
                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -292,7 +292,7 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                 // Bruttobetrag 1,25 USD
                 // Wechselkurs 1,05 1,01 EUR
                 .section("gross", "currency", "exchangeRate", "fxCurrency").optional()
-                .match("^Bruttobetrag (?<gross>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .match("^Bruttobetrag (?<gross>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .match("^Wechselkurs (?<exchangeRate>[\\.,\\d]+) [\\.,\\d]+ (?<fxCurrency>[\\w]{3})$")
                 .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
@@ -328,17 +328,17 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
 
                 // Impôt à la source 26,38 % 16,35 EUR
                 .section("tax", "currency").optional()
-                .match("(^.* .*|^)Imp.t . la source [\\.,\\d]+ % (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .match("(^.* .*|^)Imp.t . la source [\\.,\\d]+ % (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
                 // Impôt à la source 26,50% - 6,12 EUR
                 .section("tax", "currency").optional()
-                .match("(^.* .*|^)Imp.t . la source [\\.,\\d]+% \\- (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .match("(^.* .*|^)Imp.t . la source [\\.,\\d]+% \\- (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
                 // Précompte mobilier belge 30,00% - 5,09 EUR
                 .section("tax", "currency").optional()
-                .match("(^.* .*|^)Pr.compte mobilier .* [\\.,\\d]+% \\- (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .match("(^.* .*|^)Pr.compte mobilier .* [\\.,\\d]+% \\- (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
                 // Précompte mobilier belge
@@ -347,13 +347,13 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                 // L 30,00% - 14,40 EUR
                 .section("tax", "currency").optional()
                 .match("^Pr.compte mobilier .*$")
-                .match("^.* [\\.,\\d]+% \\- (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .match("^.* [\\.,\\d]+% \\- (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
                 // Taxe boursière - 0,35% - 5,22 EUR
                 // Montant brut U - 694,50 EURD - 694,50 EURTaxe boursière - 0,35% - 2,43 EURCourtage - 7,50 EUR
                 .section("tax", "currency").optional()
-                .match("(^.* .*|^)Taxe boursi.re \\- [\\.,\\d]+% \\- (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .match("(^.* .*|^)Taxe boursi.re \\- [\\.,\\d]+% \\- (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
@@ -367,13 +367,13 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
 
                 // Frais de transaction 24,95 EUR
                 .section("fee", "currency").optional()
-                .match("(^.* .*|^)Frais de transaction (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .match("(^.* .*|^)Frais de transaction (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Courtage - 7,50 EUR
                 // Montant brut U - 694,50 EURD - 694,50 EURTaxe boursière - 0,35% - 2,43 EURCourtage - 7,50 EUR
                 .section("fee", "currency").optional()
-                .match("(^.* .*|^)Courtage \\- (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .match("(^.* .*|^)Courtage \\- (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processFeeEntries(t, v, type));
     }
 

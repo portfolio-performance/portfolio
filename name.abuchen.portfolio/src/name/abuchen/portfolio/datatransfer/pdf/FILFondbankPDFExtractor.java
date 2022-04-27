@@ -127,6 +127,9 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 })
 
+                /***
+                 * All amounts are presented in net
+                 */
                 // Splittkauf Betrag UBS Msci Pacific exJap.U ETF A 1,77 EUR 44,4324 USD 0,045
                 // 2536717769 A0X97T / LU0446734526 1,125168 USD 16.04.2019 1,334
                 // UBS (Luxembourg) S.A. 1,99 USD 0,0000 EUR 1,379
@@ -151,6 +154,9 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
 
                     checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
+
+                // We fix the gross value
+                .conclude(PDFExtractorUtils.fixGrossValueBuySell())
 
                 .wrap(BuySellEntryItem::new);
 

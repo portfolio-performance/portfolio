@@ -377,7 +377,7 @@ public class DABPDFExtractorTest
         Unit grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
                         .orElseThrow(IllegalArgumentException::new);
         assertThat(grossValueUnit.getForex(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(6123.98 / 1.08389))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5650.00))));
     }
 
     @Test
