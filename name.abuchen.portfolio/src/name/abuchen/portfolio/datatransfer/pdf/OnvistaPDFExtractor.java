@@ -252,6 +252,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 .match("^(?<note>Zwangsabfindung gem.ß Hauptversammlungsbeschluss .*) Der Übertragungsbeschluss .*$")
                 .assign((t, v) -> t.setNote(v.get("note")))
 
+                .conclude(PDFExtractorUtils.fixGrossValueBuySell())
                 .wrap(BuySellEntryItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
@@ -575,6 +576,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 .match("^(?<note>Ertrag für [\\d]{4}(\\/[\\d]{2})?) [\\w]{3} [\\.,\\d]+$")
                 .assign((t, v) -> t.setNote(v.get("note")))
 
+                .conclude(PDFExtractorUtils.fixGrossValueA())
                 .wrap(TransactionItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
@@ -1148,23 +1150,23 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
                 // Handelstag 15.12.2020 Kurswert USD 4.872,01 
                 // 17.12.2020 241462046 EUR/USD 1,2239 EUR 3.965,72
-                .section("fxCurrency", "fxGross", "exchangeRate", "currency").optional()
-                .match("^.* Kurswert (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,\\d]+)([-\\s])?$")
-                .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\w]{3}\\/[\\w]{3} (?<exchangeRate>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+$")
+                .section("term", "exchangeRate").optional()
+                .match("^.* Kurswert [\\w]{3} [\\.,\\d]+([-\\s])?$")
+                .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\w]{3}\\/(?<term>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+) [\\w]{3} [\\.,\\d]+$")
                 .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                    if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
+                    String term = asCurrencyCode(v.get("term"));
+                    
+                    if (t.getCurrencyCode().contentEquals(term))
                     {
                         exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
                     }
                     type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
-
-                    BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
-
-                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
-                    Money gross = Money.of(asCurrencyCode(v.get("currency")),
-                                    BigDecimal.valueOf(fxGross.getAmount()).multiply(inverseRate)
-                                                    .setScale(0, RoundingMode.HALF_UP).longValue());
+                    
+                    Money gross = t.getMonetaryAmount();
+                    Money fxGross = Money.of(term,
+                                    BigDecimal.valueOf(gross.getAmount()).multiply(exchangeRate)
+                                    .setScale(0, RoundingMode.HALF_UP).longValue());
 
                     checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
@@ -1372,13 +1374,39 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         processTaxEntries(t, v, type);
                     }
                 })
+                
+                // ausländische Dividende EUR 4,13
+                // ausländische Quellensteuer 27% DKK 8,34
+                // anrechenbare Quellensteuer 15% DKK 4,64
+                // erstattungsfähige Quellensteuer 12% DKK 3,71
+                .section("tax", "currency").optional()
+                .match("ausländische Quellensteuer( [\\.,\\d]+%|.*)? (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$")
+                .assign((t, v) -> {
+                    if (!"X".equals(type.getCurrentContext().get("negative")) && !"X".equals(type.getCurrentContext().get("noTax")))
+                    {
+                        processTaxEntries(t, v, type);
+                    }
+                })
 
                 // anrechenbare Quellensteuer 15% DKK 4,64
                 // davon anrechenbare US-Quellensteuer EUR 4,74
                 // davon anrechenbare US-Quellensteuer 15% EUR 2,72
                 //    davon anrechenbare Quellensteuer Fondseingangsseite EUR 0,03
                 .section("creditableWithHoldingTax", "currency").optional()
-                .match("(^|^.* davon |^davon )anrechenbare (US-)?Quellensteuer( [\\.,\\d]+%|.*)? (?<currency>[\\w]{3}) (?<creditableWithHoldingTax>[\\.,\\d]+)$")
+                .match("(^.* davon |^davon )anrechenbare US-Quellensteuer( [\\.,\\d]+%|.*)? (?<currency>[\\w]{3}) (?<creditableWithHoldingTax>[\\.,\\d]+)$")
+                .assign((t, v) -> {
+                    if (!"X".equals(type.getCurrentContext().get("negative")) && !"X".equals(type.getCurrentContext().get("noTax")))
+                    {
+                        processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type);
+                    }
+                })
+                
+                // ausl. Dividendenanteil (Ausschüttung) EUR 0,98
+                // anrechenbare Quellensteuer EUR 0,03
+                // davon anrechenbare Quellensteuer Fondseingangsseite EUR 0,03
+                .section("creditableWithHoldingTax", "currency").optional()
+                .match("anrechenbare Quellensteuer (?<currency>[\\w]{3}) (?<creditableWithHoldingTax>[\\.,\\d]+)$")
+                .match(".* davon anrechenbare Quellensteuer Fondseingangsseite [\\w]{3} [\\.,\\d]+$")
                 .assign((t, v) -> {
                     if (!"X".equals(type.getCurrentContext().get("negative")) && !"X".equals(type.getCurrentContext().get("noTax")))
                     {

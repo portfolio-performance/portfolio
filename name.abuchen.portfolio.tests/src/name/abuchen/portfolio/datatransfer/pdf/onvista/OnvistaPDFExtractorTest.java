@@ -1868,9 +1868,9 @@ public class OnvistaPDFExtractorTest
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.02))));
         assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.64))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.13))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.64 / 7.483))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(8.34 / 7.483))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
@@ -1911,9 +1911,9 @@ public class OnvistaPDFExtractorTest
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.02))));
         assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.64))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.13))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.64 / 7.483))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(8.34 / 7.483))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
@@ -2213,9 +2213,9 @@ public class OnvistaPDFExtractorTest
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(16.91))));
         assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(22.73))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(22.80))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(((414 / 121.06) + 2.28 + 0.12)))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(((423 / 121.06) + 2.28 + 0.12)))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
@@ -2256,9 +2256,9 @@ public class OnvistaPDFExtractorTest
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(16.91))));
         assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(22.73))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(22.80))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(((414 / 121.06) + 2.28 + 0.12)))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(((423 / 121.06) + 2.28 + 0.12)))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
