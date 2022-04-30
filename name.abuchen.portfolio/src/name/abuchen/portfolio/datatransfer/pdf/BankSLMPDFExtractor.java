@@ -96,9 +96,9 @@ public class BankSLMPDFExtractor extends AbstractPDFExtractor
 
                 // Total Kurswert EUR -74'120.00
                 // Change EUR/CHF 1.241652 CHF -92'031.25
-                .section("fxCurrency", "fxGross", "currency", "exchangeRate").optional()
+                .section("fxCurrency", "fxGross", "currency", "gross", "exchangeRate").optional()
                 .match("^Total Kurswert (?<fxCurrency>[\\w]{3}) (\\-)?(?<fxGross>[\\.',\\d]+)$")
-                .match("^Change [\\w]{3}/(?<currency>[\\w]{3}) (?<exchangeRate>[\\.',\\d]+) [\\w]{3} (\\-)?[\\.',\\d]+$")
+                .match("^Change [\\w]{3}/(?<currency>[\\w]{3}) (?<exchangeRate>[\\.',\\d]+) [\\w]{3} (\\-)?(?<gross>[\\.',\\d]+)$")
                 .assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                     if (!t.getPortfolioTransaction().getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
@@ -107,12 +107,8 @@ public class BankSLMPDFExtractor extends AbstractPDFExtractor
                     }
                     type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
 
-                    BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
-
                     Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
-                    Money gross = Money.of(asCurrencyCode(v.get("currency")),
-                                    BigDecimal.valueOf(fxGross.getAmount()).multiply(inverseRate)
-                                                    .setScale(0, RoundingMode.HALF_UP).longValue());
+                    Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
 
                     checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
