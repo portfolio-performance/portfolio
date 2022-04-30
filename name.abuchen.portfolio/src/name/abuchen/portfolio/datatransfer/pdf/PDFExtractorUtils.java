@@ -293,6 +293,10 @@ class PDFExtractorUtils
     public static Consumer<Transaction> fixGrossValue()
     {
         return t -> {
+            // check if the relevant transaction properties have been parsed
+            if (t.getCurrencyCode() == null || t.getSecurity() == null || t.getSecurity().getCurrencyCode() == null)
+                return;
+            
             // if transaction currency equals to the currency of
             // the security, then there is no forex information required
             if (t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
@@ -309,6 +313,19 @@ class PDFExtractorUtils
 
                 if (!expectedGross.equals(grossUnit.getAmount()))
                 {
+                    // check if it a rounding difference that is acceptable
+                    try
+                    {
+                        Unit u = new Unit(Unit.Type.GROSS_VALUE, expectedGross, grossUnit.getForex(), grossUnit.getExchangeRate());
+                        t.removeUnit(grossUnit);
+                        t.addUnit(u);
+                        return;
+                    }
+                    catch (IllegalArgumentException ignore)
+                    {
+                        // recalculate the unit to fix the gross value
+                    }
+                    
                     long caculatedGrossValue = BigDecimal.valueOf(expectedGross.getAmount()) //
                                     .divide(grossUnit.getExchangeRate(), Values.MC) //
                                     .setScale(0, RoundingMode.HALF_EVEN).longValue();
