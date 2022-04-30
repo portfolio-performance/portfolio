@@ -6,6 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
+import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentContext;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.ParsedData;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -177,7 +178,7 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
         };
     }
 
-    private BiConsumer<Map<String, String>, String[]> contextProvider2019()
+    private BiConsumer<DocumentContext, String[]> contextProvider2019()
     {
         return (context, lines) -> {
             Pattern yearPattern = Pattern.compile("(.*)(KONTOAUSZUG  Nr. )(\\d+)\\/(?<year>\\d{4})");
@@ -188,7 +189,7 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
         };
     }
 
-    private BiConsumer<Map<String, String>, String[]> contextProvider2021()
+    private BiConsumer<DocumentContext, String[]> contextProvider2021()
     {
         return (context, lines) -> {
             Pattern yearPattern = Pattern.compile("(.*)(Kontoauszug Nr\\.)(\\s*)(\\d+)\\/(?<year>\\d{4})");
@@ -198,7 +199,7 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
         };
     }
 
-    private BiConsumer<Map<String, String>, String[]> contextProvider2022()
+    private BiConsumer<DocumentContext, String[]> contextProvider2022()
     {
         return (context, lines) -> {
             Pattern currencyPattern = Pattern

@@ -6,12 +6,12 @@ import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
+import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentContext;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -26,7 +26,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 {
     private static final String isJointAccount = "isJointAccount"; //$NON-NLS-1$
 
-    BiConsumer<Map<String, String>, String[]> jointAccount = (context, lines) -> {
+    BiConsumer<DocumentContext, String[]> jointAccount = (context, lines) -> {
         Pattern pJointAccount = Pattern.compile("KapSt anteilig 50,00 %.*"); //$NON-NLS-1$
         Boolean bJointAccount = false;
 
