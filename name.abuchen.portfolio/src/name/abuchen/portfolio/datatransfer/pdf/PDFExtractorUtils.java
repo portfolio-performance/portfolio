@@ -25,7 +25,7 @@ import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
-class PDFExtractorUtils
+public class PDFExtractorUtils
 {
     private static final DateTimeFormatter[] DATE_FORMATTER_GERMANY = { //
                     DateTimeFormatter.ofPattern("d.M.yyyy", Locale.GERMANY), //$NON-NLS-1$
