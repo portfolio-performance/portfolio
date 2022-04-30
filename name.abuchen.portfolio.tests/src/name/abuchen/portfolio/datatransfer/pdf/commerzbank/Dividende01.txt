@@ -23,7 +23,7 @@ Abrechnung E r t r a g s g u t s c h r i f t
 B r u t t o b e t r a g : USD 1 2 3 , 4 5
 zum D e v i s e n k u r s : EUR/USD 1 ,142700 EUR 1 2 3 , 4 5
 Ve r rechnung ü b e r Kon to ( I B A N ) V a l u t a Zu I h r e n Gunsten v o r S t e u e r n
-DE12 3456 7890 1234 5678 01 EUR 2 2 . 0 6 . 2 0 1 5 EUR 2 2 3 , 4 5
+DE12 3456 7890 1234 5678 01 EUR 2 2 . 0 6 . 2 0 1 5 EUR 1 2 3 , 4 5
 I n f o r m a t i o n z u r s t e u e r l i c h e n Behand lung d i e s e s G e s c h ä f t s v o r g a n g e s und den a u f
 I h r e m Kon to gebuch ten E n d b e t r a g f i n d e n S i e a u f d e r s e p a r a t e n S t e u e r m i t t e i l u n g
 ( R e f e r e n z - N r . 3345AO12BC3D4445E).

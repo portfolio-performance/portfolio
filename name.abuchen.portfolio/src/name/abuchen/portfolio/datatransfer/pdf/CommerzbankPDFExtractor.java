@@ -264,6 +264,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                 .match("^(.* [\\d\\s]+\\.[\\d\\s]+\\.[\\d\\s]+|Abrechnung) (?<note1>[\\D]+)$")
                 .assign((t, v) -> t.setNote(stripBlanks(v.get("note1")) + " " + stripBlanks(v.get("note2")) + " - " + stripBlanks(v.get("note3"))))
 
+                .conclude(PDFExtractorUtils.fixGrossValueA())
                 .wrap(TransactionItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);

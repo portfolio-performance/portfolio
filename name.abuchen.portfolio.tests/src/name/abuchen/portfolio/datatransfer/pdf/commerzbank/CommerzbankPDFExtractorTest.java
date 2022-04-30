@@ -542,16 +542,16 @@ public class CommerzbankPDFExtractorTest
         assertThat(transaction.getNote(), is("Ertragsgutschrift 01.03.15 - 29.02.16"));
 
         assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(223.45))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(123.45))));
         assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(223.45))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(123.45))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         Unit grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(123.45))));
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(123.45 * 1.142700))));
     }
 
     @Test
@@ -586,9 +586,9 @@ public class CommerzbankPDFExtractorTest
         assertThat(transaction.getNote(), is("Ertragsgutschrift 01.03.15 - 29.02.16"));
 
         assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(223.45))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(123.45))));
         assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(223.45))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(123.45))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -643,7 +643,7 @@ public class CommerzbankPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         Unit grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(123.45))));
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1141.55))));
     }
 
     @Test

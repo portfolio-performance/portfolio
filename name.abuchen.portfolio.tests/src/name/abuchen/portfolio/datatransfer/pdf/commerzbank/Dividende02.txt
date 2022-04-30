@@ -20,8 +20,8 @@ E m i s s i o n s l a n d : IRLAND
 USD 0 , 0 7 2 1 A u s s c h ü t t u n g p r o S t ü c k f ü r G e s c h ä f t s j a h r 0 1 . 0 3 . 1 5 b i s 2 9 . 0 2 . 1 6
 z a h l b a r ab 1 6 . 0 7 . 2 0 1 5
 Abrechnung E r t r a g s g u t s c h r i f t
-B r u t t o b e t r a g : USD 1 2 3 , 4 5
-zum D e v i s e n k u r s : EUR/USD 1 ,091700 EUR 4 3 , 2 1
+B r u t t o b e t r a g : USD 1 . 1 4 1 , 5 5
+zum D e v i s e n k u r s : EUR/USD 1 ,091700 EUR 1 . 0 4 5 , 6 7
 Ve r rechnung ü b e r Kon to ( I B A N ) V a l u t a Zu I h r e n Gunsten v o r S t e u e r n
 DE12 3456 7890 1234 5678 90 EUR 2 0 . 0 7 . 2 0 1 5 EUR 1 . 0 4 5 , 6 7
 I n f o r m a t i o n z u r s t e u e r l i c h e n Behand lung d i e s e s G e s c h ä f t s v o r g a n g e s und den a u f
