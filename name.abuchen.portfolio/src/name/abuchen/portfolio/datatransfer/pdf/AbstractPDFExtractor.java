@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.util.TextUtil.stripBlanks;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
@@ -232,6 +233,13 @@ public abstract class AbstractPDFExtractor implements Extractor
             throw new IllegalArgumentException(e);
         }
     }
+    
+    protected PDFExchangeRate asExchangeRate(Map<String, String> data)
+    {
+        return new PDFExchangeRate(asExchangeRate(stripBlanks(data.get("exchangeRate"))), //$NON-NLS-1$
+                        asCurrencyCode(data.get("baseCurrency")), //$NON-NLS-1$
+                        asCurrencyCode(data.get("termCurrency"))); //$NON-NLS-1$
+    }
 
     protected BigDecimal asExchangeRate(String value)
     {
@@ -264,7 +272,7 @@ public abstract class AbstractPDFExtractor implements Extractor
     {
         return PDFExtractorUtils.asDate(date, time);
     }
-
+    
     protected void processTaxEntries(Object t, Map<String, String> v, DocumentType type)
     {
         Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))); //$NON-NLS-1$ //$NON-NLS-2$

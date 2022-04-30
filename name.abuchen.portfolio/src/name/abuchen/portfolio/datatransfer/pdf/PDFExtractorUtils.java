@@ -76,26 +76,32 @@ public class PDFExtractorUtils
     @SuppressWarnings("nls")
     public static void checkAndSetGrossUnit(Money gross, Money fxGross, name.abuchen.portfolio.model.Transaction t, DocumentType type)
     {
-        if (type.getCurrentContext().containsKey("exchangeRate"))
+        if (t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
+            return;
+        
+        Optional<PDFExchangeRate> rate = type.getCurrentContext().getType(PDFExchangeRate.class);
+        
+        if (rate.isPresent())
         {
-            if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
-            {
-                BigDecimal exchangeRate = new BigDecimal(type.getCurrentContext().get("exchangeRate"));
-                BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+            t.addUnit(new Unit(Unit.Type.GROSS_VALUE, gross, fxGross, rate.get().getRate(gross.getCurrencyCode())));
+        }
+        else if (type.getCurrentContext().containsKey("exchangeRate"))
+        {
+            BigDecimal exchangeRate = new BigDecimal(type.getCurrentContext().get("exchangeRate"));
+            BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
 
-                /**
-                 * check, if forex currency is transaction currency or not and
-                 * swap amount, if necessary
-                 */
-                if (fxGross.getCurrencyCode().equals(t.getCurrencyCode()))
-                {
-                    t.addUnit(new Unit(Unit.Type.GROSS_VALUE, fxGross, gross, inverseRate));
-                }
-                else
-                {
-                    t.addUnit(new Unit(Unit.Type.GROSS_VALUE, gross, fxGross, inverseRate));
-                } 
+            /**
+             * check, if forex currency is transaction currency or not and
+             * swap amount, if necessary
+             */
+            if (fxGross.getCurrencyCode().equals(t.getCurrencyCode()))
+            {
+                t.addUnit(new Unit(Unit.Type.GROSS_VALUE, fxGross, gross, inverseRate));
             }
+            else
+            {
+                t.addUnit(new Unit(Unit.Type.GROSS_VALUE, gross, fxGross, inverseRate));
+            } 
         }
     }
 
@@ -115,13 +121,27 @@ public class PDFExtractorUtils
         if (tax.getCurrencyCode().equals(t.getCurrencyCode()))
         {
             t.addUnit(new Unit(Unit.Type.TAX, tax));
+            return;
+        }
+        
+        Optional<PDFExchangeRate> rate = type.getCurrentContext().getType(PDFExchangeRate.class);
+        
+        if (rate.isPresent())
+        {
+            Money fxTax = rate.get().convert(t.getCurrencyCode(), tax);
+            
+            if (t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
+                t.addUnit(new Unit(Unit.Type.TAX, fxTax));
+            else
+                t.addUnit(new Unit(Unit.Type.TAX, fxTax, tax, rate.get().getRate(t.getCurrencyCode())));
+
         }
         else if (type.getCurrentContext().containsKey("exchangeRate"))
         {
             BigDecimal exchangeRate = new BigDecimal(type.getCurrentContext().get("exchangeRate"));
             BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
 
-            Money txTax = Money.of(t.getCurrencyCode(), BigDecimal.valueOf(tax.getAmount()).multiply(inverseRate)
+            Money fxTax = Money.of(t.getCurrencyCode(), BigDecimal.valueOf(tax.getAmount()).multiply(inverseRate)
                             .setScale(0, RoundingMode.HALF_UP).longValue());
 
             /**
@@ -129,9 +149,9 @@ public class PDFExtractorUtils
              * different to transaction currency
              */
             if (t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
-                t.addUnit(new Unit(Unit.Type.TAX, txTax));
+                t.addUnit(new Unit(Unit.Type.TAX, fxTax));
             else
-                t.addUnit(new Unit(Unit.Type.TAX, txTax, tax, inverseRate));
+                t.addUnit(new Unit(Unit.Type.TAX, fxTax, tax, inverseRate));
         }
     }
 
@@ -151,6 +171,19 @@ public class PDFExtractorUtils
         if (fee.getCurrencyCode().equals(t.getCurrencyCode()))
         {
             t.addUnit(new Unit(Unit.Type.FEE, fee));
+            return;
+        }
+        
+        Optional<PDFExchangeRate> rate = type.getCurrentContext().getType(PDFExchangeRate.class);
+        
+        if (rate.isPresent())
+        {
+            Money fxFee = rate.get().convert(t.getCurrencyCode(), fee);
+            
+            if (t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
+                t.addUnit(new Unit(Unit.Type.FEE, fxFee));
+            else
+                t.addUnit(new Unit(Unit.Type.FEE, fxFee, fee, rate.get().getRate(t.getCurrencyCode())));
         }
         else if (type.getCurrentContext().containsKey("exchangeRate"))
         {
