@@ -5,7 +5,6 @@ import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAnd
 import static name.abuchen.portfolio.util.TextUtil.stripBlanks;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -234,23 +233,16 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                 // 2 2 , 0 0 0 % Q u e l l e n s t e u e r USD 1 9 , 0 6 -
                 // Ausmachender B e t r a g USD 6 7 , 3 3
                 // zum D e v i s e n k u r s : EUR/USD 1 ,098400 EUR 6 1 , 3 0
-                .section("fxCurrency", "fxGross", "exchangeRate", "currency").optional()
+                .section("fxCurrency", "fxGross", "exchangeRate", "baseCurrency", "termCurrency", "currency").optional()
                 .match("^B r u t t o b e t r a g : (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,\\d\\s]+)$")
-                .match("^.* [\\w]{3}\\/[\\w]{3} (?<exchangeRate>[\\.,\\d\\s]+) (?<currency>[\\w]{3}) [\\.,\\d\\s]+$")                     
+                .match("^.* (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d\\s]+) (?<currency>[\\w]{3}) [\\.,\\d\\s]+$")                     
                 .assign((t, v) -> {
-                    BigDecimal exchangeRate = asExchangeRate(stripBlanks(v.get("exchangeRate")));
-                    if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
-                    {
-                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
-                    }
-                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
-
-                    BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
-
+                    
+                    PDFExchangeRate rate = asExchangeRate(v);
+                    type.getCurrentContext().putType(rate);
+                    
                     Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(stripBlanks(v.get("fxGross"))));
-                    Money gross = Money.of(asCurrencyCode(v.get("currency")),
-                                    BigDecimal.valueOf(fxGross.getAmount()).multiply(inverseRate)
-                                                    .setScale(0, RoundingMode.HALF_UP).longValue());
+                    Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
 
                     checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
