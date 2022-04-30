@@ -137,6 +137,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                 .match("^B.rsentransaktion: (Kauf|Verkauf) Unsere (?<note>Referenz: .*)$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
+                .conclude(PDFExtractorUtils.fixGrossValueBuySell())
                 .wrap(BuySellEntryItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);

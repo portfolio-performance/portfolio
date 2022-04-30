@@ -216,6 +216,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                     checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
 
+                .conclude(PDFExtractorUtils.fixGrossValueBuySell())
                 .wrap(BuySellEntryItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
@@ -422,6 +423,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                     checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
 
+                .conclude(PDFExtractorUtils.fixGrossValueA())
                 .wrap(TransactionItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);

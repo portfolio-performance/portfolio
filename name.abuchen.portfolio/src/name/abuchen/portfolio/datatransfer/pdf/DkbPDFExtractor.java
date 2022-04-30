@@ -334,6 +334,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                 .match("^(?<note>Kapitalr.ckzahlung)$")
                 .assign((t, v) -> t.setNote(v.get("note")))
 
+                .conclude(PDFExtractorUtils.fixGrossValueA())
                 .wrap(TransactionItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);

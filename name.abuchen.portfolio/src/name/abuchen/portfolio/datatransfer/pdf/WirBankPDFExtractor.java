@@ -142,6 +142,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                     checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
 
+                .conclude(PDFExtractorUtils.fixGrossValueBuySell())
                 .wrap(BuySellEntryItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);

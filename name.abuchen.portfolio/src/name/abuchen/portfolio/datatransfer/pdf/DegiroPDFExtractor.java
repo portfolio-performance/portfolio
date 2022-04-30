@@ -550,8 +550,11 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                     Money.of(unit.getForex().getCurrencyCode(),forexPlusDelta), unit.getExchangeRate());
 
                                     t.addUnit(newUnit);
-                                  }
-                              }
+                                 }
+                            }
+                            
+                            PDFExtractorUtils.fixGrossValueA().accept(t);
+                            
                             if (t.getCurrencyCode() != null && t.getAmount() != 0L)
                                 return new TransactionItem(t);
                             return null;   
