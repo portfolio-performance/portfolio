@@ -68,7 +68,8 @@ public class AssertImportActions
             for (ImportAction action : actions)
             {
                 ImportAction.Status status = item.apply(action, context);
-                assertThat(status.getMessage(), status.getCode(), is(ImportAction.Status.Code.OK));
+                assertThat(status.getMessage() + "\n" //$NON-NLS-1$
+                                + item.getTypeInformation(), status.getCode(), is(ImportAction.Status.Code.OK));
             }
         }
     }
