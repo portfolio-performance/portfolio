@@ -293,6 +293,10 @@ class PDFExtractorUtils
     public static Consumer<Transaction> fixGrossValue()
     {
         return t -> {
+            // There is no transaction that is to be generated
+            if (t.getCurrencyCode() == null && t.getAmount() == 0)
+                return;
+
             // if transaction currency equals to the currency of
             // the security, then there is no forex information required
             if (t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
