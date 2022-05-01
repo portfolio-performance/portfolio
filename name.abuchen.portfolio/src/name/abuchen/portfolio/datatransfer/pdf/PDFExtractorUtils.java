@@ -232,6 +232,11 @@ public class PDFExtractorUtils
         }
     }
 
+    public static long asShares(String value, String language, String country)
+    {
+        return convertToNumberLong(value, Values.Share, language, country);
+    }
+
     public static LocalDateTime asDate(String value, Locale... hints)
     {
         Locale[] locales = hints.length > 0 ? hints : new Locale[] { Locale.GERMANY, Locale.US, Locale.UK };

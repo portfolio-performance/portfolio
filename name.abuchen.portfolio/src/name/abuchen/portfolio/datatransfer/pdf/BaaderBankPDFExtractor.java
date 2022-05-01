@@ -94,9 +94,14 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 
                 // STK 2 iShs DL Corp Bond UCITS ETF EUR 104,37
                 // Units 2.734 iShsIII-Core MSCI World U.ETF EUR 73.128
-                .section("shares")
-                .match("^(STK|Units) (?<shares>[\\.,\\d]+) .*$")
-                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                .section("local", "shares")
+                .match("^(?<local>(STK|Units)) (?<shares>[\\.,\\d]+) .*$")
+                .assign((t, v) -> {
+                    if (v.get("local").equals("Units"))
+                        t.setShares(asShares(v.get("shares"), "en", "US"));
+                    else
+                        t.setShares(asShares(v.get("shares")));
+                })
 
                 .oneOf(
                                 // Handelsdatum Handelsuhrzeit
@@ -738,25 +743,6 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
         }
 
         return PDFExtractorUtils.convertToNumberLong(value, Values.Amount, language, country);
-    }
-
-    @Override
-    protected long asShares(String value)
-    {
-        String language = "de"; //$NON-NLS-1$
-        String country = "DE"; //$NON-NLS-1$
-
-        int lastDot = value.lastIndexOf("."); //$NON-NLS-1$
-        int lastComma = value.lastIndexOf(","); //$NON-NLS-1$
-
-        // returns the greater of two int values
-        if (Math.max(lastDot, lastComma) == lastDot)
-        {
-            language = "en"; //$NON-NLS-1$
-            country = "US"; //$NON-NLS-1$
-        }
-
-        return PDFExtractorUtils.convertToNumberLong(value, Values.Share, language, country);
     }
 
     @Override
