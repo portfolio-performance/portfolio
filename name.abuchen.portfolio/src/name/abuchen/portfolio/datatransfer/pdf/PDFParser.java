@@ -82,6 +82,11 @@ import name.abuchen.portfolio.model.TypedMap;
             return key.isInstance(v) ? Optional.of(key.cast(v)) : Optional.empty(); 
         }
         
+        public void removeType(Class<?> key)
+        {
+            backingMap.remove(key.getName());
+        }
+        
         public boolean getBoolean(String key)
         {
             Object answer = backingMap.get(key);

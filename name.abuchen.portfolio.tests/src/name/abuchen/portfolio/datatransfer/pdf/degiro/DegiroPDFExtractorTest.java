@@ -206,12 +206,14 @@ public class DegiroPDFExtractorTest
         Unit grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
         assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.86))));
 
+        // 17-07-2017 00:00 ISH.S.EU.SEL.DIV.30 U.ETF DE0002635299 Dividende EUR 2,07 EUR 521,41
+        // 17-07-2017 00:00 ISH.S.EU.SEL.DIV.30 U.ETF DE0002635299 Dividendensteuer EUR -0,55 EUR 519,34
         transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
                         .collect(Collectors.toList()).get(6).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-07-17T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.07))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.07 - 0.55))));
         Unit taxUnit = transaction.getUnit(Unit.Type.TAX).orElseThrow(IllegalArgumentException::new);
         assertThat(taxUnit.getAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.55))));
 
@@ -222,12 +224,14 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-07-17T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(22.64))));
 
+        // 17-07-2017 00:00 IS.S.GL.SE.D.100 U.ETF A DE000A0F5UH1 Dividende EUR 0,09 EUR 497,25
+        // 17-07-2017 00:00 IS.S.GL.SE.D.100 U.ETF A DE000A0F5UH1 Dividendensteuer EUR -0,02 EUR 497,16
         transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
                         .collect(Collectors.toList()).get(8).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-07-17T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.09))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.07))));
         taxUnit = transaction.getUnit(Unit.Type.TAX).orElseThrow(IllegalArgumentException::new);
         assertThat(taxUnit.getAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.02))));
 
@@ -453,17 +457,21 @@ public class DegiroPDFExtractorTest
         assertThat(results.size(), is(4));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
+        // 03-08-2019 06:55 02-08-2019 Währungswechsel (Einbuchung) EUR 3,45 EUR 1.552,27
+        // 03-08-2019 06:55 02-08-2019 Währungswechsel (Ausbuchung) 1,1120 USD -3,84 USD -0,00
+        // 03-08-2019 06:09 02-08-2019 FOOT LOCKER INC. US3448491049 Dividende USD 1,52 USD 3,84
+        // 03-08-2019 06:09 02-08-2019 FOOT LOCKER INC. US3448491049 Dividendensteuer USD -0,23 USD 2,32
         AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
                         .collect(Collectors.toList()).get(0).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-08-03T06:09")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.45))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize((1.52 - 0.23) * 0.8992805755))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.21))));
         assertThat(transaction.getUnit(Unit.Type.GROSS_VALUE).get().getExchangeRate().doubleValue(),
                         IsCloseTo.closeTo(0.8992805755, 0.000001));
         Unit grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(3.84 + 0.23))));
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1.52))));
 
         transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
                         .collect(Collectors.toList()).get(1).getSubject();
@@ -545,18 +553,24 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-03-25T09:58")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(800.00))));
 
-        transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+        // 03-08-2019 06:55 02-08-2019 Währungswechsel (Einbuchung) EUR 3,45 EUR 1.552,27
+        // 03-08-2019 06:55 02-08-2019 Währungswechsel (Ausbuchung) 1,1120 USD -3,84 USD -0,00
+        // [...]
+        // 03-08-2019 06:09 02-08-2019 FOOT LOCKER INC. US3448491049 Dividende USD 1,52 USD 3,84
+        // 03-08-2019 06:09 02-08-2019 FOOT LOCKER INC. US3448491049 Dividendensteuer USD -0,23 USD 2,32
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .collect(Collectors.toList()).get(24).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-08-03T06:09")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.45))));
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize((1.52 - 0.23) / 1.1120))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.21))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         Unit grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getExchangeRate().doubleValue(), IsCloseTo.closeTo(0.8992805755, 0.000001));
-        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(3.84 + 0.23))));
+        assertThat(grossValueUnit.getExchangeRate().doubleValue(), IsCloseTo.closeTo(1 / 1.1120, 0.000001));
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1.52))));
 
         transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
                         .collect(Collectors.toList()).get(25).getSubject();
@@ -572,20 +586,24 @@ public class DegiroPDFExtractorTest
         grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
         assertThat(grossValueUnit.getForex(), is(Money.of("GBP", Values.Amount.factorize(3.73))));
 
-        transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+        // 13-06-2019 06:46 12-06-2019 Währungswechsel (Einbuchung) EUR 2,08 EUR 263,16
+        // 13-06-2019 06:46 12-06-2019 Währungswechsel (Ausbuchung) 1,1298 USD -2,36 USD -0,00
+        // [...]
+        // 12-06-2019 07:54 12-06-2019 3M COMPANY COMMON STOC US88579Y1010 Dividende USD 1,44 USD 1,22
+        // 12-06-2019 07:54 12-06-2019 3M COMPANY COMMON STOC US88579Y1010 Dividendensteuer USD -0,22 USD -0,22
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .collect(Collectors.toList()).get(50).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-06-12T07:54")));
         assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.08))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize((1.44 - 0.22) / 1.1298))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.19))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnit(Unit.Type.GROSS_VALUE).get().getExchangeRate().doubleValue(),
-                        IsCloseTo.closeTo(0.8851124093, 0.000001));
         grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize((2.08 + 0.19) / 0.8851124))));
+        assertThat(grossValueUnit.getExchangeRate().doubleValue(), IsCloseTo.closeTo(1 / 1.1298, 0.000001));
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1.44))));
 
         transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
                         .collect(Collectors.toList()).get(125).getSubject();
@@ -614,50 +632,62 @@ public class DegiroPDFExtractorTest
         assertThat(security.getName(), is("COMCAST CORPORATION -"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+        // 24-10-2019 07:16 23-10-2019 Währungswechsel (Einbuchung) EUR 1,29 EUR 691,18
+        // 24-10-2019 07:16 23-10-2019 Währungswechsel (Ausbuchung) 1,1141 USD -1,44 USD 0,00
+        // 24-10-2019 06:13 23-10-2019 COMCAST CORPORATION - US20030N1019 Dividende USD 0,42 USD 1,44
+        // 24-10-2019 06:13 23-10-2019 COMCAST CORPORATION - US20030N1019 Dividendensteuer USD -0,06 USD 1,02
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .collect(Collectors.toList()).get(0).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-10-24T06:13")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.29))));
-        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.34))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.33))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.42 / 1.1141))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.05))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnit(Unit.Type.GROSS_VALUE).get().getExchangeRate().doubleValue(),
-                        IsCloseTo.closeTo(0.897585495, 0.000001));
         Unit grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1.34 / 0.897585495))));
+        assertThat(grossValueUnit.getExchangeRate().doubleValue(), IsCloseTo.closeTo(1 / 1.1141, 0.000001));
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.42))));
 
-        transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+        // 24-10-2019 07:16 23-10-2019 Währungswechsel (Einbuchung) EUR 1,29 EUR 691,18
+        // 24-10-2019 07:16 23-10-2019 Währungswechsel (Ausbuchung) 1,1141 USD -1,44 USD 0,00
+        // ...
+        // 23-10-2019 07:46 23-10-2019 CISCO SYSTEMS INC. - US17275R1023 Dividende USD 1,40 USD 1,19
+        // 23-10-2019 07:46 23-10-2019 CISCO SYSTEMS INC. - US17275R1023 Dividendensteuer USD -0,21 USD -0,21
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .collect(Collectors.toList()).get(1).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-10-23T07:46")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.29))));
-        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.48))));
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize((1.4 - 0.21) / 1.1141))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.4 / 1.1141))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.19))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnit(Unit.Type.GROSS_VALUE).get().getExchangeRate().doubleValue(),
-                        IsCloseTo.closeTo(0.897585495, 0.000001));
         grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1.48 / 0.897585495))));
+        assertThat(grossValueUnit.getExchangeRate().doubleValue(), IsCloseTo.closeTo(1 / 1.1141, 0.000001));
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1.4))));
 
-        transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+        // 17-10-2019 07:09 16-10-2019 Währungswechsel (Einbuchung) EUR 2,80 EUR 506,43
+        // 17-10-2019 07:09 16-10-2019 Währungswechsel (Ausbuchung) 1,1083 USD -3,11 USD 0,00
+        // 17-10-2019 06:25 16-10-2019 LAM RESEARCH CORPORATI US5128071082 Dividende USD 2,30 USD 3,11
+        // 17-10-2019 06:25 16-10-2019 LAM RESEARCH CORPORATI US5128071082 Dividendensteuer USD -0,35 USD 0,81
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .collect(Collectors.toList()).get(2).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-10-17T06:25")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.80))));
-        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.12))));
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize((2.3 - 0.35) / 1.1083))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.3 / 1.1083))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.32))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnit(Unit.Type.GROSS_VALUE).get().getExchangeRate().doubleValue(),
-                        IsCloseTo.closeTo(0.9022827754, 0.000001));
         grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(3.12 / 0.9022827754))));
+        assertThat(grossValueUnit.getExchangeRate().doubleValue(), IsCloseTo.closeTo(1 / 1.1083, 0.000001));
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(2.3))));
     }
 
     @Test
@@ -786,39 +816,39 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(500.00))));
 
         // check dividends transaction EUR --> EUR
-        // 16-12-2020 11:33 16-12-2020 ROYAL DUTCH SHELL PLC GB00B03MLX29
-        // Dividende EUR 1,52 EUR 651,96
-        // 16-12-2020 11:33 16-12-2020 ROYAL DUTCH SHELL PLC GB00B03MLX29
-        // Dividendensteuer EUR -0,23 EUR 650,44
+        // 16-12-2020 11:33 16-12-2020 ROYAL DUTCH SHELL PLC GB00B03MLX29 Dividende EUR 1,52 EUR 651,96
+        // 16-12-2020 11:33 16-12-2020 ROYAL DUTCH SHELL PLC GB00B03MLX29 Dividendensteuer EUR -0,23 EUR 650,44
         transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
                         .collect(Collectors.toList()).get(1).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-16T11:33")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.52))));
-        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.75))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.52 - 0.23))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.52))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.23))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check dividends transaction USD --> EUR
-        // 16-12-2020 08:38 15-12-2020 COCA-COLA COMPANY (THE US1912161007
-        // Dividende USD 1,23 USD 7,18
-        // 16-12-2020 08:38 15-12-2020 COCA-COLA COMPANY (THE US1912161007
-        // Dividendensteuer USD -0,37 USD 5,95
-        transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+        // 17-12-2020 08:06 16-12-2020 Währungswechsel (Ausbuchung) EUR 5,87 EUR 657,83
+        // 17-12-2020 08:06 16-12-2020 Währungswechsel (Ausbuchung) 1,2212 USD -7,18 USD 0,00
+        // [...]
+        // 16-12-2020 08:38 15-12-2020 COCA-COLA COMPANY (THE US1912161007 Dividende USD 1,23 USD 7,18
+        // 16-12-2020 08:38 15-12-2020 COCA-COLA COMPANY (THE US1912161007 Dividendensteuer USD -0,37 USD 5,95
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .collect(Collectors.toList()).get(2).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-16T08:38")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.87))));
-        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(6.17))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.71))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.23 / 1.2212))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.30))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnit(Unit.Type.GROSS_VALUE).get().getExchangeRate().doubleValue(),
-                        IsCloseTo.closeTo(0.8188666885, 0.000001));
+        Unit grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1.23))));
+        assertThat(grossValueUnit.getExchangeRate().doubleValue(), IsCloseTo.closeTo(1 / 1.2212, 0.000001));
     }
 
     @Test
@@ -872,66 +902,76 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getSource(), is("Kontoauszug12.txt"));
         assertThat(transaction.getNote(), is("Einzahlung"));
 
-        transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+        // 29-03-2021 09:06 29-03-2021 ROYAL DUTCH SHELLA GB00B03MLX29 Dividende EUR 2,79 EUR 118,19
+        // 29-03-2021 09:06 29-03-2021 ROYAL DUTCH SHELLA GB00B03MLX29 Dividendensteuer EUR -0,42 EUR 115,40
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .collect(Collectors.toList()).get(3).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-29T09:06")));
         assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.79))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.79 - 0.42))));
         assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.21))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.79))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.42))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
-        transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+        // 16-12-2020 11:33 16-12-2020 ROYAL DUTCH SHELLA GB00B03MLX29 Dividende EUR 2,77 EUR 117,19
+        // 16-12-2020 11:33 16-12-2020 ROYAL DUTCH SHELLA GB00B03MLX29 Dividendensteuer EUR -0,41 EUR 114,42
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .collect(Collectors.toList()).get(4).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-16T11:33")));
         assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.77))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.77 - 0.41))));
         assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.18))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.77))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.41))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
-        transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+        // 21-09-2020 16:54 21-09-2020 ROYAL DUTCH SHELLA GB00B03MLX29 Dividende EUR 2,71 EUR 114,96
+        // 21-09-2020 16:54 21-09-2020 ROYAL DUTCH SHELLA GB00B03MLX29 Dividendensteuer EUR -0,41 EUR 112,25
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .collect(Collectors.toList()).get(5).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-09-21T16:54")));
         assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.71))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.71 - 0.41))));
         assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.12))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.71))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.41))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
-        transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+        // 30-06-2020 06:25 29-06-2020 SIXT SE DE0007231334 Dividende EUR 0,05 EUR 112,81
+        // 30-06-2020 06:25 29-06-2020 SIXT SE DE0007231334 Dividendensteuer EUR -0,01 EUR 112,76
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .collect(Collectors.toList()).get(6).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-30T06:25")));
         assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.05))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.05 - 0.01))));
         assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.06))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.05))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.01))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
-        transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+        // 24-06-2020 11:42 22-06-2020 ROYAL DUTCH SHELLA GB00B03MLX29 Dividende EUR 2,84 EUR 112,77
+        // 24-06-2020 11:42 22-06-2020 ROYAL DUTCH SHELLA GB00B03MLX29 Dividendensteuer EUR -0,43 EUR 109,93
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .collect(Collectors.toList()).get(7).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-24T11:42")));
         assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.84))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.84 - 0.43))));
         assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.27))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.84))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.43))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -1029,24 +1069,48 @@ public class DegiroPDFExtractorTest
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug13.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(2));
+        assertThat(results.size(), is(6));
         new AssertImportActions().check(results, "CHF");
 
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
-                        .collect(Collectors.toList()).get(0).getSubject();
+        List<Item> transactionList = results.stream().filter(TransactionItem.class::isInstance)
+                        .collect(Collectors.toList());
+
+        AccountTransaction transaction = (AccountTransaction) transactionList.get(0).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-11-26T09:01")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(569.00))));
         assertThat(transaction.getSource(), is("Kontoauszug13.txt"));
         assertThat(transaction.getNote(), is("Einzahlung"));
 
-        transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
-                        .collect(Collectors.toList()).get(1).getSubject();
+        transaction = (AccountTransaction) transactionList.get(1).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-10-26T09:26")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(569.00))));
         assertThat(transaction.getSource(), is("Kontoauszug13.txt"));
         assertThat(transaction.getNote(), is("Einzahlung"));
+
+        // 17-11-2021 07:38 16-11-2021 Währungswechsel (Einbuchung) CHF 2.02 CHF 1'185.08
+        // 17-11-2021 07:38 16-11-2021 Währungswechsel (Ausbuchung) 1.0760 USD -2.18 USD 0.00
+        // [...]
+        // 16-11-2021 09:52 15-11-2021 ACCENTURE PLC. CLASS A IE00B4BNMY34 Dividende USD 2.91 USD 2.18
+        // 16-11-2021 09:52 15-11-2021 ACCENTURE PLC. CLASS A IE00B4BNMY34 Dividendensteuer USD -0.73 USD -0.73
+        transaction = (AccountTransaction) transactionList.get(2).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-11-16T09:52")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(2.02))));
+        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(2.91 / 1.076))));
+        assertThat(transaction.getSource(), is("Kontoauszug13.txt"));
+
+        // 13-11-2021 07:45 12-11-2021 Währungswechsel (Einbuchung) CHF 1.54 CHF 1'183.06
+        // 13-11-2021 07:45 12-11-2021 Währungswechsel (Ausbuchung) 1.0866 USD -1.68 USD 0.00
+        // 12-11-2021 07:31 11-11-2021 APPLE INC US0378331005 Dividende USD 1.98 USD 1.68
+        // 12-11-2021 07:31 11-11-2021 APPLE INC US0378331005 Dividendensteuer USD -0.30 USD -0.30
+        transaction = (AccountTransaction) transactionList.get(3).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-11-12T07:31")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(1.54))));
+        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(1.98 / 1.0866))));
+        assertThat(transaction.getSource(), is("Kontoauszug13.txt"));
     }
 
     @Test

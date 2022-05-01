@@ -2,12 +2,16 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Map;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
+import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentContext;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -21,6 +25,66 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class DegiroPDFExtractor extends AbstractPDFExtractor
 {
+    private static class ExchangeRateHelper
+    {
+        private List<CurrencyExchangeItem> items = new ArrayList<>();
+
+        public Optional<CurrencyExchangeItem> findItem(int lineNumber, Money money, LocalDate date)
+        {
+            // search backwards for the first items _before_ the given line
+            // number with a currency exchange for the given currency
+
+            for (int ii = items.size() - 1; ii >= 0; ii--) // NOSONAR
+            {
+                CurrencyExchangeItem item = items.get(ii);
+                if (item.lineNo > lineNumber)
+                    continue;
+                
+                if (!item.termCurrency.equals(money.getCurrencyCode()))
+                    continue;
+
+                if (item.valuta != null && (item.date.equals(date) || item.valuta.equals(date)))
+                    return Optional.of(item);
+                
+                if (item.valuta == null && (date.equals(item.date) || money.getAmount() == item.termAmount))
+                    return Optional.of(item);
+            }
+
+            return Optional.empty();
+        }
+    }
+    
+    /**
+     * Represents two lines in the account statement for a currency exchange
+     * ("Währungswechsel" or "FX Debit").
+     * 
+     * <pre>
+     *  amount in base currency x exchange rate = amount in term currency
+     * </pre>
+     */
+    private static class CurrencyExchangeItem
+    {
+        int lineNo;
+        LocalDate date;
+        LocalDate valuta;
+
+        String baseCurrency;
+        long baseAmount;
+        String termCurrency;
+        long termAmount;
+        BigDecimal rate;
+
+        @Override
+        public String toString()
+        {
+            return "CurrencyExchangeItem [lineNo=" + lineNo + ", date=" + date + ", valuta=" + valuta
+                            + ", baseCurrency=" + baseCurrency + ", baseAmount=" + baseAmount + ", termCurrency="
+                            + termCurrency + ", termAmount=" + termAmount + ", rate=" + rate + "]";
+        }
+    }
+    
+    private static final DateTimeFormatter DATEFORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+    
     public DegiroPDFExtractor(Client client)
     {
         super(client);
@@ -151,52 +215,52 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             + "(\\-)?(?<amount>[\\.,'\\d]+) "
                             + "[\\w]{3}.*$");
 
+            ExchangeRateHelper exchangeRateHelper = new ExchangeRateHelper();
+            context.putType(exchangeRateHelper);
+            
             for (int i = 0; i < lines.length; i++)
             {
                 Matcher mFx = pCurrencyFx.matcher(lines[i]);
                 if (mFx.matches())
                 {
-                    StringBuilder contextEntryKey = new StringBuilder("exchange_");
-                    contextEntryKey.append(mFx.group("date")).append("_");
-                    // Date + (Valuta) + currencyFx + fxRate
-                    if (mFx.group("valuta") != null)
-                    {
-                        contextEntryKey.append(mFx.group("valuta").trim()).append("_");
-                    }
+                    CurrencyExchangeItem item = new CurrencyExchangeItem();
+                    item.lineNo = i;
+                    item.date = LocalDate.parse(mFx.group("date"), DATEFORMAT);
 
-                    if (!mFx.group("currency").equalsIgnoreCase(getClient().getBaseCurrency()))
-                    {
-                        contextEntryKey.append(mFx.group("currency")).append("_");
-                        contextEntryKey.append(mFx.group("fxRate")).append("_");
-                    }
+                    String valuta = mFx.group("valuta");
+                    if (valuta != null)
+                        item.valuta = LocalDate.parse(valuta.trim(), DATEFORMAT);
 
-                    /***
-                     * We run this loop backwards
-                     * if there is a page break.
-                     */
-                    for (int ii = i; ii >= 0; ii--)
+                    item.termCurrency = mFx.group("currency");
+                    item.termAmount = asAmount(mFx.group("amount"));
+                    item.rate = asExchangeRate(mFx.group("fxRate"));
+
+                    // run backwards to find the corresponding
+                    // entry
+                    for (int ii = i - 1; ii >= 0; ii--)
                     {
-                        if (!mFx.group("currency").equalsIgnoreCase(getClient().getBaseCurrency()))
+                        Matcher mBase = pCurrencyBase.matcher(lines[ii]);
+                        if (mBase.matches())
                         {
-                            Matcher mBase = pCurrencyBase.matcher(lines[ii]);
-                            if (mBase.matches() && mBase.group("currency").equalsIgnoreCase(getClient().getBaseCurrency()))
+                            if (item.valuta != null)
                             {
-                                contextEntryKey.append(mBase.group("amount"));
-                                context.put(contextEntryKey.toString(), mFx.group("amount"));
-                                break;
+                                item.baseCurrency = mBase.group("currency");
+                                item.baseAmount = asAmount(mBase.group("amount"));
                             }
-                        }
-                        else
-                        {
-                            Matcher mBase = pCurrencyBase.matcher(lines[ii]);
-                            if (mBase.matches() && !mBase.group("currency").equalsIgnoreCase(getClient().getBaseCurrency()))
+                            else
                             {
-                                contextEntryKey.append(mBase.group("currency")).append("_");
-                                contextEntryKey.append(mFx.group("fxRate")).append("_");
-                                contextEntryKey.append(mFx.group("amount"));
-                                context.put(contextEntryKey.toString(), mBase.group("amount"));
-                                break;
+                                // older documents (before
+                                // providing valuta date)
+                                // provide the currency the
+                                // other way around
+                                item.baseCurrency = item.termCurrency;
+                                item.baseAmount = item.termAmount;
+                                item.termCurrency = mBase.group("currency");
+                                item.termAmount = asAmount(mBase.group("amount"));
                             }
+
+                            exchangeRateHelper.items.add(item);
+                            break;
                         }
                     }
                 }
@@ -392,38 +456,42 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         + "[\\w]{3} "
                                         + "(\\-)?[\\.,'\\d]+$")
                         .assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
+                            DocumentContext context = type.getCurrentContext();
                             t.setDateTime(asDate(v.get("date"), v.get("time")));
                             t.setSecurity(getOrCreateSecurity(v));
 
-                            FxChange fxChange = getFxChangeFromContext(context, v.get("date"), v.get("currency"), v.get("amount"));
+                            Money money = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
 
-                            if (!v.get("currency").equalsIgnoreCase(getClient().getBaseCurrency())
-                                            && fxChange != null)
+                            if (!money.getCurrencyCode().equals(getClient().getBaseCurrency()))
                             {
-                                String currencyCodeFx = asCurrencyCode(fxChange.getMoney().getCurrencyCode());
+                                ExchangeRateHelper helper = context.getType(ExchangeRateHelper.class)
+                                                .orElseGet(ExchangeRateHelper::new);
 
-                                t.setAmount(asAmount(fxChange.getAmountBase()));
-                                t.setCurrencyCode(getClient().getBaseCurrency());
+                                Optional<CurrencyExchangeItem> item = helper.findItem(v.getStartLineNumber(), money,
+                                                t.getDateTime().toLocalDate());
+                                
+                                if (item.isPresent())
+                                {
+                                    Money converted = Money.of(item.get().baseCurrency,
+                                                    BigDecimal.valueOf(money.getAmount())
+                                                                    .divide(item.get().rate, Values.MC)
+                                                                    .setScale(0, RoundingMode.HALF_UP).longValue());
 
-                                BigDecimal exchangeRate = asExchangeRate(fxChange.getExchangeRate());
-                                BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
-                                                RoundingMode.HALF_DOWN);
+                                    t.setMonetaryAmount(converted);
+                                    t.addUnit(new Unit(Unit.Type.GROSS_VALUE, converted, money,
+                                                    BigDecimal.ONE.divide(item.get().rate, Values.MC)));
 
-                                long partialAmountDividend = inverseRate
-                                                .multiply(BigDecimal.valueOf(asAmount(v.get("amount"))))
-                                                .setScale(0, RoundingMode.HALF_DOWN).longValue();
-
-                                t.addUnit(new Unit(Unit.Type.GROSS_VALUE,
-                                                Money.of(getClient().getBaseCurrency(), partialAmountDividend),
-                                                Money.of(currencyCodeFx, asAmount(v.get("amount"))), inverseRate));
-
-                                context.put("FX_RATE_FOR_TAX_FEES", fxChange.getExchangeRate());
+                                    context.putType(item.get());
+                                }
+                                else
+                                {
+                                    // skip transaction (transactions with zero
+                                    // amount will not be added - see below)
+                                }
                             }
-                            else if (v.get("currency").equalsIgnoreCase(getClient().getBaseCurrency()))
+                            else
                             {
-                                t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                t.setAmount(asAmount(v.get("amount")));
+                                t.setMonetaryAmount(money);
                             }
                         })
 
@@ -441,30 +509,25 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         + "[\\w]{3} "
                                         + "(\\-)?[\\.,'\\d]+$")
                         .assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
-                            if (!v.get("currencyTax").equalsIgnoreCase(getClient().getBaseCurrency())
-                                            && context.get("FX_RATE_FOR_TAX_FEES") != null
-                                            && v.get("isin").equalsIgnoreCase(t.getSecurity().getIsin()))
+                            DocumentContext context = type.getCurrentContext();
+                            Money tax = Money.of(asCurrencyCode(v.get("currencyTax")), asAmount(v.get("tax")));
+
+                            Optional<CurrencyExchangeItem> item = context.getType(CurrencyExchangeItem.class);
+                            if (item.isPresent() && v.get("isin").equalsIgnoreCase(t.getSecurity().getIsin()))
                             {
-                                BigDecimal exchangeRate = asExchangeRate(context.get("FX_RATE_FOR_TAX_FEES"));
-                                BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
-                                                RoundingMode.HALF_DOWN);
+                                Money converted = Money.of(item.get().baseCurrency,
+                                                BigDecimal.valueOf(tax.getAmount()).divide(item.get().rate, Values.MC)
+                                                                .setScale(0, RoundingMode.HALF_UP).longValue());
 
-                                String currencyCodeFx = asCurrencyCode(v.get("currencyTax"));
-
-                                Money mTaxesFx = Money.of(currencyCodeFx, asAmount(v.get("tax")));
-
-                                long taxesFxInEUR = BigDecimal.valueOf(mTaxesFx.getAmount())
-                                                .divide(exchangeRate, 10, RoundingMode.HALF_DOWN)
-                                                .setScale(0, RoundingMode.HALF_DOWN).longValue();
-
-                                t.addUnit(new Unit(Unit.Type.TAX,
-                                                Money.of(t.getCurrencyCode(), taxesFxInEUR), mTaxesFx, inverseRate));
+                                Unit unit = new Unit(Unit.Type.TAX, converted, tax,
+                                                BigDecimal.ONE.divide(item.get().rate, Values.MC));
+                                t.addUnit(unit);
+                                t.setAmount(t.getAmount() - converted.getAmount());
                             }
-                            else if (v.get("currencyTax").equalsIgnoreCase(getClient().getBaseCurrency()))
+                            else if (tax.getCurrencyCode().equals(t.getCurrencyCode()))
                             {
-                                t.addUnit(new Unit(Unit.Type.TAX,
-                                                Money.of(asCurrencyCode(v.get("currencyTax")), asAmount(v.get("tax")))));
+                                t.addUnit(new Unit(Unit.Type.TAX, tax));
+                                t.setAmount(t.getAmount() - tax.getAmount());
                             }
                         })
 
@@ -480,78 +543,70 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         + "[\\w]{3} "
                                         + "(\\-)?[\\.,'\\d]+$")
                         .assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
-                            if (!v.get("currencyFee").equalsIgnoreCase(getClient().getBaseCurrency())
-                                            && context.get("FX_RATE_FOR_TAX_FEES") != null
-                                            && v.get("isin").equalsIgnoreCase(t.getSecurity().getIsin()))
+                            DocumentContext context = type.getCurrentContext();
+                            Money fee = Money.of(asCurrencyCode(v.get("currencyFee")), asAmount(v.get("feeFx")));
+                            
+                            Optional<CurrencyExchangeItem> item = context.getType(CurrencyExchangeItem.class);
+                            if (item.isPresent() && v.get("isin").equalsIgnoreCase(t.getSecurity().getIsin()))
                             {
+                                Money converted = Money.of(item.get().baseCurrency,
+                                                BigDecimal.valueOf(fee.getAmount()).divide(item.get().rate, Values.MC)
+                                                                .setScale(0, RoundingMode.HALF_UP).longValue());
 
-                                BigDecimal exchangeRate = asExchangeRate(context.get("FX_RATE_FOR_TAX_FEES"));
-                                BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
-                                                RoundingMode.HALF_DOWN);
-
-                                String currencyCodeFx = asCurrencyCode(v.get("currencyFee"));
-
-                                Money mFeesFx = Money.of(currencyCodeFx, asAmount(v.get("feeFx")));
-
-                                long feesFxInEUR = BigDecimal.valueOf(mFeesFx.getAmount())
-                                                .divide(exchangeRate, 10, RoundingMode.HALF_DOWN)
-                                                .setScale(0, RoundingMode.HALF_DOWN).longValue();
-
-                                t.addUnit(new Unit(Unit.Type.FEE,
-                                                Money.of(t.getCurrencyCode(), feesFxInEUR), mFeesFx, inverseRate));
+                                Unit unit = new Unit(Unit.Type.FEE, converted, fee,
+                                                BigDecimal.ONE.divide(item.get().rate, Values.MC));
+                                t.addUnit(unit);
+                                t.setAmount(t.getAmount() - converted.getAmount());
                             }
-                            else if (v.get("currencyFee").equalsIgnoreCase(getClient().getBaseCurrency()))
+                            else if (fee.getCurrencyCode().equals(t.getCurrencyCode()))
                             {
-                                t.addUnit(new Unit(Unit.Type.FEE,
-                                                Money.of(asCurrencyCode(v.get("currencyFee")), asAmount(v.get("feeFx")))));
+                                t.addUnit(new Unit(Unit.Type.FEE, fee));
+                                t.setAmount(t.getAmount() - fee.getAmount());
                             }
                         })
 
                         .wrap(t -> {
-                            type.getCurrentContext().remove("FX_RATE_FOR_TAX_FEES");
-                            // check if there is a delta between the gross
-                            // amount and the sum of fees and taxs
-                            Optional<Unit> grossValue = t.getUnit(Unit.Type.GROSS_VALUE);
-                            Optional<Unit> feesAndTaxesValue = t.getUnits().filter(u -> u.getType() == Unit.Type.TAX || u.getType() == Unit.Type.FEE).findAny();
-                            if (grossValue.isPresent() && feesAndTaxesValue.isPresent())
+                            
+                            Optional<CurrencyExchangeItem> item = type.getCurrentContext().getType(CurrencyExchangeItem.class);
+                            if (item.isPresent())
                             {
-                                long net = t.getAmount();
-                                long gross = grossValue.get().getAmount().getAmount();
-
-                                long feesAndTaxes = t.getUnits()
-                                                .filter(u -> u.getType() == Unit.Type.TAX || u.getType() == Unit.Type.FEE)
-                                                .mapToLong(u -> u.getAmount().getAmount()).sum();
-
-                                long delta = gross - feesAndTaxes - net;
-
-                                if (delta == 1 || delta == -1 )
+                                long delta = t.getAmount() - item.get().baseAmount;
+                                
+                                if (Math.abs(delta) == 1)
                                 {
-                                    /***
-                                     * pick the first unit and make it fit;
-                                     * see discussion
-                                     * https://github.com/buchen/portfolio/pull/1198
-                                     */
-                                    Unit unit = t.getUnits()
+                                    t.setAmount(item.get().baseAmount);
+                                    
+                                     // pick the first unit and make it fit;
+                                     // see discussion
+                                     // https://github.com/buchen/portfolio/pull/1198
+
+                                    Optional<Unit> candidate = t.getUnits()
                                                     .filter(u -> u.getType() == Unit.Type.TAX || u.getType() == Unit.Type.FEE)
                                                     .filter(u -> u.getExchangeRate() != null)
-                                                    .findFirst().orElseThrow(IllegalArgumentException::new);
-
-                                    t.removeUnit(unit);
-
-                                    long amountPlusDelta = unit.getAmount().getAmount() + delta;
-                                    long forexPlusDelta = BigDecimal.ONE
-                                                    .divide(unit.getExchangeRate(), 10, RoundingMode.HALF_DOWN)
-                                                    .multiply(BigDecimal.valueOf(amountPlusDelta))
-                                                    .setScale(0, RoundingMode.HALF_DOWN).longValue();
-
-                                    Unit newUnit = new Unit(unit.getType(),
-                                                    Money.of(unit.getAmount().getCurrencyCode(), amountPlusDelta),
-                                                    Money.of(unit.getForex().getCurrencyCode(),forexPlusDelta), unit.getExchangeRate());
-
-                                    t.addUnit(newUnit);
-                                 }
+                                                    .findFirst();
+                                    
+                                    if (candidate.isPresent())
+                                    {
+                                        Unit unit = candidate.get();
+                                        t.removeUnit(unit);
+    
+                                        long amountPlusDelta = unit.getAmount().getAmount() + delta;
+                                        long forexPlusDelta = BigDecimal.ONE
+                                                        .divide(unit.getExchangeRate(), 10, RoundingMode.HALF_DOWN)
+                                                        .multiply(BigDecimal.valueOf(amountPlusDelta))
+                                                        .setScale(0, RoundingMode.HALF_DOWN).longValue();
+    
+                                        Unit newUnit = new Unit(unit.getType(),
+                                                        Money.of(unit.getAmount().getCurrencyCode(), amountPlusDelta),
+                                                        Money.of(unit.getForex().getCurrencyCode(),forexPlusDelta),
+                                                        unit.getExchangeRate());
+    
+                                        t.addUnit(newUnit);
+                                    }
+                                }
                             }
+                            
+                            type.getCurrentContext().removeType(CurrencyExchangeItem.class);
                             
                             PDFExtractorUtils.fixGrossValueA().accept(t);
                             
@@ -1663,33 +1718,6 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                         .wrap(t -> new BuySellEntryItem(t)));
     }
 
-    private FxChange getFxChangeFromContext(Map<String, String> fxContextMap, String date, String currencyCode, String amountFx)
-    {
-//        String dateOnly = date.substring(0, date.indexOf(" ")); //$NON-NLS-1$
-        for (String key : fxContextMap.keySet())
-        {
-            String[] parts = key.split("_"); //$NON-NLS-1$
-            if (parts[0].equalsIgnoreCase("exchange")) //$NON-NLS-1$
-            {
-                // entry without valuta information
-                if (parts[2].equalsIgnoreCase(currencyCode)
-                                && (parts[1].equalsIgnoreCase(date)
-                                || fxContextMap.get(key).equalsIgnoreCase(amountFx)))
-                {
-                    return new FxChange(Money.of(currencyCode, asAmount(fxContextMap.get(key))), parts[3], parts[4]);
-                }
-                // entry with valuta
-                else if (parts[3].equalsIgnoreCase(currencyCode)
-                                && (parts[1].equalsIgnoreCase(date) 
-                                || parts[2].equalsIgnoreCase(date)))
-                {
-                    return new FxChange(Money.of(currencyCode, asAmount(fxContextMap.get(key))), parts[4], parts[5]);
-                }
-            }
-        }
-        return null;
-    }
-
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction
@@ -1701,39 +1729,10 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
-    private static class FxChange
-    {
-        public FxChange(Money money, String exchangeRate, String amountBase)
-        {
-            this.money = money;
-            this.exchangeRate = exchangeRate;
-            this.amountBase = amountBase;
-        }
-
-        private Money money;
-        private String exchangeRate;
-        private String amountBase;
-
-        public Money getMoney()
-        {
-            return money;
-        }
-
-        public String getExchangeRate()
-        {
-            return exchangeRate;
-        }
-
-        public String getAmountBase()
-        {
-            return amountBase;
-        }
-    }
-
     @Override
     protected long asAmount(String value)
     {
-        value = value.trim().replaceAll(" ", ""); //$NON-NLS-1$ //$NON-NLS-2$
+        value = value.trim().replace(" ", ""); //$NON-NLS-1$ //$NON-NLS-2$
 
         String language = "de"; //$NON-NLS-1$
         String country = "DE"; //$NON-NLS-1$
@@ -1763,7 +1762,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
     @Override
     protected long asShares(String value)
     {
-        value = value.trim().replaceAll(" ", ""); //$NON-NLS-1$ //$NON-NLS-2$
+        value = value.trim().replace(" ", ""); //$NON-NLS-1$ //$NON-NLS-2$
 
         String language = "de"; //$NON-NLS-1$
         String country = "DE"; //$NON-NLS-1$
@@ -1793,7 +1792,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
     @Override
     protected BigDecimal asExchangeRate(String value)
     {
-        value = value.trim().replaceAll(" ", ""); //$NON-NLS-1$ //$NON-NLS-2$
+        value = value.trim().replace(" ", ""); //$NON-NLS-1$ //$NON-NLS-2$
 
         String language = "de"; //$NON-NLS-1$
         String country = "DE"; //$NON-NLS-1$
