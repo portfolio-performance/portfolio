@@ -66,21 +66,24 @@ public class PDFExtractorUtils
     public static void checkAndSetGrossUnit(Money gross, Money fxGross, Object transaction, DocumentType type)
     {
         if (transaction instanceof name.abuchen.portfolio.model.Transaction)
-            PDFExtractorUtils.checkAndSetGrossUnit(gross, fxGross, (name.abuchen.portfolio.model.Transaction) transaction, type);
+            PDFExtractorUtils.checkAndSetGrossUnit(gross, fxGross,
+                            (name.abuchen.portfolio.model.Transaction) transaction, type);
         else if (transaction instanceof BuySellEntry)
-            PDFExtractorUtils.checkAndSetGrossUnit(gross, fxGross, ((BuySellEntry) transaction).getPortfolioTransaction(), type);
+            PDFExtractorUtils.checkAndSetGrossUnit(gross, fxGross,
+                            ((BuySellEntry) transaction).getPortfolioTransaction(), type);
         else
             throw new UnsupportedOperationException();
     }
 
     @SuppressWarnings("nls")
-    public static void checkAndSetGrossUnit(Money gross, Money fxGross, name.abuchen.portfolio.model.Transaction t, DocumentType type)
+    public static void checkAndSetGrossUnit(Money gross, Money fxGross, name.abuchen.portfolio.model.Transaction t,
+                    DocumentType type)
     {
         if (t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
             return;
-        
+
         Optional<PDFExchangeRate> rate = type.getCurrentContext().getType(PDFExchangeRate.class);
-        
+
         if (rate.isPresent())
         {
             t.addUnit(new Unit(Unit.Type.GROSS_VALUE, gross, fxGross, rate.get().getRate(gross.getCurrencyCode())));
@@ -91,17 +94,13 @@ public class PDFExtractorUtils
             BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
 
             /**
-             * check, if forex currency is transaction currency or not and
-             * swap amount, if necessary
+             * check, if forex currency is transaction currency or not and swap
+             * amount, if necessary
              */
             if (fxGross.getCurrencyCode().equals(t.getCurrencyCode()))
-            {
                 t.addUnit(new Unit(Unit.Type.GROSS_VALUE, fxGross, gross, inverseRate));
-            }
             else
-            {
                 t.addUnit(new Unit(Unit.Type.GROSS_VALUE, gross, fxGross, inverseRate));
-            } 
         }
     }
 
@@ -123,13 +122,13 @@ public class PDFExtractorUtils
             t.addUnit(new Unit(Unit.Type.TAX, tax));
             return;
         }
-        
+
         Optional<PDFExchangeRate> rate = type.getCurrentContext().getType(PDFExchangeRate.class);
-        
+
         if (rate.isPresent())
         {
             Money fxTax = rate.get().convert(t.getCurrencyCode(), tax);
-            
+
             if (t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
                 t.addUnit(new Unit(Unit.Type.TAX, fxTax));
             else
@@ -173,13 +172,13 @@ public class PDFExtractorUtils
             t.addUnit(new Unit(Unit.Type.FEE, fee));
             return;
         }
-        
+
         Optional<PDFExchangeRate> rate = type.getCurrentContext().getType(PDFExchangeRate.class);
-        
+
         if (rate.isPresent())
         {
             Money fxFee = rate.get().convert(t.getCurrencyCode(), fee);
-            
+
             if (t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
                 t.addUnit(new Unit(Unit.Type.FEE, fxFee));
             else
@@ -322,14 +321,14 @@ public class PDFExtractorUtils
 
         throw new DateTimeParseException(Messages.MsgErrorNotAValidDate, value, 0);
     }
-    
+
     public static Consumer<Transaction> fixGrossValue()
     {
         return t -> {
             // check if the relevant transaction properties have been parsed
             if (t.getCurrencyCode() == null || t.getSecurity() == null || t.getSecurity().getCurrencyCode() == null)
                 return;
-            
+
             // if transaction currency equals to the currency of
             // the security, then there is no forex information required
             if (t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
@@ -349,7 +348,9 @@ public class PDFExtractorUtils
                     // check if it a rounding difference that is acceptable
                     try
                     {
-                        Unit u = new Unit(Unit.Type.GROSS_VALUE, expectedGross, grossUnit.getForex(), grossUnit.getExchangeRate());
+                        Unit u = new Unit(Unit.Type.GROSS_VALUE, expectedGross, grossUnit.getForex(),
+                                        grossUnit.getExchangeRate());
+
                         t.removeUnit(grossUnit);
                         t.addUnit(u);
                         return;
@@ -358,14 +359,14 @@ public class PDFExtractorUtils
                     {
                         // recalculate the unit to fix the gross value
                     }
-                    
-                    long caculatedGrossValue = BigDecimal.valueOf(expectedGross.getAmount()) //
-                                    .divide(grossUnit.getExchangeRate(), Values.MC) //
-                                    .setScale(0, RoundingMode.HALF_EVEN).longValue();
+
+                    Money caculatedGrossValue = Money.of(grossUnit.getForex().getCurrencyCode(),
+                                    BigDecimal.valueOf(expectedGross.getAmount())
+                                                    .divide(grossUnit.getExchangeRate(), Values.MC)
+                                                    .setScale(0, RoundingMode.HALF_EVEN).longValue());
 
                     t.removeUnit(grossUnit);
-                    t.addUnit(new Unit(Unit.Type.GROSS_VALUE, expectedGross, Money
-                                    .of(grossUnit.getForex().getCurrencyCode(), caculatedGrossValue),
+                    t.addUnit(new Unit(Unit.Type.GROSS_VALUE, expectedGross, caculatedGrossValue,
                                     grossUnit.getExchangeRate()));
                 }
             }
@@ -378,12 +379,11 @@ public class PDFExtractorUtils
         };
     }
 
-    
     public static Consumer<AccountTransaction> fixGrossValueA()
     {
         return t -> fixGrossValue().accept(t);
     }
-    
+
     public static Consumer<BuySellEntry> fixGrossValueBuySell()
     {
         return t -> fixGrossValue().accept(t.getPortfolioTransaction());
