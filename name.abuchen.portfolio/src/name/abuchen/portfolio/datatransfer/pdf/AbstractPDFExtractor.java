@@ -64,7 +64,7 @@ public abstract class AbstractPDFExtractor implements Extractor
     {
         return bankIdentifier;
     }
-    
+
     /* package */ NumberFormat getNumberFormat()
     {
         return numberFormat;
@@ -114,8 +114,7 @@ public abstract class AbstractPDFExtractor implements Extractor
                 else if (subject.getNote() == null || trim(subject.getNote()).length() == 0)
                     item.getSubject().setNote(filename);
                 else
-                    item.getSubject().setNote(
-                                    trim(item.getSubject().getNote()).concat(" | ").concat(filename)); //$NON-NLS-1$
+                    item.getSubject().setNote(trim(item.getSubject().getNote()).concat(" | ").concat(filename)); //$NON-NLS-1$
             }
 
             return items;
@@ -238,7 +237,7 @@ public abstract class AbstractPDFExtractor implements Extractor
             throw new IllegalArgumentException(e);
         }
     }
-    
+
     protected PDFExchangeRate asExchangeRate(Map<String, String> data)
     {
         return new PDFExchangeRate(asExchangeRate(stripBlanks(data.get("exchangeRate"))), //$NON-NLS-1$
@@ -277,7 +276,7 @@ public abstract class AbstractPDFExtractor implements Extractor
     {
         return PDFExtractorUtils.asDate(date, time);
     }
-    
+
     protected void processTaxEntries(Object t, Map<String, String> v, DocumentType type)
     {
         Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))); //$NON-NLS-1$ //$NON-NLS-2$
