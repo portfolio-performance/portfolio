@@ -211,6 +211,11 @@ public abstract class AbstractPDFExtractor implements Extractor
         }
     }
 
+    protected long asShares(String value, String language, String country)
+    {
+        return PDFExtractorUtils.asShares(value, language, country);
+    }
+
     protected String asCurrencyCode(String currency)
     {
         // ensure that the security is always created with a valid currency code
