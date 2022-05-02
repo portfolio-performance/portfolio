@@ -237,7 +237,8 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                 .match("^B r u t t o b e t r a g : (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,\\d\\s]+)$")
                 .match("^.* (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d\\s]+) (?<currency>[\\w]{3}) [\\.,\\d\\s]+$")                     
                 .assign((t, v) -> {
-                    
+                    v.put("exchangeRate", stripBlanks(v.get("exchangeRate")));
+
                     PDFExchangeRate rate = asExchangeRate(v);
                     type.getCurrentContext().putType(rate);
                     
