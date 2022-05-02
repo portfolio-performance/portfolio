@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import static name.abuchen.portfolio.util.TextUtil.stripBlanks;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
@@ -235,7 +234,7 @@ public abstract class AbstractPDFExtractor implements Extractor
 
     protected PDFExchangeRate asExchangeRate(Map<String, String> data)
     {
-        return new PDFExchangeRate(asExchangeRate(stripBlanks(data.get("exchangeRate"))), //$NON-NLS-1$
+        return new PDFExchangeRate(asExchangeRate(data.get("exchangeRate")), //$NON-NLS-1$
                         asCurrencyCode(data.get("baseCurrency")), //$NON-NLS-1$
                         asCurrencyCode(data.get("termCurrency"))); //$NON-NLS-1$
     }
