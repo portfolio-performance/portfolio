@@ -28,6 +28,34 @@ public class StringToCurrencyConverterTest
     }
     
     @Test
+    public void testValidDEDecimalAmount()
+    {
+        Locale.setDefault(new Locale("DE", "DE"));
+        
+        String input = ",34";
+
+        StringToCurrencyConverter converter = new StringToCurrencyConverter(Values.Amount);
+        Long output = converter.convert(input);
+        
+        Long expectedResult = 34l ;
+        assertEquals(output, expectedResult);
+    }
+    
+    @Test
+    public void testValidDENummberAmount()
+    {
+        Locale.setDefault(new Locale("DE", "DE"));
+        
+        String input = "12";
+
+        StringToCurrencyConverter converter = new StringToCurrencyConverter(Values.Amount);
+        Long output = converter.convert(input);
+        
+        Long expectedResult = 1200l ;
+        assertEquals(output, expectedResult);
+    }
+    
+    @Test
     public void testInvalidDENegativeAmount()
     {
         Locale.setDefault(new Locale("DE", "DE"));
@@ -40,7 +68,9 @@ public class StringToCurrencyConverterTest
         {
             converter.convert(input);
             fail("Expected a IllegalArgumentException to be thrown");
-        } catch (IllegalArgumentException e) {
+        }
+        catch (IllegalArgumentException e)
+        {
             assertEquals(e.getMessage(), "Keine gültige Zahl: -12,34");
         }
    
