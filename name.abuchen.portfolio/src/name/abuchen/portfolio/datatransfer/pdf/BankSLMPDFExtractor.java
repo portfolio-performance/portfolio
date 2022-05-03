@@ -96,19 +96,24 @@ public class BankSLMPDFExtractor extends AbstractPDFExtractor
 
                 // Total Kurswert EUR -74'120.00
                 // Change EUR/CHF 1.241652 CHF -92'031.25
-                .section("fxCurrency", "fxGross", "currency", "gross", "exchangeRate").optional()
+                .section("fxCurrency", "fxGross", "termCurrency", "baseCurrency", "exchangeRate", "currency", "gross").optional()
                 .match("^Total Kurswert (?<fxCurrency>[\\w]{3}) (\\-)?(?<fxGross>[\\.',\\d]+)$")
-                .match("^Change [\\w]{3}/(?<currency>[\\w]{3}) (?<exchangeRate>[\\.',\\d]+) [\\w]{3} (\\-)?(?<gross>[\\.',\\d]+)$")
+                .match("^Change (?<termCurrency>[\\w]{3})\\/(?<baseCurrency>[\\w]{3}) (?<exchangeRate>[\\.',\\d]+) (?<currency>[\\w]{3}) (\\-)?(?<gross>[\\.',\\d]+)$")
                 .assign((t, v) -> {
-                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                    if (!t.getPortfolioTransaction().getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
-                    {
-                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
-                    }
-                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
+                    type.getCurrentContext().putType(asExchangeRate(v));
 
-                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
                     Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
+                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                    
+//                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+//                    if (!t.getPortfolioTransaction().getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
+//                    {
+//                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+//                    }
+//                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
+//
+//                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+//                    Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
 
                     checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
