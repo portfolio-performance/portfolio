@@ -3,7 +3,6 @@ package name.abuchen.portfolio.datatransfer.pdf;
 import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetGrossUnit;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -96,19 +95,14 @@ public class BankSLMPDFExtractor extends AbstractPDFExtractor
 
                 // Total Kurswert EUR -74'120.00
                 // Change EUR/CHF 1.241652 CHF -92'031.25
-                .section("fxCurrency", "fxGross", "currency", "gross", "exchangeRate").optional()
+                .section("fxCurrency", "fxGross", "termCurrency", "baseCurrency", "exchangeRate", "currency", "gross").optional()
                 .match("^Total Kurswert (?<fxCurrency>[\\w]{3}) (\\-)?(?<fxGross>[\\.',\\d]+)$")
-                .match("^Change [\\w]{3}/(?<currency>[\\w]{3}) (?<exchangeRate>[\\.',\\d]+) [\\w]{3} (\\-)?(?<gross>[\\.',\\d]+)$")
+                        .match("^Change (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.',\\d]+) (?<currency>[\\w]{3}) (\\-)?(?<gross>[\\.',\\d]+)$")
                 .assign((t, v) -> {
-                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                    if (!t.getPortfolioTransaction().getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
-                    {
-                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
-                    }
-                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
+                    type.getCurrentContext().putType(asExchangeRate(v));
 
-                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
                     Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
+                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
 
                     checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
@@ -171,23 +165,15 @@ public class BankSLMPDFExtractor extends AbstractPDFExtractor
 
                 // Brutto (17'000 * EUR 0.26) EUR 4'420.00
                 // Change EUR / CHF 1.067227 CHF 3'302.00
-                .section("currency", "gross", "fxCurrency", "exchangeRate").optional()
+                .section("currency", "gross", "termCurrency", "baseCurrency", "fxCurrency", "exchangeRate").optional()
                 .match("^Brutto \\([\\.',\\d]+ \\* [\\w]{3} [\\.',\\d]+\\) (?<currency>[\\w]{3}) (?<gross>[\\.',\\d]+)$")
-                .match("^Change [\\w]{3} \\/ (?<fxCurrency>[\\w]{3}) (?<exchangeRate>[\\.',\\d]+) [\\w]{3} (\\-)?[\\.',\\d]+$")
+                        .match("^Change (?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.',\\d]+) (?<fxCurrency>[\\w]{3}) (\\-)?[\\.',\\d]+$")
                 .assign((t, v) -> {
-                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                    if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
-                    {
-                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
-                    }
-                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
-
-                    BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
-
+                    PDFExchangeRate rate = asExchangeRate(v);
+                    type.getCurrentContext().putType(asExchangeRate(v));
+                    
                     Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
-                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")),
-                                    BigDecimal.valueOf(gross.getAmount()).multiply(inverseRate)
-                                                    .setScale(0, RoundingMode.HALF_UP).longValue());
+                    Money fxGross = rate.convert(asCurrencyCode(v.get("fxCurrency")), gross);
 
                     checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
