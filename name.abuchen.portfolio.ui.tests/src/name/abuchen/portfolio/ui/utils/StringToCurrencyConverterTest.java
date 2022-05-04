@@ -71,9 +71,7 @@ public class StringToCurrencyConverterTest
         }
         catch (IllegalArgumentException e)
         {
-            assertEquals(e.getMessage(), "Keine gültige Zahl: -12,34");
         }
-   
     }
     
     @Test
