@@ -26,6 +26,7 @@ import java.util.ResourceBundle;
     HURRICANE_SANDY,
     INDEPENDENCE,
     INTERNATION_WOMENS_DAY,
+    JUNETEENTH,
     LABOUR_DAY,
     MARTIN_LUTHER_KING,
     MEMORIAL,

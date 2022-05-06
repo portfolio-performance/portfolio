@@ -20,6 +20,7 @@ import static name.abuchen.portfolio.util.HolidayName.GOOD_FRIDAY;
 import static name.abuchen.portfolio.util.HolidayName.HURRICANE_SANDY;
 import static name.abuchen.portfolio.util.HolidayName.INTERNATION_WOMENS_DAY;
 import static name.abuchen.portfolio.util.HolidayName.INDEPENDENCE;
+import static name.abuchen.portfolio.util.HolidayName.JUNETEENTH;
 import static name.abuchen.portfolio.util.HolidayName.LABOUR_DAY;
 import static name.abuchen.portfolio.util.HolidayName.MARTIN_LUTHER_KING;
 import static name.abuchen.portfolio.util.HolidayName.MEMORIAL;
@@ -110,6 +111,7 @@ public class TradeCalendarManager
         tc.add(weekday(WASHINGTONS_BIRTHDAY, 3, DayOfWeek.MONDAY, Month.FEBRUARY));
         tc.add(easter(GOOD_FRIDAY, -2));
         tc.add(last(MEMORIAL, DayOfWeek.MONDAY, Month.MAY));
+        tc.add(fixed(JUNETEENTH, Month.JUNE, 19).moveIf(DayOfWeek.SATURDAY, -1).moveIf(DayOfWeek.SUNDAY, 1).validFrom(2022));
         tc.add(fixed(INDEPENDENCE, Month.JULY, 4).moveIf(DayOfWeek.SATURDAY, -1).moveIf(DayOfWeek.SUNDAY, 1));
         tc.add(weekday(LABOUR_DAY, 1, DayOfWeek.MONDAY, Month.SEPTEMBER));
         tc.add(weekday(THANKSGIVING, 4, DayOfWeek.THURSDAY, Month.NOVEMBER));
