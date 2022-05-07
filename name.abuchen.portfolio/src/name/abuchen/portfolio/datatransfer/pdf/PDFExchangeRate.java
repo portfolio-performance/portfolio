@@ -26,6 +26,11 @@ import name.abuchen.portfolio.money.Values;
         this.rate = Objects.requireNonNull(rate);
         this.baseCurrency = Objects.requireNonNull(baseCurrency);
         this.termCurrency = Objects.requireNonNull(termCurrency);
+
+        if (baseCurrency.equals(termCurrency) && !rate.equals(BigDecimal.ONE))
+            throw new IllegalArgumentException(
+                            MessageFormat.format("base and term currency are equal ({0}) but exchange rate is {1}",
+                                            baseCurrency, Values.ExchangeRate.format(rate)));
     }
 
     public BigDecimal getRate()

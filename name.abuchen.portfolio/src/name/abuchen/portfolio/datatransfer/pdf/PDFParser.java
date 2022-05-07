@@ -75,18 +75,18 @@ import name.abuchen.portfolio.model.TypedMap;
         {
             backingMap.put(value.getClass().getName(), value);
         }
-        
+
         public <T> Optional<T> getType(Class<T> key)
         {
             Object v = backingMap.get(key.getName());
-            return key.isInstance(v) ? Optional.of(key.cast(v)) : Optional.empty(); 
+            return key.isInstance(v) ? Optional.of(key.cast(v)) : Optional.empty();
         }
-        
+
         public void removeType(Class<?> key)
         {
             backingMap.remove(key.getName());
         }
-        
+
         public boolean getBoolean(String key)
         {
             Object answer = backingMap.get(key);
@@ -96,9 +96,9 @@ import name.abuchen.portfolio.model.TypedMap;
 
             if (answer instanceof Boolean)
                 return (Boolean) answer;
-            
+
             if (answer instanceof String)
-                return Boolean.getBoolean((String)answer);
+                return Boolean.getBoolean((String) answer);
 
             throw new IllegalArgumentException(key);
         }
@@ -107,7 +107,7 @@ import name.abuchen.portfolio.model.TypedMap;
         {
             backingMap.put(key, value);
         }
-        
+
         @Override
         public void putAll(Map<? extends String, ? extends String> m)
         {
@@ -408,13 +408,16 @@ import name.abuchen.portfolio.model.TypedMap;
         private final Map<String, String> base;
         private final int startLineNumber;
         private final int endLineNumber;
+        private final String fileName;
         private final TypedMap txContext;
 
-        private ParsedData(Map<String, String> base, int startLineNumber, int endLineNumber, TypedMap txContext)
+        private ParsedData(Map<String, String> base, int startLineNumber, int endLineNumber, String fileName,
+                        TypedMap txContext)
         {
             this.base = base;
             this.startLineNumber = startLineNumber;
             this.endLineNumber = endLineNumber;
+            this.fileName = fileName;
             this.txContext = txContext;
         }
 
@@ -426,6 +429,11 @@ import name.abuchen.portfolio.model.TypedMap;
         public int getEndLineNumber()
         {
             return endLineNumber;
+        }
+
+        public String getFileName()
+        {
+            return fileName;
         }
 
         /**
@@ -592,7 +600,7 @@ import name.abuchen.portfolio.model.TypedMap;
                                             Messages.MsgErrorMissingValueMatches, values.keySet().toString(),
                                             Arrays.toString(attributes), filename, lineNo + 1, lineNoEnd + 1));
 
-                        assignment.accept(target, new ParsedData(values, lineNo, lineNoEnd, txContext));
+                        assignment.accept(target, new ParsedData(values, lineNo, lineNoEnd, filename, txContext));
 
                         // if there might be multiple occurrences that match,
                         // the found values need to be added and the search
