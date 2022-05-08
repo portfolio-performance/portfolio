@@ -948,7 +948,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 .match("^(abzgl\\. )?Grundgeb.hr (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})([\\s]+)?$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
-                // Consorsbank Ausgabegeb�hr 2,50% EUR 0,61
+                // Consorsbank Ausgabegeb.hr 2,50% EUR 0,61
                 .section("fee", "currency").optional()
                 .match("^(abzgl\\. )?Consorsbank Ausgabegeb.hr [\\.,\\d]+% (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)([\\s]+)?$")
                 .assign((t, v) -> processFeeEntries(t, v, type))

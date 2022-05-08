@@ -487,7 +487,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 
                 // Kurswert EUR 52,63
                 // Rabatt EUR - 2,63
-                // Der regul�re Ausgabeaufschlag von 5,263% ist im Kurs enthalten.
+                // Der regul.re Ausgabeaufschlag von 5,263% ist im Kurs enthalten.
                 .section("currency", "amount", "discountCurrency", "discount", "percentageFee").optional()
                 .match("^Kurswert (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
                 .match("^Rabatt (?<discountCurrency>[\\w]{3}) \\- (?<discount>[\\.,\\d]+)$")
