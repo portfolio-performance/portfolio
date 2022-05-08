@@ -41,7 +41,7 @@
 		<repository>
 			<id>portfolio-jre11</id>
 			<layout>p2</layout>
-			<url>https://www.portfolio-performance.info/bundled-jre/11.0.12</url>
+			<url>https://www.portfolio-performance.info/bundled-jre/11.0.15</url>
 		</repository>
 	</repositories>
 
