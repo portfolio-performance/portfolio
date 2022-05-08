@@ -23,7 +23,7 @@ import name.abuchen.portfolio.money.CurrencyUnit;
 
 public class Client
 {
-    public static final int CURRENT_VERSION = 55;
+    public static final int CURRENT_VERSION = 56;
     public static final int VERSION_WITH_CURRENCY_SUPPORT = 29;
 
     private transient PropertyChangeSupport propertyChangeSupport; // NOSONAR
