@@ -3,8 +3,6 @@ package name.abuchen.portfolio.datatransfer.pdf;
 import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -63,13 +61,6 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> {
                     if (v.get("type").equals("Verkauf") || v.get("type").equals("Gesamtfälligkeit"))
                         t.setType(PortfolioTransaction.Type.SELL);
-
-                    /***
-                     * If we have multiple entries in the document,
-                     * with taxes and tax refunds,
-                     * then the "negative" flag must be removed.
-                     */
-                    type.getCurrentContext().remove("negative");
                 })
 
                 // ComStage-MSCI USA TRN UCIT.ETF Inhaber-Anteile I o.N. LU0392495700
@@ -168,11 +159,10 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                         )
 
                 /***
-                 * If changes are made in this area, 
-                 * the tax refund function must be adjusted.
+                 * If changes are made in this area, the tax refund
+                 * function must be adjusted.
                  * addBuySellTaxReturnBlock(type);
                  */
-
                 .oneOf(
                                 // 08.01.2015 8022574001 EUR 150,00
                                 section -> section
@@ -195,29 +185,30 @@ public class DABPDFExtractor extends AbstractPDFExtractor
 
                 // Handelstag 24.08.2015  Kurswert                    USD 5.205,00
                 // 03.08.2015 0000000000 EUR/USD 1,100297 EUR 4.798,86
-                .section("fxCurrency", "fxGross", "exchangeRate", "currency").optional()
+                .section("fxCurrency", "fxGross", "baseCurrency", "termCurrency", "exchangeRate", "currency").optional()
                 .match("^.* Kurswert ([\\s]+)?(?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,\\d]+)([\\-\\s]+)?$")
-                .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\w]{3}\\/[\\w]{3} (?<exchangeRate>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+$")
+                .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+$")
                 .assign((t, v) -> {
-                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                    if (t.getPortfolioTransaction().getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
-                    {
-                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
-                    }
-                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
-
-                    BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
-
+                    PDFExchangeRate rate = asExchangeRate(v);
+                    type.getCurrentContext().putType(rate);
+                    
                     Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
-                    Money gross = Money.of(asCurrencyCode(v.get("currency")),
-                                    BigDecimal.valueOf(fxGross.getAmount()).multiply(inverseRate)
-                                                    .setScale(0, RoundingMode.HALF_UP).longValue());
+                    Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
 
                     checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
 
                 .conclude(PDFExtractorUtils.fixGrossValueBuySell())
-                .wrap(BuySellEntryItem::new);
+
+                .wrap(t -> {
+                    /**
+                     * If we have multiple entries in the document,
+                     * then the "negative" flag must be removed.
+                     */
+                    type.getCurrentContext().remove("negative");
+
+                    return new BuySellEntryItem(t);
+                });
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
@@ -236,14 +227,6 @@ public class DABPDFExtractor extends AbstractPDFExtractor
         pdfTransaction.subject(() -> {
             AccountTransaction entry = new AccountTransaction();
             entry.setType(AccountTransaction.Type.DIVIDENDS);
-
-            /***
-             * If we have multiple entries in the document,
-             * with taxes and tax refunds,
-             * then the "negative" flag must be removed.
-             */
-            type.getCurrentContext().remove("negative");
-
             return entry;
         });
 
@@ -320,10 +303,18 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                                         })
                                 ,
                                 // Netto in USD zugunsten IBAN DE90 209,38 USD
+                                section -> section
+                                        .attributes("amount", "currency")
+                                        .match("^Netto in [\\w]{3} zugunsten .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                                        .assign((t, v) -> {
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                        })
+                                ,
                                 // Netto zugunsten IBAN DE11 7603 0080 0111 1111 14 437,22 EUR
                                 section -> section
                                         .attributes("amount", "currency")
-                                        .match("^Netto .*zugunsten IBAN .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                                        .match("^Netto zugunsten .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                                         .assign((t, v) -> {
                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                             t.setAmount(asAmount(v.get("amount")));
@@ -333,89 +324,61 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 // 27.08.2020 123456789 USD 4,64
                 // ausländische Dividende EUR 5,25
                 // Devisenkurs: EUR/USD 1,1814
-                // 30.06.2021 5325658010 USD 20,49
-                // Ertrag für 2020/21 USD 25,11
-                // Devisenkurs: EUR/USD 1,1914
-                .section("currency", "exchangeRate", "fxCurrency", "fxGross").optional()
+                .section("currency", "fxCurrency", "fxGross", "exchangeRate", "termCurrency", "baseCurrency").optional()
                 .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+$")
-                .match("^(Ertrag f.r [\\d]{4}\\/[\\d]{2}|ausl.ndische Dividende) (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,\\d]+)$")
-                .match("^Devisenkurs: [\\w]{3}\\/[\\w]{3} (?<exchangeRate>[\\.,\\d]+)$")
+                .match("^ausl.ndische Dividende (?<fxCurrency>[\\w]{3}) ([\\s]+)?(?<fxGross>[\\.,\\d]+).*$")
+                .match("^Devisenkurs: (?<termCurrency>[\\w]{3})\\/(?<baseCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                    if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
-                    {
-                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
-                    }
-                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
-
-                    BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
-
+                    PDFExchangeRate rate = asExchangeRate(v);
+                    type.getCurrentContext().putType(rate);
+                    
                     Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
-                    Money gross = Money.of(asCurrencyCode(v.get("currency")),
-                                    BigDecimal.valueOf(fxGross.getAmount()).multiply(inverseRate)
-                                                    .setScale(0, RoundingMode.HALF_UP).longValue());
-
+                    Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
+                    
                     checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
 
-                // 30.03.2015 0000000000 EUR/ZAR 13,195 EUR 586,80
-                // ausländische Dividende EUR 788,18
-                .section("fxCurrency", "exchangeRate", "currency", "gross").optional()
-                .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\w]{3}\\/(?<fxCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+) [\\w]{3} [\\.,\\d]+$")
+                // 01.12.2021 1234567891 EUR/JPY 127,99 EUR 3,59
+                // ausländische Dividende EUR 4,84
+                .section("baseCurrency", "termCurrency", "exchangeRate", "currency", "gross").optional()
+                .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+) [\\w]{3} [\\.,\\d]+$")
                 .match("^ausl.ndische Dividende (?<currency>[\\w]{3}) ([\\s]+)?(?<gross>[\\.,\\d]+).*$")
                 .assign((t, v) -> {
-                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                    if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
-                    {
-                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
-                    }
-                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
-
+                    PDFExchangeRate rate = asExchangeRate(v);
+                    type.getCurrentContext().putType(rate);
+                    
                     Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
-                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")),
-                                    BigDecimal.valueOf(gross.getAmount()).multiply(exchangeRate)
-                                                    .setScale(0, RoundingMode.HALF_UP).longValue());
-
+                    Money fxGross = rate.convert(asCurrencyCode(v.get("termCurrency")), gross);
+                    
                     checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
 
                 // 07.02.2017 1234567 EUR/USD 1,0797 EUR 11,06
                 // Ertrag für 2016 USD 14,24
-                .section("exchangeRate", "currency", "fxCurrency", "fxGross").optional()
-                .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\w]{3}\\/[\\w]{3} (?<exchangeRate>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+$")
+                .section("baseCurrency", "termCurrency", "exchangeRate", "currency", "fxCurrency", "fxGross").optional()
+                .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+$")
                 .match("^Ertrag f.r [\\d]{4} (?<fxCurrency>[\\w]{3}) ([\\s]+)?(?<fxGross>[\\.,\\d]+).*$")
                 .assign((t, v) -> {
-                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                    if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
-                    {
-                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
-                    }
-                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
-
-                    BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
-
+                    PDFExchangeRate rate = asExchangeRate(v);
+                    type.getCurrentContext().putType(rate);
+                    
                     Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
-                    Money gross = Money.of(asCurrencyCode(v.get("currency")),
-                                    BigDecimal.valueOf(fxGross.getAmount()).multiply(inverseRate)
-                                                    .setScale(0, RoundingMode.HALF_UP).longValue());
-
+                    Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
+                    
                     checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
 
                 // Brutto in USD 281,25 USD
                 // Devisenkurs 1,249900 USD / EUR
                 // Brutto in EUR 225,02 EUR
-                .section("fxGross", "fxCurrency", "exchangeRate", "gross", "currency").optional()
-                .match("^Brutto in [\\w]{3} (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
-                .match("^Devisenkurs (?<exchangeRate>[\\.,\\d]+) [\\w]{3} \\/ [\\w]{3}$")
+                // Netto in USD zugunsten IBAN DE90 209,38 USD
+                .section("termCurrency", "gross", "currency", "exchangeRate", "baseCurrency", "fxGross", "fxCurrency").optional()
                 .match("^Brutto in [\\w]{3} (?<gross>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^Devisenkurs (?<exchangeRate>[\\.,\\d]+) (?<termCurrency>[\\w]{3}) \\/ (?<baseCurrency>[\\w]{3})$")
+                .match("^Brutto in [\\w]{3} (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
+                .match("^Netto in [\\w]{3} zugunsten .*$")
                 .assign((t, v) -> {
-                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                    if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
-                    {
-                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
-                    }
-                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
+                    type.getCurrentContext().putType(asExchangeRate(v));
 
                     Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
                     Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
@@ -423,8 +386,33 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                     checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
 
+                // 30.06.2021 5325658010 USD 20,49
+                // Ertrag für 2020/21 USD 25,11
+                // Devisenkurs: EUR/USD 1,1914
+                .section("currency", "gross", "termCurrency", "baseCurrency", "exchangeRate").optional()
+                .match("^Ertrag f.r [\\d]{4}\\/[\\d]{2} (?<currency>[\\w]{3}) ([\\s]+)?(?<gross>[\\.,\\d]+).*$")
+                .match("^Devisenkurs: (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+)$")
+                .assign((t, v) -> {
+                    PDFExchangeRate rate = asExchangeRate(v);
+                    type.getCurrentContext().putType(rate);
+
+                    Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
+                    Money fxGross = rate.convert(asCurrencyCode(v.get("baseCurrency")), gross);
+                    
+                    checkAndSetGrossUnit(gross, fxGross, t, type);
+                })
+
                 .conclude(PDFExtractorUtils.fixGrossValueA())
-                .wrap(TransactionItem::new);
+
+                .wrap(t -> {
+                    /**
+                     * If we have multiple entries in the document, then
+                     * the "noTax" flag must be removed.
+                     */
+                    type.getCurrentContext().remove("negative");
+
+                    return new TransactionItem(t);
+                });
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
@@ -442,14 +430,6 @@ public class DABPDFExtractor extends AbstractPDFExtractor
         pdfTransaction.subject(() -> {
             PortfolioTransaction entry = new PortfolioTransaction();
             entry.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
-
-            /***
-             * If we have multiple entries in the document,
-             * with taxes and tax refunds,
-             * then the "negative" flag must be removed.
-             */
-            type.getCurrentContext().remove("negative");
-
             return entry;
         });
 
@@ -534,7 +514,15 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                     t.setAmount(0L);
                 })
 
-                .wrap(TransactionItem::new);
+                .wrap(t -> {
+                    /**
+                     * If we have multiple entries in the document, then
+                     * the "noTax" flag must be removed.
+                     */
+                    type.getCurrentContext().remove("negative");
+
+                    return new TransactionItem(t);
+                });
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
@@ -658,23 +646,17 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 // zu versteuern (negativ) EUR 341,55
                 // Wert Konto-Nr. Abrechnungs-Nr. Betrag zu Ihren Gunsten
                 // 24.08.2015 0000000000 00000000 EUR 90,09
-                .section("fxCurrency", "exchangeRate", "currency", "gross").optional()
-                .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\w]{3}\\/(?<fxCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+) [\\w]{3} [\\.,\\d]+$")
+                .section("baseCurrency", "termCurrency", "exchangeRate", "currency", "gross").optional()
+                .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+) [\\w]{3} [\\.,\\d]+$")
                 .match("^zu versteuern \\(negativ\\) .*$")
                 .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\d]+ (?<currency>[\\w]{3}) (?<gross>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                    if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
-                    {
-                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
-                    }
-                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
+                    PDFExchangeRate rate = asExchangeRate(v);
+                    type.getCurrentContext().putType(rate);
 
                     Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
-                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")),
-                                    BigDecimal.valueOf(gross.getAmount()).multiply(exchangeRate)
-                                                    .setScale(0, RoundingMode.HALF_UP).longValue());
-                    
+                    Money fxGross = rate.convert(asCurrencyCode(v.get("termCurrency")), gross);
+
                     checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
 
@@ -695,9 +677,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
             {
                 Matcher m = pCurrency.matcher(line);
                 if (m.matches())
-                {
                     context.put("currency", m.group(1));
-                }
             }
         });
         this.addDocumentTyp(type);
