@@ -3,8 +3,6 @@ package name.abuchen.portfolio.datatransfer.pdf;
 import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -176,17 +174,14 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
 
                 // Abrechnungsbetrag EUR 6,22 USD 6,88 USD 102,155229 Anteilumsatz: 0,067
                 // USD 1,106630
-                .section("currency", "gross", "fxCurrency", "fxGross", "exchangeRate").optional()
+                .section("currency", "gross", "fxCurrency", "fxGross", "termCurrency", "exchangeRate").optional()
                 .match("^Abrechnungsbetrag (?<currency>[\\w]{3}) (?<gross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,\\d]+) .*$")
                 .find("Devisenkurs .*$")
-                .match("^[\\w]{3} (?<exchangeRate>[\\.,\\d]+)$")
+                .match("^(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                    if (t.getPortfolioTransaction().getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
-                    {
-                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
-                    }
-                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
+                    v.put("baseCurrency", asCurrencyCode(v.get("currency")));
+
+                    type.getCurrentContext().putType(asExchangeRate(v));
 
                     Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
                     Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
@@ -275,12 +270,11 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
 
         Block block = new Block("^ERTRAGSAUSSCH.TTUNG$", "^Bestand neu: .*$");
         type.addBlock(block);
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>()
-            .subject(() -> {
-                AccountTransaction entry = new AccountTransaction();
-                entry.setType(AccountTransaction.Type.DIVIDENDS);
-                return entry;
-            });
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>().subject(() -> {
+            AccountTransaction entry = new AccountTransaction();
+            entry.setType(AccountTransaction.Type.DIVIDENDS);
+            return entry;
+        });
 
         pdfTransaction
                 // Ausschüttung (pro Anteil EUR 0,2292000): EUR 0,14
