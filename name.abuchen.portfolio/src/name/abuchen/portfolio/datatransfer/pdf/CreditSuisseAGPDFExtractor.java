@@ -33,7 +33,7 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("Ihr Kauf|Ihr Verkauf");
+        DocumentType type = new DocumentType("(Ihr Kauf|Ihr Verkauf)");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -53,9 +53,7 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                 .match("^Ihr (?<type>(Kauf|Verkauf)) .*$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("Verkauf"))
-                    {
                         t.setType(PortfolioTransaction.Type.SELL);
-                    }
                 })
 
                 // 900 Registered Shs Iron Mountain Inc USD 0.01
@@ -130,7 +128,7 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                     t.setAmount(t.getPortfolioTransaction().getAmount() + asAmount(v.get("feeRefund")));
                 })
 
-                .wrap(t -> new BuySellEntryItem(t));
+                .wrap(BuySellEntryItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
@@ -144,12 +142,11 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
 
         Block block = new Block("^Ertragsabrechnung .*$");
         type.addBlock(block);
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>()
-            .subject(() -> {
-                AccountTransaction entry = new AccountTransaction();
-                entry.setType(AccountTransaction.Type.DIVIDENDS);
-                return entry;
-            });
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>().subject(() -> {
+            AccountTransaction entry = new AccountTransaction();
+            entry.setType(AccountTransaction.Type.DIVIDENDS);
+            return entry;
+        });
 
         pdfTransaction
                 // 900 REGISTERED SHS IRON MOUNTAIN INC
