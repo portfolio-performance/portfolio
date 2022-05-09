@@ -129,12 +129,11 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Steuerliche Behandlung: (Wertpapier(kauf|verkauf)|Verkauf|.*Dividende)");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>()
-            .subject(() -> {
-                AccountTransaction entry = new AccountTransaction();
-                entry.setType(AccountTransaction.Type.TAX_REFUND);
-                return entry;
-            });
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>().subject(() -> {
+            AccountTransaction entry = new AccountTransaction();
+            entry.setType(AccountTransaction.Type.TAX_REFUND);
+            return entry;
+        });
 
         Block firstRelevantLine = new Block("^Steuerliche Behandlung: (Wertpapier(kauf|verkauf)|Verkauf|.*Dividende) .*$");
         type.addBlock(firstRelevantLine);
@@ -190,12 +189,11 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
         Block block = new Block("^(D i v i d e n d e n g u t s c h r i f t|E r t r a g s g u t s c h r i f t)$");
         type.addBlock(block);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>()
-            .subject(() -> {
-                AccountTransaction entry = new AccountTransaction();
-                entry.setType(AccountTransaction.Type.DIVIDENDS);
-                return entry;
-            });
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>().subject(() -> {
+            AccountTransaction entry = new AccountTransaction();
+            entry.setType(AccountTransaction.Type.DIVIDENDS);
+            return entry;
+        });
 
         pdfTransaction
                 // p e r 2 7 . 0 3 . 2 0 2 0 Samsung E l e c t r o n i c s Co. L t d . 881823
@@ -258,6 +256,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> t.setNote(stripBlanks(v.get("note1")) + " " + stripBlanks(v.get("note2")) + " - " + stripBlanks(v.get("note3"))))
 
                 .conclude(PDFExtractorUtils.fixGrossValueA())
+
                 .wrap(TransactionItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
