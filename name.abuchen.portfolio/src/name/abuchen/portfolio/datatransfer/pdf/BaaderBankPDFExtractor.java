@@ -21,7 +21,6 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 {
-
     public BaaderBankPDFExtractor(Client client)
     {
         super(client);
@@ -201,19 +200,11 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 
         Block block = new Block("^Ex-Tag: .*$");
         type.addBlock(block);
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>()
-            .subject(() -> {
-                AccountTransaction entry = new AccountTransaction();
-                entry.setType(AccountTransaction.Type.DIVIDENDS);
-
-                /***
-                 * If we have multiple entries in the document,
-                 * then the "noTax" flag must be removed.
-                 */
-                type.getCurrentContext().remove("noTax");
-
-                return entry;
-            });
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>().subject(() -> {
+            AccountTransaction entry = new AccountTransaction();
+            entry.setType(AccountTransaction.Type.DIVIDENDS);
+            return entry;
+        });
 
         pdfTransaction
                 /***
@@ -278,7 +269,15 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                     checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
 
-                .wrap(TransactionItem::new);
+                .wrap(t -> {
+                    /**
+                     * If we have multiple entries in the document, then
+                     * the "noTax" flag must be removed.
+                     */
+                    type.getCurrentContext().remove("noTax");
+
+                    return new TransactionItem(t);
+                });
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
@@ -335,7 +334,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 .match("^(?<note>Zahlungszeitraum: .*)$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
-                .wrap(t -> new TransactionItem(t));
+                .wrap(TransactionItem::new);
     }
 
     private void addTaxAdjustmentTransaction()
@@ -374,7 +373,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 .match("^.* (?<note>Steuerausgleichsrechnung) .*$")
                 .assign((t, v) -> t.setNote(v.get("note")))
 
-                .wrap(t -> new TransactionItem(t));
+                .wrap(TransactionItem::new);
     }
 
     private void addDepotStatementTransaction()
@@ -412,7 +411,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                     t.setNote(v.get("note"));
                 })
 
-                .wrap(t -> new TransactionItem(t)));
+                .wrap(TransactionItem::new));
 
         Block removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Lastschrift aktiv|SEPA-Ueberweisung) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.\\d]+,[\\d]{2} \\-$");
         type.addBlock(removalBlock);
@@ -434,7 +433,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                     t.setNote(v.get("note"));
                 })
 
-                .wrap(t -> new TransactionItem(t)));
+                .wrap(TransactionItem::new));
 
         Block feesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Transaktionskostenpauschale o\\. MwSt\\. [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.\\d]+,[\\d]{2} \\-$");
         type.addBlock(feesBlock);
@@ -456,7 +455,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                     t.setNote(v.get("note"));
                 })
 
-                .wrap(t -> new TransactionItem(t)));
+                .wrap(TransactionItem::new));
 
         Block buySellBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Kauf|Verkauf) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}( .*)?$");
         type.addBlock(buySellBlock);
@@ -528,7 +527,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                     t.setAmount(asAmount(v.get("amount")));
                 })
 
-                .wrap(t -> new TransactionItem(t)));
+                .wrap(TransactionItem::new));
     }
 
     private void addFeesAssetManagerTransaction()
@@ -538,12 +537,11 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 
         Block block = new Block("^Rechnung f.r .*$");
         type.addBlock(block);
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>()
-            .subject(() -> {
-                AccountTransaction entry = new AccountTransaction();
-                entry.setType(AccountTransaction.Type.FEES);
-                return entry;
-            });
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>().subject(() -> {
+            AccountTransaction entry = new AccountTransaction();
+            entry.setType(AccountTransaction.Type.FEES);
+            return entry;
+        });
 
         pdfTransaction
                 // Leistungen Beträge (EUR)
@@ -566,7 +564,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 .match("^(?<note>Abrechnungszeitraum .*)$")
                 .assign((t, v) -> t.setNote(v.get("note")))
 
-                .wrap(t -> new TransactionItem(t));
+                .wrap(TransactionItem::new);
 
         block.set(pdfTransaction);
     }
@@ -600,13 +598,12 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 // Nominale ISIN: DE000A3H3MF2 WKN: A3H3MF
                 // STK 96 Enapter AG
                 // Inhaber-Bezugsrechte
-                .section("isin", "wkn", "shares", "name", "nameContinued").optional()
+                .section("isin", "wkn", "name", "nameContinued").optional()
                 .find("^Ausbuchung aus Depot .* per [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$")
                 .match("^Nominale ISIN: (?<isin>[\\w]{12}) WKN: (?<wkn>[\\w]{6})( .*)?$")
-                .match("^STK (?<shares>[\\.,\\d]+) (?<name>.*)$")
+                .match("^STK [\\.,\\d]+ (?<name>.*)$")
                 .match("^(?<nameContinued>.*)$")
                 .assign((t, v) -> {
-                    t.setShares(asShares(v.get("shares")));
                     t.setSecurity(getOrCreateSecurity(v));
                     t.setCurrencyCode(asCurrencyCode(t.getSecurity().getCurrencyCode()));
                     t.setAmount(0L);
@@ -616,15 +613,17 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 // Nominale ISIN: DE000A3H3MG0 WKN: A3H3MG Bezugspreis:
                 // STK 6 Enapter AG EUR 22,00 p.STK
                 // junge Inhaber-Aktien o.N.
-                .section("isin", "wkn", "shares", "name", "currency", "nameContinued").optional()
+                .section("isin", "wkn", "name", "currency", "nameContinued").optional()
                 .find("^Einbuchung in Depot .* per [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$")
                 .match("^Nominale ISIN: (?<isin>[\\w]{12}) WKN: (?<wkn>[\\w]{6})( .*)?$")
-                .match("^STK (?<shares>[\\.,\\d]+) (?<name>.*) (?<currency>[\\w]{3}) [\\.,\\d]+ .*$")
+                .match("^STK [\\.,\\d]+ (?<name>.*) (?<currency>[\\w]{3}) [\\.,\\d]+ .*$")
                 .match("^(?<nameContinued>.*)$")
-                .assign((t, v) -> {
-                    t.setShares(asShares(v.get("shares")));
-                    t.setSecurity(getOrCreateSecurity(v));
-                })
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                // STK 96 Enapter AG
+                .section("shares")
+                .match("^STK (?<shares>[\\.,\\d]+) .*$")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 // Einbuchung in Depot yyyyyyyyyy per 09.03.2021
                 // Ausbuchung aus Depot yyyyyyyyyy per 09.03.2021
@@ -634,7 +633,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 
                 // Bezugspreis EUR 132,00
                 // Bruttobetrag EUR 1.012,00
-                .section("amount", "currency").optional()
+                .section("currency", "amount").optional()
                 .match("^(Bezugspreis|Bruttobetrag) (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -646,7 +645,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 .match("^(?<note>Bezugsverh.ltnis: .*)$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
-                .wrap(t -> new TransactionItem(t));
+                .wrap(TransactionItem::new);
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
