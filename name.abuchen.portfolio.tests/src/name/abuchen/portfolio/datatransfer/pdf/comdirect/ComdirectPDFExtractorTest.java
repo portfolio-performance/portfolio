@@ -3078,7 +3078,7 @@ public class ComdirectPDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-05-14T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(16)));
-        assertThat(transaction.getSource(), is("SteuermitteilungDividende09.txt"));
+        assertThat(transaction.getSource(), is("SteuermitteilungDividende09.txt; Dividende12.txt"));
         assertNull(transaction.getNote());
 
         assertThat(transaction.getMonetaryAmount(),
@@ -3127,7 +3127,7 @@ public class ComdirectPDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-05-14T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(16)));
-        assertThat(transaction.getSource(), is("Dividende12.txt"));
+        assertThat(transaction.getSource(), is("Dividende12.txt; SteuermitteilungDividende09.txt"));
         assertNull(transaction.getNote());
 
         assertThat(transaction.getMonetaryAmount(),
@@ -3176,8 +3176,8 @@ public class ComdirectPDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-04T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(32)));
-        assertThat(transaction.getSource(), is("SteuermitteilungDividende10.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getSource(), is("SteuermitteilungDividende10.txt; Dividende13.txt"));
+        assertThat(transaction.getNote(), is("Quartalsdividende"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.19))));
@@ -3225,8 +3225,8 @@ public class ComdirectPDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-04T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(32)));
-        assertThat(transaction.getSource(), is("SteuermitteilungDividende10.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getSource(), is("SteuermitteilungDividende10.txt; Dividende13.txt"));
+        assertThat(transaction.getNote(), is("Quartalsdividende"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.19))));
@@ -3274,8 +3274,8 @@ public class ComdirectPDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-07T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(34)));
-        assertThat(transaction.getSource(), is("SteuermitteilungDividende11.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getSource(), is("SteuermitteilungDividende11.txt; Dividende14.txt"));
+        assertThat(transaction.getNote(), is("Quartalsdividende"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.03))));
@@ -3323,7 +3323,7 @@ public class ComdirectPDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-07T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(34)));
-        assertThat(transaction.getSource(), is("Dividende14.txt"));
+        assertThat(transaction.getSource(), is("Dividende14.txt; SteuermitteilungDividende11.txt"));
         assertThat(transaction.getNote(), is("Quartalsdividende"));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -3372,7 +3372,7 @@ public class ComdirectPDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-12-31T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(81.921)));
-        assertThat(transaction.getSource(), is("SteuermitteilungDividende16.txt"));
+        assertThat(transaction.getSource(), is("SteuermitteilungDividende16.txt; Dividende17.txt"));
         assertNull(transaction.getNote());
 
         assertThat(transaction.getMonetaryAmount(),
@@ -3421,7 +3421,7 @@ public class ComdirectPDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-12-31T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(81.921)));
-        assertThat(transaction.getSource(), is("SteuermitteilungDividende16.txt"));
+        assertThat(transaction.getSource(), is("SteuermitteilungDividende16.txt; Dividende17.txt"));
         assertNull(transaction.getNote());
 
         assertThat(transaction.getMonetaryAmount(),
