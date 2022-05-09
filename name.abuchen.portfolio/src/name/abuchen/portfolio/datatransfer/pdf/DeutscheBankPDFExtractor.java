@@ -47,14 +47,6 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
         pdfTransaction.subject(() -> {
             BuySellEntry entry = new BuySellEntry();
             entry.setType(PortfolioTransaction.Type.BUY);
-            
-            /***
-             * If we have multiple entries in the document,
-             * with fee and fee refunds,
-             * then the "noProvision" flag must be removed.
-             */
-            type.getCurrentContext().remove("noProvision");
-
             return entry;
         });
 
@@ -108,7 +100,16 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 })
                 
-                .wrap(BuySellEntryItem::new);
+                .wrap(t -> {
+                    /***
+                     * If we have multiple entries in the document, with
+                     * fee and fee refunds, then the "noProvision" flag
+                     * must be removed.
+                     */
+                    type.getCurrentContext().remove("noProvision");
+
+                    return new BuySellEntryItem(t);
+                });
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
@@ -121,12 +122,11 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
 
         Block block = new Block("^(Dividendengutschrift|Ertragsgutschrift)$");
         type.addBlock(block);
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>()
-            .subject(() -> {
-                AccountTransaction entry = new AccountTransaction();
-                entry.setType(AccountTransaction.Type.DIVIDENDS);
-                return entry;
-            });
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>().subject(() -> {
+            AccountTransaction entry = new AccountTransaction();
+            entry.setType(AccountTransaction.Type.DIVIDENDS);
+            return entry;
+        });
 
         pdfTransaction
                 // 380,000000 878841 US17275R1023
