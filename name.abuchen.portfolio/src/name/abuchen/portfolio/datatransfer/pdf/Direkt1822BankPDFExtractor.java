@@ -5,7 +5,6 @@ import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAnd
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -108,21 +107,17 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
 
                 // Devisenkurs (EUR/USD) 1,1987 vom 02.03.2021
                 // Kurswert 52,50- EUR
-                .section("fxCurrency", "exchangeRate", "gross", "currency").optional()
-                .match("^Devisenkurs \\([\\w]{3}\\/(?<fxCurrency>[\\w]{3})\\) (?<exchangeRate>[\\.,\\d]+) .*$")
+                .section("baseCurrency", "fxCurrency", "exchangeRate", "gross", "currency").optional()
+                .match("^Devisenkurs \\((?<baseCurrency>[\\w]{3})\\/(?<fxCurrency>[\\w]{3})\\) (?<exchangeRate>[\\.,\\d]+) .*$")
                 .match("^Kurswert (?<gross>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                    if (t.getPortfolioTransaction().getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
-                    {
-                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
-                    }
-                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
+                    v.put("termCurrency", asCurrencyCode(v.get("fxCurrency")));
+
+                    PDFExchangeRate rate = asExchangeRate(v);
+                    type.getCurrentContext().putType(rate);
 
                     Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
-                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")),
-                                    BigDecimal.valueOf(gross.getAmount()).multiply(exchangeRate)
-                                                    .setScale(0, RoundingMode.HALF_UP).longValue());
+                    Money fxGross = rate.convert(asCurrencyCode(v.get("fxCurrency")), gross);
 
                     checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
@@ -189,19 +184,15 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                 // Devisenkurs EUR / USD 1,2095
                 // Devisenkursdatum 02.01.2018
                 // Ausschüttung 113,16 USD 93,56+ EUR
-                .section("exchangeRate", "fxGross", "fxCurrency", "gross", "currency").optional()
-                .match("^Devisenkurs .* (?<exchangeRate>[\\.,\\d]+)$")
+                .section("baseCurrency", "termCurrency", "exchangeRate", "fxGross", "fxCurrency", "gross", "currency").optional()
+                .match("^Devisenkurs (?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+)$")
                 .match("^(Aussch.ttung|Dividendengutschrift) (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3}) (?<gross>[\\.,\\d]+)\\+ (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                    if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
-                    {
-                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
-                    }
-                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
+                    PDFExchangeRate rate = asExchangeRate(v);
+                    type.getCurrentContext().putType(rate);
 
                     Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
-                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                    Money fxGross = rate.convert(asCurrencyCode(v.get("fxCurrency")), gross);
 
                     checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
