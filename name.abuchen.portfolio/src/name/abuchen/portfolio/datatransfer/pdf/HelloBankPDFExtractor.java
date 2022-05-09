@@ -3,9 +3,6 @@ package name.abuchen.portfolio.datatransfer.pdf;
 import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -106,23 +103,16 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
                 // Kurswert: -10.360,-- NOK 
                 // -10.360,-- NOK 
                 // Devisenkurs: 9,486 (3.7.2017) -1.092,14 EUR 
-                .section("fxGross", "fxCurrency", "exchangeRate").optional()
+                .section("termCurrency", "fxGross", "fxCurrency", "exchangeRate", "baseCurrency").optional()
+                .match("^Kurs: [\\-\\.,\\d]+ (?<termCurrency>[\\w]{3}).*$")
                 .match("^Kurswert: (?<fxGross>[\\-\\.,\\d]+) (?<fxCurrency>[\\w]{3}).*$")
-                .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\([\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}\\) [\\-\\.,\\d]+ [\\w]{3}.*$")
-                .assign((t, v) -> {                   
-                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                    if (t.getPortfolioTransaction().getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
-                    {
-                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
-                    }
-                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
-
-                    BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+                .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\([\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}\\) [\\-\\.,\\d]+ (?<baseCurrency>[\\w]{3}).*$")
+                .assign((t, v) -> {
+                    PDFExchangeRate rate = asExchangeRate(v);
+                    type.getCurrentContext().putType(asExchangeRate(v));
 
                     Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
-                    Money gross = Money.of(asCurrencyCode(v.get("currency")),
-                                    BigDecimal.valueOf(fxGross.getAmount()).multiply(inverseRate)
-                                                    .setScale(0, RoundingMode.HALF_UP).longValue());
+                    Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
 
                     checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
@@ -141,12 +131,11 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
 
         Block block = new Block("^Gesch.ftsart: Ertrag$");
         type.addBlock(block);
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>()
-            .subject(() -> {
-                AccountTransaction entry = new AccountTransaction();
-                entry.setType(AccountTransaction.Type.DIVIDENDS);
-                return entry;
-            });
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>().subject(() -> {
+            AccountTransaction entry = new AccountTransaction();
+            entry.setType(AccountTransaction.Type.DIVIDENDS);
+            return entry;
+        });
 
         pdfTransaction
                 // Titel: NO0003054108  M a r i n e  H a r v est ASA                 
@@ -181,25 +170,19 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 })
 
+                // Dividende: 3,2 NOK 
                 // Bruttoertrag: 640,-- NOK 
                 // Devisenkurs: 9,308 (5.9.2017) 49,85 EUR 
-                .section("fxGross", "fxCurrency", "exchangeRate").optional()
+                .section("termCurrency","fxGross", "fxCurrency", "exchangeRate", "baseCurrency").optional()
+                .match("^(Dividende|Ertrag): [\\.,\\d]+ (?<termCurrency>[\\w]{3}).*$")
                 .match("^Bruttoertrag: (?<fxGross>[\\-\\.,\\d]+) (?<fxCurrency>[\\w]{3}).*$")
-                .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\([\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}\\) [\\-\\.,\\d]+ [\\w]{3}.*$")
-                .assign((t, v) -> {                   
-                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                    if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
-                    {
-                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
-                    }
-                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
-
-                    BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+                .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\([\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}\\) [\\-\\.,\\d]+ (?<baseCurrency>[\\w]{3}).*$")
+                .assign((t, v) -> {
+                    PDFExchangeRate rate = asExchangeRate(v);
+                    type.getCurrentContext().putType(asExchangeRate(v));
 
                     Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
-                    Money gross = Money.of(asCurrencyCode(v.get("currency")),
-                                    BigDecimal.valueOf(fxGross.getAmount()).multiply(inverseRate)
-                                                    .setScale(0, RoundingMode.HALF_UP).longValue());
+                    Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
 
                     checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
