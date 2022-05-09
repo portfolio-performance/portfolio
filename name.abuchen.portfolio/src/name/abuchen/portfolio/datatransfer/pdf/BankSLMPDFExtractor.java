@@ -40,10 +40,10 @@ public class BankSLMPDFExtractor extends AbstractPDFExtractor
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
-                pdfTransaction.subject(() -> {
-                    BuySellEntry entry = new BuySellEntry();
-                    entry.setType(PortfolioTransaction.Type.BUY);
-                    return entry;
+        pdfTransaction.subject(() -> {
+            BuySellEntry entry = new BuySellEntry();
+            entry.setType(PortfolioTransaction.Type.BUY);
+            return entry;
         });
 
         Block firstRelevantLine = new Block("^B.rsenabrechnung \\- (Kauf|Verkauf)$");
@@ -97,7 +97,7 @@ public class BankSLMPDFExtractor extends AbstractPDFExtractor
                 // Change EUR/CHF 1.241652 CHF -92'031.25
                 .section("fxCurrency", "fxGross", "termCurrency", "baseCurrency", "exchangeRate", "currency", "gross").optional()
                 .match("^Total Kurswert (?<fxCurrency>[\\w]{3}) (\\-)?(?<fxGross>[\\.',\\d]+)$")
-                        .match("^Change (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.',\\d]+) (?<currency>[\\w]{3}) (\\-)?(?<gross>[\\.',\\d]+)$")
+                .match("^Change (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.',\\d]+) (?<currency>[\\w]{3}) (\\-)?(?<gross>[\\.',\\d]+)$")
                 .assign((t, v) -> {
                     type.getCurrentContext().putType(asExchangeRate(v));
 
@@ -120,12 +120,11 @@ public class BankSLMPDFExtractor extends AbstractPDFExtractor
 
         Block block = new Block("^Dividende$");
         type.addBlock(block);
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>()
-            .subject(() -> {
-                AccountTransaction entry = new AccountTransaction();
-                entry.setType(AccountTransaction.Type.DIVIDENDS);
-                return entry;
-            });
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>().subject(() -> {
+            AccountTransaction entry = new AccountTransaction();
+            entry.setType(AccountTransaction.Type.DIVIDENDS);
+            return entry;
+        });
 
         pdfTransaction
                 // Namen-Aktien nom CHF 100.00 Ex Datum: 02.05.2016
@@ -167,7 +166,7 @@ public class BankSLMPDFExtractor extends AbstractPDFExtractor
                 // Change EUR / CHF 1.067227 CHF 3'302.00
                 .section("currency", "gross", "termCurrency", "baseCurrency", "fxCurrency", "exchangeRate").optional()
                 .match("^Brutto \\([\\.',\\d]+ \\* [\\w]{3} [\\.',\\d]+\\) (?<currency>[\\w]{3}) (?<gross>[\\.',\\d]+)$")
-                        .match("^Change (?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.',\\d]+) (?<fxCurrency>[\\w]{3}) (\\-)?[\\.',\\d]+$")
+                .match("^Change (?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.',\\d]+) (?<fxCurrency>[\\w]{3}) (\\-)?[\\.',\\d]+$")
                 .assign((t, v) -> {
                     PDFExchangeRate rate = asExchangeRate(v);
                     type.getCurrentContext().putType(asExchangeRate(v));
