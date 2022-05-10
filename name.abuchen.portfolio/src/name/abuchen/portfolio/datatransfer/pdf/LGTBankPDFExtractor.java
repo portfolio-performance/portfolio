@@ -72,7 +72,7 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
                 .section("date", "time")
                 .match("^Abschlussdatum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2})$")
                 .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
-    
+
                 // Belastung DKK Konto 0037156.021 DKK 82'452.21
                 .section("currency", "amount")
                 .match("^Belastung [\\w]{3} Konto .* (?<currency>[\\w]{3}) (?<amount>[\\.',\\d]+)$")
@@ -85,13 +85,12 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
                 .section("note").optional()
                 .match("^(?<note>Valorennummer .*)$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
-    
+
                 .wrap(BuySellEntryItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
     }
-
 
     private void addDividendeTransaction()
     {
@@ -100,12 +99,11 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
 
         Block block = new Block("^Baraussch.ttung .*$");
         type.addBlock(block);
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>()
-            .subject(() -> {
-                AccountTransaction entry = new AccountTransaction();
-                entry.setType(AccountTransaction.Type.DIVIDENDS);
-                return entry;
-            });
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>().subject(() -> {
+            AccountTransaction entry = new AccountTransaction();
+            entry.setType(AccountTransaction.Type.DIVIDENDS);
+            return entry;
+        });
 
         pdfTransaction
                 // 551 Veolia Environnement SA
@@ -173,7 +171,7 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
                 .section("fee", "currency").optional()
                 .match("^Courtage ([\\s]+)?(?<currency>[\\w]{3}) (?<fee>[\\.,'\\d]+)$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
-        
+
                 // Broker Kommission  DKK 12.12
                 .section("fee", "currency").optional()
                 .match("^Broker Kommission ([\\s]+)?(?<currency>[\\w]{3}) (?<fee>[\\.,'\\d]+)$")
