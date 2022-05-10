@@ -2,9 +2,6 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetGrossUnit;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -151,16 +148,11 @@ public class WeberbankPDFExtractor extends AbstractPDFExtractor
 
                 // Devisenkurs EUR / USD 1,1848
                 // Dividendengutschrift 87,74 USD 74,05+ EUR
-                .section("exchangeRate", "fxGross", "fxCurrency", "gross", "currency").optional()
-                .match("^Devisenkurs .* (?<exchangeRate>[\\.,\\d]+)$")
+                .section("baseCurrency", "termCurrency", "exchangeRate", "fxGross", "fxCurrency", "gross", "currency").optional()
+                .match("^Devisenkurs (?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+)$")
                 .match("^Dividendengutschrift (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3}) (?<gross>[\\.,\\d]+)\\+ (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                    if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
-                    {
-                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
-                    }
-                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
+                    type.getCurrentContext().putType(asExchangeRate(v));
 
                     Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
                     Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
@@ -190,7 +182,7 @@ public class WeberbankPDFExtractor extends AbstractPDFExtractor
 
                 // Solidaritätszuschlag 5,5 % auf 7,40 EUR 0,40- EUR
                 .section("tax", "currency").optional()
-                .match("^Solidaritätszuschlag [\\.,\\d]+ % .* (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
+                .match("^Solidarit.tszuschlag [\\.,\\d]+ % .* (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
                 // Einbehaltene Quellensteuer 15 % auf 87,74 USD 11,11- EUR
