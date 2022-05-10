@@ -2,9 +2,6 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetGrossUnit;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -82,7 +79,7 @@ public class VBankAGPDFExtractor extends AbstractPDFExtractor
                 // Ausmachender Betrag EUR - 11.116,97
                 // Ausmachender Betrag EUR 26.199,03
                 .section("currency", "amount")
-                .match("^Ausmachender Betrag (?<currency>[\\w]{3}) ([\\-\\s]+)?(?<amount>[\\.,\\d]+)")
+                .match("^Ausmachender Betrag (?<currency>[\\w]{3}) ([\\-\\s]+)?(?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -90,23 +87,17 @@ public class VBankAGPDFExtractor extends AbstractPDFExtractor
 
                 // Kurswert USD - 16.136,00
                 // Devisenkurs EUR/USD 1,116670
-                .section("fxCurrency", "fxGross", "exchangeRate").optional()
+                // Ausmachender Betrag EUR - 14.480,11
+                .section("fxCurrency", "fxGross", "baseCurrency", "termCurrency", "exchangeRate", "currency").optional()
                 .match("^Kurswert (?<fxCurrency>[\\w]{3}) \\- (?<fxGross>[\\.,\\d]+)$")
-                .match("^Devisenkurs (?<currency>[\\w]{3})\\/[\\w]{3} (?<exchangeRate>[\\.,\\d]+)$")
+                .match("^Devisenkurs (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+)$")
+                .match("^Ausmachender Betrag (?<currency>[\\w]{3}) .*$")
                 .assign((t, v) -> {
-                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                    if (t.getPortfolioTransaction().getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
-                    {
-                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
-                    }
-                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
-
-                    BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+                    PDFExchangeRate rate = asExchangeRate(v);
+                    type.getCurrentContext().putType(rate);
 
                     Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
-                    Money gross = Money.of(asCurrencyCode(v.get("currency")),
-                                    BigDecimal.valueOf(fxGross.getAmount()).multiply(inverseRate)
-                                                    .setScale(0, RoundingMode.HALF_UP).longValue());
+                    Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
 
                     checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
@@ -124,13 +115,11 @@ public class VBankAGPDFExtractor extends AbstractPDFExtractor
 
         Block block = new Block("^Ertr.gnisabrechnung$", "^Der Abrechnungsbetrag wird mit Valuta .*$");
         type.addBlock(block);
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>()
-
-                        .subject(() -> {
-                            AccountTransaction entry = new AccountTransaction();
-                            entry.setType(AccountTransaction.Type.DIVIDENDS);
-                            return entry;
-                        });
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>().subject(() -> {
+            AccountTransaction entry = new AccountTransaction();
+            entry.setType(AccountTransaction.Type.DIVIDENDS);
+            return entry;
+        });
 
         pdfTransaction
                 // Wertpapierbezeichnung OptoFlex Inhaber-Ant. P o.N.
