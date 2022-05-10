@@ -2,8 +2,6 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetGrossUnit;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -76,12 +74,6 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> {
                     if (v.get("type").equals("Verkauf"))
                         t.setType(PortfolioTransaction.Type.SELL);
-
-                    /***
-                     * If we have multiple entries in the document,
-                     * then the "negative" flag must be removed.
-                     */
-                    type.getCurrentContext().remove("negative");
                 })
 
                 // Clinuvel Pharmaceuticals Ltd. 80 Stk. 22,82 EUR 1.825,60 EUR
@@ -229,27 +221,21 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 // 1 Bruttoertrag 26,80 GBP
                 // 2 Barausgleich 0,37 GBP
                 // Zwischensumme 0,85267 EUR/GBP 0,44 EUR
-                .section("amount1", "currency1", "amount2", "currency2", "exchangeRate", "fxCurrency", "currency").optional()
-                .match("^[\\d] Bruttoertrag (?<amount1>[\\.,\\d]+) (?<currency1>[\\w]{3})$")
-                .match("^[\\d] Barausgleich (?<amount2>[\\.,\\d]+) (?<currency2>[\\w]{3})$")
-                .match("^Zwischensumme (?<exchangeRate>[\\.,\\d]+) [\\w]{3}\\/(?<fxCurrency>[\\w]{3}) [\\.,\\d]+ (?<currency>[\\w]{3})$")
+                .section("gross", "grossCurrency", "cashCompensation", "cashCompensationCurrency", "exchangeRate", "baseCurrency", "fxCurrency", "currency").optional()
+                .match("^[\\d] Bruttoertrag (?<gross>[\\.,\\d]+) (?<grossCurrency>[\\w]{3})$")
+                .match("^[\\d] Barausgleich (?<cashCompensation>[\\.,\\d]+) (?<cashCompensationCurrency>[\\w]{3})$")
+                .match("^Zwischensumme (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[\\w]{3})\\/(?<fxCurrency>[\\w]{3}) [\\.,\\d]+ (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    Money amount1 = Money.of(asCurrencyCode(v.get("currency1")), asAmount(v.get("amount1")));
-                    Money amount2 = Money.of(asCurrencyCode(v.get("currency2")), asAmount(v.get("amount2")));
+                    v.put("termCurrency", asCurrencyCode(v.get("fxCurrency")));
 
-                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                    if (t.getPortfolioTransaction().getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
-                    {
-                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
-                    }
-                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
+                    Money grossValueBasis = Money.of(asCurrencyCode(v.get("grossCurrency")), asAmount(v.get("gross")));
+                    Money cashCompensationValue = Money.of(asCurrencyCode(v.get("cashCompensationCurrency")), asAmount(v.get("cashCompensation")));
 
-                    BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+                    PDFExchangeRate rate = asExchangeRate(v);
+                    type.getCurrentContext().putType(rate);
 
-                    Money fxGross = amount1.subtract(amount2);
-                    Money gross = Money.of(asCurrencyCode(v.get("currency")),
-                                    BigDecimal.valueOf(fxGross.getAmount()).multiply(inverseRate)
-                                                    .setScale(0, RoundingMode.HALF_UP).longValue());
+                    Money fxGross = grossValueBasis.subtract(cashCompensationValue);
+                    Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
 
                     t.setAmount(gross.getAmount());
                     t.setCurrencyCode(asCurrencyCode(gross.getCurrencyCode()));
@@ -295,7 +281,15 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                     t.setMonetaryAmount(t.getPortfolioTransaction().getMonetaryAmount().subtract(tax));
                 })
 
-                .wrap(BuySellEntryItem::new);
+                .wrap(t -> {
+                    /**
+                     * If we have multiple entries in the document,
+                     * then the "negative" flag must be removed.
+                     */
+                    type.getCurrentContext().remove("negative");
+
+                    return new BuySellEntryItem(t);
+                });
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
@@ -311,13 +305,6 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         pdfTransaction.subject(() -> {
             BuySellEntry entry = new BuySellEntry();
             entry.setType(PortfolioTransaction.Type.SELL);
-
-            /***
-             * If we have multiple entries in the document,
-             * then the "negative" flag must be removed.
-             */
-            type.getCurrentContext().remove("negative");
-
             return entry;
         });
 
@@ -384,13 +371,6 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         pdfTransaction.subject(() -> {
             AccountTransaction entry = new AccountTransaction();
             entry.setType(AccountTransaction.Type.DIVIDENDS);
-
-            /***
-             * If we have multiple entries in the document,
-             * then the "negative" flag must be removed.
-             */
-            type.getCurrentContext().remove("negative");
-
             return entry;
         });
 
@@ -476,23 +456,15 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                 // GESAMT 5,63 USD
                 // Zwischensumme 1,102 EUR/USD 5,11 EUR
-                .section("fxGross", "fxCurrency", "exchangeRate", "currency").optional()
+                .section("fxGross", "fxCurrency", "exchangeRate", "baseCurrency", "termCurrency", "currency").optional()
                 .match("^GESAMT (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
-                .match("^Zwischensumme (?<exchangeRate>[\\.,\\d]+) [\\w]{3}\\/[\\w]{3} [\\.,\\d]+ (?<currency>[\\w]{3})$")
+                .match("^Zwischensumme (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) [\\.,\\d]+ (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                    if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
-                    {
-                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
-                    }
-                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
-
-                    BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+                    PDFExchangeRate rate = asExchangeRate(v);
+                    type.getCurrentContext().putType(rate);
 
                     Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
-                    Money gross = Money.of(asCurrencyCode(v.get("currency")),
-                                    BigDecimal.valueOf(fxGross.getAmount()).multiply(inverseRate)
-                                                    .setScale(0, RoundingMode.HALF_UP).longValue());
+                    Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
 
                     checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
@@ -500,23 +472,15 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 // 1 Bruttoertrag 26,80 GBP
                 // Zwischensumme 0,85267 EUR/GBP 0,44 EUR
                 // GESAMT 0,44 EUR
-                .section("fxGross", "currency", "fxCurrency", "exchangeRate").optional()
+                .section("fxGross", "fxCurrency", "exchangeRate", "baseCurrency", "termCurrency", "currency").optional()
                 .match("^[\\d] Bruttoertrag (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
-                .match("^Zwischensumme (?<exchangeRate>[\\.,\\d]+) (?<currency>[\\w]{3})\\/[\\w]{3} [\\.,\\d]+ [\\w]{3}$")
+                .match("^Zwischensumme (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) [\\.,\\d]+ (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                    if (!t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
-                    {
-                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
-                    }
-                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
-
-                    BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+                    PDFExchangeRate rate = asExchangeRate(v);
+                    type.getCurrentContext().putType(rate);
 
                     Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
-                    Money gross = Money.of(asCurrencyCode(v.get("currency")),
-                                    BigDecimal.valueOf(fxGross.getAmount()).multiply(inverseRate)
-                                                    .setScale(0, RoundingMode.HALF_UP).longValue());
+                    Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
 
                     t.setAmount(gross.getAmount());
                     t.setCurrencyCode(asCurrencyCode(gross.getCurrencyCode()));
@@ -525,6 +489,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 })
 
                 .conclude(PDFExtractorUtils.fixGrossValueA())
+
                 .wrap(TransactionItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
@@ -544,13 +509,6 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         pdfTransaction.subject(() -> {
             AccountTransaction entry = new AccountTransaction();
             entry.setType(AccountTransaction.Type.DIVIDENDS);
-
-            /***
-             * If we have multiple entries in the document,
-             * then the "negative" flag must be removed.
-             */
-            type.getCurrentContext().remove("negative");
-
             return entry;
         });
 
@@ -585,16 +543,11 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                 // 1 Barausgleich 1,18 USD
                 // Zwischensumme 1,102 EUR/USD 5,11 EUR
-                .section("fxGross", "fxCurrency","exchangeRate", "gross", "currency").optional()
+                .section("fxGross", "fxCurrency","exchangeRate", "baseCurrency", "termCurrency", "gross", "currency").optional()
                 .match("^[\\d] Barausgleich (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
-                .match("^Zwischensumme (?<exchangeRate>[\\.,\\d]+) [\\w]{3}\\/[\\w]{3} (?<gross>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^Zwischensumme (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<gross>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                    if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
-                    {
-                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
-                    }
-                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
+                    type.getCurrentContext().putType(asExchangeRate(v));
 
                     Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
                     Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
@@ -853,13 +806,6 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         pdfTransaction.subject(() -> {
             AccountTransaction entry = new AccountTransaction();
             entry.setType(AccountTransaction.Type.TAX_REFUND);
-
-            /***
-             * If we have multiple entries in the document,
-             * then the "negative" flag must be removed.
-             */
-            type.getCurrentContext().remove("negative");
-
             return entry;
         });
 
@@ -868,46 +814,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
-                // Kapitalertragssteuer Optimierung 3,75 EUR
-                .section("amount", "currency", "date").optional()
-                .match("^Kapitalertragssteuer Optimierung (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
-                .find("VERRECHNUNGSKONTO VALUTA BETRAG")
-                .match("^.* (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) [\\.,\\d]+$")
-                .assign((t, v) -> {
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                    t.setDateTime(asDate(v.get("date")));
-                })
-
                 // Kapitalertragsteuer Optimierung 3,75 EUR
-                .section("amount", "currency", "date").optional()
-                .match("^Kapitalertragsteuer Optimierung (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .section("amount", "currency", "date")
+                .match("^Kapitalertrags(s)?teuer Optimierung [\\.,\\d]+ (?<currency>[\\w]{3})$")
                 .find("VERRECHNUNGSKONTO VALUTA BETRAG")
-                .match("^.* (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) [\\.,\\d]+$")
+                .match("^.* (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) (?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                    t.setDateTime(asDate(v.get("date")));
-                })
-
-                // Solidaritätszuschlag Optimierung 0,21 EUR
-                .section("amount", "currency", "date")
-                .match("^Solidarit.tszuschlag Optimierung (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
-                .find("VERRECHNUNGSKONTO VALUTA BETRAG")
-                .match("^.* (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) [\\.,\\d]+$")
-                .assign((t, v) -> {
-                    t.setAmount(t.getAmount() + asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                    t.setDateTime(asDate(v.get("date")));
-                })
-
-                // Kirchensteuer Optimierung 0,30 EUR
-                .section("amount", "currency", "date").optional()
-                .match("^Kirchensteuer Optimierung (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
-                .find("VERRECHNUNGSKONTO VALUTA BETRAG")
-                .match("^.* (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) [\\.,\\d]+$")
-                .assign((t, v) -> {
-                    t.setAmount(t.getAmount() + asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                     t.setDateTime(asDate(v.get("date")));
                 })
@@ -924,13 +837,6 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         pdfTransaction.subject(() -> {
             AccountTransaction entry = new AccountTransaction();
             entry.setType(AccountTransaction.Type.TAXES);
-
-            /***
-             * If we have multiple entries in the document,
-             * then the "negative" flag must be removed.
-             */
-            type.getCurrentContext().remove("negative");
-
             return entry;
         });
 
@@ -978,13 +884,6 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 .subject(() -> {
                     AccountTransaction t = new AccountTransaction();
                     t.setType(AccountTransaction.Type.TAX_REFUND);
-
-                    /***
-                     * If we have multiple entries in the document,
-                     * then the "negative" flag must be removed.
-                     */
-                    type.getCurrentContext().remove("negative");
-
                     return t;
                 })
 
@@ -1058,13 +957,6 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 .subject(() -> {
                     AccountTransaction t = new AccountTransaction();
                     t.setType(AccountTransaction.Type.TAX_REFUND);
-
-                    /***
-                     * If we have multiple entries in the document,
-                     * then the "negative" flag must be removed.
-                     */
-                    type.getCurrentContext().remove("negative");
-
                     return t;
                 })
 
@@ -1123,7 +1015,6 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
     private void addSellWithNegativeAmountTransaction()
     {
-
         DocumentType type = new DocumentType("Verkauf");
         this.addDocumentTyp(type);
 
@@ -1133,13 +1024,6 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         pdfTransaction.subject(() -> {
             AccountTransaction t = new AccountTransaction();
             t.setType(AccountTransaction.Type.FEES);
-
-            /***
-             * If we have multiple entries in the document,
-             * then the "negative" flag must be removed.
-             */
-            type.getCurrentContext().remove("negative");
-
             return t;
         });
 
@@ -1181,7 +1065,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                 // Fremdkostenzuschlag -1,00 EUR
                 .section("currency", "amount").optional()
-                .match("^Fremdkostenzuschlag -(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^Fremdkostenzuschlag \\-(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {                            
                     if ("X".equals(type.getCurrentContext().get("negative")))
                     {
@@ -1191,6 +1075,12 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 })
 
                 .wrap(t -> {
+                    /**
+                     * If we have multiple entries in the document,
+                     * then the "negative" flag must be removed.
+                     */
+                    type.getCurrentContext().remove("negative");
+
                     if (t.getCurrencyCode() != null && t.getAmount() != 0)
                         return new TransactionItem(t);
                     return null;
