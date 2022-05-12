@@ -91,6 +91,8 @@ public class TradeCalendarTest
         assertThat(calendar.isHoliday(LocalDate.parse("2013-05-20")), is(false)); // trading despite public holiday
         assertThat(calendar.isHoliday(LocalDate.parse("2014-06-09")), is(false)); // trading despite public holiday
         assertThat(calendar.isHoliday(LocalDate.parse("2015-05-25")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2021-05-24")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2022-06-06")), is(false)); // trading despite public holiday
 
         // Corpus Christi
         assertThat(calendar.isHoliday(LocalDate.parse("1999-06-03")), is(true));
@@ -105,6 +107,8 @@ public class TradeCalendarTest
         assertThat(calendar.isHoliday(LocalDate.parse("2000-10-03")), is(false)); // trading despite public holiday
         assertThat(calendar.isHoliday(LocalDate.parse("2013-10-03")), is(false)); // trading despite public holiday
         assertThat(calendar.isHoliday(LocalDate.parse("2014-10-03")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2021-10-03")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2022-10-03")), is(false)); // trading despite public holiday
     }
 
     @Test
