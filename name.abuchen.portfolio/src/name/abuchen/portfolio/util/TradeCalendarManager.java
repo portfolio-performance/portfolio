@@ -91,12 +91,12 @@ public class TradeCalendarManager
         tc.add(easter(EASTER_MONDAY, 1));
         tc.add(easter(ASCENSION_DAY, 39).validTo(1999));
         tc.add(easter(WHIT_MONDAY, 50).validTo(1999));
-        tc.add(easter(WHIT_MONDAY, 50).validFrom(2015));
+        tc.add(easter(WHIT_MONDAY, 50).validFrom(2015).validTo(2021));
         tc.add(easter(CORPUS_CHRISTI, 60).validTo(1999));
         tc.add(fixed(LABOUR_DAY, Month.MAY, 1));
         tc.add(fixed(UNIFICATION_GERMANY, Month.JUNE, 17).validFrom(1954).validTo(1990));
         tc.add(fixed(UNIFICATION_GERMANY, Month.OCTOBER, 3).validFrom(1990).validTo(1999));
-        tc.add(fixed(UNIFICATION_GERMANY, Month.OCTOBER, 3).validFrom(2014));
+        tc.add(fixed(UNIFICATION_GERMANY, Month.OCTOBER, 3).validFrom(2014).validTo(2021));
         tc.add(fixed(REFORMATION_DAY, Month.OCTOBER, 31).onlyIn(2017));
         tc.add(fixed(REPENTANCE_AND_PRAYER, Month.NOVEMBER, 16).moveTo(DayOfWeek.WEDNESDAY).validTo(1994));
         tc.add(fixed(CHRISTMAS_EVE, Month.DECEMBER, 24));
