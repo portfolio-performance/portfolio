@@ -104,7 +104,8 @@ public class TradeCalendarTest
 
         // German Unity Day
         assertThat(calendar.isHoliday(LocalDate.parse("1999-10-03")), is(true));
-        assertThat(calendar.isHoliday(LocalDate.parse("2000-10-03")), is(false)); // trading despite public holiday
+        assertThat(calendar.isHoliday(LocalDate.parse("2000-10-03")), is(true)); // no trading (despite other plans) because of union protests
+        assertThat(calendar.isHoliday(LocalDate.parse("2001-10-03")), is(false)); // trading despite public holiday
         assertThat(calendar.isHoliday(LocalDate.parse("2013-10-03")), is(false)); // trading despite public holiday
         assertThat(calendar.isHoliday(LocalDate.parse("2014-10-03")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2021-10-03")), is(true));
