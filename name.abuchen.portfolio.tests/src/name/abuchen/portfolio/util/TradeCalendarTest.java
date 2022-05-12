@@ -88,6 +88,9 @@ public class TradeCalendarTest
         // Whit Monday
         assertThat(calendar.isHoliday(LocalDate.parse("1999-05-24")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2000-06-12")), is(false)); // trading despite public holiday
+        assertThat(calendar.isHoliday(LocalDate.parse("2006-06-05")), is(false)); // trading despite public holiday
+        assertThat(calendar.isHoliday(LocalDate.parse("2007-05-28")), is(true)); // no trading only because Whit Monday coincides with U.S. Memorial Day
+        assertThat(calendar.isHoliday(LocalDate.parse("2008-05-12")), is(false)); // trading despite public holiday
         assertThat(calendar.isHoliday(LocalDate.parse("2013-05-20")), is(false)); // trading despite public holiday
         assertThat(calendar.isHoliday(LocalDate.parse("2014-06-09")), is(false)); // trading despite public holiday
         assertThat(calendar.isHoliday(LocalDate.parse("2015-05-25")), is(true));

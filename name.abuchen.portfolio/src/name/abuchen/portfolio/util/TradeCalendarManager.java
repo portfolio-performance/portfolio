@@ -91,6 +91,7 @@ public class TradeCalendarManager
         tc.add(easter(EASTER_MONDAY, 1));
         tc.add(easter(ASCENSION_DAY, 39).validTo(1999));
         tc.add(easter(WHIT_MONDAY, 50).validTo(1999));
+        tc.add(easter(WHIT_MONDAY, 50).onlyIn(2007));
         tc.add(easter(WHIT_MONDAY, 50).validFrom(2015).validTo(2021));
         tc.add(easter(CORPUS_CHRISTI, 60).validTo(1999));
         tc.add(fixed(LABOUR_DAY, Month.MAY, 1));
