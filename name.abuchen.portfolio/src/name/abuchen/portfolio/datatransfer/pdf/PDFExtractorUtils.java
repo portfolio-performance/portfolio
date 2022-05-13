@@ -75,7 +75,6 @@ public class PDFExtractorUtils
             throw new UnsupportedOperationException();
     }
 
-    @SuppressWarnings("nls")
     public static void checkAndSetGrossUnit(Money gross, Money fxGross, name.abuchen.portfolio.model.Transaction t,
                     DocumentType type)
     {
@@ -87,20 +86,6 @@ public class PDFExtractorUtils
         if (rate.isPresent())
         {
             t.addUnit(new Unit(Unit.Type.GROSS_VALUE, gross, fxGross, rate.get().getRate(gross.getCurrencyCode())));
-        }
-        else if (type.getCurrentContext().containsKey("exchangeRate"))
-        {
-            BigDecimal exchangeRate = new BigDecimal(type.getCurrentContext().get("exchangeRate"));
-            BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
-
-            /**
-             * check, if forex currency is transaction currency or not and swap
-             * amount, if necessary
-             */
-            if (fxGross.getCurrencyCode().equals(t.getCurrencyCode()))
-                t.addUnit(new Unit(Unit.Type.GROSS_VALUE, fxGross, gross, inverseRate));
-            else
-                t.addUnit(new Unit(Unit.Type.GROSS_VALUE, gross, fxGross, inverseRate));
         }
     }
 
@@ -114,7 +99,6 @@ public class PDFExtractorUtils
             throw new UnsupportedOperationException();
     }
 
-    @SuppressWarnings("nls")
     public static void checkAndSetTax(Money tax, name.abuchen.portfolio.model.Transaction t, DocumentType type)
     {
         if (tax.getCurrencyCode().equals(t.getCurrencyCode()))
@@ -135,23 +119,6 @@ public class PDFExtractorUtils
                 t.addUnit(new Unit(Unit.Type.TAX, fxTax, tax, rate.get().getRate(t.getCurrencyCode())));
 
         }
-        else if (type.getCurrentContext().containsKey("exchangeRate"))
-        {
-            BigDecimal exchangeRate = new BigDecimal(type.getCurrentContext().get("exchangeRate"));
-            BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
-
-            Money fxTax = Money.of(t.getCurrencyCode(), BigDecimal.valueOf(tax.getAmount()).multiply(inverseRate)
-                            .setScale(0, RoundingMode.HALF_UP).longValue());
-
-            /**
-             * Store tax value in both currencies, if security's currency is
-             * different to transaction currency
-             */
-            if (t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
-                t.addUnit(new Unit(Unit.Type.TAX, fxTax));
-            else
-                t.addUnit(new Unit(Unit.Type.TAX, fxTax, tax, inverseRate));
-        }
     }
 
     public static void checkAndSetFee(Money fee, Object transaction, DocumentType type)
@@ -164,7 +131,6 @@ public class PDFExtractorUtils
             throw new UnsupportedOperationException();
     }
 
-    @SuppressWarnings("nls")
     public static void checkAndSetFee(Money fee, name.abuchen.portfolio.model.Transaction t, DocumentType type)
     {
         if (fee.getCurrencyCode().equals(t.getCurrencyCode()))
@@ -183,23 +149,6 @@ public class PDFExtractorUtils
                 t.addUnit(new Unit(Unit.Type.FEE, fxFee));
             else
                 t.addUnit(new Unit(Unit.Type.FEE, fxFee, fee, rate.get().getRate(t.getCurrencyCode())));
-        }
-        else if (type.getCurrentContext().containsKey("exchangeRate"))
-        {
-            BigDecimal exchangeRate = new BigDecimal(type.getCurrentContext().get("exchangeRate"));
-            BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
-
-            Money fxFee = Money.of(t.getCurrencyCode(), BigDecimal.valueOf(fee.getAmount()).multiply(inverseRate)
-                            .setScale(0, RoundingMode.HALF_UP).longValue());
-
-            /**
-             * Store tax value in both currencies, if security's currency is
-             * different to transaction currency
-             */
-            if (t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
-                t.addUnit(new Unit(Unit.Type.FEE, fxFee));
-            else
-                t.addUnit(new Unit(Unit.Type.FEE, fxFee, fee, inverseRate));
         }
     }
 
