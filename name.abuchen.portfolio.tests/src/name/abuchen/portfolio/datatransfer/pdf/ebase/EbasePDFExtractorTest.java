@@ -537,6 +537,13 @@ public class EbasePDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
         // check dividends transaction
+        
+        // ISIN Anteilsbestand Betrag je Anteil Betrag
+        // IE00B3RBWM25 7,332986 0,297309 USD 2,18 USD
+        // Kapitalertragsteuer Solidaritätszuschlag Kirchensteuer Devisenkurs abzgl. Steuern
+        // 0,34 EUR 0,01 EUR 0,00 EUR 1,117800 0,39 USD
+        // Zahlungsbetrag 1,79 USD
+
         AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
@@ -550,9 +557,9 @@ public class EbasePDFExtractorTest
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1.79))));
         assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(2.10))));
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(2.18))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize((0.34 + 0.01) / 1.117800))));
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.39))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
     }
@@ -703,6 +710,13 @@ public class EbasePDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
         // check dividends transaction
+        
+        // ISIN Anteilsbestand Betrag je Anteil Betrag
+        // IE00B2QWDY88 37,327232 0,373500000 USD 13,94 USD
+        // Kapitalertragsteuer Solidaritätszuschlag Kirchensteuer Devisenkurs abzgl. Steuern
+        // 2,97 EUR 0,16 EUR 0,00 EUR 1,177700 3,69 USD
+        // Zahlungsbetrag 10,25 USD
+
         AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
@@ -716,9 +730,9 @@ public class EbasePDFExtractorTest
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(10.25))));
         assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(12.91))));
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(13.94))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize((2.97 + 0.16) / 1.177700))));
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(3.69))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
 
@@ -890,6 +904,13 @@ public class EbasePDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
         // check dividends transaction
+        
+        // ISIN Anteilsbestand Betrag je Anteil Betrag
+        // IE00B1W57M07 12,000000 0,661400 USD 7,94 USD
+        // Kapitalertragsteuer Solidaritätszuschlag Kirchensteuer Devisenkurs abzgl. Steuern
+        // 1,53 EUR 0,08 EUR 0,00 EUR 1,103900 1,78 USD
+        // Zahlungsbetrag 6,16 USD
+
         AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
@@ -903,9 +924,9 @@ public class EbasePDFExtractorTest
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(6.16))));
         assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(7.62))));
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(7.94))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize((1.53 + 0.08) / 1.103900))));
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1.78))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
 
@@ -3320,6 +3341,13 @@ public class EbasePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.03))));
 
         // check 1st taxes transaction
+        
+        // ISIN Anteilsbestand Betrag je Anteil Betrag
+        // GB00B0MY6T00 300,991871 0,012407000 GBP 3,73 GBP
+        // Kapitalertragsteuer Solidaritätszuschlag Kirchensteuer Devisenkurs abzgl. Steuern
+        // 0,73 EUR 0,04 EUR 0,00 EUR 0,899700 0,70 GBP
+        // Zahlungsbetrag 3,03 GBP
+
         AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
@@ -3333,9 +3361,9 @@ public class EbasePDFExtractorTest
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of("GBP", Values.Amount.factorize(3.03))));
         assertThat(transaction.getGrossValue(),
-                        is(Money.of("GBP", Values.Amount.factorize(3.88))));
+                        is(Money.of("GBP", Values.Amount.factorize(3.73))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of("GBP", Values.Amount.factorize(0.85))));
+                        is(Money.of("GBP", Values.Amount.factorize(0.70))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of("GBP", Values.Amount.factorize(0.00))));
     }
@@ -3649,6 +3677,13 @@ public class EbasePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.03))));
 
         // check 1st taxes transaction
+        
+        // ISIN Anteilsbestand Betrag je Anteil Betrag
+        // GB00B0MY6T00 300,991871 0,012407000 GBP 3,73 GBP
+        // Kapitalertragsteuer Solidaritätszuschlag Kirchensteuer Devisenkurs abzgl. Steuern
+        // 0,73 EUR 0,04 EUR 0,00 EUR 0,899700 0,70 GBP
+        // Zahlungsbetrag 3,03 GBP
+
         AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
@@ -3662,9 +3697,9 @@ public class EbasePDFExtractorTest
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of("GBP", Values.Amount.factorize(3.03))));
         assertThat(transaction.getGrossValue(),
-                        is(Money.of("GBP", Values.Amount.factorize(3.88))));
+                        is(Money.of("GBP", Values.Amount.factorize(3.73))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of("GBP", Values.Amount.factorize(0.85))));
+                        is(Money.of("GBP", Values.Amount.factorize(0.70))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of("GBP", Values.Amount.factorize(0.00))));
     }
