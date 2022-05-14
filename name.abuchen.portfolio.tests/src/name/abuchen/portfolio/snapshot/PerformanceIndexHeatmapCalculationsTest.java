@@ -43,7 +43,7 @@ public class PerformanceIndexHeatmapCalculationsTest
 
     private PerformanceIndex getClientIndex()
     {
-        List<Exception> warnings = new ArrayList<Exception>();
+        List<Exception> warnings = new ArrayList<>();
         Interval reportInterval = Interval.of(startDate, endDate);
         CurrencyConverter converter = new TestCurrencyConverter();
 
@@ -59,13 +59,26 @@ public class PerformanceIndexHeatmapCalculationsTest
     }
 
     @Test
-    public void testThatClientIndexPerformanceWithInterestZeroWhenDataPointsForNoDatesAreAvailable()
+    public void testThatClientIndexPerformanceZeroWhenDataPointsForNoDatesAreAvailable()
     {
         new AccountBuilder() //
                         .interest(startDate.plusDays(1).atStartOfDay(), 1).addTo(client);
 
         Interval interval = Interval.of(startDate.minusDays(1), endDate.plusDays(1));
 
+        assertThat(getClientIndex().getPerformance(interval), closeTo(0.01, 0.1e-10));
+    }
+
+    @Test
+    public void testThatClientIndexPerformance_WhenIntervalDoesNotIntersect() // NOSONAR
+    {
+        new AccountBuilder() //
+                        .interest(startDate.plusDays(1).atStartOfDay(), 1).addTo(client);
+
+        Interval interval = Interval.of(startDate.minusDays(5), startDate.minusDays(1));
+        assertThat(getClientIndex().getPerformance(interval), closeTo(0.0, 0.1e-10));
+
+        interval = Interval.of(endDate.plusDays(1), endDate.plusDays(5));
         assertThat(getClientIndex().getPerformance(interval), closeTo(0.0, 0.1e-10));
     }
 
@@ -81,7 +94,7 @@ public class PerformanceIndexHeatmapCalculationsTest
     }
 
     @Test
-    public void testThatSecurityPerformanceCorectWhenDataPointsForBothDatesAreAvailableNoPerformance()
+    public void testThatSecurityPerformanceCorrectWhenDataPointsForBothDatesAreAvailableNoPerformance()
     {
         Interval interval = Interval.of(startDate, endDate);
 
@@ -93,7 +106,7 @@ public class PerformanceIndexHeatmapCalculationsTest
     }
 
     @Test
-    public void testThatSecurityPerformanceCorectWhenDataPointsForBothDatesAreAvailableSomePerformance()
+    public void testThatSecurityPerformanceCorrectWhenDataPointsForBothDatesAreAvailableSomePerformance()
     {
         Interval interval = Interval.of(startDate, endDate);
 
@@ -132,15 +145,24 @@ public class PerformanceIndexHeatmapCalculationsTest
     }
 
     @Test
-    public void testThatSecurityPerformanceZeroWhenNoDataPointIsNotAvailable()
+    public void testThatSecurityPerformanceCorrectWhenWhenIntervalIntersects()
     {
         Security security = new SecurityBuilder().addPrice(startDateString, 100).addPrice(endDateString, 101)
                         .addTo(client);
 
         PerformanceIndex securityIndex = PerformanceIndex.forSecurity(getClientIndex(), security);
 
+        // intersects -> performance of full interval
         Interval interval = Interval.of(startDate.minusDays(1), endDate.plusDays(1));
+        assertThat(securityIndex.getPerformance(interval), closeTo(0.01, 0.1e-10));
 
-        assertThat(securityIndex.getPerformance(interval), closeTo(0.0, 0.1e-10));
+        // is before -> zero performance
+        interval = Interval.of(startDate.minusDays(5), startDate.minusDays(1));
+        assertThat(getClientIndex().getPerformance(interval), closeTo(0.0, 0.1e-10));
+
+        // is after -> zero performance
+        interval = Interval.of(endDate.plusDays(1), endDate.plusDays(5));
+        assertThat(getClientIndex().getPerformance(interval), closeTo(0.0, 0.1e-10));
+
     }
 }

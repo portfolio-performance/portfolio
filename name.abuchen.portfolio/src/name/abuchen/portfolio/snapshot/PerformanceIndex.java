@@ -441,33 +441,27 @@ public class PerformanceIndex
             }
         }
     }
-    
+
+    /**
+     * Returns the performance for the given interval. If the interval does not
+     * intersect with the performance time period, i.e. is before or after the
+     * performance time period, then zero is returned.
+     */
     public double getPerformance(Interval interval)
     {
-        double startValue, endValue;
-        startValue = endValue = 0;
-        
         int startIndex = Arrays.binarySearch(this.getDates(), interval.getStart());
-        boolean startFound = (startIndex >= 0);
-        if (startFound)
-            startValue = this.getAccumulatedPercentage()[startIndex];
-        
         int endIndex = Arrays.binarySearch(this.getDates(), interval.getEnd());
-        boolean endFound = (endIndex >= 0);
-        if (endFound)
-        {
-            endValue = this.getAccumulatedPercentage()[endIndex];
-        }
-        else if (startFound)
-        {
-            // make sure there is an end index if the binary search returns a
-            // negative value (i.e. if the current month is not finished)
-            // But be sure to only do so if a start date was found at all.
-            // If both are not found, no data is available and everything stays
-            // zero.
-            int lastIndex = this.getDates().length - 1;
-            endValue = this.getAccumulatedPercentage()[lastIndex];
-        }
+
+        // return zero if the interval does not intersect
+        if (startIndex < 0 && startIndex == endIndex)
+            return 0;
+
+        // return zero if start is after end
+        if (Math.abs(startIndex) > Math.abs(endIndex))
+            return 0;
+
+        double startValue = this.getAccumulatedPercentage()[startIndex >= 0 ? startIndex : 0];
+        double endValue = this.getAccumulatedPercentage()[endIndex >= 0 ? endIndex : this.getDates().length - 1];
 
         return ((endValue + 1) / (startValue + 1)) - 1;
     }
