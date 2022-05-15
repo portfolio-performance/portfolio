@@ -209,6 +209,7 @@ public class Messages extends NLS
     public static String LabelXwithCurrencyY;
     public static String MsgAlphaVantageAPIKeyMissing;
     public static String MsgAlphaVantageRateLimitExceeded;
+    public static String MsgCheckConfiguredAndCalculatedGrossValueDoNotMatch;
     public static String MsgCheckDividendsMustHaveASecurity;
     public static String MsgCheckInvalidTransactionType;
     public static String MsgCheckGrossValueUnitMissing;
@@ -225,6 +226,9 @@ public class Messages extends NLS
     public static String MsgCheckUnitForexNotValid;
     public static String MsgCheckUnsupportedCurrency;
     public static String MsgDeltaWithoutAssets;
+    public static String MsgErrorBaseAndTermCurrencyAreEqualWithInvalidExchangeRate;
+    public static String MsgErrorCannotConvertToRequestedCurrency;
+    public static String MsgErrorCannotRetrieveExchangeRateForCurrency;
     public static String MsgErrorDecrypting;
     public static String MsgErrorDownloadYahoo;
     public static String MsgErrorDownloadEurostatHICP;

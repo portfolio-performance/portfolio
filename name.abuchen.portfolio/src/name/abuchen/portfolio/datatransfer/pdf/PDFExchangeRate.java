@@ -5,6 +5,7 @@ import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.util.Objects;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
@@ -29,7 +30,7 @@ import name.abuchen.portfolio.money.Values;
 
         if (baseCurrency.equals(termCurrency) && !rate.equals(BigDecimal.ONE))
             throw new IllegalArgumentException(
-                            MessageFormat.format("base and term currency are equal ({0}) but exchange rate is {1}",
+                            MessageFormat.format(Messages.MsgErrorBaseAndTermCurrencyAreEqualWithInvalidExchangeRate,
                                             baseCurrency, Values.ExchangeRate.format(rate)));
     }
 
@@ -51,8 +52,8 @@ import name.abuchen.portfolio.money.Values;
         else if (baseCurrency.equals(targetCurrencyCode))
             return BigDecimal.ONE.divide(rate, 10, RoundingMode.HALF_DOWN);
         else
-            throw new IllegalArgumentException(
-                            MessageFormat.format("Cannot convert to {0} with ''{1}''", targetCurrencyCode, this));
+            throw new IllegalArgumentException(MessageFormat
+                            .format(Messages.MsgErrorCannotRetrieveExchangeRateForCurrency, targetCurrencyCode, this));
     }
 
     public String getBaseCurrency()
@@ -77,7 +78,7 @@ import name.abuchen.portfolio.money.Values;
         {
             if (!baseCurrency.equals(money.getCurrencyCode()))
                 throw new IllegalArgumentException(
-                                MessageFormat.format("Cannot convert {0} to currency {1} with ''{2}''",
+                                MessageFormat.format(Messages.MsgErrorCannotConvertToRequestedCurrency,
                                                 Values.Money.format(money), targetCurrencyCode, this));
 
             return Money.of(targetCurrencyCode, BigDecimal.valueOf(money.getAmount()).multiply(rate)
@@ -88,7 +89,7 @@ import name.abuchen.portfolio.money.Values;
         {
             if (!termCurrency.equals(money.getCurrencyCode()))
                 throw new IllegalArgumentException(
-                                MessageFormat.format("Cannot convert {0} to currency {1} with ''{2}''",
+                                MessageFormat.format(Messages.MsgErrorCannotConvertToRequestedCurrency,
                                                 Values.Money.format(money), targetCurrencyCode, this));
 
             return Money.of(targetCurrencyCode, BigDecimal.valueOf(money.getAmount()).divide(rate, Values.MC)
@@ -96,7 +97,7 @@ import name.abuchen.portfolio.money.Values;
         }
         else
         {
-            throw new IllegalArgumentException(MessageFormat.format("Cannot convert {0} to currency {1} with ''{2}''",
+            throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorCannotConvertToRequestedCurrency,
                             Values.Money.format(money), targetCurrencyCode, this));
         }
     }

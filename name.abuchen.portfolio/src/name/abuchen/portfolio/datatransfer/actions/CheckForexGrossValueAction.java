@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.actions;
 import java.text.MessageFormat;
 import java.util.Optional;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ImportAction;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -71,8 +72,7 @@ public class CheckForexGrossValueAction implements ImportAction
 
         if (!unitValue.equals(calculatedValue))
             return new Status(Status.Code.ERROR,
-                            MessageFormat.format(
-                                            "Configured gross value ({0}) and calculatd gross value ({1}) do not match",
+                            MessageFormat.format(Messages.MsgCheckConfiguredAndCalculatedGrossValueDoNotMatch,
                                             Values.Money.format(unitValue), Values.Money.format(calculatedValue)));
 
         return Status.OK_STATUS;
