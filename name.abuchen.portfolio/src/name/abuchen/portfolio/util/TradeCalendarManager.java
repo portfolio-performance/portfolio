@@ -34,6 +34,7 @@ import static name.abuchen.portfolio.util.HolidayName.REMEMBERANCE_OF_PRESIDENT_
 import static name.abuchen.portfolio.util.HolidayName.REPENTANCE_AND_PRAYER;
 import static name.abuchen.portfolio.util.HolidayName.ROYAL_JUBILEE;
 import static name.abuchen.portfolio.util.HolidayName.ROYAL_WEDDING;
+import static name.abuchen.portfolio.util.HolidayName.SAINT_STEPHEN;
 import static name.abuchen.portfolio.util.HolidayName.SECOND_CHRISTMAS_DAY;
 import static name.abuchen.portfolio.util.HolidayName.SPRING_MAY_BANK_HOLIDAY;
 import static name.abuchen.portfolio.util.HolidayName.SUMMER_BANK_HOLIDAY;
@@ -136,7 +137,7 @@ public class TradeCalendarManager
         tc.add(weekday(EARLY_MAY_BANK_HOLIDAY, 1, DayOfWeek.MONDAY, Month.MAY).exceptIn(1995).exceptIn(2020));
         tc.add(last(SPRING_MAY_BANK_HOLIDAY, DayOfWeek.MONDAY, Month.MAY).exceptIn(1977).exceptIn(2002).exceptIn(2012).exceptIn(2022));
         tc.add(last(SUMMER_BANK_HOLIDAY, DayOfWeek.MONDAY, Month.AUGUST));
-        tc.add(fixed(FIRST_CHRISTMAS_DAY, Month.DECEMBER, 25).moveIf(DayOfWeek.SATURDAY, 2).moveIf(DayOfWeek.SUNDAY, 2));
+        tc.add(fixed(CHRISTMAS, Month.DECEMBER, 25).moveIf(DayOfWeek.SATURDAY, 2).moveIf(DayOfWeek.SUNDAY, 2));
             // strange but true: if 25th+26th is Sun+Mon, Christmas Day is moved *beyond* Boxing Day, to Tue
         tc.add(fixed(BOXING_DAY, Month.DECEMBER, 26).moveIf(DayOfWeek.SUNDAY, 2).moveIf(DayOfWeek.SATURDAY, 2));
         // one-time holidays; see https://en.wikipedia.org/wiki/Bank_holiday
@@ -161,8 +162,8 @@ public class TradeCalendarManager
         tc.add(easter(GOOD_FRIDAY, -2));
         tc.add(easter(EASTER_MONDAY, 1));
         tc.add(fixed(LABOUR_DAY, Month.MAY, 1));
-        tc.add(fixed(FIRST_CHRISTMAS_DAY, Month.DECEMBER, 25));
-        tc.add(fixed(BOXING_DAY, Month.DECEMBER, 26));
+        tc.add(fixed(CHRISTMAS, Month.DECEMBER, 25));
+        tc.add(fixed(SAINT_STEPHEN, Month.DECEMBER, 26));
         CACHE.put(tc.getCode(), tc);
 
         // see six trading days on their official website:
