@@ -146,7 +146,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 .find("Nominal (Kurs|Einl.sung zu:|Ex-Tag)")
                 .match("^(?<notation>[\\w]{3}) (?<shares>[\\.,\\d]+) ([\\w]{3} [\\.,\\d]+|[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
                 .assign((t, v) -> {
-                    // Workaround for bonds
+                    // Percentage quotation, workaround for bonds
                     if (v.get("notation") != null && !v.get("notation").equalsIgnoreCase("STK"))
                         t.setShares((asShares(v.get("shares")) / 100));
                     else
@@ -236,11 +236,9 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 .conclude(PDFExtractorUtils.fixGrossValueBuySell())
 
                 .wrap(t -> {
-                    /**
-                     * If we have multiple entries in the document, with
-                     * taxes and tax refunds, then the "negative" flag
-                     * must be removed.
-                     */
+                    // If we have multiple entries in the document, with
+                    // taxes and tax refunds, then the "negative" flag
+                    // must be removed.
                     type.getCurrentContext().remove("negative");
 
                     return new BuySellEntryItem(t);
@@ -268,9 +266,8 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
-                /**
-                 * If we have a reinvest we pick the second
-                 */
+                // If we have a reinvest we pick the second
+
                 // Gattungsbezeichnung ISIN
                 // Deutsche Telekom AG Namens-Aktien o.N. DE0005557508
                 // Die Dividende wurde wie folgt in neue Aktien reinvestiert:
@@ -296,7 +293,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 .match("^(?<notation>[\\w]{3}) (?<shares>[\\.,\\d]+) ([\\w]{3} [\\.,\\d]+"
                                 + "|[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\w]{3} [\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    // Workaround for bonds
+                    // Percentage quotation, workaround for bonds
                     if (v.get("notation") != null && !v.get("notation").equalsIgnoreCase("STK"))
                         t.setShares((asShares(v.get("shares")) / 100));
                     else
@@ -323,11 +320,9 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> t.setNote(v.get("note") + ": " + v.get("isin")))
 
                 .wrap(t -> {
-                    /**
-                     * If we have multiple entries in the document, with
-                     * taxes and tax refunds, then the "negative" flag
-                     * must be removed.
-                     */
+                    // If we have multiple entries in the document, with
+                    // taxes and tax refunds, then the "negative" flag
+                    // must be removed.
                     type.getCurrentContext().remove("negative");
 
                     return new BuySellEntryItem(t);
@@ -348,9 +343,8 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
         });
         
         pdfTransaction
-                /**
-                 * If we have a gross reinvestment, then it is taxes.
-                 */
+                // If we have a gross reinvestment, then it is taxes.
+
                 .section("type").optional()
                 .match("^(?<type>Ertragsthesaurierung) .*$")
                 .match("^Steuerliquidität [\\w]{3} [\\.,\\d]+$")
@@ -402,9 +396,8 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                     t.setSecurity(getOrCreateSecurity(v));
                 })
 
-                /**
-                 * This is for the reinvestment of dividends
-                 */
+                // This is for the reinvestment of dividends
+
                 // Gattungsbezeichnung ISIN
                 // Gattungsbezeichnung ISIN
                 .section("isin").optional()
@@ -424,7 +417,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                     .attributes("notation", "shares")
                                     .match("^(?<notation>[\\w]{3}) (?<shares>[\\.,\\d]+)( [\\d]{2}\\.[\\d]{2}\\.[\\d]{4})? [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\w]{3} [\\.,\\d]+$")
                                     .assign((t, v) -> {
-                                        // Workaround for bonds
+                                        // Percentage quotation, workaround for bonds
                                         if (v.get("notation") != null && !v.get("notation").equalsIgnoreCase("STK"))
                                             t.setShares((asShares(v.get("shares")) / 100));
                                         else
@@ -454,9 +447,8 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         )
 
                 .oneOf(
-                                /**
-                                 * This is for the reinvestment of dividends
-                                 */
+                                // This is for the reinvestment of dividends
+
                                 // Leistungen aus dem steuerlichen Einlagenkonto (§27 KStG) EUR 17,50
                                 section -> section
                                         .attributes("currency", "amount")
@@ -466,9 +458,8 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                             t.setAmount(asAmount(v.get("amount")));
                                         })
                                 ,
-                                /**
-                                 * This is for the "Ertragsthesaurierung"
-                                 */
+                                // This is for the "Ertragsthesaurierung"
+
                                 // Ertragsthesaurierung Frankfurt am Main, 19.10.2017
                                 // Steuerliquidität EUR 0,02
                                 section -> section
@@ -548,17 +539,13 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 .conclude(PDFExtractorUtils.fixGrossValueA())
 
                 .wrap(t -> {
-                    /**
-                     * If we have multiple entries in the document, with
-                     * taxes and tax refunds, then the "negative" flag
-                     * must be removed.
-                     */
+                    // If we have multiple entries in the document, with
+                    // taxes and tax refunds, then the "negative" flag
+                    // must be removed.
                     type.getCurrentContext().remove("negative");
 
-                    /**
-                     * If we have a gross reinvestment, then the "noTax"
-                     * flag must be removed.
-                     */
+                    // If we have a gross reinvestment, then the "noTax"
+                    // flag must be removed.
                     type.getCurrentContext().remove("noTax");
 
                     return new TransactionItem(t);
@@ -617,12 +604,11 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 })
 
-                /**
-                 * If all taxes are covered by
-                 * Freistellungsauftrag/Verlusttopf, section "Wert
-                 * Konto-Nr. Betrag zu Ihren Lasten" is not present,
-                 * then extract currency here
-                 */
+                // If all taxes are covered by
+                // Freistellungsauftrag/Verlusttopf, section "Wert
+                // Konto-Nr. Betrag zu Ihren Lasten" is not present,
+                // then extract currency here
+
                 // STK 0,4298 02.01.2020 02.01.2020 EUR 0,3477
                 .section("currency").optional()
                 .match("^STK [\\.,\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[\\w]{3}) [\\.,\\d]+$")
@@ -631,16 +617,10 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 })
 
-                /**
-                 * If the advance tax rate is 0,00 and parced correctly,
-                 * then do not import.
-                 */
                 .wrap(t -> {
-                    /**
-                     * If we have multiple entries in the document, with
-                     * taxes and tax refunds, then the "negative" flag
-                     * must be removed.
-                     */
+                    // If we have multiple entries in the document, with
+                    // taxes and tax refunds, then the "negative" flag
+                    // must be removed.
                     type.getCurrentContext().remove("negative");
 
                     if (t.getCurrencyCode() != null && t.getAmount() != 0)
@@ -740,11 +720,9 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> t.setNote(v.get("note")))
 
                 .wrap(t -> {
-                    /**
-                     * If we have multiple entries in the document, with
-                     * taxes and tax refunds, then the "negative" flag
-                     * must be removed.
-                     */
+                    // If we have multiple entries in the document, with
+                    // taxes and tax refunds, then the "negative" flag
+                    // must be removed.
                     type.getCurrentContext().remove("negative");
 
                     return new TransactionItem(t);
@@ -787,7 +765,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 .section("shares")
                 .match("^(?<notation>[\\w]{3}) (?<shares>[\\.,\\d]+) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$")
                 .assign((t, v) -> {
-                    // Workaround for bonds
+                    // Percentage quotation, workaround for bonds
                     if (v.get("notation") != null && !v.get("notation").equalsIgnoreCase("STK"))
                         t.setShares((asShares(v.get("shares")) / 100));
                     else
@@ -813,11 +791,9 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> t.setNote(v.get("note")))
 
                 .wrap(t -> {
-                    /**
-                     * If we have multiple entries in the document, with
-                     * taxes and tax refunds, then the "negative" flag
-                     * must be removed.
-                     */
+                    // If we have multiple entries in the document, with
+                    // taxes and tax refunds, then the "negative" flag
+                    // must be removed.
                     type.getCurrentContext().remove("negative");
 
                     return new TransactionItem(t);
@@ -1052,7 +1028,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                         .attributes("notation", "shares")
                                         .match("^(?<notation>[\\w]{3}) (?<shares>[\\.,\\d]+) [\\w]{3} [\\.,\\d]+$")
                                         .assign((t, v) -> {
-                                            // Workaround for bonds
+                                            // Percentage quotation, workaround for bonds
                                             if (v.get("notation") != null && !v.get("notation").equalsIgnoreCase("STK"))
                                                 t.setShares((asShares(v.get("shares")) / 100));
                                             else
@@ -1064,7 +1040,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                         .attributes("notation", "shares")
                                         .match("^(?<notation>[\\w]{3}) (?<shares>[\\.,\\d]+)( [\\d]{2}\\.[\\d]{2}\\.[\\d]{4})?$")
                                         .assign((t, v) -> {
-                                            // Workaround for bonds
+                                            // Percentage quotation, workaround for bonds
                                             if (v.get("notation") != null && !v.get("notation").equalsIgnoreCase("STK"))
                                                 t.setShares((asShares(v.get("shares")) / 100));
                                             else
@@ -1225,7 +1201,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 .section("notation", "shares")
                 .match("^(?<notation>[\\w]{3}) (?<shares>[\\.,\\d]+)( [\\d]{2}\\.[\\d]{2}\\.[\\d]{4})?$")
                 .assign((t, v) -> {
-                    // Workaround for bonds
+                    // Percentage quotation, workaround for bonds
                     if (v.get("notation") != null && !v.get("notation").equalsIgnoreCase("STK"))
                         t.setShares((asShares(v.get("shares")) / 100));
                     else
@@ -1270,11 +1246,9 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 })
 
                 .wrap(t -> {
-                    /**
-                     * If we have multiple entries in the document, with
-                     * taxes and tax refunds, then the "negative" flag
-                     * must be removed.
-                     */
+                    // If we have multiple entries in the document, with
+                    // taxes and tax refunds, then the "negative" flag
+                    //  must be removed.
                     type.getCurrentContext().remove("negative");
 
                     if (t.getCurrencyCode() != null && t.getAmount() != 0)
@@ -1285,27 +1259,19 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
-        /**
-         * If we have a tax refunds, we set a flag and don't book tax below
-         */
+        // If we have a tax refunds, we set a flag and don't book tax below.
         transaction
                 .section("n").optional()
                 .match("zu versteuern \\(negativ\\) (?<n>.*)")
-                .assign((t, v) -> {
-                    type.getCurrentContext().put("negative", "X");
-                });
+                .assign((t, v) -> type.getCurrentContext().put("negative", "X"));
 
-        /**
-         * If we have a gross reinvestment, we set a flag and don't book tax
-         * below
-         */
+        // If we have a gross reinvestment, we set a flag and don't book tax
+        // below.
         transaction
                 .section("n").optional()
                 .match("^Ertragsthesaurierung .*$")
                 .match("Steuerliquidit.t (?<n>.*)")
-                .assign((t, v) -> {
-                    type.getCurrentContext().put("noTax", "X");
-                });
+                .assign((t, v) -> type.getCurrentContext().put("noTax", "X"));
 
         transaction
                 // Handelsplatz außerbörslich Lang & Schwarz Frz. Finanztrans. Steuer EUR 11,19-

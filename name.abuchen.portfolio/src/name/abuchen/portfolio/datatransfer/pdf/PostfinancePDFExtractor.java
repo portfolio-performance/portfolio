@@ -22,19 +22,18 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class PostfinancePDFExtractor extends AbstractPDFExtractor
 {
+    /***
+     * Postfinance offers three accounts with different currencies (CHF,
+     * EUR, USD) There are two possibilities to buy shares of foreign
+     * currencies: 
+     * - Transfer money from CHF account to EUR/USD account and buy it in foreign currency 
+     * - Buy EUR/USD shares from CHF account directly (actual exchange rate will be taken) 
+     * 
+     * User manual:
+     * https://isotest.postfinance.ch/corporates/help/PostFinance_Testplattform_BenHB.pdf
+     */
     public PostfinancePDFExtractor(Client client)
     {
-        /***
-         * Postfinance offers three accounts with different currencies (CHF,
-         * EUR, USD) There are two possibilities to buy shares of foreign
-         * currencies: 
-         * - Transfer money from CHF account to EUR/USD account and buy it in foreign currency 
-         * - Buy EUR/USD shares from CHF account directly (actual exchange rate will be taken) 
-         * 
-         * User manual:
-         * https://isotest.postfinance.ch/corporates/help/PostFinance_Testplattform_BenHB.pdf
-         */
-
         super(client);
 
         addBankIdentifier("PostFinance"); //$NON-NLS-1$

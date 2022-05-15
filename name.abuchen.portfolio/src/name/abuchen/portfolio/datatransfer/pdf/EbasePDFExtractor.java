@@ -52,11 +52,9 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
             BuySellEntry entry = new BuySellEntry();
             entry.setType(PortfolioTransaction.Type.BUY);
 
-            /***
-             * We have multiple entries in the document
-             * and cannot split it with "endWith",
-             * so the "skipTransaction" flag must be removed.
-             */
+            // We have multiple entries in the document
+            // and cannot split it with "endWith",
+            // so the "skipTransaction" flag must be removed.
             type.getCurrentContext().remove("skipTransaction");
 
             return entry;
@@ -100,13 +98,10 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                     }
                 })
 
-                /***
-                 * Here we set a flag for all entries 
-                 * which should be skipped.
-                 * 
-                 * If this is not done, it can happen that taxes and fees 
-                 * are included from the following entries
-                 */
+                // Here we set a flag for all entries 
+                // which should be skipped.
+                // If this is not done, it can happen that taxes and fees 
+                // are included from the following entries
                 .section("type").optional()
                 .match("^(?<type>Fondsertrag) .*$")
                 .assign((t, v) -> {
@@ -200,10 +195,9 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 })
 
-                /***
-                 * If we have a "Verkauf wegen Vorabpauschale"
-                 * we set this amount.
-                 */
+                // If we have a "Verkauf wegen Vorabpauschale"
+                // we set this amount.
+
                 // Verkauf wegen Vorabpauschale 0,13 EUR mit Kursdatum 27.01.2020 aus Depotposition XXXXXXXX.02
                 // abzgl. Steuereinbehalt 0,13 EUR
                 .section("amount", "currency").optional()
@@ -214,12 +208,11 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 })
 
-                /***
-                 * If we have a "Entgelt Verkauf"
-                 * in which fee are immediately withheld,
-                 * without a separate transaction, 
-                 * we first post the sale and then the fee payment.
-                 */
+                // If we have a "Entgelt Verkauf"
+                // in which fee are immediately withheld,
+                // without a separate transaction,
+                // we first post the sale and then the fee payment.
+
                 // Entgelt Verkauf mit Kursdatum 20.12.2017 aus Depotposition 11111111111.01
                 // Depotführungsentgelt inkl. 19% USt 12,00 EUR
                 // VL-Vertragsentgelt inkl. 16 % USt 9,75 EUR
@@ -231,12 +224,11 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 })
 
-                /***
-                 * If we have a "Entgeltbelastung Verkauf"
-                 * in which fee are immediately withheld,
-                 * without a separate transaction,
-                 * we first post the sale and then the fee payment.
-                 */
+                // If we have a "Entgeltbelastung Verkauf"
+                // in which fee are immediately withheld,
+                // without a separate transaction,
+                // we first post the sale and then the fee payment.
+
                 // Entgeltbelastung Verkauf 3,00 EUR mit Kursdatum 06.04.2021 aus Depotposition 99999999999.01
                 // Summe 3,00 EUR
                 // Depotführungsentgelt inkl. 19 %
@@ -449,33 +441,33 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
-        /**
-         * The advance tax payment is always paid in local currency.
-         * If the security is in foreign currency,
-         * the exchange rate is missing in the document for posting.
-         * 
-         * Vorabpauschale zum Stichtag 31.12.2020 aus Depotposition xxx.21
-         * Mor.St.Inv.-Global Opportunity Actions Nominatives A USD o.N.
-         * Ref. Nr. 000/22012021, Buchungsdatum 22.01.2021
-         * ISIN Betrag je Anteil
-         * LU0552385295 0,038342500 EUR <-- MISSING Exchange Rate
-         * Kapitalertragsteuer Solidaritätszuschlag Kirchensteuer
-         * 0,03 EUR 0,00 EUR 0,00 EUR
-         * Belastung der angefallenen Steuern in Höhe von 0,03 EUR erfolgt durch Verkauf aus Depotposition xxx.21 mit Ref. Nr.
-         * 000/22012021
-         * 
-         * --------------------------------------------------------
-         * 
-         * Verkauf wegen Vorabpauschale 0,03 EUR mit Kursdatum 25.01.2021 aus Depotposition xxx.21
-         * Mor.St.Inv.-Global Opportunity Actions Nominatives A USD o.N.
-         * Ref. Nr. 000/22012021, Buchungsdatum 26.01.2021
-         * Belastung der angefallenen Steuern aus Depotposition xxx.21 mit Ref. Nr. 000/22012021 (Vorabpauschale)
-         * ISIN Anteile Abrechnungskurs Devisenkurs Betrag
-         * LU0552385295 -0,000268 136,090000 USD 1,216800 0,03 EUR <-- Exchange Rate
-         * abzgl. Steuereinbehalt 0,03 EUR
-         * Zahlungsbetrag 0,00 EUR
-         * Vorabpauschale zum Stichtag 31.12.2020 aus Depotposition xxx.25
-         */
+        // @formatter:off
+        // The advance tax payment is always paid in local currency.
+        // If the security is in foreign currency,
+        // the exchange rate is missing in the document for posting.
+        // 
+        // Vorabpauschale zum Stichtag 31.12.2020 aus Depotposition xxx.21
+        // Mor.St.Inv.-Global Opportunity Actions Nominatives A USD o.N.
+        // Ref. Nr. 000/22012021, Buchungsdatum 22.01.2021
+        // ISIN Betrag je Anteil
+        // LU0552385295 0,038342500 EUR <-- MISSING Exchange Rate
+        // Kapitalertragsteuer Solidaritätszuschlag Kirchensteuer
+        // 0,03 EUR 0,00 EUR 0,00 EUR
+        // Belastung der angefallenen Steuern in Höhe von 0,03 EUR erfolgt durch Verkauf aus Depotposition xxx.21 mit Ref. Nr.
+        // 000/22012021
+        // 
+        // --------------------------------------------------------
+        // 
+        // Verkauf wegen Vorabpauschale 0,03 EUR mit Kursdatum 25.01.2021 aus Depotposition xxx.21
+        // Mor.St.Inv.-Global Opportunity Actions Nominatives A USD o.N.
+        // Ref. Nr. 000/22012021, Buchungsdatum 26.01.2021
+        // Belastung der angefallenen Steuern aus Depotposition xxx.21 mit Ref. Nr. 000/22012021 (Vorabpauschale)
+        // ISIN Anteile Abrechnungskurs Devisenkurs Betrag
+        // LU0552385295 -0,000268 136,090000 USD 1,216800 0,03 EUR <-- Exchange Rate
+        // abzgl. Steuereinbehalt 0,03 EUR
+        // Zahlungsbetrag 0,00 EUR
+        // Vorabpauschale zum Stichtag 31.12.2020 aus Depotposition xxx.25
+        // @formatter:on
 
         pdfTransaction
                 // Vorabpauschale zum Stichtag 31.12.2019 aus Depotposition XXXXXXXXXX.05

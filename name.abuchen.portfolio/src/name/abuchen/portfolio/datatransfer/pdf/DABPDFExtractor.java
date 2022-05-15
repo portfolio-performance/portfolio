@@ -127,8 +127,8 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 .section("notation", "shares")
                 .match("^(?<notation>[\\w]{3}) (?<shares>[\\.,\\d]+) ([\\w]{3} )?[\\.,\\d]+( %)?$")
                 .assign((t, v) -> {
+                    // Percentage quotation, workaround for bonds
                     if (v.get("notation") != null && !v.get("notation").equalsIgnoreCase("STK"))
-                        // Prozent-Notierung, Workaround..
                         t.setShares((asShares(v.get("shares")) / 100));
                     else
                         t.setShares(asShares(v.get("shares")));
@@ -158,11 +158,6 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
                         )
 
-                /***
-                 * If changes are made in this area, the tax refund
-                 * function must be adjusted.
-                 * addBuySellTaxReturnBlock(type);
-                 */
                 .oneOf(
                                 // 08.01.2015 8022574001 EUR 150,00
                                 section -> section
@@ -201,10 +196,8 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 .conclude(PDFExtractorUtils.fixGrossValueBuySell())
 
                 .wrap(t -> {
-                    /**
-                     * If we have multiple entries in the document,
-                     * then the "negative" flag must be removed.
-                     */
+                    // If we have multiple entries in the document,
+                    // then the "negative" flag must be removed.
                     type.getCurrentContext().remove("negative");
 
                     return new BuySellEntryItem(t);
@@ -405,10 +398,8 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 .conclude(PDFExtractorUtils.fixGrossValueA())
 
                 .wrap(t -> {
-                    /**
-                     * If we have multiple entries in the document, then
-                     * the "noTax" flag must be removed.
-                     */
+                    // If we have multiple entries in the document, then
+                    // the "negative" flag must be removed.
                     type.getCurrentContext().remove("negative");
 
                     return new TransactionItem(t);
@@ -503,9 +494,6 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 .match("^STK [\\.,\\d]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
-                /***
-                 * Deposit without amount (share split)
-                 */
                 // Wir haben Ihrem Depot im Verhältnis 1 : 22 folgende Stücke zugebucht (hinzugefügt):
                 .section("note").optional()
                 .match("^Wir haben Ihrem Depot im (?<note>Verh.ltnis [\\d]+ : [\\d]+) .*$")
@@ -515,10 +503,8 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 })
 
                 .wrap(t -> {
-                    /**
-                     * If we have multiple entries in the document, then
-                     * the "noTax" flag must be removed.
-                     */
+                    // If we have multiple entries in the document, then
+                    // the "negative" flag must be removed.
                     type.getCurrentContext().remove("negative");
 
                     return new TransactionItem(t);
@@ -531,11 +517,6 @@ public class DABPDFExtractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private void addBuySellTaxReturnBlock(DocumentType type)
     {
-        /***
-         * If changes are made in this area,
-         * the buy/sell transaction function must be adjusted.
-         * addBuySellTransaction();
-         */
         Block block = new Block("^(Kauf|Verkauf|Gesamtf.lligkeit) .*$", "Dieser Beleg wird .*$");
         type.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
@@ -609,8 +590,8 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 .section("notation", "shares")
                 .match("^(?<notation>[\\w]{3}) (?<shares>[\\.,\\d]+) ([\\w]{3} )?[\\.,\\d]+( %)?$")
                 .assign((t, v) -> {
+                    // Percentage quotation, workaround for bonds
                     if (v.get("notation") != null && !v.get("notation").equalsIgnoreCase("STK"))
-                        // Prozent-Notierung, Workaround..
                         t.setShares((asShares(v.get("shares")) / 100));
                     else
                         t.setShares(asShares(v.get("shares")));
@@ -737,10 +718,8 @@ public class DABPDFExtractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
-        /***
-         * if we have a tax refunds,
-         * we set a flag and don't book tax below
-         */
+        // If we have a tax refunds,
+        // we set a flag and don't book tax below.
         transaction
                 .section("n").optional()
                 .match("^zu versteuern \\(negativ\\) (?<n>.*)$")

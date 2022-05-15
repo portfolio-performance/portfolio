@@ -109,7 +109,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 .section("shares", "notation")
                 .match("^Ausgef.hrt ([:\\s]+)?(?<shares>[\\.,\\d]+) ([\\s]+)?(?<notation>St\\.|[\\w]{3}).*$")
                 .assign((t, v) -> {
-                    // Prozent-Notierung, Workaround..
+                    // Percentage quotation, workaround for bonds
                     if (v.get("notation") != null && !v.get("notation").startsWith("St"))
                         t.setShares((asShares(v.get("shares")) / 100));
                     else
@@ -166,18 +166,12 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         })
                         )
 
-                /***
-                 * If the taxes are negative, 
-                 * this is a tax refund transaction
-                 * and we subtract this from the amount and reset this.
-                 * 
-                 * If the currency of the tax differs from the amount, 
-                 * it will be converted and reset.
-                 * 
-                 * If changes are made in this area, 
-                 * the tax refund function must be adjusted.
-                 * addTaxReturnBlock(type);
-                 */
+                // If the taxes are negative,
+                // this is a tax refund transaction
+                // and we subtract this from the amount and reset this.
+                // If the currency of the tax differs from the amount,
+                // it will be converted and reset.
+
                 // Gewinn/Verlust 0,00 EUR              **Einbeh. Steuer EUR                -1,00
                 .section("taxRefund", "currency").optional()
                 .match("^.* \\*\\*Einbeh\\. Steuer ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?\\-(?<taxRefund>[\\.,\\d]+)$")
@@ -434,10 +428,8 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 })
 
                 .wrap(t -> {
-                    /**
-                     * If we have multiple entries in the document,
-                     * then the "negative" flag must be removed.
-                     */
+                    // If we have multiple entries in the document,
+                    // then the "negative" flag must be removed.
                     type.getCurrentContext().remove("negative");
 
                     if (t.getPortfolioTransaction().getCurrencyCode() != null && t.getPortfolioTransaction().getAmount() != 0)
@@ -518,22 +510,19 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                     t.setAmount(asAmount(v.get("amount")));
                 })
 
-                /***
-                 * If the taxes are negative, 
-                 * this is a tax refund transaction
-                 * and we subtract this from the amount and reset this.
-                 * 
-                 * If the currency of the tax differs from the amount, 
-                 * it will be converted and reset.
-                 * 
-                 * Example:
-                 * **Einbeh. Steuer:           0,84 EUR
-                 * Endbetrag     :             955,98 USD
-                 * 
-                 * If changes are made in this area, 
-                 * the tax refund function must be adjusted.
-                 * addSummaryStatementTaxReturnBlock(type);
-                 */
+                // @formatter:off
+                // If the taxes are negative, 
+                // this is a tax refund transaction
+                // and we subtract this from the amount and reset this.
+                //  
+                // If the currency of the tax differs from the amount, 
+                // it will be converted and reset.
+                //  
+                // Example:
+                // **Einbeh. Steuer:           0,84 EUR
+                // Endbetrag     :             955,98 USD
+                // @formatter:on
+
                 // Lagerland    : Deutschland           **Einbeh. Steuer :            -100,00 EUR
                 .section("taxRefund", "currency").optional()
                 .match("^.* \\*\\*Einbeh\\. Steuer([\\s]+)?: ([\\s]+)?\\-(?<taxRefund>[\\.,\\d]+) (?<currency>[\\w]{3})$")
@@ -655,10 +644,8 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                             type.getCurrentContext().put("negative", "X");
                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
 
-                                            /***
-                                             * If we have a negative amount and no gross reinvestment,
-                                             * we first book the dividends received and then the tax charge
-                                             */
+                                            // If we have a negative amount and no gross reinvestment,
+                                            // we first book the dividends received and then the tax charge
                                             if (v.get("type").equals("Bruttothesaurierung"))
                                             {
                                                 t.setAmount(0L);
@@ -694,10 +681,8 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                             type.getCurrentContext().put("negative", "X");
                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
 
-                                            /***
-                                             * If we have a negative amount and no gross reinvestment,
-                                             * we first book the dividends received and then the tax charge
-                                             */
+                                            // If we have a negative amount and no gross reinvestment,
+                                            // we first book the dividends received and then the tax charge
                                             if (v.get("type").equals("Bruttothesaurierung"))
                                                 t.setAmount(0L);
                                             else
@@ -758,11 +743,9 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + trim(v.get("note2"))))
 
                 .wrap(t -> {
-                    /**
-                     * If we have multiple entries in the document, with
-                     * taxes and tax refunds, then the "negative" flag
-                     * must be removed.
-                     */
+                    // If we have multiple entries in the document, with
+                    // taxes and tax refunds, then the "negative" flag
+                    // must be removed.
                     type.getCurrentContext().remove("negative");
 
                     if (t.getCurrencyCode() != null && t.getAmount() != 0)
@@ -1156,7 +1139,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 .section("shares", "notation").optional()
                 .match("^Stk?\\.\\/Nominale([\\*\\s]+)?: ([\\s]+)?(?<shares>[\\.,\\d]+) ([\\s]+)?(?<notation>St\\.|[\\w]{3})(.*)$")
                 .assign((t, v) -> {
-                    // Prozent-Notierung, Workaround..
+                    // Percentage quotation, workaround for bonds
                     if (v.get("notation") != null && !v.get("notation").startsWith("St"))
                         t.setShares((asShares(v.get("shares")) / 100));
                     else
@@ -1189,15 +1172,10 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                     t.setType(PortfolioTransaction.Type.TRANSFER_OUT);
                 })
 
-                /***
-                 * If the taxes are negative,
-                 * this is a tax refund transaction
-                 * and we subtract this from the amount and reset this.
-                 * 
-                 * If changes are made in this area, 
-                 * the tax refund function must be adjusted.
-                 * addTransferInOutTaxReturnBlock(type);
-                 */
+                // If the taxes are negative,
+                // this is a tax refund transaction
+                // and we subtract this from the amount and reset this.
+
                 // Stk./Nominale  : 325,000000 Stk         Einbeh. Steuer*:           -382,12 EUR
                 //                                           Einbeh. Steuer**:         -10,00 EUR
                 .section("taxRefund").optional()
@@ -1258,7 +1236,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 .section("shares", "notation")
                 .match("^Stk\\.\\/Nominale([\\s]+)?: ([\\s]+)?(?<shares>[\\.,\\d]+) ([\\s]+)?(?<notation>St\\.|[\\w]{3}).*$")
                 .assign((t, v) -> {
-                    // Prozent-Notierung, Workaround..
+                    // Percentage quotation, workaround for bonds
                     if (v.get("notation") != null && !v.get("notation").startsWith("St"))
                         t.setShares((asShares(v.get("shares")) / 100));
                     else
@@ -1278,15 +1256,10 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                     t.setAmount(asAmount(v.get("amount")) * t.getShares() / Values.Share.factor());
                 })
 
-                /***
-                 * If the taxes are negative,
-                 * this is a tax refund transaction
-                 * and we subtract this from the amount and reset this.
-                 * 
-                 * If changes are made in this area, 
-                 * the tax refund function must be adjusted.
-                 * addTransferInOutTaxReturnBlock(type);
-                 */
+                // If the taxes are negative,
+                // this is a tax refund transaction
+                // and we subtract this from the amount and reset this.
+
                 //                                           Einbeh. Steuer**:          -1,00 EUR
                 .section("taxRefund").optional()
                 .match("^.* Einbeh\\. Steuer[\\*\\s]+: ([\\s]+)?\\-(?<taxRefund>[\\.,\\d]+) [\\w]{3}$")
@@ -1385,11 +1358,6 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
     private void addTaxReturnBlock(DocumentType type)
     {
-        /***
-         * If changes are made in this area,
-         * the buy/sell transaction function must be adjusted.
-         * addBuySellTransaction();
-         */
         Block block = new Block("^.* Auftragsdatum .*$");
         type.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
@@ -1420,7 +1388,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 .section("shares", "notation")
                 .match("^Ausgef.hrt ([:\\s]+)?(?<shares>[\\.,\\d]+) ([\\s]+)?(?<notation>(St\\.|[\\w]{3})).*$")
                 .assign((t, v) -> {
-                    // Prozent-Notierung, Workaround..
+                    // Percentage quotation, workaround for bonds
                     if (v.get("notation") != null && !v.get("notation").startsWith("St"))
                         t.setShares((asShares(v.get("shares")) / 100));
                     else
@@ -1446,10 +1414,8 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         t.setDateTime(asDate(v.get("date")));
                 })
 
-                /***
-                * If the currency of the tax differs from the amount,
-                * it will be converted and reset.
-                */
+                // If the currency of the tax differs from the amount,
+                // it will be converted and reset.
                 .oneOf(
                                 // Endbetrag      EUR               -50,30
                                 section -> section
@@ -1564,11 +1530,6 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
     private void addSummaryStatementTaxReturnBlock(DocumentType type)
     {
-        /***
-         * If changes are made in this area,
-         * the buy/sell transaction function must be adjusted.
-         * addSummaryStatementBuySellTransaction();
-         */
         Block block = new Block("^Nr\\.[\\d]+\\/[\\d]+ ([\\s]+)?(Kauf|Verkauf) ([\\s]+)?(?<name>.*) \\((?<isin>[\\w]{12})\\/(?<wkn>.*)\\)$");
         type.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
@@ -1597,10 +1558,9 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 .match("^.* Schlusstag([:\\s]+)? (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}), (?<time>\\d+:\\d+).*$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"), v.get("time"))))
 
-                /***
-                * If the currency of the tax differs from the amount, 
-                * it will be converted and reset.
-                */
+                // If the currency of the tax differs from the amount, 
+                // it will be converted and reset.
+
                 // Valuta       : 30.01.2014              Endbetrag      :          -5.893,10 EUR
                 .section("currency")
                 .match("^.* Endbetrag([:\\s]+)? (\\-)?[\\.,\\d]+ (?<currency>[\\w]{3})$")
@@ -1660,12 +1620,6 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
     private void addTransferInOutTaxReturnBlock(DocumentType type)
     {
-        /***
-         * If changes are made in this area,
-         * the transaction function must be adjusted.
-         * addTransferOutTransaction();
-         * addTransferInTransaction();
-         */
         Block block = new Block("^(Depoteingang|Depotausgang|Bestandsausbuchung|Gutschrifts\\- \\/ Belastungsanzeige).*$");
         type.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
@@ -1699,7 +1653,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 .section("shares", "notation").optional()
                 .match("^Stk\\.\\/Nominale([:\\s]+)? (?<shares>[\\.,\\d]+) ([\\s]+)?(?<notation>(St\\.|[\\w]{3})) .*$")
                 .assign((t, v) -> {
-                    // Prozent-Notierung, Workaround..
+                    // Percentage quotation, workaround for bonds
                     if (v.get("notation") != null && !v.get("notation").startsWith("St"))
                         t.setShares((asShares(v.get("shares")) / 100));
                     else
@@ -1754,14 +1708,14 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
-        /***
-         * If the currency of the tax differs from the amount,
-         * it will be converted and reset.
-         * 
-         * Example:
-         * **Einbeh. Steuer:           0,84 EUR
-         * Endbetrag     :             955,98 USD
-         */
+        // @formatter:off
+        // If the currency of the provision tax differs from the amount, it will
+        // be converted and reset.
+        //
+        // Example:
+        // **Einbeh. Steuer:           0,84 EUR
+        // Endbetrag     :             955,98 USD
+        // @formatter:on
         transaction
                 // Lagerland    : Deutschland           **Einbeh. Steuer :               0,00 EUR
                 .section("tax", "currency").optional()
@@ -1936,10 +1890,8 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
     {
-        /***
-         * If the currency of the provision fee differs from the amount,
-         * it will be converted and reset.
-         */
+        // If the currency of the provision fee differs from the amount, it will
+        // be converted and reset.
         transaction
                 // Devisenkurs  :                         Provision      :               3,90 EUR
                 .section("fee", "currency").optional()

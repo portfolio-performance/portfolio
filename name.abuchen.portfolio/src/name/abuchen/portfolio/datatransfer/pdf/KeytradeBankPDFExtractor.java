@@ -42,12 +42,9 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
             Pattern pTransaction = Pattern.compile("^Num.ro.*(Achat|Vente) (?<shares>[\\.,\\d]+) (?<name>.*) \\((?<isin>[\\w]{12})\\) .* [\\.,\\d]+ (?<currency>[\\w]{3}).*$");
             // read the current context here
 
-            /***
-             * This is the section we need,
-             * if the securities information and shares
-             * are outside the block.
-             */
-
+            // This is the section we need,
+            // if the securities information and shares
+            // are outside the block.
             for (String line : lines)
             {
                 Matcher m = pTransaction.matcher(line);
@@ -182,12 +179,9 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
             Pattern pTransaction = Pattern.compile("^CREDIT COUPON NR .*: (?<shares>[\\.,\\d]+) (?<name>.*) \\((?<isin>[\\w]{12})\\) .* [\\.,\\d]+ (?<currency>[\\w]{3}).*$");
             // read the current context here
 
-            /***
-             * This is the section we need,
-             * if the securities information and shares
-             * are outside the block.
-             */
-
+            // This is the section we need,
+            // if the securities information and shares
+            // are outside the block.
             for (String line : lines)
             {
                 Matcher m = pTransaction.matcher(line);

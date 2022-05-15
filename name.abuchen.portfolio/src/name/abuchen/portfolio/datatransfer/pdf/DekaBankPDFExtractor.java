@@ -330,9 +330,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                 m = pIsin.matcher(lines[i]);
                 if (m.matches())
                 {
-                    /***
-                     * Search the security currency in the block
-                     */
+                    // Search the security currency in the block
                     for (int ii = i; ii < endBlock; ii++)
                     {
                         Matcher m1 = pSecurityCurrency.matcher(lines[ii]);
@@ -340,15 +338,15 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                             securityCurrency = m1.group("securityCurrency");
                     }
 
-                    /***
-                     * Stringbuilder:
-                     * security_(security name)_(currency)_(start@line)_(end@line) = isin
-                     * 
-                     * Example:
-                     * Deka-GlobalChampions TF
-                     * ISIN: DE000DK0ECV6 Unterdepot: 00
-                     * EUR Fremdwährung EUR Anteile tag nungstag
-                     */
+                    // @formatter:off
+                    // Stringbuilder:
+                    // security_(security name)_(currency)_(start@line)_(end@line) = isin
+                    // 
+                    // Example:
+                    // Deka-GlobalChampions TF
+                    // ISIN: DE000DK0ECV6 Unterdepot: 00
+                    // EUR Fremdwährung EUR Anteile tag nungstag
+                    // @formatter:on
                     StringBuilder securityListKey = new StringBuilder("security_");
                     securityListKey.append(trim(lines[i - 1])).append("_");
                     securityListKey.append(securityCurrency).append("_");

@@ -142,10 +142,8 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                 .wrap(t -> {
-                    /**
-                     * If we have multiple entries in the document,
-                     * then the "negative" flag must be removed.
-                     */
+                    // If we have multiple entries in the document,
+                    // then the "negative" flag must be removed.
                     type.getCurrentContext().remove("negative");
 
                     return new BuySellEntryItem(t);
@@ -294,10 +292,8 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                 .wrap(t -> {
-                    /**
-                     * If we have multiple entries in the document, then
-                     * the "negative" flag must be removed.
-                     */
+                    // If we have multiple entries in the document, then
+                    // the "negative" flag must be removed.
                     type.getCurrentContext().remove("negative");
 
                     return new TransactionItem(t);
@@ -354,10 +350,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
-        /***
-         * if we have a tax refunds,
-         * we set a flag and don't book tax below
-         */
+        // If we have a tax refunds, we set a flag and don't book tax below.
         transaction
                 .section("n").optional()
                 .match("zu versteuern \\(negativ\\) (?<n>.*)")

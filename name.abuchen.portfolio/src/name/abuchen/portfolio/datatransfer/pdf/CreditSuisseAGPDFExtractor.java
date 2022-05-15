@@ -2,6 +2,8 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
+import java.math.BigDecimal;
+
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -78,9 +80,7 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                 .match("^.* ISIN (?<isin>[\\w]{12})$")
                 .match("^Kurswert (?<currency>[\\w]{3}) [\\.,\\d]+$")
                 .assign((t, v) -> {
-                    /***
-                     * Workaround for bonds 
-                     */
+                    // Percentage quotation, workaround for bonds
                     t.setShares((asShares(v.get("shares")) / 100));
                     t.setSecurity(getOrCreateSecurity(v));
                 })
@@ -111,15 +111,10 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                     t.setAmount(asAmount(v.get("amount")));
                 })
 
-                /***
-                 * If we have the "Internet-Vergünstigung",
-                 * we add up it from the amount and reset it.
-                 * The "Internet discount" is then posted as a fee refund.
-                 * 
-                 * If changes are made in this area, 
-                 * the fee refund function must be adjusted.
-                 * addFeeReturnBlock(type);
-                 */
+                // If we have the "Internet-Vergünstigung",
+                // we add up it from the amount and reset it.
+                // The "Internet discount" is then posted as a fee refund.
+
                 // Internet-Vergünstigung USD - 41.81
                 // Internet-Vergünstigung USD 44.69
                 .section("feeRefund", "currency").optional()
@@ -171,9 +166,7 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                 .match("^.* ISIN (?<isin>[\\w]{12})$")
                 .match("^Bruttoertrag (?<currency>[\\w]{3}) [\\.,\\d]+$")
                 .assign((t, v) -> {
-                    /***
-                     * Workaround for bonds 
-                     */
+                    // Percentage quotation, workaround for bonds
                     t.setShares((asShares(v.get("shares")) / 100));
                     t.setSecurity(getOrCreateSecurity(v));
                 })
@@ -207,11 +200,6 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
 
     private void addFeeReturnBlock(DocumentType type)
     {
-        /***
-         * If changes are made in this area,
-         * the buy/sell transaction function must be adjusted.
-         * addBuySellTransaction();
-         */
         Block block = new Block("^Ihr (Kauf|Verkauf) .*$");
         type.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
@@ -244,9 +232,7 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                 .match("^.* ISIN (?<isin>[\\w]{12})$")
                 .match("^Kurswert (?<currency>[\\w]{3}) [\\.,\\d]+$")
                 .assign((t, v) -> {
-                    /***
-                     * Workaround for bonds 
-                     */
+                    // Percentage quotation, workaround for bonds
                     t.setShares((asShares(v.get("shares")) / 100));
                     t.setSecurity(getOrCreateSecurity(v));
                 })
@@ -315,5 +301,11 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
     protected long asShares(String value)
     {
         return PDFExtractorUtils.convertToNumberLong(value, Values.Share, "en", "US");
+    }
+
+    @Override
+    protected BigDecimal asExchangeRate(String value)
+    {
+        return PDFExtractorUtils.convertToNumberBigDecimal(value, Values.Share, "en", "US");
     }
 }
