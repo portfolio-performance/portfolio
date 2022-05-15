@@ -233,9 +233,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                 m1 = pNameIsin.matcher(lines[i]);
                 if (m1.matches())
                 {
-                    /***
-                     * Search the base currency in the block
-                     */
+                    // Search the base currency in the block
                     for (int ii = i; ii < endOfLineOfSecurityTransactionBlock; ii++)
                     {
                         Matcher m2 = pBaseCurrency.matcher(lines[ii]);
@@ -243,23 +241,23 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                             baseCurrency = m2.group("baseCurrency");
                     }
 
-                    /***
-                     * Stringbuilder:
-                     * security_(security name)_(currency)_(start@line)_(end@line) = isin
-                     * 
-                     * Example:
-                     * Fonds: PrivatFonds: Kontrolliert pro ISIN: DE000A0RPAN3 Verwaltungsvergütung: 1,55 % p. a.
-                     * Buchungs-/ Umsatzart Betrag/EUR Ausgabe- Preis/EUR Anteile
-                     * 
-                     * Fonds: UniGlobal ISIN: DE0008491051 Verwaltungsvergütung: 1,20 % p. a.
-                     * Hinweis: UniProfiRente Altersvorsorgevertrag
-                     * - gefördert -
-                     * Buchungs-/ Umsatzart Betrag/EUR Ausgabe- Preis/EUR Anteile
-                     * 
-                     * Fonds: UniMultiAsset: Exklusiv ISIN: DE000A2H9A01 Verwaltungsvergütung: 0,50 % p. a.
-                     * UniMultiAsset: Chance I ISIN: DE000A2H9A19 Verwaltungsvergütung: 0,40 % p. a.
-                     * LMGF-L.M.Mart.Cu.Gl.L.T.Uncon. Reg. ISIN: IE00BMDQ4622 Verwaltungsvergütung: 0,40 % p. a.
-                     */
+                    // @formatter:off
+                    // Stringbuilder:
+                    // security_(security name)_(currency)_(start@line)_(end@line) = isin
+                    //  
+                    // Example:
+                    // Fonds: PrivatFonds: Kontrolliert pro ISIN: DE000A0RPAN3 Verwaltungsvergütung: 1,55 % p. a.
+                    // Buchungs-/ Umsatzart Betrag/EUR Ausgabe- Preis/EUR Anteile
+                    //  
+                    // Fonds: UniGlobal ISIN: DE0008491051 Verwaltungsvergütung: 1,20 % p. a.
+                    // Hinweis: UniProfiRente Altersvorsorgevertrag
+                    //  - gefördert -
+                    // Buchungs-/ Umsatzart Betrag/EUR Ausgabe- Preis/EUR Anteile
+                    //  
+                    // Fonds: UniMultiAsset: Exklusiv ISIN: DE000A2H9A01 Verwaltungsvergütung: 0,50 % p. a.
+                    // UniMultiAsset: Chance I ISIN: DE000A2H9A19 Verwaltungsvergütung: 0,40 % p. a.
+                    // LMGF-L.M.Mart.Cu.Gl.L.T.Uncon. Reg. ISIN: IE00BMDQ4622 Verwaltungsvergütung: 0,40 % p. a.
+                    // @formatter:on
                     if (i != (endOfLineOfSecurityTransactionBlock - 1))
                     {
                         StringBuilder securityListKey = new StringBuilder("security_");
@@ -275,19 +273,19 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                     }
                     else
                     {
-                        /***
-                         * Example:
-                         * Fonds: UniMultiAsset: Exklusiv ISIN: DE000A2H9A01 Verwaltungsvergütung: 0,50 % p. a.
-                         * UniMultiAsset: Chance I ISIN: DE000A2H9A19 Verwaltungsvergütung: 0,40 % p. a.
-                         * LMGF-L.M.Mart.Cu.Gl.L.T.Uncon. Reg. ISIN: IE00BMDQ4622 Verwaltungsvergütung: 0,40 % p. a.
-                         * iShares III- Core EO Govt Bond UCIT ISIN: IE00B4WXJJ64 Verwaltungsvergütung: 0,20 % p. a.
-                         * J O H.C.M.U.Fd-Glob.Opport.Fd ISIN: IE00B7MR5575 Verwaltungsvergütung: 0,75 % p. a.
-                         * SISF EURO Corporate Bond C Acc EUR ISIN: LU0113258742 Verwaltungsvergütung: 0,45 % p. a.
-                         * BGF Euro Corporate Bond Fund D2 EUR ISIN: LU0368266499 Verwaltungsvergütung: 0,40 % p. a.
-                         * UBS(L)F.S-MSCI EM.MKTS UC ETF A USD ISIN: LU0480132876 Verwaltungsvergütung: 0,225 % p. a.
-                         * Xtrackers MSCI World Swap ISIN: LU0659579733 Verwaltungsvergütung: 0,42 % p. a
-                         * DWS Inv.-Euro-Gov Bonds ISIN: LU1663883681 Verwaltungsvergütung: 0,35 % p. a.
-                         * */
+                        // @formatter:off
+                        // Example:
+                        // Fonds: UniMultiAsset: Exklusiv ISIN: DE000A2H9A01 Verwaltungsvergütung: 0,50 % p. a.
+                        // UniMultiAsset: Chance I ISIN: DE000A2H9A19 Verwaltungsvergütung: 0,40 % p. a.
+                        // LMGF-L.M.Mart.Cu.Gl.L.T.Uncon. Reg. ISIN: IE00BMDQ4622 Verwaltungsvergütung: 0,40 % p. a.
+                        // iShares III- Core EO Govt Bond UCIT ISIN: IE00B4WXJJ64 Verwaltungsvergütung: 0,20 % p. a.
+                        // J O H.C.M.U.Fd-Glob.Opport.Fd ISIN: IE00B7MR5575 Verwaltungsvergütung: 0,75 % p. a.
+                        // SISF EURO Corporate Bond C Acc EUR ISIN: LU0113258742 Verwaltungsvergütung: 0,45 % p. a.
+                        // BGF Euro Corporate Bond Fund D2 EUR ISIN: LU0368266499 Verwaltungsvergütung: 0,40 % p. a.
+                        // UBS(L)F.S-MSCI EM.MKTS UC ETF A USD ISIN: LU0480132876 Verwaltungsvergütung: 0,225 % p. a.
+                        // Xtrackers MSCI World Swap ISIN: LU0659579733 Verwaltungsvergütung: 0,42 % p. a
+                        // DWS Inv.-Euro-Gov Bonds ISIN: LU1663883681 Verwaltungsvergütung: 0,35 % p. a.
+                        // @formatter:on
 
                         // Add security to securityList
                         String[] security = {m1.group("isin"), trim(m1.group("name"))};
@@ -327,10 +325,10 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                     {
                         if (m.group("name").equals(security[1]))
                         {
-                            /***
-                             * Stringbuilder:
-                             * security_(security name)_(currency)_(start@line)_(end@line) = isin
-                             */
+                            // @formatter:off
+                            // Stringbuilder:
+                            // security_(security name)_(currency)_(start@line)_(end@line) = isin
+                            // @formatter:on
                             StringBuilder securityListKey = new StringBuilder("security_");
                             securityListKey.append(trim(m.group("name"))).append("_");
                             securityListKey.append(baseCurrency).append("_");
@@ -345,23 +343,23 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
         });
         this.addDocumentTyp(type);
 
-        /***
-         * Formatting:
-         * Buchungsdatum
-         * Preisdatum | Umsatzart | Betrag/EUR
-         * Anlage | Betrag/EUR | Ausgabeaufschlag % | Preis/EUR | Anteile
-         * -------------------------------------
-         * 18.07.2017
-         * 17.07.2017 Kauf 2.125,00
-         * Anlage 2.125,00 0,00 148,75 14,286
-         * 
-         * 19.11.2020 Verkauf *1 18.103,67 63,38 -285,637
-         * 
-         * 27.11.2017
-         * 2 4.11.2017 Wiederanlage 94,78 0,00 142,61 0,665
-         * 
-         * 01.03.2022 Anlage 4,24 25,5849 0,166
-         */
+        // @formatter:off
+        // Formatting:
+        // Buchungsdatum
+        // Preisdatum | Umsatzart | Betrag/EUR
+        // Anlage | Betrag/EUR | Ausgabeaufschlag % | Preis/EUR | Anteile
+        // -------------------------------------
+        // 18.07.2017
+        // 17.07.2017 Kauf 2.125,00
+        // Anlage 2.125,00 0,00 148,75 14,286
+        // 
+        // 19.11.2020 Verkauf *1 18.103,67 63,38 -285,637
+        //  
+        // 27.11.2017
+        // 2 4.11.2017 Wiederanlage 94,78 0,00 142,61 0,665
+        // 
+        // 01.03.2022 Anlage 4,24 25,5849 0,166
+        // @formatter:on
         Transaction<BuySellEntry> pdfTransaction1 = new Transaction<>();
         pdfTransaction1.subject(() -> {
             BuySellEntry entry = new BuySellEntry();
@@ -498,24 +496,24 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
         addFeesSectionsTransaction(pdfTransaction1, type);
         addTaxesSectionsTransaction(pdfTransaction1, type);
 
-        /***
-         * Formatting:
-         * Buchungsdatum
-         * Preisdatum | Umsatzart | Betrag/EUR
-         * Anlage | Betrag/EUR | Ausgabeaufschlag % | Preis/EUR | Anteile
-         * -------------------------------------
-         * Gesamtausschüttung *1 94,78
-         * abgeführte Kapitalertragsteuer 0,00
-         * inklusive Solidaritätszuschlag
-         * 27.11.2017
-         * 2 4.11.2017 Wiederanlage 94,78 0,00 142,61 0,665
-         * 
-         * Ausschüttung *1 362,80
-         * abgeführte Kapitalertragsteuer 0,00
-         * inklusive Solidaritätszuschlag
-         * 11.12.2020
-         * 1 0.12.2020 Wiederanlage 362,80 0,00 53,91 6,730
-         */
+        // @formatter:off
+        // Formatting:
+        // Buchungsdatum
+        // Preisdatum | Umsatzart | Betrag/EUR
+        // Anlage | Betrag/EUR | Ausgabeaufschlag % | Preis/EUR | Anteile
+        // -------------------------------------
+        // Gesamtausschüttung *1 94,78
+        // abgeführte Kapitalertragsteuer 0,00
+        // inklusive Solidaritätszuschlag
+        // 27.11.2017
+        // 2 4.11.2017 Wiederanlage 94,78 0,00 142,61 0,665
+        //  
+        // Ausschüttung *1 362,80
+        // abgeführte Kapitalertragsteuer 0,00
+        // inklusive Solidaritätszuschlag
+        // 11.12.2020
+        // 1 0.12.2020 Wiederanlage 362,80 0,00 53,91 6,730
+        // @formatter:on
         Transaction<AccountTransaction> pdfTransaction2 = new Transaction<>();
         pdfTransaction2.subject(() -> {
             AccountTransaction transaction = new AccountTransaction();
@@ -558,17 +556,16 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
         addFeesSectionsTransaction(pdfTransaction2, type);
         addTaxesSectionsTransaction(pdfTransaction2, type);
 
-        /***
-         * Formatting:
-         * Buchungsdatum
-         * Preisdatum | Umsatzart | Betrag/EUR
-         * Anlage | Betrag/EUR | Ausgabeaufschlag % | Preis/EUR | Anteile
-         * -------------------------------------
-         * 22.11.2019
-         * 21.11.2019 Ausgleichsbuchung Steuer*1 2,09
-         * Anlage 2,09 0,00 241,88 0,009
-
-         */
+        // @formatter:off
+        // Formatting:
+        // Buchungsdatum
+        // Preisdatum | Umsatzart | Betrag/EUR
+        // Anlage | Betrag/EUR | Ausgabeaufschlag % | Preis/EUR | Anteile
+        //  -------------------------------------
+        // 22.11.2019
+        // 21.11.2019 Ausgleichsbuchung Steuer*1 2,09
+        // Anlage 2,09 0,00 241,88 0,009
+        // @formatter:on
         Transaction<PortfolioTransaction> pdfTransaction3 = new Transaction<>();
         pdfTransaction3.subject(() -> {
             PortfolioTransaction transaction = new PortfolioTransaction();
@@ -612,17 +609,17 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
         addFeesSectionsTransaction(pdfTransaction3, type);
         addTaxesSectionsTransaction(pdfTransaction3, type);
 
-        /***
-         * Formatting:
-         * Buchungsdatum
-         * Preisdatum | Umsatzart | Betrag/EUR
-         * Anlage | Betrag/EUR | Ausgabeaufschlag % | Preis/EUR | Anteile
-         * -------------------------------------
-         * 11.02.2014
-         * 10.02.2014 Umtausch 458,99
-         * aus Unterdepot 1345674218
-         * Anlage 458,99 0,00 37,77 12,152
-         */
+        // @formatter:off
+        // Formatting:
+        // Buchungsdatum
+        // Preisdatum | Umsatzart | Betrag/EUR
+        // Anlage | Betrag/EUR | Ausgabeaufschlag % | Preis/EUR | Anteile
+        // -------------------------------------
+        // 11.02.2014
+        // 10.02.2014 Umtausch 458,99
+        // aus Unterdepot 1345674218
+        // Anlage 458,99 0,00 37,77 12,152
+        // @formatter:on
         Transaction<PortfolioTransaction> pdfTransaction4 = new Transaction<>();
         pdfTransaction4.subject(() -> {
             PortfolioTransaction transaction = new PortfolioTransaction();
@@ -697,10 +694,10 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
         addTaxesSectionsTransaction(pdfTransaction4, type);
 
 
-        /***
-         * Depotgebühr mit Nutzung der -32,55
-         * Postbox
-         */
+        // @formatter:off
+        // Depotgebühr mit Nutzung der -32,55
+        // Postbox
+        // @formatter:on
         Transaction<AccountTransaction> pdfTransaction5 = new Transaction<>();
         pdfTransaction5.subject(() -> {
             AccountTransaction transaction = new AccountTransaction();
@@ -731,10 +728,10 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                     return null;
                 });
 
-        /***
-         * Erstattung Kapitalertragsteuer 16,8
-         * inklusive Solidaritätszuschlag
-         */
+        // @formatter:off
+        // Erstattung Kapitalertragsteuer 16,8
+        // inklusive Solidaritätszuschlag
+        // @formatter:on
         Transaction<AccountTransaction> pdfTransaction6 = new Transaction<>();
         pdfTransaction6.subject(() -> {
             AccountTransaction transaction = new AccountTransaction();
@@ -765,9 +762,9 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                     return null;
                 });
 
-        /***
-         * Erstattung Kirchensteuer 1,27
-         */
+        // @formatter:off
+        // Erstattung Kirchensteuer 1,27
+        // @formatter:on
         Transaction<AccountTransaction> pdfTransaction7 = new Transaction<>();
         pdfTransaction7.subject(() -> {
             AccountTransaction transaction = new AccountTransaction();

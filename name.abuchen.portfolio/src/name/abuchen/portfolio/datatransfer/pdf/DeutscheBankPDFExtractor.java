@@ -99,13 +99,11 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 })
-                
+
                 .wrap(t -> {
-                    /***
-                     * If we have multiple entries in the document, with
-                     * fee and fee refunds, then the "noProvision" flag
-                     * must be removed.
-                     */
+                    // If we have multiple entries in the document, with
+                    // fee and fee refunds, then the "noProvision" flag
+                    // must be removed.
                     type.getCurrentContext().remove("noProvision");
 
                     return new BuySellEntryItem(t);
@@ -194,20 +192,20 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
         });
         this.addDocumentTyp(type);
 
-        /***
-         * Formatting:
-         * Buchung | Valuta | Vorgang | Soll | Haben
-         * 
-         * 01.12. 01.12. SEPA Dauerauftrag an - 40,00
-         * Mustermann, Max
-         * IBAN DE1111110000111111
-         * BIC OSDDDE81XXX
-         * 
-         * 07.12. 07.12. SEPA Überweisung von + 562,00
-         * Unser Sparverein
-         * Verwendungszweck/ Kundenreferenz
-         * 1111111111111111 1220 INKL. SONDERZAHLUNG
-         */
+        // @formatter:off
+        // Formatting:
+        // Buchung | Valuta | Vorgang | Soll | Haben
+        //  
+        // 01.12. 01.12. SEPA Dauerauftrag an - 40,00
+        // Mustermann, Max
+        // IBAN DE1111110000111111
+        // BIC OSDDDE81XXX
+        // 
+        // 07.12. 07.12. SEPA Überweisung von + 562,00
+        // Unser Sparverein
+        // Verwendungszweck/ Kundenreferenz
+        // 1111111111111111 1220 INKL. SONDERZAHLUNG
+        // @formatter:on
         Block blockDepositRemoval = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. "
                         + "((SEPA )?"
                         + "(Dauerauftrag"
@@ -260,13 +258,12 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                     t.setAmount(asAmount(v.get("amount")));
                     t.setNote(v.get("note"));
 
-                    /*** 
-                     * If we have fees,
-                     * then we set the amount to 0.00
-                     * 
-                     * 31.12. 31.12. Verwendungszweck/ Kundenreferenz - 13,47
-                     * Saldo der Abschlussposten
-                     */
+                    // @formatter:off
+                    // If we have fees, then we set the amount to 0.00
+                    //  
+                    // 31.12. 31.12. Verwendungszweck/ Kundenreferenz - 13,47
+                    // Saldo der Abschlussposten
+                    // @formatter:on
                     if (v.get("note1").equals("Saldo der Abschlussposten"))
                         t.setAmount(0L);
                 })
@@ -277,13 +274,13 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                     return null;
                 }));
 
-        /***
-         * Formatting:
-         * Buchung | Valuta | Vorgang | Soll | Haben
-         * 
-         * 31.12. 31.12. Verwendungszweck/ Kundenreferenz - 13,47
-         * Saldo der Abschlussposten
-         */
+        // @formatter:off
+        // Formatting:
+        // Buchung | Valuta | Vorgang | Soll | Haben
+        //  
+        // 31.12. 31.12. Verwendungszweck/ Kundenreferenz - 13,47
+        // Saldo der Abschlussposten
+        // @formatter:on
         Block blockFees = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. Verwendungszweck\\/ Kundenreferenz \\- [\\.,\\d]+$");
         type.addBlock(blockFees);
         blockFees.set(new Transaction<AccountTransaction>()
@@ -368,10 +365,8 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
     {
-        /***
-         * If the provision fee and the fee refund are the same, 
-         * then we set a flag and don't book provision fee
-         */
+        // If the provision fee and the fee refund are the same, 
+        // then we set a flag and don't book provision fee.
         transaction
                 // Provision EUR 3,13
                 // Provisions-Rabatt EUR -1,13

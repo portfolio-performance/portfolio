@@ -36,22 +36,21 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
         return "Lime Trading Corp."; //$NON-NLS-1$
     }
 
+    /***
+     * Information:
+     * Lime Trading Corp. is a US-based financial services company.
+     * The currency is US$.
+     * 
+     * All security currencies are USD.
+     * 
+     * CUSIP Number:
+     * The CUSIP number is the WKN number.
+     * 
+     * Dividend transactions:
+     * The amount of dividends is reported in gross.
+     */
     private void addAccountStatementTransaction()
     {
-        /***
-         * Information:
-         * Lime Trading Corp. is a US-based financial services company.
-         * The currency is US$.
-         * 
-         * All security currencies are USD.
-         * 
-         * CUSIP Number:
-         * The CUSIP number is the WKN number.
-         * 
-         * Dividend transactions:
-         * The amount of dividends is reported in gross.
-         */
-
         final DocumentType type = new DocumentType("ACCOUNT STATEMENT", (context, lines) -> {
             Pattern pYear = Pattern.compile("^.* STATEMENT PERIOD: .*, (?<year>[\\d]{4})$");
             // read the current context here
@@ -66,15 +65,15 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
         });
         this.addDocumentTyp(type);
 
-        /***
-         * Formatting:
-         * Date | Effective Description | CUSIP | Type of Activity | Quantity Market Price | Net Settlement Amount
-         * -------------------------------------
-         * Sep 15 Vanguard Index Fds 922908363 Buy 4 409.61 (1,638.44)
-         * S P 500 Etf Shs
-         * Sep 02 Netflix Inc 64110L106 Sell 2 566.20 1,132.39
-         * Com
-         */
+        // @formatter:off
+        // Formatting:
+        // Date | Effective Description | CUSIP | Type of Activity | Quantity Market Price | Net Settlement Amount
+        // -------------------------------------
+        // Sep 15 Vanguard Index Fds 922908363 Buy 4 409.61 (1,638.44)
+        // S P 500 Etf Shs
+        // Sep 02 Netflix Inc 64110L106 Sell 2 566.20 1,132.39
+        // Com
+        // @formatter:on
         Block blockBuySell = new Block("^[\\w]{3} [\\d]{2} .* [\\w]{9} (Buy|Sell) [\\.,\\d]+ [\\.,\\d]+ (\\()?[\\.,\\d]+(\\)?)$");
         type.addBlock(blockBuySell);
         blockBuySell.set(new Transaction<BuySellEntry>()
@@ -108,21 +107,21 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(BuySellEntryItem::new));
 
-        /***
-         * Formatting:
-         * Date | Effective Description | CUSIP | Type of Activity | Quantity Market Price | Net Settlement Amount
-         * -------------------------------------
-         * Sep 16 Barrick Gold Co             14 067901108 Dividend 1.97
-         * 
-         * Sep 17 Barrick Gold Co             14 067901108 Dividend 1.26
-         * Sep 17 For Sec Withhold: Div   .25000 067901108 Foreign Withholding (0.31)
-         * 
-         * Sep 15 Realty Income C             22 756109104 Dividend 5.18
-         * Sep 15 Nra Withhold: Dividend 756109104 NRA Withhold (1.55)
-         * 
-         * Sep 15 Tyson Foods Inc              6 902494103 Qualified Dividend 2.67
-         * Sep 15 Nra Withhold: Dividend 902494103 NRA Withhold (0.80)
-         */
+        // @formatter:off
+        // Formatting:
+        // Date | Effective Description | CUSIP | Type of Activity | Quantity Market Price | Net Settlement Amount
+        // -------------------------------------
+        // Sep 16 Barrick Gold Co             14 067901108 Dividend 1.97
+        // 
+        // Sep 17 Barrick Gold Co             14 067901108 Dividend 1.26
+        // Sep 17 For Sec Withhold: Div   .25000 067901108 Foreign Withholding (0.31)
+        //  
+        // Sep 15 Realty Income C             22 756109104 Dividend 5.18
+        // Sep 15 Nra Withhold: Dividend 756109104 NRA Withhold (1.55)
+        //  
+        // Sep 15 Tyson Foods Inc              6 902494103 Qualified Dividend 2.67
+        // Sep 15 Nra Withhold: Dividend 902494103 NRA Withhold (0.80)
+        // @formatter:on
         Block blockDividende = new Block("^[\\w]{3} [\\d]{2} .* (?!Qualified).{9} (Qualified )?Dividend [\\.,\\d]+$");
         type.addBlock(blockDividende);
         blockDividende.set(new Transaction<AccountTransaction>()
@@ -175,15 +174,15 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                             return null;
                         }));
 
-        /***
-         * Formatting:
-         * Date | Effective Description | CUSIP | Type of Activity | Quantity Market Price | Net Settlement Amount
-         * -------------------------------------
-         * Nov 05 2seventy Bio Inc 901384107 Security Journal 5
-         * Common Stock
-         * Nov 15 Orion Office Reit Inc 68629Y103 Security Journal 2
-         * Com
-         */
+        // @formatter:off
+        // Formatting:
+        // Date | Effective Description | CUSIP | Type of Activity | Quantity Market Price | Net Settlement Amount
+        // -------------------------------------
+        // Nov 05 2seventy Bio Inc 901384107 Security Journal 5
+        // Common Stock
+        // Nov 15 Orion Office Reit Inc 68629Y103 Security Journal 2
+        // Com
+        // @formatter:on
         Block blockDeliveryInBound = new Block("^[\\w]{3} [\\d]{2} .* [\\w]{9} Security Journal [\\.,\\d]+$");
         type.addBlock(blockDeliveryInBound);
         blockDeliveryInBound.set(new Transaction<PortfolioTransaction>()
@@ -215,13 +214,13 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                             return null;
                         }));
 
-        /***
-         * Formatting:
-         * Date | Effective Description | CUSIP | Type of Activity | Quantity Market Price | Net Settlement Amount
-         * -------------------------------------
-         * Nov 05 Ca Fee_spinoff_blue Tsvt 09609 Journal (30.00) <-- CUSIP is incorrect (length = 9)
-         * Nov 15 Ca Fee_spinoff_o Onl 756109104 Journal (30.00)
-         */
+        // @formatter:off
+        // Formatting:
+        // Date | Effective Description | CUSIP | Type of Activity | Quantity Market Price | Net Settlement Amount
+        // -------------------------------------
+        // Nov 05 Ca Fee_spinoff_blue Tsvt 09609 Journal (30.00) <-- CUSIP is incorrect (length = 9)
+        // Nov 15 Ca Fee_spinoff_o Onl 756109104 Journal (30.00)
+        // @formatter:on
         Block blockFees = new Block("^[\\w]{3} [\\d]{2} Ca Fee_spinoff.* Journal \\([\\.,\\d]+\\)$");
         type.addBlock(blockFees);
         blockFees.set(new Transaction<AccountTransaction>()
@@ -255,14 +254,13 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                             return new NonImportableItem("CUSIP is maybe incorrect. " + t.getDateTime() + " " + t.getSecurity());
                         }));
 
-
-        /***
-         * Formatting:
-         * Date | Effective Description | CUSIP | Type of Activity | Quantity Market Price | Net Settlement Amount
-         * -------------------------------------
-         * Jun 23 Cil Allocation 58933Y105 Journal 29.98
-         * Merck & Co Inc New
-         */
+        // @formatter:off
+        // Formatting:
+        // Date | Effective Description | CUSIP | Type of Activity | Quantity Market Price | Net Settlement Amount
+        // -------------------------------------
+        // Jun 23 Cil Allocation 58933Y105 Journal 29.98
+        // Merck & Co Inc New
+        // @formatter:on
         Block blockCashAllocation = new Block("^[\\w]{3} [\\d]{2} .* Allocation [\\w]{9} Journal [\\.,\\d]+$");
         type.addBlock(blockCashAllocation);
         blockCashAllocation.set(new Transaction<AccountTransaction>()
@@ -294,12 +292,12 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                             return null;
                         }));
 
-        /***
-         * Formatting:
-         * Date | Effective Description | CUSIP | Type of Activity | Quantity Market Price | Net Settlement Amount
-         * -------------------------------------
-         * Dec 29 Incoming Wire Abccdd Doe Journal 71,000.00
-         */
+        // @formatter:off
+        // Formatting:
+        // Date | Effective Description | CUSIP | Type of Activity | Quantity Market Price | Net Settlement Amount
+        // -------------------------------------
+        // Dec 29 Incoming Wire Abccdd Doe Journal 71,000.00
+        // @formatter:on
         Block blockDeposit = new Block("^[\\w]{3} [\\d]{2} Incoming Wire .* [\\.,\\d]+$");
         type.addBlock(blockDeposit);
         blockDeposit.set(new Transaction<AccountTransaction>()
@@ -328,12 +326,12 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                             return null;
                         }));
 
-        /***
-         * Formatting:
-         * Date | Effective Description | CUSIP | Type of Activity | Quantity Market Price | Net Settlement Amount
-         * -------------------------------------
-         * Dec 31 .05000% 3 Days,Bal=   $71000 Credit Interest 0.30
-         */
+        // @formatter:off
+        // Formatting:
+        // Date | Effective Description | CUSIP | Type of Activity | Quantity Market Price | Net Settlement Amount
+        // -------------------------------------
+        // Dec 31 .05000% 3 Days,Bal=   $71000 Credit Interest 0.30
+        // @formatter:on
         Block blockInterest = new Block("^[\\w]{3} [\\d]{2} .* Credit Interest [\\.,\\d]+$");
         type.addBlock(blockInterest);
         blockInterest.set(new Transaction<AccountTransaction>()

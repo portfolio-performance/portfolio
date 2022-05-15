@@ -223,8 +223,8 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 .section("shares", "notation")
                 .match("^Nominale (?<shares>[\\.,\\d]+) (?<notation>(St.ck|[\\w]{3}))$")
                 .assign((t, v) -> {
+                    // Percentage quotation, workaround for bonds
                     if (v.get("notation") != null && !v.get("notation").equalsIgnoreCase("Stück"))
-                        // Prozent-Notierung, Workaround..
                         t.setShares((asShares(v.get("shares")) / 100));
                     else
                         t.setShares(asShares(v.get("shares")));
@@ -243,10 +243,9 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                     t.setAmount(asAmount(v.get("amount")));
                 })
 
-                /***
-                 * Is the total amount negative, 
-                 * then change from DIVIDENDS to TAXES
-                 */
+                // If the total amount is negative, then we change the
+                // transaction type from DIVIDENDS to TAXES.
+
                 // Gesamtbetrag zu Ihren Lasten EUR - 20,03
                 .section("currency", "amount").optional()
                 .match("^Gesamtbetrag zu Ihren Lasten (?<currency>[\\w]{3}) \\- (?<amount>[\\.,\\d]+)$")

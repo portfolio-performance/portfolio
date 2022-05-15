@@ -159,7 +159,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                 .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)")
                 .match("^(?<notation>(St.ck|[\\w]{3})) (?<shares>[\\.,\\d]+) .*$")
                 .assign((t, v) -> {
-                    // Workaround for bonds
+                    // Percentage quotation, workaround for bonds
                     if (v.get("notation") != null && !v.get("notation").equalsIgnoreCase("Stück"))
                     {
                         BigDecimal shares = asBigDecimal(v.get("shares"));
@@ -279,7 +279,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                 .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)")
                 .match("^(?<notation>(St.ck|[\\w]{3})) (?<shares>[\\.,\\d]+) .*$")
                 .assign((t, v) -> {
-                    // Workaround for bonds
+                    // Percentage quotation, workaround for bonds
                     if (v.get("notation") != null && !v.get("notation").equalsIgnoreCase("Stück"))
                     {
                         BigDecimal shares = asBigDecimal(v.get("shares"));
@@ -363,11 +363,10 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> {
                     t.setSecurity(getOrCreateSecurity(v));
 
-                    // Workaround for bonds
+                    // Percentage quotation, workaround for bonds
                     BigDecimal shares = asBigDecimal(v.get("shares"));
                     t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
 
-                    // Workaround for bonds
                     t.setAmount(0L);
                     t.setCurrencyCode(asCurrencyCode(t.getPortfolioTransaction().getSecurity().getCurrencyCode()));
                 })
@@ -421,7 +420,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                 .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)")
                 .match("^(?<notation>St.ck|[\\w]{3}) (?<shares>[\\.,\\d]+) .*$")
                 .assign((t, v) -> {
-                    // Workaround for bonds
+                    // Percentage quotation, workaround for bonds
                     if (v.get("notation") != null && !v.get("notation").equalsIgnoreCase("Stück"))
                     {
                         BigDecimal shares = asBigDecimal(v.get("shares"));

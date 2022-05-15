@@ -104,11 +104,9 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                     Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
                     Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
 
-                    /***
-                     * Swissquote sometimes uses scaled exchanges rates (such as DKK/CHF 15.42),
-                     * instead of 0.1542, hence we try to extract and if we fail,
-                     * we calculate the exchange rate
-                     */
+                    // Swissquote sometimes uses scaled exchanges rates (such as DKK/CHF 15.42),
+                    // instead of 0.1542, hence we try to extract and if we fail,
+                    // we calculate the exchange rate
                     if (fxGross.getCurrencyCode().equals(t.getPortfolioTransaction().getSecurity().getCurrencyCode()))
                     {
                         try

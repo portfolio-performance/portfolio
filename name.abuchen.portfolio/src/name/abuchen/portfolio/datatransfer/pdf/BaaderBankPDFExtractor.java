@@ -207,11 +207,9 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
         });
 
         pdfTransaction
-                /***
-                 * If we have a positive amount and a gross reinvestment,
-                 * there is a tax refund.
-                 * If the amount is negative, then it is taxes.
-                 */
+                // If we have a positive amount and a gross reinvestment,
+                // there is a tax refund.
+                // If the amount is negative, then it is taxes.
                 .section("type", "sign").optional()
                 .match("^Nominale ISIN: .* (?<type>(Aussch.ttung|Thesaurierung brutto))$")
                 .match("^Zu (?<sign>(Gunsten|Lasten)) Konto [\\d]+ Valuta: [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\w]{3} [\\.\\d]+,[\\d]{2}$")
@@ -270,10 +268,8 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 })
 
                 .wrap(t -> {
-                    /**
-                     * If we have multiple entries in the document, then
-                     * the "noTax" flag must be removed.
-                     */
+                    // If we have multiple entries in the document, then
+                    // the "noTax" flag must be removed.
                     type.getCurrentContext().remove("noTax");
 
                     return new TransactionItem(t);
@@ -650,10 +646,8 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
-        /***
-         * If we have a gross reinvestment,
-         * we set a flag and don't book tax below
-         */
+        // If we have a gross reinvestment,
+        // we set a flag and don't book tax below.
         transaction
                 .section("n").optional()
                 .match("^Ertragsthesaurierung .*$")

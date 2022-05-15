@@ -148,11 +148,9 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
         });
 
         pdfTransaction
-                /***
-                 * If we have a positive amount and a gross reinvestment,
-                 * there is a tax refund.
-                 * If the amount is negative, then it is taxes.
-                 */
+                // If we have a positive amount and a gross
+                // reinvestment, there is a tax refund.
+                // If the amount is negative, then it is taxes.
                 .section("type", "sign").optional()
                 .match("^.* (?<type>(Aussch.ttung|Dividende|Ertrag|Thesaurierung brutto)) pro (St\\.|St.ck) [\\.,\\d]+ [\\w]{3}$")
                 .match("^Ausmachender Betrag [\\.,\\d]+(?<sign>(\\+|\\-))? (?<currency>[\\w]{3})$")

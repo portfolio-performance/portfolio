@@ -108,12 +108,10 @@ public class QuirionPDFExtractor extends AbstractPDFExtractor
                     AccountTransaction entry = new AccountTransaction();
                     entry.setType(AccountTransaction.Type.DIVIDENDS);
 
-                    /***
-                     * If we have multiple entries in the document,
-                     * then the "taxCurrency" flag must be removed.
-                     */
+                   // If we have multiple entries in the document,
+                   // then the "taxCurrency" flag must be removed.
                     type.getCurrentContext().remove("taxCurrency");
-                    
+
                     return entry;
                 })
 
@@ -166,16 +164,16 @@ public class QuirionPDFExtractor extends AbstractPDFExtractor
                     t.setAmount(asAmount(v.get("amount")));
                 })
 
-                /***
-                 * The exchange rate is missing in the documents.
-                 * If taxes or fees are specified in foreign currency,
-                 * they cannot be converted.
-                 * 
-                 * The transaction is not recorded
-                 * 
-                 * Erträgnisabrechnung, Ref.: 119876044 09.04.2020 08.04.2020 0,94 EUR
-                 * KEST: USD -0,22, SOLI: USD -0,01
-                 */
+                // @formatter:off
+                // The exchange rate is missing in the documents.
+                // If taxes or fees are specified in foreign currency,
+                // they cannot be converted.
+                // 
+                // The transaction is not recorded
+                //  
+                // Erträgnisabrechnung, Ref.: 119876044 09.04.2020 08.04.2020 0,94 EUR
+                // KEST: USD -0,22, SOLI: USD -0,01
+                // @formatter:on
 
                 // KEST: EUR -1,81, SOLI: EUR -0,09
                 .section("currency", "tax").optional()
@@ -226,10 +224,12 @@ public class QuirionPDFExtractor extends AbstractPDFExtractor
                     return null;
                 }));
 
+        // @formatter:off
         // Kontoübertrag 1197537 28.05.2019 28.05.2019 3.000,00 EUR
         // Sammelgutschrift 19.12.2019 19.12.2019 5.000,00 EUR
         // Überweisungsgutschrift Inland 27.12.2019 27.12.2019 2.000,00 EUR
         // Interne Buchung 31.01.2020 31.01.2020 2,84 EUR
+        // @formatter:on
         Block depositBlock = new Block("^(Konto.bertrag [\\d]+|"
                         + "Sammelgutschrift|"
                         + "Interne Buchung|"
@@ -264,7 +264,9 @@ public class QuirionPDFExtractor extends AbstractPDFExtractor
 
                 .wrap(t -> new TransactionItem(t)));
 
+        // @formatter:off
         // Rücküberweisung Inland 23.12.2019 19.12.2019 -5.002,84 EUR
+        // @formatter:on
         Block removalBlock = new Block("^R.cküberweisung Inland [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\-[\\.,\\d]+ [\\w]{3}$");
         type.addBlock(removalBlock);
         removalBlock.set(new Transaction<AccountTransaction>()
@@ -289,7 +291,9 @@ public class QuirionPDFExtractor extends AbstractPDFExtractor
 
                 .wrap(t -> new TransactionItem(t)));
 
+        // @formatter:off
         // Steueroptimierung 12.06.2020 12.06.2020 36,82 EUR
+        // @formatter:on
         Block taxReturnBlock = new Block("^Steueroptimierung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+ [\\w]{3}$");
         type.addBlock(taxReturnBlock);
         taxReturnBlock.set(new Transaction<AccountTransaction>()
@@ -314,8 +318,10 @@ public class QuirionPDFExtractor extends AbstractPDFExtractor
 
                 .wrap(t -> new TransactionItem(t)));
 
+        // @formatter:off
         // Vermögensverwaltungshonorar 31.08.2019 31.08.2019 -5,75 EUR
         // Vermögensverwaltungshonorar 0000000000, 01.09.2019 - 30.09.2019 30.09.2019 30.09.2019 -6,98 EUR
+        // @formatter:on
         Block feesBlock = new Block("^Verm.gensverwaltungshonorar( .*)? [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\- )?[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\-[\\.,\\d]+ [\\w]{3}$");
         type.addBlock(feesBlock);
         feesBlock.set(new Transaction<AccountTransaction>()

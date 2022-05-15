@@ -114,9 +114,11 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 })
 
-                /***
-                 * All amounts are presented in net
-                 */
+                // In the fund financial statements, all amounts are
+                // reported exclusively as net amounts. If the net
+                // amount is stated in foreign currency, we convert
+                // this.
+
                 // Splittkauf Betrag UBS Msci Pacific exJap.U ETF A 1,77 EUR 44,4324 USD 0,045
                 // 2536717769 A0X97T / LU0446734526 1,125168 USD 16.04.2019 1,334
                 // UBS (Luxembourg) S.A. 1,99 USD 0,0000 EUR 1,379
@@ -141,14 +143,11 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                 .conclude(PDFExtractorUtils.fixGrossValueBuySell())
 
                 .wrap(t -> {
-                    /***
-                     * If we have a sell transaction, we set a flag.
-                     * 
-                     * So that in the case of a possible charge by sale, (Entgeltbelastung),
-                     * taxes are not included if they are in the block.
-                     * 
-                     * Otherwise the flag will be removed.
-                     */
+                    // If we have a sell transaction, we set a flag. So
+                    // that in the case of a possible charge by sale,
+                    // (Entgeltbelastung), taxes are not included if
+                    // they are in the block. Otherwise the flag will be
+                    // removed.
                     type.getCurrentContext().remove("sale");
 
                     return new BuySellEntryItem(t);
@@ -175,9 +174,7 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
-                /***
-                 * We have a sell transaction, we set a flag.
-                 */
+                // We have a sell transaction, we set a flag.
                 .section("type").optional()
                 .match("^(?<type>Entgeltbelastung) .*$")
                 .assign((t, v) -> type.getCurrentContext().put("sale", "X"))
@@ -258,11 +255,6 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
 
     private void addFeeForAccountBlock(DocumentType type)
     {
-        /***
-         * If changes are made in this area,
-         * the sell transaction function must be adjusted.
-         * addSellForAccountFeeTransaction();
-         */
         Block block = new Block("^Entgeltbelastung .*$");
         type.addBlock(block);       
         block.set(new Transaction<AccountTransaction>().subject(() -> {

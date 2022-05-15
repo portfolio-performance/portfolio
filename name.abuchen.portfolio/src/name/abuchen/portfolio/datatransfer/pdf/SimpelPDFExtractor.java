@@ -131,9 +131,10 @@ public class SimpelPDFExtractor extends AbstractPDFExtractor
                     t.setSecurity(getOrCreateSecurity(v));
                 })
 
-                /***
-                 * Calculate shares
-                 */
+                // There is no information about the proportions in the
+                // documents. In this section we calculate the shares
+                // for the respective transaction.
+
                 // Ausschüttung je Anteil: 2.71
                 // Ausschüttung gesamt: 17.58
                 .section("amountPerShare", "gross")

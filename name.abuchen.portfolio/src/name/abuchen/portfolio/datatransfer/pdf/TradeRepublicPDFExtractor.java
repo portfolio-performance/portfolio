@@ -86,10 +86,8 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 .match("^(ISIN([\\s])?:([\\s])?)?(?<isin>[\\w]{12})$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-                /***
-                 * This is for the reinvestment of dividends
-                 * We pick the second 
-                 */
+                // This is for the reinvestment of dividends
+                // We pick the second 
 
                 // 1 Reinvestierung Vodafone Group PLC 699 Stk.
                 // 2 Reinvestierung Vodafone Group PLC 22 Stk.
@@ -154,13 +152,9 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
                         )
 
-                /***
-                 * If the type of transaction is "SELL" 
-                 * and the amount is negative, 
-                 * then the gross amount set.
-                 * 
-                 * Fees are processed in a separate transaction
-                 */
+                // If the type of transaction is "SELL" and the amount
+                // is negative, then the gross amount set. Fees are
+                // processed in a separate transaction.
                 .section("negative").optional()
                 .match("GESAMT (\\-)?[\\.,\\d]+ [\\w]{3}")
                 .match("GESAMT (?<negative>\\-)[\\.,\\d]+ [\\w]{3}")
@@ -170,14 +164,15 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 })
 
                 .oneOf(
-                                /***
-                                 * There might be two lines with "GESAMT" or "TOTAL"
-                                 * - one for gross
-                                 * - one for the net value 
-                                 * we pick the second
-                                 */
+                                // @formatter:off
+                                // There might be two lines with "GESAMT" or "TOTAL"
+                                // - one for gross
+                                // - one for the net value 
+                                // we pick the second
+                                // 
                                 // GESAMT 1.825,60 EUR
                                 // GESAMT 1.792,29 EUR
+                                // @formatter:on
                                 section -> section
                                         .attributes("amount", "currency", "gross", "grossCurrency")
                                         .match("^(GESAMT|TOTAL) (\\-)?(?<gross>[\\.,\\d]+) (?<grossCurrency>[\\w]{3})$")
@@ -195,13 +190,14 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                             }
                                         })
                                 ,
-                                /***
-                                 * in case there is no tax,
-                                 * only one line with "GESAMT"
-                                 * exists and we need to grab data from that line
-                                 */
+                                // @formatter:off
+                                // In case there is no tax,
+                                // only one line with "GESAMT"
+                                // exists and we need to grab data from that line
+                                //
                                 // GESAMT 1.792,29 EUR
                                 // TOTAL 20,00 EUR
+                                // @formatter:on
                                 section -> section
                                         .attributes("amount", "currency")
                                         .match("^(GESAMT|TOTAL) (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
@@ -211,12 +207,9 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         })
                         )
 
-                /***
-                 * This is for the reinvestment of dividends
-                 * 
-                 * We subtract the second amount from 
-                 * the first amount and set this,
-                 */
+                // This is for the reinvestment of dividends. We
+                // subtract the second amount from the first amount and
+                // set this.
 
                 // 1 Bruttoertrag 26,80 GBP
                 // 2 Barausgleich 0,37 GBP
@@ -243,15 +236,9 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                     checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
 
-                /***
-                 * If the tax is optimized, 
-                 * this is a tax refund transaction
-                 * and we subtract this from the amount and reset this.
-                 * 
-                 * If changes are made in this area, 
-                 * the tax refund function must be adjusted.
-                 * addBuySellTaxReturnBlock(type);
-                 */
+                // If the tax is optimized, this is a tax refund
+                // transaction and we subtract this from the amount and
+                // reset this.
 
                 // Kapitalertragssteuer Optimierung 20,50 EUR
                 // Kapitalertragsteuer Optimierung 4,56 EUR
@@ -282,10 +269,8 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 })
 
                 .wrap(t -> {
-                    /**
-                     * If we have multiple entries in the document,
-                     * then the "negative" flag must be removed.
-                     */
+                    // If we have multiple entries in the document,
+                    // then the "negative" flag must be removed.
                     type.getCurrentContext().remove("negative");
 
                     return new BuySellEntryItem(t);
@@ -347,16 +332,6 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
-
-        /***
-         * If the tax is optimized, 
-         * this is a tax refund transaction.
-         * 
-         * If changes are made in this area, 
-         * the tax refund function must be adjusted.
-         * addLiquidationTaxReturnBlock(type);
-         */
-
         addLiquidationTaxReturnBlock(type);
     }
 
@@ -415,12 +390,6 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 .match("^[\\w]+ (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) [\\.,\\d]+ [\\w]{3}$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
-                /***
-                 * There might be two lines with "GESAMT"
-                 * - one for gross
-                 * - one for the net value 
-                 * we pick the second
-                 */
                 .oneOf(
                                 // 1 Reinvestierung Vodafone Group PLC 699 Stk.
                                 // 1 Bruttoertrag 26,80 GBP
@@ -433,8 +402,15 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                             t.setAmount(asAmount(v.get("amount")));
                                         })
                                 ,
+                                // @formatter:off
+                                // There might be two lines with "GESAMT"
+                                // - one for gross
+                                // - one for the net value 
+                                // we pick the second
+                                // 
                                 // GESAMT 3,83 EUR
                                 // GESAMT 2,83 EUR
+                                // @formatter:on
                                 section -> section
                                         .attributes("amount", "currency")
                                         .match("^GESAMT [\\.,\\d]+ [\\w]{3}$")
@@ -582,10 +558,8 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 if (m.matches())
                     context.put("date", m.group("date"));
 
-                /***
-                 * If we have a "ABRECHNUNG",
-                 * then this is not a delivery in/outbond.
-                 */
+                // If we have a "ABRECHNUNG", then this is not a
+                // delivery in/outbond.
                 m = pSkipTransaction.matcher(line);
                 if (m.matches())
                     context.put("skipTransaction", Boolean.TRUE.toString());
@@ -670,24 +644,19 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                     t.setCurrencyCode(asCurrencyCode(t.getSecurity().getCurrencyCode()));
                 })
 
-                /***
-                 * If we have a "ABRECHNUNG",
-                 * then this is not a delivery in/outbond.
-                 * We skip this transaction.
-                 */
                 .wrap(t -> {
-                            Map<String, String> context = type.getCurrentContext();
-                            boolean skipTransactions = Boolean.parseBoolean(context.get("skipTransaction"));
+                    // If we have a "ABRECHNUNG", then this is not a
+                    // delivery in/outbond. We skip this transaction.
+                    Map<String, String> context = type.getCurrentContext();
+                    boolean skipTransactions = Boolean.parseBoolean(context.get("skipTransaction"));
 
-                            if (skipTransactions && context.get("transactionPosition").equals(context.get("position")))
-                                return null;
-                            else
-                                return new TransactionItem(t);
+                    if (skipTransactions && context.get("transactionPosition").equals(context.get("position")))
+                        return null;
+                    else
+                        return new TransactionItem(t);
                 });
 
-        /***
-         * If we have a "ABRECHNUNG".
-         */
+        // If we have a "ABRECHNUNG".
         Transaction<BuySellEntry> pdfTransaction2 = new Transaction<>();
         pdfTransaction2.subject(() -> {
             BuySellEntry entry = new BuySellEntry();
@@ -872,11 +841,6 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTaxReturnBlock(DocumentType type)
     {
-        /***
-         * If changes are made in this area,
-         * the buy/sell transaction function must be adjusted.
-         * addBuySellTransaction();
-         */
         Block block = new Block("^((Limit|Stop-Market|Market)-Order )?(Kauf|Verkauf) .*$");
         type.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
@@ -945,11 +909,6 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
     private void addLiquidationTaxReturnBlock(DocumentType type)
     {
-        /***
-         * If changes are made in this area,
-         * the liquidation transaction function must be adjusted.
-         * addLiquidationTransaction();
-         */
         Block block = new Block("^TILGUNG$");
         type.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
@@ -1075,10 +1034,8 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 })
 
                 .wrap(t -> {
-                    /**
-                     * If we have multiple entries in the document,
-                     * then the "negative" flag must be removed.
-                     */
+                    // If we have multiple entries in the document,
+                    // then the "negative" flag must be removed.
                     type.getCurrentContext().remove("negative");
 
                     if (t.getCurrencyCode() != null && t.getAmount() != 0)
