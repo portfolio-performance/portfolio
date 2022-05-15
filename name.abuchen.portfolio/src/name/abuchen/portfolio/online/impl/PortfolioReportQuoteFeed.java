@@ -31,11 +31,17 @@ import name.abuchen.portfolio.util.WebAccess;
 
 public final class PortfolioReportQuoteFeed implements QuoteFeed
 {
+    private static class ResponseData
+    {
+        LocalDate start;
+        String json;
+    }
+
     public static final String ID = "PORTFOLIO-REPORT"; //$NON-NLS-1$
     public static final String MARKETS_PROPERTY_NAME = "PORTFOLIO-REPORT-MARKETS"; //$NON-NLS-1$
     public static final String MARKET_PROPERTY_NAME = "PORTFOLIO-REPORT-MARKET"; //$NON-NLS-1$
 
-    private final PageCache<String> cache = new PageCache<>();
+    private final PageCache<ResponseData> cache = new PageCache<>();
 
     @Override
     public String getId()
@@ -47,6 +53,12 @@ public final class PortfolioReportQuoteFeed implements QuoteFeed
     public String getName()
     {
         return "Portfolio Report"; //$NON-NLS-1$
+    }
+
+    @Override
+    public boolean mergeDownloadRequests()
+    {
+        return true;
     }
 
     @Override
@@ -104,22 +116,22 @@ public final class PortfolioReportQuoteFeed implements QuoteFeed
                                                                             .getVersion().toString())
                                             .addParameter("from", start.toString());
 
-            String url = webaccess.getURL();
+            ResponseData response = cache.lookup(security.getOnlineId());
 
-            String response = cache.lookup(url);
-
-            if (response == null)
+            if (response == null || response.start.isAfter(start))
             {
-                response = webaccess.get();
+                response = new ResponseData();
+                response.start = start;
+                response.json = webaccess.get();
 
-                if (response != null)
-                    cache.put(url, response);
+                if (response.json != null)
+                    cache.put(security.getOnlineId(), response);
             }
 
             if (collectRawResponse)
-                data.addResponse(webaccess.getURL(), response);
+                data.addResponse(webaccess.getURL(), response.json);
 
-            JSONObject json = (JSONObject) JSONValue.parse(response);
+            JSONObject json = (JSONObject) JSONValue.parse(response.json);
 
             JSONArray pricesJson = (JSONArray) json.get("prices"); //$NON-NLS-1$
             if (pricesJson == null)
