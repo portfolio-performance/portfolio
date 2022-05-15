@@ -203,9 +203,12 @@ public class TradeCalendarManager
         tc.add(fixed(NEW_YEAR, Month.JANUARY, 1));
         tc.add(easter(GOOD_FRIDAY, -2));
         tc.add(easter(EASTER_MONDAY, 1));
+        tc.add(fixed(LABOUR_DAY, Month.MAY, 1));
         tc.add(easter(WHIT_MONDAY, 50));
         tc.add(fixed(NATION_DAY, Month.OCTOBER, 26));
         tc.add(fixed(CHRISTMAS_EVE, Month.DECEMBER, 24));
+        tc.add(fixed(CHRISTMAS, Month.DECEMBER, 25));
+        tc.add(fixed(SAINT_STEPHEN, Month.DECEMBER, 26));
         tc.add(fixed(NEW_YEARS_EVE, Month.DECEMBER, 31));
         CACHE.put(tc.getCode(), tc);
 
