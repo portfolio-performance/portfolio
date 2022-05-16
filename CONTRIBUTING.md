@@ -121,7 +121,9 @@ For problems with launching from the Eclipse IDE for Portfolio Performance, we h
 5. Open thee `portfolio-target-definition.target`
 	- If only the XML file opens, right-click on 'portfolio-target-definition.target' and select 'Open in target editor.
 6. Now click on 'Set as Active Target Platform' in the editor ( top right ). 
- 	- This can take a while, because all necessary dependencies are configured now. About 10 - 30 minutes. You can see the status in `Progress`. Menu` --> `Window` --> `Show View` --> `Progress`.
+ 	- This can take a while, because all necessary dependencies are configured now. About 10 - 30 minutes. 
+ 	- You can see the status in `Progress`. 
+ 		- `Menu` --> `Window` --> `Show View` --> `Progress`.
 
 <a name="Launch_PP_Application_with_LCDSL"></a>
 #### Launch Portfolio Performance with LCDSL plugin
@@ -158,7 +160,7 @@ For problems with launching from the Eclipse IDE for Portfolio Performance, we h
 ## Pull requests
 1. Comments and explanations in the source must be provided in English.
 2. Changes in the source code are to be validated with test cases, if possible.
-3. Variables, classes, methods and new functions are to be selected unambiguously. ([OOP](https://en.wikipedia.org/wiki/Object-oriented_programming))
+3. Variables, classes, methods and new functions are to be selected unambiguously. ( [OOP](https://en.wikipedia.org/wiki/Object-oriented_programming) )
 
 <a name="Pull_request_with_Github_Desktop"></a>
 #### Pull request with Github Desktop
@@ -208,19 +210,24 @@ Importers are to be created by bank/broker.
 
 <a name="Path_to_PDF_importer"></a>
 ### Path to PDF importer
-Importer
-```
-name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/
-name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/
-```
+_PDF importer_
+
+`name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/`
+
+_Test cases:_
+
+`name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/`
 
 
 <a name="PDF_importer_file_names"></a>
 ### PDF importer file names
 The PDF importer names must be chosen unambiguously.
-Beispiel: Deutsche Bank 
-- Importer --> `DeutscheBankPDFExtractor.java`
-- TestCase --> `DeutscheBankPDFExtractorTest.java`
+
+**Example: Deutsche Bank**
+
+_PDF importer:_ `DeutscheBankPDFExtractor.java`
+
+_TestCase:_ `DeutscheBankPDFExtractorTest.java`
 
 
 <a name="Transaction_pairs"></a>
