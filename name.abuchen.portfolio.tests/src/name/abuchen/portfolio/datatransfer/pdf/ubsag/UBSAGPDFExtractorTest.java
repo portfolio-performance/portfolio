@@ -242,6 +242,7 @@ public class UBSAGPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US6541061031"));
         assertThat(security.getWkn(), is("957150"));
+        assertThat(security.getTickerSymbol(), is("NKE"));
         assertThat(security.getName(), is("AKT -B- NIKE INC."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -270,11 +271,12 @@ public class UBSAGPDFExtractorTest
     }
 
     @Test
-    public void testDividende03WithSecurityInCHF()
+    public void testDividende01WithSecurityInCHF()
     {
         Security security = new Security("AKT -B- NIKE INC.", "CHF");
         security.setIsin("US6541061031");
         security.setWkn("957150");
+        security.setTickerSymbol("NKE");
 
         Client client = new Client();
         client.addSecurity(security);
