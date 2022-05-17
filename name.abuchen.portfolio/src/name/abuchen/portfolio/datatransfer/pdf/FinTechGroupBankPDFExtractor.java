@@ -89,17 +89,17 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 })
 
                 // Nr.121625906/1     Kauf        IS C.MSCI EMIMI U.ETF DLA (IE00BKM4GZ66/A111X9)
-                // Ausgeführt    :              29 St.     Kurswert      :             751,68 EUR
+                // Kurs          :       25,920000 EUR     Provision     :               5,90 EUR
                 .section("name", "isin", "wkn", "currency").optional()
                 .match("^Nr\\.[\\d]+\\/[\\d]+ ([\\s]+)?(Kauf|Verkauf) ([\\s]+)?(?<name>.*) \\((?<isin>[\\w]{12})\\/(?<wkn>.*)\\)$")
-                .match("^.* Kurswert([:\\s]+)? [\\.,\\d]+ (?<currency>[\\w]{3})$")
+                .match("^Kurs([:\\s]+)? [\\.,\\d]+ (?<currency>[\\w]{3}) .*$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // Nr.76443716/1  Verkauf           UBS AG LONDON 14/16 RWE (DE000US9RGR9/US9RGR)
                 // Kurs           29,0000 %               Kurswert       EUR             7.250,00
                 .section("name", "isin", "wkn", "currency").optional()
                 .match("^Nr\\.[\\d]+\\/[\\d]+ ([\\s]+)?(Kauf|Verkauf) ([\\s]+)?(?<name>.*) \\((?<isin>[\\w]{12})\\/(?<wkn>.*)\\)$")
-                .match("^.* Kurswert([\\s]+)? ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?[\\.,\\d]+$")
+                .match("^Kurs([:\\s]+)? [\\.,\\d]+ % ([\\s]+)?Kurswert([\\s]+)? ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?[\\.,\\d]+$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // Ausgeführt     25.000,00000 EUR
@@ -165,6 +165,26 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                             t.setAmount(asAmount(v.get("amount")));
                                         })
                         )
+
+                // Ausgeführt : 80 St. Kurswert : 4.216,61 EUR
+                // Kurs : 55,080000 USD Provision : 0,00 EUR
+                // Devisenkurs : 1,045010 Eigene Spesen : 0,00 EUR
+                .section("gross", "currency", "fxCurrency", "exchangeRate").optional()
+                .match("^.* ([\\s]+)?Kurswert([:\\s]+)? ([\\s]+)?(?<gross>[\\.,\\d]+) ([\\s]+)?(?<currency>[\\w]{3})$")
+                .match("^Kurs([:\\s]+)? [\\.,\\d]+ (?<fxCurrency>[\\w]{3}) .*$")
+                .match("^Devisenkurs ([:\\s]+)?(?<exchangeRate>[\\.,\\d]+) .*$")
+                .assign((t, v) -> {
+                    v.put("baseCurrency", asCurrencyCode(v.get("currency")));
+                    v.put("termCurrency", asCurrencyCode(v.get("fxCurrency")));
+
+                    PDFExchangeRate rate = asExchangeRate(v);
+                    type.getCurrentContext().putType(asExchangeRate(v));
+
+                    Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
+                    Money fxGross = rate.convert(asCurrencyCode(v.get("fxCurrency")), gross);
+
+                    checkAndSetGrossUnit(gross, fxGross, t, type);
+                })
 
                 /***
                  * If the taxes are negative, 
@@ -486,7 +506,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 // Kurs         : 39,2480 EUR             Kurswert       :           5.887,20 EUR
                 .section("name", "isin", "wkn", "currency")
                 .match("^Nr\\.[\\d]+\\/[\\d]+ ([\\s]+)?(Kauf|Verkauf) ([\\s]+)?(?<name>.*) \\((?<isin>[\\w]{12})\\/(?<wkn>.*)\\)$")
-                .match("^.* Kurswert([:\\s]+)? [\\.,\\d]+ (?<currency>[\\w]{3})$")
+                .match("^Kurs([:\\s]+)? [\\.,\\d]+ (?<currency>[\\w]{3}) .*$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // davon ausgef.: 150,00 St.              Schlusstag     :  28.01.2014, 12:50 Uhr
@@ -1401,9 +1421,10 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 })
 
                 // Nr.123441244/1  Kauf            C.S.-MSCI PACIF.T.U.ETF I (LU0392495023/ETF114)
+                // Kurs           4,424000 EUR           Kurswert       EUR             44,24
                 .section("name", "isin", "wkn", "currency").optional()
                 .match("^Nr\\.[\\d]+\\/[\\d]+ ([\\s]+)?(Kauf|Verkauf) ([\\s]+)?(?<name>.*) \\((?<isin>[\\w]{12})\\/(?<wkn>.*)\\)$")
-                .match("^.* Kurswert([:\\s]+)? [\\.,\\d]+ (?<currency>[\\w]{3})$")
+                .match("^Kurs([:\\s]+)? [\\.,\\d]+ (?<currency>[\\w]{3}) .*$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // Nr.76443716/1  Verkauf           UBS AG LONDON 14/16 RWE (DE000US9RGR9/US9RGR)
@@ -1583,7 +1604,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 // Kurs         : 59,4890 EUR             Kurswert       :           5.948,90 EUR
                 .section("name", "isin", "wkn", "currency")
                 .match("^Nr\\.[\\d]+\\/[\\d]+ ([\\s]+)?(Kauf|Verkauf) ([\\s]+)?(?<name>.*) \\((?<isin>[\\w]{12})\\/(?<wkn>.*)\\)$")
-                .match("^.* Kurswert([:\\s]+)? [\\.,\\d]+ (?<currency>[\\w]{3})$")
+                .match("^Kurs([:\\s]+)? [\\.,\\d]+ (?<currency>[\\w]{3}) .*$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // davon ausgef.: 150,00 St.              Schlusstag     :  28.01.2014, 12:50 Uhr
