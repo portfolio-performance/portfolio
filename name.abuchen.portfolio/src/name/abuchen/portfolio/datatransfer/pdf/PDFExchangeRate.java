@@ -28,7 +28,7 @@ import name.abuchen.portfolio.money.Values;
         this.baseCurrency = Objects.requireNonNull(baseCurrency);
         this.termCurrency = Objects.requireNonNull(termCurrency);
 
-        if (baseCurrency.equals(termCurrency) && !rate.equals(BigDecimal.ONE))
+        if (baseCurrency.equals(termCurrency) && rate.compareTo(BigDecimal.ONE) != 0)
             throw new IllegalArgumentException(
                             MessageFormat.format(Messages.MsgErrorBaseAndTermCurrencyAreEqualWithInvalidExchangeRate,
                                             baseCurrency, Values.ExchangeRate.format(rate)));
