@@ -137,6 +137,14 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                         .find("Trade Date Trade Time")
                                         .match("^(?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$")
                                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
+                                ,
+                                // Order Date: 2022-04-29 Execution Venue: GETTEX - MM Munich
+                                // Order Time: 09:32:39:19
+                                section -> section
+                                        .attributes("date", "time")
+                                        .match("^Order Date: (?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) .*$")
+                                        .match("^Order Time: (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}):[\\d]{2}$")
+                                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
                         )
 
                 .oneOf(
