@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.util;
 
 import static java.time.temporal.TemporalAdjusters.dayOfWeekInMonth;
+import static java.time.temporal.TemporalAdjusters.nextOrSame;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -262,8 +263,8 @@ import java.util.Set;
         for (MoveIf mv : moveIf)
             date = mv.apply(date);
 
-        while (moveTo != null && date.getDayOfWeek() != moveTo)
-            date = date.plusDays(1);
+        if (moveTo != null)
+            date = date.with(nextOrSame(moveTo));
 
         return new Holiday(answer.getName(), date);
     }
