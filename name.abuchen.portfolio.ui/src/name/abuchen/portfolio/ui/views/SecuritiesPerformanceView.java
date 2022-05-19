@@ -83,6 +83,7 @@ import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
 import name.abuchen.portfolio.ui.views.columns.WknColumn;
 import name.abuchen.portfolio.ui.views.panes.CalculationLineItemPane;
 import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
+import name.abuchen.portfolio.ui.views.panes.SecurityEventsPane;
 import name.abuchen.portfolio.ui.views.panes.SecurityPriceChartPane;
 import name.abuchen.portfolio.ui.views.panes.TradesPane;
 import name.abuchen.portfolio.util.Interval;
@@ -972,6 +973,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         pages.add(make(SecurityPriceChartPane.class));
         pages.add(make(CalculationLineItemPane.class));
         pages.add(make(TradesPane.class));
+        pages.add(make(SecurityEventsPane.class));
     }
 
     @Override
