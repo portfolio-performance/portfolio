@@ -112,7 +112,7 @@ public class TradeCalendarManager
         tc.add(weekday(MARTIN_LUTHER_KING, 3, DayOfWeek.MONDAY, Month.JANUARY).validFrom(1998));
         tc.add(weekday(WASHINGTONS_BIRTHDAY, 3, DayOfWeek.MONDAY, Month.FEBRUARY));
         tc.add(easter(GOOD_FRIDAY, -2));
-        tc.add(last(MEMORIAL, DayOfWeek.MONDAY, Month.MAY));
+        tc.add(weekday(MEMORIAL, -1, DayOfWeek.MONDAY, Month.MAY));
         tc.add(fixed(JUNETEENTH, Month.JUNE, 19).moveIf(DayOfWeek.SATURDAY, -1).moveIf(DayOfWeek.SUNDAY, 1).validFrom(2022));
         tc.add(fixed(INDEPENDENCE, Month.JULY, 4).moveIf(DayOfWeek.SATURDAY, -1).moveIf(DayOfWeek.SUNDAY, 1));
         tc.add(weekday(LABOUR_DAY, 1, DayOfWeek.MONDAY, Month.SEPTEMBER));
@@ -135,8 +135,8 @@ public class TradeCalendarManager
         tc.add(easter(GOOD_FRIDAY, -2));
         tc.add(easter(EASTER_MONDAY, 1));
         tc.add(weekday(EARLY_MAY_BANK_HOLIDAY, 1, DayOfWeek.MONDAY, Month.MAY).exceptIn(1995).exceptIn(2020));
-        tc.add(last(SPRING_MAY_BANK_HOLIDAY, DayOfWeek.MONDAY, Month.MAY).exceptIn(1977).exceptIn(2002).exceptIn(2012).exceptIn(2022));
-        tc.add(last(SUMMER_BANK_HOLIDAY, DayOfWeek.MONDAY, Month.AUGUST));
+        tc.add(weekday(SPRING_MAY_BANK_HOLIDAY, -1, DayOfWeek.MONDAY, Month.MAY).exceptIn(1977).exceptIn(2002).exceptIn(2012).exceptIn(2022));
+        tc.add(weekday(SUMMER_BANK_HOLIDAY, -1, DayOfWeek.MONDAY, Month.AUGUST));
         tc.add(fixed(CHRISTMAS, Month.DECEMBER, 25).moveIf(DayOfWeek.SATURDAY, 2).moveIf(DayOfWeek.SUNDAY, 2));
             // strange but true: if 25th+26th is Sun+Mon, Christmas Day is moved *beyond* Boxing Day, to Tue
         tc.add(fixed(BOXING_DAY, Month.DECEMBER, 26).moveIf(DayOfWeek.SUNDAY, 2).moveIf(DayOfWeek.SATURDAY, 2));
