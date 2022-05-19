@@ -48,7 +48,6 @@ import static name.abuchen.portfolio.util.HolidayName.WASHINGTONS_BIRTHDAY;
 import static name.abuchen.portfolio.util.HolidayName.WHIT_MONDAY;
 import static name.abuchen.portfolio.util.HolidayType.easter;
 import static name.abuchen.portfolio.util.HolidayType.fixed;
-import static name.abuchen.portfolio.util.HolidayType.last;
 import static name.abuchen.portfolio.util.HolidayType.weekday;
 
 import java.text.MessageFormat;
