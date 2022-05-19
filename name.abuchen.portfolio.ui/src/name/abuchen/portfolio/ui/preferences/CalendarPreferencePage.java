@@ -60,8 +60,9 @@ public class CalendarPreferencePage extends FieldEditorPreferencePage
 
     protected void createInfo(Composite composite)
     {
+        int year = LocalDate.now().getYear();
         infoLabel = new Label(composite, SWT.WRAP);
-        infoLabel.setText(createHolidayText(TradeCalendarManager.getDefaultInstance().getCode()));
+        infoLabel.setText(createHolidayText(TradeCalendarManager.getDefaultInstance().getCode(), year));
         infoLabel.setFont(getFieldEditorParent().getFont());
 
         GridDataFactory.fillDefaults().span(2, 1).grab(true, true).applyTo(infoLabel);
@@ -74,22 +75,23 @@ public class CalendarPreferencePage extends FieldEditorPreferencePage
 
         if (event.getProperty().equals(FieldEditor.VALUE))
         {
+            int year = LocalDate.now().getYear();
             String newCode = (String) event.getNewValue();
-            infoLabel.setText(createHolidayText(newCode));
+            infoLabel.setText(createHolidayText(newCode, year));
             infoLabel.getParent().getParent().layout(true);
         }
     }
 
     private static final DateTimeFormatter shortDayOfWeekFormatter = DateTimeFormatter.ofPattern("E"); //$NON-NLS-1$
 
-    private String createHolidayText(String calendarCode)
+    private String createHolidayText(String calendarCode, int year)
     {
         TradeCalendar calendar = TradeCalendarManager.getInstance(calendarCode);
 
         if (calendar == null)
             return ""; //$NON-NLS-1$
 
-        Collection<Holiday> holidays = calendar.getHolidays(LocalDate.now().getYear());
+        Collection<Holiday> holidays = calendar.getHolidays(year);
 
         StringBuilder buffer = new StringBuilder();
         holidays.stream().sorted((r, l) -> r.getDate().compareTo(l.getDate()))
