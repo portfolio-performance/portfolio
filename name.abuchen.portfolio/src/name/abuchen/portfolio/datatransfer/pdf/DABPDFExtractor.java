@@ -23,6 +23,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
         super(client);
 
         addBankIdentifier("DAB Bank"); //$NON-NLS-1$
+        addBankIdentifier("DAB bank AG"); //$NON-NLS-1$
         addBankIdentifier("BNP Paribas S.A. Niederlassung Deutschland"); //$NON-NLS-1$
 
         addBuySellTransaction();
@@ -843,22 +844,23 @@ public class DABPDFExtractor extends AbstractPDFExtractor
         transaction
                 // Handelszeit 14:15* Registrierungsspesen EUR 0,58-
                 .section("fee", "currency").optional()
-                .match("^.* Registrierungsspesen (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)\\-$")
+                .match("^.* Registrierungsspesen ([\\s]+)?(?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)\\-$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Handelszeit 16:38* Provision USD 18,78-
+                // Handelszeit 12:34* Provision                   EUR 10,00-
                 .section("fee", "currency").optional()
-                .match("^.* Provision (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)\\-$")
+                .match("^.* Provision ([\\s]+)?(?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)\\-$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Börse USA/NAN Handelsplatzentgelt USD 17,44-
                 .section("fee", "currency").optional()
-                .match("^.* Handelsplatzentgelt (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)\\-$")
+                .match("^.* ([\\s]+)?Handelsplatzentgelt (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)\\-$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Verwahrart Wertpapierrechnung Abwicklungskosten Ausland USD 0,10-
                 .section("fee", "currency").optional()
-                .match("^.* Abwicklungskosten .* (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)\\-$")
+                .match("^.* ([\\s]+)?Abwicklungskosten .* (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)\\-$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Verwahrart Girosammelverwahrung Gebühr EUR 0,50-
@@ -873,7 +875,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
 
                 // Verwahrart Girosammelverwahrung Variabl. Transaktionsentgelt EUR 0,75-
                 .section("fee", "currency").optional()
-                .match("^.* Transaktionsentgelt (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)\\-$")
+                .match("^.* ([\\s]+)?Transaktionsentgelt (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)\\-$")
                 .assign((t, v) -> processFeeEntries(t, v, type));
     }
 }
