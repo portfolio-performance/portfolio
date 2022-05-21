@@ -54,7 +54,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^((Auftragsdatum|Order Date):|Einbuchung in Depot|Ausbuchung aus Depot) .*$");
+        Block firstRelevantLine = new Block("^(Referenz\\-Nr|Reference No)\\.: .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
