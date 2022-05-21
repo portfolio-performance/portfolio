@@ -1,0 +1,50 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Consorsbank  90318 Nürnberg
+Depotnummer: 1111111111
+1111111111/00
+Vermerk der Bank: 2000
+2
+Max Mustermann
+Musterweg 1 Datum: 12.05.2022
+11111 Musterstadt Seite: 1 von 2
+Dividendengutschrift
+Wertpapierbezeichnung WKN ISIN
+ASML Holding N.V. Aandelen op naam EO -,09 A1J4U4 NL0010273215
+Bestand
+8 Stück
+Dividende pro Stück 3,70 EUR Schlusstag 02.05.2022
+Brutto 29,60 EUR
+abzgl. Quellensteuer 15,00 % von 29,60 EUR 4,44 EUR
+Netto zugunsten IBAN DE11 1111 1111 1111 1111 11 25,16 EUR
+Valuta 12.05.2022 BIC DABBDEMMXXX
+Anrechenbare Quellensteuer 15,00 % von 29,60 EUR 4,44 EUR
+Bitte beachten Sie die weiteren Informationen auf Seite 2.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+Président du Conseil dAdministration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur Général (Generaldirektor): Jean-Laurent Bonnafé
+Depotnummer: 1111111111
+1111111111/00
+Vermerk der Bank: 2000
+2
+Datum: 12.05.2022
+Seite: 2 von 2
+Details zur Abrechnung
+Steuerpflichtiger Gesamtertrag 29,60 EUR
+Mit Verrechnungstopf "Allgemein" verrechnet 0,00 EUR
+Mit Sparerpauschbetrag verrechnet -29,60 EUR
+Mit Quellensteuer verrechnet 0,00 EUR
+somit verrechnete Quellensteuer 0,00 EUR
+Bemessungsgrundlage für Kapitalertragsteuer gesamt 0,00 EUR
+Details zu den Verrechnungstöpfen
+Verrechnungstopf "Allgemein" vor der Abrechnung 0,00 EUR
+Mit Verrechnungstopf "Allgemein" verrechnet 0,00 EUR
+Verrechnungstopf "Allgemein" nach der Abrechnung 0,00 EUR
+Sparerpauschbetrag vor der Abrechnung 663,39 EUR
+Mit Sparerpauschbetrag verrechnet -29,60 EUR
+Sparerpauschbetrag nach der Abrechnung 633,79 EUR
+Verrechnungstopf "Quellensteuer" vor der Abrechnung 1,76 EUR
+Änderung Verrechnungstopf "Quellensteuer" 4,44 EUR
+Verrechnungstopf "Quellensteuer" nach der Abrechnung 6,20 EUR
