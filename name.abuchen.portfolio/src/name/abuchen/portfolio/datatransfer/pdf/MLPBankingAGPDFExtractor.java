@@ -4,6 +4,8 @@ import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAnd
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -26,6 +28,7 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
 
         addBuySellTransaction();
         addDividendeTransaction();
+        addDepotStatementTransaction();
     }
 
     @Override
@@ -217,6 +220,109 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
         addFeesSectionsTransaction(pdfTransaction, type);
 
         block.set(pdfTransaction);
+    }
+
+    private void addDepotStatementTransaction()
+    {
+        DocumentType type = new DocumentType("Verm.gensdepot Konto", (context, lines) -> {
+            Pattern pCurrency = Pattern.compile("^(?<currency>[\\w]{3})\\-Konto Kontonummer .*$");
+            Pattern pYear = Pattern.compile("^.* Kontoauszug Nr\\. ([\\s]+)?[\\d]+\\/(?<year>[\\d]{4})$");
+
+            for (String line : lines)
+            {
+                Matcher m = pCurrency.matcher(line);
+                if (m.matches())
+                    context.put("currency", m.group("currency"));
+
+                m = pYear.matcher(line);
+                if (m.matches())
+                    context.put("year", m.group("year"));
+            }
+        });
+        this.addDocumentTyp(type);
+
+        Block depositRemovalblock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. LASTSCHRIFTEINR\\. .* [S|H]$");
+        type.addBlock(depositRemovalblock);
+        depositRemovalblock.set(new Transaction<AccountTransaction>()
+
+                .subject(() -> {
+                    AccountTransaction t = new AccountTransaction();
+                    t.setType(AccountTransaction.Type.DEPOSIT);
+                    return t;
+                })
+
+                .section("day", "month", "note", "amount", "sign")
+                .match("^[\\d]{2}\\.[\\d]{2}\\. (?<day>[\\d]{2})\\.(?<month>[\\d]{2})\\. (?<note>LASTSCHRIFTEINR\\.) .* (?<amount>[\\.,\\d]+) (?<sign>[S|H])$")
+                .assign((t, v) -> {
+                    Map<String, String> context = type.getCurrentContext();
+
+                    // Is sign --> "S" change from DEPOSIT to REMOVAL
+                    if (v.get("sign").equals("S"))
+                        t.setType(AccountTransaction.Type.REMOVAL);
+                    
+                    // create a long date from the year in the context
+                    t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + context.get("year")));
+
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+
+                    // Formatting some notes
+                    if (v.get("note").equals("LASTSCHRIFTEINR."))
+                        v.put("note", "Lastschrifteinr.");
+
+                    t.setNote(v.get("note"));
+                })
+
+                .wrap(t -> {
+                    if (t.getAmount() != 0)
+                        return new TransactionItem(t);
+                    return null;
+                }));
+
+        Block feeblock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. ENTGELT .* [S|H]$");
+        type.addBlock(feeblock);
+        feeblock.set(new Transaction<AccountTransaction>()
+
+                .subject(() -> {
+                    AccountTransaction t = new AccountTransaction();
+                    t.setType(AccountTransaction.Type.FEES_REFUND);
+                    return t;
+                })
+
+                .section("day", "month", "note1", "amount", "sign", "note2", "note3")
+                .match("^[\\d]{2}\\.[\\d]{2}\\. (?<day>[\\d]{2})\\.(?<month>[\\d]{2})\\. (?<note1>ENTGELT) .* (?<amount>[\\.,\\d]+) (?<sign>[S|H])$")
+                .match("^.* (?<note2>(DEPOTPREIS|VERWALTUNGSENTGELT)) [\\d]+ (?<note3>[\\w]{2}\\/[\\d]{4}) .*$")
+                .assign((t, v) -> {
+                    Map<String, String> context = type.getCurrentContext();
+
+                    // Is sign --> "S" change from FEES_REFUND to FEES
+                    if (v.get("sign").equals("S"))
+                        t.setType(AccountTransaction.Type.FEES);
+                    
+                    // create a long date from the year in the context
+                    t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + context.get("year")));
+
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+
+                    // Formatting some notes
+                    if (v.get("note1").equals("ENTGELT"))
+                        v.put("note1", "Entgeld");
+
+                    if (v.get("note2").equals("DEPOTPREIS"))
+                        v.put("note2", "Depotpreis");
+
+                    if (v.get("note2").equals("VERWALTUNGSENTGELT"))
+                        v.put("note2", "Verwaltungsentgeld");
+
+                    t.setNote(v.get("note1") + " " + v.get("note2") + " " + v.get("note3"));
+                })
+
+                .wrap(t -> {
+                    if (t.getAmount() != 0)
+                        return new TransactionItem(t);
+                    return null;
+                }));
     }
 
     private void addTaxReturnBlock(Map<String, String> context, DocumentType type)
