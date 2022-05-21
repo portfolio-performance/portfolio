@@ -1,0 +1,139 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+-
+Austria
+Benutzername: ***uer
+Kontoauszug von 07-04-2022 bis 05-05-2022
+Datum Uhrze Valutadatum Produkt ISIN Beschreibung FX Änderung Saldo
+05-05-2022 19:52 05-05-2022 REALTY INCOME CORPORAT US7561091049 DEGIRO Transaktionsgebühren und/oder Fremdkosten EUR -0,50 EUR 1.913,93
+05-05-2022 19:52 05-05-2022 REALTY INCOME CORPORAT US7561091049 Kauf 7 zu je 67,2 USD (US7561091049) USD -470,40 USD 51,98
+05-05-2022 19:50 05-05-2022 STORE CAPITAL CORPORAT US8621211007 DEGIRO Transaktionsgebühren und/oder Fremdkosten EUR -0,50 EUR 1.914,43
+05-05-2022 19:50 05-05-2022 STORE CAPITAL CORPORAT US8621211007 Kauf 19 zu je 27,8 USD (US8621211007) USD -528,20 USD 522,38
+05-05-2022 18:17 05-05-2022 Überweisung auf Ihr Geldkonto bei der flatex Bank: 110,78 EUR 1.914,93
+EUR
+05-05-2022 18:17 05-05-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -110,78 EUR 1.804,15
+05-05-2022 10:54 04-05-2022 BASF SE DE000BASF111 Dividende EUR 132,60 EUR 1.914,93
+05-05-2022 10:54 04-05-2022 BASF SE DE000BASF111 Dividendensteuer EUR -34,97 EUR 1.782,33
+05-05-2022 07:32 04-05-2022 Währungswechsel (Einbuchung) EUR 13,15 EUR 1.817,30
+05-05-2022 07:32 04-05-2022 Währungswechsel (Ausbuchung) 10,377 SEK -136,49 SEK -0,00
+04-05-2022 16:33 04-05-2022 Überweisung auf Ihr Geldkonto bei der flatex Bank: 112,14 EUR 1.804,15
+EUR
+04-05-2022 16:33 04-05-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -112,14 EUR 1.692,01
+04-05-2022 10:50 04-05-2022 flatex Einzahlung EUR 1.692,01 EUR 1.804,15
+04-05-2022 08:37 03-05-2022 LENZING AG AT0000644505 Dividende EUR 160,95 EUR 112,14
+04-05-2022 08:37 03-05-2022 LENZING AG AT0000644505 Dividendensteuer EUR -44,26 EUR -48,81
+04-05-2022 07:41 03-05-2022 THULE GROUP SE0006422390 Dividende SEK 195,00 SEK 136,49
+04-05-2022 07:41 03-05-2022 THULE GROUP SE0006422390 Dividendensteuer SEK -58,50 SEK -58,51
+flatex DEGIRO Bank Dutch Branch, die unter dem Namen DEGIRO www.degiro.de Konto
+handelt, ist die niederländische Niederlassung der flatexDEGIRO kundenservice@degiro.de 2022-05-05
+Bank AG. Die flatexDEGIRO Bank AG wird primär von der deutschen
+Finanzaufsicht (BaFin) beaufsichtigt und ist bei der DNB in den Amstelplein 1 1096 HA Seite 1 / 5
+Niederlanden registriert.
+-
+Austria
+Benutzername: ***uer
+Datum Uhrze Valutadatum Produkt ISIN Beschreibung FX Änderung Saldo
+03-05-2022 10:17 02-05-2022 Überweisung auf Ihr Geldkonto bei der flatex Bank: 1.050,58 USD 1.050,58
+USD
+03-05-2022 10:17 02-05-2022 FLATEX USD BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer USD -1.050,58 USD 0,00
+03-05-2022 10:17 02-05-2022 Auszahlung von Ihrem Geldkonto bei der flatex Bank: EUR -4,55
+1.005,45 EUR
+03-05-2022 10:17 02-05-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 1.005,45 EUR 1.000,90
+02-05-2022 18:17 02-05-2022 Auszahlung von Ihrem Geldkonto bei der flatex Bank: EUR -4,55
+2.702,73 EUR
+02-05-2022 18:17 02-05-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 2.702,73 EUR 2.698,18
+02-05-2022 17:09 02-05-2022 EUR/USD EURUSD...... DEGIRO Transaktionsgebühren und/oder Fremdkosten EUR -10,00 EUR -4,55
+02-05-2022 17:09 02-05-2022 EUR/USD EURUSD...... Währungswechsel (Einbuchung) 1,0508 USD 1.050,58 USD 1.050,58
+02-05-2022 17:09 02-05-2022 EUR/USD EURUSD...... Währungswechsel (Ausbuchung) EUR -1.000,00 EUR 5,45
+02-05-2022 10:50 02-05-2022 flatex Einzahlung EUR 1.000,00 EUR 1.005,45
+02-05-2022 09:59 02-05-2022 FRESENIUS SE & CO KGAA DE0005785604 DEGIRO Transaktionsgebühren und/oder Fremdkosten EUR -0,20 EUR 5,45
+02-05-2022 09:59 02-05-2022 FRESENIUS SE & CO KGAA DE0005785604 DEGIRO Transaktionsgebühren und/oder Fremdkosten EUR -3,90 EUR 5,65
+02-05-2022 09:59 02-05-2022 FRESENIUS SE & CO KGAA DE0005785604 Kauf 31 zu je 33 EUR (DE0005785604) EUR -1.023,00 EUR 9,55
+02-05-2022 09:59 02-05-2022 HEIDELBERGCEMENT AG DE0006047004 DEGIRO Transaktionsgebühren und/oder Fremdkosten EUR -0,20 EUR 1.032,55
+02-05-2022 09:59 02-05-2022 HEIDELBERGCEMENT AG DE0006047004 DEGIRO Transaktionsgebühren und/oder Fremdkosten EUR -3,90 EUR 1.032,75
+02-05-2022 09:59 02-05-2022 HEIDELBERGCEMENT AG DE0006047004 Kauf 19 zu je 53,5 EUR (DE0006047004) EUR -1.016,50 EUR 1.036,65
+02-05-2022 09:47 29-04-2022 Auszahlung von Ihrem Geldkonto bei der flatex Bank: 0,5 EUR 2.053,15
+EUR
+02-05-2022 09:47 29-04-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 0,50 EUR 2.053,65
+30-04-2022 07:33 29-04-2022 Währungswechsel (Ausbuchung) EUR -655,03 EUR 2.053,15
+flatex DEGIRO Bank Dutch Branch, die unter dem Namen DEGIRO www.degiro.de Konto
+handelt, ist die niederländische Niederlassung der flatexDEGIRO kundenservice@degiro.de 2022-05-05
+Bank AG. Die flatexDEGIRO Bank AG wird primär von der deutschen
+Finanzaufsicht (BaFin) beaufsichtigt und ist bei der DNB in den Amstelplein 1 1096 HA Seite 2 / 5
+Niederlanden registriert.
+-
+Austria
+Benutzername: ***uer
+Datum Uhrze Valutadatum Produkt ISIN Beschreibung FX Änderung Saldo
+30-04-2022 07:33 29-04-2022 Währungswechsel (Einbuchung) 1,0517 USD 688,87 USD 0,00
+29-04-2022 18:51 29-04-2022 STORE CAPITAL CORPORAT US8621211007 DEGIRO Transaktionsgebühren und/oder Fremdkosten EUR -0,50 EUR 2.708,18
+29-04-2022 18:51 29-04-2022 STORE CAPITAL CORPORAT US8621211007 Kauf 24 zu je 29,2 USD (US8621211007) USD -700,80 USD -688,87
+29-04-2022 17:34 18-08-2021 GAZPROM PAO US3682872078 ADR/GDR Weitergabegebühr USD 7,12 USD 11,93
+29-04-2022 17:30 18-08-2020 GAZPROM PAO US3682872078 ADR/GDR Weitergabegebühr USD 4,81 USD 4,81
+28-04-2022 10:17 27-04-2022 Auszahlung von Ihrem Geldkonto bei der flatex Bank: 501,61 EUR 2.708,68
+EUR
+28-04-2022 10:17 27-04-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 501,61 EUR 3.210,29
+27-04-2022 20:58 27-04-2022 SALESFORCE.COM INC COM US79466L3024 Währungswechsel (Einbuchung) 1,0537 USD 528,00 USD 0,00
+27-04-2022 20:58 27-04-2022 SALESFORCE.COM INC COM US79466L3024 Währungswechsel (Ausbuchung) EUR -501,11 EUR 2.708,68
+27-04-2022 20:58 27-04-2022 SALESFORCE.COM INC COM US79466L3024 DEGIRO Transaktionsgebühren und/oder Fremdkosten EUR -0,50 EUR 3.209,79
+27-04-2022 20:58 27-04-2022 SALESFORCE.COM INC COM US79466L3024 Kauf 3 zu je 176 USD (US79466L3024) USD -528,00 USD -528,00
+25-04-2022 16:47 25-04-2022 Überweisung auf Ihr Geldkonto bei der flatex Bank: 0,31 EUR EUR 3.210,29
+25-04-2022 16:47 25-04-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -0,31 EUR 3.209,98
+25-04-2022 10:50 25-04-2022 flatex Einzahlung EUR 1.000,00 EUR 3.210,29
+23-04-2022 07:33 22-04-2022 Währungswechsel (Einbuchung) EUR 0,31 EUR 2.210,29
+23-04-2022 07:33 22-04-2022 Währungswechsel (Ausbuchung) 1,0828 USD -0,34 USD 0,00
+22-04-2022 16:47 22-04-2022 Überweisung auf Ihr Geldkonto bei der flatex Bank: 40,64 EUR 2.209,98
+EUR
+22-04-2022 16:47 22-04-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -40,64 EUR 2.169,34
+22-04-2022 09:42 15-04-2022 ORION OFFICE REIT INC. COMMON STOCK US68629Y1038 Dividende USD 0,40 USD 0,34
+flatex DEGIRO Bank Dutch Branch, die unter dem Namen DEGIRO www.degiro.de Konto
+handelt, ist die niederländische Niederlassung der flatexDEGIRO kundenservice@degiro.de 2022-05-05
+Bank AG. Die flatexDEGIRO Bank AG wird primär von der deutschen
+Finanzaufsicht (BaFin) beaufsichtigt und ist bei der DNB in den Amstelplein 1 1096 HA Seite 3 / 5
+Niederlanden registriert.
+-
+Austria
+Benutzername: ***uer
+Datum Uhrze Valutadatum Produkt ISIN Beschreibung FX Änderung Saldo
+22-04-2022 09:42 15-04-2022 ORION OFFICE REIT INC. COMMON STOCK US68629Y1038 Dividendensteuer USD -0,06 USD -0,06
+22-04-2022 07:33 21-04-2022 Währungswechsel (Einbuchung) EUR 40,64 EUR 2.209,98
+22-04-2022 07:33 21-04-2022 Währungswechsel (Ausbuchung) 1,0860 USD -44,14 USD 0,00
+21-04-2022 11:20 15-04-2022 REALTY INCOME CORPORAT US7561091049 Dividende USD 11,12 USD 44,14
+21-04-2022 11:20 15-04-2022 REALTY INCOME CORPORAT US7561091049 Dividendensteuer USD -1,67 USD 33,02
+21-04-2022 10:35 15-04-2022 STORE CAPITAL CORPORAT US8621211007 Dividende USD 40,81 USD 34,69
+21-04-2022 10:35 15-04-2022 STORE CAPITAL CORPORAT US8621211007 Dividendensteuer USD -6,12 USD -6,12
+19-04-2022 12:18 15-04-2022 Überweisung auf Ihr Geldkonto bei der flatex Bank: 24 EUR EUR 2.169,34
+19-04-2022 12:18 15-04-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -24,00 EUR 2.145,34
+15-04-2022 08:17 14-04-2022 Währungswechsel (Einbuchung) EUR 24,00 EUR 2.169,34
+15-04-2022 08:17 14-04-2022 Währungswechsel (Ausbuchung) 1,0857 USD -26,06 USD 0,00
+14-04-2022 08:53 12-04-2022 PHILIP MORRIS INTERNAT US7181721090 Dividende USD 26,25 USD 26,06
+14-04-2022 08:53 12-04-2022 PHILIP MORRIS INTERNAT US7181721090 Dividendensteuer USD -0,20 USD -0,19
+12-04-2022 17:17 12-04-2022 Auszahlung von Ihrem Geldkonto bei der flatex Bank: 783,06 EUR 2.145,34
+EUR
+12-04-2022 17:17 12-04-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 783,06 EUR 2.928,40
+12-04-2022 12:23 12-04-2022 UNILEVER PLC LS-,031111 GB00B10RZP78 DEGIRO Transaktionsgebühren und/oder Fremdkosten EUR -0,16 EUR 2.145,34
+12-04-2022 12:23 12-04-2022 UNILEVER PLC LS-,031111 GB00B10RZP78 DEGIRO Transaktionsgebühren und/oder Fremdkosten EUR -3,90 EUR 2.145,50
+12-04-2022 12:23 12-04-2022 UNILEVER PLC LS-,031111 GB00B10RZP78 Kauf 19 zu je 41 EUR (GB00B10RZP78) EUR -779,00 EUR 2.149,40
+08-04-2022 10:02 07-04-2022 Auszahlung von Ihrem Geldkonto bei der flatex Bank: EUR 2.928,40
+1.244,15 EUR
+flatex DEGIRO Bank Dutch Branch, die unter dem Namen DEGIRO www.degiro.de Konto
+handelt, ist die niederländische Niederlassung der flatexDEGIRO kundenservice@degiro.de 2022-05-05
+Bank AG. Die flatexDEGIRO Bank AG wird primär von der deutschen
+Finanzaufsicht (BaFin) beaufsichtigt und ist bei der DNB in den Amstelplein 1 1096 HA Seite 4 / 5
+Niederlanden registriert.
+-
+Austria
+Benutzername: ***uer
+Datum Uhrze Valutadatum Produkt ISIN Beschreibung FX Änderung Saldo
+08-04-2022 10:02 07-04-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 1.244,15 EUR 4.172,55
+07-04-2022 15:24 07-04-2022 RATIONAL AG DE0007010803 DEGIRO Transaktionsgebühren und/oder Fremdkosten EUR -0,25 EUR 2.928,40
+07-04-2022 15:24 07-04-2022 RATIONAL AG DE0007010803 DEGIRO Transaktionsgebühren und/oder Fremdkosten EUR -3,90 EUR 2.928,65
+07-04-2022 15:24 07-04-2022 RATIONAL AG DE0007010803 Kauf 2 zu je 620 EUR (DE0007010803) EUR -1.240,00 EUR 2.932,55
+07-04-2022 10:02 06-04-2022 Auszahlung von Ihrem Geldkonto bei der flatex Bank: EUR 4.172,55
+5.238,78 EUR
+07-04-2022 10:02 06-04-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 5.238,78 EUR 9.411,33
+flatex DEGIRO Bank Dutch Branch, die unter dem Namen DEGIRO www.degiro.de Konto
+handelt, ist die niederländische Niederlassung der flatexDEGIRO kundenservice@degiro.de 2022-05-05
+Bank AG. Die flatexDEGIRO Bank AG wird primär von der deutschen
+Finanzaufsicht (BaFin) beaufsichtigt und ist bei der DNB in den Amstelplein 1 1096 HA Seite 5 / 5
+Niederlanden registriert.
