@@ -411,8 +411,8 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 
     private void addDepotStatementTransaction()
     {
-        final DocumentType type = new DocumentType("(Perioden\\-Kontoauszug|Tageskontoauszug)", (context, lines) -> {
-            Pattern pCurrency = Pattern.compile("(Perioden\\-Kontoauszug|Tageskontoauszug): (?<currency>[\\w]{3})\\-Konto(.*)");
+        final DocumentType type = new DocumentType("(Perioden\\-Kontoauszug|Tageskontoauszug|Periodic Account Statement)", (context, lines) -> {
+            Pattern pCurrency = Pattern.compile("(Perioden\\-Kontoauszug|Tageskontoauszug|Periodic Account Statement): (?<currency>[\\w]{3})(\\-Konto| Account)");
             // read the current context here
             for (String line : lines)
             {
@@ -444,7 +444,39 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                     t.setNote(v.get("note"));
                 })
 
-                .wrap(TransactionItem::new));
+                .wrap(t -> {
+                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                        return new TransactionItem(t);
+                    return null;
+                }));
+
+        Block depositEnglishBlock = new Block("^[\\d]{4}\\-[\\d]{2}\\-[\\d]{2} (Credit SEPA|Direct Debit) [\\d]{4}\\-[\\d]{2}\\-[\\d]{2} [\\.,\\d]+$");
+        type.addBlock(depositEnglishBlock);
+        depositEnglishBlock.set(new Transaction<AccountTransaction>()
+
+                .subject(() -> {
+                    AccountTransaction t = new AccountTransaction();
+                    t.setType(AccountTransaction.Type.DEPOSIT);
+                    return t;
+                })
+
+                // 2022-02-02 Credit SEPA 2022-02-02 1,000.00
+                // 2022-02-03 Direct Debit 2022-02-03 1.00
+                .section("note", "date", "amount")
+                .match("^[\\d]{4}\\-[\\d]{2}\\-[\\d]{2} (?<note>(Credit SEPA|Direct Debit)) (?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) (?<amount>[\\.,\\d]+)$")
+                .assign((t, v) -> {
+                    Map<String, String> context = type.getCurrentContext();
+                    t.setDateTime(asDate(v.get("date")));
+                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setNote(v.get("note"));
+                })
+
+                .wrap(t -> {
+                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                        return new TransactionItem(t);
+                    return null;
+                }));
 
         Block removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Lastschrift aktiv|SEPA\\-Ueberweisung) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+ \\-$");
         type.addBlock(removalBlock);
@@ -466,7 +498,11 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                     t.setNote(v.get("note"));
                 })
 
-                .wrap(TransactionItem::new));
+                .wrap(t -> {
+                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                        return new TransactionItem(t);
+                    return null;
+                }));
 
         Block feesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Transaktionskostenpauschale o\\. MwSt\\. [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+ \\-$");
         type.addBlock(feesBlock);
@@ -488,79 +524,11 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                     t.setNote(v.get("note"));
                 })
 
-                .wrap(TransactionItem::new));
-
-        Block buySellBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Kauf|Verkauf) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}( .*)?$");
-        type.addBlock(buySellBlock);
-        buySellBlock.set(new Transaction<BuySellEntry>()
-
-                .subject(() -> {
-                    BuySellEntry entry = new BuySellEntry();
-                    entry.setType(PortfolioTransaction.Type.BUY);
-                    return entry;
-                })
-
-                .section("note", "name", "isin")
-                .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<note>(Kauf|Verkauf)) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+( .*)?$")
-                .match("^(?<name>.*)$")
-                .match("^ISIN (?<isin>[\\w]{12})$")
-                .assign((t, v) -> {
-                    Map<String, String> context = type.getCurrentContext();
-                    v.put("currency", context.get("currency"));
-                    t.setSecurity(getOrCreateSecurity(v));
-                    t.setNote(v.get("note"));
-                })
-
-                .section("date", "type", "amount", "shares")
-                .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<type>(Kauf|Verkauf)) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<amount>[\\.,\\d]+)( .*)?$")
-                .match("^STK ([\\s]+)?(?<shares>[\\.,\\d]+)(([\\s]+)?\\-)?$")
-                .assign((t, v) -> {
-                    // Is type --> "Verkauf" change from BUY to SELL
-                    if (v.get("type").equals("Verkauf"))
-                        t.setType(PortfolioTransaction.Type.SELL);
-
-                    Map<String, String> context = type.getCurrentContext();
-                    t.setDate(asDate(v.get("date")));
-                    t.setShares(asShares(v.get("shares")));
-                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                    t.setAmount(asAmount(v.get("amount")));
-                })
-
-                .wrap(BuySellEntryItem::new));
-
-        Block dividendBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Coupons\\/Dividende [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .*$");
-        type.addBlock(dividendBlock);
-        dividendBlock.set(new Transaction<AccountTransaction>()
-
-                .subject(() -> {
-                    AccountTransaction t = new AccountTransaction();
-                    t.setType(AccountTransaction.Type.DIVIDENDS);
-                    return t;
-                })
-
-                .section("note", "name", "isin")
-                .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<note>Coupons\\/Dividende) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+$")
-                .match("^(?<name>.*)$")
-                .match("^(ISIN )?(?<isin>[\\w]{12})$")
-                .assign((t, v) -> {
-                    Map<String, String> context = type.getCurrentContext();
-                    v.put("currency", context.get("currency"));
-                    t.setSecurity(getOrCreateSecurity(v));
-                    t.setNote(v.get("note"));
-                })
-
-                .section("date", "amount", "shares")
-                .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Coupons\\/Dividende (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d]+)$")
-                .match("^STK ([\\s]+)?(?<shares>[\\.,\\d]+)$")
-                .assign((t, v) -> {
-                    Map<String, String> context = type.getCurrentContext();
-                    t.setDateTime(asDate(v.get("date")));
-                    t.setShares(asShares(v.get("shares")));
-                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                    t.setAmount(asAmount(v.get("amount")));
-                })
-
-                .wrap(TransactionItem::new));
+                .wrap(t -> {
+                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                        return new TransactionItem(t);
+                    return null;
+                }));
     }
 
     private void addFeesAssetManagerTransaction()
