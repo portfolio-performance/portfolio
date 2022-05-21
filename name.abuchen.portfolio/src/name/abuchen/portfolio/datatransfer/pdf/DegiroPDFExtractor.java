@@ -158,7 +158,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
         final DocumentType type = new DocumentType("(Kontoauszug"
                         + "|Account statement"
                         + "|Rekeningoverzicht"
-                        + "||Estratto conto)", (context, lines) -> {
+                        + "|Estratto conto)", (context, lines) -> {
 
             // @formatter:off
             // Formatting:
@@ -183,8 +183,8 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
             // 13-11-2021 07:45 12-11-2021 Währungswechsel (Einbuchung) CHF 1.54 CHF 1'183.06
             // 13-11-2021 07:45 12-11-2021 Währungswechsel (Ausbuchung) 1.0866 USD -1.68 USD 0.00
             // @formatter:on
-            Pattern pCurrencyFx = Pattern.compile("^(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4}) [\\d]{2}:[\\d]{2} "
-                            + "(?<valuta>[\\d]{2}-[\\d]{2}-[\\d]{4} )?"
+            Pattern pCurrencyFx = Pattern.compile("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) [\\d]{2}:[\\d]{2} "
+                            + "(?<valuta>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?"
                             + "(W.hrungswechsel|FX Debit).* "
                             + "(?<fxRate>[\\.,'\\d]+) "
                             + "(?<currency>[\\w]{3}) "
@@ -208,8 +208,8 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
             // 16-03-2021 09:24 15-03-2021 FX Debit EUR 31.66 EUR -1,542.30
             // 16-03-2021 09:24 15-03-2021 FX Debit 1.1942 USD -37.82 USD -0.00
             // @formatter:on
-            Pattern pCurrencyBase = Pattern.compile("^([\\d]{2}-[\\d]{2}-[\\d]{4}) [\\d]{2}:[\\d]{2} "
-                            + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
+            Pattern pCurrencyBase = Pattern.compile("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}:[\\d]{2} "
+                            + "([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?"
                             + "(W.hrungswechsel|FX Debit).* "
                             + "(?<currency>[\\w]{3}) "
                             + "(\\-)?(?<amount>[\\.,'\\d]+) "
@@ -217,7 +217,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
 
             ExchangeRateHelper exchangeRateHelper = new ExchangeRateHelper();
             context.putType(exchangeRateHelper);
-            
+
             for (int i = 0; i < lines.length; i++)
             {
                 Matcher mFx = pCurrencyFx.matcher(lines[i]);
@@ -306,8 +306,8 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date", "time", "note", "currency", "amount")
-                        .match("^(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
-                                        + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
+                        .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
+                                        + "([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?"
                                         + "(?<note>(SOFORT |iDEAL |flatex )?(Einzahlung|Deposit|Deposito))( flatex)? "
                                         + "(?<currency>[\\w]{3}) "
                                         + "(?<amount>[\\.,'\\d]+) "
@@ -347,8 +347,8 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date", "time", "note", "currency", "amount")
-                        .match("(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
-                                        + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
+                        .match("(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
+                                        + "([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?"
                                         + "(?<note>Auszahlung) "
                                         + "(?<currency>[\\w]{3}) "
                                         + "\\-(?<amount>[\\.,'\\d]+) "
@@ -430,7 +430,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
         // ExchangeRage: 0,8851124093 --> 0,89
         // Gross amount in EUR: (1,74 * 0,89) + (0,52 * 0,89) + (0,08 * 0,89) = 2,0826 EUR
         // @formatter:on
-        Block blockDividends = new Block("^[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2} ([\\d]{2}-[\\d]{2}-[\\d]{4} )?.*"
+        Block blockDividends = new Block("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}:[\\d]{2} ([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?.*"
                         + "(Dividende|Dividend(?! Tax)|Fondsaussch.ttung) "
                         + ".*$");
         type.addBlock(blockDividends);
@@ -446,8 +446,8 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                         // 05-08-2019 14:12 31-07-2019 MORGAN STANLEY USD LIQUIDITY FUND LU0904783114 Fondsausschüttung USD 1,64 USD 6.383,23
                         // 22-03-2021 07:39 19-03-2021 MANULIFE FINANCIAL COR CA56501R1064 Dividend CAD 18.20 CAD 13.65
                         .section("date", "time", "name", "isin", "currency", "amount").optional()
-                        .match("^(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
-                                        + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
+                        .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
+                                        + "([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?"
                                         + "(?<name>.*) "
                                         + "(?<isin>[\\w]{12}) "
                                         + "(Dividende|Dividend|Fondsaussch.ttung) "
@@ -499,8 +499,8 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                         // 17-07-2017 00:00 ISH.S.EU.SEL.DIV.30 U.ETF DE0002635299 Dividendensteuer EUR -0,55 EUR 519,34
                         // 22-03-2021 07:39 19-03-2021 MANULIFE FINANCIAL COR CA56501R1064 Dividend Tax CAD -4.55 CAD -4.55
                         .section("isin", "currencyTax", "tax").optional()
-                        .match("^([\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2}) "
-                                        + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
+                        .match("^([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}:[\\d]{2}) "
+                                        + "([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?"
                                         + "(.*) "
                                         + "(?<isin>[\\w]{12}) .*"
                                         + "(Dividendensteuer|Dividend Tax) "
@@ -533,11 +533,11 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
 
                         //  06-06-2019 09:00 05-06-2019 SONY CORPORATION COMMO US8356993076 ADR/GDR Weitergabegebühr USD -0,04 USD -0,040
                         .section("isin", "currencyFee", "feeFx").optional()
-                        .match("^([\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2}) "
-                                        + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
+                        .match("^([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}:[\\d]{2}) "
+                                        + "([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?"
                                         + "(.*) "
                                         + "(?<isin>[\\w]{12}) "
-                                        + "ADR/GDR Weitergabegeb.hr "
+                                        + "ADR\\/GDR Weitergabegeb.hr "
                                         + "(?<currencyFee>[\\w]{3}) "
                                         + "\\-(?<feeFx>[\\.,'\\d]+) "
                                         + "[\\w]{3} "
@@ -633,9 +633,9 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
         // 01-04-2021 21:00 31-03-2021 Flatex Interest EUR -0,15 EUR 117,98
         // 02-07-2021 07:41 30-06-2021 Flatex Interest Income EUR 0,00 EUR 0,00
         // @formatter:on
-        Block blockInterest = new Block("^[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2} ([\\d]{2}-[\\d]{2}-[\\d]{4} )?.*"
+        Block blockInterest = new Block("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}:[\\d]{2} ([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?.*"
                         + "(Zinsen|Interest) "
-                        + ".*");
+                        + ".*$");
         type.addBlock(blockInterest);
         blockInterest.set(new Transaction<AccountTransaction>()
 
@@ -646,9 +646,9 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date", "time", "note", "currency", "type", "amount")
-                        .match("^(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
-                                        + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
-                                        + "(?<note>(Flatex )?(Zinsen|Interest)( (für Leerverkauf|Income))?) "
+                        .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
+                                        + "([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?"
+                                        + "(?<note>(Flatex )?(Zinsen|Interest)( (f.r Leerverkauf|Income))?) "
                                         + "(?<currency>[\\w]{3})"
                                         + "(?<type>\\s(\\-)?)"
                                         + "(?<amount>[\\.,'\\d]+) "
@@ -683,7 +683,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
         // 04-01-2019 20:14 04-01-2019 SOFORT Zahlungsgebühr EUR -1,00 EUR 150,00
         // 29-06-2018 15:25 29-06-2018 SOFORT Zahlungsgebühr EUR -2,00 EUR 1.683,05
         // @formatter:on
-        Block blockDepositFee = new Block("^[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2} ([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
+        Block blockDepositFee = new Block("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}:[\\d]{2} ([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?"
                         + "SOFORT Zahlungsgeb.*hr"
                         + ".*$");
         type.addBlock(blockDepositFee);
@@ -696,8 +696,8 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date", "time", "note", "currency", "amount")
-                        .match("^(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
-                                        + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
+                        .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
+                                        + "([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?"
                                         + "(?<note>SOFORT Zahlungsgeb.*hr) "
                                         + "(?<currency>[\\w]{3}) "
                                         + "(\\-)?(?<amount>[\\.,'\\d]+) "
@@ -740,7 +740,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
         //  
         // 02-10-2021 10:46 30-09-2021 DEGIRO Costi di connessione 2021 (Xetra - XET) EUR -1,24 EUR 206,99
         // @formatter:on
-        Block blockTrademodalities = new Block("^[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2} ([\\d]{2}-[\\d]{2}-[\\d]{4} )?.*"
+        Block blockTrademodalities = new Block("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}:[\\d]{2} ([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?.*"
                         + "(Einrichtung von|DEGIRO Aansluitingskosten|DEGIRO Costi di connessione) "
                         + ".*$");
         type.addBlock(blockTrademodalities);
@@ -755,8 +755,8 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                         .oneOf(
                             section -> section
                                 .attributes("date", "time", "note1", "note2", "note3", "currency", "type", "amount")
-                                .match("^(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
-                                                + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
+                                .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
+                                                + "([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?"
                                                 + "(?<note1>Einrichtung von) "
                                                 + "(?<currency>[\\w]{3})"
                                                 + "(?<type>\\s(\\-)?)"
@@ -779,8 +779,8 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
 
                             section -> section
                                 .attributes("date", "time", "note", "currency", "type", "amount")
-                                .match("^(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
-                                                + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
+                                .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
+                                                + "([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?"
                                                 + "(?<note>(Einrichtung von Handelsmodalit.ten|DEGIRO Aansluitingskosten|DEGIRO Costi di connessione)( [\\d]{4})?) .* "
                                                 + "(?<currency>[\\w]{3})"
                                                 + "(?<type>\\s(\\-)?)"
@@ -819,7 +819,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
         // 26-07-2019 13:52 26-07-2019 ODX4 P12400.00 26JUL19 DE000C3727R2 Gebühr für Ausübung/Zuteilung EUR -2,00 EUR 1.225,59
         // 01-03-2019 13:21 01-03-2019 ODX1 C11500.00 01MAR19 DE000C27U079 Gebühr für Ausübung/Zuteilung EUR -1,00 EUR 1.942,75
         // @formatter:on
-        Block blockFeeStrike = new Block("^[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2} ([\\d]{2}-[\\d]{2}-[\\d]{4} )?.* "
+        Block blockFeeStrike = new Block("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}:[\\d]{2} ([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?.* "
                         + "Geb.hr für Aus.bung\\/Zuteilung "
                         + ".*$");
         type.addBlock(blockFeeStrike);
@@ -832,8 +832,8 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date", "time", "name", "isin", "note", "currency", "amount")
-                        .match("^(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
-                                        + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
+                        .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
+                                        + "([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?"
                                         + "(?<name>.*) "
                                         + "(?<isin>[\\w]{12}) "
                                         + "(?<note>Geb.hr für Aus.bung\\/Zuteilung) "
@@ -866,7 +866,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
         // 05-03-2019 15:37 28-02-2019 Gutschrift für die Neukundenaktion EUR 18,00 EUR 1.960,69
         // 05-03-2019 15:37 28-02-2019 Rabatt für 500 Euro Aktion EUR 18,00 EUR 1.960,64
         // @formatter:on
-        Block blockFeeReturn = new Block("^[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2}( [\\d]{2}-[\\d]{2}-[\\d]{4} )?"
+        Block blockFeeReturn = new Block("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}:[\\d]{2}( [\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?"
                         + "(Rabatt|Gutschrift) "
                         + ".*$");
         type.addBlock(blockFeeReturn);
@@ -879,8 +879,8 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date", "time", "note", "currency", "amount")
-                        .match("^(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
-                                        + "([\\d]{2}-[\\d]{2}-[\\d]{4} )?"
+                        .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
+                                        + "([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?"
                                         + "(?<note>(Rabatt|Gutschrift) .*) "
                                         + "(?<currency>[\\w]{3}) "
                                         + "(?<amount>[\\.,'\\d]+) "
@@ -915,7 +915,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                         + "|Operazioni)");
         this.addDocumentTyp(type);
 
-        Block blockBuy = new Block("^[\\d]{2}-[\\d]{2}-[\\d]{4} [\\d]{2}:[\\d]{2} .* [\\w]{12} .* ([\\w]{3}|[\\w]{3} [\\w]{4}) .*([\\.\\d]+,[\\d]{2}|[\\w]{3})$");
+        Block blockBuy = new Block("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}:[\\d]{2} .* [\\w]{12} .* ([\\w]{3}|[\\w]{3} [\\w]{4}) .*([\\.\\d]+,[\\d]{2}|[\\w]{3})$");
         type.addBlock(blockBuy);
 
         blockBuy.set(new Transaction<BuySellEntry>()
@@ -942,7 +942,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // @formatter:on
                             section -> section
                                 .attributes("date", "time", "name", "isin", "shares", "currency", "amount")
-                                .match("^(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
+                                .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
                                                 + "(?<name>.*) "
                                                 + "(?<isin>[\\w]{12}) "
                                                 + "[\\w]{3} "
@@ -982,7 +982,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // @formatter:on
                             section -> section
                                 .attributes("date", "time", "name", "isin", "shares", "currency", "amount")
-                                .match("^(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
+                                .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
                                                 + "(?<name>.*) "
                                                 + "(?<isin>[\\w]{12}) "
                                                 + "[\\w]{3} "
@@ -1023,7 +1023,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // @formatter:on
                             section -> section
                                 .attributes("date", "time", "name", "isin", "shares", "currencyFee", "fee", "currency", "amount")
-                                .match("^(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
+                                .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
                                                 + "(?<name>.*) "
                                                 + "(?<isin>[\\w]{12}) "
                                                 + "[\\w]{3} "
@@ -1067,7 +1067,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // @formatter:on
                             section -> section
                                 .attributes("date", "time", "name", "isin", "shares", "currencyFee", "fee", "currency", "amount")
-                                .match("^(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
+                                .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
                                                 + "(?<name>.*) "
                                                 + "(?<isin>[\\w]{12}) "
                                                 + "[\\w]{3} "
@@ -1114,7 +1114,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // @formatter:on
                             section -> section
                                 .attributes("date", "time", "name", "isin", "shares", "currency", "amountFx", "exchangeRate", "currencyFee", "fee", "currencyAccount", "amount")
-                                .match("^(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
+                                .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
                                                 + "(?<name>.*) "
                                                 + "(?<isin>[\\w]{12}) "
                                                 + "[\\w]{3} "
@@ -1182,7 +1182,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // @formatter:on
                             section -> section
                                 .attributes("date", "time", "name", "isin", "shares", "currency", "amountFx", "exchangeRate", "currencyFee", "fee", "currencyAccount", "amount")
-                                .match("^(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
+                                .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
                                                 + "(?<name>.*) "
                                                 + "(?<isin>[\\w]{12}) "
                                                 + "[\\w]{3} "
@@ -1247,7 +1247,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // @formatter:on
                             section -> section
                                 .attributes("date", "time", "name", "isin", "shares", "currency", "amountFx", "exchangeRate", "currencyAccount", "amount")
-                                .match("^(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
+                                .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
                                                 + "(?<name>.*) "
                                                 + "(?<isin>[\\w]{12}) "
                                                 + "[\\w]{3} "
@@ -1301,7 +1301,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // @formatter:on
                             section -> section
                                 .attributes("date", "time", "name", "isin", "shares", "currency", "amountFx", "exchangeRate", "currencyAccount", "amount")
-                                .match("^(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
+                                .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
                                                 + "(?<name>.*) "
                                                 + "(?<isin>[\\w]{12}) "
                                                 + "[\\w]{3} "
@@ -1357,7 +1357,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // @formatter:on
                             section -> section
                                 .attributes("date", "time", "name", "isin", "shares", "currency", "amountFx", "exchangeRate", "currencyFee", "fee", "currencyAccount", "amount")
-                                .match("^(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
+                                .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
                                                 + "(?<name>.*) "
                                                 + "(?<isin>[\\w]{12}) "
                                                 + "[\\w]{3} [\\w]{4} "
@@ -1423,7 +1423,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // @formatter:on
                             section -> section
                                 .attributes("date", "time", "name", "isin", "shares", "currency", "amountFx", "exchangeRate", "currencyFee", "fee", "currencyAccount", "amount")
-                                .match("^(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
+                                .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
                                                 + "(?<name>.*) "
                                                 + "(?<isin>[\\w]{12}) "
                                                 + "[\\w]{3} [\\w]{4} "
@@ -1492,7 +1492,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // @formatter:on
                             section -> section
                                 .attributes("date", "time", "name", "isin", "shares", "currencyFee", "fee", "currency", "amount")
-                                .match("^(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
+                                .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
                                                 + "(?<name>.*) "
                                                 + "(?<isin>[\\w]{12}) "
                                                 + "[\\w]{3} [\\w]{4} "
@@ -1536,7 +1536,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // @formatter:on
                             section -> section
                                 .attributes("date", "time", "name", "isin", "shares", "currencyFee", "fee", "currency", "amount")
-                                .match("^(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
+                                .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
                                                 + "(?<name>.*) "
                                                 + "(?<isin>[\\w]{12}) "
                                                 + "[\\w]{3} [\\w]{4} "
@@ -1579,7 +1579,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // @formatter:on
                             section -> section
                                 .attributes("date", "time", "name", "isin", "shares", "currency", "amountFx", "exchangeRate", "currencyAccount", "amount")
-                                .match("^(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
+                                .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
                                                 + "(?<name>.*) "
                                                 + "(?<isin>[\\w]{12}) "
                                                 + "[\\w]{3} [\\w]{4} "
@@ -1633,7 +1633,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // @formatter:on
                             section -> section
                                 .attributes("date", "time", "name", "isin", "shares", "currency", "amountFx", "exchangeRate", "currencyAccount", "amount")
-                                .match("^(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
+                                .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
                                                 + "(?<name>.*) "
                                                 + "(?<isin>[\\w]{12}) "
                                                 + "[\\w]{3} [\\w]{4} "
@@ -1685,7 +1685,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // @formatter:on
                             section -> section
                                 .attributes("date", "time", "name", "isin", "shares", "currency", "amount")
-                                .match("^(?<date>[\\d]{2}-[\\d]{2}-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
+                                .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
                                                 + "(?<name>.*) (?<isin>[\\w]{12}) "
                                                 + "[\\w]{3} [\\w]{4} "
                                                 + "(?<shares>(\\-)?[\\.\\d\\s]+[,\\d]*) "
