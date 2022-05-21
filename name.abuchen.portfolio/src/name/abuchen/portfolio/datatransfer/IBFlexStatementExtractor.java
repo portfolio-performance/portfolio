@@ -163,7 +163,7 @@ public class IBFlexStatementExtractor implements Extractor
         private static final String ASSETKEY_STOCK = "STK";
         private static final String ASSETKEY_OPTION = "OPT";
         private static final String ASSETKEY_FUTURE_OPTION = "FOP";
-        
+
         private Document document;
         private List<Exception> errors = new ArrayList<>();
         private List<Item> results = new ArrayList<>();
@@ -374,7 +374,7 @@ public class IBFlexStatementExtractor implements Extractor
             }
 
             transaction.setSecurity(this.getOrCreateSecurity(element, true));
-            
+
             // transaction currency
             String currency = asCurrencyUnit(element.getAttribute("currency"));
             transaction.getPortfolioTransaction().setCurrencyCode(currency);

@@ -101,7 +101,12 @@ public class SecurityPosition
                         .multiply(BigDecimal.valueOf(price.getValue()), Values.MC)
                         .movePointLeft(Values.Quote.precisionDeltaToMoney()) //
                         .setScale(0, RoundingMode.HALF_DOWN).longValue();
-        return Money.of(investment.getCurrencyCode(), marketValue);
+        String currencyForCalculation = investment.getCurrencyCode();
+        if (!transactions.isEmpty())
+        {
+            currencyForCalculation = transactions.get(0).getCurrencyCode();
+        }
+        return Money.of(currencyForCalculation, marketValue);
     }
 
     public static SecurityPosition split(SecurityPosition position, int weight)
