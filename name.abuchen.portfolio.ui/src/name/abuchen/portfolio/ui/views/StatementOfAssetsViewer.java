@@ -107,6 +107,7 @@ import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
+import name.abuchen.portfolio.ui.views.columns.QuoteToSmaDeltaColumnHelper;
 import name.abuchen.portfolio.ui.views.columns.SymbolColumn;
 import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
 import name.abuchen.portfolio.ui.views.columns.WknColumn;
@@ -575,6 +576,7 @@ public class StatementOfAssetsViewer
         addTaxonomyColumns();
         addAttributeColumns();
         addCurrencyColumns();
+        QuoteToSmaDeltaColumnHelper.createColumns(support, () -> model.getDate()).wrap(ElementComparator::new);
 
         support.createColumns(isConfigurable);
 
