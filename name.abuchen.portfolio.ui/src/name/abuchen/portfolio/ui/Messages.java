@@ -163,6 +163,9 @@ public class Messages extends NLS
     public static String RebalanceAmbiguousTooltip;
     public static String RebalanceInexactTooltip;
     public static String ColumnDeltaValue;
+    public static String ColumnDeltaToSmaX;
+    public static String ColumnDeltaToSmaX_Description;
+    public static String ColumnDeltaToSmaX_Option;
     public static String ColumnDesiredAllocation;
     public static String ColumnDesiredAllocation_Description;
     public static String ColumnDetails;
