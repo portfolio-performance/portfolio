@@ -10,6 +10,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Shell;
 
+import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.ui.Images;
@@ -26,12 +27,16 @@ public class QuoteToSmaDeltaColumnHelper
     {
     }
 
-    public static void createColumns(ShowHideColumnHelper support)
+    public static ColumnViewerSorter createColumns(ShowHideColumnHelper support)
     {
         List<Integer> smaIntervals = Arrays.asList(5, 20, 30, 38, 50, 90, 100, 200);
         BiFunction<Object, Integer, Double> valueProvider = (element, option) -> {
 
-            List<SecurityPrice> prices = ((Security) element).getPricesIncludingLatest();
+            Security s = Adaptor.adapt(Security.class, element);
+            if (s == null)
+                return null;
+            
+            List<SecurityPrice> prices = s.getPricesIncludingLatest();
 
             if (prices == null || prices.size() < option)
                 return null;
@@ -49,7 +54,7 @@ public class QuoteToSmaDeltaColumnHelper
         column.setDescription(Messages.ColumnDeltaToSmaX_Description);
         column.setLabelProvider(new SmaPeriodColumnLabelProvider(valueProvider));
         column.setVisible(false);
-        column.setSorter(ColumnViewerSorter.create((o1, o2) -> {
+        ColumnViewerSorter sorter = ColumnViewerSorter.create((o1, o2) -> {
             Integer option = (Integer) ColumnViewerSorter.SortingContext.getColumnOption();
 
             Double v1 = valueProvider.apply(o1, option);
@@ -63,9 +68,11 @@ public class QuoteToSmaDeltaColumnHelper
                 return 1;
 
             return Double.compare(v1.doubleValue(), v2.doubleValue());
-        }));
+        }); 
+        column.setSorter(sorter);
 
         support.addColumn(column);
+        return sorter;
     }
 
     private static final class SmaPeriodColumnOption implements Column.Options<Integer>
