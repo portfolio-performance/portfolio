@@ -217,41 +217,11 @@ public class ClientInput
 
     public void doSaveAs(Shell shell, String extension, Set<SaveFlag> flags) // NOSONAR
     {
-        FileDialog dialog = new FileDialog(shell, SWT.SAVE);
-        dialog.setOverwrite(true);
-
-        // if an extension is given, make sure the file name proposal has the
-        // right extension in the save as dialog
         String fileNameProposal = clientFile != null ? clientFile.getName() : getLabel();
-        if (extension != null && !fileNameProposal.endsWith('.' + extension))
-        {
-            int p = fileNameProposal.lastIndexOf('.');
-            fileNameProposal = (p > 0 ? fileNameProposal.substring(0, p + 1) : fileNameProposal + '.') + extension;
-        }
-
-        dialog.setFileName(fileNameProposal);
-
-        // On macOS, the save as dialog does not seem to accept the existing
-        // directory path. However, when using the user home directory, it
-        // works. Something to do with the sandbox? Or requires a newer version
-        // of SWT?
-
-        if (Platform.OS_MACOSX.equals(Platform.getOS()))
-            dialog.setFilterPath(System.getProperty("user.home")); //$NON-NLS-1$
-        else
-            dialog.setFilterPath(clientFile != null ? clientFile.getAbsoluteFile().getParent()
-                            : System.getProperty("user.home")); //$NON-NLS-1$
-
-        String path = dialog.open();
-        if (path == null)
+        File localFile = pickFile(shell, extension, fileNameProposal);
+        if (localFile == null)
             return;
 
-        // again make sure the extension is correct as the user might have
-        // changed it in the save dialog
-        if (extension != null && !path.endsWith('.' + extension))
-            path += '.' + extension;
-
-        File localFile = new File(path);
         char[] password = null;
 
         if (flags.contains(SaveFlag.ENCRYPTED))
@@ -283,6 +253,74 @@ public class ClientInput
                                 new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
             }
         });
+    }
+
+    /**
+     * Exports the current data into a new file without changing any of the
+     * editor settings.
+     */
+    public void doExportAs(Shell shell, String extension, Set<SaveFlag> flags)
+    {
+        if (flags.contains(SaveFlag.ENCRYPTED))
+            throw new IllegalArgumentException();
+
+        String fileNameProposal = clientFile != null ? clientFile.getName() : getLabel();
+        if (!fileNameProposal.endsWith('.' + extension))
+            fileNameProposal += '.' + extension;
+        File localFile = pickFile(shell, extension, fileNameProposal);
+        if (localFile == null)
+            return;
+
+        BusyIndicator.showWhile(shell.getDisplay(), () -> {
+            try
+            {
+                ClientFactory.exportAs(client, localFile, null, flags);
+            }
+            catch (IOException e)
+            {
+                PortfolioPlugin.log(e);
+                ErrorDialog.openError(shell, Messages.LabelError, e.getMessage(),
+                                new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
+            }
+        });
+    }
+
+    private File pickFile(Shell shell, String extension, String fileNameProposal)
+    {
+        FileDialog dialog = new FileDialog(shell, SWT.SAVE);
+        dialog.setOverwrite(true);
+
+        // if an extension is given, make sure the file name proposal has the
+        // right extension in the save as dialog
+        if (extension != null && !fileNameProposal.endsWith('.' + extension))
+        {
+            int p = fileNameProposal.lastIndexOf('.');
+            fileNameProposal = (p > 0 ? fileNameProposal.substring(0, p + 1) : fileNameProposal + '.') + extension;
+        }
+
+        dialog.setFileName(fileNameProposal);
+
+        // On macOS, the save as dialog does not seem to accept the existing
+        // directory path. However, when using the user home directory, it
+        // works. Something to do with the sandbox? Or requires a newer version
+        // of SWT?
+
+        if (Platform.OS_MACOSX.equals(Platform.getOS()))
+            dialog.setFilterPath(System.getProperty("user.home")); //$NON-NLS-1$
+        else
+            dialog.setFilterPath(clientFile != null ? clientFile.getAbsoluteFile().getParent()
+                            : System.getProperty("user.home")); //$NON-NLS-1$
+
+        String path = dialog.open();
+        if (path == null)
+            return null;
+
+        // again make sure the extension is correct as the user might have
+        // changed it in the save dialog
+        if (extension != null && !path.endsWith('.' + extension))
+            path += '.' + extension;
+
+        return new File(path);
     }
 
     /**

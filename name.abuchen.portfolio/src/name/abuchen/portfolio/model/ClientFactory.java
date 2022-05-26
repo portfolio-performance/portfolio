@@ -574,7 +574,7 @@ public class ClientFactory
         if (flags.contains(SaveFlag.ENCRYPTED) && client.getSecret() == null)
             throw new IOException(Messages.MsgPasswordMissing);
 
-        writeFile(client, file, null, flags);
+        writeFile(client, file, null, flags, true);
     }
 
     public static void saveAs(final Client client, final File file, char[] password, Set<SaveFlag> flags)
@@ -586,11 +586,23 @@ public class ClientFactory
         if (flags.contains(SaveFlag.ENCRYPTED) && password == null)
             throw new IOException(Messages.MsgPasswordMissing);
 
-        writeFile(client, file, password, flags);
+        writeFile(client, file, password, flags, true);
     }
 
-    private static void writeFile(final Client client, final File file, char[] password, Set<SaveFlag> flags)
+    public static void exportAs(final Client client, final File file, char[] password, Set<SaveFlag> flags)
                     throws IOException
+    {
+        if (flags.isEmpty())
+            flags.add(SaveFlag.XML);
+
+        if (flags.contains(SaveFlag.ENCRYPTED) && password == null)
+            throw new IOException(Messages.MsgPasswordMissing);
+
+        writeFile(client, file, password, flags, false);
+    }
+
+    private static void writeFile(final Client client, final File file, char[] password, Set<SaveFlag> flags,
+                    boolean updateFlags) throws IOException
     {
         PortfolioLog.info(String.format("Saving %s with %s", file.getName(), flags.toString())); //$NON-NLS-1$
 
@@ -600,8 +612,12 @@ public class ClientFactory
         {
             ClientPersister persister = buildPersister(flags, password);
             persister.save(client, output);
-            client.getSaveFlags().clear();
-            client.getSaveFlags().addAll(flags);
+
+            if (updateFlags)
+            {
+                client.getSaveFlags().clear();
+                client.getSaveFlags().addAll(flags);
+            }
         }
     }
 

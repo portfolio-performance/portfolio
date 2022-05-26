@@ -54,7 +54,7 @@
         <children xsi:type="menu:Menu" xmi:id="_mF9JAEYQEeSRXYVe298mXg" elementId="name.abuchen.portfolio.ui.menu.file.import" label="%command.import.name">
           <children xsi:type="menu:HandledMenuItem" xmi:id="_tHcwMI50Eeei6L14_E-zxg" elementId="name.abuchen.portfolio.ui.menu.file.import.PDFassistant" label="%command.import.pdf.import-pdf" tooltip="%command.import.pdf.tooltip" mnemonics="" command="_pgC00EYREeSRXYVe298mXg"/>
           <children xsi:type="menu:MenuSeparator" xmi:id="_C24kEBREEemo-IqrE7irYg" elementId="name.abuchen.portfolio.bootstrap.menuseparator.0"/>
-          <children xsi:type="menu:HandledMenuItem" xmi:id="_PouM4BfWEeOders_POVQHQ" elementId="name.abuchen.portfolio.ui.menu.file.import.csv" label="%command.import.csv" tooltip="%command.import.csv.tooltip" command="_GgTyQBhXEeOR1rNFCzC82A"/>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_PouM4BfWEeOders_POVQHQ" elementId="name.abuchen.portfolio.ui.menu.file.import.csv" label="%command.csv" tooltip="%command.csv.tooltip" command="_GgTyQBhXEeOR1rNFCzC82A"/>
           <children xsi:type="menu:Menu" xmi:id="_Qdqi0BREEemo-IqrE7irYg" elementId="name.abuchen.portfolio.bootstrap.menu.importWithCSVConfiguration" label="%command.importWithCSVConfiguration.name">
             <children xsi:type="menu:DynamicMenuContribution" xmi:id="_fcsG4BREEemo-IqrE7irYg" elementId="name.abuchen.portfolio.bootstrap.dynamicmenucontribution.1" label="CSV Configurations" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.CSVConfigurationsMenuContribution"/>
           </children>
@@ -64,7 +64,13 @@
           <children xsi:type="menu:MenuSeparator" xmi:id="_gNzZUPr7EeS4ucTlYYYvbw" elementId="name.abuchen.portfolio.bootstrap.menuseparator.2"/>
           <children xsi:type="menu:HandledMenuItem" xmi:id="_C1cmoLptEeSHOs-ah25CLg" elementId="name.abuchen.portfolio.ui.menu.file.import.create-text" label="%command.import.pdf.create-text" tooltip="%command.import.pdf.create-text.tooltip" command="_Jw7yELptEeSHOs-ah25CLg"/>
         </children>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_QviD8BfWEeOders_POVQHQ" elementId="name.abuchen.portfolio.ui.menu.file.export" label="%command.export.name" tooltip="%command.export.tooltip" command="_lcgCQBfWEeOders_POVQHQ"/>
+        <children xsi:type="menu:Menu" xmi:id="_XO3VoNzYEeyUBtACSRat_Q" elementId="name.abuchen.portfolio.bootstrap.menu.commandexportname" label="%command.export.name">
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_QviD8BfWEeOders_POVQHQ" elementId="name.abuchen.portfolio.ui.menu.file.export" label="%command.csv" tooltip="%command.csv.tooltip" command="_lcgCQBfWEeOders_POVQHQ"/>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_WaGbYNzZEeyUBtACSRat_Q" elementId="name.abuchen.portfolio.bootstrap.handledmenuitem.commandexportxml" label="%command.export.xml" command="_48Q94POhEeOtWc3KvKMOyw">
+            <parameters xmi:id="_iVczENzZEeyUBtACSRat_Q" elementId="" name="name.abuchen.portfolio.ui.param.file-type" value="xml"/>
+            <parameters xmi:id="_hum1gNzZEeyUBtACSRat_Q" elementId="" name="name.abuchen.portfolio.ui.param.create-copy" value="true"/>
+          </children>
+        </children>
         <children xsi:type="menu:MenuSeparator" xmi:id="_J3qfQBi9EeO8gYEHAOvLsA" elementId="name.abuchen.portfolio.ui.menuseparator.2"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_h53pUGzxEeapdeFYfst3DA" elementId="name.abuchen.portfolio.ui.menu.file.close" label="%command.close.name" tooltip="%command.close.tooltip" command="_nzlOsGzxEeapdeFYfst3DA"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_GSo5UBi9EeO8gYEHAOvLsA" elementId="name.abuchen.portfolio.ui.menu.file.quit" label="%command.quit.name" tooltip="%command.quit.tooltip" command="_1mco0Bi8EeO8gYEHAOvLsA"/>
@@ -221,7 +227,7 @@
   <commands xmi:id="_3CjQwBfHEeOders_POVQHQ" elementId="name.abuchen.portfolio.ui.command.open" commandName="openCommand"/>
   <commands xmi:id="_D9tYMBiPEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.command.consistencychecks" commandName="consistencyChecksCommand"/>
   <commands xmi:id="_lcgCQBfWEeOders_POVQHQ" elementId="name.abuchen.portfolio.ui.command.export" commandName="exportCommand"/>
-  <commands xmi:id="_GgTyQBhXEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.command.import" commandName="%command.import.csv">
+  <commands xmi:id="_GgTyQBhXEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.command.import" commandName="%command.csv">
     <parameters xmi:id="_MY53cBRFEemo-IqrE7irYg" elementId="name.abuchen.portfolio.ui.param.name" name="name"/>
   </commands>
   <commands xmi:id="_pgC00EYREeSRXYVe298mXg" elementId="name.abuchen.portfolio.ui.command.import.pdf" commandName="%command.import.pdf.import-pdf"/>
@@ -237,6 +243,7 @@
   <commands xmi:id="_7aSvMLdLEeO0acAVfaNMbA" elementId="org.eclipse.ui.window.preferences" commandName="openPreferenceDialog"/>
   <commands xmi:id="_48Q94POhEeOtWc3KvKMOyw" elementId="name.abuchen.portfolio.ui.command.saveAs" commandName="saveAsCommand">
     <parameters xmi:id="_-VGq0POhEeOtWc3KvKMOyw" elementId="name.abuchen.portfolio.ui.param.file-type" name="file-type" optional="false"/>
+    <parameters xmi:id="_otbBwNzZEeyUBtACSRat_Q" elementId="name.abuchen.portfolio.ui.param.create-copy" name="create-copy"/>
   </commands>
   <commands xmi:id="_rzHrcPOjEeOHHf_SGgPLVA" elementId="org.eclipse.ui.file.save" commandName="saveCommand"/>
   <commands xmi:id="_xEtu4G_lEeWs-Og7n4Tz9g" elementId="org.eclipse.ui.file.saveAll" commandName="saveAllCommand"/>
