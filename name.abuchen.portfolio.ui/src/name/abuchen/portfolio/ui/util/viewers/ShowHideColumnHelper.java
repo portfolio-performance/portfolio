@@ -6,9 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.StringTokenizer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.Action;
@@ -41,7 +38,6 @@ import org.eclipse.swt.widgets.Widget;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.ConfigurationStore;
 import name.abuchen.portfolio.ui.util.ConfigurationStore.ConfigurationStoreOwner;
 import name.abuchen.portfolio.util.TextUtil;
@@ -62,6 +58,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
          * configuration.
          */
         private org.eclipse.swt.widgets.Listener changeListener;
+        private boolean redraw = true;
 
         abstract ColumnViewer getViewer();
 
@@ -116,7 +113,13 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
         void setRedraw(boolean redraw)
         {
+            this.redraw = redraw;
             getViewer().getControl().setRedraw(redraw);
+        }
+
+        boolean isRedraw()
+        {
+            return redraw;
         }
 
         public void setChangeListener(org.eclipse.swt.widgets.Listener changeListener)
@@ -395,7 +398,6 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
     }
 
     /* package */static final String OPTIONS_KEY = Column.class.getName() + "_OPTION"; //$NON-NLS-1$
-    private static final Pattern CONFIG_PATTERN = Pattern.compile("^([^=]*)=(?:([^\\|]*)\\|)?(?:(\\d*)\\$)?(\\d*)$"); //$NON-NLS-1$
 
     private final String identifier;
 
@@ -436,7 +438,10 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
         if (client != null)
         {
             this.store = new ConfigurationStore(identifier, client, preferences, this);
-            this.policy.setChangeListener(e -> store.updateActive(serialize()));
+            this.policy.setChangeListener(e -> {
+                if (this.policy.isRedraw())
+                    store.updateActive(serialize());
+            });
         }
 
         this.policy.getViewer().getControl().addDisposeListener(e -> ShowHideColumnHelper.this.widgetDisposed());
@@ -755,7 +760,8 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
     private void createFromColumnConfig(String config)
     {
-        if (config == null || config.trim().length() == 0)
+        ColumnConfiguration configuration = ColumnConfiguration.read(config);
+        if (configuration == null)
             return;
 
         try
@@ -765,71 +771,28 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             // turn of sorting in case new columns define no viewer comparator
             policy.getViewer().setComparator(null);
 
-            int count = policy.getColumnCount();
+            int oldCount = policy.getColumnCount();
 
-            StringTokenizer tokens = new StringTokenizer(config, ";"); //$NON-NLS-1$
-            while (tokens.hasMoreTokens())
-            {
-                try
+            configuration.getItems().forEach(item -> {
+                // index
+                Column col = id2column.get(item.getId());
+                if (col == null)
+                    return;
+
+                // option
+                Object option = null;
+
+                if (col.hasOptions())
                 {
-                    Matcher matcher = CONFIG_PATTERN.matcher(tokens.nextToken());
-                    if (!matcher.matches())
-                        continue;
-
-                    // index
-                    Column col = id2column.get(matcher.group(1));
-                    if (col == null)
-                        continue;
-
-                    // option
-                    Object option = null;
-
-                    if (col.hasOptions())
-                    {
-                        String o = matcher.group(2);
-                        option = col.getOptions().valueOf(o);
-                        if (option == null)
-                            continue;
-                    }
-
-                    // direction
-                    String d = matcher.group(3);
-                    Integer direction = null;
-                    
-                    if (d != null)
-                    {
-                        int sortDirection = Integer.parseInt(d);
-                        
-                        switch (sortDirection)
-                        {
-                            case 1: // ascending
-                                direction = SWT.UP;
-                                break;
-                            case 2: // descending
-                                direction = SWT.DOWN;
-                                break;
-                            case 1 << 7: // legacy
-                                direction = SWT.DOWN;
-                                break;
-                            case 1 << 10: // legacy
-                                direction = SWT.UP;
-                                break;
-                            default:
-                        }
-                    }
-
-                    // width
-                    int width = Integer.parseInt(matcher.group(4));
-
-                    policy.create(col, option, direction, width);
+                    option = col.getOptions().valueOf(item.getOption());
+                    if (option == null)
+                        return;
                 }
-                catch (RuntimeException e)
-                {
-                    PortfolioPlugin.log(e);
-                }
-            }
 
-            for (int ii = 0; ii < count; ii++)
+                policy.create(col, option, item.getSortDirection(), item.getWidth());
+            });
+
+            for (int ii = 0; ii < oldCount; ii++)
                 policy.getColumn(0).dispose();
         }
         finally
@@ -873,7 +836,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
     private String serialize()
     {
-        StringBuilder buf = new StringBuilder();
+        ColumnConfiguration configuration = new ColumnConfiguration();
 
         Widget sortedColumn = policy.getSortColumn();
 
@@ -881,16 +844,20 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
         {
             Widget col = policy.getColumn(index);
             Column column = (Column) col.getData(Column.class.getName());
-            buf.append(column.getId()).append('=');
+
+            ColumnConfiguration.Item item = new ColumnConfiguration.Item(column.getId());
 
             if (column.hasOptions())
-                buf.append(column.getOptions().toString(col.getData(OPTIONS_KEY))).append('|');
+                item.setOption(column.getOptions().toString(col.getData(OPTIONS_KEY)));
             if (col.equals(sortedColumn))
-                buf.append(policy.getSortDirection() == SWT.UP ? 1 : 2).append('$');
+                item.setSortDirection(policy.getSortDirection() == SWT.UP ? 1 : 2);
 
-            buf.append(policy.getWidth(col)).append(';');
+            item.setWidth(policy.getWidth(col));
+
+            configuration.addItem(item);
         }
-        return buf.toString();
+
+        return configuration.serialize();
     }
 
     @Override
