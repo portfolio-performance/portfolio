@@ -14,6 +14,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
+import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -86,7 +87,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
         abstract int getWidth(Item col);
 
-        abstract void create(Column column, Object option, Integer direction, int width);
+        abstract Item create(Column column, Object option, Integer direction, int width);
 
         void setCommonParameters(Column column, ViewerColumn viewerColumn, Integer direction)
         {
@@ -226,7 +227,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
         }
 
         @Override
-        public void create(Column column, Object option, Integer direction, int width)
+        public Item create(Column column, Object option, Integer direction, int width)
         {
             TableViewerColumn col = new TableViewerColumn(table, column.getStyle());
 
@@ -260,6 +261,8 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
             if (column.getLabelProvider() instanceof CellItemImageClickedListener)
                 setupImageClickedListener(column, tableColumn);
+
+            return tableColumn;
         }
 
         private void setupImageClickedListener(Column column, TableColumn tableColumn)
@@ -358,7 +361,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
         }
 
         @Override
-        public void create(Column column, Object option, Integer direction, int width)
+        public Item create(Column column, Object option, Integer direction, int width)
         {
             TreeViewerColumn col = new TreeViewerColumn(tree, column.getStyle());
 
@@ -391,6 +394,8 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
             if (column.getLabelProvider() instanceof CellItemImageClickedListener)
                 setupImageClickedListener(column, treeColumn);
+
+            return treeColumn;
         }
 
         private void setupImageClickedListener(Column column, TreeColumn treeColumn)
@@ -418,6 +423,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
     }
 
     /* package */static final String OPTIONS_KEY = Column.class.getName() + "_OPTION"; //$NON-NLS-1$
+    private static final String ORIGINAL_LABEL_KEY = "$original_label$"; //$NON-NLS-1$
 
     private final String identifier;
 
@@ -860,7 +866,13 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
                         return;
                 }
 
-                policy.create(col, option, item.getSortDirection(), item.getWidth());
+                Item viewerColumn = policy.create(col, option, item.getSortDirection(), item.getWidth());
+
+                if (item.getLabel() != null)
+                {
+                    viewerColumn.setData(ORIGINAL_LABEL_KEY, viewerColumn.getText());
+                    viewerColumn.setText(item.getLabel());
+                }
             });
 
             for (int ii = 0; ii < oldCount; ii++)
@@ -925,6 +937,10 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
             item.setWidth(policy.getWidth(col));
 
+            String originalLabel = (String) col.getData(ORIGINAL_LABEL_KEY);
+            if (originalLabel != null)
+                item.setLabel(col.getText());
+
             configuration.addItem(item);
         }
 
@@ -963,7 +979,34 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
         if (column == null)
             return;
 
-        manager.add(new LabelOnly(widget.getText()));
+        String originalLabel = (String) widget.getData(ORIGINAL_LABEL_KEY);
+
+        manager.add(new LabelOnly(originalLabel != null ? originalLabel : widget.getText()));
+
+        manager.add(new SimpleAction(Messages.MenuRenameColumn, a -> {
+
+            String oldLabel = widget.getText();
+
+            InputDialog dlg = new InputDialog(Display.getCurrent().getActiveShell(), Messages.ColumnName,
+                            Messages.ColumnName, oldLabel,
+                            text -> text != null && text.length() > 0 ? null : Messages.LabelError);
+            if (dlg.open() != InputDialog.OK) // NOSONAR
+                return;
+
+            String newLabel = dlg.getValue();
+            widget.setText(newLabel);
+
+            if (originalLabel == null)
+                widget.setData(ORIGINAL_LABEL_KEY, oldLabel);
+        }));
+
+        if (originalLabel != null)
+        {
+            manager.add(new SimpleAction(Messages.MenuResetColumnName, a -> {
+                widget.setData(ORIGINAL_LABEL_KEY, null);
+                widget.setText(originalLabel);
+            }));
+        }
 
         if (column.isRemovable())
         {

@@ -18,6 +18,7 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
     static class Item
     {
         private String id;
+        private String label;
         private String option;
         private Integer sortDirection;
         private int width;
@@ -34,6 +35,16 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
         public String getId()
         {
             return id;
+        }
+
+        public String getLabel()
+        {
+            return label;
+        }
+
+        public void setLabel(String label)
+        {
+            this.label = label;
         }
 
         public String getOption()
