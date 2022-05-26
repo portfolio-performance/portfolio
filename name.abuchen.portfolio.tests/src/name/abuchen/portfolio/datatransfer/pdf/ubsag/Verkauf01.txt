@@ -28,7 +28,7 @@ Abrechnungsdetails Bewertet in  CHF
 Transaktionswert USD 11'116.75 10'286
 Marchzinsen
 Diverse USD -16.68
-Courtage USD -70.03
+Courtage USD -50.03
 Abrechnungsbetrag USD 11'050.04
 in Kontowährung
 Realisierter Erfolg

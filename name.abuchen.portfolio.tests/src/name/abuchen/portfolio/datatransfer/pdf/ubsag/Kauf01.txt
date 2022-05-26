@@ -28,7 +28,7 @@ Abrechnungsdetails Bewertet in  CHF
 Transaktionswert USD 4'890.60 4'532
 Marchzinsen
 Diverse USD -7.34
-Courtage USD -37.01
+Courtage USD -22.01
 Abrechnungsbetrag USD -4'919.95
 in Kontowährung
 Angezeigt in UBS e-banking am 01.04.2022, 16:06:11 BST Seite 1/1
