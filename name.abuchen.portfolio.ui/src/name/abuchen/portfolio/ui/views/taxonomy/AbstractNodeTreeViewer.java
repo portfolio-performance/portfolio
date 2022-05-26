@@ -375,7 +375,7 @@ import name.abuchen.portfolio.util.TextUtil;
 
         addColumns(support);
 
-        support.createColumns();
+        support.createColumns(true);
 
         nodeViewer.getTree().setHeaderVisible(true);
         nodeViewer.getTree().setLinesVisible(true);

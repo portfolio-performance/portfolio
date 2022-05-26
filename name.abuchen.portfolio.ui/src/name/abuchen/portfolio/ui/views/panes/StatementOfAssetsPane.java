@@ -52,7 +52,7 @@ public class StatementOfAssetsPane implements InformationPanePage
     {
         viewer = view.make(StatementOfAssetsViewer.class);
 
-        Control control = viewer.createControl(parent);
+        Control control = viewer.createControl(parent, true);
 
         new ContextMenu(viewer.getTableViewer().getControl(), manager -> viewer.hookMenuListener(manager, view)).hook();
 

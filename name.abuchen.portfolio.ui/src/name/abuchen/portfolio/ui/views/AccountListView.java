@@ -252,7 +252,7 @@ public class AccountListView extends AbstractFinanceView implements Modification
 
         addAttributeColumns(accountColumns);
 
-        accountColumns.createColumns();
+        accountColumns.createColumns(true);
 
         accounts.getTable().setHeaderVisible(true);
         accounts.getTable().setLinesVisible(true);

@@ -364,7 +364,7 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
         ColumnViewerSorter.create(e -> ((AccountTransaction) e).getSource()).attachTo(column); // $NON-NLS-1$
         transactionsColumns.addColumn(column);
 
-        transactionsColumns.createColumns();
+        transactionsColumns.createColumns(true);
 
         transactions.getTable().setHeaderVisible(true);
         transactions.getTable().setLinesVisible(true);

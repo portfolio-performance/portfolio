@@ -77,6 +77,7 @@ import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
 import name.abuchen.portfolio.ui.util.BookmarkMenu;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ConfirmActionWithSelection;
+import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.viewers.BooleanEditingSupport;
@@ -212,7 +213,7 @@ public final class SecuritiesTable implements ModificationListener
         addQuoteFeedColumns();
         addDataQualityColumns();
 
-        support.createColumns();
+        support.createColumns(true);
 
         securities.getTable().setHeaderVisible(true);
         securities.getTable().setLinesVisible(true);
@@ -868,6 +869,7 @@ public final class SecuritiesTable implements ModificationListener
 
         Menu contextMenu = menuMgr.createContextMenu(securities.getTable());
         securities.getTable().setMenu(contextMenu);
+        securities.getTable().setData(ContextMenu.DEFAULT_MENU, contextMenu);
 
         securities.getTable().addDisposeListener(e -> {
             if (contextMenu != null)

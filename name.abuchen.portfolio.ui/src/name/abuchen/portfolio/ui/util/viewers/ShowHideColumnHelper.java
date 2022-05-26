@@ -27,7 +27,10 @@ import org.eclipse.jface.viewers.ViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableColumn;
@@ -40,6 +43,9 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.ConfigurationStore;
 import name.abuchen.portfolio.ui.util.ConfigurationStore.ConfigurationStoreOwner;
+import name.abuchen.portfolio.ui.util.ContextMenu;
+import name.abuchen.portfolio.ui.util.LabelOnly;
+import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.util.TextUtil;
 
 public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOwner
@@ -64,19 +70,21 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
         abstract int getColumnCount();
 
-        abstract Widget[] getColumns();
+        abstract int getHeaderHeight();
 
-        abstract Widget getColumn(int index);
+        abstract Item[] getColumns();
 
-        abstract Widget getSortColumn();
+        abstract Item getColumn(int index);
 
-        abstract Widget getColumnWidget(ViewerColumn column);
+        abstract Item getSortColumn();
+
+        abstract Item getColumnWidget(ViewerColumn column);
 
         abstract int[] getColumnOrder();
 
         abstract int getSortDirection();
 
-        abstract int getWidth(Widget col);
+        abstract int getWidth(Item col);
 
         abstract void create(Column column, Object option, Integer direction, int width);
 
@@ -170,25 +178,31 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
         }
 
         @Override
-        public Widget[] getColumns()
+        int getHeaderHeight()
+        {
+            return table.getTable().getHeaderHeight();
+        }
+
+        @Override
+        public Item[] getColumns()
         {
             return table.getTable().getColumns();
         }
 
         @Override
-        public Widget getColumn(int index)
+        public Item getColumn(int index)
         {
             return table.getTable().getColumn(index);
         }
 
         @Override
-        public Widget getSortColumn()
+        public Item getSortColumn()
         {
             return table.getTable().getSortColumn();
         }
 
         @Override
-        Widget getColumnWidget(ViewerColumn column)
+        Item getColumnWidget(ViewerColumn column)
         {
             return ((TableViewerColumn) column).getColumn();
         }
@@ -206,7 +220,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
         }
 
         @Override
-        public int getWidth(Widget col)
+        public int getWidth(Item col)
         {
             return ((TableColumn) col).getWidth();
         }
@@ -296,25 +310,31 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
         }
 
         @Override
-        public Widget[] getColumns()
+        int getHeaderHeight()
+        {
+            return tree.getTree().getHeaderHeight();
+        }
+
+        @Override
+        public Item[] getColumns()
         {
             return tree.getTree().getColumns();
         }
 
         @Override
-        public Widget getColumn(int index)
+        public Item getColumn(int index)
         {
             return tree.getTree().getColumn(index);
         }
 
         @Override
-        public Widget getSortColumn()
+        public Item getSortColumn()
         {
             return tree.getTree().getSortColumn();
         }
 
         @Override
-        Widget getColumnWidget(ViewerColumn column)
+        Item getColumnWidget(ViewerColumn column)
         {
             return ((TreeViewerColumn) column).getColumn();
         }
@@ -332,7 +352,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
         }
 
         @Override
-        public int getWidth(Widget col)
+        public int getWidth(Item col)
         {
             return ((TreeColumn) col).getWidth();
         }
@@ -410,6 +430,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
     private ViewerPolicy policy;
     private Menu contextMenu;
+    private int selectedColumnIndex = -1;
 
     public ShowHideColumnHelper(String identifier, IPreferenceStore preferences, TreeViewer viewer,
                     TreeColumnLayout layout)
@@ -491,7 +512,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
     }
 
     @Override
-    public void menuAboutToShow(final IMenuManager manager)
+    public void menuAboutToShow(final IMenuManager manager) // NOSONAR
     {
         final Map<Column, List<Object>> visible = new HashMap<>();
         for (Widget col : policy.getColumns())
@@ -612,28 +633,33 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
     public void destroyColumnWithOption(Column column, Object option)
     {
-        for (Widget widget : policy.getColumns())
+        for (Item widget : policy.getColumns())
         {
             if (column.equals(widget.getData(Column.class.getName())) //
                             && (option == null || option.equals(widget.getData(OPTIONS_KEY))))
             {
-                try
-                {
-                    policy.setRedraw(false);
-
-                    Widget sortColumn = policy.getSortColumn();
-                    if (widget.equals(sortColumn))
-                        policy.getViewer().setComparator(null);
-
-                    widget.dispose();
-                }
-                finally
-                {
-                    policy.getViewer().refresh();
-                    policy.setRedraw(true);
-                }
+                destroyColumn(widget);
                 break;
             }
+        }
+    }
+
+    private void destroyColumn(Item viewerColumn)
+    {
+        try
+        {
+            policy.setRedraw(false);
+
+            Widget sortColumn = policy.getSortColumn();
+            if (viewerColumn.equals(sortColumn))
+                policy.getViewer().setComparator(null);
+
+            viewerColumn.dispose();
+        }
+        finally
+        {
+            policy.getViewer().refresh();
+            policy.setRedraw(true);
         }
     }
 
@@ -668,7 +694,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
         {
             policy.setRedraw(false);
 
-            for (Column column : columns)
+            for (Column column : columns) // NOSONAR
             {
                 if (!group.equals(column.getGroupLabel()))
                     continue;
@@ -725,12 +751,57 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
     public void createColumns()
     {
+        createColumns(false);
+    }
+
+    public void createColumns(boolean isEditable) // NOSONAR
+    {
         createFromColumnConfig();
 
         if (policy.getColumnCount() == 0)
         {
-            columns.stream().filter(c -> c.isVisible())
+            columns.stream().filter(Column::isVisible)
                             .forEach(c -> policy.create(c, null, c.getDefaultSortDirection(), c.getDefaultWidth()));
+        }
+
+        if (isEditable)
+        {
+            ContextMenu headerMenu = new ContextMenu(policy.getViewer().getControl(), this::headerMenuAboutToShow);
+
+            policy.getViewer().getControl().addListener(SWT.MenuDetect, event -> {
+                Control control = policy.getViewer().getControl();
+                Menu tableMenu = (Menu) control.getData(ContextMenu.DEFAULT_MENU);
+                Point pt = event.display.map(null, control, new Point(event.x, event.y));
+                Rectangle clientArea = ((Composite) control).getClientArea();
+                boolean isHeader = clientArea.y <= pt.y && pt.y < (clientArea.y + policy.getHeaderHeight());
+
+                if (isHeader)
+                {
+                    // remember the current column in selectedColumnIndex for
+                    // later
+                    // use in the context menu
+
+                    int xOffset = pt.x;
+                    int columnIndex = 0;
+                    int[] order = policy.getColumnOrder();
+                    int columnCount = policy.getColumnCount();
+
+                    while ((columnIndex < columnCount)
+                                    && (xOffset > policy.getWidth(policy.getColumn(order[columnIndex]))))
+                    {
+                        xOffset -= policy.getWidth(policy.getColumn(order[columnIndex]));
+                        columnIndex++;
+                    }
+
+                    selectedColumnIndex = (columnIndex < columnCount) ? order[columnIndex] : -1;
+
+                    control.setMenu(headerMenu.getMenu());
+                }
+                else
+                {
+                    control.setMenu(tableMenu);
+                }
+            });
         }
     }
 
@@ -842,7 +913,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
         for (int index : policy.getColumnOrder())
         {
-            Widget col = policy.getColumn(index);
+            Item col = policy.getColumn(index);
             Column column = (Column) col.getData(Column.class.getName());
 
             ColumnConfiguration.Item item = new ColumnConfiguration.Item(column.getId());
@@ -874,8 +945,30 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
         else
             createFromColumnConfig(data);
 
-        listeners.stream().forEach(l -> l.onConfigurationPicked());
+        listeners.stream().forEach(Listener::onConfigurationPicked);
 
         policy.getViewer().refresh();
+    }
+
+    private void headerMenuAboutToShow(IMenuManager manager)
+    {
+        if (selectedColumnIndex == -1)
+            return;
+
+        Item widget = policy.getColumn(selectedColumnIndex);
+        if (widget == null)
+            return;
+
+        Column column = (Column) widget.getData(Column.class.getName());
+        if (column == null)
+            return;
+
+        manager.add(new LabelOnly(widget.getText()));
+
+        if (column.isRemovable())
+        {
+            manager.add(new Separator());
+            manager.add(new SimpleAction(Messages.MenuHideColumn, a -> destroyColumn(widget)));
+        }
     }
 }

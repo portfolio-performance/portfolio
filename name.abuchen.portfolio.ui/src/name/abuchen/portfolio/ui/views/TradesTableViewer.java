@@ -75,7 +75,7 @@ public class TradesTableViewer
                         SecuritiesPerformanceView.class.getSimpleName() + "@trades@" + viewMode.name(), //$NON-NLS-1$
                         view.getPreferenceStore(), trades, layout);
         createTradesColumns(support, viewMode);
-        support.createColumns();
+        support.createColumns(true);
 
         trades.getTable().setHeaderVisible(true);
         trades.getTable().setLinesVisible(true);

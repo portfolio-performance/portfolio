@@ -146,7 +146,7 @@ public class InvestmentPlanListView extends AbstractFinanceView implements Modif
         addColumns(planColumns);
         addAttributeColumns(planColumns);
 
-        planColumns.createColumns();
+        planColumns.createColumns(true);
         plans.getTable().setHeaderVisible(true);
         plans.getTable().setLinesVisible(true);
         plans.setContentProvider(ArrayContentProvider.getInstance());

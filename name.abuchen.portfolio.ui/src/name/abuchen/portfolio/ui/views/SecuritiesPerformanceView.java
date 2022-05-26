@@ -270,7 +270,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         createRiskColumns();
         createAdditionalColumns();
 
-        recordColumns.createColumns();
+        recordColumns.createColumns(true);
 
         records.getTable().setHeaderVisible(true);
         records.getTable().setLinesVisible(true);

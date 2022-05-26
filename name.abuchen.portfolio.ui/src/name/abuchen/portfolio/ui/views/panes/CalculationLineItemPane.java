@@ -74,7 +74,7 @@ public class CalculationLineItemPane implements InformationPanePage
                         layout);
 
         createTransactionColumns(support);
-        support.createColumns();
+        support.createColumns(true);
 
         transactions.getTable().setHeaderVisible(true);
         transactions.getTable().setLinesVisible(true);

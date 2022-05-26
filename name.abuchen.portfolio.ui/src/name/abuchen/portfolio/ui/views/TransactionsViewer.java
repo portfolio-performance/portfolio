@@ -41,6 +41,7 @@ import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.selection.SelectionService;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
@@ -162,7 +163,7 @@ public final class TransactionsViewer implements ModificationListener
         support = new ShowHideColumnHelper(identifier, owner.getPreferenceStore(), tableViewer, layout);
 
         addColumns();
-        support.createColumns();
+        support.createColumns(true);
 
         tableViewer.getTable().setHeaderVisible(true);
         tableViewer.getTable().setLinesVisible(true);
@@ -470,6 +471,7 @@ public final class TransactionsViewer implements ModificationListener
 
         contextMenu = menuMgr.createContextMenu(parent.getShell());
         tableViewer.getTable().setMenu(contextMenu);
+        tableViewer.getTable().setData(ContextMenu.DEFAULT_MENU, contextMenu);
 
         tableViewer.getTable().addDisposeListener(e -> TransactionsViewer.this.widgetDisposed());
     }

@@ -271,9 +271,9 @@ public class StatementOfAssetsViewer
             assets.refresh();
     }
 
-    public Control createControl(Composite parent)
+    public Control createControl(Composite parent, boolean isConfigurable)
     {
-        Control control = createColumns(parent);
+        Control control = createColumns(parent, isConfigurable);
 
         this.assets.getTable().addDisposeListener(e -> StatementOfAssetsViewer.this.widgetDisposed());
 
@@ -301,7 +301,7 @@ public class StatementOfAssetsViewer
             this.taxonomy = client.getTaxonomies().get(0);
     }
 
-    private Control createColumns(Composite parent) // NOSONAR
+    private Control createColumns(Composite parent, boolean isConfigurable) // NOSONAR
     {
         Composite container = new Composite(parent, SWT.NONE);
         TableColumnLayout layout = new TableColumnLayout();
@@ -537,7 +537,7 @@ public class StatementOfAssetsViewer
         addAttributeColumns();
         addCurrencyColumns();
 
-        support.createColumns();
+        support.createColumns(isConfigurable);
 
         assets.getTable().setHeaderVisible(true);
         assets.getTable().setLinesVisible(true);

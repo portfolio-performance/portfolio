@@ -202,7 +202,7 @@ public class StatementOfAssetsView extends AbstractFinanceView
     protected Control createBody(Composite parent)
     {
         assetViewer = make(StatementOfAssetsViewer.class);
-        Control control = assetViewer.createControl(parent);
+        Control control = assetViewer.createControl(parent, true);
         assetViewer.setToolBarManager(getViewToolBarManager());
 
         updateTitle(getDefaultTitle());
