@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.function.Supplier;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -30,7 +31,7 @@ public class QuoteToSmaDeltaColumnHelper
     {
     }
 
-    public static ColumnViewerSorter createColumns(ShowHideColumnHelper support)
+    public static ColumnViewerSorter createColumns(ShowHideColumnHelper support, Supplier<LocalDate> dateProvider)
     {
         List<Integer> smaIntervals = Arrays.asList(5, 20, 30, 38, 50, 90, 100, 200);
         BiFunction<Object, Integer, Double> valueProvider = (element, option) -> {
@@ -39,7 +40,7 @@ public class QuoteToSmaDeltaColumnHelper
             if (s == null)
                 return null;
             
-            List<SecurityPrice> prices = s.getLatestNPricesOfDate(LocalDate.now(), option);
+            List<SecurityPrice> prices = s.getLatestNPricesOfDate(dateProvider.get(), option);
             if(prices.size() < option || prices.isEmpty())
                 return null;
             

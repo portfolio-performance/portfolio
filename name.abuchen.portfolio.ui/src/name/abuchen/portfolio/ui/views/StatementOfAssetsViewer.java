@@ -576,7 +576,7 @@ public class StatementOfAssetsViewer
         addTaxonomyColumns();
         addAttributeColumns();
         addCurrencyColumns();
-        QuoteToSmaDeltaColumnHelper.createColumns(support).wrap(ElementComparator::new);
+        QuoteToSmaDeltaColumnHelper.createColumns(support, () -> model.getDate()).wrap(ElementComparator::new);
 
         support.createColumns(isConfigurable);
 

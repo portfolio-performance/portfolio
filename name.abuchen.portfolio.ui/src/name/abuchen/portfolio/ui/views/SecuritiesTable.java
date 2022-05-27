@@ -202,7 +202,7 @@ public final class SecuritiesTable implements ModificationListener
         addColumnDateOfLatestPrice();
         addColumnDateOfLatestHistoricalPrice();
         addQuoteDeltaColumn();
-        QuoteToSmaDeltaColumnHelper.createColumns(support);
+        QuoteToSmaDeltaColumnHelper.createColumns(support, LocalDate::now);
 
         for (Taxonomy taxonomy : getClient().getTaxonomies())
         {
