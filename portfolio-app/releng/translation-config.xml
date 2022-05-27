@@ -43,6 +43,10 @@
 			<excludes>
 				<string>AboutText</string>
 				<string>AboutTextContributions</string>
+				<string>AboutTextDevelopers</string>
+				<string>AboutTextOtherSoftware</string>
+				<string>AboutTextTranslationDevelopers</string>
+				<string>AboutTextDeveloped</string>
 			</excludes>
 		</artifact>
 		<artifact>
@@ -77,7 +81,7 @@
 		</artifact>
 		<artifact>
 			<context>taxonomy.security-type</context>
-			<path>name.abuchen.portfolio/META-INF/taxonomy</path>
+			<path>name.abuchen.portfolio/src/name/abuchen/portfolio/model/taxonomy_templates</path>
 			<filename>security-type</filename>
 			<excludes>
 				<string>colors</string>
@@ -91,7 +95,7 @@
 		</artifact>
 		<artifact>
 			<context>taxonomy.kommer</context>
-			<path>name.abuchen.portfolio/META-INF/taxonomy</path>
+			<path>name.abuchen.portfolio/src/name/abuchen/portfolio/model/taxonomy_templates</path>
 			<filename>kommer</filename>
 			<excludes>
 				<string>colors</string>
@@ -105,7 +109,7 @@
 		</artifact>
 		<artifact>
 			<context>taxonomy.asset-classes</context>
-			<path>name.abuchen.portfolio/META-INF/taxonomy</path>
+			<path>name.abuchen.portfolio/src/name/abuchen/portfolio/model/taxonomy_templates</path>
 			<filename>assetclasses</filename>
 			<excludes>
 				<string>colors</string>
@@ -119,7 +123,7 @@
 		</artifact>
 		<artifact>
 			<context>taxonomy.regions</context>
-			<path>name.abuchen.portfolio/META-INF/taxonomy</path>
+			<path>name.abuchen.portfolio/src/name/abuchen/portfolio/model/taxonomy_templates</path>
 			<filename>regions</filename>
 			<excludes>
 				<string>colors</string>
@@ -133,7 +137,7 @@
 		</artifact>
 		<artifact>
 			<context>taxonomy.regions-msci</context>
-			<path>name.abuchen.portfolio/META-INF/taxonomy</path>
+			<path>name.abuchen.portfolio/src/name/abuchen/portfolio/model/taxonomy_templates</path>
 			<filename>regions-msci</filename>
 			<excludes>
 				<string>colors</string>
