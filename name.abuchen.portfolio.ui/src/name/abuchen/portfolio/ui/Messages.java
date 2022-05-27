@@ -770,6 +770,8 @@ public class Messages extends NLS
     public static String LabelToolTipDividendDetailsGross;
     public static String LabelToolTipInvestmentDetails;
     public static String LabelToolTipTransactionSummary;
+    public static String LabelTotalsAtTheBottom;
+    public static String LabelTotalsAtTheTop;
     public static String LabelTotalSum;
     public static String LabelTotalValuePercent;
     public static String LabelTrades;
