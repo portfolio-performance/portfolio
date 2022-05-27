@@ -39,13 +39,13 @@ public class QuoteToSmaDeltaColumnHelper
             Security s = Adaptor.adapt(Security.class, element);
             if (s == null)
                 return null;
-            
+
             List<SecurityPrice> prices = s.getLatestNPricesOfDate(dateProvider.get(), option);
-            if(prices.size() < option || prices.isEmpty())
+            if (prices.size() < option || prices.isEmpty())
                 return null;
-            
+
             Double sma = SimpleMovingAverage.calculateSma(prices);
-            
+
             return prices.get(prices.size() - 1).getValue() / Values.Quote.divider() / sma - 1;
         };
 
@@ -68,7 +68,7 @@ public class QuoteToSmaDeltaColumnHelper
                 return 1;
 
             return Double.compare(v1.doubleValue(), v2.doubleValue());
-        }); 
+        });
         column.setSorter(sorter);
 
         support.addColumn(column);
