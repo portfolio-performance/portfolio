@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.columns;
 
 import java.text.MessageFormat;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiFunction;
@@ -13,6 +14,7 @@ import org.eclipse.swt.widgets.Shell;
 import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.Colors;
@@ -20,6 +22,7 @@ import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.OptionLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.views.SimpleMovingAverage;
 
 public class QuoteToSmaDeltaColumnHelper
 {
@@ -36,17 +39,13 @@ public class QuoteToSmaDeltaColumnHelper
             if (s == null)
                 return null;
             
-            List<SecurityPrice> prices = s.getPricesIncludingLatest();
-
-            if (prices == null || prices.size() < option)
+            List<SecurityPrice> prices = s.getLatestNPricesOfDate(LocalDate.now(), option);
+            if(prices.size() < option || prices.isEmpty())
                 return null;
-
-            List<SecurityPrice> lastXprices = prices.subList(prices.size() - option, prices.size());
-            long sum = lastXprices.stream().mapToLong(SecurityPrice::getValue).sum();
-
-            double smaX = (sum / option);
-            long latestPrice = prices.get(prices.size() - 1).getValue();
-            return latestPrice / smaX - 1;
+            
+            Double sma = SimpleMovingAverage.calculateSma(prices);
+            
+            return prices.get(prices.size() - 1).getValue() / Values.Quote.divider() / sma - 1;
         };
 
         Column column = new Column("delta-to-sma", Messages.ColumnDeltaToSmaX, SWT.RIGHT, 85); //$NON-NLS-1$
