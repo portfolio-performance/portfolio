@@ -762,7 +762,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
     public void createColumns(boolean isEditable) // NOSONAR
     {
-        createFromColumnConfig();
+        createFromColumnConfig(store != null ? store.getActive() : preferences.getString(identifier));
 
         if (policy.getColumnCount() == 0)
         {
@@ -809,30 +809,6 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
                 }
             });
         }
-    }
-
-    private void createFromColumnConfig()
-    {
-        // if a configuration store is used, then migrate the preferences into
-        // the store. This is done once. Unfortunately, if the user then does
-        // not save the file subsequently, the configuration is lost (e.g. the
-        // order and size of the displayed columns). Therefore the key is saved
-        // for manual recovery.
-
-        // if no configuration store is used (i.e. column configuration cannot
-        // be saved), we continue to use the preferences to store configuration
-
-        String configInPreferences = preferences.getString(identifier);
-
-        if (store != null && !configInPreferences.isEmpty())
-        {
-            preferences.setToDefault(identifier);
-            preferences.setValue("__backup__" + identifier, configInPreferences); //$NON-NLS-1$
-            store.insertMigratedConfiguration(configInPreferences);
-        }
-
-        String config = store != null ? store.getActive() : configInPreferences;
-        createFromColumnConfig(config);
     }
 
     private void createFromColumnConfig(String config)
