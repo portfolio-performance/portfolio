@@ -384,7 +384,7 @@ public final class Security implements Attributable, InvestmentVehicle
             fromIndex = 0; // always start with first element if fromIndex is
                            // out of bounds
 
-        return allPrices.subList(fromIndex, index + 1);
+        return new ArrayList<>(allPrices.subList(fromIndex, index + 1));
     }
 
     /**
