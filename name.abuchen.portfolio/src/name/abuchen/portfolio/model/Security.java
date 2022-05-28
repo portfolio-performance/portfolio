@@ -364,7 +364,7 @@ public final class Security implements Attributable, InvestmentVehicle
      * number of prices (or less if there are not enough prices) from requested
      * Date.
      */
-    public List<SecurityPrice> getLatestNPricesOfDate(LocalDate dateOfLastPrice, Integer numberOfPrices)
+    public List<SecurityPrice> getLatestNPricesOfDate(LocalDate dateOfLastPrice, int numberOfPrices)
     {
         List<SecurityPrice> allPrices = getPricesIncludingLatest();
 
