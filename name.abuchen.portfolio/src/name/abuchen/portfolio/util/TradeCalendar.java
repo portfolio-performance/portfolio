@@ -5,7 +5,6 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +16,7 @@ public class TradeCalendar implements Comparable<TradeCalendar>
 {
     public static final String EMPTY_CODE = "empty"; //$NON-NLS-1$
 
-    private static final Set<DayOfWeek> WEEKEND = EnumSet.of(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY);
+    private final Set<DayOfWeek> weekend;
 
     private final String code;
     private final String description;
@@ -36,10 +35,11 @@ public class TradeCalendar implements Comparable<TradeCalendar>
 
     };
 
-    /* package */ TradeCalendar(String code, String description)
+    /* package */ TradeCalendar(String code, String description, Set<DayOfWeek> weekend)
     {
         this.code = Objects.requireNonNull(code);
         this.description = Objects.requireNonNull(description);
+        this.weekend = Objects.requireNonNull(weekend);
     }
 
     /* package */ void add(HolidayType type)
@@ -68,9 +68,7 @@ public class TradeCalendar implements Comparable<TradeCalendar>
      */
     public boolean isHoliday(LocalDate date)
     {
-        if (EMPTY_CODE.equals(getCode()))
-            return false;
-        if (WEEKEND.contains(date.getDayOfWeek()))
+        if (weekend.contains(date.getDayOfWeek()))
             return true;
 
         return cache.get(date.getYear()).containsKey(date);

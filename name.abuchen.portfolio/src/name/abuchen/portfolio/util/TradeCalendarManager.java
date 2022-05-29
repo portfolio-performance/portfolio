@@ -56,8 +56,10 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import name.abuchen.portfolio.Messages;
@@ -71,11 +73,13 @@ public class TradeCalendarManager
     public static final String TARGET2_CALENDAR_CODE = "TARGET2"; //$NON-NLS-1$
     public static final String FIRST_OF_THE_MONTH_CODE = "first-of-the-month"; //$NON-NLS-1$
 
+    private static final Set<DayOfWeek> STANDARD_WEEKEND = EnumSet.of(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY);
+
     private static final Map<String, TradeCalendar> CACHE = new HashMap<>();
 
     static
     {
-        TradeCalendar tc = new TradeCalendar("default", Messages.LabelTradeCalendarDefault); //$NON-NLS-1$
+        TradeCalendar tc = new TradeCalendar("default", Messages.LabelTradeCalendarDefault, STANDARD_WEEKEND); //$NON-NLS-1$
         tc.add(fixed(NEW_YEAR, Month.JANUARY, 1));
         tc.add(easter(GOOD_FRIDAY, -2));
         tc.add(easter(EASTER_MONDAY, 1));
@@ -85,7 +89,7 @@ public class TradeCalendarManager
         tc.add(fixed(SECOND_CHRISTMAS_DAY, Month.DECEMBER, 26));
         CACHE.put(tc.getCode(), tc);
 
-        tc = new TradeCalendar("de", Messages.LabelTradeCalendarGermany); //$NON-NLS-1$
+        tc = new TradeCalendar("de", Messages.LabelTradeCalendarGermany, STANDARD_WEEKEND); //$NON-NLS-1$
         tc.add(fixed(NEW_YEAR, Month.JANUARY, 1));
         tc.add(easter(GOOD_FRIDAY, -2));
         tc.add(easter(EASTER_MONDAY, 1));
@@ -106,7 +110,7 @@ public class TradeCalendarManager
         tc.add(fixed(NEW_YEARS_EVE, Month.DECEMBER, 31));
         CACHE.put(tc.getCode(), tc);
 
-        tc = new TradeCalendar("nyse", Messages.LabelTradeCalendarNYSE); //$NON-NLS-1$
+        tc = new TradeCalendar("nyse", Messages.LabelTradeCalendarNYSE, STANDARD_WEEKEND); //$NON-NLS-1$
         tc.add(fixed(NEW_YEAR, Month.JANUARY, 1).moveIf(DayOfWeek.SUNDAY, 1));
         tc.add(weekday(MARTIN_LUTHER_KING, 3, DayOfWeek.MONDAY, Month.JANUARY).validFrom(1998));
         tc.add(weekday(WASHINGTONS_BIRTHDAY, 3, DayOfWeek.MONDAY, Month.FEBRUARY));
@@ -129,7 +133,7 @@ public class TradeCalendarManager
         CACHE.put(tc.getCode(), tc);
 
         // see https://www.gov.uk/bank-holidays
-        tc = new TradeCalendar("lse", Messages.LabelTradeCalendarLSE); //$NON-NLS-1$
+        tc = new TradeCalendar("lse", Messages.LabelTradeCalendarLSE, STANDARD_WEEKEND); //$NON-NLS-1$
         tc.add(fixed(NEW_YEAR, Month.JANUARY, 1).moveIf(DayOfWeek.SATURDAY, 2).moveIf(DayOfWeek.SUNDAY, 1));
         tc.add(easter(GOOD_FRIDAY, -2));
         tc.add(easter(EASTER_MONDAY, 1));
@@ -156,7 +160,7 @@ public class TradeCalendarManager
         tc.add(fixed(ROYAL_JUBILEE, Month.JUNE, 3).onlyIn(2022)); // Platinum Jubilee of Elizabeth II
         CACHE.put(tc.getCode(), tc);
 
-        tc = new TradeCalendar("euronext", Messages.LabelTradeCalendarEuronext); //$NON-NLS-1$
+        tc = new TradeCalendar("euronext", Messages.LabelTradeCalendarEuronext, STANDARD_WEEKEND); //$NON-NLS-1$
         tc.add(fixed(NEW_YEAR, Month.JANUARY, 1));
         tc.add(easter(GOOD_FRIDAY, -2));
         tc.add(easter(EASTER_MONDAY, 1));
@@ -167,7 +171,7 @@ public class TradeCalendarManager
 
         // see six trading days on their official website:
         // https://six-group.com/exchanges/exchange_traded_products/trading/trading_and_settlement_calendar_de.html
-        tc = new TradeCalendar("six", Messages.LabelTradeCalendarSix); //$NON-NLS-1$
+        tc = new TradeCalendar("six", Messages.LabelTradeCalendarSix, STANDARD_WEEKEND); //$NON-NLS-1$
         tc.add(fixed(NEW_YEAR, Month.JANUARY, 1));
         tc.add(fixed(BERCHTOLDSTAG, Month.JANUARY, 2));
         tc.add(easter(GOOD_FRIDAY, -2));
@@ -184,7 +188,7 @@ public class TradeCalendarManager
 
         // see Italian Stock Exchange trading days on their official website:
         // https://www.borsaitaliana.it/borsaitaliana/calendario-e-orari-di-negoziazione/calendario-borsa-orari-di-negoziazione.en.htm
-        tc = new TradeCalendar("ise", Messages.LabelTradeCalendarISE); //$NON-NLS-1$
+        tc = new TradeCalendar("ise", Messages.LabelTradeCalendarISE, STANDARD_WEEKEND); //$NON-NLS-1$
         tc.add(fixed(NEW_YEAR, Month.JANUARY, 1));
         tc.add(easter(GOOD_FRIDAY, -2));
         tc.add(easter(EASTER_MONDAY, 1));
@@ -198,7 +202,7 @@ public class TradeCalendarManager
 
         // see Vienna Stock Exchange trading days on their official website:
         // https://www.wienerborse.at/handel/handelsinformationen/handelskalender/
-        tc = new TradeCalendar("vse", Messages.LabelTradeCalendarVSE); //$NON-NLS-1$
+        tc = new TradeCalendar("vse", Messages.LabelTradeCalendarVSE, STANDARD_WEEKEND); //$NON-NLS-1$
         tc.add(fixed(NEW_YEAR, Month.JANUARY, 1));
         tc.add(easter(GOOD_FRIDAY, -2));
         tc.add(easter(EASTER_MONDAY, 1));
@@ -215,7 +219,7 @@ public class TradeCalendarManager
         // https://www.moex.com/s371
         // https://de.wikipedia.org/wiki/Feiertage_in_Russland
         // Die offizielle Regelung in Russland lautet: Wenn ein gesetzlicher Feiertag auf einen Samstag oder Sonntag fällt, wird der Feiertag auf einen Arbeitstag verlegt.
-        tc = new TradeCalendar("MICEX-RTS", Messages.LabelTradeCalendarMICEXRTS); //$NON-NLS-1$
+        tc = new TradeCalendar("MICEX-RTS", Messages.LabelTradeCalendarMICEXRTS, STANDARD_WEEKEND); //$NON-NLS-1$
         tc.add(fixed(NEW_YEAR, Month.JANUARY, 1));
         tc.add(fixed(NEW_YEAR_HOLIDAY, Month.JANUARY, 2));
         tc.add(fixed(NEW_YEAR_HOLIDAY, Month.JANUARY, 3));
@@ -232,7 +236,7 @@ public class TradeCalendarManager
 
         // see Toronto Stock Exchange trading days on their official website:
         // https://www.tsx.com/trading/calendars-and-trading-hours/calendar
-        tc = new TradeCalendar("tsx", Messages.LabelTradeCalendarTSX); //$NON-NLS-1$
+        tc = new TradeCalendar("tsx", Messages.LabelTradeCalendarTSX, STANDARD_WEEKEND); //$NON-NLS-1$
         tc.add(fixed(NEW_YEAR, Month.JANUARY, 1).moveIf(DayOfWeek.SATURDAY, 2).moveIf(DayOfWeek.SUNDAY, 1));
         tc.add(weekday(FAMILY_DAY, 3, DayOfWeek.MONDAY, Month.FEBRUARY));
         tc.add(easter(GOOD_FRIDAY, -2));
@@ -247,7 +251,7 @@ public class TradeCalendarManager
 
         // TARGET2 (banking day in euro zone)
         // see https://www.ecb.europa.eu/press/pr/date/2000/html/pr001214_4.en.html
-        tc = new TradeCalendar(TARGET2_CALENDAR_CODE, Messages.LabelTradeCalendarTARGET2);
+        tc = new TradeCalendar(TARGET2_CALENDAR_CODE, Messages.LabelTradeCalendarTARGET2, STANDARD_WEEKEND);
         tc.add(fixed(NEW_YEAR, Month.JANUARY, 1));
         tc.add(easter(GOOD_FRIDAY, -2));
         tc.add(easter(EASTER_MONDAY, 1));
@@ -256,7 +260,7 @@ public class TradeCalendarManager
         tc.add(fixed(SECOND_CHRISTMAS_DAY, Month.DECEMBER, 26));
         CACHE.put(tc.getCode(), tc);
 
-        tc = new TradeCalendar(FIRST_OF_THE_MONTH_CODE,  Messages.LabelTradeCalendarFirstOfTheMonth)
+        tc = new TradeCalendar(FIRST_OF_THE_MONTH_CODE, Messages.LabelTradeCalendarFirstOfTheMonth, EnumSet.noneOf(DayOfWeek.class))
         {
             @Override
             /* package */ void add(HolidayType type)
@@ -279,7 +283,7 @@ public class TradeCalendarManager
         };
         CACHE.put(tc.getCode(), tc);
 
-        tc = new TradeCalendar(TradeCalendar.EMPTY_CODE, Messages.LabelTradeCalendarEmpty);
+        tc = new TradeCalendar(TradeCalendar.EMPTY_CODE, Messages.LabelTradeCalendarEmpty, EnumSet.noneOf(DayOfWeek.class)); //$NON-NLS-1$
         CACHE.put(tc.getCode(), tc);
 }
 
@@ -313,7 +317,7 @@ public class TradeCalendarManager
     {
         String description = MessageFormat.format(Messages.LabelTradeCalendarUseDefault,
                         getDefaultInstance().getDescription());
-        return new TradeCalendar("", description); //$NON-NLS-1$
+        return new TradeCalendar("", description, STANDARD_WEEKEND); //$NON-NLS-1$
     }
 
     public static TradeCalendar getDefaultInstance()
