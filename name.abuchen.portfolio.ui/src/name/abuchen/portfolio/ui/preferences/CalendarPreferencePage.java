@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.preferences;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -79,6 +80,8 @@ public class CalendarPreferencePage extends FieldEditorPreferencePage
         }
     }
 
+    private static final DateTimeFormatter shortDayOfWeekFormatter = DateTimeFormatter.ofPattern("E"); //$NON-NLS-1$
+
     private String createHolidayText(String calendarCode)
     {
         TradeCalendar calendar = TradeCalendarManager.getInstance(calendarCode);
@@ -91,7 +94,11 @@ public class CalendarPreferencePage extends FieldEditorPreferencePage
         StringBuilder buffer = new StringBuilder();
         holidays.stream().sorted((r, l) -> r.getDate().compareTo(l.getDate()))
                         .forEach(h -> buffer.append(Values.Date.format(h.getDate())).append(" ") //$NON-NLS-1$
-                                        .append(h.getLabel()).append("\n")); //$NON-NLS-1$
+                                        .append(h.getLabel())
+                                        .append(calendar.isWeekend(h.getDate()) ?
+                                            " (" + shortDayOfWeekFormatter.format(h.getDate()) + ")" //$NON-NLS-1$ //$NON-NLS-2$
+                                            : "") //$NON-NLS-1$
+                                        .append("\n")); //$NON-NLS-1$
         return buffer.toString();
     }
 }
