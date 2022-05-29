@@ -93,9 +93,9 @@ import name.abuchen.portfolio.ui.util.viewers.ReportingPeriodColumnOptions;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
+import name.abuchen.portfolio.ui.views.columns.DistanceFromMovingAverageColumn;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
-import name.abuchen.portfolio.ui.views.columns.QuoteToSmaDeltaColumnHelper;
 import name.abuchen.portfolio.ui.views.columns.SymbolColumn;
 import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
 import name.abuchen.portfolio.ui.views.columns.WknColumn;
@@ -202,7 +202,7 @@ public final class SecuritiesTable implements ModificationListener
         addColumnDateOfLatestPrice();
         addColumnDateOfLatestHistoricalPrice();
         addQuoteDeltaColumn();
-        QuoteToSmaDeltaColumnHelper.createColumns(support, LocalDate::now);
+        support.addColumn(new DistanceFromMovingAverageColumn(LocalDate::now));
 
         for (Taxonomy taxonomy : getClient().getTaxonomies())
         {

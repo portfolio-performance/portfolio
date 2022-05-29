@@ -16,8 +16,6 @@ import name.abuchen.portfolio.ui.views.SecuritiesChart.ChartInterval;
 
 public class SimpleMovingAverage
 {
-    public static final int MIN_AVERAGE_PRICES_PER_WEEK = 2;
-
     private int rangeSMA;
     private Security security;
     private ChartInterval interval;

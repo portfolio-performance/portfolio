@@ -103,11 +103,11 @@ import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
+import name.abuchen.portfolio.ui.views.columns.DistanceFromMovingAverageColumn;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
-import name.abuchen.portfolio.ui.views.columns.QuoteToSmaDeltaColumnHelper;
 import name.abuchen.portfolio.ui.views.columns.SymbolColumn;
 import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
 import name.abuchen.portfolio.ui.views.columns.WknColumn;
@@ -576,7 +576,10 @@ public class StatementOfAssetsViewer
         addTaxonomyColumns();
         addAttributeColumns();
         addCurrencyColumns();
-        QuoteToSmaDeltaColumnHelper.createColumns(support, () -> model.getDate()).wrap(ElementComparator::new);
+
+        column = new DistanceFromMovingAverageColumn(() -> model.getDate());
+        column.getSorter().wrap(ElementComparator::new);
+        support.addColumn(column);
 
         support.createColumns(isConfigurable);
 

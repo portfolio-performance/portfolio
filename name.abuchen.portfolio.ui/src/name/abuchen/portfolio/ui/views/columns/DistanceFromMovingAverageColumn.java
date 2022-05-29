@@ -22,62 +22,12 @@ import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.OptionLabelProvider;
-import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.views.SimpleMovingAverage;
 
-public class QuoteToSmaDeltaColumnHelper
+public class DistanceFromMovingAverageColumn extends Column
 {
-    private QuoteToSmaDeltaColumnHelper()
-    {
-    }
-
-    public static ColumnViewerSorter createColumns(ShowHideColumnHelper support, Supplier<LocalDate> dateProvider)
-    {
-        List<Integer> smaIntervals = Arrays.asList(5, 20, 30, 38, 50, 90, 100, 200);
-        BiFunction<Object, Integer, Double> valueProvider = (element, option) -> {
-
-            Security s = Adaptor.adapt(Security.class, element);
-            if (s == null)
-                return null;
-
-            List<SecurityPrice> prices = s.getLatestNPricesOfDate(dateProvider.get(), option);
-            if (prices.size() < option || prices.isEmpty())
-                return null;
-
-            Double sma = SimpleMovingAverage.calculateSma(prices);
-
-            return prices.get(prices.size() - 1).getValue() / Values.Quote.divider() / sma - 1;
-        };
-
-        Column column = new Column("delta-to-sma", Messages.ColumnDeltaToSmaX, SWT.RIGHT, 85); //$NON-NLS-1$
-        column.setOptions(new SmaPeriodColumnOption(Messages.ColumnDeltaToSmaX_Option, smaIntervals));
-        column.setDescription(Messages.ColumnDeltaToSmaX_Description);
-        column.setLabelProvider(new SmaPeriodColumnLabelProvider(valueProvider));
-        column.setVisible(false);
-        ColumnViewerSorter sorter = ColumnViewerSorter.create((o1, o2) -> {
-            Integer option = (Integer) ColumnViewerSorter.SortingContext.getColumnOption();
-
-            Double v1 = valueProvider.apply(o1, option);
-            Double v2 = valueProvider.apply(o2, option);
-
-            if (v1 == null && v2 == null)
-                return 0;
-            else if (v1 == null)
-                return -1;
-            else if (v2 == null)
-                return 1;
-
-            return Double.compare(v1.doubleValue(), v2.doubleValue());
-        });
-        column.setSorter(sorter);
-
-        support.addColumn(column);
-        return sorter;
-    }
-
     private static final class SmaPeriodColumnOption implements Column.Options<Integer>
     {
-
         private final List<Integer> options;
         private final String columnLabel;
 
@@ -183,5 +133,48 @@ public class QuoteToSmaDeltaColumnHelper
                 return Images.RED_ARROW.image();
             return null;
         }
+    }
+
+    public DistanceFromMovingAverageColumn(Supplier<LocalDate> dateProvider)
+    {
+        super("distance-from-sma", Messages.ColumnDistanceFromMovingAverage, SWT.RIGHT, 85); //$NON-NLS-1$
+
+        List<Integer> smaIntervals = Arrays.asList(5, 20, 30, 38, 50, 90, 100, 200);
+        BiFunction<Object, Integer, Double> valueProvider = (element, option) -> {
+
+            Security s = Adaptor.adapt(Security.class, element);
+            if (s == null)
+                return null;
+
+            List<SecurityPrice> prices = s.getLatestNPricesOfDate(dateProvider.get(), option);
+            if (prices.size() < option || prices.isEmpty())
+                return null;
+
+            Double sma = SimpleMovingAverage.calculateSma(prices);
+
+            return prices.get(prices.size() - 1).getValue() / Values.Quote.divider() / sma - 1;
+        };
+
+        setOptions(new SmaPeriodColumnOption(Messages.ColumnDistanceFromMovingAverage_Option, smaIntervals));
+        setDescription(Messages.ColumnDistanceFromMovingAverage_Description);
+        setLabelProvider(new SmaPeriodColumnLabelProvider(valueProvider));
+        setVisible(false);
+
+        ColumnViewerSorter sorter = ColumnViewerSorter.create((o1, o2) -> {
+            Integer option = (Integer) ColumnViewerSorter.SortingContext.getColumnOption();
+
+            Double v1 = valueProvider.apply(o1, option);
+            Double v2 = valueProvider.apply(o2, option);
+
+            if (v1 == null && v2 == null)
+                return 0;
+            else if (v1 == null)
+                return -1;
+            else if (v2 == null)
+                return 1;
+
+            return Double.compare(v1.doubleValue(), v2.doubleValue());
+        });
+        setSorter(sorter);
     }
 }
