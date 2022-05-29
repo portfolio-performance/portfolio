@@ -62,6 +62,14 @@ public class TradeCalendar implements Comparable<TradeCalendar>
     }
 
     /**
+     * Tests whether {@code date} is a weekend day in this calendar.
+     */
+    public boolean isWeekend(LocalDate date)
+    {
+        return weekend.contains(date.getDayOfWeek());
+    }
+
+    /**
      * Tests whether {@code date} is a non-trading day, i.e. a holiday or weekend day.
      */
     public boolean isHoliday(LocalDate date)
