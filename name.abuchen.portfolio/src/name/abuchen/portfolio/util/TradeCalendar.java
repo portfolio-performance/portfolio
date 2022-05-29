@@ -63,6 +63,9 @@ public class TradeCalendar implements Comparable<TradeCalendar>
         return getDescription();
     }
 
+    /**
+     * Tests whether {@code date} is a non-trading day, i.e. a holiday or weekend day.
+     */
     public boolean isHoliday(LocalDate date)
     {
         if (EMPTY_CODE.equals(getCode()))
@@ -79,7 +82,7 @@ public class TradeCalendar implements Comparable<TradeCalendar>
     }
 
     /**
-     * @return {@code date}, if date is not a holiday. Otherwise the earliest date after {@code date}, that is not a holiday. 
+     * @return {@code date}, if date is a trading day. Otherwise the earliest date after {@code date} that is a trading day.
      */
     public LocalDate getNextNonHoliday(LocalDate date)
     {
