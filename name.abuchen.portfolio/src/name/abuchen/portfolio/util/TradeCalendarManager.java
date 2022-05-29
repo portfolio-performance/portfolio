@@ -297,7 +297,7 @@ public class TradeCalendarManager
         if (!CACHE.containsKey(defaultCalendarCode))
         {
             PortfolioLog.warning(
-                            MessageFormat.format("Attempting to set unkown calendar code: {0}", defaultCalendarCode)); //$NON-NLS-1$
+                            MessageFormat.format("Attempting to set unknown calendar code: {0}", defaultCalendarCode)); //$NON-NLS-1$
             return;
         }
 
