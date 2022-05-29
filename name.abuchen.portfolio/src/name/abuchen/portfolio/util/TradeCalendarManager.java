@@ -283,7 +283,7 @@ public class TradeCalendarManager
         };
         CACHE.put(tc.getCode(), tc);
 
-        tc = new TradeCalendar(TradeCalendar.EMPTY_CODE, Messages.LabelTradeCalendarEmpty, EnumSet.noneOf(DayOfWeek.class)); //$NON-NLS-1$
+        tc = new TradeCalendar("empty", Messages.LabelTradeCalendarEmpty, EnumSet.noneOf(DayOfWeek.class)); //$NON-NLS-1$
         CACHE.put(tc.getCode(), tc);
 }
 
