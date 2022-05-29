@@ -182,10 +182,13 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
             // 
             // 13-11-2021 07:45 12-11-2021 Währungswechsel (Einbuchung) CHF 1.54 CHF 1'183.06
             // 13-11-2021 07:45 12-11-2021 Währungswechsel (Ausbuchung) 1.0866 USD -1.68 USD 0.00
+            //
+            // 27-05-2022 07:34 26-05-2022 Valuta Creditering EUR 0,53 EUR 0,53
+            // 27-05-2022 07:34 26-05-2022 Valuta Debitering 1,0758 USD -0,57 USD 0,00
             // @formatter:on
             Pattern pCurrencyFx = Pattern.compile("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) [\\d]{2}:[\\d]{2} "
                             + "(?<valuta>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?"
-                            + "(W.hrungswechsel|FX Debit).* "
+                            + "(W.hrungswechsel|FX Debit|Valuta Debitering).* "
                             + "(?<fxRate>[\\.,'\\d]+) "
                             + "(?<currency>[\\w]{3}) "
                             + "(\\-)?(?<amount>[\\.,'\\d]+) "
@@ -207,10 +210,14 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
             // 
             // 16-03-2021 09:24 15-03-2021 FX Debit EUR 31.66 EUR -1,542.30
             // 16-03-2021 09:24 15-03-2021 FX Debit 1.1942 USD -37.82 USD -0.00
+            //
+            // 27-05-2022 07:34 26-05-2022 Valuta Creditering EUR 0,53 EUR 0,53
+            // 27-05-2022 07:34 26-05-2022 Valuta Debitering 1,0758 USD -0,57 USD 0,00
+            //
             // @formatter:on
             Pattern pCurrencyBase = Pattern.compile("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}:[\\d]{2} "
                             + "([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?"
-                            + "(W.hrungswechsel|FX Debit).* "
+                            + "(W.hrungswechsel|FX Debit|Valuta Creditering).* "
                             + "(?<currency>[\\w]{3}) "
                             + "(\\-)?(?<amount>[\\.,'\\d]+) "
                             + "[\\w]{3}.*$");
@@ -234,7 +241,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                     item.termCurrency = mFx.group("currency");
                     item.termAmount = asAmount(mFx.group("amount"));
                     item.rate = asExchangeRate(mFx.group("fxRate"));
-
+                    
                     // run backwards to find the corresponding
                     // entry
                     for (int ii = i - 1; ii >= 0; ii--)
