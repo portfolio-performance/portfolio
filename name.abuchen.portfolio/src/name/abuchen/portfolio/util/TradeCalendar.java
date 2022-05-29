@@ -14,8 +14,6 @@ import java.util.stream.Collectors;
 
 public class TradeCalendar implements Comparable<TradeCalendar>
 {
-    public static final String EMPTY_CODE = "empty"; //$NON-NLS-1$
-
     private final Set<DayOfWeek> weekend;
 
     private final String code;

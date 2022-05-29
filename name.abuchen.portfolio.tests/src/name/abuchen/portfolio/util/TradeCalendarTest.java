@@ -310,7 +310,7 @@ public class TradeCalendarTest
     @Test
     public void testEmptyCalendar()
     {
-        TradeCalendar calendar = TradeCalendarManager.getInstance(TradeCalendar.EMPTY_CODE);
+        TradeCalendar calendar = TradeCalendarManager.getInstance("empty");
 
         // we generate a random day
         long minDay = LocalDate.of(2000, 1, 1).toEpochDay();
