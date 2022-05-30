@@ -1,0 +1,215 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Ihren Auftrag haben wir gemäß unseren produktbezogenen
+Geschäftsbedingungen "Trading" wie nachstehend ausgeführt.
+Die Wertpapiere haben wir der Abrechnung entsprechend gebucht.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und
+Vollständigkeit zu überprüfen und etwaige Einwendungen
+25449 Quickborn unverzüglich zu erheben.
+                                       
+Telefon   :   04106-708 25 00           
+                                                                              
+                             
+                                       
+                             
+    11111 010
+Depotnr.:        1111111 00 
+            BLZ:             111 111 11
+Vorname Nachname                  
+und Frau Vorname Nachname                                      
+Straße 1                                        
+11111 Stadt                                               
+                             
+                             
+                             
+                                                  
+                                                  
+GESCHÄFTSABRECHNUNG VOM 12.03.2020                                                   
+                                                                                                                                    
+*
+Wertpapierkauf                                                                                                                      
+Geschäftsnummer   : 11 111111 bis 11 111112                                                                                         
+Ordernummer       : 000121111681      Rechnungsnummer   : 511138111156DA65                                                          
+Geschäftstag      : 11.03.2020        Ausführungsplatz  : NEW YORK -NYSE- LISTED                                                    
+                                                          (Kommissionsgeschäft)                                                     
+                                                                                                                                    
+Wertpapier-Bezeichnung                                               WPKNR/ISIN                                                     
+AerCap Holdings N.V.                                                     A0LFB3                                                     
+Aandelen op naam EO -,01                                           NL0000687663                                                     
+                                                                                                                                    
+                                                                                                                                    
+Ihre Order wurde wie folgt ausgeführt:                                                                                              
+                                                                                                                                    
+Handelszeit   Nennwert                Zum Kurs von                     Kurswert                                                     
+ 20:28        St.  100                USD  40,09        USD            4.009,00                                                     
+ 20:28        St.    1                USD  40,09        USD               40,09                                                     
+ 20:28        St.  100                USD  40,10        USD            4.010,00                                                     
+ 20:28        St.   34                USD  40,10        USD            1.363,40                                                     
+ 20:28        St.  100                USD  40,10        USD            4.010,00                                                     
+ 20:28        St.   71                USD  40,10        USD            2.847,10                                                     
+ 20:28        St.    1                USD  40,10        USD               40,10                                                     
+ 20:28        St.    1                USD  40,10        USD               40,10                                                     
+ 20:28        St.  100                USD  40,10        USD            4.010,00                                                     
+ 20:28        St.  100                USD  40,10        USD            4.010,00                                                     
+ 20:28        St.   11                USD  40,10        USD              441,10                                                     
+ 20:28        St.    1                USD  40,10        USD               40,10                                                     
+ 20:28        St.  100                USD  40,10        USD            4.010,00                                                     
+--------------------------------------------------------------------------------                                                    
+ Summe        St.  720                USD  40,098597    USD           28.870,99                                                     
+(ggf. gerundet)                                                                                                                     
+                          Ausmachender Betrag           USD           28.898,89                                                     
+       Umrechn. zum Dev. kurs 1,120800 vom 12.03.2020 : EUR           25.784,17                                                     
+--------------------------------------------------------------------------------                                                    
+Eigene Entgelte                                                                                                                     
+                          Gesamtprovision             : EUR               62,90                                                     
+--------------------------------------------------------------------------------                                                    
+Fremde Kosten                                                                                                                       
+                          Fremde Spesen               : USD               27,90                                                     
+--------------------------------------------------------------------------------                                                    
+                                                                                                                                    
+                                                                                                                                    
+IBAN                                  Valuta         Zu Ihren Lasten vor Steuern                                                    
+D11 1111 1111 1111 1111 11   EUR     13.03.2020        EUR           25.847,07                                                     
+                                                                                                                                    
+Verwahrungs-Art: WERTPAPIERRECHNUNG USA/KANADA                                                                                      
+Ihre Wertpapier-Order wurde über das Online Banking erteilt.                                                                        
+Teilausführung Ihrer Order                                                                                                          
+                                                                                                                                    
+                                                                                                                                    
+                                                                                                                                    
+Informationen zur steuerlichen Behandlung dieses Geschäftsvorgangs und den auf                                                      
+Ihrem Konto gebuchten Endbetrag finden Sie auf der separaten Steuermitteilung.                                                      
+                                                                                                                                    
+                                                                                                                                    
+                                                          Fortsetzung auf Blatt  2                                                  
+A113
+DO15DD/16/04/2010
+                    Vorname Nachname                  
+Depotnr.:        1111111 00     und Frau Vorname Nachname       
+BLZ:             111 111 11 Straße 11            Blatt: 02
+1111 Stadt                  
+GESCHÄFTSABRECHNUNG VOM 12.03.2020                                                   
+Geschäftsnummer   : 11 111111 bis 11 111112                                                                                         
+Ordernummer       : 000111112681      Rechnungsnummer   : 511111111411DA65                                                          
+                                                                                                                                    
+Bei Fragen geben Sie bitte die Ordernummer an.                                                                                      
+                                                                                                                                    
+comdirect bank AG                                                                                                                   
+                                                                                                                                    
+Diese Abrechnung wird von der Bank nicht unterschrieben                                                                             
+Die Leistung ist gemäß §4 Nr.8 UStG umsatzsteuerfrei. USt-Id-Nr.: DE 812 279 461                                                    
+*
+A113
+DO15N/16/04/2010
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Kundennr. /BLZ Bezeichnung
+1111111  Vorname  Nachnam und Frau Vorname Nachname                
+                                                  
+            
+111 111 11 Straße 1                                 1111 Stadt                                       
+abweichend wirtschaftlich Berechtigter
+                              
+                                              ----                    
+ c o  m   d  i r e  c  t   b  a  n  k    A  G               
+               
+2   5  4  5  1   Q  u  i c  k  b  o  r n                   
+0  1   0  1  1823
+                                                  
+T   e  le  f o  n  :             0   4  1  0  6   -  7  0 8 25 00
+ H  e  r r n                           
+Vornam D   a  t u  m   :                        1  2  . 0  3  .2020           e  N   a c hname                     
+u   n  d   F  r a  u    V  o  r  n  a m e   Nachname        D   e  p  o  t  n  u  m   m  er:        1   1  1  1  1  1 1 00  
+ S  t     S   r  a ß e  1 1  1  1  1 1   1  1              
+11111 Stadt                   R   e  f e  r e  n  z  - N   u mmer:    1 1   1 1  1  1  1  1   1 110011Z                     
+                                      
+                                                  
+                                                  
+                                                  
+Steuerliche Behandlung: Wertpapierkauf Nr. 91111084 vom 11.03.2020                                                                
+Stk.             720 AERCAP HOLDINGS   EO -,01 , WKN / ISIN: A0LFB3  / NL0000687663                                               
+Z u  Ih r e n L a s te n  v o r  S te u e r n:                                                                                                       E U R         -25.847,0 7   
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+ S te u e rb e m  e ss u n g s g r u n d la g e                                                            E  U   R                                  0 , 0 0                          
+                                                                                                                                
+                                                                                                                                
+K  ap i ta le r tr a gs t e ue r                                                                        E  U   R                                  0 , 0 0                          
+S  ol id a ri tä t sz u s c hl a g                                                                      E  U   R                                  0 , 0 0                          
+K  irc h e n s te u e r                                                                              E_  _U   R_  _  _  _   _  _  _   _  _  _  _   _  _  _   _  0_ ,_ _0 0_                          
+ ab g e f ü h rt e S t e u er n                                                                                                                    _E _U _R _ _ _ _ _ _ _ _  __ _ _ _  _0__,0_ _0   
+                                                                                                                                
+ Zu  Ih r e n L a s te n  n a ch  S te u e r n :                                                                                                    E U R         -25.847,0 7   
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+Die Belastung erfolgt mit Valuta 13.03.2020 auf Konto EUR mit der IBAN DE11 1111 1111 1111 1111 11                                                    
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+KEINE STEUERBESCHEINIGUNG ...
+Bisher einbehaltene bzw. angerechnete Steuer in EUR (4)
+in 2020 einbehaltene einbehaltener einbehaltene angerechneteKapitalertragsteuer Solidaritätszuschlag Kirchensteuer ausländische Quellensteuer
+vor Ermittlung
+              839,08                46,02
+               75,41               173,49
+nach Ermittlung
+              839,08 46,02                75,41               173,49               
+Verrechnungssalden in EUR (4)
+in 2020 Gewinne / Verluste sonstige anrechenbare verfügbareraus Aktien Gewinne / Verluste ausländische Quellensteuer Freistellungsauftrag
+vor Ermittlung
+          -33.942,53             5.727,96                 0,00                 0,00
+nach Ermittlung
+          -33.942,53             5.727,96
+                0,00                 0,00
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+comdirect bank AG                                                                                                                                     
+Diese Abrechnung ist maschinell erstellt und wird nicht unterschrieben.                                                                               
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+(4) Die ausgewiesenen EUR-Beträge spiegeln den Stand zum Abrechnungszeitpunkt wider.                                                                  
+KEINE STEUERBESCHEINIGUNG

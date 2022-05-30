@@ -204,6 +204,26 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                     checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
 
+                //  Summe        St.  720                USD  40,098597    USD           28.870,99 
+                //                           Ausmachender Betrag           USD           28.898,89 
+                //        Umrechn. zum Dev. kurs 1,120800 vom 12.03.2020 : EUR           25.784,17 
+                .section("fxCurrency", "fxGross", "termCurrency", "exchangeRate", "baseCurrency", "currency").optional()
+                .match("^(([\\s]+)?Summe ([\\s]+)?)?St. ([\\s]+)?[\\.,\\d]+ ([\\s]+)?[\\w]{3} ([\\s]+)?[\\.,\\d]+ ([\\s]+)?(?<fxCurrency>[\\w]{3}) ([\\s]+)?(?<fxGross>[\\.,\\d]+).*$")
+                .match("^.* Ausmachender Betrag ([\\s]+)?(?<termCurrency>[\\w]{3}) ([\\s]+)?[\\.,\\d]+.*$")
+                .match("^.* (Umrechn\\. zum Dev\\. kurs|Umrechnung zum Devisenkurs) (?<exchangeRate>[\\.,\\d]+).* : (?<baseCurrency>[\\w]{3}).*$")
+                .match("^.* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?[\\.,\\d]+.*$")
+                .assign((t, v) -> {
+                    PDFExchangeRate rate = asExchangeRate(v);
+                    type.getCurrentContext().putType(asExchangeRate(v));
+                    
+                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                    Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
+
+                    type.getCurrentContext().putType(asExchangeRate(v));
+
+                    checkAndSetGrossUnit(gross, fxGross, t, type);
+                })
+
                 // If the taxes are negative, this is a tax refund
                 // transaction and we subtract this from the amount and
                 // reset this.
@@ -742,6 +762,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                     t.setCurrencyCode(asCurrencyCode(stripBlanksAndUnderscores(v.get("currency"))));
                 })
 
+                //                           Kurswert                    : USD            1.573,75 
                 //        Umrechn. zum Dev. kurs 1,222500 vom 16.12.2020 : EUR            1.275,95 
                 //  er s ta t te t e S t e ue r n    E_ U_ R_ _ _ _ _ _ _ _ _  __  _ __ _10_,_8_ 4_
                 .section("termCurrency", "exchangeRate", "baseCurrency", "currency", "gross").optional()
