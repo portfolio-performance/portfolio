@@ -110,6 +110,7 @@ public class Messages extends NLS
     public static String InvestmentPlanItemImportToolTip;
     public static String IssueBuySellWithoutSecurity;
     public static String IssueDividendWithoutSecurity;
+    public static String IssueExchangeRateIsNegative;
     public static String IssueInconsistentSharesHeld;
     public static String IssueInterestWithSecurity;
     public static String IssueMissingAccountTransfer;
