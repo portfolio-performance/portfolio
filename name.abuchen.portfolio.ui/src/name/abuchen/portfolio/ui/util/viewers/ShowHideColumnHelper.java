@@ -909,7 +909,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             if (column.hasOptions())
                 item.setOption(column.getOptions().toString(col.getData(OPTIONS_KEY)));
             if (col.equals(sortedColumn))
-                item.setSortDirection(policy.getSortDirection() == SWT.UP ? 1 : 2);
+                item.setSortDirection(policy.getSortDirection());
 
             item.setWidth(policy.getWidth(col));
 
