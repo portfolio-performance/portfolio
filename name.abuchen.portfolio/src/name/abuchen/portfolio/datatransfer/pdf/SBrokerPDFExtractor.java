@@ -73,12 +73,12 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
 
                 // Nominale Wertpapierbezeichnung ISIN (WKN)
                 // Stück 7,1535 BGF - WORLD TECHNOLOGY FUND LU0171310443 (A0BMAN)
-                // Kurswert 509,71- EUR
+                // Ausführungskurs 71,253 EUR Auftragserteilung/ -ort Persönlich im Institut
                 .section("name", "isin", "wkn", "name1", "currency").optional()
                 .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)")
                 .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
                 .match("^(?<name1>.*)$")
-                .match("^Kurswert [\\.,\\d]+(\\-)? (?<currency>[\\w]{3})$")
+                .match("^Ausf.hrungskurs [\\.,\\d]+ (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Handels-/Ausführungsplatz"))
                         v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
@@ -136,10 +136,29 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                         })
                         )
 
+                // Ausführungskurs 146,8444 USD Auftragserteilung/ -ort Persönlich im Institut
+                // Devisenkurs (EUR/USD) 1,1762 vom 28.07.2021
+                // Kurswert 15.605,81- EUR
+                .section("fxCurrency", "baseCurrency", "termCurrency", "exchangeRate", "gross", "currency").optional()
+                .match("^Ausf.hrungskurs [\\.,\\d]+ (?<fxCurrency>[\\w]{3}) .*$")
+                .match("^Devisenkurs \\((?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3})\\) (?<exchangeRate>[\\.,\\d]+) .*$")
+                .match("^Kurswert (?<gross>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    PDFExchangeRate rate = asExchangeRate(v);
+                    type.getCurrentContext().putType(rate);
+
+                    Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
+                    Money fxGross = rate.convert(asCurrencyCode(v.get("fxCurrency")), gross);
+
+                    checkAndSetGrossUnit(gross, fxGross, t, type);
+                })
+
                 // Limit 189,40 EUR
                 .section("note").optional()
                 .match("(?<note>Limit .*)$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                .conclude(PDFExtractorUtils.fixGrossValueBuySell())
 
                 .wrap(t -> {
                     // If we have multiple entries in the document,
@@ -325,9 +344,25 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                 .match("^STK .* (?<currency>[\\w]{3} [\\.,\\d]+)$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-                // STK 47,000 EUR 120,3500
+                // Nominale Wertpapierbezeichnung ISIN (WKN)
+                // Stück 7,1535 BGF - WORLD TECHNOLOGY FUND LU0171310443 (A0BMAN)
+                // Ausführungskurs 71,253 EUR Auftragserteilung/ -ort Persönlich im Institut
+                .section("name", "isin", "wkn", "name1", "currency").optional()
+                .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)")
+                .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
+                .match("^(?<name1>.*)$")
+                .match("^Ausf.hrungskurs [\\.,\\d]+ (?<currency>[\\w]{3}).*$")
+                .assign((t, v) -> {
+                    if (!v.get("name1").startsWith("Handels-/Ausführungsplatz"))
+                        v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
+
+                    t.setSecurity(getOrCreateSecurity(v));
+                })
+
+                // STK 16,000 EUR 120,4000
+                // Stück 7,1535 BGF - WORLD TECHNOLOGY FUND LU0171310443 (A0BMAN)
                 .section("shares").optional()
-                .match("^STK (?<shares>[\\.,\\d]+) .*$")
+                .match("^(STK|St.ck) (?<shares>[\\.,\\d]+) .*$")
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 // Wert Konto-Nr. Abrechnungs-Nr. Betrag zu Ihren Gunsten
