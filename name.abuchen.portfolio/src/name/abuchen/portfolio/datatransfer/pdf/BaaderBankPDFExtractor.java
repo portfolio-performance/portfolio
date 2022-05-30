@@ -34,6 +34,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
         addDepotStatementTransaction();
         addFeesAssetManagerTransaction();
         addDeliveryInOutBoundTransaction();
+        addTransferOutTransaction();
     }
 
     @Override
@@ -647,6 +648,66 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                 .wrap(TransactionItem::new);
+    }
+
+    private void addTransferOutTransaction()
+    {
+        DocumentType type = new DocumentType("Ablauf der Optionsfrist");
+        this.addDocumentTyp(type);
+
+        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        pdfTransaction.subject(() -> {
+            BuySellEntry entry = new BuySellEntry();
+            entry.setType(PortfolioTransaction.Type.SELL);
+            return entry;
+        });
+
+        Block firstRelevantLine = new Block("^Referenz\\-Nr\\.: .*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction
+                // Nominale ISIN: DE000HB2KBG9 WKN: HB2KBG Barabfindung
+                // STK 6 UniCredit Bank AG EUR 10,00 p.STK
+                // HVB Inline 18.05.22 BASF 45-70
+                .section("isin", "wkn", "name", "nameContinued", "currency").optional()
+                .match("^Nominale ISIN: (?<isin>[\\w]{12}) WKN: (?<wkn>.*) Barabfindung$")
+                .match("^STK [\\.,\\d]+ (?<name>.*) (?<currency>[\\w]{3}) .*$")
+                .match("^(?<nameContinued>.*)$")
+                .assign((t, v) -> {
+                    if (v.get("nameContinued").endsWith("p.STK"))
+                        v.put("nameContinued", v.get("nameContinued").replace("p.STK", ""));
+
+                    t.setSecurity(getOrCreateSecurity(v));
+                })
+
+                // STK 6 UniCredit Bank AG EUR 10,00 p.STK
+                .section("shares")
+                .match("^STK (?<shares>[\\.,\\d]+) .*$")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                // Ausbuchung aus Depot 1234567001 per 25.05.2022
+                .section("date")
+                .match("^Ausbuchung .* per (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
+                .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+
+                // Zu Gunsten Konto 1234567005 Valuta: 25.05.2022 EUR 60,00
+                .section("date", "currency", "amount")
+                .match("^Zu Gunsten Konto [\\d]+ Valuta: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
+                .assign((t, v) -> {
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                    t.setAmount(asAmount(v.get("amount")));
+                })
+
+                // Ablauf der Optionsfrist
+                .section("note").optional()
+                .match("^(?<note>Ablauf der Optionsfrist)$")
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                .wrap(BuySellEntryItem::new);
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
+        addFeesSectionsTransaction(pdfTransaction, type);
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
