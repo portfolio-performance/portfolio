@@ -30,5 +30,14 @@ public class IssueFixGrossValueUnitInClientFactoryTest
         // check portfolio transaction (inbound delivery)
         PortfolioTransaction txp = client.getPortfolios().get(0).getTransactions().get(0);
         assertThat(txp.getUnit(Unit.Type.GROSS_VALUE).orElseThrow().getAmount(), is(txp.getGrossValue()));
+
+        // check CHF portfolio transaction (inbound delivery) - handle negative
+        // exchange rates
+        txp = client.getPortfolios().get(0).getTransactions().get(1);
+        final Unit unit = txp.getUnit(Unit.Type.GROSS_VALUE).orElseThrow();
+        assertThat(unit.getAmount(), is(txp.getGrossValue()));
+        assertThat(unit.getForex().getCurrencyCode(), is("CHF")); //$NON-NLS-1$
+        assertThat(unit.getExchangeRate().signum(), is(-1));
+
     }
 }

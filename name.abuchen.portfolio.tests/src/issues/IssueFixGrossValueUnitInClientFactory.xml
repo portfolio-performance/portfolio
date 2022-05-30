@@ -14,6 +14,18 @@
       <isRetired>false</isRetired>
       <updatedAt>2022-05-08T07:24:49.672555Z</updatedAt>
     </security>
+    <security>
+      <uuid>cdb57c58-dffc-11ec-9d64-0242ac120002</uuid>
+      <name>CHF Security</name>
+      <currencyCode>CHF</currencyCode>
+      <feed>MANUAL</feed>
+      <prices/>
+      <attributes>
+        <map/>
+      </attributes>
+      <isRetired>false</isRetired>
+      <updatedAt>2022-05-08T07:24:49.672555Z</updatedAt>
+    </security>
   </securities>
   <watchlists/>
   <accounts>
@@ -75,6 +87,24 @@
               <amount currency="EUR" amount="20833"/>
               <forex currency="USD" amount="22000"/>
               <exchangeRate>0.9460737938</exchangeRate>
+            </unit>
+          </units>
+          <updatedAt>2022-05-08T07:25:31.890551Z</updatedAt>
+          <type>DELIVERY_INBOUND</type>
+        </portfolio-transaction>
+        <portfolio-transaction>
+          <uuid>d91bd33a-dffc-11ec-9d64-0242ac120002</uuid>
+          <date>2022-05-08T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>337280</amount>
+          <security reference="../../../../../securities/security[2]"/>
+          <shares>1000000000</shares>
+          <units>
+            <unit type="GROSS_VALUE">
+              <!-- wrong gross value will force new calcluation --> 
+              <amount currency="EUR" amount="200"/>
+              <forex currency="CHF" amount="200"/>
+              <exchangeRate>-1.152</exchangeRate>
             </unit>
           </units>
           <updatedAt>2022-05-08T07:25:31.890551Z</updatedAt>

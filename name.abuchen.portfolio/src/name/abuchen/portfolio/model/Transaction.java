@@ -82,6 +82,14 @@ public abstract class Transaction implements Annotated, Adaptable
                 long lower = Math.round(exchangeRate.add(BigDecimal.valueOf(-0.003))
                                 .multiply(BigDecimal.valueOf(forex.getAmount())).doubleValue());
 
+                // check for negative values
+                if (lower > upper)
+                {
+                    long temp = lower;
+                    lower = upper;
+                    upper = temp;
+                }
+
                 if (amount.getAmount() < lower || amount.getAmount() > upper)
                     throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorIllegalForexUnit,
                                     type.toString(), Values.Money.format(forex), exchangeRate,
