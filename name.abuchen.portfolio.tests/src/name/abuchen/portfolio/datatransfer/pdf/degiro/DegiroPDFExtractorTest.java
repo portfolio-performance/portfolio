@@ -4895,17 +4895,25 @@ public class DegiroPDFExtractorTest
      * Test reading Dividends in USD from DeGiro AccountStatement in Dutch and converting to EUR.
      */
     @Test
-    public void testAccountStatement_Dividends_FX()
+    public void testRekeningoverzicht03()
     {
         DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AccountStatement_Dividends_FX.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Rekeningoverzicht03.txt"), errors);
         
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("IE00B1FZS467"));
+        assertThat(security.getName(), is("ISHARES INFRA GLO"));
+        // Note that USD is read from the DeGiro PDF but it is the Dividend currency,
+        // which is NOT the security currency in this case as that is not mentioned in this PDF
+        assertThat(security.getCurrencyCode(), is("USD"));
 
         // check dividends transaction
         AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
@@ -4913,18 +4921,21 @@ public class DegiroPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-26T08:08")));
-        assertThat(transaction.getShares(), is(0L));
-
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.53))));
         assertThat(transaction.getGrossValue(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.53))));
-        assertThat(transaction.getSecurity().getName(), is("ISHARES INFRA GLO"));
-        assertThat(transaction.getSecurity().getIsin(), is("IE00B1FZS467"));
-        // Parsed fxrate 1,0758 is inverted to give 0.92954
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0))));
         Unit grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        // Parsed fxrate 1,0758 is inverted to give 0.92954
         assertThat(grossValueUnit.getExchangeRate().doubleValue(), IsCloseTo.closeTo(0.92954, 0.000001));
         assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.57))));
-        assertNull(transaction.getCrossEntry());
+        // Check that the transaction has the correct security
+        assertThat(transaction.getSecurity().getName(), is("ISHARES INFRA GLO"));
+        assertThat(transaction.getSecurity().getIsin(), is("IE00B1FZS467"));
+        assertThat(transaction.getSecurity().getCurrencyCode(), is("USD"));
     }
 }
