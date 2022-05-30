@@ -87,6 +87,8 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
         abstract int getWidth(Item col);
 
+        abstract int getColumnIndex(Point pt);
+
         abstract Item create(Column column, Object option, Integer direction, int width);
 
         void setCommonParameters(Column column, ViewerColumn viewerColumn, Integer direction)
@@ -227,6 +229,36 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
         }
 
         @Override
+        int getColumnIndex(Point pt)
+        {
+            // https://stackoverflow.com/a/22197297/1158146
+
+            int rowCount = table.getTable().getItemCount();
+
+            TableItem item = rowCount == 0 ? new TableItem(table.getTable(), 0) : table.getTable().getItem(0);
+
+            try
+            {
+                int columnCount = table.getTable().getColumnCount();
+                int[] order = table.getTable().getColumnOrder();
+
+                for (int index = 0; index < columnCount; index++)
+                {
+                    Rectangle rect = item.getBounds(order[index]);
+                    if (pt.x >= rect.x && pt.x <= rect.x + rect.width)
+                        return order[index];
+                }
+            }
+            finally
+            {
+                if (rowCount == 0)
+                    item.dispose();
+            }
+
+            return NO_COLUMN_SELECTED;
+        }
+
+        @Override
         public Item create(Column column, Object option, Integer direction, int width)
         {
             TableViewerColumn col = new TableViewerColumn(table, column.getStyle());
@@ -361,6 +393,34 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
         }
 
         @Override
+        int getColumnIndex(Point pt)
+        {
+            int rowCount = tree.getTree().getItemCount();
+
+            TreeItem item = rowCount == 0 ? new TreeItem(tree.getTree(), 0) : tree.getTree().getItem(0);
+
+            try
+            {
+                int columnCount = tree.getTree().getColumnCount();
+                int[] order = tree.getTree().getColumnOrder();
+
+                for (int index = 0; index < columnCount; index++)
+                {
+                    Rectangle rect = item.getBounds(order[index]);
+                    if (pt.x >= rect.x && pt.x <= rect.x + rect.width)
+                        return order[index];
+                }
+            }
+            finally
+            {
+                if (rowCount == 0)
+                    item.dispose();
+            }
+
+            return NO_COLUMN_SELECTED;
+        }
+
+        @Override
         public Item create(Column column, Object option, Integer direction, int width)
         {
             TreeViewerColumn col = new TreeViewerColumn(tree, column.getStyle());
@@ -424,6 +484,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
     /* package */static final String OPTIONS_KEY = Column.class.getName() + "_OPTION"; //$NON-NLS-1$
     private static final String ORIGINAL_LABEL_KEY = "$original_label$"; //$NON-NLS-1$
+    private static final int NO_COLUMN_SELECTED = -1;
 
     private final String identifier;
 
@@ -436,7 +497,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
     private ViewerPolicy policy;
     private Menu contextMenu;
-    private int selectedColumnIndex = -1;
+    private int selectedColumnIndex = NO_COLUMN_SELECTED;
 
     public ShowHideColumnHelper(String identifier, IPreferenceStore preferences, TreeViewer viewer,
                     TreeColumnLayout layout)
@@ -784,23 +845,9 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
                 if (isHeader)
                 {
                     // remember the current column in selectedColumnIndex for
-                    // later
-                    // use in the context menu
-
-                    int xOffset = pt.x;
-                    int columnIndex = 0;
-                    int[] order = policy.getColumnOrder();
-                    int columnCount = policy.getColumnCount();
-
-                    while ((columnIndex < columnCount)
-                                    && (xOffset > policy.getWidth(policy.getColumn(order[columnIndex]))))
-                    {
-                        xOffset -= policy.getWidth(policy.getColumn(order[columnIndex]));
-                        columnIndex++;
-                    }
-
-                    selectedColumnIndex = (columnIndex < columnCount) ? order[columnIndex] : -1;
-
+                    // later use in the context menu
+                    
+                    selectedColumnIndex = policy.getColumnIndex(pt);
                     control.setMenu(headerMenu.getMenu());
                 }
                 else
@@ -944,7 +991,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
     private void headerMenuAboutToShow(IMenuManager manager)
     {
-        if (selectedColumnIndex == -1)
+        if (selectedColumnIndex == NO_COLUMN_SELECTED)
             return;
 
         Item widget = policy.getColumn(selectedColumnIndex);
