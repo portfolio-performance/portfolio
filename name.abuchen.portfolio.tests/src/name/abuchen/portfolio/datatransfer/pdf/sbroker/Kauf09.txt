@@ -1,0 +1,48 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Sparkasse Musterort · Musterstr. 12 · 12345 Musterort  Seite 1 von 2
+Depotnummer
+ 9999999
+ Kundennummer 99999999
+ Max MustermannAuftragsnummer 999999/99.99
+Herrn Datum 28.07.2021
+Max Mustermann Rechnungsnummer W99999-9999999999/99
+Musterweg 42 Umsatzsteuer-ID DE999999999 
+12345 Musterort
+ 
+Wertpapier Abrechnung Ausgabe Investmentfonds
+Auftrag vom 26.07.2021 15:18:11 Uhr
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 125 MOR.ST.INV.-GLOBAL OPPORTUNITY LU0552385295 (A1H6XK)
+ACTIONS NOMINATIVES A USD O.N. 
+Handels-/Ausführungsplatz Außerbörslich (gemäß Weisung)
+Schlusstag 27.07.2021 Auftraggeber Mustermann, Max
+Ausführungskurs 146,8444 USD Auftragserteilung/ -ort Persönlich im Institut
+Wertpapierrechnung Lagerland Luxemburg
+Devisenkurs (EUR/USD) 1,1762 vom 28.07.2021
+Kurswert 15.605,81- EUR
+Kundenbonifikation 50 % vom Ausgabeaufschlag 424,27 EUR
+Ausmachender Betrag 15.181,54- EUR
+Ausgabeaufschlag pro Anteil 5,75 %
+ 
+Den Gegenwert buchen wir mit Valuta 30.07.2021 zu Lasten des Kontos 999999999 (IBAN DE99 9999 9999 9999 9999 99),
+BLZ 99999999 (BIC XYXYXYZ9MUS).
+Der Kurswert beinhaltet den regulären Ausgabeaufschlag des Fonds.
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+9999.99999999.99999999X99  
+Seite 2 von 2
+Depotnummer 9999999
+Kundennummer 99999999
+Auftragsnummer 999999/99.99
+Datum 28.07.2021
+Für das Geschäft wurde keine Anlageberatung erbracht.
+Initiator der Besprechung war der Kunde.
+Auf die Höhe der Kosten wurde hingewiesen.
+Mir/Uns wurden die wesentlichen Anlegerinformationen rechtzeitig vor Geschäftsabschluss in Papierform zur Verfügung
+gestellt.
+Mir/Uns wurden die sonstigen Verkaufsunterlagen (Verkaufsprospekt sowie Jahres-/Halbjahresbericht) rechtzeitig vor
+Geschäftsabschluss in Papierform zur Verfügung gestellt.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+9999.99999999.99999999X99  
