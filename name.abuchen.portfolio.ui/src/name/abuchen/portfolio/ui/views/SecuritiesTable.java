@@ -262,6 +262,19 @@ public final class SecuritiesTable implements ModificationListener
         column.getEditingSupport().addListener(this);
         support.addColumn(column);
 
+        column = new Column("securityExchange", Messages.ColumnSecurityExchange, SWT.LEFT, 80); //$NON-NLS-1$
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return ((Security) element).getExchange();
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(element -> ((Security) element).getExchange()));
+        column.setVisible(false);
+        support.addColumn(column);
+
         column = new SymbolColumn("2"); //$NON-NLS-1$
         column.getEditingSupport().addListener(this);
         support.addColumn(column);

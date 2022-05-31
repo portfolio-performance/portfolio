@@ -54,6 +54,8 @@ public final class Security implements Attributable, InvestmentVehicle
     private String isin;
     private String tickerSymbol;
     private String wkn;
+    /** 3 character exchange. */
+    private String exchange;
     private String calendar;
 
     // feed and feedURL are used to update historical prices
@@ -605,6 +607,16 @@ public final class Security implements Attributable, InvestmentVehicle
         this.updatedAt = Instant.now();
     }
 
+    public String getExchange()
+    {
+        return exchange;
+    }
+
+    public void setExchange(String exchange)
+    {
+        this.exchange = exchange;
+    }
+
     public List<SecurityEvent> getEvents()
     {
         if (this.events == null)
@@ -856,6 +868,8 @@ public final class Security implements Attributable, InvestmentVehicle
         answer.isRetired = isRetired;
 
         answer.updatedAt = updatedAt;
+
+        answer.exchange = exchange;
 
         return answer;
     }

@@ -483,6 +483,19 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         layout.setColumnData(column.getColumn(), new ColumnPixelData(250, true));
 
         column = new TableViewerColumn(viewer, SWT.NONE);
+        column.getColumn().setText(Messages.ColumnSecurityExchange);
+        column.setLabelProvider(new FormattedLabelProvider() // NOSONAR
+        {
+            @Override
+            public String getText(ExtractedEntry entry)
+            {
+                Security security = entry.getItem().getSecurity();
+                return security != null && security.getExchange() != null ? security.getExchange() : null;
+            }
+        });
+        layout.setColumnData(column.getColumn(), new ColumnPixelData(100, true));
+
+        column = new TableViewerColumn(viewer, SWT.NONE);
         column.getColumn().setText(Messages.ColumnAccount);
         column.setLabelProvider(new FormattedLabelProvider() // NOSONAR
         {

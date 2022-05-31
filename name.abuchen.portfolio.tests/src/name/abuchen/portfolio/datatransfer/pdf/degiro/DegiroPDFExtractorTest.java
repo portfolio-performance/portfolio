@@ -1605,24 +1605,28 @@ public class DegiroPDFExtractorTest
         assertThat(security1.getIsin(), is("DE000C21EMZ1"));
         assertThat(security1.getName(), is("ODX5 C11500.00 29MAR19"));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security1.getExchange(), is("ERX"));
 
         Security security2 = results.stream().filter(i -> i instanceof SecurityItem).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security2.getIsin(), is("DE000C21EMV0"));
         assertThat(security2.getName(), is("ODX5 C11400.00 29MAR19"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security2.getExchange(), is("ERX"));
 
         Security security3 = results.stream().filter(i -> i instanceof SecurityItem).skip(2).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security3.getIsin(), is("DE000C21EMX6"));
         assertThat(security3.getName(), is("ODX5 C11450.00 29MAR19"));
         assertThat(security3.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security3.getExchange(), is("ERX"));
 
         Security security4 = results.stream().filter(i -> i instanceof SecurityItem).skip(3).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security4.getIsin(), is("DE000C21EMY4"));
         assertThat(security4.getName(), is("ODX5 P11450.00 29MAR19"));
         assertThat(security4.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security4.getExchange(), is("ERX"));
 
         // 29-03-2019 12:18 29-03-2019 ODX5 C11500.00 29MAR19 DE000C21EMZ1
         // Verkauf 3 zu je 30 EUR (DE000C21EMZ1) EUR 450,00 EUR 2.604,06
@@ -1719,6 +1723,7 @@ public class DegiroPDFExtractorTest
         assertThat(security.getIsin(), is("DE0005140008"));
         assertThat(security.getName(), is("DEUTSCHE BANK AG NA O.N"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getExchange(), is("XET"));
 
         // check first buy sell transaction
         BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)
@@ -1795,12 +1800,14 @@ public class DegiroPDFExtractorTest
         assertThat(security1.getIsin(), is("US88160R1014"));
         assertThat(security1.getName(), is("TESLA MOTORS INC. - C"));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security1.getExchange(), is("NDQ"));
 
         Security security2 = results.stream().filter(i -> i instanceof SecurityItem).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security2.getIsin(), is("DE000C34JCK6"));
         assertThat(security2.getName(), is("ODX1 P12300.00 03MAY19"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security2.getExchange(), is("ERX"));
 
         // check 1st buy/sell transaction
         BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)
@@ -1886,6 +1893,7 @@ public class DegiroPDFExtractorTest
         assertThat(security.getName(), is("ARCHER-DANIELS-MIDLAND"));
         assertThat(security.getIsin(), is("US0394831020"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security.getExchange(), is("NSY"));
 
         // check 1st buy/sell transaction
         BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)
@@ -1952,6 +1960,7 @@ public class DegiroPDFExtractorTest
         assertThat(security.getName(), is("CATERPILLAR INC. COMM"));
         assertThat(security.getIsin(), is("US1491231015"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security.getExchange(), is("NSY"));
 
         // check first transaction
         BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)
@@ -2065,6 +2074,7 @@ public class DegiroPDFExtractorTest
         assertThat(security.getName(), is("CALL 20.09.19 TRADDESK 180"));
         assertThat(security.getIsin(), is("DE000GA2N3L5"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getExchange(), is("FRA"));
 
         // check first transaction
         BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)
@@ -2153,6 +2163,7 @@ public class DegiroPDFExtractorTest
         assertThat(security.getName(), is("TURBOC O.END GOLD 1109,22"));
         assertThat(security.getIsin(), is("DE000VA5DDR3"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getExchange(), is("FRA"));
 
         // check first transaction
         BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)
@@ -2215,6 +2226,7 @@ public class DegiroPDFExtractorTest
         assertThat(security.getName(), is("SALESFORCE.COM INC COM"));
         assertThat(security.getIsin(), is("US79466L3024"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security.getExchange(), is("NSY"));
 
         // check buy transaction
         BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)
@@ -2278,6 +2290,7 @@ public class DegiroPDFExtractorTest
         assertThat(security.getName(), is("WALT DISNEY COMPANY (T"));
         assertThat(security.getIsin(), is("US2546871060"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security.getExchange(), is("NSY"));
 
         // check 1st sell transaction
         BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)
@@ -2379,6 +2392,7 @@ public class DegiroPDFExtractorTest
         assertThat(security.getName(), is("CALL 16.12.22 LEONI 18"));
         assertThat(security.getIsin(), is("DE000DV0VC30"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getExchange(), is("FRA"));
 
         // check 1st buy transaction
         BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)
@@ -2486,6 +2500,7 @@ public class DegiroPDFExtractorTest
         assertThat(security.getName(), is("VARTA AG"));
         assertThat(security.getIsin(), is("DE000A0TGJ55"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getExchange(), is("XET"));
 
         // check 1st sell transaction
         BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)
@@ -2527,6 +2542,7 @@ public class DegiroPDFExtractorTest
         assertThat(security.getName(), is("VARTA AG"));
         assertThat(security.getIsin(), is("DE000A0TGJ55"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getExchange(), is("XET"));
 
         // check 1st sell transaction
         BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)
@@ -2688,6 +2704,7 @@ public class DegiroPDFExtractorTest
         assertThat(security.getName(), is("IROBOT CORPORATION - C"));
         assertThat(security.getIsin(), is("US4627261005"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security.getExchange(), is("NDQ"));
 
         // check 1st buy transaction
         BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)
@@ -2751,6 +2768,7 @@ public class DegiroPDFExtractorTest
         assertThat(security.getName(), is("DEUTSCHE TELEKOM AG"));
         assertThat(security.getIsin(), is("DE0005557508"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getExchange(), is("XET"));
 
         // check 1st buy transaction
         BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)
@@ -2792,6 +2810,7 @@ public class DegiroPDFExtractorTest
         assertThat(security.getName(), is("GENERAL ELECTRIC"));
         assertThat(security.getIsin(), is("US3696043013"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security.getExchange(), is("NSY"));
 
         // check 1st buy transaction
         BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)
@@ -2852,12 +2871,14 @@ public class DegiroPDFExtractorTest
         assertThat(security1.getName(), is("CD PROJEKT RED SA"));
         assertThat(security1.getIsin(), is("PLOPTTC00011"));
         assertThat(security1.getCurrencyCode(), is("PLN"));
+        assertThat(security1.getExchange(), is("WSE"));
 
         Security security2 = results.stream().filter(i -> i instanceof SecurityItem).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security2.getName(), is("EBAY INC"));
         assertThat(security2.getIsin(), is("US2786421030"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security2.getExchange(), is("XET"));
 
         // check 1st buy transaction
         BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)
@@ -2937,66 +2958,77 @@ public class DegiroPDFExtractorTest
         assertThat(security1.getName(), is("PLUG POWER INC. - COM"));
         assertThat(security1.getIsin(), is("US72919P2020"));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security1.getExchange(), is("NDQ"));
 
         Security security2 = results.stream().filter(i -> i instanceof SecurityItem).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security2.getName(), is("NIKOLA CORP"));
         assertThat(security2.getIsin(), is("US6541101050"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security2.getExchange(), is("NDQ"));
 
         Security security3 = results.stream().filter(i -> i instanceof SecurityItem).skip(2).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security3.getName(), is("NIO INC - ADR"));
         assertThat(security3.getIsin(), is("US62914V1061"));
         assertThat(security3.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security3.getExchange(), is("NSY"));
 
         Security security4 = results.stream().filter(i -> i instanceof SecurityItem).skip(3).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security4.getName(), is("BALLARD POWER SYSTEMS"));
         assertThat(security4.getIsin(), is("CA0585861085"));
         assertThat(security4.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security4.getExchange(), is("NDQ"));
 
         Security security5 = results.stream().filter(i -> i instanceof SecurityItem).skip(4).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security5.getName(), is("TESLA MOTORS INC. - C"));
         assertThat(security5.getIsin(), is("US88160R1014"));
         assertThat(security5.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security5.getExchange(), is("NDQ"));
 
         Security security6 = results.stream().filter(i -> i instanceof SecurityItem).skip(5).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security6.getName(), is("ALPHABET INC. - CLASS A"));
         assertThat(security6.getIsin(), is("US02079K3059"));
         assertThat(security6.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security6.getExchange(), is("NDQ"));
 
         Security security7 = results.stream().filter(i -> i instanceof SecurityItem).skip(6).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security7.getName(), is("ADOBE SYSTEMS INCORPOR"));
         assertThat(security7.getIsin(), is("US00724F1012"));
         assertThat(security7.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security7.getExchange(), is("NDQ"));
 
         Security security8 = results.stream().filter(i -> i instanceof SecurityItem).skip(7).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security8.getName(), is("SALESFORCE.COM INC COM"));
         assertThat(security8.getIsin(), is("US79466L3024"));
         assertThat(security8.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security8.getExchange(), is("NSY"));
 
         Security security9 = results.stream().filter(i -> i instanceof SecurityItem).skip(8).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security9.getName(), is("DEUTSCHE LUFTHANSA AG"));
         assertThat(security9.getIsin(), is("DE0008232125"));
         assertThat(security9.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security9.getExchange(), is("XET"));
 
         Security security10 = results.stream().filter(i -> i instanceof SecurityItem).skip(9).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security10.getName(), is("VOLKSWAGEN AG"));
         assertThat(security10.getIsin(), is("DE0007664039"));
         assertThat(security10.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security10.getExchange(), is("XET"));
 
         Security security11 = results.stream().filter(i -> i instanceof SecurityItem).skip(10).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security11.getName(), is("WAL-MART STORES INC."));
         assertThat(security11.getIsin(), is("US9311421039"));
         assertThat(security11.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security11.getExchange(), is("NSY"));
 
         // check 1st buy transaction
         BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)
@@ -3076,12 +3108,14 @@ public class DegiroPDFExtractorTest
         assertThat(security1.getName(), is("GENERAL ELECTRIC"));
         assertThat(security1.getIsin(), is("US3696043013"));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security1.getExchange(), is("NSY"));
 
         Security security2 = results.stream().filter(i -> i instanceof SecurityItem).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security2.getName(), is("GENERAL ELECTRIC COMPA"));
         assertThat(security2.getIsin(), is("US3696041033"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security2.getExchange(), is("NSY"));
 
         // check 1st buy transaction
         BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)
@@ -3142,42 +3176,49 @@ public class DegiroPDFExtractorTest
         assertThat(security1.getName(), is("ISHARES MSCI EUROPE ESG"));
         assertThat(security1.getIsin(), is("IE00BFNM3D14"));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security1.getExchange(), is("XET"));
 
         Security security2 = results.stream().filter(i -> i instanceof SecurityItem).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security2.getName(), is("ISHARES DJ EUROPE"));
         assertThat(security2.getIsin(), is("IE00B52VJ196"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security2.getExchange(), is("SWX"));
 
         Security security3 = results.stream().filter(i -> i instanceof SecurityItem).skip(2).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security3.getName(), is("HSBC SP 500 ETF"));
         assertThat(security3.getIsin(), is("IE00B5KQNG97"));
         assertThat(security3.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security3.getExchange(), is("EPA"));
 
         Security security4 = results.stream().filter(i -> i instanceof SecurityItem).skip(3).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security4.getName(), is("AMUNDI ETF STOX600"));
         assertThat(security4.getIsin(), is("LU1681040223"));
         assertThat(security4.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security4.getExchange(), is("EPA"));
 
         Security security5 = results.stream().filter(i -> i instanceof SecurityItem).skip(4).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security5.getName(), is("XIAOMI CORP. CL.B"));
         assertThat(security5.getIsin(), is("KYG9830T1067"));
         assertThat(security5.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security5.getExchange(), is("FRA"));
 
         Security security6 = results.stream().filter(i -> i instanceof SecurityItem).skip(5).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security6.getName(), is("APPLE INC"));
         assertThat(security6.getIsin(), is("US0378331005"));
         assertThat(security6.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security6.getExchange(), is("XET"));
 
         Security security7 = results.stream().filter(i -> i instanceof SecurityItem).skip(6).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security7.getName(), is("GAMESTOP CORPORATION C"));
         assertThat(security7.getIsin(), is("US36467W1099"));
         assertThat(security7.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security7.getExchange(), is("NSY"));
 
         // check 1st buy transaction
         BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)
@@ -3466,102 +3507,119 @@ public class DegiroPDFExtractorTest
         assertThat(security1.getName(), is("ISHARES DJ EUROPE"));
         assertThat(security1.getIsin(), is("IE00B52VJ196"));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security1.getExchange(), is("SWX"));
 
         Security security2 = results.stream().filter(i -> i instanceof SecurityItem).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security2.getName(), is("AMUNDI ETF STOX600"));
         assertThat(security2.getIsin(), is("LU1681040223"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security2.getExchange(), is("EPA"));
 
         Security security3 = results.stream().filter(i -> i instanceof SecurityItem).skip(2).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security3.getName(), is("ISHARES MSCI EUROPE ESG"));
         assertThat(security3.getIsin(), is("IE00BFNM3D14"));
         assertThat(security3.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security3.getExchange(), is("XET"));
 
         Security security4 = results.stream().filter(i -> i instanceof SecurityItem).skip(3).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security4.getName(), is("HSBC SP 500 ETF"));
         assertThat(security4.getIsin(), is("IE00B5KQNG97"));
         assertThat(security4.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security4.getExchange(), is("EPA"));
 
         Security security5 = results.stream().filter(i -> i instanceof SecurityItem).skip(4).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security5.getName(), is("XIAOMI CORP. CL.B"));
         assertThat(security5.getIsin(), is("KYG9830T1067"));
         assertThat(security5.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security5.getExchange(), is("FRA"));
 
         Security security6 = results.stream().filter(i -> i instanceof SecurityItem).skip(5).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security6.getName(), is("APPLE INC"));
         assertThat(security6.getIsin(), is("US0378331005"));
         assertThat(security6.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security6.getExchange(), is("XET"));
 
         Security security7 = results.stream().filter(i -> i instanceof SecurityItem).skip(6).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security7.getName(), is("GAMESTOP CORPORATION C"));
         assertThat(security7.getIsin(), is("US36467W1099"));
         assertThat(security7.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security7.getExchange(), is("NSY"));
 
         Security security8 = results.stream().filter(i -> i instanceof SecurityItem).skip(7).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security8.getName(), is("AIRBUS SE"));
         assertThat(security8.getIsin(), is("NL0000235190"));
         assertThat(security8.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security8.getExchange(), is("XET"));
 
         Security security9 = results.stream().filter(i -> i instanceof SecurityItem).skip(8).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security9.getName(), is("RWE AG"));
         assertThat(security9.getIsin(), is("DE0007037129"));
         assertThat(security9.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security9.getExchange(), is("XET"));
 
         Security security10 = results.stream().filter(i -> i instanceof SecurityItem).skip(9).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security10.getName(), is("ETF ISHARES S&P 500 CHF"));
         assertThat(security10.getIsin(), is("IE00B88DZ566"));
         assertThat(security10.getCurrencyCode(), is("CHF"));
+        assertThat(security10.getExchange(), is("SWX"));
 
         Security security11 = results.stream().filter(i -> i instanceof SecurityItem).skip(10).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security11.getName(), is("SERVICENOW INC. COMMO"));
         assertThat(security11.getIsin(), is("US81762P1021"));
         assertThat(security11.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security11.getExchange(), is("NSY"));
 
         Security security12 = results.stream().filter(i -> i instanceof SecurityItem).skip(11).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security12.getName(), is("ACCENTURE PLC. CLASS A"));
         assertThat(security12.getIsin(), is("IE00B4BNMY34"));
         assertThat(security12.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security12.getExchange(), is("NSY"));
 
         Security security13 = results.stream().filter(i -> i instanceof SecurityItem).skip(12).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security13.getName(), is("LYXOR UCITS ETF S&P500"));
         assertThat(security13.getIsin(), is("LU0832435464"));
         assertThat(security13.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security13.getExchange(), is("MIL"));
 
         Security security14 = results.stream().filter(i -> i instanceof SecurityItem).skip(13).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security14.getName(), is("WIRECARD AG"));
         assertThat(security14.getIsin(), is("DE0007472060"));
         assertThat(security14.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security14.getExchange(), is("XET"));
 
         Security security15 = results.stream().filter(i -> i instanceof SecurityItem).skip(14).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security15.getName(), is("ALLIANZ SE"));
         assertThat(security15.getIsin(), is("DE0008404005"));
         assertThat(security15.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security15.getExchange(), is("XET"));
 
         Security security16 = results.stream().filter(i -> i instanceof SecurityItem).skip(16).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security16.getName(), is("CSAM ISHARES SPI (CH)"));
         assertThat(security16.getIsin(), is("CH0237935652"));
         assertThat(security16.getCurrencyCode(), is("CHF"));
+        assertThat(security16.getExchange(), is("SWX"));
 
         Security security17 = results.stream().filter(i -> i instanceof SecurityItem).skip(17).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security17.getName(), is("ISHARES MSCI USA MINIM"));
         assertThat(security17.getIsin(), is("US46429B6974"));
         assertThat(security17.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security17.getExchange(), is("NYA"));
 
         // check 1st buy transaction
         BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)
@@ -3792,12 +3850,14 @@ public class DegiroPDFExtractorTest
         assertThat(security1.getName(), is("MCDONALD'S CORPORATION"));
         assertThat(security1.getIsin(), is("US5801351017"));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security1.getExchange(), is("NSY"));
 
         Security security2 = results.stream().filter(i -> i instanceof SecurityItem).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security2.getName(), is("VANGUARD FTSE AW"));
         assertThat(security2.getIsin(), is("IE00B3RBWM25"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security2.getExchange(), is("EAM"));
 
         // check 1st buy/sell transaction
         BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)
@@ -3882,6 +3942,7 @@ public class DegiroPDFExtractorTest
         assertThat(security.getName(), is("MACYS INC COMMON STOC"));
         assertThat(security.getIsin(), is("US55616P1049"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security.getExchange(), is("NSY"));
 
         // check first transaction
         BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)
@@ -3980,6 +4041,7 @@ public class DegiroPDFExtractorTest
         assertThat(security.getName(), is("APPLE INC. - COMMON ST"));
         assertThat(security.getIsin(), is("US0378331005"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security.getExchange(), is("NDQ"));
 
         // check buy transaction
         BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)
@@ -4042,6 +4104,7 @@ public class DegiroPDFExtractorTest
         assertThat(security.getName(), is("LUMINAR TECHNOLOGIES"));
         assertThat(security.getIsin(), is("US5504241051"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security.getExchange(), is("NDQ"));
 
         // check 1st sell transaction
         BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)
@@ -4199,6 +4262,7 @@ public class DegiroPDFExtractorTest
         assertThat(security.getName(), is("NRG ENERGY INC. COMMO"));
         assertThat(security.getIsin(), is("US6293775085"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security.getExchange(), is("NSY"));
 
         // check 1st buy transaction
         BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)
@@ -4418,6 +4482,7 @@ public class DegiroPDFExtractorTest
         assertThat(security.getName(), is("INVESCO EQQQ NASDAQ-100"));
         assertThat(security.getIsin(), is("IE0032077012"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getExchange(), is("XET"));
 
         // check 1st buy transaction
         BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)
@@ -4502,6 +4567,7 @@ public class DegiroPDFExtractorTest
         assertThat(security.getName(), is("APHRIA INC. - COMMON"));
         assertThat(security.getIsin(), is("CA03765K1049"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security.getExchange(), is("NDQ"));
 
         // check 1st buy transaction
         BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)
@@ -4629,6 +4695,7 @@ public class DegiroPDFExtractorTest
         assertThat(security.getName(), is("AURORA CANNABIS"));
         assertThat(security.getIsin(), is("CA05156X8843"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getExchange(), is("FRA"));
 
         // check 1st buy transaction
         BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)
@@ -4804,6 +4871,7 @@ public class DegiroPDFExtractorTest
         assertThat(security.getName(), is("VANGUARD FTSE ALL-"));
         assertThat(security.getIsin(), is("IE00BK5BQT80"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getExchange(), is("XET"));
 
         // check 1st buy transaction
         BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)
@@ -4903,6 +4971,7 @@ public class DegiroPDFExtractorTest
         assertThat(security.getName(), is("THE TRADE DESK CL A"));
         assertThat(security.getIsin(), is("US88339J1051"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security.getExchange(), is("NDQ"));
 
         // check 1st buy transaction
         BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)

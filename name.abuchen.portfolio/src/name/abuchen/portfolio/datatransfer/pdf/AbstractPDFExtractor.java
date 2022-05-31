@@ -186,9 +186,22 @@ public abstract class AbstractPDFExtractor implements Extractor
         if (nameRowTwo != null)
             name = name + " " + nameRowTwo.trim(); //$NON-NLS-1$
 
+        // exchange must be final so it can be used in the Security creation function
+        // A next step could be to add it to the securityCache.lookup method.
+        final String exchange;
+        if (values.get("exchange") != null && values.get("exchange").trim().length() == 3) //$NON-NLS-1$
+        {
+            exchange = values.get("exchange").trim(); //$NON-NLS-1$
+        }
+        else
+        {
+            exchange = null;
+        }
+        
         Security security = securityCache.lookup(isin, tickerSymbol, wkn, name, () -> {
             Security s = new Security();
             s.setCurrencyCode(asCurrencyCode(values.get("currency"))); //$NON-NLS-1$
+            s.setExchange(exchange);
             return s;
         });
 
