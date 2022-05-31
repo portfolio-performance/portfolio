@@ -2,6 +2,7 @@ package name.abuchen.portfolio.model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -91,9 +92,29 @@ public abstract class Transaction implements Annotated, Adaptable
                 }
 
                 if (amount.getAmount() < lower || amount.getAmount() > upper)
-                    throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorIllegalForexUnit,
-                                    type.toString(), Values.Money.format(forex), exchangeRate,
-                                    Values.Money.format(amount)));
+                {
+                    // do the reverse check b/c small currency amounts might not
+                    // allow for a better exchange rate
+
+                    upper = BigDecimal.valueOf(amount.getAmount() + 1).divide(exchangeRate, Values.MC)
+                                    .setScale(0, RoundingMode.HALF_EVEN).longValue();
+                    lower = BigDecimal.valueOf(amount.getAmount() - 1).divide(exchangeRate, Values.MC)
+                                    .setScale(0, RoundingMode.HALF_EVEN).longValue();
+
+                    if (lower > upper)
+                    {
+                        long temp = lower;
+                        lower = upper;
+                        upper = temp;
+                    }
+
+                    if (forex.getAmount() < lower || forex.getAmount() > upper)
+                    {
+                        throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorIllegalForexUnit,
+                                        type.toString(), Values.Money.format(forex), exchangeRate,
+                                        Values.Money.format(amount)));
+                    }
+                }
             }
         }
 

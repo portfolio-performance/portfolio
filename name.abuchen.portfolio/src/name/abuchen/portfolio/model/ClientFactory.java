@@ -1396,13 +1396,13 @@ public class ClientFactory
     private static void copyClassificationKeys(Classification from, Classification to)
     {
         to.setKey(from.getKey());
-        
+
         Map<String, Classification> fromChildren = from.getChildren().stream()
-                        .collect(Collectors.toMap(Classification::getName, Function.identity(), (r,l) -> null));
-        
+                        .collect(Collectors.toMap(Classification::getName, Function.identity(), (r, l) -> null));
+
         Map<String, Classification> toChildren = to.getChildren().stream()
-                        .collect(Collectors.toMap(Classification::getName, Function.identity(), (r,l) -> null));
-        
+                        .collect(Collectors.toMap(Classification::getName, Function.identity(), (r, l) -> null));
+
         for (Map.Entry<String, Classification> entry : fromChildren.entrySet())
         {
             String key = entry.getKey();
@@ -1453,14 +1453,24 @@ public class ClientFactory
             // recalculate the unit to fix the gross value
         }
 
-        Money updatedGrossValue = Money.of(grossValueUnit.getForex().getCurrencyCode(),
-                        BigDecimal.valueOf(calculatedGrossValue.getAmount())
-                                        .divide(grossValueUnit.getExchangeRate(), Values.MC)
-                                        .setScale(0, RoundingMode.HALF_EVEN).longValue());
+        try
+        {
+            Money updatedGrossValue = Money.of(grossValueUnit.getForex().getCurrencyCode(),
+                            BigDecimal.valueOf(calculatedGrossValue.getAmount())
+                                            .divide(grossValueUnit.getExchangeRate(), Values.MC)
+                                            .setScale(0, RoundingMode.HALF_EVEN).longValue());
 
-        tx.removeUnit(grossValueUnit);
-        tx.addUnit(new Unit(Unit.Type.GROSS_VALUE, calculatedGrossValue, updatedGrossValue,
-                        grossValueUnit.getExchangeRate()));
+            tx.removeUnit(grossValueUnit);
+            tx.addUnit(new Unit(Unit.Type.GROSS_VALUE, calculatedGrossValue, updatedGrossValue,
+                            grossValueUnit.getExchangeRate()));
+        }
+        catch (IllegalArgumentException e)
+        {
+            // ignore in case we are still running into rounding differences
+            // (for example: 4,33 EUR / 131,53 = 0,03 JPY but 0,03 JPY * 131,53
+            // = 3,95 EUR) because otherwise the user cannot open the file at
+            // all (and manually fix the issue)
+        }
     }
 
     @SuppressWarnings("nls")
