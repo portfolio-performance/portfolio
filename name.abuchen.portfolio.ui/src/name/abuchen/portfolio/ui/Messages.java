@@ -1028,7 +1028,6 @@ public class Messages extends NLS
     public static String PrefFinnhubAPIKey;
     public static String PrefLabelAutoSaveFrequency;
     public static String PrefLabelEnableExperimentalFeatures;
-    public static String PrefLabelKeepYourAPIKeyPrivate;
     public static String PrefLabelNote;
     public static String PrefLabelProxyHost;
     public static String PrefLabelProxyPort;
