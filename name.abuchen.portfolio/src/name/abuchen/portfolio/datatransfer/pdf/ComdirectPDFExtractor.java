@@ -253,6 +253,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                     return new BuySellEntryItem(t);
                 });
 
+        addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
         addTaxReturnBlock(type);
     }
@@ -379,6 +380,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                 
                 .wrap(TransactionItem::new);
 
+        addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
 
         block.set(pdfTransaction);
@@ -1106,6 +1108,15 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(TransactionItem::new));
+    }
+
+    private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
+    {
+        transaction
+                //                           Transaktionssteuer          : GBP              213,60 
+                .section("tax", "currency").optional()
+                .match("^.* Transaktionssteuer ([\\s]+)?: ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<tax>[\\.,\\d]+).*$")
+                .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
