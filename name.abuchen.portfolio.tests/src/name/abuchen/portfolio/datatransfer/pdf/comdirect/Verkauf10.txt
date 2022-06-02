@@ -1,0 +1,194 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Ihren Auftrag haben wir gemäß unseren produktbezogenen
+Geschäftsbedingungen "Trading" wie nachstehend ausgeführt.
+Die Wertpapiere haben wir der Abrechnung entsprechend gebucht.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und
+Vollständigkeit zu überprüfen und etwaige Einwendungen
+25449 Quickborn unverzüglich zu erheben.
+fon   : 04106-708 25 00                                                  Tele   
+                                                                              
+                             
+                                       
+                             
+    11111 111
+Depotnr.:        1111111 11 
+            BLZ:             111 111 11
+Vorname Nachname                  
+und Frau Vorname Nachname                                    
+Straße 11                                         
+1111 Stadt                                               
+                             
+                             
+                             
+                                                  
+                                                  
+GESCHÄFTSABRECHNUNG VOM 14.06.2016                                                   
+                                                                                                                                    
+*
+Wertpapierverkauf                                                                                                                   
+Geschäftsnummer   : 11 111111 bis 11 111112                                                                                         
+Ordernummer       : 111111111111      Rechnungsnummer   : 111111111111A011                                                          
+Geschäftstag      : 13.06.2016        Ausführungsplatz  : NEW YORK -NYSE- LISTED                                                    
+                                                          (Kommissionsgeschäft)                                                     
+                                                                                                                                    
+Wertpapier-Bezeichnung                                               WPKNR/ISIN                                                     
+Hornbeck Offshore Svcs Inc.                                              A0B9UT                                                     
+Registered Shares DL -,01                                          US4405431069                                                     
+                                                                                                                                    
+                                                                                                                                    
+Ihre Order wurde wie folgt ausgeführt:                                                                                              
+                                                                                                                                    
+Handelszeit   Nennwert                Zum Kurs von                     Kurswert                                                     
+ 17:50        St.    650              USD  9,24         USD            6.006,00                                                     
+ 17:50        St.    200              USD  9,24         USD            1.848,00                                                     
+ 17:50        St.    100              USD  9,24         USD              924,00                                                     
+ 17:50        St.    100              USD  9,24         USD              924,00                                                     
+ 17:50        St.    100              USD  9,24         USD              924,00                                                     
+ 17:50        St.    137              USD  9,24         USD            1.265,88                                                     
+ 17:50        St.     13              USD  9,24         USD              120,12                                                     
+--------------------------------------------------------------------------------                                                    
+ Summe        St.  1.300              USD  9,24         USD           12.012,00                                                     
+(ggf. gerundet)                                                                                                                     
+--------------------------------------------------------------------------------                                                    
+Eigene Entgelte                                                                                                                     
+                          Gesamtprovision             : USD               38,89-                                                    
+--------------------------------------------------------------------------------                                                    
+Fremde Kosten                                                                                                                       
+                          Fremde Spesen               : USD               14,26-                                                    
+--------------------------------------------------------------------------------                                                    
+                                                                                                                                    
+                                                                                                                                    
+IBAN                                  Valuta        Zu Ihren Gunsten vor Steuern                                                    
+DE11 1111 1111 1111 1111 11   USD     16.06.2016        USD           11.958,85                                                     
+                                                                                                                                    
+Verwahrungs-Art: WERTPAPIERRECHNUNG USA/KANADA                                                                                      
+Teilausführung Ihrer Order                                                                                                          
+                                                                                                                                    
+                                                                                                                                    
+                                                                                                                                    
+Informationen zur steuerlichen Behandlung dieses Geschäftsvorgangs und den auf                                                      
+Ihrem Konto gebuchten Endbetrag finden Sie auf der separaten Steuermitteilung.                                                      
+                                                                                                                                    
+                                                                                                                                    
+Bei Fragen geben Sie bitte die Ordernummer an.                                                                                      
+                                                                                                                                    
+comdirect bank AG                                                                                                                   
+                                                                                                                                    
+Diese Abrechnung wird von der Bank nicht unterschrieben                                                                             
+Die Leistung ist gemäß §4 Nr.8 UStG umsatzsteuerfrei. USt-Id-Nr.: DE 112 279 461                                                    
+A113
+DO15DD/16/04/2010
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Kundennr. /BLZ Bezeichnung
+ 1111111  Vorname  Nachname und Frau Vorname Nachname               
+                                                  
+            
+111 111 11 Straße 11                                 1111 Stadt                                       
+abweichend wirtschaftlich Berechtigter
+                              
+                                              ----                    
+c  o  m   d  i r e  c  t   b  a  n  k    A  G               
+               
+ 2  5  4  5  1   Q  u  i c  k  b  o  r n                   
+0  1  0   1  1111
+                                                  
+T   e  le  f o  n  :             0   4  1  0  6   -  7  0 8 25 00
+F   r a  u                                                  
+ V   o  r n  a  me  N   a  c hname                      D  a  t u  m   :                       1   4  . 0  6  .2016
+u  n   d   F  r a  u    V  o  r  n  a m e  a  Nachname        
+ D  e  p  o  t  n  u  m   m  er:        1   1  1  1  1  1 1 11  
+S   t     S   t  r a ß  e  1  1              
+1111 Stadt                   R   e  f e  r e  n  z  - N   u mmer:     1 1  I A  A  A   1  A   11XA111A                     
+                                      
+                                                  
+                                                  
+                                                  
+Steuerliche Behandlung: Wertpapierverkauf  Nr. 11111111  vom 13.06.2016                                                           
+Stk.           1.300 HORNBECK OFFSH.SVCS DL-01 , WKN / ISIN: A0B9UT  / US4405431069                                               
+Z  u     I h  r e   n    G  u   n   s  t e   n   v  o  r    S  t e  u   e   r n  :                                                         E  U   R                      1   0  .  5   8  3 , 9 9  U S D           11  .9 5 8 ,  8 5   
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+S  te u e rb e m  e ss u n g s g r u n d la g e                                                            E  U   R                    -  1   2  .  6   4  4 , 1 7                          
+                                                                                                                                
+                                                                                                                                
+ K ap i ta le r tr a gs t e ue r  ( 2 ) (8 )                                                              E  U   R                         3  .  0   9  1 , 4 8                          
+ S ol id a ri tä t sz u s c hl a g                                                                      E  U   R                             1   6  9 , 9 6                          
+K  irc h e n s te u e r                                                                              _E  _U   _R  _  _  _   _  _  _   _  _  _  _   _  _  2_   _7  8_ ,_ 1_ 4_                          
+e r s ta t te t e S t e ue r n                                                                         E  U   R                         3  .  5   3  9 , 5 8  U_ S_ D_ _ _ _ _ _ _ _  _ __ 3_ ._ _ 9_9 _ 9, _3 _ 7_   
+                                                                                                                                
+ Zu  Ih r e n G u n s t e n n a c h S t e u er n :                                                                                                   U S D          15.958,2 2   
+Umrechnungen zum Devisenkurs       1,129900                                                                             
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+Die Gutschrift erfolgt mit Valuta 16.06.2016 auf Konto USD 11 11111 11 Bankleitzahl : 111 111 11                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+(2) Durch die Berücksichtigung der Kirchensteuer (8% bzw. 9%) als Sonderausgabe reduziert sich der Kapitalertragsteuersatz auf 24,51% bzw. 24,45%.    
+(8) Aufgrund des mit diesem Geschäft realisierten Verlustes erstatten wir Ihnen bereits abgeführte Steuern.                                           
+KEINE STEUERBESCHEINIGUNG ...
+Bisher einbehaltene bzw. angerechnete Steuer in EUR (4)
+in 2016 einbehaltene einbehaltener einbehaltene angerechneteKapitalertragsteuer Solidaritätszuschlag Kirchensteuer ausländische Quellensteuer
+vor Ermittlung
+           17.418,96               957,40
+            1.567,06             1.236,39
+nach Ermittlung
+           14.327,48 787,44             1.288,92             1.236,39              
+Verrechnungssalden in EUR (4)
+2016 Gewinne / Verluste sonstige anrechenbare verfügbarerin aus Aktien Gewinne / Verluste ausländische Quellensteuer Freistellungsauftrag
+vor Ermittlung
+           25.670,38            11.111,11                 0,00                 0,00
+nach Ermittlung
+           13.026,21            11.111,11
+                0,00                 0,00
+Hinweise zur Ermittlung der Steuerbemessungsgrundlage:                                                                                                             
+                                                                                                                                                                                    
+ zu  Ih r e n G u n s te n  v o r  S te u e rn                                                                                                                                                          E  U R           10.583,99                           
+ An s  ch a  f f un  g  vo  m 1 0 . 0 3  . 20  15            1 . 3 0 0 , 0 0  S  tü  ck                       E_ _U R_ _ _ _ _ _ _ _ _ _ _- _2 3_ ._ 2_ 2__8_,1__7                                                   
+Summe der Anschaffungskosten aus Anschaffungsvorgängen nach                                                                                                      
+a b g e l tu n g s te u e rr e le v a n te m  S t ic h ta g                                                                                                                                                  _E  U_ R__ _ _ _ _ _  _ __ _ -__2_3_._2_2_8_,_1_7                           
+S  te u e r b e m e s s u n g s g r u n d la g e  v o r  V  er l u s tv e r re c h n u n g                                                                                                                   E  U R          -12.644,17                           
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+Sonstige Erläuterungen:                                                                                                 
+Bei Fremdwährungsgeschäften werden für die Ermittlung der Steuerbemessungsgrundlage sowohl der Veräußerungserlös        
+als auch die Anschaffungskosten in Euro umgerechnet (§ 20 Abs. 4 S. 1 2. Halbsatz EStG).                                
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+comdirect bank AG                                                                                                                                     
+Diese Abrechnung ist maschinell erstellt und wird nicht unterschrieben.                                                                               
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+(4) Die ausgewiesenen EUR-Beträge spiegeln den Stand zum Abrechnungszeitpunkt wider.                                                                  
+KEINE STEUERBESCHEINIGUNG
