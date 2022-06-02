@@ -285,10 +285,10 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
 
     private void addTaxRefundTransaction()
     {
-        DocumentType type = new DocumentType("(Dividendenaussch.ttung|Dividend Payment)");
+        DocumentType type = new DocumentType("(Dividendenaussch.ttung|Dividend Payment|R.ckerstattung Quellensteuer)");
         this.addDocumentTyp(type);
 
-        Block block = new Block("(Dividendenart|Type of dividend): (R.ckerstattung Quellensteuer|Refund withholding tax)");
+        Block block = new Block("^(Dividendenart|Type of dividend): (R.ckerstattung Quellensteuer|Refund withholding tax)$");
         type.addBlock(block);
         block.set(new Transaction<AccountTransaction>().subject(() -> {
             AccountTransaction transaction = new AccountTransaction();

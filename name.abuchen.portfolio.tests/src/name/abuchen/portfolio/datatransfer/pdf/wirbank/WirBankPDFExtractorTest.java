@@ -1366,4 +1366,47 @@ public class WirBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("CHF", Values.Amount.factorize(0.00))));
     }
+
+    @Test
+    public void testSteuerrueckerstattung01()
+    {
+        Client client = new Client();
+
+        WirBankPDFExtractor extractor = new WirBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steuerrueckerstattung01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("CH0030849654"));
+        assertThat(security.getName(), is("CSIF Pacific ex Japan"));
+        assertThat(security.getCurrencyCode(), is("CHF"));
+
+        // check tax refund transaction
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-23T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(0.966)));
+        assertThat(transaction.getSource(), is("Steuerrueckerstattung01.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of("CHF", Values.Amount.factorize(11.59))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of("CHF", Values.Amount.factorize(11.59))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
+    }
 }
