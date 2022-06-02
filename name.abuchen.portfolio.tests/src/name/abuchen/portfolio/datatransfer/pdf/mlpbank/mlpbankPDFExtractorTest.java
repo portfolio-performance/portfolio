@@ -633,4 +633,144 @@ public class mlpbankPDFExtractorTest
             assertThat(transaction.getNote(), is("Entgeld Verwaltungsentgeld Q4/2021"));
         }
     }
+
+    @Test
+    public void testDepotauszug02()
+    {
+        MLPBankingAGPDFExtractor extractor = new MLPBankingAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Depotauszug02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(5));
+
+        // check transaction
+        // get transactions
+        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
+        assertThat(results.stream().filter(i -> i instanceof TransactionItem).count(), is(5L));
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-07-15T00:00")));
+            assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50.00))));
+            assertThat(transaction.getSource(), is("Depotauszug02.txt"));
+            assertThat(transaction.getNote(), is("Lastschrifteinr."));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-08-15T00:00")));
+            assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50.00))));
+            assertThat(transaction.getSource(), is("Depotauszug02.txt"));
+            assertThat(transaction.getNote(), is("Lastschrifteinr."));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-09-15T00:00")));
+            assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50.00))));
+            assertThat(transaction.getSource(), is("Depotauszug02.txt"));
+            assertThat(transaction.getNote(), is("Lastschrifteinr."));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-07-04T00:00")));
+            assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.27))));
+            assertThat(transaction.getSource(), is("Depotauszug02.txt"));
+            assertThat(transaction.getNote(), is("Einzugsermächtigung Vermögensdepot Q2/2016"));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-07-04T00:00")));
+            assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.57))));
+            assertThat(transaction.getSource(), is("Depotauszug02.txt"));
+            assertThat(transaction.getNote(), is("Einzugsermächtigung Vermögensdepot Q2/2016"));
+        }
+    }
+
+    @Test
+    public void testDepotauszug03()
+    {
+        MLPBankingAGPDFExtractor extractor = new MLPBankingAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Depotauszug03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(3));
+
+        // check transaction
+        // get transactions
+        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
+        assertThat(results.stream().filter(i -> i instanceof TransactionItem).count(), is(3L));
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2012-01-16T00:00")));
+            assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50.00))));
+            assertThat(transaction.getSource(), is("Depotauszug03.txt"));
+            assertThat(transaction.getNote(), is("Lastschrifteinr."));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2012-02-15T00:00")));
+            assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50.00))));
+            assertThat(transaction.getSource(), is("Depotauszug03.txt"));
+            assertThat(transaction.getNote(), is("Lastschrifteinr."));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2012-03-15T00:00")));
+            assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50.00))));
+            assertThat(transaction.getSource(), is("Depotauszug03.txt"));
+            assertThat(transaction.getNote(), is("Lastschrifteinr."));
+        }
+    }
 }

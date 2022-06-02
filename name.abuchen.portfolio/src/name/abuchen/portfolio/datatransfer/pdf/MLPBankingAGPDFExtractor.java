@@ -226,7 +226,7 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
     {
         DocumentType type = new DocumentType("Verm.gensdepot Konto", (context, lines) -> {
             Pattern pCurrency = Pattern.compile("^(?<currency>[\\w]{3})\\-Konto Kontonummer .*$");
-            Pattern pYear = Pattern.compile("^.* Kontoauszug Nr\\. ([\\s]+)?[\\d]+\\/(?<year>[\\d]{4})$");
+            Pattern pYear = Pattern.compile("^.* Kontoauszug ([\\s]+)?Nr\\. ([\\s]+)?[\\d]+\\/(?<year>[\\d]{4})$");
 
             for (String line : lines)
             {
@@ -279,7 +279,7 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
                     return null;
                 }));
 
-        Block feeblock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. ENTGELT .* [S|H]$");
+        Block feeblock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. (ENTGELT|EINZUGSERMAECHTIGUNG) .* [S|H]$");
         type.addBlock(feeblock);
         feeblock.set(new Transaction<AccountTransaction>()
 
@@ -289,34 +289,139 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
                     return t;
                 })
 
-                .section("day", "month", "note1", "amount", "sign", "note2", "note3")
-                .match("^[\\d]{2}\\.[\\d]{2}\\. (?<day>[\\d]{2})\\.(?<month>[\\d]{2})\\. (?<note1>ENTGELT) .* (?<amount>[\\.,\\d]+) (?<sign>[S|H])$")
-                .match("^.* (?<note2>(DEPOTPREIS|VERWALTUNGSENTGELT)) [\\d]+ (?<note3>[\\w]{2}\\/[\\d]{4}) .*$")
-                .assign((t, v) -> {
-                    Map<String, String> context = type.getCurrentContext();
+                .oneOf(
+                                section -> section
+                                        .attributes("day", "month", "note1", "amount", "sign", "note2", "note3")
+                                        .match("^[\\d]{2}\\.[\\d]{2}\\. (?<day>[\\d]{2})\\.(?<month>[\\d]{2})\\. (?<note1>ENTGELT|EINZUGSERMAECHTIGUNG) .* (?<amount>[\\.,\\d]+) (?<sign>[S|H])$")
+                                        .match("^.* (?<note2>(DEPOTPREIS|VERWALTUNGSENTGELT|VERMOEGENSDEPOT)) [\\d]+ (?<note3>[\\w]{2}\\/[\\d]{4}) .*$")
+                                        .assign((t, v) -> {
+                                            Map<String, String> context = type.getCurrentContext();
 
-                    // Is sign --> "S" change from FEES_REFUND to FEES
-                    if (v.get("sign").equals("S"))
-                        t.setType(AccountTransaction.Type.FEES);
-                    
-                    // create a long date from the year in the context
-                    t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + context.get("year")));
+                                            // Is sign --> "S" change from FEES_REFUND to FEES
+                                            if (v.get("sign").equals("S"))
+                                                t.setType(AccountTransaction.Type.FEES);
+                                            
+                                            // create a long date from the year in the context
+                                            t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + context.get("year")));
 
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
 
-                    // Formatting some notes
-                    if (v.get("note1").equals("ENTGELT"))
-                        v.put("note1", "Entgeld");
+                                            // Formatting some notes
+                                            if (v.get("note1").equals("ENTGELT"))
+                                                v.put("note1", "Entgeld");
 
-                    if (v.get("note2").equals("DEPOTPREIS"))
-                        v.put("note2", "Depotpreis");
+                                            if (v.get("note1").equals("EINZUGSERMAECHTIGUNG"))
+                                                v.put("note1", "Einzugsermächtigung");
 
-                    if (v.get("note2").equals("VERWALTUNGSENTGELT"))
-                        v.put("note2", "Verwaltungsentgeld");
+                                            if (v.get("note2").equals("DEPOTPREIS"))
+                                                v.put("note2", "Depotpreis");
 
-                    t.setNote(v.get("note1") + " " + v.get("note2") + " " + v.get("note3"));
-                })
+                                            if (v.get("note2").equals("VERWALTUNGSENTGELT"))
+                                                v.put("note2", "Verwaltungsentgeld");
+
+                                            if (v.get("note2").equals("VERMOEGENSDEPOT"))
+                                                v.put("note2", "Vermögensdepot");
+
+                                            t.setNote(v.get("note1") + " " + v.get("note2") + " " + v.get("note3"));
+                                        })
+                                ,
+                                section -> section
+                                        .attributes("day", "month", "note1", "amount", "sign", "note2", "note3", "note4")
+                                        .match("^[\\d]{2}\\.[\\d]{2}\\. (?<day>[\\d]{2})\\.(?<month>[\\d]{2})\\. (?<note1>ENTGELT|EINZUGSERMAECHTIGUNG) .* (?<amount>[\\.,\\d]+) (?<sign>[S|H])$")
+                                        .match("^.* (?<note2>(DEPOTPREIS|VERWALTUNGSENTGELT|VERMOEGENSDEPOT)) VERW\\.G\\. (?<note3>[\\d]{4}) (?<note4>QUARTAL .*)$")
+                                        .assign((t, v) -> {
+                                            Map<String, String> context = type.getCurrentContext();
+
+                                            // Is sign --> "S" change from FEES_REFUND to FEES
+                                            if (v.get("sign").equals("S"))
+                                                t.setType(AccountTransaction.Type.FEES);
+                                            
+                                            // create a long date from the year in the context
+                                            t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + context.get("year")));
+
+                                            t.setAmount(asAmount(v.get("amount")));
+                                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+
+                                            // Formatting some notes
+                                            if (v.get("note1").equals("ENTGELT"))
+                                                v.put("note1", "Entgeld");
+
+                                            if (v.get("note1").equals("EINZUGSERMAECHTIGUNG"))
+                                                v.put("note1", "Einzugsermächtigung");
+
+                                            if (v.get("note2").equals("DEPOTPREIS"))
+                                                v.put("note2", "Depotpreis");
+
+                                            if (v.get("note2").equals("VERWALTUNGSENTGELT"))
+                                                v.put("note2", "Verwaltungsentgeld");
+
+                                            if (v.get("note2").equals("VERMOEGENSDEPOT"))
+                                                v.put("note2", "Vermögensdepot");
+
+                                            if (v.get("note4").equals("QUARTAL I"))
+                                                v.put("note4", "Q1/");
+
+                                            if (v.get("note4").equals("QUARTAL II"))
+                                                v.put("note4", "Q2/");
+
+                                            if (v.get("note4").equals("QUARTAL III"))
+                                                v.put("note4", "Q3/");
+
+                                            if (v.get("note4").equals("QUARTAL IV"))
+                                                v.put("note4", "Q4/");
+
+                                            t.setNote(v.get("note1") + " " + v.get("note2") + " " + v.get("note4") + v.get("note3"));
+                                        })
+                                ,
+                                section -> section
+                                        .attributes("day", "month", "note1", "amount", "sign", "note2", "note3", "note4")
+                                        .match("^[\\d]{2}\\.[\\d]{2}\\. (?<day>[\\d]{2})\\.(?<month>[\\d]{2})\\. (?<note1>ENTGELT|EINZUGSERMAECHTIGUNG) .* (?<amount>[\\.,\\d]+) (?<sign>[S|H])$")
+                                        .match("^.* (?<note2>(DEPOTPREIS|VERWALTUNGSENTGELT|VERMOEGENSDEPOT)) (?<note3>[\\d]{4}) (?<note4>QUARTAL .*)$")
+                                        .assign((t, v) -> {
+                                            Map<String, String> context = type.getCurrentContext();
+
+                                            // Is sign --> "S" change from FEES_REFUND to FEES
+                                            if (v.get("sign").equals("S"))
+                                                t.setType(AccountTransaction.Type.FEES);
+                                            
+                                            // create a long date from the year in the context
+                                            t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + context.get("year")));
+
+                                            t.setAmount(asAmount(v.get("amount")));
+                                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+
+                                            // Formatting some notes
+                                            if (v.get("note1").equals("ENTGELT"))
+                                                v.put("note1", "Entgeld");
+
+                                            if (v.get("note1").equals("EINZUGSERMAECHTIGUNG"))
+                                                v.put("note1", "Einzugsermächtigung");
+
+                                            if (v.get("note2").equals("DEPOTPREIS"))
+                                                v.put("note2", "Depotpreis");
+
+                                            if (v.get("note2").equals("VERWALTUNGSENTGELT"))
+                                                v.put("note2", "Verwaltungsentgeld");
+
+                                            if (v.get("note2").equals("VERMOEGENSDEPOT"))
+                                                v.put("note2", "Vermögensdepot");
+
+                                            if (v.get("note4").equals("QUARTAL I"))
+                                                v.put("note4", "Q1/");
+
+                                            if (v.get("note4").equals("QUARTAL II"))
+                                                v.put("note4", "Q2/");
+
+                                            if (v.get("note4").equals("QUARTAL III"))
+                                                v.put("note4", "Q3/");
+
+                                            if (v.get("note4").equals("QUARTAL IV"))
+                                                v.put("note4", "Q4/");
+
+                                            t.setNote(v.get("note1") + " " + v.get("note2") + " " + v.get("note4") + v.get("note3"));
+                                        })
+                        )
 
                 .wrap(t -> {
                     if (t.getAmount() != 0)
