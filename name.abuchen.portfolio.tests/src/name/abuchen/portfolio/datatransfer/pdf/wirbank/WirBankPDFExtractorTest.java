@@ -501,6 +501,101 @@ public class WirBankPDFExtractorTest
         Status s = c.process(entry, account, entry.getPortfolio());
         assertThat(s, is(Status.OK_STATUS));
     }
+    
+    @Test
+    public void testWertpapierKauf07()
+    {
+        Client client = new Client();
+
+        WirBankPDFExtractor extractor = new WirBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf07.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("CH0037606552"));
+        assertThat(security.getName(), is("CSIF Europe ex CH"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check buy sell transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-05-19T00:00")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.477)));
+        assertThat(entry.getSource(), is("Kauf07.txt"));
+        assertNull(entry.getNote());
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of("CHF", Values.Amount.factorize(421.47))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of("CHF", Values.Amount.factorize(421.47))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
+
+        Unit grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
+                        .orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(402.34))));
+    }
+
+    @Test
+    public void testWertpapierKauf07WithSecurityInCHF()
+    {
+        Security security = new Security("CSIF Europe ex CH", "CHF");
+        security.setIsin("CH0037606552");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        WirBankPDFExtractor extractor = new WirBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf07.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        // check buy sell transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-05-19T00:00")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.477)));
+        assertThat(entry.getSource(), is("Kauf07.txt"));
+        assertNull(entry.getNote());
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of("CHF", Values.Amount.factorize(421.47))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of("CHF", Values.Amount.factorize(421.47))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
+
+        CheckCurrenciesAction c = new CheckCurrenciesAction();
+        Account account = new Account();
+        account.setCurrencyCode("CHF");
+        Status s = c.process(entry, account, entry.getPortfolio());
+        assertThat(s, is(Status.OK_STATUS));
+    }
 
     @Test
     public void testInterest01()
