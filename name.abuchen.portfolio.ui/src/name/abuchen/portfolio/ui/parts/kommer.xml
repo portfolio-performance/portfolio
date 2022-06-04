@@ -4183,7 +4183,7 @@
                   </classification>
                   <classification>
                     <id>country_TR</id>
-                    <name>Türkei</name>
+                    <name>Türkiye</name>
                     <color>#9df2d3</color>
                     <parent reference="../../.."/>
                     <children/>
