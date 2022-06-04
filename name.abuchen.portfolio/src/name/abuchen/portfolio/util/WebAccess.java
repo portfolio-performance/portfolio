@@ -117,8 +117,8 @@ public class WebAccess
     }
 
     public static final RequestConfig defaultRequestConfig = RequestConfig.custom()
-                    .setConnectTimeout(Timeout.ofSeconds(2)) //
-                    .setResponseTimeout(Timeout.ofSeconds(2)) //
+                    .setConnectTimeout(Timeout.ofSeconds(5)) //
+                    .setResponseTimeout(Timeout.ofSeconds(20)) //
                     .setCookieSpec(StandardCookieSpec.STRICT) //
                     .build();
 
