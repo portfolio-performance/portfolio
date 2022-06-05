@@ -13,6 +13,7 @@ import static name.abuchen.portfolio.util.HolidayName.CORPUS_CHRISTI;
 import static name.abuchen.portfolio.util.HolidayName.DEFENDER_OF_THE_FATHERLAND_DAY;
 import static name.abuchen.portfolio.util.HolidayName.EARLY_MAY_BANK_HOLIDAY;
 import static name.abuchen.portfolio.util.HolidayName.EASTER_MONDAY;
+import static name.abuchen.portfolio.util.HolidayName.EXTRA_HOLIDAY;
 import static name.abuchen.portfolio.util.HolidayName.FAMILY_DAY;
 import static name.abuchen.portfolio.util.HolidayName.FIRST_CHRISTMAS_DAY;
 import static name.abuchen.portfolio.util.HolidayName.GOOD_FRIDAY;
