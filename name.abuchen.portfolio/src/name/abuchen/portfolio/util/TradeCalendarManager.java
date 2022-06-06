@@ -176,12 +176,12 @@ public class TradeCalendarManager
         // https://six-group.com/exchanges/exchange_traded_products/trading/trading_and_settlement_calendar_de.html
         tc = new TradeCalendar("six", Messages.LabelTradeCalendarSix, STANDARD_WEEKEND); //$NON-NLS-1$
         tc.add(fixed(NEW_YEAR, Month.JANUARY, 1));
-        tc.add(fixed(BERCHTOLDSTAG, Month.JANUARY, 2));
+        tc.add(fixed(BERCHTOLDSTAG, Month.JANUARY, 2).exceptIn(2002));
         tc.add(easter(GOOD_FRIDAY, -2));
         tc.add(easter(EASTER_MONDAY, 1));
         tc.add(fixed(LABOUR_DAY, Month.MAY, 1));
-        tc.add(easter(ASCENSION_DAY, 39));
-        tc.add(easter(WHIT_MONDAY, 50));
+        tc.add(easter(ASCENSION_DAY, 39).exceptIn(2002));
+        tc.add(easter(WHIT_MONDAY, 50).exceptIn(2002));
         tc.add(fixed(NATION_DAY, Month.AUGUST, 1).validTo(2000));
         tc.add(fixed(NATION_DAY, Month.AUGUST, 1).validFrom(2006));
         tc.add(fixed(CHRISTMAS_EVE, Month.DECEMBER, 24));
