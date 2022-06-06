@@ -187,6 +187,8 @@ public class TradeCalendarManager
         tc.add(fixed(FIRST_CHRISTMAS_DAY, Month.DECEMBER, 25));
         tc.add(fixed(SECOND_CHRISTMAS_DAY, Month.DECEMBER, 26));
         tc.add(fixed(NEW_YEARS_EVE, Month.DECEMBER, 31));
+        // one-time holidays
+        tc.add(fixed(EXTRA_HOLIDAY, Month.JANUARY, 3).onlyIn(2000));
         CACHE.put(tc.getCode(), tc);
 
         // see Italian Stock Exchange trading days on their official website:
