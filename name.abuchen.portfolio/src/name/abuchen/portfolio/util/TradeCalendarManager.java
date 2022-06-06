@@ -185,8 +185,8 @@ public class TradeCalendarManager
         tc.add(fixed(NATION_DAY, Month.AUGUST, 1).validTo(2000));
         tc.add(fixed(NATION_DAY, Month.AUGUST, 1).validFrom(2006));
         tc.add(fixed(CHRISTMAS_EVE, Month.DECEMBER, 24));
-        tc.add(fixed(FIRST_CHRISTMAS_DAY, Month.DECEMBER, 25));
-        tc.add(fixed(SECOND_CHRISTMAS_DAY, Month.DECEMBER, 26));
+        tc.add(fixed(CHRISTMAS, Month.DECEMBER, 25));
+        tc.add(fixed(SAINT_STEPHEN, Month.DECEMBER, 26));
         tc.add(fixed(NEW_YEARS_EVE, Month.DECEMBER, 31));
         // one-time holidays
         tc.add(fixed(EXTRA_HOLIDAY, Month.JANUARY, 3).onlyIn(2000));
