@@ -317,15 +317,18 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         )
 
                 // 000000000  EUR            00000000      15.12.2010         EUR             335,92
+                // Gutschrift auf Konto                    Valuta             Zu Ihren Gunsten        
                 .section("date")
-                .match("^.* Zu Ihren Gunsten vor Steuern.*$")
+                .match("^.* Zu Ihren Gunsten( vor Steuern)?.*$")
                 .match("^.* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) ([\\s]+)?[\\w]{3} ([\\s]+)?[\\.,\\d]+.*$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                 // Verrechnung über Konto                  Valuta       Zu Ihren Gunsten vor Steuern
                 // 0000000 00     EUR                      27.04.2009         EUR           1.546,13
+                // Gutschrift auf Konto                    Valuta             Zu Ihren Gunsten        
+                // 1111111 11     EUR                      15.05.2008         EUR             126,24  
                 .section("currency", "amount")
-                .match("^.* Zu Ihren Gunsten vor Steuern.*$")
+                .match("^.* Zu Ihren Gunsten( vor Steuern)?.*$")
                 .match("^.* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<amount>[\\.,\\d]+).*$")
                 .assign((t, v) -> {
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
