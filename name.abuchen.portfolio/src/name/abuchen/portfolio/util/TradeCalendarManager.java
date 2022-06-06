@@ -182,7 +182,8 @@ public class TradeCalendarManager
         tc.add(fixed(LABOUR_DAY, Month.MAY, 1));
         tc.add(easter(ASCENSION_DAY, 39));
         tc.add(easter(WHIT_MONDAY, 50));
-        tc.add(fixed(NATION_DAY, Month.AUGUST, 1));
+        tc.add(fixed(NATION_DAY, Month.AUGUST, 1).validTo(2000));
+        tc.add(fixed(NATION_DAY, Month.AUGUST, 1).validFrom(2006));
         tc.add(fixed(CHRISTMAS_EVE, Month.DECEMBER, 24));
         tc.add(fixed(FIRST_CHRISTMAS_DAY, Month.DECEMBER, 25));
         tc.add(fixed(SECOND_CHRISTMAS_DAY, Month.DECEMBER, 26));
