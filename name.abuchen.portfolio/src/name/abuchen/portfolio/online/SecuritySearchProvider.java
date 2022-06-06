@@ -9,6 +9,11 @@ import name.abuchen.portfolio.model.Security;
 
 public interface SecuritySearchProvider
 {
+    /**
+     * Returns the technical identifier of the security search provider.
+     */
+    String getId();
+
     public interface ResultItem
     {
         String getName();

@@ -7,6 +7,13 @@ import name.abuchen.portfolio.online.SecuritySearchProvider;
 
 public class PortfolioReportNetSearchProvider implements SecuritySearchProvider
 {
+    public static final String ID = "PORTFOLIO-REPORT"; //$NON-NLS-1$
+
+    @Override
+    public String getId()
+    {
+        return ID;
+    }
 
     @Override
     public String getName()

@@ -16,6 +16,14 @@ import name.abuchen.portfolio.util.WebAccess;
 
 public class YahooSearchProvider implements SecuritySearchProvider
 {
+    public static final String ID = "YAHOO"; //$NON-NLS-1$
+
+    @Override
+    public String getId()
+    {
+        return ID;
+    }
+
     @Override
     public String getName()
     {
