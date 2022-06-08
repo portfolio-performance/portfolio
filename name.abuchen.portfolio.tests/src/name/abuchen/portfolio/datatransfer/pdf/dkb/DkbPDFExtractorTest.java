@@ -3427,12 +3427,12 @@ public class DkbPDFExtractorTest
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug14.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(3));
+        assertThat(results.size(), is(6));
 
         // check transaction
         // get transactions
         Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
-        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(3L));
+        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(6L));
         if (iter.hasNext())
         {
             Item item = iter.next();
@@ -3447,6 +3447,49 @@ public class DkbPDFExtractorTest
             assertThat(transaction.getNote(), is("Abrechnungszeitraum vom 01.01.2022 bis 31.03.2022"));
         }
 
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-04-21T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(161.65)));
+            assertThat(transaction.getSource(), is("GiroKontoauszug14.txt"));
+            assertThat(transaction.getNote(), is("Verfüg. Geldautom. FW"));
+        }
+        
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-04-22T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(69)));
+            assertThat(transaction.getSource(), is("GiroKontoauszug14.txt"));
+            assertThat(transaction.getNote(), is("Kartenzahlung onl"));
+        }
+        
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-04-25T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(4.01)));
+            assertThat(transaction.getSource(), is("GiroKontoauszug14.txt"));
+            assertThat(transaction.getNote(), is("Kartenzahlung onl FW"));
+        }
+        
         if (iter.hasNext())
         {
             Item item = iter.next();
