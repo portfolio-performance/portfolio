@@ -642,9 +642,10 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         + "|Dauerauftrag"
                         + "|Basislastschrift"
                         + "|Lastschrift"
-                        + "|Kartenzahlung"
+                        + "|Kartenzahlung.*"
                         + "|Kreditkartenabr\\."
-                        + "|Verf.gung Geldautomat) "
+                        + "|Verf.gung Geldautomat"
+                        + "|Verf.g\\. Geldautom\\. FW) "
                         + "[\\.,\\d]+$");
         type.addBlock(removalBlock);
         removalBlock.set(new Transaction<AccountTransaction>()
@@ -661,9 +662,10 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                 + "|Dauerauftrag"
                                 + "|Basislastschrift"
                                 + "|Lastschrift"
-                                + "|Kartenzahlung"
+                                + "|Kartenzahlung.*"
                                 + "|Kreditkartenabr\\."
-                                + "|Verf.gung Geldautomat) "
+                                + "|Verf.gung Geldautomat"
+                                + "|Verf.g\\. Geldautom\\. FW) "
                                 + "(?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
