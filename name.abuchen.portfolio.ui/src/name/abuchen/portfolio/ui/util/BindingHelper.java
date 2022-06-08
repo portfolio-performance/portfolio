@@ -471,15 +471,17 @@ public class BindingHelper
         l.setText(label);
 
         final Text txtValue = new Text(editArea, SWT.BORDER | style);
-        txtValue.addFocusListener(new FocusAdapter()
+        if ((style & SWT.MULTI) == 0)
         {
-            @Override
-            public void focusGained(FocusEvent e)
+            txtValue.addFocusListener(new FocusAdapter()
             {
-                txtValue.selectAll();
-            }
-        });
-
+                @Override
+                public void focusGained(FocusEvent e)
+                {
+                    txtValue.selectAll();
+                }
+            });
+        }
         if (lenghtInCharacters == SWT.DEFAULT)
             GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(txtValue);
         else

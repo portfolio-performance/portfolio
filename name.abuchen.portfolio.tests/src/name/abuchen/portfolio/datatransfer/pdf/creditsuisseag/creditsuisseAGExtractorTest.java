@@ -1,15 +1,13 @@
 package name.abuchen.portfolio.datatransfer.pdf.creditsuisseag;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.junit.Test;
 
@@ -47,24 +45,23 @@ public class creditsuisseAGExtractorTest
         new AssertImportActions().check(results, CurrencyUnit.USD);
 
         // check security
-        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst()
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US46284V1017"));
         assertThat(security.getName(), is("Registered Shs Iron Mountain Inc"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
-        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
-        assertThat(item.isPresent(), is(true));
-
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)
-                        .collect(Collectors.toList()).get(0).getSubject();
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-06-08T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-06-08T18:32:46")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(900)));
+        assertThat(entry.getSource(), is("Kauf01.txt"));
+        assertNull(entry.getNote());
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(27776.51))));
@@ -75,16 +72,25 @@ public class creditsuisseAGExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(463.60))));
 
-        // check fee-refund in buy sell transaction
-        item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
-        assertThat(item.isPresent(), is(true));
-        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
-        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+        // check fee refund transaction
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
+
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-08T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(900)));
+        assertThat(transaction.getSource(), is("Kauf01.txt"));
+        assertNull(transaction.getNote());
+
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(41.81))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(41.81))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -101,24 +107,23 @@ public class creditsuisseAGExtractorTest
         new AssertImportActions().check(results, CurrencyUnit.USD);
 
         // check security
-        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst()
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("XS1055787680"));
         assertThat(security.getName(), is("6.25 % Fixed Rate Notes Norddeutsche"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
-        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
-        assertThat(item.isPresent(), is(true));
-
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)
-                        .collect(Collectors.toList()).get(0).getSubject();
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-09-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-09-16T09:31:35")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2000)));
+        assertThat(entry.getSource(), is("Kauf02.txt"));
+        assertNull(entry.getNote());
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(190182.49))));
@@ -129,16 +134,25 @@ public class creditsuisseAGExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1413.65))));
 
-        // check fee-refund in buy sell transaction
-        item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
-        assertThat(item.isPresent(), is(true));
-        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
-        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+        // check fee refund transaction
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
+
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-09-16T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(2000)));
+        assertThat(transaction.getSource(), is("Kauf02.txt"));
+        assertNull(transaction.getNote());
+
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(40.48))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(40.48))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -155,21 +169,23 @@ public class creditsuisseAGExtractorTest
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst()
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("GB00B03MLX29"));
         assertThat(security.getName(), is("Akt. -A- Royal Dutch Shell PLC"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)
-                        .collect(Collectors.toList()).get(0).getSubject();
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-04-30T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-04-30T17:26:53")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1000)));
+        assertThat(entry.getSource(), is("Verkauf01.txt"));
+        assertNull(entry.getNote());
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(28744.30))));
@@ -195,24 +211,23 @@ public class creditsuisseAGExtractorTest
         new AssertImportActions().check(results, CurrencyUnit.USD);
 
         // check security
-        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst()
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US88163VAD10"));
         assertThat(security.getName(), is("6.15 % Notes Teva Pharmaceutical Finance"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
-        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
-        assertThat(item.isPresent(), is(true));
-
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem)
-                        .collect(Collectors.toList()).get(0).getSubject();
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-02-22T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-02-22T09:00:55")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1000)));
+        assertThat(entry.getSource(), is("Verkauf02.txt"));
+        assertNull(entry.getNote());
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(111718.52))));
@@ -223,16 +238,24 @@ public class creditsuisseAGExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(844.82))));
 
-        // check fee-refund in buy sell transaction
-        item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
-        assertThat(item.isPresent(), is(true));
-        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
-        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+        // check fee refund transaction
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
+
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-22T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(1000)));
+        assertThat(transaction.getSource(), is("Verkauf02.txt"));
+        assertNull(transaction.getNote());
+
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(44.69))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(44.69))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.0))));
     }
 
     @Test
@@ -249,28 +272,30 @@ public class creditsuisseAGExtractorTest
         new AssertImportActions().check(results, CurrencyUnit.USD);
 
         // check security
-        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst()
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("XS1055787680"));
         assertThat(security.getName(), is("6.25 % FIXED RATE NOTES NORDDEUTSCHE"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-04-10T00:00")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-04-12T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(2000)));
+        assertThat(transaction.getSource(), is("Dividende01.txt"));
+        assertThat(transaction.getNote(), is("Semesterzinsen"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(6250.00))));
-        assertThat(transaction.getGrossValue(), 
+        assertThat(transaction.getGrossValue(),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(6250.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), 
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), 
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
     }
 
@@ -288,28 +313,30 @@ public class creditsuisseAGExtractorTest
         new AssertImportActions().check(results, CurrencyUnit.USD);
 
         // check security
-        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst()
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US46284V1017"));
         assertThat(security.getName(), is("REGISTERED SHS IRON MOUNTAIN INC"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-06T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(900)));
+        assertThat(transaction.getSource(), is("Dividende02.txt"));
+        assertThat(transaction.getNote(), is("Quartalsdividende"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(389.65))));
-        assertThat(transaction.getGrossValue(), 
+        assertThat(transaction.getGrossValue(),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(556.65))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), 
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(167.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), 
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
     }
 }

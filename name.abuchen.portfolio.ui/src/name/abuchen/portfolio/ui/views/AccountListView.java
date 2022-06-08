@@ -31,6 +31,7 @@ import org.eclipse.swt.widgets.Display;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MutableMoney;
 import name.abuchen.portfolio.money.Values;
@@ -251,7 +252,7 @@ public class AccountListView extends AbstractFinanceView implements Modification
 
         addAttributeColumns(accountColumns);
 
-        accountColumns.createColumns();
+        accountColumns.createColumns(true);
 
         accounts.getTable().setHeaderVisible(true);
         accounts.getTable().setLinesVisible(true);
@@ -338,7 +339,7 @@ public class AccountListView extends AbstractFinanceView implements Modification
             return;
 
         List<AccountTransaction> tx = new ArrayList<>(account.getTransactions());
-        Collections.sort(tx, new AccountTransaction.ByDateAmountTypeAndHashCode());
+        Collections.sort(tx, Transaction.BY_DATE);
 
         MutableMoney balance = MutableMoney.of(account.getCurrencyCode());
         for (AccountTransaction t : tx)

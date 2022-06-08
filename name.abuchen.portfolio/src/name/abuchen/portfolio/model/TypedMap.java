@@ -55,6 +55,9 @@ public class TypedMap extends HashMap<String, Object>
 
         if (answer instanceof Boolean)
             return (Boolean) answer;
+        
+        if (answer instanceof String)
+            return Boolean.getBoolean((String)answer);
 
         throw new IllegalArgumentException(key);
     }

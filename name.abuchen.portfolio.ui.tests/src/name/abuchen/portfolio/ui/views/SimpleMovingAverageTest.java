@@ -22,6 +22,8 @@ public class SimpleMovingAverageTest
 {
     private Security securityOnePrice;
     private Security securityTenPrices;
+    private Security securitySevenPricesWithGaps; // no prices for 06.01.2017,
+                                                  // 07.01.2017 and 08.01.2017
 
     @Before
     public void prepareSecurity()
@@ -29,6 +31,7 @@ public class SimpleMovingAverageTest
 
         securityOnePrice = new Security();
         securityTenPrices = new Security();
+        securitySevenPricesWithGaps = new Security();
         SecurityPrice price = new SecurityPrice();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
         formatter = formatter.withLocale(Locale.GERMANY);
@@ -49,6 +52,9 @@ public class SimpleMovingAverageTest
             price.setDate(date);
             price.setValue(i);
             securityTenPrices.addPrice(price);
+            if (i != 8 && i != 7 && i != 6) // no prices for 06.01.2017,
+                                            // 07.01.2017 and 08.01.2017
+                securitySevenPricesWithGaps.addPrice(price);
             i++;
         }
 
@@ -78,6 +84,20 @@ public class SimpleMovingAverageTest
         assertThat(sma, is(IsNull.notNullValue()));
         assertThat(sma.getValues().length, is(1));
         assertThat(sma.getValues()[0], is((1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9 + 10) / Values.Quote.divider() / 10));
+    }
+
+    @Test
+    public void testCorrectSMAEntries_CorrectMultipleSMA_PricesWithDateGaps()
+    {
+        ChartInterval interval = new ChartInterval(this.securitySevenPricesWithGaps.getPrices().get(4).getDate(),
+                        LocalDate.now());
+        ChartLineSeriesAxes sma = new SimpleMovingAverage(5, this.securitySevenPricesWithGaps, interval).getSMA();
+        assertThat(sma, is(IsNull.notNullValue()));
+        assertThat(sma.getValues(), is(IsNull.notNullValue()));
+        assertThat(sma.getValues().length, is(3));
+        assertThat(sma.getValues()[0], is((1 + 2 + 3 + 4 + 5) / Values.Quote.divider() / 5));
+        assertThat(sma.getValues()[1], is((2 + 3 + 4 + 5 + 9) / Values.Quote.divider() / 5));
+        assertThat(sma.getValues()[2], is((3 + 4 + 5 + 9 + 10) / Values.Quote.divider() / 5));
     }
 
     @Test

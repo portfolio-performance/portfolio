@@ -46,7 +46,7 @@ public class AccountTransactionModel extends AbstractModel
     private Security security;
     private Account account;
     private LocalDate date = LocalDate.now();
-    private LocalTime time = LocalTime.MIDNIGHT;
+    private LocalTime time = PresetValues.getTime();
     private long shares;
 
     private long fxGrossAmount;
@@ -182,6 +182,7 @@ public class AccountTransactionModel extends AbstractModel
         setTaxes(0);
         setFxTaxes(0);
         setNote(null);
+        setTime(PresetValues.getTime());
     }
 
     public boolean supportsShares()

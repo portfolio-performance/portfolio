@@ -1,0 +1,35 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Raiffeisenbank Augsburger Land West eG
+Bahnhofstr. 5, 86424 Dinkelscherben
+Filiale Dinkelscherben, Tel. 08292 12345
+Privatkonto 18 Plus
+EUR-Konto Kontonummer 123456
+Raiffeisenbank Augsburger Land West eG
+Augsburger Str. 12, 86441 Zusmarshausen Kontoauszug Nr.   6/2020
+erstellt am 30.06.2020 23:30 Blatt    1 von 1
+IBAN: DE62 7206 9274 0001 23456  BIC: GENODEF1ZUS
+Herrn Ihr Kreditrahmen                         1.000,00
+Max Mustermann
+Musterstraße. 1
+01234 Musterstadt
+Bu-Tag Wert Vorgang
+alter Kontostand vom 29.05.2020                      8.588,38 H
+08.06. 08.06. Überweisung SEPA                                                      4,00 S
+              Max Mustermann
+              Netflix /*DA-3* IBAN: DE123456789 BIC: B
+              YLADEM1AUG
+10.06. 10.06. Überweisung SEPA                                                    700,00 S
+              Max Mustermann
+              Umbuchung /*DA-2* IBAN: DE123456789 BIC: IN
+              GDDEFFXXX
+22.06. 22.06. Basislastschrift                                                     36,99 S
+              Vodafone Kabel Deutschland GmbH
+              06/2020 K-NR. 123456 Ihre Rechnung online bei www.v
+              odafone.de/meinkabel EREF: RECHNR. 1234656 MREF:
+              KD02000123456 CRED: DE20KD0000000123456 IBAN: DE133807
+              00590045335700 BIC: DEUTDEDK380
+25.06. 25.06. LOHN/GEHALT                                                                 1.870,70 H
+              Mustermann GmbH
+              Lohn/Gehalt 000123456/123456
+                                    neuer Kontostand vom 30.06.2020                      9.718,09 H

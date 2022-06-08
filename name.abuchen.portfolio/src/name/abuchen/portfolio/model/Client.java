@@ -23,7 +23,7 @@ import name.abuchen.portfolio.money.CurrencyUnit;
 
 public class Client
 {
-    public static final int CURRENT_VERSION = 54;
+    public static final int CURRENT_VERSION = 56;
     public static final int VERSION_WITH_CURRENCY_SUPPORT = 29;
 
     private transient PropertyChangeSupport propertyChangeSupport; // NOSONAR
@@ -622,14 +622,14 @@ public class Client
         for (Portfolio portfolio : portfolios)
         {
             answer.append(portfolio.getName()).append('\n');
-            portfolio.getTransactions().stream().sorted(new Transaction.ByDate())
+            portfolio.getTransactions().stream().sorted(Transaction.BY_DATE)
                             .forEach(t -> answer.append(t).append('\n'));
         }
 
         for (Account account : accounts)
         {
             answer.append(account.getName()).append('\n');
-            account.getTransactions().stream().sorted(new Transaction.ByDate())
+            account.getTransactions().stream().sorted(Transaction.BY_DATE)
                             .forEach(t -> answer.append(t).append('\n'));
         }
 

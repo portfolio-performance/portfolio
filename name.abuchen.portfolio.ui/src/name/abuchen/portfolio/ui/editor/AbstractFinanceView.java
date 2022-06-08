@@ -30,6 +30,7 @@ import org.eclipse.swt.widgets.ToolBar;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.swt.SashLayout;
 import name.abuchen.portfolio.ui.util.swt.SashLayoutData;
 import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
@@ -289,7 +290,10 @@ public abstract class AbstractFinanceView
 
         Menu contextMenu = menuMgr.createContextMenu(control);
         if (hook)
+        {
+            control.setData(ContextMenu.DEFAULT_MENU, contextMenu);
             control.setMenu(contextMenu);
+        }
 
         contextMenus.add(contextMenu);
 

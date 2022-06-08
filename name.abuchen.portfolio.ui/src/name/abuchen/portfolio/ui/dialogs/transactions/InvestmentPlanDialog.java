@@ -31,10 +31,9 @@ import org.eclipse.swt.widgets.Text;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.InvestmentPlan;
+import name.abuchen.portfolio.model.InvestmentPlan.Type;
 import name.abuchen.portfolio.model.Portfolio;
-import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.transactions.InvestmentPlanModel.Properties;
@@ -46,11 +45,11 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
 {
     private Client client;
 
-    private final Class<? extends Transaction> planType;
+    private final InvestmentPlan.Type planType;
 
     @Inject
     public InvestmentPlanDialog(@Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell, Client client,
-                    Class<? extends Transaction> planType)
+                    InvestmentPlan.Type planType)
     {
         super(parentShell);
         this.client = client;
@@ -89,7 +88,7 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
 
         ComboInput securities = null;
         ComboInput portfolio = null;
-        if (planType == PortfolioTransaction.class)
+        if (planType == Type.BUY_OR_DELIVERY)
         {
             portfolio = new ComboInput(editArea, Messages.ColumnPortfolio);
             List<Portfolio> portfolios = including(client.getActivePortfolios(), model().getPortfolio());
@@ -106,7 +105,7 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
 
         ComboInput account = new ComboInput(editArea, Messages.ColumnAccount);
         List<Account> accounts = including(client.getActiveAccounts(), model().getAccount());
-        if (planType == PortfolioTransaction.class)
+        if (planType == Type.BUY_OR_DELIVERY)
             accounts = including(accounts, InvestmentPlanModel.DELIVERY);
         account.value.setInput(accounts);
         account.bindValue(Properties.account.name(), Messages.MsgMissingAccount);
@@ -160,7 +159,7 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
         // fees
 
         Input fees = null;
-        if (planType == PortfolioTransaction.class)
+        if (planType == Type.BUY_OR_DELIVERY)
         {
             fees = new Input(editArea, Messages.ColumnFees);
             fees.bindValue(Properties.fees.name(), Messages.ColumnAmount, Values.Amount, false);

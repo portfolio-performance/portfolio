@@ -107,6 +107,11 @@ public class Column
         setSorter(sorter);
         this.defaultSortDirection = direction;
     }
+    
+    public void setSortDirction(int direction)
+    {
+        this.defaultSortDirection = direction;
+    }
 
     public void setLabelProvider(CellLabelProvider labelProvider)
     {

@@ -12,6 +12,7 @@ import name.abuchen.portfolio.online.impl.EODHistoricalDataQuoteFeed;
 import name.abuchen.portfolio.online.impl.FinnhubQuoteFeed;
 import name.abuchen.portfolio.online.impl.QuandlQuoteFeed;
 import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.dialogs.transactions.PresetValues;
 import name.abuchen.portfolio.util.FormatHelper;
 import name.abuchen.portfolio.util.TradeCalendarManager;
 
@@ -87,5 +88,11 @@ public class Preference2EnvAddon
                     @Preference(value = UIConstants.Preferences.FORMAT_CALCULATED_QUOTE_DIGITS) int quotePrecision)
     {
         FormatHelper.setCalculatedQuoteDisplayPrecision(quotePrecision);
+    }
+
+    @Inject
+    public void setTimePreset(@Preference(value = UIConstants.Preferences.PRESET_VALUE_TIME) String timePresetValue)
+    {
+        PresetValues.setTimePreset(timePresetValue);
     }
 }

@@ -1,10 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -15,14 +11,11 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
 public class CommSecPDFExtractor extends AbstractPDFExtractor
 {
-    private static final DateTimeFormatter australianDateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.ENGLISH);
-
     public CommSecPDFExtractor(Client client)
     {
         super(client);
@@ -41,14 +34,14 @@ public class CommSecPDFExtractor extends AbstractPDFExtractor
     private void addBuySellTransaction()
     {
         DocumentType type = new DocumentType("WE HAVE (SOLD|BOUGHT)", (context, lines) -> {
-            Pattern pCurrency = Pattern.compile("^CONSIDERATION \\((?<currency>[\\w]{3})\\): \\D[.,\\d]+ .*$");
+            Pattern pCurrency = Pattern.compile("^CONSIDERATION \\((?<currency>[\\w]{3})\\): \\p{Sc}[\\.,\\d]+ .*$");
             // read the current context here
             for (String line : lines)
             {
                 Matcher m = pCurrency.matcher(line);
                 if (m.matches())
                 {
-                    context.put("currency", m.group(1));
+                    context.put("currency", m.group("currency"));
                 }
             }
         });
@@ -82,7 +75,7 @@ public class CommSecPDFExtractor extends AbstractPDFExtractor
                 .section("name", "tickerSymbol", "currency").optional()
                 .match("^COMPANY: (?<name>.*)$")
                 .match("^(?<tickerSymbol>[\\w]{3,4})$")
-                .match("^CONSIDERATION \\((?<currency>[\\w]{3})\\): \\D[.,\\d]+ .*$")
+                .match("^CONSIDERATION \\((?<currency>[\\w]{3})\\): \\p{Sc}[\\.,\\d]+ .*$")
                 .assign((t, v) -> {                    
                     t.setSecurity(getOrCreateSecurity(v));
                 })
@@ -93,7 +86,7 @@ public class CommSecPDFExtractor extends AbstractPDFExtractor
                 .section("name", "tickerSymbol", "currency").optional()
                 .match("^COMPANY (?<name>.*)$")
                 .match("^SECURITY ORDINARY FULLY PAID (?<tickerSymbol>[\\w]{3,4})$")
-                .match("^CONSIDERATION \\((?<currency>[\\w]{3})\\): \\D[.,\\d]+ .*$")
+                .match("^CONSIDERATION \\((?<currency>[\\w]{3})\\): \\p{Sc}[\\.,\\d]+ .*$")
                 .assign((t, v) -> {                    
                     t.setSecurity(getOrCreateSecurity(v));
                 })
@@ -105,26 +98,27 @@ public class CommSecPDFExtractor extends AbstractPDFExtractor
                     t.setDate(asDate(v.get("date")));
                 })
 
-                // AS AT DATE: 20/04/2020 277 3.610000
-                .section("shares").optional()
-                .match("^AS AT DATE: .* (?<shares>[.,\\d]+) [.,\\d]+$")
-                .assign((t, v) -> {
-                    t.setShares(asShares(v.get("shares")));
-                })
-
-                // CONFIRMATION NO: XXXXXXX 1,000 28.060000
-                .section("shares").optional()
-                .match("^CONFIRMATION NO: .* (?<shares>[.,\\d]+) [.,\\d]+$")
-                .assign((t, v) -> {
-                    t.setShares(asShares(v.get("shares")));
-                })
+                .oneOf(
+                                // AS AT DATE: 20/04/2020 277 3.610000
+                                section -> section
+                                        .attributes("shares")
+                                        .match("^AS AT DATE: .* (?<shares>[\\.,\\d]+) [\\.,\\d]+$")
+                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                                ,
+                                // CONFIRMATION NO: XXXXXXX 1,000 28.060000
+                                section -> section
+                                        .attributes("shares")
+                                        .match("^CONFIRMATION NO: .* (?<shares>[\\.,\\d]+) [\\.,\\d]+$")
+                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        )
 
                 // TOTAL COST: $1,092.92
                 // NET PROCEEDS: $28,031.94
                 .section("amount")
-                .match("^(TOTAL COST|NET PROCEEDS): \\D(?<amount>[.,\\d]+)$")
+                .match("^(TOTAL COST|NET PROCEEDS): \\p{Sc}(?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
+
                     t.setCurrencyCode(context.get("currency"));
                     t.setAmount(asAmount(v.get("amount")));
                 })
@@ -140,7 +134,7 @@ public class CommSecPDFExtractor extends AbstractPDFExtractor
         transaction
                 // TOTAL GST: $2.72
                 .section("tax").optional()
-                .match("^TOTAL GST: \\D(?<tax>[.,\\d]+)$")
+                .match("^TOTAL GST: \\p{Sc}(?<tax>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
                     v.put("currency", context.get("currency"));
@@ -150,7 +144,7 @@ public class CommSecPDFExtractor extends AbstractPDFExtractor
 
                 // TOTAL GST: $2.55 105
                 .section("tax").optional()
-                .match("^TOTAL GST: \\D(?<tax>[.,\\d]+) .*$")
+                .match("^TOTAL GST: \\p{Sc}(?<tax>[\\.,\\d]+) .*$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
                     v.put("currency", context.get("currency"));
@@ -164,7 +158,7 @@ public class CommSecPDFExtractor extends AbstractPDFExtractor
         transaction
                 // BROKERAGE & COSTS INCL GST: $29.95 55685147 0404181685
                 .section("fee").optional()
-                .match("^BROKERAGE & COSTS INCL GST: \\D(?<fee>[.,\\d]+) .*$")
+                .match("^BROKERAGE & COSTS INCL GST: \\p{Sc}(?<fee>[\\.,\\d]+) .*$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
                     v.put("currency", context.get("currency"));
@@ -174,49 +168,13 @@ public class CommSecPDFExtractor extends AbstractPDFExtractor
 
                 // APPLICATION MONEY: $0.00
                 .section("fee").optional()
-                .match("^APPLICATION MONEY: \\D(?<fee>[.,\\d]+)$")
+                .match("^APPLICATION MONEY: \\p{Sc}(?<fee>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
                     v.put("currency", context.get("currency"));
 
                     processFeeEntries(t, v, type);
                 });
-    }
-
-    private void processTaxEntries(Object t, Map<String, String> v, DocumentType type)
-    {
-        if (t instanceof name.abuchen.portfolio.model.Transaction)
-        {
-            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-            PDFExtractorUtils.checkAndSetTax(tax, (name.abuchen.portfolio.model.Transaction) t, type);
-        }
-        else
-        {
-            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-            PDFExtractorUtils.checkAndSetTax(tax, ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
-        }
-    }
-
-    private void processFeeEntries(Object t, Map<String, String> v, DocumentType type)
-    {
-        if (t instanceof name.abuchen.portfolio.model.Transaction)
-        {
-            Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
-            PDFExtractorUtils.checkAndSetFee(fee, 
-                            (name.abuchen.portfolio.model.Transaction) t, type);
-        }
-        else
-        {
-            Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
-            PDFExtractorUtils.checkAndSetFee(fee,
-                            ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
-        }
-    }
-
-    @Override
-    protected LocalDateTime asDate(String value)
-    {
-        return LocalDate.parse(value, australianDateFormat).atStartOfDay();
     }
 
     @Override

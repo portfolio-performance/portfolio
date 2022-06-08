@@ -1,11 +1,12 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
+import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetGrossUnit;
+
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -13,7 +14,6 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 
 @SuppressWarnings("nls")
@@ -46,21 +46,13 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("(Kauf|Verkauf|Gesamtfälligkeit|Zwangsabfindung|Dividende)");
+        DocumentType type = new DocumentType("(Kauf|Verkauf|Gesamtf.lligkeit|Zwangsabfindung|Dividende)");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
         pdfTransaction.subject(() -> {
             BuySellEntry entry = new BuySellEntry();
             entry.setType(PortfolioTransaction.Type.BUY);
-
-            /***
-             * If we have multiple entries in the document,
-             * with taxes and tax refunds,
-             * then the "negative" flag must be removed.
-             */
-            type.getCurrentContext().remove("negative");
-
             return entry;
         });
 
@@ -154,7 +146,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 .find("Nominal (Kurs|Einl.sung zu:|Ex-Tag)")
                 .match("^(?<notation>[\\w]{3}) (?<shares>[\\.,\\d]+) ([\\w]{3} [\\.,\\d]+|[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
                 .assign((t, v) -> {
-                    // Workaround for bonds
+                    // Percentage quotation, workaround for bonds
                     if (v.get("notation") != null && !v.get("notation").equalsIgnoreCase("STK"))
                         t.setShares((asShares(v.get("shares")) / 100));
                     else
@@ -201,52 +193,39 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
                         )
 
-                // 19.08.2019 123450042 EUR 150,01
-                .section("amount", "currency").optional()
-                .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
-                .assign((t, v) -> {
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(v.get("currency"));
-                })
+                .oneOf(
+                                // 19.08.2019 123450042 EUR 150,01
+                                section -> section
+                                        .attributes("currency", "amount")
+                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
+                                        .assign((t, v) -> {
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                        })
+                                ,
+                                // 21.08.2019 372650044 EUR/USD 1,1026 EUR 1.536,13
+                                section -> section
+                                        .attributes("currency", "amount")
+                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\w]{3}\\/[\\w]{3} [\\.,\\d]+ (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
+                                        .assign((t, v) -> {
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                        })
+                        )
 
-                // Handelstag 16.12.2020 Kurswert EUR 1.060,00 
                 // Handelstag 19.08.2019 Kurswert USD 1.677,20-
                 // 21.08.2019 372650044 EUR/USD 1,1026 EUR 1.536,13
-                .section("fxCurrency", "fxAmount", "exchangeRate", "amount", "currency").optional()
-                .match("^.* Kurswert (?<fxCurrency>[\\w]{3}) (?<fxAmount>[\\.,\\d]+)([-\\s])?$")
-                .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\w]{3}\\/[\\w]{3} (?<exchangeRate>[\\.,\\d]+) (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
+                .section("fxCurrency", "fxGross", "baseCurrency", "termCurrency", "exchangeRate", "currency").optional()
+                .match("^.* Kurswert (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,\\d]+)([-\\s])?$")
+                .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+$")
                 .assign((t, v) -> {
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(v.get("currency"));
+                    PDFExchangeRate rate = asExchangeRate(v);
+                    type.getCurrentContext().putType(rate);
 
-                    // read the forex currency, exchange rate and gross
-                    // amount in forex currency
-                    String forex = asCurrencyCode(v.get("fxCurrency"));
-                    if (t.getPortfolioTransaction().getSecurity().getCurrencyCode().equals(forex))
-                    {
-                        BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                        BigDecimal reverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
-                                        RoundingMode.HALF_DOWN);
+                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                    Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
 
-                        // gross given in forex currency
-                        long fxAmount = asAmount(v.get("fxAmount"));
-                        long amount = reverseRate.multiply(BigDecimal.valueOf(fxAmount))
-                                        .setScale(0, RoundingMode.HALF_DOWN).longValue();
-
-                        Unit grossValue = new Unit(Unit.Type.GROSS_VALUE,
-                                        Money.of(t.getPortfolioTransaction().getCurrencyCode(), amount),
-                                        Money.of(forex, fxAmount), reverseRate);
-
-                        t.getPortfolioTransaction().addUnit(grossValue);
-                    }
-                })
-
-                // 21.08.2019 372650044 EUR/USD 1,1026 EUR 1.536,13
-                .section("exchangeRate").optional()
-                .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\w]{3}\\/[\\w]{3} (?<exchangeRate>[\\.,\\d]+) [\\w]{3} [\\.,\\d]+$")
-                .assign((t, v) -> {
-                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
+                    checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
 
                 // Zwangsabfindung gemäß Hauptversammlungsbeschluss vom 22. Juli 2015. Der Übertragungsbeschluss wurde am 15.
@@ -254,7 +233,16 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 .match("^(?<note>Zwangsabfindung gem.ß Hauptversammlungsbeschluss .*) Der Übertragungsbeschluss .*$")
                 .assign((t, v) -> t.setNote(v.get("note")))
 
-                .wrap(BuySellEntryItem::new);
+                .conclude(PDFExtractorUtils.fixGrossValueBuySell())
+
+                .wrap(t -> {
+                    // If we have multiple entries in the document, with
+                    // taxes and tax refunds, then the "negative" flag
+                    // must be removed.
+                    type.getCurrentContext().remove("negative");
+
+                    return new BuySellEntryItem(t);
+                });
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
@@ -263,50 +251,23 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
     private void addReinvestTransaction()
     {
-        DocumentType type = new DocumentType("(Reinvestierung|Ertragsthesaurierung)");
+        DocumentType type = new DocumentType("(Reinvestierung)");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
         pdfTransaction.subject(() -> {
             BuySellEntry entry = new BuySellEntry();
             entry.setType(PortfolioTransaction.Type.BUY);
-
-            /***
-             * If we have multiple entries in the document,
-             * with taxes and tax refunds,
-             * then the "negative" flag must be removed.
-             */
-            type.getCurrentContext().remove("negative");
-
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^(Reinvestierung|Ertragsthesaurierung) .*$");
+        Block firstRelevantLine = new Block("^(Reinvestierung) .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
-                // Gattungsbezeichnung ISIN
-                // iS.EO Go.B.C.2.5-5.5y.U.ETF DE Inhaber-Anteile DE000A0H08A8
-                // Nominal Ex-Tag Zahltag Ausschüttungsbetrag pro Stück
-                // STK 0,4512 06.10.2017 20.10.2017 EUR 0,169895
-                .section("name", "isin", "name1", "date", "currency").optional()
-                .find("Gattungsbezeichnung ISIN")
-                .match("^(?<name>.*) (?<isin>[\\w]{12})$")
-                .match("^(?<name1>.*)$")
-                .match("^[\\w]{3} [\\.,\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<currency>[\\w]{3}) [\\.,\\d]+$")
-                .assign((t, v) -> {
-                    if (!v.get("name1").startsWith("Nominal"))
-                        v.put("name", v.get("name") + " " + v.get("name1"));
+                // If we have a reinvest we pick the second
 
-                    t.setDate(asDate(v.get("date")));
-                    t.setSecurity(getOrCreateSecurity(v));
-                })
-
-                /***
-                 * If we have a reinvest
-                 * we pick the second
-                 */
                 // Gattungsbezeichnung ISIN
                 // Deutsche Telekom AG Namens-Aktien o.N. DE0005557508
                 // Die Dividende wurde wie folgt in neue Aktien reinvestiert:
@@ -325,29 +286,14 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                     t.setSecurity(getOrCreateSecurity(v));
                 })
 
-                // Gattungsbezeichnung ISIN
-                // Deutsche Telekom AG Namens-Aktien o.N. DE0005557508
-                // Gattungsbezeichnung ISIN
-                // Deutsche Telekom AG Dividend in Kind-Cash Line DE000A1TNRX5
-                .section("isin").optional()
-                .find("Gattungsbezeichnung .*").optional()
-                .match("^.* (?<isin>[\\w]{12})$")
-                .assign((t, v) -> {
-                    // if we have a new isin for reinvest, we grab the old for note
-                    Map<String, String> context = type.getCurrentContext();
-                    context.put("isin", v.get("isin"));
-                })
-
                 // Nominal Reinvestierungspreis
                 // STK 25,000 EUR 0,700000
-                // Nominal Ex-Tag Zahltag Ausschüttungsbetrag pro Stück
-                // STK 0,4512 06.10.2017 20.10.2017 EUR 0,169895
                 .section("notation", "shares")
                 .find("Nominal (Ex-Tag|Reinvestierungspreis)( .*)")
                 .match("^(?<notation>[\\w]{3}) (?<shares>[\\.,\\d]+) ([\\w]{3} [\\.,\\d]+"
                                 + "|[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\w]{3} [\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    // Workaround for bonds
+                    // Percentage quotation, workaround for bonds
                     if (v.get("notation") != null && !v.get("notation").equalsIgnoreCase("STK"))
                         t.setShares((asShares(v.get("shares")) / 100));
                     else
@@ -355,66 +301,55 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 })
 
                 // Zahlungstag 17.05.2013
-                .section("date").optional()
+                .section("date")
                 .match("^Zahlungstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
                 .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                 // Leistungen aus dem steuerlichen Einlagenkonto (§27 KStG) EUR 17,50
-                .section("amount", "currency").optional()
+                .section("currency", "amount").optional()
                 .match("^Leistungen aus dem steuerlichen Einlagenkonto .* (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(v.get("currency"));
                 })
 
-                // Steuerliquidität EUR 0,02
-                // zu versteuern EUR 0,08
-                .section("tax", "amount", "currency").optional()
-                .match("Ertragsthesaurierung .*")
-                .match("Steuerliquidität [\\w]{3} (?<tax>[\\.,\\d]+)")
-                .match("^zu versteuern (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
-                .assign((t, v) -> {
-                    t.setAmount(asAmount(v.get("amount")) - asAmount(v.get("tax")));
-                    t.setCurrencyCode(v.get("currency"));
-                })
-
-                .section("note").optional()
+                .section("note", "isin").optional()
                 .match("^(?<note>Reinvestierung) .*$")
-                .assign((t, v) -> {
-                    Map<String, String> context = type.getCurrentContext();
-                    t.setNote(v.get("note") + ": " + context.get("isin"));
-                })
+                .find("Gattungsbezeichnung .*").optional()
+                .match("^.* (?<isin>[\\w]{12})$")
+                .assign((t, v) -> t.setNote(v.get("note") + ": " + v.get("isin")))
 
-                .section("note").optional()
-                .match("^(?<note>Ertragsthesaurierung) .*$")
-                .assign((t, v) -> t.setNote(v.get("note")))
+                .wrap(t -> {
+                    // If we have multiple entries in the document, with
+                    // taxes and tax refunds, then the "negative" flag
+                    // must be removed.
+                    type.getCurrentContext().remove("negative");
 
-                .wrap(BuySellEntryItem::new);
+                    return new BuySellEntryItem(t);
+                });
     }
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("(Dividendengutschrift|Erträgnisgutschrift|Kupongutschrift|Reinvestierung)");
+        DocumentType type = new DocumentType("(Dividendengutschrift|Ertr.gnisgutschrift|Kupongutschrift|Reinvestierung)");
         this.addDocumentTyp(type);
 
         Block block = new Block("^(Ertr.gnisgutschrift aus Wertpapieren|Kupongutschrift|Reinvestierung) .*$");
         type.addBlock(block);
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>()
-            .subject(() -> {
-                AccountTransaction entry = new AccountTransaction();
-                entry.setType(AccountTransaction.Type.DIVIDENDS);
-
-                /***
-                 * If we have multiple entries in the document,
-                 * with taxes and tax refunds,
-                 * then the "negative" flag must be removed.
-                 */
-                type.getCurrentContext().remove("negative");
-
-                return entry;
-            });
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>().subject(() -> {
+            AccountTransaction entry = new AccountTransaction();
+            entry.setType(AccountTransaction.Type.DIVIDENDS);
+            return entry;
+        });
         
         pdfTransaction
+                // If we have a gross reinvestment, then it is taxes.
+
+                .section("type").optional()
+                .match("^(?<type>Ertragsthesaurierung) .*$")
+                .match("^Steuerliquidität [\\w]{3} [\\.,\\d]+$")
+                .assign((t, v) -> t.setType(AccountTransaction.Type.TAXES))
+
                 // Gattungsbezeichnung ISIN
                 // Commerzbank AG Inhaber-Aktien o.N. DE000CBK1001
                 // STK 50,000 21.04.2016 21.04.2016 EUR 0,200000
@@ -461,9 +396,8 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                     t.setSecurity(getOrCreateSecurity(v));
                 })
 
-                /***
-                 * This is for the reinvestment of dividends
-                 */
+                // This is for the reinvestment of dividends
+
                 // Gattungsbezeichnung ISIN
                 // Gattungsbezeichnung ISIN
                 .section("isin").optional()
@@ -483,7 +417,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                     .attributes("notation", "shares")
                                     .match("^(?<notation>[\\w]{3}) (?<shares>[\\.,\\d]+)( [\\d]{2}\\.[\\d]{2}\\.[\\d]{4})? [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\w]{3} [\\.,\\d]+$")
                                     .assign((t, v) -> {
-                                        // Workaround for bonds
+                                        // Percentage quotation, workaround for bonds
                                         if (v.get("notation") != null && !v.get("notation").equalsIgnoreCase("STK"))
                                             t.setShares((asShares(v.get("shares")) / 100));
                                         else
@@ -512,58 +446,80 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                     .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
                         )
 
-                // 21.04.2016 172306238 EUR 10,00
-                .section("amount", "currency").optional()
-                .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
-                .assign((t, v) -> {
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(v.get("currency"));
-                })
+                .oneOf(
+                                // This is for the reinvestment of dividends
 
-                /***
-                 * This is for the reinvestment of dividends
-                 */
-                // Leistungen aus dem steuerlichen Einlagenkonto (§27 KStG) EUR 17,50
-                .section("amount", "currency").optional()
-                .match("^Leistungen aus dem steuerlichen Einlagenkonto .* (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
-                .assign((t, v) -> {
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(v.get("currency"));
-                })
+                                // Leistungen aus dem steuerlichen Einlagenkonto (§27 KStG) EUR 17,50
+                                section -> section
+                                        .attributes("currency", "amount")
+                                        .match("^Leistungen aus dem steuerlichen Einlagenkonto .* (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
+                                        .assign((t, v) -> {
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                        })
+                                ,
+                                // This is for the "Ertragsthesaurierung"
 
-                /***
-                 * This is for the "Ertragsthesaurierung"
-                 */
-                // Steuerliquidität EUR 0,02
-                // zu versteuern EUR 0,08
-                .section("tax", "amount", "currency").optional()
-                .match("Ertragsthesaurierung .*")
-                .match("Steuerliquidität [\\w]{3} (?<tax>[\\.,\\d]+)")
-                .match("^zu versteuern (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
-                .assign((t, v) -> {
-                    t.setAmount(asAmount(v.get("amount")) - asAmount(v.get("tax")));
-                    t.setCurrencyCode(v.get("currency"));
-                })
+                                // Ertragsthesaurierung Frankfurt am Main, 19.10.2017
+                                // Steuerliquidität EUR 0,02
+                                section -> section
+                                        .attributes("currency", "amount")
+                                        .match("^Ertragsthesaurierung .*$")
+                                        .match("^Steuerliquidit.t (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
+                                        .assign((t, v) -> {
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                        })
+                                ,
+                                // 21.04.2016 172306238 EUR 10,00
+                                section -> section
+                                        .attributes("currency", "amount")
+                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
+                                        .assign((t, v) -> {
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                        })
+                                ,
+                                // 15.07.2019 123456789 EUR/USD 1,1327 EUR 13,47
+                                section -> section
+                                        .attributes("currency", "amount")
+                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\w]{3}\\/[\\w]{3} [\\.,\\d]+ (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
+                                        .assign((t, v) -> {
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                        })
+                        )
 
                 // 15.07.2019 123456789 EUR/USD 1,1327 EUR 13,47
-                .section("amount", "currency", "fxCurrency", "exchangeRate").optional()
-                .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\w]{3}\\/(?<fxCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+) (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
+                // ausländische Dividende EUR 18,10
+                .section("baseCurrency", "fxCurrency", "exchangeRate", "currency", "gross").optional()
+                .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ (?<baseCurrency>[\\w]{3})\\/(?<fxCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+) [\\w]{3} [\\.,\\d]+$")
+                .match("^ausl.ndische Dividende (?<currency>[\\w]{3}) (?<gross>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(v.get("currency"));
+                    v.put("termCurrency", asCurrencyCode(v.get("fxCurrency")));
 
-                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate")).setScale(10,
-                                    RoundingMode.HALF_DOWN);
-                    BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
-                                    RoundingMode.HALF_DOWN);
-                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
+                    PDFExchangeRate rate = asExchangeRate(v);
+                    type.getCurrentContext().putType(rate);
 
-                    Money forex = Money.of(asCurrencyCode(v.get("fxCurrency")),
-                                    Math.round(t.getAmount() / inverseRate.doubleValue()));
-                    Unit unit = new Unit(Unit.Type.GROSS_VALUE, t.getMonetaryAmount(), forex, inverseRate);
+                    Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
+                    Money fxGross = rate.convert(asCurrencyCode(v.get("fxCurrency")), gross);
 
-                    if (unit.getForex().getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
-                        t.addUnit(unit);
+                    checkAndSetGrossUnit(gross, fxGross, t, type);
+                })
+
+                // 05.02.2019 000000000 EUR/USD 1,1474 EUR 39,60
+                // Ertrag für 2018 USD 45,44
+                .section("baseCurrency", "termCurrency", "exchangeRate", "currency", "fxCurrency", "fxGross").optional()
+                .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+$")
+                .match("^Ertrag f.r [\\d]{4}(\\/[\\d]{2})? (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,\\d]+)$")
+                .assign((t, v) -> {
+                    PDFExchangeRate rate = asExchangeRate(v);
+                    type.getCurrentContext().putType(rate);
+
+                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                    Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
+
+                    checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
 
                 // Die Dividende wurde wie folgt in neue Aktien reinvestiert:
@@ -574,7 +530,26 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                     t.setNote(v.get("note") + " " + context.get("isin"));
                 })
 
-                .wrap(TransactionItem::new);
+                // Ertrag für 2018 USD 45,44
+                // Ertrag für 2016/17 EUR 1,80
+                .section("note").optional()
+                .match("^(?<note>Ertrag für [\\d]{4}(\\/[\\d]{2})?) [\\w]{3} [\\.,\\d]+$")
+                .assign((t, v) -> t.setNote(v.get("note")))
+
+                .conclude(PDFExtractorUtils.fixGrossValueA())
+
+                .wrap(t -> {
+                    // If we have multiple entries in the document, with
+                    // taxes and tax refunds, then the "negative" flag
+                    // must be removed.
+                    type.getCurrentContext().remove("negative");
+
+                    // If we have a gross reinvestment, then the "noTax"
+                    // flag must be removed.
+                    type.getCurrentContext().remove("noTax");
+
+                    return new TransactionItem(t);
+                });
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
@@ -592,14 +567,6 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
         Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>().subject(() -> {
             AccountTransaction entry = new AccountTransaction();
             entry.setType(AccountTransaction.Type.TAXES);
-
-            /***
-             * If we have multiple entries in the document,
-             * with taxes and tax refunds,
-             * then the "negative" flag must be removed.
-             */
-            type.getCurrentContext().remove("negative");
-
             return entry;
         });
 
@@ -634,14 +601,14 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(v.get("currency"));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 })
 
-                /***
-                 * If all taxes are covered by Freistellungsauftrag/Verlusttopf, 
-                 * section "Wert Konto-Nr. Betrag zu Ihren Lasten" is not present, 
-                 * then extract currency here
-                 */
+                // If all taxes are covered by
+                // Freistellungsauftrag/Verlusttopf, section "Wert
+                // Konto-Nr. Betrag zu Ihren Lasten" is not present,
+                // then extract currency here
+
                 // STK 0,4298 02.01.2020 02.01.2020 EUR 0,3477
                 .section("currency").optional()
                 .match("^STK [\\.,\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[\\w]{3}) [\\.,\\d]+$")
@@ -650,14 +617,15 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 })
 
-                /***
-                 * If the advance tax rate is 0,00 and parced correctly, 
-                 * then do not import.
-                 */
                 .wrap(t -> {
+                    // If we have multiple entries in the document, with
+                    // taxes and tax refunds, then the "negative" flag
+                    // must be removed.
+                    type.getCurrentContext().remove("negative");
+
                     if (t.getCurrencyCode() != null && t.getAmount() != 0)
                         return new TransactionItem(t);
-                    return new NonImportableItem("Steuerpflichtige Vorabpauschale mit 0 " + t.getCurrencyCode());
+                    return new NonImportableItem(Messages.MsgErrorOrderCancellationUnsupported);
                 });
         
         block.set(pdfTransaction);
@@ -669,7 +637,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         + "|Freier Erhalt"
                         + "|Einbuchung von Rechten"
                         + "|Wertlose Ausbuchung"
-                        + "|Kapitalerhöhung"
+                        + "|Kapitalerh.hung"
                         + "|Kapitalherabsetzung"
                         + "|Umtausch", (context, lines) -> {
             Pattern pDate = Pattern.compile("(^|^[\\s]+).*, (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$");
@@ -689,18 +657,10 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
         pdfTransaction.subject(() -> {
             PortfolioTransaction entry = new PortfolioTransaction();
             entry.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
-
-            /***
-             * If we have multiple entries in the document,
-             * with taxes and tax refunds,
-             * then the "negative" flag must be removed.
-             */
-            type.getCurrentContext().remove("negative");
-
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^(Einbuchung:|Ausbuchung:|Wir erhielten zu Gunsten Ihres Depots)(.*)?");
+        Block firstRelevantLine = new Block("^(Einbuchung:|Ausbuchung:|Wir erhielten zu Gunsten Ihres Depots).*");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -720,7 +680,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 // Nominal Ex-Tag
                 // STK 12,000 04.07.2017
                 .section("name", "isin", "name1", "shares")
-                .find("(Einbuchung:|Ausbuchung:|Wir erhielten zu Gunsten Ihres Depots)(.*)?")
+                .find("(Einbuchung:|Ausbuchung:|Wir erhielten zu Gunsten Ihres Depots).*")
                 .find("Gattungsbezeichnung ISIN")
                 .match("^(?<name>.*) (?<isin>[\\w]{12})$")
                 .match("^(?<name1>.*)")
@@ -741,7 +701,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 // STK 12,000 04.07.2017
                 // STK 28,000 02.12.2011 02.12.2011
                 .section("date").optional()
-                .match("^STK [\\.,\\d]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})(.*)?$")
+                .match("^STK [\\.,\\d]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                 // Kapitalherabsetzung im Verhältnis 10:1. Weitere Informationen finden Sie im elektronischen Bundesanzeiger
@@ -751,15 +711,22 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
                 // Umbuchung der Teil- in Vollrechte. Für die eventuell verbleibenden Bruchteile (Nachkommastellen) in den Teilrechten
                 .section("note").optional()
-                .match("^(?<note>Umbuchung der Teil- in Vollrechte.) .*$")
+                .match("^(?<note>Umbuchung der Teil\\- in Vollrechte.) .*$")
                 .assign((t, v) -> t.setNote(v.get("note")))
 
                 // Einbuchung der Rechte zur Dividende wahlweise. Bitte beachten Sie hierzu unser separates Anschreiben.
                 .section("note").optional()
-                .match("^(?<note>Einbuchung der Rechte zur Dividende wahlweise.) .*$")
+                .match("^(?<note>Einbuchung der Rechte zur Dividende wahlweise\\.) .*$")
                 .assign((t, v) -> t.setNote(v.get("note")))
 
-                .wrap(TransactionItem::new);
+                .wrap(t -> {
+                    // If we have multiple entries in the document, with
+                    // taxes and tax refunds, then the "negative" flag
+                    // must be removed.
+                    type.getCurrentContext().remove("negative");
+
+                    return new TransactionItem(t);
+                });
 
         addTaxReturnBlock(type);
     }
@@ -773,14 +740,6 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
         pdfTransaction.subject(() -> {
             AccountTransaction t = new AccountTransaction();
             t.setType(AccountTransaction.Type.FEES);
-
-            /***
-             * If we have multiple entries in the document,
-             * with taxes and tax refunds,
-             * then the "negative" flag must be removed.
-             */
-            type.getCurrentContext().remove("negative");
-
             return t;
         });
 
@@ -800,35 +759,45 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         v.put("name", v.get("name") + " " + v.get("name1"));
 
                     t.setSecurity(getOrCreateSecurity(v));
-                    t.setCurrencyCode(asCurrencyCode(t.getSecurity().getCurrencyCode()));
                 })
 
                 // STK 6,000 22.07.2017
                 .section("shares")
                 .match("^(?<notation>[\\w]{3}) (?<shares>[\\.,\\d]+) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$")
                 .assign((t, v) -> {
-                    // Workaround for bonds
+                    // Percentage quotation, workaround for bonds
                     if (v.get("notation") != null && !v.get("notation").equalsIgnoreCase("STK"))
                         t.setShares((asShares(v.get("shares")) / 100));
                     else
                         t.setShares(asShares(v.get("shares")));
                 })
 
+                // STK 6,000 22.07.2017
+                .section("date")
+                .match("^[\\w]{3} [\\.,\\d]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
+                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
                 // 24.07.2017 172406048 EUR 0,89
-                .section("date", "amount", "currency")
-                .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]+ (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
+                .section("currency", "amount")
+                .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    t.setDateTime(asDate(v.get("date")));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(v.get("currency"));
                 })
 
                 // Für die Registrierung der Namens-Aktien (auf Ihren Namen) im Aktionärs-Register belasten wir Ihrem Konto vorstehenden 
                 .section("note").optional()
-                .match("^F.r die (?<note>Registrierung der Namens-Aktien) .*$")
+                .match("^F.r die (?<note>Registrierung der Namens\\-Aktien) .*$")
                 .assign((t, v) -> t.setNote(v.get("note")))
 
-                .wrap(TransactionItem::new);
+                .wrap(t -> {
+                    // If we have multiple entries in the document, with
+                    // taxes and tax refunds, then the "negative" flag
+                    // must be removed.
+                    type.getCurrentContext().remove("negative");
+
+                    return new TransactionItem(t);
+                });
     }
 
     private void addAccountStatementTransaction()
@@ -886,8 +855,8 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 // 04.04. 04.04. REF: 000045862247 200,00+
                 // Überweisungseingang SEPA Max Mustermann
                 .section("date", "amount", "note", "sign").optional()
-                .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. .* (?<amount>[\\.,\\d]+)(?<sign>[-|+])$")
-                .match("^(?<note>.berweisungseingang SEPA) .*$")
+                .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. .* (?<amount>[\\.,\\d]+)(?<sign>([\\+|\\-]))$")
+                .match("^(?<note>.berweisung(seingang|ausgang) SEPA)( .*)?$")
                 .assign((t, v) -> {
                     // Is sign is negative change to REMOVAL
                     if (v.get("sign").equals("-"))
@@ -903,7 +872,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 // Saldenübernahme Nordnet
                 .section("date", "amount", "note").optional()
                 .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. .* (?<amount>[\\.,\\d]+)$")
-                .match("^(?<note>Salden.bernahme) .*$")
+                .match("^(?<note>Salden.bernahme)( .*)?$")
                 .assign((t, v) -> {
                     t.setDateTime(asDate(v.get("date") + type.getCurrentContext().get("year")));
                     t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("currency")));
@@ -913,13 +882,37 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
                 // 07.04. 03.04. REF: 000033640646 0,62-
                 // Portogebühren
-                .section("date", "amount", "note", "sign").optional()
-                .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. .* (?<amount>[\\.,\\d]+)(?<sign>[-|+])$")
-                .match("^(?<note>Portogeb.hren)$")
+                // Portogebuehren 03/15
+                // 24.03. 23.03. REF: 000137060674 42,42+
+                // Erst. BGH-Urteil Sonstige
+                .section("date", "amount", "sign", "note1", "note2").optional()
+                .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. REF: [\\d]+ (?<amount>[\\.,\\d]+)(?<sign>([\\+|\\-]))$")
+                .match("^(?<note1>(Portogeb.hren|Erst\\. BGH\\-Urteil Sonstige))$")
+                .match("^(Portogebuehren )?(?<note2>([\\d]{2}\\/[\\d]{2}|[\\d]{1}\\. Quartal [\\d]{4}))$")
                 .assign((t, v) -> {
-                    // Is sign is negative change to REMOVAL
+                    // Is sign is positiv change to FEES_REFUND
                     if (v.get("sign").equals("-"))
                         t.setType(AccountTransaction.Type.FEES);
+                    else
+                        t.setType(AccountTransaction.Type.FEES_REFUND);
+
+                    t.setDateTime(asDate(v.get("date") + type.getCurrentContext().get("year")));
+                    t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("currency")));
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setNote(v.get("note1") + " " + v.get("note2"));
+                })
+
+                // 31.03. 30.03. REF: 000137802265 0,77-
+                // Überziehungszinsen
+                .section("date", "amount", "sign", "note").optional()
+                .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. REF: [\\d]+ (?<amount>[\\.,\\d]+)(?<sign>([\\+|\\-]))$")
+                .match("^(?<note>.berziehungszinsen)$")
+                .assign((t, v) -> {
+                    // Is sign is positiv change to INTEREST
+                    if (v.get("sign").equals("-"))
+                        t.setType(AccountTransaction.Type.INTEREST_CHARGE);
+                    else
+                        t.setType(AccountTransaction.Type.INTEREST);
 
                     t.setDateTime(asDate(v.get("date") + type.getCurrentContext().get("year")));
                     t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("currency")));
@@ -1035,7 +1028,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                         .attributes("notation", "shares")
                                         .match("^(?<notation>[\\w]{3}) (?<shares>[\\.,\\d]+) [\\w]{3} [\\.,\\d]+$")
                                         .assign((t, v) -> {
-                                            // Workaround for bonds
+                                            // Percentage quotation, workaround for bonds
                                             if (v.get("notation") != null && !v.get("notation").equalsIgnoreCase("STK"))
                                                 t.setShares((asShares(v.get("shares")) / 100));
                                             else
@@ -1047,7 +1040,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                         .attributes("notation", "shares")
                                         .match("^(?<notation>[\\w]{3}) (?<shares>[\\.,\\d]+)( [\\d]{2}\\.[\\d]{2}\\.[\\d]{4})?$")
                                         .assign((t, v) -> {
-                                            // Workaround for bonds
+                                            // Percentage quotation, workaround for bonds
                                             if (v.get("notation") != null && !v.get("notation").equalsIgnoreCase("STK"))
                                                 t.setShares((asShares(v.get("shares")) / 100));
                                             else
@@ -1097,9 +1090,9 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                         .match("(^|^[\\s]+).*, (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
                                 ,
-                                /***
-                                 * This is for the reinvestment of dividends
-                                 * We pick the second 
+                                /**
+                                 * This is for the reinvestment of
+                                 * dividends we pick the second
                                  */
                                 // STK 25,000 17.05.2013 17.05.2013 EUR 0,700000
                                 section -> section
@@ -1108,42 +1101,31 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
                         )
 
-                // 17.12.2020 241462046 EUR/USD 1,2239 EUR 3.965,72
-                .section("exchangeRate").optional()
-                .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\w]{3}\\/[\\w]{3} (?<exchangeRate>[\\.,\\d]+) [\\w]{3} [\\.,\\d]+$")
-                .assign((t, v) -> {
-                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
-                })
-
                 // Wert Konto-Nr. Abrechnungs-Nr. Betrag zu Ihren Gunsten
                 // 16.12.2020 241462046 59592727 EUR 14,10
                 .section("amount", "currency").optional()
-                .find("Wert Konto-Nr. Abrechnungs-Nr. Betrag zu Ihren Gunsten")
+                .find("Wert Konto\\-Nr. Abrechnungs\\-Nr\\. Betrag zu Ihren Gunsten")
                 .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\d]+ (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(v.get("currency"));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                })
 
-                    /***
-                     * If the currency of the security 
-                     * differs from the account currency
-                     */
-                    if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
+                // Handelstag 15.12.2020 Kurswert USD 4.872,01 
+                // 17.12.2020 241462046 EUR/USD 1,2239 EUR 3.965,72
+                .section("fxCurrency", "baseCurrency", "termCurrency", "exchangeRate").optional()
+                .match("^.* Kurswert (?<fxCurrency>[\\w]{3}) [\\.,\\d]+([-\\s])?$")
+                .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+) [\\w]{3} [\\.,\\d]+$")
+                .assign((t, v) -> {
+                    if (!t.getMonetaryAmount().isZero())
                     {
-                        BigDecimal exchangeRate = new BigDecimal(type.getCurrentContext().get("exchangeRate"));
-                        BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
-                                        RoundingMode.HALF_DOWN);
+                        PDFExchangeRate rate = asExchangeRate(v);
+                        type.getCurrentContext().putType(rate);
 
-                        Money amount = Money.of(t.getCurrencyCode(), asAmount(v.get("amount")));
+                        Money gross = t.getMonetaryAmount();
+                        Money fxGross = rate.convert(asCurrencyCode(v.get("fxCurrency")), gross);
 
-                        // convert gross to security currency using exchangeRate
-                        long gross = exchangeRate.multiply(BigDecimal.valueOf(asAmount(v.get("amount")))
-                                        .setScale(0, RoundingMode.HALF_DOWN)).longValue();
-
-                        Money fxAmount = Money.of(t.getSecurity().getCurrencyCode(), gross);
-
-                        t.addUnit(new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate));
+                        checkAndSetGrossUnit(gross, fxGross, t, type);
                     }
                 })
 
@@ -1179,18 +1161,10 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
         pdfTransaction.subject(() -> {
             AccountTransaction entry = new AccountTransaction();
             entry.setType(AccountTransaction.Type.TAXES);
-
-            /***
-             * If we have multiple entries in the document,
-             * with taxes and tax refunds,
-             * then the "negative" flag must be removed.
-             */
-            type.getCurrentContext().remove("negative");
-
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^Ausbuchung:(.*)?");
+        Block firstRelevantLine = new Block("^Ausbuchung:.*");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -1200,7 +1174,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 // Nominal Ex-Tag
                 // STK 12,000 04.07.2017
                 .section("name", "isin", "name1")
-                .find("(Einbuchung:|Ausbuchung:|Wir erhielten zu Gunsten Ihres Depots)(.*)?")
+                .find("(Einbuchung:|Ausbuchung:|Wir erhielten zu Gunsten Ihres Depots).*")
                 .find("Gattungsbezeichnung ISIN")
                 .match("^(?<name>.*) (?<isin>[\\w]{12})$")
                 .match("^(?<name1>.*)")
@@ -1219,7 +1193,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 // STK 12,000 04.07.2017
                 // STK 28,000 02.12.2011 02.12.2011
                 .section("date").optional()
-                .match("^[\\w]{3} [\\.,\\d]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})(.*)?$")
+                .match("^[\\w]{3} [\\.,\\d]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                 // STK 33,000 06.06.2011
@@ -1227,7 +1201,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 .section("notation", "shares")
                 .match("^(?<notation>[\\w]{3}) (?<shares>[\\.,\\d]+)( [\\d]{2}\\.[\\d]{2}\\.[\\d]{4})?$")
                 .assign((t, v) -> {
-                    // Workaround for bonds
+                    // Percentage quotation, workaround for bonds
                     if (v.get("notation") != null && !v.get("notation").equalsIgnoreCase("STK"))
                         t.setShares((asShares(v.get("shares")) / 100));
                     else
@@ -1236,48 +1210,47 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
                 // Wert Konto-Nr. Betrag zu Ihren Lasten
                 // 23.11.2015 172306238 EUR 12,86
-                .section("amount", "currency").optional()
+                .section("currency", "amount").optional()
                 .find("Wert Konto-Nr. Betrag zu Ihren Lasten")
                 .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(v.get("currency"));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                })
+
+                // Wert Konto-Nr. Devisenkurs Betrag zu Ihren Lasten
+                // 21.08.2019 372650044 EUR/USD 1,1026 EUR 1.536,13
+                .section("currency", "amount").optional()
+                .find("Wert Konto\\-Nr\\. Devisenkurs Betrag zu Ihren Lasten")
+                .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\w]{3}\\/[\\w]{3} [\\.,\\d]+ (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
+                .assign((t, v) -> {
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 })
 
                 // Ausmachender Betrag USD 0,30-
                 // Wert Konto-Nr. Devisenkurs Betrag zu Ihren Lasten
                 // 21.08.2019 372650044 EUR/USD 1,1026 EUR 1.536,13
-                .section("fxCurrency", "fxAmount", "exchangeRate", "amount", "currency").optional()
-                .match("^Ausmachender Betrag (?<fxCurrency>[\\w]{3}) (?<fxAmount>[\\.,\\d]+)-$")
-                .find("Wert Konto-Nr. Devisenkurs Betrag zu Ihren Lasten")
-                .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\w]{3}\\/[\\w]{3} (?<exchangeRate>[\\.,\\d]+) (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
+                .section("fxCurrency", "fxGross", "baseCurrency", "termCurrency", "exchangeRate", "currency").optional()
+                .match("^Ausmachender Betrag (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,\\d]+)-$")
+                .find("Wert Konto\\-Nr\\. Devisenkurs Betrag zu Ihren Lasten")
+                .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+$")
                 .assign((t, v) -> {
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(v.get("currency"));
+                    PDFExchangeRate rate = asExchangeRate(v);
+                    type.getCurrentContext().putType(rate);
 
-                    // read the forex currency, exchange rate and gross
-                    // amount in forex currency
-                    String forex = asCurrencyCode(v.get("fxCurrency"));
-                    if (t.getSecurity().getCurrencyCode().equals(forex))
-                    {
-                        BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                        BigDecimal reverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
-                                        RoundingMode.HALF_DOWN);
+                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                    Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
 
-                        // gross given in forex currency
-                        long fxAmount = asAmount(v.get("fxAmount"));
-                        long amount = reverseRate.multiply(BigDecimal.valueOf(fxAmount))
-                                        .setScale(0, RoundingMode.HALF_DOWN).longValue();
-
-                        Unit grossValue = new Unit(Unit.Type.GROSS_VALUE,
-                                        Money.of(t.getCurrencyCode(), amount),
-                                        Money.of(forex, fxAmount), reverseRate);
-
-                        t.addUnit(grossValue);
-                    }
+                    checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
 
                 .wrap(t -> {
+                    // If we have multiple entries in the document, with
+                    // taxes and tax refunds, then the "negative" flag
+                    //  must be removed.
+                    type.getCurrentContext().remove("negative");
+
                     if (t.getCurrencyCode() != null && t.getAmount() != 0)
                         return new TransactionItem(t);
                     return null;
@@ -1286,23 +1259,26 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
-        /***
-         * if we have a tax refunds,
-         * we set a flag and don't book tax below
-         */
+        // If we have a tax refunds, we set a flag and don't book tax below.
         transaction
                 .section("n").optional()
                 .match("zu versteuern \\(negativ\\) (?<n>.*)")
-                .assign((t, v) -> {
-                    type.getCurrentContext().put("negative", "X");
-                });
+                .assign((t, v) -> type.getCurrentContext().put("negative", "X"));
+
+        // If we have a gross reinvestment, we set a flag and don't book tax
+        // below.
+        transaction
+                .section("n").optional()
+                .match("^Ertragsthesaurierung .*$")
+                .match("Steuerliquidit.t (?<n>.*)")
+                .assign((t, v) -> type.getCurrentContext().put("noTax", "X"));
 
         transaction
                 // Handelsplatz außerbörslich Lang & Schwarz Frz. Finanztrans. Steuer EUR 11,19-
                 .section("currency", "tax").optional()
-                .match("^.* Finanztrans\\. Steuer (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)-$")
+                .match("^.* Finanztrans\\. Steuer (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)\\-$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")))
+                    if (!"X".equals(type.getCurrentContext().get("negative")) && !"X".equals(type.getCurrentContext().get("noTax")))
                     {
                         processTaxEntries(t, v, type);
                     }
@@ -1310,9 +1286,9 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
                 // Börse Xetra/EDE Kapitalertragsteuer EUR 1,43-
                 .section("currency", "tax").optional()
-                .match("(^|^.* )Kapitalertragsteuer (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)-$")
+                .match("(^|^.* )Kapitalertragsteuer (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)\\-$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")))
+                    if (!"X".equals(type.getCurrentContext().get("negative")) && !"X".equals(type.getCurrentContext().get("noTax")))
                     {
                         processTaxEntries(t, v, type);
                     }
@@ -1321,9 +1297,9 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 // Verwahrart Girosammelverwahrung Solidaritätszuschlag EUR 0,08-
                 // Solidaritätszuschlag EUR 1,43-
                 .section("currency", "tax").optional()
-                .match("(^|^.* )Solidarit.tszuschlag (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)-$")
+                .match("(^|^.* )Solidarit.tszuschlag (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)\\-$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")))
+                    if (!"X".equals(type.getCurrentContext().get("negative")) && !"X".equals(type.getCurrentContext().get("noTax")))
                     {
                         processTaxEntries(t, v, type);
                     }
@@ -1331,9 +1307,22 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
                 // Kirchensteuer EUR 1,01-
                 .section("currency", "tax").optional()
-                .match("(^|^.* )Kirchensteuer (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)-$")
+                .match("(^|^.* )Kirchensteuer (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)\\-$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")))
+                    if (!"X".equals(type.getCurrentContext().get("negative")) && !"X".equals(type.getCurrentContext().get("noTax")))
+                    {
+                        processTaxEntries(t, v, type);
+                    }
+                })
+                
+                // ausländische Dividende EUR 4,13
+                // ausländische Quellensteuer 27% DKK 8,34
+                // anrechenbare Quellensteuer 15% DKK 4,64
+                // erstattungsfähige Quellensteuer 12% DKK 3,71
+                .section("tax", "currency").optional()
+                .match("ausländische Quellensteuer( [\\.,\\d]+%|.*)? (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$")
+                .assign((t, v) -> {
+                    if (!"X".equals(type.getCurrentContext().get("negative")) && !"X".equals(type.getCurrentContext().get("noTax")))
                     {
                         processTaxEntries(t, v, type);
                     }
@@ -1343,31 +1332,34 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 // davon anrechenbare US-Quellensteuer EUR 4,74
                 // davon anrechenbare US-Quellensteuer 15% EUR 2,72
                 //    davon anrechenbare Quellensteuer Fondseingangsseite EUR 0,03
-                .section("tax", "currency").optional()
-                .match("(^|^.* davon |^davon )anrechenbare (US-)?Quellensteuer( [\\.,\\d]+%|.*)? (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$")
+                .section("creditableWithHoldingTax", "currency").optional()
+                .match("(^.* davon |^davon )anrechenbare US-Quellensteuer( [\\.,\\d]+%|.*)? (?<currency>[\\w]{3}) (?<creditableWithHoldingTax>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")))
+                    if (!"X".equals(type.getCurrentContext().get("negative")) && !"X".equals(type.getCurrentContext().get("noTax")))
                     {
-                        processTaxEntries(t, v, type);
+                        processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type);
                     }
                 })
-
-                // erstattungsfähige Quellensteuer 12% DKK 3,71
-                .section("tax", "currency").optional()
-                .match("^erstattungsf.hige Quellensteuer .* (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$")
+                
+                // ausl. Dividendenanteil (Ausschüttung) EUR 0,98
+                // anrechenbare Quellensteuer EUR 0,03
+                // davon anrechenbare Quellensteuer Fondseingangsseite EUR 0,03
+                .section("creditableWithHoldingTax", "currency").optional()
+                .match("anrechenbare Quellensteuer (?<currency>[\\w]{3}) (?<creditableWithHoldingTax>[\\.,\\d]+)$")
+                .match(".* davon anrechenbare Quellensteuer Fondseingangsseite [\\w]{3} [\\.,\\d]+$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")))
+                    if (!"X".equals(type.getCurrentContext().get("negative")) && !"X".equals(type.getCurrentContext().get("noTax")))
                     {
-                        processTaxEntries(t, v, type);
+                        processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type);
                     }
                 })
 
                 // einbehaltene Kapitalertragsteuer EUR 1,81
                 // einbehaltene Kapitalertragsteuer EUR              0,39     
                 .section("tax", "currency").optional()
-                .match("^einbehaltene Kapitalertragsteuer ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<tax>[\\.,\\d]+)(.*)?$")
+                .match("^einbehaltene Kapitalertragsteuer ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<tax>[\\.,\\d]+).*$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")))
+                    if (!"X".equals(type.getCurrentContext().get("negative")) && !"X".equals(type.getCurrentContext().get("noTax")))
                     {
                         processTaxEntries(t, v, type);
                     }
@@ -1376,9 +1368,9 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 // einbehaltener Solidaritätszuschlag EUR 0,10
                 // einbehaltener Solidaritätszuschlag  EUR              0,02     
                 .section("tax", "currency").optional()
-                .match("^einbehaltener Solidarit.tszuschlag ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<tax>[\\.,\\d]+)(.*)?$")
+                .match("^einbehaltener Solidarit.tszuschlag ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<tax>[\\.,\\d]+).*$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")))
+                    if (!"X".equals(type.getCurrentContext().get("negative")) && !"X".equals(type.getCurrentContext().get("noTax")))
                     {
                         processTaxEntries(t, v, type);
                     }
@@ -1387,9 +1379,9 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 // einbehaltene Kirchensteuer EUR 5,86
                 // einbehaltener Kirchensteuer  EUR              0,02 
                 .section("tax", "currency").optional()
-                .match("^einbehaltene Kirchensteuer(  Ehegatte\\/Lebenspartner)? ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<tax>[\\.,\\d]+)(.*)?$")
+                .match("^einbehaltene Kirchensteuer(  Ehegatte\\/Lebenspartner)? ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<tax>[\\.,\\d]+).*$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")))
+                    if (!"X".equals(type.getCurrentContext().get("negative")) && !"X".equals(type.getCurrentContext().get("noTax")))
                     {
                         processTaxEntries(t, v, type);
                     }
@@ -1397,9 +1389,9 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
                 // einbehaltene Kirchensteuer Ehegatte/Lebenspartner EUR 1,09
                 .section("tax", "currency").optional()
-                .match("^einbehaltene Kirchensteuer Ehegatte\\/Lebenspartner ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<tax>[\\.,\\d]+)(.*)?$")
+                .match("^einbehaltene Kirchensteuer Ehegatte\\/Lebenspartner ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<tax>[\\.,\\d]+).*$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")))
+                    if (!"X".equals(type.getCurrentContext().get("negative")) && !"X".equals(type.getCurrentContext().get("noTax")))
                     {
                         processTaxEntries(t, v, type);
                     }
@@ -1429,35 +1421,5 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 .section("currency", "fee").optional()
                 .match("^.* Maklercourtage ([\\s]+)?(?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)-$")
                 .assign((t, v) -> processFeeEntries(t, v, type));
-    }
-
-    private void processTaxEntries(Object t, Map<String, String> v, DocumentType type)
-    {
-        if (t instanceof name.abuchen.portfolio.model.Transaction)
-        {
-            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-            PDFExtractorUtils.checkAndSetTax(tax, (name.abuchen.portfolio.model.Transaction) t, type);
-        }
-        else
-        {
-            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-            PDFExtractorUtils.checkAndSetTax(tax, ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
-        }
-    }
-
-    private void processFeeEntries(Object t, Map<String, String> v, DocumentType type)
-    {
-        if (t instanceof name.abuchen.portfolio.model.Transaction)
-        {
-            Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
-            PDFExtractorUtils.checkAndSetFee(fee, 
-                            (name.abuchen.portfolio.model.Transaction) t, type);
-        }
-        else
-        {
-            Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
-            PDFExtractorUtils.checkAndSetFee(fee,
-                            ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
-        }
     }
 }

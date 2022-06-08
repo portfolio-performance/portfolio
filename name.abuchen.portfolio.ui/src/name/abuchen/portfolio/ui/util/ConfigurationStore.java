@@ -243,12 +243,4 @@ public class ConfigurationStore
     {
         return active.getUUID();
     }
-
-    public void insertMigratedConfiguration(String data)
-    {
-        active = new Configuration(Messages.ConfigurationStandard, data);
-        configSet.add(active);
-        preferences.setValue(identifier + KEY_ACTIVE, active.getUUID());
-        client.touch();
-    }
 }

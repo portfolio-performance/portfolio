@@ -1,21 +1,24 @@
 package name.abuchen.portfolio.ui.util;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
-import java.text.ParseException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.text.ParsePosition;
+import java.util.Locale;
 
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 
 public class StringToCurrencyConverter implements IValidatingConverter<String, Long>
 {
-    private final Pattern pattern;
-    private final NumberFormat full;
+    private static final char NBSP = '\u00A0';
 
-    private final int factor;
+    private final DecimalFormat defaultPlattern;
+    private final DecimalFormat withSpacePattern;
+    private final DecimalFormat belgianPattern;
+
+    private final Values<?> type;
+    private boolean acceptNegativeValues;
 
     public StringToCurrencyConverter(Values<?> type)
     {
@@ -24,20 +27,45 @@ public class StringToCurrencyConverter implements IValidatingConverter<String, L
 
     public StringToCurrencyConverter(Values<?> type, boolean acceptNegativeValues)
     {
-        this.factor = type.factor();
+        this.type = type;
+        this.acceptNegativeValues = acceptNegativeValues;
 
-        StringBuilder patternString = new StringBuilder();
-        patternString.append("^("); //$NON-NLS-1$
-
-        if (acceptNegativeValues)
-            patternString.append("-?"); //$NON-NLS-1$
+        defaultPlattern = new DecimalFormat("#,###.##"); //$NON-NLS-1$
+        defaultPlattern.setParseBigDecimal(true);
 
         DecimalFormatSymbols symbols = new DecimalFormatSymbols();
-        patternString.append("[\\d").append(symbols.getGroupingSeparator()).append("]*)(") //$NON-NLS-1$ //$NON-NLS-2$
-                        .append(symbols.getDecimalSeparator()).append("(\\d*))?$"); //$NON-NLS-1$
+        if (symbols.getGroupingSeparator() == NBSP)
+        {
+            // some (European) locales use the non-breaking space as grouping
+            // separator. Support both: space and non-breaking space
 
-        pattern = Pattern.compile(patternString.toString());
-        full = new DecimalFormat("#,###"); //$NON-NLS-1$
+            symbols.setGroupingSeparator(' ');
+            withSpacePattern = new DecimalFormat("#,###.##", symbols); //$NON-NLS-1$
+            withSpacePattern.setParseBigDecimal(true);
+        }
+        else
+        {
+            withSpacePattern = null;
+        }
+
+        if ("BE".equals(Locale.getDefault().getCountry())) //$NON-NLS-1$
+        {
+            // In Belgium (i.e. fr_be and nl_be) it is normal do use the
+            // dot character as the decimal separator in the input field
+            // because that is the key on the numeric keypad
+
+            // Other applications like Excel convert this automatically to
+            // the correct value
+
+            symbols = new DecimalFormatSymbols();
+            symbols.setDecimalSeparator('.');
+            belgianPattern = new DecimalFormat("#.##", symbols); //$NON-NLS-1$
+            belgianPattern.setParseBigDecimal(true);
+        }
+        else
+        {
+            belgianPattern = null;
+        }
     }
 
     @Override
@@ -57,47 +85,52 @@ public class StringToCurrencyConverter implements IValidatingConverter<String, L
     {
         String value = fromObject.trim();
 
-        try
-        {
-            long result = 0;
-            for (String part : value.split("\\+")) //$NON-NLS-1$
-                result += convertToLong(part.trim());
+        long result = 0;
+        for (String part : value.split("\\+")) //$NON-NLS-1$
+            result += convertToLong(part.trim());
 
-            return Long.valueOf(result);
-        }
-        catch (ParseException e)
-        {
-            throw new IllegalArgumentException(e);
-        }
-
+        return Long.valueOf(result);
     }
 
-    private long convertToLong(String part) throws ParseException
+    private long convertToLong(String part)
     {
-        Matcher m = pattern.matcher(String.valueOf(part));
-        if (!m.matches())
-            throw new IllegalArgumentException(String.format(Messages.CellEditor_NotANumber, part));
-
-        String strBefore = m.group(1);
-        Number before = strBefore.trim().length() > 0 ? full.parse(strBefore) : Long.valueOf(0);
-        boolean isNegative = strBefore.contains("-"); //$NON-NLS-1$
-
-        String strAfter = m.group(3);
-        long after = 0;
-        if (strAfter != null && strAfter.length() > 0)
+        if (belgianPattern != null)
         {
-            int length = (int) Math.log10(factor);
+            // see above - parse with a special Belgian format that is used if
+            // and only if there is only one dot in the string and not the
+            // regular decimal separator
 
-            if (strAfter.length() > length)
-                strAfter = strAfter.substring(0, length);
+            int dot = part.indexOf('.');
+            int comma = part.indexOf(defaultPlattern.getDecimalFormatSymbols().getDecimalSeparator());
 
-            after = Long.parseLong(strAfter);
-
-            for (int ii = strAfter.length(); ii < length; ii++)
-                after *= 10;
+            if (comma < 0 && dot >= 0 && part.lastIndexOf('.') == dot)
+                return parse(part, belgianPattern);
         }
 
-        // For negative numbers: subtract decimal digits instead of adding them
-        return before.longValue() * factor + (isNegative ? -after : after);
+        try
+        {
+            if (withSpacePattern != null)
+                return parse(part, withSpacePattern);
+        }
+        catch (IllegalArgumentException ignore)
+        {
+            // fall back to default pattern
+        }
+
+        return parse(part, defaultPlattern);
+    }
+
+    private long parse(String string, DecimalFormat decimalFormat)
+    {
+        ParsePosition parsePosition = new ParsePosition(0);
+        BigDecimal answer = (BigDecimal) decimalFormat.parse(string, parsePosition);
+
+        if (parsePosition.getIndex() == 0 || parsePosition.getIndex() < string.length())
+            throw new IllegalArgumentException(String.format(Messages.CellEditor_NotANumber, string));
+
+        if (answer.signum() == -1 && !acceptNegativeValues)
+            throw new IllegalArgumentException(String.format(Messages.CellEditor_NotANumber, string));
+
+        return answer.multiply(type.getBigDecimalFactor()).longValue();
     }
 }

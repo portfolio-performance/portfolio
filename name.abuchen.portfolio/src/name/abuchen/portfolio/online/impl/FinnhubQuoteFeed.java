@@ -21,7 +21,6 @@ import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.QuoteFeedData;
-import name.abuchen.portfolio.util.Dates;
 import name.abuchen.portfolio.util.WebAccess;
 
 public final class FinnhubQuoteFeed implements QuoteFeed
@@ -50,7 +49,7 @@ public final class FinnhubQuoteFeed implements QuoteFeed
     @Override
     public Optional<LatestSecurityPrice> getLatestQuote(Security security)
     {
-        QuoteFeedData data = getHistoricalQuotes(security, false, 5);
+        QuoteFeedData data = getHistoricalQuotes(security, false, LocalDate.now().minusDays(5));
 
         List<LatestSecurityPrice> prices = data.getLatestPrices();
         if (prices.isEmpty())
@@ -64,24 +63,23 @@ public final class FinnhubQuoteFeed implements QuoteFeed
     @Override
     public QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse)
     {
-        int count = 20000;
+        LocalDate quoteStartDate = null;
 
         if (!security.getPrices().isEmpty())
-        {
-            LocalDate startDate = security.getPrices().get(security.getPrices().size() - 1).getDate();
-            count = Dates.daysBetween(startDate, LocalDate.now()) + 5;
-        }
+            quoteStartDate = security.getPrices().get(security.getPrices().size() - 1).getDate();
+        else
+            quoteStartDate = LocalDate.now().minusYears(10);
 
-        return getHistoricalQuotes(security, collectRawResponse, count);
+        return getHistoricalQuotes(security, collectRawResponse, quoteStartDate);
     }
 
     @Override
     public QuoteFeedData previewHistoricalQuotes(Security security)
     {
-        return getHistoricalQuotes(security, true, 100);
+        return getHistoricalQuotes(security, true, LocalDate.now().minusMonths(2));
     }
 
-    private QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse, int count)
+    private QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse, LocalDate startDate)
     {
         if (security.getTickerSymbol() == null)
         {
@@ -95,8 +93,11 @@ public final class FinnhubQuoteFeed implements QuoteFeed
         {
             @SuppressWarnings("nls")
             WebAccess webaccess = new WebAccess("finnhub.io", "/api/v1/stock/candle")
-                            .addParameter("symbol", security.getTickerSymbol()).addParameter("resolution", "D")
-                            .addParameter("count", String.valueOf(count));
+                            .addParameter("symbol", security.getTickerSymbol()) //
+                            .addParameter("resolution", "D") //
+                            .addParameter("from",
+                                            String.valueOf(startDate.atStartOfDay().toEpochSecond(ZoneOffset.UTC))) //
+                            .addParameter("to", String.valueOf(LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)));
 
             if (apiKey != null)
                 webaccess.addParameter("token", apiKey); //$NON-NLS-1$

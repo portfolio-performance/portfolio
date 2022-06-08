@@ -55,4 +55,13 @@ public class TextUtilTest
         assertThat(TextUtil.stripJavaScriptCallback("]something["), is("]something["));
     }
 
+    @Test
+    public void testSanitizeFilename()
+    {
+        assertThat(TextUtil.sanitizeFilename("?a\\b/c:d|e<f>g//h*i"), is("_a_b_c_d_e_f_g_h_i"));
+        assertThat(TextUtil.sanitizeFilename("a    b"), is("a_b"));
+        assertThat(TextUtil.sanitizeFilename("äöüÄÖÜß"), is("äöüÄÖÜß"));
+        assertThat(TextUtil.sanitizeFilename("Акти"), is("Акти"));
+    }
+
 }

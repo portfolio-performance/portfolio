@@ -1,7 +1,7 @@
 package name.abuchen.portfolio.util;
 
 import static java.time.temporal.TemporalAdjusters.dayOfWeekInMonth;
-import static java.time.temporal.TemporalAdjusters.lastInMonth;
+import static java.time.temporal.TemporalAdjusters.nextOrSame;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -69,26 +69,6 @@ import java.util.Set;
         {
             LocalDate date = LocalDate.of(year, month, 1);
             return new Holiday(getName(), date.with(dayOfWeekInMonth(which, weekday)));
-        }
-    }
-
-    private static class LastWeekdayHolidayType extends HolidayType
-    {
-        private final DayOfWeek weekday;
-        private final Month month;
-
-        public LastWeekdayHolidayType(HolidayName name, DayOfWeek weekday, Month month)
-        {
-            super(name);
-            this.weekday = weekday;
-            this.month = month;
-        }
-
-        @Override
-        protected Holiday doGetHoliday(int year)
-        {
-            LocalDate date = LocalDate.of(year, month, 1);
-            return new Holiday(getName(), date.with(lastInMonth(weekday)));
         }
     }
 
@@ -215,11 +195,6 @@ import java.util.Set;
         return new FixedWeekdayHolidayType(name, which, weekday, month);
     }
 
-    public static HolidayType last(HolidayName name, DayOfWeek weekday, Month month)
-    {
-        return new LastWeekdayHolidayType(name, weekday, month);
-    }
-
     public static HolidayType easter(HolidayName name, int daysToAdd)
     {
         return new RelativeToEasterHolidayType(name, daysToAdd);
@@ -288,8 +263,8 @@ import java.util.Set;
         for (MoveIf mv : moveIf)
             date = mv.apply(date);
 
-        while (moveTo != null && date.getDayOfWeek() != moveTo)
-            date = date.plusDays(1);
+        if (moveTo != null)
+            date = date.with(nextOrSame(moveTo));
 
         return new Holiday(answer.getName(), date);
     }

@@ -39,7 +39,7 @@ public class SecurityTransferModel extends AbstractModel
     private Portfolio sourcePortfolio;
     private Portfolio targetPortfolio;
     private LocalDate date = LocalDate.now();
-    private LocalTime time = LocalTime.MIDNIGHT;
+    private LocalTime time = PresetValues.getTime();
 
     private long shares;
     private BigDecimal quote = BigDecimal.ONE;
@@ -108,6 +108,7 @@ public class SecurityTransferModel extends AbstractModel
         setShares(0);
         setAmount(0);
         setNote(null);
+        setTime(PresetValues.getTime());
     }
 
     private IStatus calculateStatus()

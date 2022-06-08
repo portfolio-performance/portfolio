@@ -88,9 +88,14 @@ public class TradeCalendarTest
         // Whit Monday
         assertThat(calendar.isHoliday(LocalDate.parse("1999-05-24")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2000-06-12")), is(false)); // trading despite public holiday
+        assertThat(calendar.isHoliday(LocalDate.parse("2006-06-05")), is(false)); // trading despite public holiday
+        assertThat(calendar.isHoliday(LocalDate.parse("2007-05-28")), is(true)); // no trading only because Whit Monday coincides with U.S. Memorial Day
+        assertThat(calendar.isHoliday(LocalDate.parse("2008-05-12")), is(false)); // trading despite public holiday
         assertThat(calendar.isHoliday(LocalDate.parse("2013-05-20")), is(false)); // trading despite public holiday
         assertThat(calendar.isHoliday(LocalDate.parse("2014-06-09")), is(false)); // trading despite public holiday
         assertThat(calendar.isHoliday(LocalDate.parse("2015-05-25")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2021-05-24")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2022-06-06")), is(false)); // trading despite public holiday
 
         // Corpus Christi
         assertThat(calendar.isHoliday(LocalDate.parse("1999-06-03")), is(true));
@@ -102,9 +107,12 @@ public class TradeCalendarTest
 
         // German Unity Day
         assertThat(calendar.isHoliday(LocalDate.parse("1999-10-03")), is(true));
-        assertThat(calendar.isHoliday(LocalDate.parse("2000-10-03")), is(false)); // trading despite public holiday
+        assertThat(calendar.isHoliday(LocalDate.parse("2000-10-03")), is(true)); // no trading (despite other plans) because of union protests
+        assertThat(calendar.isHoliday(LocalDate.parse("2001-10-03")), is(false)); // trading despite public holiday
         assertThat(calendar.isHoliday(LocalDate.parse("2013-10-03")), is(false)); // trading despite public holiday
         assertThat(calendar.isHoliday(LocalDate.parse("2014-10-03")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2021-10-03")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2022-10-03")), is(false)); // trading despite public holiday
     }
 
     @Test
@@ -302,7 +310,7 @@ public class TradeCalendarTest
     @Test
     public void testEmptyCalendar()
     {
-        TradeCalendar calendar = TradeCalendarManager.getInstance(TradeCalendar.EMPTY_CODE);
+        TradeCalendar calendar = TradeCalendarManager.getInstance("empty");
 
         // we generate a random day
         long minDay = LocalDate.of(2000, 1, 1).toEpochDay();

@@ -360,6 +360,34 @@ public final class Security implements Attributable, InvestmentVehicle
     }
 
     /**
+     * Returns a list of the last historical security prices with requested
+     * number of prices (or less if there are not enough prices) from requested
+     * Date.
+     */
+    public List<SecurityPrice> getLatestNPricesOfDate(LocalDate dateOfLastPrice, int numberOfPrices)
+    {
+        List<SecurityPrice> allPrices = getPricesIncludingLatest();
+
+        int index = Collections.binarySearch(allPrices, new SecurityPrice(dateOfLastPrice, 0),
+                        new SecurityPrice.ByDate());
+
+        if (index < 0)
+            index = -index - 2; // if price for requested date not found, use
+                                // price before start date
+
+        if (index >= allPrices.size())
+            index = allPrices.size() - 1; // requested date greater than last
+                                          // prize --> use last price
+
+        int fromIndex = index - numberOfPrices + 1;
+        if (fromIndex < 0)
+            fromIndex = 0; // always start with first element if fromIndex is
+                           // out of bounds
+
+        return new ArrayList<>(allPrices.subList(fromIndex, index + 1));
+    }
+
+    /**
      * Adds security price to historical quotes.
      * 
      * @return true if the historical quote was updated.

@@ -47,7 +47,7 @@ public class QuotesTableViewer
         ColumnViewerSorter
                         .create(element -> element instanceof String ? LocalDate.now()
                                         : ((LatestSecurityPrice) element).getDate())
-                        .attachTo(tableViewer, viewerColumn, SWT.UP);
+                        .attachTo(tableViewer, viewerColumn, SWT.DOWN);
 
         TableColumn column = new TableColumn(tableViewer.getTable(), SWT.None);
         column.setText(Messages.ColumnDaysHigh);

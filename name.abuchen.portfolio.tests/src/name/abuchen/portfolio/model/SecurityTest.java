@@ -65,7 +65,7 @@ public class SecurityTest
             if (p.getPropertyType() != String.class && p.getPropertyType() != boolean.class
                             && p.getPropertyType() != int.class)
                 continue;
-            
+
             Object sourceValue = p.getReadMethod().invoke(source);
             Object targetValue = p.getReadMethod().invoke(target);
 
@@ -207,13 +207,52 @@ public class SecurityTest
         security.setTickerSymbol("AAPL");
         assertEquals(security.getExternalIdentifier(), "AAPL");
 
-        // In some countries there is no ISIN or WKN, only the ticker symbol. 
-        // If historical prices are retrieved from the stock exchange, 
+        // In some countries there is no ISIN or WKN, only the ticker symbol.
+        // If historical prices are retrieved from the stock exchange,
         // the ticker symbol is expanded. (UMAX --> UMAX.AX)
         security.setTickerSymbol("AAPL.BA");
         assertEquals(security.getExternalIdentifier(), "AAPL");
 
         security.setIsin("US0378331005");
         assertEquals(security.getExternalIdentifier(), "US0378331005");
+    }
+
+    @Test
+    public void testgetLatestNPricesOfDate()
+    {
+        Security security = new Security();
+        security.addPrice(new SecurityPrice(LocalDate.parse("2019-02-21"), 1));
+        security.addPrice(new SecurityPrice(LocalDate.parse("2019-02-22"), 2));
+        security.addPrice(new SecurityPrice(LocalDate.parse("2019-02-23"), 3));
+        security.addPrice(new SecurityPrice(LocalDate.parse("2019-02-24"), 4));
+
+        List<SecurityPrice> prices = security.getLatestNPricesOfDate(LocalDate.parse("2019-02-23"), 2);
+        assertThat(prices.size(), is(2));
+        assertThat(prices.get(0).getValue(), is(2l));
+        assertThat(prices.get(1).getValue(), is(3l));
+
+        prices = security.getLatestNPricesOfDate(LocalDate.parse("2019-02-21"), 2);
+        assertThat(prices.size(), is(1));
+        assertThat(prices.get(0).getValue(), is(1l));
+
+        // test with start date before date of first available price
+        prices = security.getLatestNPricesOfDate(LocalDate.parse("2018-05-05"), 2);
+        assertThat(prices.size(), is(0));
+
+        // test request portion of prices and start date after date of last
+        // price
+        prices = security.getLatestNPricesOfDate(LocalDate.parse("2020-02-02"), 2);
+        assertThat(prices.size(), is(2));
+        assertThat(prices.get(0).getValue(), is(3l));
+        assertThat(prices.get(1).getValue(), is(4l));
+
+        // test request more prices than available and start date after date of
+        // last price
+        prices = security.getLatestNPricesOfDate(LocalDate.parse("2020-02-02"), 40);
+        assertThat(prices.size(), is(4));
+        assertThat(prices.get(0).getValue(), is(1l));
+        assertThat(prices.get(1).getValue(), is(2l));
+        assertThat(prices.get(2).getValue(), is(3l));
+        assertThat(prices.get(3).getValue(), is(4l));
     }
 }

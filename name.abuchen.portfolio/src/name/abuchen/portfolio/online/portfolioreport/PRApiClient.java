@@ -7,21 +7,23 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.http.Header;
-import org.apache.http.HttpHeaders;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.message.BasicHeader;
-import org.apache.http.util.EntityUtils;
+import org.apache.hc.client5.http.classic.methods.HttpDelete;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.classic.methods.HttpPut;
+import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.Header;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.HttpHeaders;
+import org.apache.hc.core5.http.HttpStatus;
+import org.apache.hc.core5.http.ParseException;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.apache.hc.core5.http.io.entity.StringEntity;
+import org.apache.hc.core5.http.message.BasicHeader;
 import org.osgi.framework.FrameworkUtil;
 
 import com.google.gson.Gson;
@@ -33,10 +35,11 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+
 import name.abuchen.portfolio.online.impl.PortfolioReportNet;
 import name.abuchen.portfolio.util.WebAccess;
 
-@SuppressWarnings("nls")
+@SuppressWarnings({ "nls", "restriction" })
 public class PRApiClient
 {
     private String endpoint;
@@ -88,17 +91,17 @@ public class PRApiClient
 
     public List<PRPortfolio> listPortfolios() throws IOException
     {
-        return list(PRPortfolio.class, "/portfolios");
+        return list(PRPortfolio.class, "/portfolios/");
     }
 
     public PRPortfolio createPortfolio(PRPortfolio portfolio) throws IOException
     {
-        return create(PRPortfolio.class, "/portfolios", portfolio);
+        return create(PRPortfolio.class, "/portfolios/", portfolio);
     }
 
     public List<PRSecurity> listSecurities(long portfolioId) throws IOException
     {
-        return list(PRSecurity.class, "/portfolios/" + portfolioId + "/securities");
+        return list(PRSecurity.class, "/portfolios/" + portfolioId + "/securities/");
     }
 
     public PRSecurity updateSecurity(long portfolioId, PRSecurity security) throws IOException
@@ -113,7 +116,7 @@ public class PRApiClient
 
     public List<PRAccount> listAccounts(long portfolioId) throws IOException
     {
-        return list(PRAccount.class, "/portfolios/" + portfolioId + "/accounts");
+        return list(PRAccount.class, "/portfolios/" + portfolioId + "/accounts/");
     }
 
     public PRAccount updateAccount(long portfolioId, PRAccount account) throws IOException
@@ -128,7 +131,7 @@ public class PRApiClient
 
     public List<PRTransaction> listTransactions(long portfolioId) throws IOException
     {
-        return list(PRTransaction.class, "/portfolios/" + portfolioId + "/transactions");
+        return list(PRTransaction.class, "/portfolios/" + portfolioId + "/transactions/");
     }
 
     public PRTransaction updateTransaction(long portfolioId, PRTransaction transaction) throws IOException
@@ -148,10 +151,10 @@ public class PRApiClient
         HttpGet request = new HttpGet(endpoint + path);
         CloseableHttpResponse response = client.execute(request);
 
-        if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK)
+        if (response.getCode() != HttpStatus.SC_OK)
             throw asError(request, response, null);
 
-        return this.gson.fromJson(EntityUtils.toString(response.getEntity()),
+        return this.gson.fromJson(toString(response.getEntity()),
                         TypeToken.getParameterized(List.class, type).getType());
     }
 
@@ -161,10 +164,10 @@ public class PRApiClient
         request.setEntity(new StringEntity(this.gson.toJson(input), StandardCharsets.UTF_8));
         CloseableHttpResponse response = client.execute(request);
 
-        if (response.getStatusLine().getStatusCode() != HttpStatus.SC_CREATED)
-            throw asError(request, response, EntityUtils.toString(request.getEntity()));
+        if (response.getCode() != HttpStatus.SC_CREATED)
+            throw asError(request, response, toString(request.getEntity()));
 
-        return this.gson.fromJson(EntityUtils.toString(response.getEntity()), type);
+        return this.gson.fromJson(toString(response.getEntity()), type);
     }
 
     private <T> T update(Class<T> type, String path, T input) throws IOException
@@ -174,10 +177,10 @@ public class PRApiClient
 
         CloseableHttpResponse response = client.execute(request);
 
-        if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK)
-            throw asError(request, response, EntityUtils.toString(request.getEntity()));
+        if (response.getCode() != HttpStatus.SC_OK)
+            throw asError(request, response, toString(request.getEntity()));
 
-        return this.gson.fromJson(EntityUtils.toString(response.getEntity()), type);
+        return this.gson.fromJson(toString(response.getEntity()), type);
     }
 
     private <T> T deleteEntity(Class<T> type, String path) throws IOException
@@ -185,17 +188,28 @@ public class PRApiClient
         HttpDelete request = new HttpDelete(endpoint + path);
         CloseableHttpResponse response = client.execute(request);
 
-        if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK)
+        if (response.getCode() != HttpStatus.SC_OK)
             throw asError(request, response, null);
 
-        return this.gson.fromJson(EntityUtils.toString(response.getEntity()), type);
+        return this.gson.fromJson(toString(response.getEntity()), type);
     }
 
-    private IOException asError(HttpRequestBase request, CloseableHttpResponse response, String requestBody)
+    private IOException asError(HttpUriRequestBase request, CloseableHttpResponse response, String requestBody)
                     throws IOException
     {
-        return new IOException(request.toString() + " --> " + response.getStatusLine().getStatusCode() + "\n\n"
-                        + (requestBody != null ? requestBody + "\n\n" : "")
-                        + EntityUtils.toString(response.getEntity()));
+        return new IOException(request.toString() + " --> " + response.getCode() + "\n\n"
+                        + (requestBody != null ? requestBody + "\n\n" : "") + toString(response.getEntity()));
+    }
+
+    private String toString(HttpEntity httpEntity) throws IOException
+    {
+        try
+        {
+            return EntityUtils.toString(httpEntity);
+        }
+        catch (ParseException e)
+        {
+            throw new IOException(e);
+        }
     }
 }

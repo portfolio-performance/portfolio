@@ -1,0 +1,53 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Postbank Köln · 51222 Köln    Seite 1 von 2
+Depotnummer
+ 123456789
+ Kundennummer 1234567899
+Dr. Max Mustermann
+ Auftragsnummer 123456/37.00
+Herr Doktor Datum 10.01.2020
+Max Mustermann Rechnungsnummer W00860-0123456789/20
+Musterstraße 1 Umsatzsteuer-ID DE123456789   
+12345 Musterstadt
+ 
+Wertpapier Abrechnung Rücknahme Investmentfonds
+Auftrag vom 09.01.2020 15:24:25 Uhr
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 0,7918 XTRACKERS MSCI WORLD SWAP          LU0274208692 (DBX1MW)
+INHABER-ANTEILE 1C O.N.            
+Handels-/Ausführungsplatz Außerbörslich (gemäß Weisung)
+Schlusstag 10.01.2020 Auftragserteilung/ -ort Online-Banking
+Ausführungskurs 62,12 EUR
+Girosammelverw. mehrere Sammelurkunden - kein Stückeausdruck -
+Kurswert 49,19 EUR
+Ermittlung steuerrelevante Erträge
+Veräußerungsgewinn (nach Teilfreistellung) 0,71 EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 0,71 EUR
+ 
+Steuerberechnung
+Kapitalertragsteuer 24,51% auf 0,71 EUR 0,17- EUR
+Kirchensteuer 8,00% auf 0,17 EUR 0,01- EUR
+Ausmachender Betrag 49,01 EUR
+ 
+Den Gegenwert buchen wir mit Valuta 14.01.2020 zu Gunsten des Kontos 012345678
+(IBAN DE12 3456 7890 0123 4567 89), BLZ 37011000 (BIC PBNKDEFFXXX).
+Die Wertpapiere entnehmen wir Ihrem Depotkonto.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+Für das Geschäft wurde keine Anlageberatung erbracht.
+ 
+0860.01101923.0007596OR07                                                             
+Seite 2 von 2
+Depotnummer 123456789
+Kundennummer 1234567899
+Auftragsnummer 123456/37.00
+Datum 10.01.2020
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verlustverrechnungstöpfe 2020 ohne Vorjahressaldo Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien Sonstige
+Pauschbetrag Quellensteuer
+Nachher 0,00 0,00 0,00 0,00 0,00 12.562,07
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0860.01101923.0007597OR07                                                             

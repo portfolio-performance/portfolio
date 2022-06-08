@@ -1,0 +1,41 @@
+PDF Autor: 'DAB-BNP-Paribas'
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=123456789
+Wertpapierabrechnung DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=DRUCK
+ADRESSZEILE1=Herr
+Kauf  ADRESSZEILE2=Max Mustermann
+Kommissionsgeschäft ADRESSZEILE3=Musterstraße 12
+ADRESSZEILE4=12345 Stadt
+Depot-Nr. Abrechnungs-Nr. ADRESSZEILE5=
+123456789 123456789 / 26.07.2021 ADRESSZEILE6=
+Herr BELEGNUMMER=6532
+Max Mustermann SEITENNUMMER=1
+Musterstraße 12 STEUERERSTATTUNG=N
+12345 Stadt Depotinhaber
+Max Mustermann
+München, 26.07.2021
+Wir haben für Sie gekauft
+Gattungsbezeichnung Fälligkeit näch. Zinstermin ISIN
+VanEck ETP AG ETN 31.12.29 MVCBIC 31.12.2029 DE000A28M8D0
+Nominal Kurs
+STK 38,000 EUR 18,1499
+Handelstag 26.07.2021 Kurswert EUR 689,70-
+Handelszeit 12:59* Provision EUR 4,00-
+Börse Tradegate/EDG
+Verwahrart Girosammelverwahrung
+Wert Konto-Nr. Betrag zu Ihren Lasten
+28.07.2021 123456789 EUR 693,70
+Wir werden in Ihrem Depot wie angegeben buchen.
+* Die angegebene Zeit entspricht den Angaben der Handelspartner gemäß der lokalen Zeit in Deutschland
+  (Mitteleuropäische Zeit bzw. Mitteleuropäische Sommerzeit).
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+BNP Paribas S.A. Niederlassung Deutschland > Standort: München > Landsberger Straße 300 > 80687 München > Sitz: Nürnberg HRB Nürnberg 31129 > USt.-Ident-Nr.: DE 
+191528929 > Sitz der Hauptniederlassung der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449 > Président du 
+Conseil d‘Administration: Jean Lemierre, Directeur Général: Jean-Laurent Bonnafé
+3.19/ABREABHNHANDKFDI/POC1618/006532/123456/123546

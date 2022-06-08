@@ -11,16 +11,28 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.MessageFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.time.format.TextStyle;
+import java.time.temporal.WeekFields;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
 import java.util.Properties;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
-import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -86,7 +98,8 @@ public class LanguagePreferencePage extends PreferencePage
     }
 
     private Properties userProperties = new Properties();
-    private ComboViewer viewer;
+    private ComboViewer languageCombo;
+    private ComboViewer countryCombo;
 
     public LanguagePreferencePage()
     {
@@ -104,31 +117,195 @@ public class LanguagePreferencePage extends PreferencePage
         Label label = new Label(area, SWT.NONE);
         label.setText(Messages.LabelLanguage);
 
-        viewer = new ComboViewer(area, SWT.READ_ONLY);
-        viewer.setContentProvider(ArrayContentProvider.getInstance());
-        viewer.setInput(Language.values());
-        viewer.setSelection(new StructuredSelection(Language.valueOfLocale(userProperties.getProperty(OSGI_NL))));
+        languageCombo = new ComboViewer(area, SWT.READ_ONLY);
+        languageCombo.setContentProvider(ArrayContentProvider.getInstance());
+        languageCombo.setInput(Language.values());
+        languageCombo.addSelectionChangedListener(event -> {
+            Language l = (Language) event.getStructuredSelection().getFirstElement();
+            if (l != null)
+            {
+                if (l == Language.AUTOMATIC)
+                {
+                    countryCombo.getCombo().setEnabled(false);
+                    countryCombo.setInput(Collections.emptyList());
+                    countryCombo.setSelection(StructuredSelection.EMPTY);
+                }
+                else
+                {
+                    countryCombo.getCombo().setEnabled(true);
+                    countryCombo.setInput(getCountriesForLanguage(l));
+                    countryCombo.setSelection(new StructuredSelection(new Locale(l.getCode())));
+                }
+                area.layout();
+            }
+        });
+
+        label = new Label(area, SWT.NONE);
+        label.setText(Messages.LabelCountry);
+
+        countryCombo = new ComboViewer(area, SWT.READ_ONLY);
+        countryCombo.setContentProvider(ArrayContentProvider.getInstance());
+        countryCombo.setLabelProvider(new LabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return ((Locale) element).getDisplayCountry();
+            }
+        });
+
+        createSampleArea(area);
+
+        updateSelection(userProperties.getProperty(OSGI_NL));
 
         return area;
+    }
+
+    private void createSampleArea(Composite area)
+    {
+        Label label = new Label(area, SWT.SEPARATOR | SWT.HORIZONTAL);
+        GridDataFactory.fillDefaults().span(2, 1).applyTo(label);
+
+        label = new Label(area, SWT.NONE);
+        label.setText("Java Locale"); //$NON-NLS-1$
+
+        Label javaLocale = new Label(area, SWT.NONE);
+
+        label = new Label(area, SWT.NONE);
+        label.setText(Messages.ColumnDate);
+
+        Label sampleDate = new Label(area, SWT.NONE);
+
+        label = new Label(area, SWT.NONE);
+        label.setText(Messages.LabelFirstDayOfWeek);
+
+        Label firstDayOfWeek = new Label(area, SWT.NONE);
+
+        label = new Label(area, SWT.NONE);
+        label.setText(Messages.ColumnAmount);
+
+        Label sampleAmount = new Label(area, SWT.NONE);
+
+        countryCombo.addSelectionChangedListener(event -> {
+
+            Locale locale = (Locale) countryCombo.getStructuredSelection().getFirstElement();
+
+            if (locale == null)
+            {
+                // if the user currently uses the automatic locale, we can use
+                // the locale to print the sample data. If the user overrides
+                // the automatic locale, there is no way to know what it would
+                // be
+
+                String automaticLocale = userProperties.getProperty(OSGI_NL);
+                if (automaticLocale == null)
+                    locale = Locale.getDefault();
+            }
+
+            if (locale == null)
+            {
+                javaLocale.setText(""); //$NON-NLS-1$
+                sampleDate.setText("---"); //$NON-NLS-1$
+                firstDayOfWeek.setText("---"); //$NON-NLS-1$
+                sampleAmount.setText("---"); //$NON-NLS-1$
+            }
+            else
+            {
+                javaLocale.setText(locale.toString());
+
+                DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(
+                                new Locale("pt").getLanguage().equals(locale.getLanguage()) ? FormatStyle.SHORT //$NON-NLS-1$
+                                                : FormatStyle.MEDIUM,
+                                FormatStyle.SHORT).withLocale(locale);
+
+                sampleDate.setText(formatter.format(LocalDateTime.now()));
+
+                firstDayOfWeek.setText(WeekFields.of(locale).getFirstDayOfWeek()
+                                .getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault()));
+
+                DecimalFormatSymbols symbols = new DecimalFormatSymbols(locale);
+                DecimalFormat format = new DecimalFormat("#,##0.##", symbols); //$NON-NLS-1$
+
+                sampleAmount.setText(format.format(12345.67));
+
+                area.layout();
+            }
+        });
+    }
+
+    private void updateSelection(String nlValue)
+    {
+        Language language = Language.valueOfLocale(nlValue);
+        languageCombo.setSelection(new StructuredSelection(language));
+
+        if (language != Language.AUTOMATIC)
+        {
+            String country = ""; //$NON-NLS-1$
+            if (nlValue.contains("_")) //$NON-NLS-1$
+            {
+                String[] split = nlValue.split("_"); //$NON-NLS-1$
+                country = split[1];
+            }
+            Locale locale = new Locale(language.code, country);
+            countryCombo.setSelection(new StructuredSelection(locale));
+        }
+    }
+
+    private String getNlValueFromSelection()
+    {
+        Language language = (Language) languageCombo.getStructuredSelection().getFirstElement();
+        if (language == null || language.equals(Language.AUTOMATIC))
+        {
+            return null;
+        }
+        else
+        {
+            Locale locale = (Locale) countryCombo.getStructuredSelection().getFirstElement();
+            if (locale == null)
+            {
+                locale = (Locale) countryCombo.getElementAt(0);
+            }
+            return locale.toString();
+        }
+    }
+
+    private List<Locale> getCountriesForLanguage(Language language)
+    {
+        List<Locale> regions = new ArrayList<>();
+        if (language == Language.AUTOMATIC)
+            return regions;
+
+        for (Locale locale : Locale.getAvailableLocales())
+        {
+            if (locale.getLanguage().equals(language.code))
+            {
+                regions.add(locale);
+            }
+        }
+
+        // Remove irrelevant variants
+        regions.removeIf(l -> l.getDisplayVariant().length() > 0);
+
+        Collections.sort(regions, (l1, l2) -> l1.getDisplayCountry().compareTo(l2.getDisplayCountry()));
+
+        return regions;
     }
 
     @Override
     public boolean performOk()
     {
         // check if viewer is initialized at all
-        if (viewer == null)
+        if (languageCombo == null)
             return true;
 
-        Language language = (Language) ((IStructuredSelection) viewer.getSelection()).getFirstElement();
-
-        switch (language)
+        String nlValue = getNlValueFromSelection();
+        if (nlValue == null)
         {
-            case AUTOMATIC:
-                userProperties.remove(OSGI_NL);
-                break;
-            default:
-                userProperties.setProperty(OSGI_NL, language.getCode());
-                break;
+            userProperties.remove(OSGI_NL);
+        }
+        else
+        {
+            userProperties.setProperty(OSGI_NL, nlValue);
         }
 
         storeUserPreferences();
@@ -139,7 +316,7 @@ public class LanguagePreferencePage extends PreferencePage
     @Override
     protected void performDefaults()
     {
-        viewer.setSelection(new StructuredSelection(Language.valueOfLocale(userProperties.getProperty(OSGI_NL))));
+        updateSelection(userProperties.getProperty(OSGI_NL));
         super.performDefaults();
     }
 

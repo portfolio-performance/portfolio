@@ -1,0 +1,30 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KASTANIENALLEE 32  10435 BERLIN
+[FULL NAME] PAGE 1 / 1
+[STREET NUMBER]  DATE 17/01/2022
+[ZIP CODE] [CITY] EXÉCUTION cee1-2d00
+INVESTISSEMENT 
+PROGRAMMÉ eea2-4c8b
+COMPTE-TITRES [ACCOUNT NUMBER]
+CONFIRMATION DE L'INVESTISSEMENT PROGRAMMÉ
+RÉCAPITULATIF
+Exécution de l'investissement programmé le 17/01/2022 sur le Lang & Schwarz Exchange.
+Le contractant de la transaction est Lang & Schwarz TradeCenter AG & Co. KG.
+INTITULÉ QUANTITÉ COURS MOYEN MONTANT
+Tencent Holdings Ltd. 0,3773 titre(s) 53,00 EUR 20,00 EUR
+Reg.Sh.(unsp.ADRs)/1 HD -,0001
+ISIN : US88032Q1094
+TOTAL 20,00 EUR
+COMPTABILISATION DES OPÉRATIONS
+COMPTE-ESPÈCES DATE DE VALEUR MONTANT
+[CASH ACCOUNT NUMBER] 19/01/2022 -20,00 EUR
+Tencent Holdings Ltd. Reg.Sh.(unsp.ADRs)/1 HD -,0001 en relevé de transaction en Allemagne.
+Pays d'enregistrement: États-Unis
+Ce document est généré automatiquement et n'est donc pas signé.
+Si aucune taxe sur le chiffre d'affaires n'est indiquée, il s'agit d'un service non sujet à la taxe sur le chiffre 
+d'affaires (conformément à la reglementation UStG. § 4 n° 8).
+Trade Republic Bank GmbH www.traderepublic.com Siège de la Société: Düsseldorf Directeur Général
+Kastanienallee 32 service@traderepublic.fr AG Düsseldorf HRB 85864 Andreas Willius
+10435 Berlin VAT-ID DE307510626 Karsten Müller
+ABRE / 17/01/2022 / 49831633 / f0ac-567b

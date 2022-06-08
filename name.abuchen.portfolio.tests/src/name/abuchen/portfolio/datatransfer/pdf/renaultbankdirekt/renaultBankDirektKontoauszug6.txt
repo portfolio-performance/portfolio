@@ -1,0 +1,46 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Ihre Kontodaten
+BIC RCNOATW1
+IBAN AT123456789098765436
+Herrn MITTEILUNG
+MaxMuster Kontonummer 123456-123-1
+xxx 123/98 Kontoeigner MusterMax
+1234xxx Verfügernummer 1453453454
+Wien, am 01.01.2022
+Kunden ServiceCenter
+Tel.: 01 / 7200270
+Kontoauszug Tagesgeld
+Saldo zu Ihren Gunsten in EUR 20.136,46
+Datum Informationen Referenz Betrag in EUR Valuta Kontostand in EUR
+01.12.2021 Anfangssaldo 25.134,62
+04.12.2021 Zahlungseingang Z12345 3.200,00 04.12.2021 25.132,68
+Auftraggeber: peter pan
+Konto: AT876545676545676547
+Kontof. Inst.: ASDFDFDSFSD
+22.12.2021 Überweisung Z2342343X -5.000,00 22.12.2021 20.134,62
+Begünstigter: MaxMuster
+xxx123/98 1234xxx
+Konto: AT876545676545676547
+Kontof. Inst.: ASDFDFDSFSD
+Verwendungszweck:UEBERWEISUNG
+31.12.2021 Bonuszinsen A8765ABCD 1,23 31.12.2021 20.137,08
+31.12.2021 Habenzinsen A8765ABCD 2,46 31.12.2021 20.137,08
+31.12.2021 Kapitalertragsteuer A8765ABCD -0,62 31.12.2021 20.136,46
+Schlusssaldo in EUR 20.136,46
+Bitte überprüfen Sie alle Angaben auf Vollständigkeit und Richtigkeit. Wenn vorstehende Aufstellung mit dem Hinweis
+Schlusssaldo gekennzeichnet ist, wurden die im vertraglich vereinbarten Abrechnungszeitraum entstandenen
+wechselseitigen Ansprüche (einschließlich Zinsen und Entgelte) verrechnet. Umsätze, die nach dem Abrechnungsdatum
+entstehen, werden erst in der folgenden Abrechnung berücksichtigt. Einwendungen gegen den Inhalt dieses
+Kontoauszuges sind längstens binnen 6 Wochen nach Zugang dieses Kontoauszuges an die Bank zu richten. Wenn Sie
+innerhalb dieser Frist keine Einwendungen gegen den Inhalt dieses Kontoauszuges erheben, anerkennen Sie diesen
+damit.
+Seite 1 von 2
+WichtigerHinweis zur Einlagensicherung
+Einlagensicherung ist die Bezeichnung für die gesetzlichen und freiwilligen Maßnahmen zum Schutz der Einlagen
+(Guthaben) von Kunden bei Kreditinstituten im Falle der Insolvenz. Die Renault Bank direkt ist dem französischen
+Einlagensicherungsfonds FGDR angeschlossen. Der französische Einlagensicherungsfonds FGDR sichert Einlagen bis
+100.000Euro pro Person zu 100 Prozent ab.
+Nähere Informationen zum FGDR können Sie auf unserer Website unter dem Menüpunkt "Über uns" im Untermenü
+"Einlagensicherung" entnehmen.
+Seite 2 von 2

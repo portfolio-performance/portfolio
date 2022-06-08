@@ -1,0 +1,26 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Zusammenfassung
+{{Vorname}}{{Nachname}} Zu Beginn 1.226,2 €
+Einzahlungen 1.004,19 €
+Datum 29.01.2022 - 12.02.2022 Auszahlungen 0 €
+Referenznummer {{Referenznummer}} Ergebnis 2.230,39 €
+Zusätzliches Einkommen
+Datum Zahlungsart Eingänge Ausgänge Guthaben
+29.01.2022 Go & Grow Zinsen 0,22 € 1.226,42 €
+30.01.2022 Go & Grow Zinsen 0,22 € 1.226,64 €
+31.01.2022 Go & Grow Zinsen 0,22 € 1.226,86 €
+01.02.2022 Go & Grow Zinsen 0,22 € 1.227,08 €
+02.02.2022 Go & Grow Zinsen 0,22 € 1.227,3 €
+03.02.2022 Go & Grow Zinsen 0,22 € 1.227,52 €
+04.02.2022 Go & Grow Zinsen 0,22 € 1.227,74 €
+05.02.2022 Go & Grow Zinsen 0,22 € 1.227,96 €
+06.02.2022 Go & Grow Zinsen 0,22 € 1.228,18 €
+07.02.2022 Überweisen 1.000 € 2.228,18 €
+07.02.2022 Go & Grow Zinsen 0,22 € 2.228,4 €
+08.02.2022 Go & Grow Zinsen 0,4 € 2.228,8 €
+09.02.2022 Go & Grow Zinsen 0,39 € 2.229,19 €
+10.02.2022 Go & Grow Zinsen 0,4 € 2.229,59 €
+11.02.2022 Go & Grow Zinsen 0,4 € 2.229,99 €
+12.02.2022 Go & Grow Zinsen 0,4 € 2.230,39 €
+Gesamt 2.230,39 €

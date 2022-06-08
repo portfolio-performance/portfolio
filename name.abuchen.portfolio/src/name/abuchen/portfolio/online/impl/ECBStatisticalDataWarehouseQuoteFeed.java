@@ -192,6 +192,7 @@ public class ECBStatisticalDataWarehouseQuoteFeed implements QuoteFeed
                     throws ParserConfigurationException, SAXException, IOException
     {
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+        dbFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true); //$NON-NLS-1$
         dbFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
         DocumentBuilder builder = dbFactory.newDocumentBuilder();
         Document document = builder.parse(new InputSource(new StringReader(responseBody)));

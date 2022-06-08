@@ -1,7 +1,8 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetGrossUnit;
+
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -13,8 +14,8 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
 public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
@@ -38,15 +39,12 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
     private void addBuySellTransaction()
     {
         final DocumentType type = new DocumentType("(Kauf|Achat|Vente|Verkauf)", (context, lines) -> {
-            Pattern pTransaction = Pattern.compile("^Num.ro.*(Achat|Vente) (?<shares>[\\.,\\d]+) (?<name>.*) \\((?<isin>[\\w]{12})\\) . [\\.,\\d]+ (?<currency>[\\w]{3})(.*)?$");
+            Pattern pTransaction = Pattern.compile("^Num.ro.*(Achat|Vente) (?<shares>[\\.,\\d]+) (?<name>.*) \\((?<isin>[\\w]{12})\\) .* [\\.,\\d]+ (?<currency>[\\w]{3}).*$");
             // read the current context here
 
-            /***
-             * This is the section we need,
-             * if the securities information and shares
-             * are outside the block.
-             */
-
+            // This is the section we need,
+            // if the securities information and shares
+            // are outside the block.
             for (String line : lines)
             {
                 Matcher m = pTransaction.matcher(line);
@@ -78,9 +76,7 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                 .match("^(Num.ro.*)?(?<type>(Kauf|Achat|Vente|Verkauf)) .*$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("Verkauf") || v.get("type").equals("Vente"))
-                    {
                         t.setType(PortfolioTransaction.Type.SELL);
-                    }
                 })
 
                 .oneOf(
@@ -99,7 +95,7 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                                 // Numéro de réf. : 7763C9846/01AAchat 15 KINEPOLIS GROUP (BE0974274061) à 46,3 EURType d' instrument: Actions
                                 section -> section
                                         .attributes("securityIsOutsideTheBlock")
-                                        .match("^(?<securityIsOutsideTheBlock>Num.ro.*)(\\s)?: .*$")
+                                        .match("^(?<securityIsOutsideTheBlock>Num.ro.*)([\\s]+)?: .*$")
                                         .assign((t, v) -> {
                                             Map<String, String> context = type.getCurrentContext();
 
@@ -119,20 +115,20 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                                 // Date et heure d'exécution : 19/10/2020 11:53:03 CET 
                                 section -> section
                                         .attributes("date", "time")
-                                        .match("^(Ausf.hrungsdatum und \\-zeit|Date et heure d'ex.cution)(\\s)?: (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2})(.*)?$")
-                                        .assign((t, v) -> t.setDate(asDate(v.get("date").replaceAll("/", "."), v.get("time"))))
+                                        .match("^(Ausf.hrungsdatum und \\-zeit|Date et heure d.ex.cution)([\\s]+)?: (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$")
+                                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
                                 ,
                                 // Ordre créé à: 26/P11/2021L10:05:13 CETDate et heure d'exécution: 26/11/2021 13:25:24 CETDate de comptabilisation: 26/11/2021Date valeur: 30/11/2021Lieu d'exécution: EURONEXT - EURONEXT BRUSS
                                 section -> section
                                         .attributes("date", "time")
-                                        .match("^Ordre cr.. .(\\s)?: .*Date et heure d'ex.cution(\\s)?: (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2})(.*)?$")
-                                        .assign((t, v) -> t.setDate(asDate(v.get("date").replaceAll("/", "."), v.get("time"))))
+                                        .match("^Ordre cr.. .([\\s]+)?: .*Date et heure d.ex.cution([\\s]+)?: (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$")
+                                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
                                 ,
                                 // Ordre créé à: 05/11/2020 11:25:43 CET
                                 section -> section
                                         .attributes("date", "time")
-                                        .match("^Ordre cr.. .(\\s)?: (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2})(.*)?$")
-                                        .assign((t, v) -> t.setDate(asDate(v.get("date").replaceAll("/", "."), v.get("time"))))
+                                        .match("^Ordre cr.. .([\\s]+)?: (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$")
+                                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
                         )
 
                 // Lastschrift 1.994,39 EUR Valutadatum 17/03/2021
@@ -142,32 +138,25 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                 // Crédit 908,64 EUR
                 // Débit 1.502,72 EUR
                 .section("amount", "currency")
-                .match("^(Gutschrift|Cr.dit|Lastschrift|D.bit) (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .match("^(Gutschrift|Cr.dit|Lastschrift|D.bit) (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(v.get("currency"));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 })
 
+                // Bruttobetrag 924,00 USD
                 // Wechselkurs EUR/USD 1.123000 849,47 EUR
-                // Lastschrift 953,95 USD Valutadatum 21/06/2016
-                .section("amount", "currency", "exchangeRate", "forexCurrency", "forexAmount").optional()
-                .match("^Wechselkurs [\\w]{3}\\/[\\w]{3} (?<exchangeRate>[\\.,\\d]+) (?<forexAmount>[\\.,\\d]+) (?<forexCurrency>[\\w]{3})$")
-                .match("^(Gutschrift|Cr.dit|Lastschrift|D.bit) (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .section("gross", "currency", "termCurrency", "baseCurrency", "exchangeRate", "fxCurrency").optional()
+                .match("^Bruttobetrag (?<gross>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
+                .match("^Wechselkurs (?<termCurrency>[\\w]{3})\\/(?<baseCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+) [\\.,\\d]+ (?<fxCurrency>[\\w]{3})$")
                 .assign((t, v) -> {
-                     Money forex = Money.of(asCurrencyCode(v.get("forexCurrency")), asAmount(v.get("forexAmount")));
-                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                     Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
+                    PDFExchangeRate rate = asExchangeRate(v);
+                    type.getCurrentContext().putType(rate);
 
-                     // only add gross value with forex if the security
-                     // is actually denoted in the foreign currency
-                     // (often users actually have the quotes in their
-                     // home country currency)
-                     if (forex.getCurrencyCode()
-                                     .equals(t.getPortfolioTransaction().getSecurity().getCurrencyCode()))
-                     {
-                         t.getPortfolioTransaction()
-                                         .addUnit(new Unit(Unit.Type.GROSS_VALUE, gross, forex, exchangeRate));
-                     }
+                    Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
+                    Money fxGross = rate.convert(asCurrencyCode(v.get("fxCurrency")), gross);
+
+                    checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
 
                 // Auftragstyp : Limit (16 EUR)
@@ -175,7 +164,7 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                 // Type d'ordre: Market
                 // Type d'ordre: Market I
                 .section("note").optional()
-                .match("^(Auftragstyp|Type d'(\\s)?ordre)(\\s)?: (?<note>(Limit \\([\\.,\\d]+ [\\w]{3}\\)|Market))(.*)?$")
+                .match("^(Auftragstyp|Type d'([\\s]+)?ordre)([\\s]+)?: (?<note>(Limit \\([\\.,\\d]+ [\\w]{3}\\)|Market)).*$")
                 .assign((t, v) -> t.setNote(v.get("note")))
 
                 .wrap(BuySellEntryItem::new);
@@ -187,15 +176,12 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
     private void addDividendeTransaction()
     {
         final DocumentType type = new DocumentType("(Einkommensart|Nature des revenus)", (context, lines) -> {
-            Pattern pTransaction = Pattern.compile("^CREDIT COUPON NR .*: (?<shares>[\\.,\\d]+) (?<name>.*) \\((?<isin>[\\w]{12})\\) . [\\.,\\d]+ (?<currency>[\\w]{3})(.*)?$");
+            Pattern pTransaction = Pattern.compile("^CREDIT COUPON NR .*: (?<shares>[\\.,\\d]+) (?<name>.*) \\((?<isin>[\\w]{12})\\) .* [\\.,\\d]+ (?<currency>[\\w]{3}).*$");
             // read the current context here
 
-            /***
-             * This is the section we need,
-             * if the securities information and shares
-             * are outside the block.
-             */
-
+            // This is the section we need,
+            // if the securities information and shares
+            // are outside the block.
             for (String line : lines)
             {
                 Matcher m = pTransaction.matcher(line);
@@ -210,14 +196,13 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
         });
         this.addDocumentTyp(type);
 
-        Block block = new Block("^(Einkommensart|Nature des revenus)(\\s)?: .*$");
+        Block block = new Block("^(Einkommensart|Nature des revenus)([\\s]+)?: .*$");
         type.addBlock(block);
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>()
-            .subject(() -> {
-                AccountTransaction entry = new AccountTransaction();
-                entry.setType(AccountTransaction.Type.DIVIDENDS);
-                return entry;
-            });
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>().subject(() -> {
+            AccountTransaction entry = new AccountTransaction();
+            entry.setType(AccountTransaction.Type.DIVIDENDS);
+            return entry;
+        });
 
         pdfTransaction
                 .oneOf(
@@ -227,7 +212,7 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                                 section -> section
                                         .attributes("shares", "name", "isin", "currency")
                                         .match("^(?<shares>[\\.,\\d]+) (?<name>.*) NR .* [\\.,\\d]+ (?<currency>[\\w]{3})$")
-                                        .match("^(Wertschriftenkonto|Compte-titres):.* (Wertpapier|Titre):[\\d]+\\/(?<isin>[\\w]{12}) .*$")
+                                        .match("^(Wertschriftenkonto|Compte\\-titres):.* (Wertpapier|Titre):[\\d]+\\/(?<isin>[\\w]{12}) .*$")
                                         .assign((t, v) -> {
                                             t.setShares(asShares(v.get("shares")));
                                             t.setSecurity(getOrCreateSecurity(v));
@@ -236,7 +221,7 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                                 // CREDIT COUPON NR 210104 : 35 TOTALENERGIES (FR0000120271) à 0,66 EUR
                                 section -> section
                                         .attributes("securityIsOutsideTheBlock")
-                                        .match("^(?<securityIsOutsideTheBlock>Nature des revenus)(\\s)?: .*$")
+                                        .match("^(?<securityIsOutsideTheBlock>Nature des revenus)([\\s]+)?: .*$")
                                         .assign((t, v) -> {
                                             Map<String, String> context = type.getCurrentContext();
 
@@ -256,15 +241,15 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                                 // Net CREDIT 45,65 EUR Date  03/02/2021
                                 section -> section
                                         .attributes("date")
-                                        .match("^(Nettoguthaben|Net CREDIT) [\\.,\\d]+ [\\w]{3} (Datum|Date) (\\s)?(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4})$")
-                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date").replaceAll("/", "."))))
+                                        .match("^(Nettoguthaben|Net CREDIT) [\\.,\\d]+ [\\w]{3} (Datum|Date) ([\\s]+)?(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4})$")
+                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
                                 ,
                                 // Date valeur: 11/01/2021
                                 // Date valeur: 17/11/2021 C
                                 section -> section
                                         .attributes("date")
-                                        .match("^Date valeur(\\s)?: (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4})(.*)?$")
-                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date").replaceAll("/", "."))))
+                                        .match("^Date valeur([\\s]+)?: (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}).*$")
+                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
                         )
 
                 .oneOf(
@@ -272,10 +257,10 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                                 // Net CREDIT 45,65 EUR Date  03/02/2021
                                 section -> section
                                         .attributes("amount", "currency")
-                                        .match("^(Nettoguthaben|Net CREDIT) (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                                        .match("^(Nettoguthaben|Net CREDIT) (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                                         .assign((t, v) -> {
                                             t.setAmount(asAmount(v.get("amount")));
-                                            t.setCurrencyCode(v.get("currency"));
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                         })
                                 ,
                                 // Net CREDIT
@@ -286,45 +271,26 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                                         .match("^(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                                         .assign((t, v) -> {
                                             t.setAmount(asAmount(v.get("amount")));
-                                            t.setCurrencyCode(v.get("currency"));
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                         })
                         )
 
                 // Bruttobetrag 1,25 USD
                 // Wechselkurs 1,05 1,01 EUR
-                .section("exchangeRate", "fxAmount", "fxCurrency", "amount", "currency").optional()
-                .match("^Wechselkurs (?<exchangeRate>[\\.,\\d]+) (?<fxAmount>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
-                .match("^(Nettoguthaben|Net CREDIT) (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .section("gross", "currency", "exchangeRate", "fxCurrency").optional()
+                .match("^Bruttobetrag (?<gross>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
+                .match("^Wechselkurs (?<exchangeRate>[\\.,\\d]+) [\\.,\\d]+ (?<fxCurrency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                    if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
-                    {
-                        exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
-                    }
-                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
+                    v.put("baseCurrency", asCurrencyCode(v.get("currency")));
+                    v.put("termCurrency", asCurrencyCode(v.get("fxCurrency")));
 
-                    if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
-                    {
-                        BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
-                                        RoundingMode.HALF_DOWN);
+                    PDFExchangeRate rate = asExchangeRate(v);
+                    type.getCurrentContext().putType(rate);
 
-                        // check, if forex currency is transaction
-                        // currency or not and swap amount, if necessary
-                        Unit grossValue;
-                        if (!asCurrencyCode(v.get("fxCurrency")).equals(t.getCurrencyCode()))
-                        {
-                            Money fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")),asAmount(v.get("fxAmount")));
-                            Money amount = Money.of(asCurrencyCode(v.get("currency")),asAmount(v.get("amount")));
-                            grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
-                        }
-                        else
-                        {
-                            Money amount = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxAmount")));
-                            Money fxAmount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
-                            grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
-                        }
-                        t.addUnit(grossValue);
-                    }
+                    Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
+                    Money fxGross = rate.convert(asCurrencyCode(v.get("fxCurrency")), gross);
+
+                    checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
 
                 .wrap(TransactionItem::new);
@@ -345,17 +311,17 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
 
                 // Impôt à la source 26,38 % 16,35 EUR
                 .section("tax", "currency").optional()
-                .match("(^.* .*|^)Imp.t . la source [\\.,\\d]+ % (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .match("(^.* .*|^)Imp.t . la source [\\.,\\d]+ % (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
                 // Impôt à la source 26,50% - 6,12 EUR
                 .section("tax", "currency").optional()
-                .match("(^.* .*|^)Imp.t . la source [\\.,\\d]+% \\- (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .match("(^.* .*|^)Imp.t . la source [\\.,\\d]+% \\- (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
                 // Précompte mobilier belge 30,00% - 5,09 EUR
                 .section("tax", "currency").optional()
-                .match("(^.* .*|^)Pr.compte mobilier .* [\\.,\\d]+% \\- (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .match("(^.* .*|^)Pr.compte mobilier .* [\\.,\\d]+% \\- (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
                 // Précompte mobilier belge
@@ -364,13 +330,13 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                 // L 30,00% - 14,40 EUR
                 .section("tax", "currency").optional()
                 .match("^Pr.compte mobilier .*$")
-                .match("^.* [\\.,\\d]+% \\- (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .match("^.* [\\.,\\d]+% \\- (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
                 // Taxe boursière - 0,35% - 5,22 EUR
                 // Montant brut U - 694,50 EURD - 694,50 EURTaxe boursière - 0,35% - 2,43 EURCourtage - 7,50 EUR
                 .section("tax", "currency").optional()
-                .match("(^.* .*|^)Taxe boursi.re \\- [\\.,\\d]+% \\- (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .match("(^.* .*|^)Taxe boursi.re \\- [\\.,\\d]+% \\- (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
@@ -384,43 +350,70 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
 
                 // Frais de transaction 24,95 EUR
                 .section("fee", "currency").optional()
-                .match("(^.* .*|^)Frais de transaction (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .match("(^.* .*|^)Frais de transaction (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Courtage - 7,50 EUR
                 // Montant brut U - 694,50 EURD - 694,50 EURTaxe boursière - 0,35% - 2,43 EURCourtage - 7,50 EUR
                 .section("fee", "currency").optional()
-                .match("(^.* .*|^)Courtage \\- (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})(.*)?$")
+                .match("(^.* .*|^)Courtage \\- (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
-    private void processTaxEntries(Object t, Map<String, String> v, DocumentType type)
+    @Override
+    protected long asAmount(String value)
     {
-        if (t instanceof name.abuchen.portfolio.model.Transaction)
+        String language = "de"; //$NON-NLS-1$
+        String country = "DE"; //$NON-NLS-1$
+
+        int lastDot = value.lastIndexOf("."); //$NON-NLS-1$
+        int lastComma = value.lastIndexOf(","); //$NON-NLS-1$
+
+        // returns the greater of two int values
+        if (Math.max(lastDot, lastComma) == lastDot)
         {
-            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-            PDFExtractorUtils.checkAndSetTax(tax, (name.abuchen.portfolio.model.Transaction) t, type);
+            language = "en"; //$NON-NLS-1$
+            country = "US"; //$NON-NLS-1$
         }
-        else
-        {
-            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-            PDFExtractorUtils.checkAndSetTax(tax, ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
-        }
+
+        return PDFExtractorUtils.convertToNumberLong(value, Values.Amount, language, country);
     }
 
-    private void processFeeEntries(Object t, Map<String, String> v, DocumentType type)
+    @Override
+    protected long asShares(String value)
     {
-        if (t instanceof name.abuchen.portfolio.model.Transaction)
+        String language = "de"; //$NON-NLS-1$
+        String country = "DE"; //$NON-NLS-1$
+
+        int lastDot = value.lastIndexOf("."); //$NON-NLS-1$
+        int lastComma = value.lastIndexOf(","); //$NON-NLS-1$
+
+        // returns the greater of two int values
+        if (Math.max(lastDot, lastComma) == lastDot)
         {
-            Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
-            PDFExtractorUtils.checkAndSetFee(fee, 
-                            (name.abuchen.portfolio.model.Transaction) t, type);
+            language = "en"; //$NON-NLS-1$
+            country = "US"; //$NON-NLS-1$
         }
-        else
+
+        return PDFExtractorUtils.convertToNumberLong(value, Values.Share, language, country);
+    }
+
+    @Override
+    protected BigDecimal asExchangeRate(String value)
+    {
+        String language = "de"; //$NON-NLS-1$
+        String country = "DE"; //$NON-NLS-1$
+
+        int lastDot = value.lastIndexOf("."); //$NON-NLS-1$
+        int lastComma = value.lastIndexOf(","); //$NON-NLS-1$
+
+        // returns the greater of two int values
+        if (Math.max(lastDot, lastComma) == lastDot)
         {
-            Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
-            PDFExtractorUtils.checkAndSetFee(fee,
-                            ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
+            language = "en"; //$NON-NLS-1$
+            country = "US"; //$NON-NLS-1$
         }
+
+        return PDFExtractorUtils.convertToNumberBigDecimal(value, Values.Share, language, country);
     }
 }

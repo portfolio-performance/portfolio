@@ -260,7 +260,7 @@ public class PortfolioListView extends AbstractFinanceView implements Modificati
 
         addAttributeColumns(portfolioColumns);
 
-        portfolioColumns.createColumns();
+        portfolioColumns.createColumns(true);
 
         portfolios.getTable().setHeaderVisible(true);
         portfolios.getTable().setLinesVisible(true);

@@ -26,7 +26,7 @@ public class ClientIRRYield
         List<Transaction> transactions = new ArrayList<>();
         collectAccountTransactions(client, interval, transactions);
         collectPortfolioTransactions(client, interval, transactions);
-        Collections.sort(transactions, new Transaction.ByDate());
+        Collections.sort(transactions, Transaction.BY_DATE);
 
         List<LocalDate> dates = new ArrayList<>();
         List<Double> values = new ArrayList<>();

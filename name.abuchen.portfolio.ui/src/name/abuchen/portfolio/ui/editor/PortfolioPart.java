@@ -423,6 +423,11 @@ public class PortfolioPart implements ClientInputListener
         this.clientInput.doSaveAs(shell, extension, flags);
     }
 
+    public void doExportAs(Shell shell, String extension, Set<SaveFlag> flags)
+    {
+        this.clientInput.doExportAs(shell, extension, flags);
+    }
+
     public ClientInput getClientInput()
     {
         return clientInput;

@@ -44,7 +44,7 @@ public final class UpdateQuotesJob extends AbstractClientJob
      */
     private static class Dirtyable
     {
-        private static final int THRESHOLD = 5;
+        private static final int THRESHOLD = 20;
 
         private final Client client;
         private AtomicInteger counter;
@@ -122,6 +122,11 @@ public final class UpdateQuotesJob extends AbstractClientJob
     public UpdateQuotesJob(Client client, Security security)
     {
         this(client, s -> s.equals(security), EnumSet.allOf(Target.class));
+    }
+
+    public UpdateQuotesJob(Client client, List<Security> securities)
+    {
+        this(client, securities::contains, EnumSet.allOf(Target.class));
     }
 
     public UpdateQuotesJob(Client client, Predicate<Security> filter, Set<Target> target)
@@ -204,6 +209,11 @@ public final class UpdateQuotesJob extends AbstractClientJob
             if (feed == null)
                 continue;
 
+            // skip download if the latest quotes are downloaded as part of the
+            // download of the historic quotes
+            if (feed.mergeDownloadRequests() && target.contains(Target.HISTORIC))
+                continue;
+
             Job job = createLatestQuoteJob(dirtyable, feed, s);
             jobs.add(job);
 
@@ -277,6 +287,17 @@ public final class UpdateQuotesJob extends AbstractClientJob
 
                         if (!data.getErrors().isEmpty())
                             PortfolioPlugin.log(createErrorStatus(security.getName(), data.getErrors()));
+
+                        // download latest quotes if the download should be done
+                        // together (and the job includes the download of latest
+                        // quotes)
+                        if (feed.mergeDownloadRequests() && target.contains(Target.LATEST))
+                        {
+                            feed.getLatestQuote(security).ifPresent(p -> {
+                                if (security.setLatest(p))
+                                    dirtyable.markDirty();
+                            });
+                        }
 
                         return Status.OK_STATUS;
                     }

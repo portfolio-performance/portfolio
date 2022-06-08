@@ -7,6 +7,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Link;
 
+import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.DesktopAPI;
@@ -18,8 +19,9 @@ public class EODHistoricalDataPreferencePage extends FieldEditorPreferencePage
     {
         super(GRID);
 
-        setTitle("EOD Historical Data"); //$NON-NLS-1$
+        setTitle(Messages.PrefTitleEODHistoricalData);
         setDescription(Messages.PrefDescriptionEODHistoricalData);
+        setImageDescriptor(Images.EODHISTORICALDATA_LOGO.descriptor());
     }
 
     @Override

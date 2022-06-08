@@ -59,11 +59,11 @@ public class ClientTestUtilities
         client.getSecurities().forEach(Security::getAttributes);
 
         client.getAccounts().forEach(a -> {
-            a.getTransactions().sort(new AccountTransaction.ByDateAmountTypeAndHashCode());
+            a.getTransactions().sort(Transaction.BY_DATE);
             a.getAttributes();
         });
         client.getPortfolios().forEach(p -> {
-            p.getTransactions().sort(new Transaction.ByDate());
+            p.getTransactions().sort(Transaction.BY_DATE);
             p.getAttributes();
         });
 

@@ -13,7 +13,7 @@ import name.abuchen.portfolio.math.Risk.Volatility;
 import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
+import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.views.dashboard.heatmap.EarningsHeatmapWidget;
@@ -233,30 +233,16 @@ public enum WidgetFactory
     HEATMAP_INVESTMENTS(Messages.LabelHeatmapInvestments, Messages.LabelTrades, InvestmentHeatmapWidget::new),
 
     PORTFOLIO_TAX_RATE(Messages.LabelPortfolioTaxRate, Messages.ClientEditorLabelPerformance, //
-                    (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
-                                    .with(Values.Percent2) //
-                                    .with((ds, period) -> {
-                                        PerformanceIndex index = data.calculate(ds, period);
-                                        ClientPerformanceSnapshot snapshot = index.getClientPerformanceSnapshot()
-                                                        .orElseThrow(IllegalArgumentException::new);
-                                        return snapshot.getPortfolioTaxRate();
-                                    }) //
-                                    .withTooltip((ds, period) -> Messages.TooltipPortfolioTaxRate) //
-                                    .withBenchmarkDataSeries(false) //
-                                    .build()),
+                    (widget, data) -> new PortfolioTaxOrFeeRateWidget(widget, data, s -> {
+                        double rate = s.getPortfolioTaxRate();
+                        return Double.isNaN(rate) ? s.getValue(CategoryType.TAXES) : rate;
+                    }, Messages.TooltipPortfolioTaxRate)),
 
     PORTFOLIO_FEE_RATE(Messages.LabelPortfolioFeeRate, Messages.ClientEditorLabelPerformance, //
-                    (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
-                                    .with(Values.Percent2) //
-                                    .with((ds, period) -> {
-                                        PerformanceIndex index = data.calculate(ds, period);
-                                        ClientPerformanceSnapshot snapshot = index.getClientPerformanceSnapshot()
-                                                        .orElseThrow(IllegalArgumentException::new);
-                                        return snapshot.getPortfolioFeeRate();
-                                    }) //
-                                    .withTooltip((ds, period) -> Messages.TooltipPortfolioFeeRate) //
-                                    .withBenchmarkDataSeries(false) //
-                                    .build()),
+                    (widget, data) -> new PortfolioTaxOrFeeRateWidget(widget, data, s -> {
+                        double rate = s.getPortfolioFeeRate();
+                        return Double.isNaN(rate) ? s.getValue(CategoryType.FEES) : rate;
+                    }, Messages.TooltipPortfolioFeeRate)),
 
     CURRENT_DATE(Messages.LabelCurrentDate, Messages.LabelCommon, CurrentDateWidget::new),
 

@@ -80,7 +80,8 @@ public final class DataSeries implements Adaptable
     private String label;
     private boolean isLineChart = true;
     private boolean isBenchmark = false;
-
+    private int lineWidth = 2;
+    
     private RGB color;
 
     private boolean showArea;
@@ -199,6 +200,16 @@ public final class DataSeries implements Adaptable
     public void setLineStyle(LineStyle lineStyle)
     {
         this.lineStyle = lineStyle;
+    }
+
+    public int getLineWidth()
+    {
+        return lineWidth;
+    }
+
+    public void setLineWidth(int lineWidth)
+    {
+        this.lineWidth = lineWidth;
     }
 
     public Image getImage()

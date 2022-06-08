@@ -24,7 +24,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.jsoup.Jsoup;
-import org.jsoup.safety.Whitelist;
+import org.jsoup.safety.Safelist;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -130,7 +130,7 @@ public class RawResponsesDialog extends Dialog
             if (rawText.isDisposed())
                 return;
 
-            rawText.setText(Jsoup.clean(rawText.getText(), Whitelist.relaxed()));
+            rawText.setText(Jsoup.clean(rawText.getText(), Safelist.relaxed()));
         }));
 
     }

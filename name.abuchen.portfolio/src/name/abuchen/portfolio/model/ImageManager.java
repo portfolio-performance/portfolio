@@ -2,6 +2,7 @@ package name.abuchen.portfolio.model;
 
 import java.util.HashMap;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.swt.graphics.Image;
 
 import name.abuchen.portfolio.model.AttributeType.ImageConverter;
@@ -23,10 +24,11 @@ public final class ImageManager
 
     public Image getImage(Attributable target, AttributeType attr)
     {
-        return getImage(target, attr, 16, 16);
+        int xOffset = Platform.OS_WIN32.equals(Platform.getOS()) ? 1 : 0;
+        return getImage(target, attr, xOffset, 16, 16);
     }
 
-    public Image getImage(Attributable target, AttributeType attr, int width, int height)
+    public Image getImage(Attributable target, AttributeType attr, int xOffset, int width, int height)
     {
         if (target != null && target.getAttributes().exists(attr) && attr.getConverter() instanceof ImageConverter)
         {
@@ -35,14 +37,14 @@ public final class ImageManager
                 return null;
 
             String imgString = String.valueOf(imgObject);
-            String imgKey = imgString + width + height;
+            String imgKey = imgString + width + height + xOffset;
             synchronized (imageCache)
             {
                 Image img = imageCache.getOrDefault(imgKey, null);
                 if (img != null)
                     return img;
 
-                img = ImageUtil.toImage(imgString, width, height);
+                img = ImageUtil.toImage(imgString, xOffset, width, height);
                 if (img != null)
                 {
                     imageCache.put(imgKey, img);

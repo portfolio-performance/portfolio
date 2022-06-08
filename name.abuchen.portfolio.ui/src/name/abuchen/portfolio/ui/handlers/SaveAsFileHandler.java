@@ -9,6 +9,7 @@ import javax.inject.Named;
 
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -45,7 +46,8 @@ public class SaveAsFileHandler
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_PART) MPart part,
                     @Named(IServiceConstants.ACTIVE_SHELL) Shell shell,
-                    @Named(UIConstants.Parameter.FILE_TYPE) String type)
+                    @Named(UIConstants.Parameter.FILE_TYPE) String type,
+                    @Optional @Named("name.abuchen.portfolio.ui.param.create-copy") String doCreateCopy)
     {
         if (!MenuHelper.getActiveClientInput(part).isPresent())
             return;
@@ -105,7 +107,14 @@ public class SaveAsFileHandler
         // trigger part to save file
         try
         {
-            ((PortfolioPart) part.getObject()).doSaveAs(shell, extension, flags);
+            if (Boolean.parseBoolean(doCreateCopy))
+            {
+                ((PortfolioPart) part.getObject()).doExportAs(shell, extension, flags);
+            }
+            else
+            {
+                ((PortfolioPart) part.getObject()).doSaveAs(shell, extension, flags);
+            }
         }
         catch (RuntimeException e)
         {

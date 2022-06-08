@@ -12,14 +12,19 @@ import name.abuchen.portfolio.money.Values;
  */
 public class TransactionPair<T extends Transaction> implements Adaptable
 {
-    public static final class ByDate implements Comparator<TransactionPair<?>>, Serializable
+    /**
+     * Date comparator for transaction pairs. Guarantees a stable sorting. 
+     */
+    public static final Comparator<TransactionPair<?>> BY_DATE = new ByDate();
+
+    private static final class ByDate implements Comparator<TransactionPair<?>>, Serializable
     {
         private static final long serialVersionUID = 1L;
 
         @Override
         public int compare(TransactionPair<?> t1, TransactionPair<?> t2)
         {
-            return t1.getTransaction().getDateTime().compareTo(t2.getTransaction().getDateTime());
+            return Transaction.BY_DATE.compare(t1.getTransaction(), t2.getTransaction());
         }
     }
 

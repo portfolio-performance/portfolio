@@ -1,9 +1,6 @@
 package name.abuchen.portfolio.online.impl;
 
 import java.io.IOException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -38,9 +35,11 @@ public class YahooSearchProvider implements SecuritySearchProvider
         // German Yahoo Finance site
 
         if (type == Type.SHARE)
-            answer = answer.stream().filter(r -> "Aktie".equals(r.getType())).collect(Collectors.toList()); //$NON-NLS-1$
+            answer = answer.stream().filter(r -> SecuritySearchProvider.Type.SHARE.toString().equals(r.getType()))
+                            .collect(Collectors.toList());
         if (type == Type.BOND)
-            answer = answer.stream().filter(r -> "Anleihe".equals(r.getType())).collect(Collectors.toList()); //$NON-NLS-1$
+            answer = answer.stream().filter(r -> SecuritySearchProvider.Type.BOND.toString().equals(r.getType()))
+                            .collect(Collectors.toList());
 
         if (answer.size() >= 10)
         {
@@ -61,21 +60,15 @@ public class YahooSearchProvider implements SecuritySearchProvider
 
     private void addSearchPage(List<ResultItem> answer, String query) throws IOException
     {
-        String templateURL = "/_finance_doubledown/api/resource/searchassist;searchTerm={0}"; //$NON-NLS-1$
-
-        String url = MessageFormat.format(templateURL, URLEncoder.encode(query, StandardCharsets.UTF_8.name()));
-
         @SuppressWarnings("nls")
-        String html = new WebAccess("de.finance.yahoo.com", url) //
-                        .addParameter("bkt", "finance-DE-de-DE-def").addParameter("device", "desktop")
-                        .addParameter("intl", "de") //
-                        .addParameter("lang", "de-DE") //
-                        .addParameter("partner", "none") //
-                        .addParameter("region", "DE") //
-                        .addParameter("site", "finance") //
-                        .addParameter("tz", "Europe%2FBerlin") //
-                        .addParameter("ver", "0.102.1312") //
-                        .addParameter("returnMeta", "true") //
+        String html = new WebAccess("query2.finance.yahoo.com", "/v1/finance/lookup") //
+                        .addParameter("formatted", "true") //
+                        .addParameter("lang", "de-DE").addParameter("region", "DE") //
+                        .addParameter("query", query) //
+                        .addParameter("type", "all") //
+                        .addParameter("count", "25") //
+                        .addParameter("start", "0") //
+                        .addParameter("corsDomain", "de.finance.yahoo.com") //
                         .get();
 
         extractFrom(answer, html);
@@ -83,22 +76,30 @@ public class YahooSearchProvider implements SecuritySearchProvider
 
     /* protected */void extractFrom(List<ResultItem> answer, String html)
     {
-        JSONObject response = (JSONObject) JSONValue.parse(html);
-        if (response != null)
+        JSONObject jsonObject = (JSONObject) JSONValue.parse(html);
+        if (jsonObject == null)
+            return;
+
+        jsonObject = (JSONObject) jsonObject.get("finance"); //$NON-NLS-1$
+        if (jsonObject == null)
+            return;
+
+        JSONArray jsonArray = (JSONArray) jsonObject.get("result"); //$NON-NLS-1$
+        if (jsonArray == null || jsonArray.isEmpty())
+            return;
+
+        jsonObject = (JSONObject) jsonArray.get(0);
+        if (jsonObject == null)
+            return;
+
+        JSONArray items = (JSONArray) jsonObject.get("documents"); //$NON-NLS-1$
+        if (items == null || items.isEmpty())
+            return;
+
+        for (int ii = 0; ii < items.size(); ii++)
         {
-            JSONObject data = (JSONObject) response.get("data"); //$NON-NLS-1$
-            if (data != null)
-            {
-                JSONArray items = (JSONArray) data.get("items"); //$NON-NLS-1$
-                if (items != null)
-                {
-                    for (int ii = 0; ii < items.size(); ii++)
-                    {
-                        JSONObject item = (JSONObject) items.get(ii);
-                        YahooSymbolSearch.Result.from(item).ifPresent(answer::add);
-                    }
-                }
-            }
+            JSONObject item = (JSONObject) items.get(ii);
+            YahooSymbolSearch.Result.from(item).ifPresent(answer::add);
         }
     }
 }

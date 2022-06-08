@@ -24,10 +24,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Attributable;
 import name.abuchen.portfolio.model.InvestmentPlan;
-import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.InvestmentPlan.Type;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
@@ -113,11 +112,13 @@ public class InvestmentPlanListView extends AbstractFinanceView implements Modif
 
             manager.add(new OpenDialogAction(this, Messages.InvestmentPlanTypeBuyDelivery) //
                             .type(InvestmentPlanDialog.class) //
-                            .parameters(PortfolioTransaction.class));
-
+                            .parameters(InvestmentPlan.Type.BUY_OR_DELIVERY));
             manager.add(new OpenDialogAction(this, Messages.InvestmentPlanTypeDeposit) //
                             .type(InvestmentPlanDialog.class) //
-                            .parameters(AccountTransaction.class));
+                            .parameters(InvestmentPlan.Type.DEPOSIT));
+            manager.add(new OpenDialogAction(this, Messages.InvestmentPlanTypeRemoval) //
+                            .type(InvestmentPlanDialog.class) //
+                            .parameters(InvestmentPlan.Type.REMOVAL));
         }));
     }
 
@@ -145,7 +146,7 @@ public class InvestmentPlanListView extends AbstractFinanceView implements Modif
         addColumns(planColumns);
         addAttributeColumns(planColumns);
 
-        planColumns.createColumns();
+        planColumns.createColumns(true);
         plans.getTable().setHeaderVisible(true);
         plans.getTable().setLinesVisible(true);
         plans.setContentProvider(ArrayContentProvider.getInstance());
@@ -197,8 +198,17 @@ public class InvestmentPlanListView extends AbstractFinanceView implements Modif
             public String getText(Object e)
             {
                 InvestmentPlan plan = (InvestmentPlan) e;
-                return plan.getPortfolio() != null ? plan.getPortfolio().getName()
-                                : Messages.InvestmentPlanOptionDeposit;
+                if (plan.getPortfolio() != null)
+                {
+                    return plan.getPortfolio().getName();
+                }
+                else
+                {
+                    if (plan.getPlanType() == Type.DEPOSIT)
+                        return Messages.InvestmentPlanOptionDeposit;
+                    else
+                        return Messages.InvestmentPlanOptionRemoval;
+                }
             }
 
             @Override

@@ -7,7 +7,6 @@ import static org.hamcrest.collection.IsEmptyCollection.empty;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.junit.Test;
 
@@ -50,14 +49,16 @@ public class SelfWealthPDFExtractorTest
         assertThat(security.getCurrencyCode(), is("AUD"));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance)
-                        .collect(Collectors.toList()).get(0).getSubject();
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-07-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(25)));
+        assertThat(entry.getSource(), is("SelfWealthBuy01.txt"));
+        assertThat(entry.getNote(), is("T20210701123456­-1"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("AUD", Values.Amount.factorize(322.00))));
@@ -90,14 +91,16 @@ public class SelfWealthPDFExtractorTest
         assertThat(security.getCurrencyCode(), is("AUD"));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance)
-                        .collect(Collectors.toList()).get(0).getSubject();
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-07-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(25)));
+        assertThat(entry.getSource(), is("SelfWealthBuy02.txt"));
+        assertThat(entry.getNote(), is("T20210701123456­1"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("AUD", Values.Amount.factorize(325.12))));
@@ -130,14 +133,16 @@ public class SelfWealthPDFExtractorTest
         assertThat(security.getCurrencyCode(), is("AUD"));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance)
-                        .collect(Collectors.toList()).get(0).getSubject();
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-24T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(397)));
+        assertThat(entry.getSource(), is("SelfWealthSell01.txt"));
+        assertThat(entry.getNote(), is("T20210701123456­1"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("AUD", Values.Amount.factorize(8676.86))));
@@ -170,14 +175,16 @@ public class SelfWealthPDFExtractorTest
         assertThat(security.getCurrencyCode(), is("AUD"));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance)
-                        .collect(Collectors.toList()).get(0).getSubject();
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-24T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(397)));
+        assertThat(entry.getSource(), is("SelfWealthSell02.txt"));
+        assertThat(entry.getNote(), is("T20210701123456­1"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("AUD", Values.Amount.factorize(8695.86))));
