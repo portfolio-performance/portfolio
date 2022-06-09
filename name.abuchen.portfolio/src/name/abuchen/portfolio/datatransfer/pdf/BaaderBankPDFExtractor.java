@@ -530,6 +530,32 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         return new TransactionItem(t);
                     return null;
                 }));
+
+        Block feesEnglishBlock = new Block("^[\\d]{4}\\-[\\d]{2}\\-[\\d]{2} Ordergeb.hr [\\d]{4}\\-[\\d]{2}\\-[\\d]{2} [\\.,\\d]+ \\-$");
+        type.addBlock(feesEnglishBlock);
+        feesEnglishBlock.set(new Transaction<AccountTransaction>()
+
+                .subject(() -> {
+                    AccountTransaction t = new AccountTransaction();
+                    t.setType(AccountTransaction.Type.FEES);
+                    return t;
+                })
+
+                .section("note", "date", "amount")
+                .match("^[\\d]{4}\\-[\\d]{2}\\-[\\d]{2} (?<note>Ordergeb.hr) (?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) (?<amount>[\\.,\\d]+) \\-$")
+                .assign((t, v) -> {
+                    Map<String, String> context = type.getCurrentContext();
+                    t.setDateTime(asDate(v.get("date")));
+                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setNote(v.get("note"));
+                })
+
+                .wrap(t -> {
+                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                        return new TransactionItem(t);
+                    return null;
+                }));
     }
 
     private void addFeesAssetManagerTransaction()
