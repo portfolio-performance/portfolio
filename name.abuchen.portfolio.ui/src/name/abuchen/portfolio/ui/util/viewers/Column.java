@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.util.viewers;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Supplier;
 
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.swt.widgets.Shell;
@@ -48,7 +49,7 @@ public class Column
     private boolean isRemovable = true;
     private ColumnViewerSorter sorter;
     private Integer defaultSortDirection;
-    private CellLabelProvider labelProvider;
+    private Supplier<CellLabelProvider> labelProvider;
     private Images image;
 
     private Options<Object> options;
@@ -114,6 +115,11 @@ public class Column
     }
 
     public void setLabelProvider(CellLabelProvider labelProvider)
+    {
+        setLabelProvider(() -> labelProvider);
+    }
+
+    public void setLabelProvider(Supplier<CellLabelProvider> labelProvider)
     {
         this.labelProvider = labelProvider;
     }
@@ -199,9 +205,9 @@ public class Column
         return defaultSortDirection;
     }
 
-    public CellLabelProvider getLabelProvider()
+    public Supplier<CellLabelProvider> getLabelProvider()
     {
-        return labelProvider;
+        return labelProvider != null ? labelProvider : () -> null;
     }
 
     /* package */Images getImage()
