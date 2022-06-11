@@ -68,14 +68,12 @@ public class Factory
      * 
      * @see SecuritySearchProvider#getId()
      */
-    public static SecuritySearchProvider getSearchProvider(String searchId)
+    public static <S extends SecuritySearchProvider> S getSearchProvider(Class<S> feedType)
     {
-        for (SecuritySearchProvider searchProvider : SEARCH)
-        {
-            if (searchProvider.getId().equals(searchId))
-                return searchProvider;
-        }
-        return null;
+        return feedType.cast(SEARCH.stream()
+                        .filter(c -> feedType.equals(c.getClass()))
+                        .findAny()
+                        .orElseThrow(IllegalArgumentException::new));
     }
 
     static

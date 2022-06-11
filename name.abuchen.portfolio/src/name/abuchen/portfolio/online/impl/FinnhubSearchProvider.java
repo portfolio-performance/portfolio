@@ -4,16 +4,24 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.Optional;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.PortfolioLog;
+import name.abuchen.portfolio.model.ClientSettings;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
+import name.abuchen.portfolio.util.WebAccess;
+import name.abuchen.portfolio.util.WebAccess.WebAccessException;
 
 /**
- * Use the <a href="https://finnhub.io/">Finnhub</a> API to search for securities.
- * 
- * @see FinnhubSymbolSearch
+ * Use the <a href="https://finnhub.io/">Finnhub</a> API to search for securities
+ * by symbol or ISIN. This API can be used with the free API key that
+ * you can obtain by registering on <a href="https://finnhub.io/>FinnHub.io</a>.
  */
 public class FinnhubSearchProvider implements SecuritySearchProvider
 {
@@ -38,6 +46,101 @@ public class FinnhubSearchProvider implements SecuritySearchProvider
         this.apiKey = apiKey;
     }
 
+    static class Result implements ResultItem
+    {
+        private String symbol;
+        private String description;
+        private String type;
+        private String displaySymbol;
+
+        public static Optional<Result> from(JSONObject json)
+        {
+            Object symbol = json.get("symbol"); //$NON-NLS-1$
+            if (symbol == null)
+                return Optional.empty();
+
+            Object description = json.get("description"); //$NON-NLS-1$
+
+            Object type = json.get("type"); //$NON-NLS-1$
+
+            Object displaySymbol = json.get("displaySymbol"); //$NON-NLS-1$
+
+            return Optional.of(new Result(String.valueOf(symbol), String.valueOf(description), String.valueOf(type),
+                            String.valueOf(displaySymbol)));
+        }
+
+        private Result(String symbol, String description, String type, String displaySymbol)
+        {
+            this.symbol = symbol;
+            this.description = description;
+            this.type = type;
+            this.displaySymbol = displaySymbol;
+        }
+
+        /* package */ Result(String description)
+        {
+            this.description = description;
+        }
+
+        @Override
+        public String getSymbol()
+        {
+            return symbol;
+        }
+
+        @Override
+        public String getName()
+        {
+            return description;
+        }
+
+        @Override
+        public String getType()
+        {
+            return type;
+        }
+
+        @Override
+        public String getExchange()
+        {
+            return null;
+        }
+
+        @Override
+        public String getIsin()
+        {
+            return null;
+        }
+
+        @Override
+        public String getWkn()
+        {
+            return null;
+        }
+
+        @Override
+        public Security create(ClientSettings settings)
+        {
+            Security security = new Security();
+            security.setName(description);
+            security.setTickerSymbol(symbol);
+            security.setFeed(FinnhubQuoteFeed.ID);
+            return security;
+        }
+
+        @SuppressWarnings("nls")
+        @Override
+        public String toString()
+        {
+            StringBuilder builder = new StringBuilder();
+            builder.append("Result [symbol=").append(symbol)
+                .append(", description=").append(description)
+                .append(", type=").append(type)
+                .append(", displaySymbol=").append(displaySymbol)
+                .append(']');
+            return builder.toString();
+        }
+    }
     /**
      * <p>Search for the symbol or ISIN provided in  the <code>query</code> parameter.
      * The <code>type</code> parameter is not used. </p>
@@ -61,7 +164,7 @@ public class FinnhubSearchProvider implements SecuritySearchProvider
 
         if (answer.size() >= 10)
         {
-            FinnhubSymbolSearch.Result item = new FinnhubSymbolSearch.Result(Messages.MsgMoreResultsAvailable);
+            Result item = new Result(Messages.MsgMoreResultsAvailable);
             answer.add(item);
         }
 
@@ -70,9 +173,30 @@ public class FinnhubSearchProvider implements SecuritySearchProvider
 
     private void addSymbolSearchResults(List<ResultItem> answer, String query) throws IOException
     {
-        Set<String> existingSymbols = answer.stream().map(ResultItem::getSymbol).collect(Collectors.toSet());
+        try
+        {
+            @SuppressWarnings("nls")
+            String html = new WebAccess("finnhub.io", "api/v1/search")
+                            .addParameter("q", query)
+                            .addHeader("X-Finnhub-Token", apiKey)
+                            .get();
 
-        new FinnhubSymbolSearch(apiKey).search(query)//
-                        .filter(r -> !existingSymbols.contains(r.getSymbol())).forEach(answer::add);
+            JSONObject responseData = (JSONObject) JSONValue.parse(html);
+            if (responseData != null)
+            {
+                JSONArray result = (JSONArray) responseData.get("result"); //$NON-NLS-1$
+                if (result != null)
+                {
+                    for (int ii = 0; ii < result.size(); ii++)
+                    {
+                        Result.from((JSONObject) result.get(ii)).ifPresent(answer::add);
+                    }
+                }
+            }
+        }
+        catch (WebAccessException ex)
+        {
+            PortfolioLog.error(ex);
+        }
     }
 }

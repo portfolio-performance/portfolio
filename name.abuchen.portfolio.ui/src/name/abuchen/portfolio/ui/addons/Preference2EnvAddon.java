@@ -48,7 +48,7 @@ public class Preference2EnvAddon
     public void setFinnhubApiKey(@Preference(value = UIConstants.Preferences.FINNHUB_API_KEY) String finnhubApiKey)
     {
         ((FinnhubQuoteFeed) Factory.getQuoteFeedProvider(FinnhubQuoteFeed.ID)).setApiKey(finnhubApiKey);
-        ((FinnhubSearchProvider) Factory.getSearchProvider(FinnhubSearchProvider.ID)).setApiKey(finnhubApiKey);
+        Factory.getSearchProvider(FinnhubSearchProvider.class).setApiKey(finnhubApiKey);
     }
 
     @Inject
