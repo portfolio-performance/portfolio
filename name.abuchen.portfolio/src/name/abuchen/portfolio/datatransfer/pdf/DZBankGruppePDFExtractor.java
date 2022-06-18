@@ -289,7 +289,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
 
                         // Add security to securityList
                         String[] security = {m1.group("isin"), trim(m1.group("name"))};
-                        securityList.add(security);   
+                        securityList.add(security);
                     }
 
                     endOfLineOfSecurityTransactionBlock = i;
@@ -297,7 +297,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
             }
 
             // Create patter of security names
-            for (String[] security : securityList) 
+            for (String[] security : securityList)
             {
                 if (patterOfSecurityNames.isEmpty())
                     patterOfSecurityNames = security[1];
@@ -456,7 +456,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                                             v.put("currency", asCurrencyCode(securityData.getCurrency()));
                                         }
                                         t.setSecurity(getOrCreateSecurity(v));
-                                        
+
                                         t.setDate(asDate(stripBlanks(v.get("date")), v.get("time")));
                                         t.setShares(asShares(v.get("shares")));
                                         t.setCurrencyCode(asCurrencyCode(context.get("baseCurrency")));
@@ -632,7 +632,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
         firstRelevantLine4.set(pdfTransaction4);
 
         pdfTransaction4
-        .oneOf(
+                .oneOf(
                         section -> section
                                 .attributes("date", "note1", "amount", "note2", "shares")
                                 .match("^(?<date>[\\s\\d]{2,3}\\.[\\d]{2}\\.[\\d]{4}) (?<note1>Umtausch) (?<amount>[\\.,\\d]+)$")
@@ -682,7 +682,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                                     t.setSecurity(getOrCreateSecurity(v));
                                     t.setNote(v.get("note1") + " " + trim(v.get("note2")));
                                 })
-                    )
+                        )
 
                 .wrap(t -> {
                     if (t.getCurrencyCode() != null && t.getAmount() != 0)
@@ -692,7 +692,6 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
 
         addFeesSectionsTransaction(pdfTransaction4, type);
         addTaxesSectionsTransaction(pdfTransaction4, type);
-
 
         // @formatter:off
         // Depotgebühr mit Nutzung der -32,55
@@ -911,6 +910,11 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                 // Übertragungs-/Liefergebühr 0,07- EUR
                 .section("fee", "currency").optional()
                 .match("^.bertragungs-\\/Liefergeb.hr (?<fee>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+
+                // Eigene Spesen 10,00- EUR
+                .section("fee", "currency").optional()
+                .match("^Eigene Spesen (?<fee>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Anlage 2.125,00 2,00 113,45 18,730
