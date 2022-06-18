@@ -86,6 +86,8 @@
           <children xsi:type="menu:HandledMenuItem" xmi:id="_pM-dIKpPEeuHB9RTOqgi4A" elementId="name.abuchen.portfolio.ui.menu.view.show-hide-sidebar" mnemonics="M1+L" command="_kGDGEJl3EemdcMPaSHoNPw">
             <parameters xmi:id="_pM-dIapPEeuHB9RTOqgi4A" elementId="name.abuchen.portfolio.ui.parameter.2" name="name.abuchen.portfolio.ui.param.tag" value="informationpane"/>
           </children>
+          <children xsi:type="menu:MenuSeparator" xmi:id="_cg67EO8hEeyrZdV12xoNqg" elementId="name.abuchen.portfolio.bootstrap.menuseparator.7"/>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_c-GmUO8hEeyrZdV12xoNqg" elementId="name.abuchen.portfolio.ui.menu.view.discreetmode" label="%menu.view.options.discreet-mode.label" type="Check" command="_oL7wsO8hEeyrZdV12xoNqg"/>
         </children>
         <children xsi:type="menu:MenuSeparator" xmi:id="_ablPgJkBEemdcMPaSHoNPw" elementId="name.abuchen.portfolio.bootstrap.menuseparator.4"/>
         <children xsi:type="menu:DynamicMenuContribution" xmi:id="_3P_sYH0xEemaIIhNHihfSA" elementId="name.abuchen.portfolio.bootstrap.dynamicmenucontribution.2" label="%menu.view.label" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.ViewNavigationMenuContribution"/>
@@ -182,6 +184,7 @@
   <handlers xmi:id="_YLz7IDFOEeuGXeKVI3KJtQ" elementId="name.abuchen.portfolio.handler.selectAll" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.SelectAllHandler" command="_gxx18DFPEeuGXeKVI3KJtQ"/>
   <handlers xmi:id="_toGqAHmOEeuiO8_BzX84yg" elementId="name.abuchen.portfolio.ui.handler.syncPortfolioReport" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.SyncPortfolioReportHandler" command="_m720cHmOEeuiO8_BzX84yg"/>
   <handlers xmi:id="_kqZZoDrlEeydp_NU-UFwGA" elementId="name.abuchen.portfolio.ui.handler.syncEODHistoricalData" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.SyncEODHistoricalDataHandler" command="_hlqdUDrlEeydp_NU-UFwGA"/>
+  <handlers xmi:id="_epQgkO8hEeyrZdV12xoNqg" elementId="name.abuchen.portfolio.ui.handler.activateDiscreetMode" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.ActivateDiscreetModeHandler" command="_oL7wsO8hEeyrZdV12xoNqg"/>
   <bindingTables xmi:id="_uK6dcBiSEeO8gYEHAOvLsA" elementId="" bindingContext="_7d8q4RjAEeO8gYEHAOvLsA">
     <bindings xmi:id="_yNkakBiSEeO8gYEHAOvLsA" elementId="" keySequence="M1+O" command="_3CjQwBfHEeOders_POVQHQ"/>
     <bindings xmi:id="_0WsqQBiSEeO8gYEHAOvLsA" elementId="" keySequence="M1+N" command="_LiZuIBiOEeOR1rNFCzC82A"/>
@@ -274,6 +277,7 @@
   <commands xmi:id="_gxx18DFPEeuGXeKVI3KJtQ" elementId="name.abuchen.portfolio.ui.command.selectAll" commandName="selectAll"/>
   <commands xmi:id="_m720cHmOEeuiO8_BzX84yg" elementId="name.abuchen.portfolio.ui.command.syncPortfolioReport" commandName="syncPortfolioReport"/>
   <commands xmi:id="_hlqdUDrlEeydp_NU-UFwGA" elementId="name.abuchen.portfolio.ui.command.syncEODHistoricalData" commandName="syncEODHistoricalData"/>
+  <commands xmi:id="_oL7wsO8hEeyrZdV12xoNqg" elementId="name.abuchen.portfolio.ui.command.activateDiscreetMode" commandName="activateDiscreetMode"/>
   <addons xmi:id="_4SwvYLOQEeWe1a5u3oOf1Q" elementId="name.abuchen.portfolio.ui.addon.proxy" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.ProxyAddon"/>
   <addons xmi:id="_B_-6cKH7EeO9F5tUX5UqjQ" elementId="name.abuchen.portfolio.ui.addon.log" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.StartupAddon"/>
   <addons xmi:id="_D8SDoRfFEeOders_POVQHQ" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>

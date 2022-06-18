@@ -577,6 +577,13 @@ public class ClientInput
         }
     }
 
+    @Inject
+    @Optional
+    public void onDiscreedModeChanged(@UIEventTopic(UIConstants.Event.Global.DISCREET_MODE) Object obj)
+    {
+        listeners.forEach(ClientInputListener::onRecalculationNeeded);
+    }
+
     private void scheduleOnlineUpdateJobs()
     {
         if (preferences.getBoolean(UIConstants.Preferences.UPDATE_QUOTES_AFTER_FILE_OPEN, true))

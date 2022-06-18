@@ -815,6 +815,7 @@ public class Messages extends NLS
     public static String LabelYTD;
     public static String MarkSecurityPageDescription;
     public static String MarkSecurityPageTitle;
+    public static String MenuActivateDiscreetMode;
     public static String MenuAddAll;
     public static String MenuAddNewDashboardColumnLeft;
     public static String MenuAddNewDashboardColumnRight;
@@ -846,6 +847,7 @@ public class Messages extends NLS
     public static String MenuCreateAccountOrTransaction;
     public static String MenuCreateColumnConfig;
     public static String MenuCreatePortfolioOrTransaction;
+    public static String MenuDeactivateDiscreetMode;
     public static String MenuDeleteAllTransactions;
     public static String MenuDeleteDashboardColumn;
     public static String MenuDeleteWidget;

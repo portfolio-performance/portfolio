@@ -34,6 +34,11 @@ public interface UIConstants
         {
             String LOADED = "exchangeRates/loaded"; //$NON-NLS-1$
         }
+
+        interface Global // NOSONAR
+        {
+            String DISCREET_MODE = "global/discreet-mode"; //$NON-NLS-1$
+        }
     }
 
     interface Context // NOSONAR

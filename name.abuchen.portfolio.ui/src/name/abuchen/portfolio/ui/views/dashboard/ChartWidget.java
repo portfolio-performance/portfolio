@@ -29,6 +29,7 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
+import name.abuchen.portfolio.ui.util.format.AmountNumberFormat;
 import name.abuchen.portfolio.ui.views.PerformanceChartView;
 import name.abuchen.portfolio.ui.views.StatementOfAssetsHistoryView;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
@@ -200,6 +201,8 @@ public class ChartWidget extends WidgetDelegate<Object>
         chart.getAxisSet().getYAxis(0).getTick().setVisible(false);
         if (useCase != DataSeries.UseCase.STATEMENT_OF_ASSETS)
             chart.getToolTip().setDefaultValueFormat(new DecimalFormat("0.##%")); //$NON-NLS-1$
+        else
+            chart.getToolTip().setDefaultValueFormat(new AmountNumberFormat());
         chart.getToolTip().reverseLabels(true);
 
         int yHint = get(ChartHeightConfig.class).getPixel();
