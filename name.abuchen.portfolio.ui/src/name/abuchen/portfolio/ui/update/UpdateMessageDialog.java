@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.update;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,8 +20,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.Version;
-
-import com.ibm.icu.text.MessageFormat;
 
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;

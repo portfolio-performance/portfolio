@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,8 +15,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swtchart.ICircularSeries;
 import org.eclipse.swtchart.ISeries.SeriesType;
 import org.eclipse.swtchart.model.Node;
-
-import com.ibm.icu.text.MessageFormat;
 
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;

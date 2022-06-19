@@ -5,7 +5,9 @@ import static name.abuchen.portfolio.ui.util.SWTHelper.amountWidth;
 import static name.abuchen.portfolio.ui.util.SWTHelper.widest;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.text.MessageFormat;
+import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -28,9 +30,6 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-
-import com.ibm.icu.text.DecimalFormat;
-import com.ibm.icu.text.NumberFormat;
 
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Messages;

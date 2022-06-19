@@ -1,13 +1,12 @@
 package name.abuchen.portfolio.ui.dialogs.palette;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 
 import javax.inject.Inject;
-
-import com.ibm.icu.text.MessageFormat;
 
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction;

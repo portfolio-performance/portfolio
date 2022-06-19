@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.util;
 
 import java.time.LocalTime;
+import java.util.Calendar;
 import java.util.Date;
 
 import org.eclipse.jface.databinding.swt.WidgetValueProperty;
@@ -8,8 +9,6 @@ import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DateTime;
-
-import com.ibm.icu.util.Calendar;
 
 public class SimpleDateTimeTimeSelectionProperty extends WidgetValueProperty<Control, LocalTime>
 {

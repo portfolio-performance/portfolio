@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
 import java.beans.PropertyChangeListener;
+import java.text.MessageFormat;
 import java.util.function.Function;
 
 import org.eclipse.jface.viewers.OwnerDrawLabelProvider;
@@ -11,8 +12,6 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.widgets.Widget;
-
-import com.ibm.icu.text.MessageFormat;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.Values;

@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.dnd;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -19,8 +20,6 @@ import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.swt.dnd.URLTransfer;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-
-import com.ibm.icu.text.MessageFormat;
 
 import name.abuchen.portfolio.model.Exchange;
 import name.abuchen.portfolio.model.Security;

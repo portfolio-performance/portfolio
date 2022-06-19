@@ -1,11 +1,11 @@
 package name.abuchen.portfolio.ui.util;
 
+import java.text.MessageFormat;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Display;
-
-import com.ibm.icu.text.MessageFormat;
 
 public class ConfirmActionWithSelection extends Action
 {

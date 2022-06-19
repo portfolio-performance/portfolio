@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views;
 
 import java.text.DecimalFormat;
+import java.text.MessageFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -42,7 +43,6 @@ import org.swtchart.LineStyle;
 import org.swtchart.Range;
 
 import com.google.common.primitives.Doubles;
-import com.ibm.icu.text.MessageFormat;
 
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AttributeType;
