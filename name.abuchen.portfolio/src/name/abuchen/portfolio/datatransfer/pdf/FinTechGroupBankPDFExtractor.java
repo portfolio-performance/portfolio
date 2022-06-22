@@ -289,7 +289,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             t.setMonetaryAmount(t.getPortfolioTransaction().getMonetaryAmount().add(taxRefund));
                     }
                 })
-                
+
                 // Devisenkurs   : 1,192200(x)             Provision     :
                 // Gewinn/Verlust:            0,00 EUR   **Einbeh. Steuer:              -1,00 EUR
                 .section("taxRefund", "currency", "exchangeRate").optional()
@@ -637,6 +637,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 .match("^(St\\.|St\\.\\/Nominale) ([\\s]+)?: ([\\s]+)?(?<shares>[\\.,\\d]+).*$")
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
+                // Valuta          :      17.06.2022      grundlage       :            0,00 EUR
                 .section("date")
                 .match("Valuta ([\\s]+)?: ([\\s]+)?(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
@@ -807,6 +808,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 .match("^(St\\.|St\\.\\/Nominale) ([\\s]+)?: ([\\s]+)?(?<shares>[\\.,\\d]+).*$")
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
+                // Valuta          :      17.06.2022      grundlage       :            0,00 EUR
                 .section("date")
                 .match("^Valuta ([\\s]+)?: ([\\s]+)?(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
@@ -1066,6 +1068,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                     return null;
                 }));
 
+        // 31.12.     31.12.  Steuertopfoptimierung 2016                            4,94+
         block = new Block("^[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?+[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?+Steuertopfoptimierung .*$");
         type.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
@@ -1597,7 +1600,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         t.setAmount(asAmount(v.get("amount")));
                     }
                 })
-                
+
                 // Devisenkurs   : 1,192200(x)             Provision     :
                 // Valuta        : 02.12.2020            **Einbeh. Steuer:              -0,84 EUR
                 .section("exchangeRate", "fxAmount", "fxCurrency").optional()
@@ -1806,7 +1809,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         checkAndSetTax(tax, t, type);
                     }
                 })
-                
+
                 // Lagerland    : Deutschland           **Einbeh. KESt                0,00 EUR
                 .section("tax", "currency").optional()
                 .match("^.* \\*\\*Einbeh\\. KESt ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<tax>[\\.,\\d]+)$")
@@ -2002,6 +2005,11 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 // Verwahrart     Wertpapierrechnung      *Fremde Spesen                 2,71 EUR
                 .section("fee", "currency").optional()
                 .match("^.* \\*Fremde Spesen ([\\s]+)?(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+
+                // Fremdgeb./Stück :            0,02 USD  Gesamtgebühr    :            0,10 USD
+                .section("fee", "currency").optional()
+                .match("^.* Gesamtgeb.hr ([\\s]+)?: ([\\s]+)?(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processFeeEntries(t, v, type));
     }
 }
