@@ -1,0 +1,46 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+flatexDEGIRO Bank AG
+Postfach 100551
+41405 Neuss
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 (0)9221 - 7035898
+E-Mail: kunden@flatex.de
+flatexDEGIRO Bank AG -  Hammfelddamm 4 - 41460 Neuss, Deutschland
+0102382000002615225960
+Herrn
+Max Musterman
+Straße 7
+45594 Dorf
+             Frankfurt, 21.06.2022
+Dividendengutschrift für ausländische Wertpapiere
+Ihre Depotnummer: 1009999999
+Depotinhaber    : Max, Mustermann
+Nr.2877924406   BIONTECH SE SPON. ADRS 1               (US09075V1026/A2PSR2)  
+St.             :           10,00      Bruttodividende
+                                       pro Stück       :          2,1322 USD
+Extag           :      02.06.2022      Bruttodividende :           21,32 USD
+Zahlungstag     :      17.06.2022      Bemessungs-
+Valuta          :      17.06.2022      grundlage       :            0,00 EUR
+                                      *Einbeh. Steuer  :            0,00 EUR
+Quellenst.-satz :           26,38 %    Gez. Quellenst. :            5,63 USD
+Fremdgeb./Stück :            0,02 USD  Gesamtgebühr    :            0,20 USD
+                                       Endbetrag       :           15,49 USD
+* Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+                                  Kapitalertragsteuer  :            0,00 EUR
+                                  Solidaritätszuschlag :            0,00 EUR
+                                  Kirchensteuer        :            0,00 EUR
+  Details dazu inkl. evtl. angerechneter ausländischer Quellensteuer
+  finden Sie im Steuerreport unter der Transaktion-Nr. : 2877924406
+Die Verrechnung des Endbetrages erfolgt über Ihr Konto Nr.: 1099999999
+Die  Gutschrift erfolgt  unter Vorbehalt  des  Eingangs.  Einwendungen  müssen
+unverzüglich  nach  Zugang  erhoben  werden.  Die  Unterlassung  rechtzeitiger
+Einwendung gilt als Genehmigung.
+Dieser   Beleg   ist    keine   Steuerbescheinigung.    Kapitalerträge   sind
+einkommensteuerpflichtig.
+Diese Mitteilung ist maschinell erstellt und wird nicht unterschrieben.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Muhamad Said Chahrour, Dr. Benon Janos, Jörn Engelmann, Steffen Jentsch
+2000002615225960 0113102380000101
