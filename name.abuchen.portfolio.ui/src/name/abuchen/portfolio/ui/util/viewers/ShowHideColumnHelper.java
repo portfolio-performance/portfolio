@@ -18,6 +18,7 @@ import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.TableViewer;
@@ -93,8 +94,6 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
         void setCommonParameters(Column column, ViewerColumn viewerColumn, Integer direction)
         {
-            viewerColumn.setLabelProvider(column.getLabelProvider().get());
-
             if (column.getSorter() != null)
             {
                 if (direction != null)
@@ -289,15 +288,18 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
             layout.setColumnData(tableColumn, new ColumnPixelData(width));
 
+            CellLabelProvider labelProvider = column.getLabelProvider().get();
+            col.setLabelProvider(labelProvider);
+
             setCommonParameters(column, col, direction);
 
-            if (col.getViewer().getLabelProvider() instanceof CellItemImageClickedListener)
-                setupImageClickedListener(col);
+            if (labelProvider instanceof CellItemImageClickedListener)
+                setupImageClickedListener(col, (CellItemImageClickedListener) labelProvider);
 
             return tableColumn;
         }
 
-        private void setupImageClickedListener(TableViewerColumn viewerColumn)
+        private void setupImageClickedListener(TableViewerColumn viewerColumn, CellItemImageClickedListener cellImage)
         {
             org.eclipse.swt.widgets.Listener listener = event -> {
 
@@ -313,8 +315,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
                 Rectangle rect = tableItem.getImageBounds(columnIndex);
                 if (rect.contains(pt))
-                    ((CellItemImageClickedListener) viewerColumn.getViewer().getLabelProvider())
-                                    .onImageClicked(tableItem.getData());
+                    cellImage.onImageClicked(tableItem.getData());
             };
 
             table.getTable().addListener(SWT.MouseUp, listener);
@@ -451,15 +452,18 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
             layout.setColumnData(treeColumn, new ColumnPixelData(width));
 
+            CellLabelProvider labelProvider = column.getLabelProvider().get();
+            col.setLabelProvider(labelProvider);
+
             setCommonParameters(column, col, direction);
 
-            if (col.getViewer().getLabelProvider() instanceof CellItemImageClickedListener)
-                setupImageClickedListener(col);
+            if (labelProvider instanceof CellItemImageClickedListener)
+                setupImageClickedListener(col, (CellItemImageClickedListener) labelProvider);
 
             return treeColumn;
         }
 
-        private void setupImageClickedListener(TreeViewerColumn viewerColumn)
+        private void setupImageClickedListener(TreeViewerColumn viewerColumn, CellItemImageClickedListener cellImage)
         {
             org.eclipse.swt.widgets.Listener listener = event -> {
 
@@ -474,8 +478,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
                 Rectangle rect = treeItem.getImageBounds(columnIndex);
                 if (rect.contains(pt))
-                    ((CellItemImageClickedListener) viewerColumn.getViewer().getLabelProvider())
-                                    .onImageClicked(treeItem.getData());
+                    cellImage.onImageClicked(treeItem.getData());
             };
 
             tree.getTree().addListener(SWT.MouseUp, listener);
@@ -848,7 +851,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
                 {
                     // remember the current column in selectedColumnIndex for
                     // later use in the context menu
-                    
+
                     selectedColumnIndex = policy.getColumnIndex(pt);
                     control.setMenu(headerMenu.getMenu());
                 }
