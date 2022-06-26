@@ -43,6 +43,8 @@ import name.abuchen.portfolio.ui.util.CacheKey;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.chart.PlainChart;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
+import name.abuchen.portfolio.ui.util.format.AmountNumberFormat;
+import name.abuchen.portfolio.ui.util.format.ThousandsNumberFormat;
 import name.abuchen.portfolio.util.Interval;
 import name.abuchen.portfolio.util.Pair;
 import name.abuchen.portfolio.util.TextUtil;
@@ -263,11 +265,15 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
 
             ChartType chartType = get(ChartTypeConfig.class).getValue();
 
-            toolTip.setDefaultValueFormat(new DecimalFormat(chartType == ChartType.COUNT ? "#" : "#,##0.00")); //$NON-NLS-1$ //$NON-NLS-2$
+            toolTip.setDefaultValueFormat(
+                            chartType == ChartType.COUNT ? new DecimalFormat("#") : new AmountNumberFormat()); //$NON-NLS-1$
 
             IAxis xAxis = chart.getAxisSet().getXAxis(0);
             Interval interval = get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now());
             List<YearMonth> yearMonths = interval.getYearMonths();
+
+            chart.getAxisSet().getYAxis(0).getTick().setFormat(
+                            chartType == ChartType.COUNT ? new DecimalFormat("#") : new ThousandsNumberFormat()); //$NON-NLS-1$
 
             chart.setData(yearMonths);
 
