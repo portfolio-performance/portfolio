@@ -1,290 +1,220 @@
-# Portfolio Performance Standards
+# Contributing to Portfolio Performance
 
 ## Contents
-- [Eclipse](#Eclipse)
-	- [Prerequisites](#Prerequisites)
-	- [Install](#Install)
-		- [Change language of Eclipse](#Install_Language)
-	- [Plugins](#Plugins)
-		- [Helpful settings for the Eclipse IDE](#Settings_in_Eclipse)
-	- [First launch](#First_launch)
-		- [Launch Portfolio Performance with LCDSL plugin](#Launch_PP_Application_with_LCDSL)
-		- [Launch Portfolio Performance without LCDSL plugin](#Launch_PP_Application_without_LCDSL)
-		- [Launch test cases with LCDSL plugin](#Launch_JunitPP_Application_with_LCDSL)
-		- [Launch test cases without LCDSL plugin](#Launch_JunitPP_Application_without_LCDSL)
-- [Pull requests](#Pull_requests)
-	- [Pull requests with Github Desktop](#Pull_request_with_Github_Desktop)
-- [Translations](#Translations)
-	- [Join the translation team](#Join_the_translation_team)
-- [PDF importer](#PDF_importer)
-	- [Path to PDF importer](#Path_to_PDF_importer)
-	- [PDF importer file names](#PDF_importer_file_names)
-	- [Transaction pairs](#Transaction_pairs)
-	- [Transaction classes (securities transaction)](#TransactionClasses_securities_transaction)
-	- [Transaction class sections ( securities transaction )](#Transaction_class_sections_securities_transaction)
-	- [PDF importer auxiliary class](#PDF_importer_auxiliary_class)
-	- [Mathematical calculations of amounts](#Mathematical_calculations_of_amounts)
-	- [String manipulation](#String_manipulation)
-	- [Formatting of the source code](#Formatting_of_the_source_code)
-	- [General rules of the test cases](#General_rules_of_test_cases)
-	- [Regular expressions](#Regular_expressions)
 
----
+- [Development Setup](#development-setup)
+	- [Install Eclipse](#install-eclipse)
+	- [Install Plug-ins](#install-eclipse-plugins)
+	- [Configure Eclipse](#configure-eclipse)
+- [Project Setup](#project-setup)
+	- [Source Code](#source-code)
+	- [Target Platform](#setup-target-platform)
+	- [Launch Application](#launch-portfolio-performance)
+	- [Build with Maven](#build-with-maven)
+- [Contribute Code](#contribute-code)
+- [Translations](#translations)
+- [PDF Importer](#pdf-importer)
+	- [Source Location](#source-location)
+	- [Imported Transactions](#imported-transactions)
+	- [Anatomy of a PDF Importer](#anatomy-of-a-pdf-importer)
+	- [Naming Conventions for Detected Values](#naming-conventions-for-detected-values)
+	- [Auxiliary classes](#auxiliary-classes)
+	- [Formatting of PDF Importer](#formatting-of-pdf-importer)
+	- [Test Cases](#test-cases)
+	- [Regular Expressions](#regular-expressions)
 
 
-<a name="Eclipse"></a>
-## Eclipse
+## Development Setup
 
-<a name="Prerequisites"></a>
-### Prerequisites
-- Eclipse IDE
-- Java 11
+### Install Eclipse
 
----
+* Java 11, for example from [Azul](https://www.azul.com/downloads/)
 
+* [Eclipse IDE](https://www.eclipse.org/downloads/packages/) - PP is build using the Eclipse RCP (Rich Client Platform) framework. Therefore it generally does not make sense to use other IDEs. Download the **Eclipse IDE for RCP and RAP Developers** package.
 
-<a name="Install"></a>
-### Install
-1. Download [Eclipse IDE](https://www.eclipse.org)
-2. Install Eclipse IDE
-3. Install Java 11 [Open JDK](https://www.azul.com/downloads/)
-
-<a name="Install_Language"></a>
-#### Change language of Eclipse
-1. `Menu` --> `Help` --> `Install New Software`
-2. Copy in `Work with:` the following link https://download.eclipse.org/technology/babel/update-site/latest/
-3. Start installation
-4. Choose your language pack
-5. In the start icon on your desktop change the target execution
-	- `eclipse.exe -nl en` --> English
-	- `eclipse.exe -nl de` --> German
-	- ...
-
----
+Optionally, install language packs for Eclipse:
+ * `Menu` --> `Help` --> `Install New Software`
+ * Use the following update site:
+   ```
+   https://download.eclipse.org/technology/babel/update-site/latest/
+   ```
+ * Select the language packs you want to install
+ * By default, Eclipse uses the host operating system language (locale).
+   To force the use of another language, use the **-nl** parameter:
+   ```
+   eclipse.exe -nl de
+   ```
 
 
-<a name="Plugins"></a>
-### Plugins
-For the Eclipse IDE we also need the following plugins, which have to be installed via the marketplace.
+### Install Eclipse Plugins
 
-1. [Eclipse PDE (Plug-in Development Environment)](https://marketplace.eclipse.org/content/eclipse-pde-plug-development-environment)
-2. [Infinitest](https://marketplace.eclipse.org/content/infinitest)
-3. [ResourceBundle Editor](https://marketplace.eclipse.org/content/resourcebundle-editor)
-4. [Checkstyle Plug-In](https://marketplace.eclipse.org/content/checkstyle-plug)
-5. [SonarLint](https://marketplace.eclipse.org/content/sonarlint)
-6. [Launch Configuration DSL](https://marketplace.eclipse.org/content/launch-configuration-dsl)
-7. As standard, the "Eclipse e4 Tools Developer Resources" are not installed. They are installed as follows.
+Optionally, install via the Eclipse Marketplace (drag and drop the *Install* button to your Eclipse workspace)
+
+* [Eclipse PDE (Plug-in Development Environment)](https://marketplace.eclipse.org/content/eclipse-pde-plug-development-environment) (skip if you installed the *Eclipse IDE for RCP and RAP Developers*)
+* [Infinitest](https://marketplace.eclipse.org/content/infinitest)
+* [ResourceBundle Editor](https://marketplace.eclipse.org/content/resourcebundle-editor)
+* [Checkstyle Plug-In](https://marketplace.eclipse.org/content/checkstyle-plug)
+* [SonarLint](https://marketplace.eclipse.org/content/sonarlint)
+* [Launch Configuration DSL](https://marketplace.eclipse.org/content/launch-configuration-dsl)
+* Eclipse e4 Tools Developer Resources
 	- `Menu` --> `Help` --> `Install New Software`
-	- Open the drop-down menu of `Work with:`
-	- Select the Eclipse installation
-	- Under 'General Purpose Tools' select the 'Eclipse e4 Tools Developer Resources'
-	- Click on `Next`, then on `Install`
+	- Pick *Latest Eclipse Simultaneous Release* from the dropdown menu 
+	- Under *General Purpose Tools* select the *Eclipse e4 Tools Developer Resources*
 
-<a name="Settings_in_Eclipse"></a>
-#### Helpful settings for the Eclipse IDE
-1. `Menu` -> `Window` --> `Preference` --> `Java` --> `Editor` --> `Save Actions`
+
+### Configure Eclipse
+
+Configure the following preferences (`Menu` --> `Window` --> `Preferences`)
+
+* `Java` --> `Editor` --> `Save Actions`
+	- Activate `Format Source Code` and then `Format edited lines`
  	- Activate `Organize imports`
-2. `Menu` -> `Window` --> `Preference` --> `Java` --> `Editor` --> `Content Assist`
-	- Activate `Add import insted of qualified name`
+* `Java` --> `Editor` --> `Content Assist`
+	- Activate `Add import instead of qualified name`
 	- Activate `Use static imports`
+* `Java` --> `Editor` --> `Content Assist` --> `Favorites`
 	- Click on `New Type...` and add the following favorites
 		- `name.abuchen.portfolio.util.TextUtil`
----
+		- `name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils`
+* `Java` --> `Editor` --> `Installed JREs`
+	- Add the Java 11 JDK
 
 
-<a name="First_launch"></a>
-### First launch
-
-For problems with launching from the Eclipse IDE for Portfolio Performance, we have a collection thread in the forum. Currently this is only in German language.
-[Forum ( German )](https://forum.portfolio-performance.info/t/verbesserungen-im-source-code-in-github-einbringen/7063)
-
-1. `Menu` --> `Window` --> `Preference` --> `Java` --> `Editor` --> `Installed JREs` --> `Execution Environments`
-	- Click on `JavaSE-11`
-	- Activate the compatible Java version ( Java 11 )
-	- Save the setting
-2. Create your own [fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo) of Portfolio Performance via GitHub
-3. Downlod des Git Repository von Portfolio Performance
-4. Import the repository into your Eclipse workspace
-	- `Menu` --> `Window` --> `Show View` --> `Other…` --> `Git` --> `Git Repositories`
-	- Click on `Clone a Git repository`
-		- URI: https://github.com/YOUR-GIT-USERNAME/portfolio.git
-		- Host: github.com
-		- Repository path: YOUR-GIT-USERNAME/portfolio.git
-	- Click on `Next`
-	- Click on `Deselect All`
-	- Select `master`
-	- Click on `Next`
-	- Choose your destination directory
-	- Select `Import all existing Eclipse projects after clone finishes`
-	- Select `Add project to working sets` ( If a working set does not yet exist, it must be created. )
-	- Click `Finish` and the download from the Git repository will start.
-5. Open thee `portfolio-target-definition.target`
-	- If only the XML file opens, right-click on 'portfolio-target-definition.target' and select 'Open in target editor.
-6. Now click on 'Set as Active Target Platform' in the editor ( top right ). 
- 	- This can take a while, because all necessary dependencies are configured now. About 10 - 30 minutes. 
- 	- You can see the status in `Progress`. 
- 		- `Menu` --> `Window` --> `Show View` --> `Progress`.
-
-<a name="Launch_PP_Application_with_LCDSL"></a>
-#### Launch Portfolio Performance with LCDSL plugin
-1. `Menu` --> `Window` --> `Show View` --> `Other…` --> `Debug` --> `Launch Configuration`
-2. Select under `Eclipse Application` --> `PortfolioPerformance`
-3. Right mouse button --> `( Re- )generate Eclipse launch configuration`
-4. Right mouse button --> `Run`
-
-<a name="Launch_PP_Application_without_LCDSL"></a>
-#### Launch Portfolio Performance without LCDSL plugin
-1. `Menu` --> `Run` --> `Run Configurations`
-2. Choose from `Eclipse Application` --> `PortfolioPerformance`
-3. Click on `Plug-ins` --> `Add Required Plug-ins` in the tab menu
-4. `Apply` then click on `Run`
-
-<a name="Launch_JunitPP_Application_with_LCDSL"></a>
-#### Launch test cases with LCDSL plugin
-1. `Menu` --> `Window` --> `Show View` --> `Other…` --> `Debug` --> `Launch Configuration`
-2. Choose from `Junit Plug-in Test` --> `PortfolioPerformance_Tests` or `PortfolioPerformance_UI_Tests`
-3. Right mouse button --> `( Re- )generate Eclipse launch configuration`
-4. Right mouse button --> `Run`
-
-<a name="Launch_JunitPP_Application_without_LCDSL"></a>
-#### Launch test cases without LCDSL plugin
-1. `Menu` --> `Run` --> `Run Configurations`
-2. Select under `Junit Plug-in Test` --> `PortfolioPerformance_Tests` or `PortfolioPerformance_UI_Tests`
-3. Click on `Plug-ins` --> `Add Required Plug-ins` in the tab menu
-4. `Apply` then click on `Run`
-
----
+## Project Setup
+ 
+For further disucssion, check out the thread in the [(German) Forum](https://forum.portfolio-performance.info/t/verbesserungen-im-source-code-in-github-einbringen/7063).
 
 
-<a name="Pull_requests"></a>
-## Pull requests
-1. Comments and explanations in the source must be provided in English.
-2. Changes in the source code are to be validated with test cases, if possible.
-3. Variables, classes, methods and new functions are to be selected unambiguously. ( [OOP](https://en.wikipedia.org/wiki/Object-oriented_programming) )
+### Source Code
 
-<a name="Pull_request_with_Github_Desktop"></a>
-#### Pull request with Github Desktop
-There are many ways to start a pull request in Portfolio Performance. Of course, the Eclipse IDE can do this itself.
+To contribute to Portfolio Performacne, you create a fork, clone the repository, make and push changes to your repository, and then create a pull request.
 
-An alternative option to Eclipse is from [GitHub Desktop](https://desktop.github.com/), which we explain here.
-
-You can find a full tutorial [here](https://docs.github.com/en/desktop/installing-and-configuring-github-desktop/overview/creating-your-first-repository-using-github-desktop).
-
-1. Download [GitHub Desktop](https://desktop.github.com/)
-2. Install GitHub Desktop on your PC.
-3. `Menu` --> `File` --> `Clone repository`
-4. Select your repository ( fork of Portfolio Performance ) and click on `Clone`.
-5. Create a new branch via `Menu` --> `Branch` --> `New Branch` and give it a name.
-6. Copy the changed/new files to the new branch on your hard drive.
-7. Click on `Commit to ...` to push your changes.
-8. Open your web browser and navigate to your account on [GitHub.com](https://github.com) to execute your pull request.
-
----
+* [Create your own fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo)
+* Within Eclipse, [clone your repository](https://www.vogella.com/tutorials/EclipseGit/article.html#exercise-clone-an-existing-repository). In the last step, choose to *import all existing Eclipse projects*.
+* Within Eclipse, [import projects from an existing repository](https://www.vogella.com/tutorials/EclipseGit/article.html#exercise-import-projects-from-an-existing-repository)
 
 
-<a name="Translations"></a>
+### Setup Target Platform
+
+* Open the `portfolio-target-definition` project
+* Open the `portfolio-target-definition.target` file with the Target Editor (this may take a while as it requires Internet access). If you just get an XML file, use right click and chose Open With *Target Editor*
+* In the resulting editor, click on the "Set as Active Target Platform" link at the top right (this may also take a while)
+
+
+### Launch Portfolio Performance
+
+PP uses [Eclipse Launch Configuration DSL](https://github.com/mduft/lcdsl) to define Eclipse launch configurations in a OS independent way.
+
+First, add the *Launch Configuration* view to your workspace:
+* `Menu` --> `Window` --> `Show View` --> `Other...` --> `Debug` --> `Launch Configuration`
+
+**To run the application**, select `Eclipse Application` --> `PortfolioPerformance` and right-click *Run*.
+
+**To run the tests**, select under `JUnit Plug-in Tests` --> `PortfolioPerformance_Tests` or `PortfolioPerformance_UI_Tests`.
+
+
+### Build with Maven
+
+It is not required to use [Maven](https://maven.apache.org) as you can develop using the Eclipse IDE with the setup above. The Maven build is used for the [Github Actions](https://github.com/buchen/portfolio/actions) build.
+
+The Maven build works fine when `JAVA_HOME` points to an (Open-)JDK 11 installation.
+
+Linux/macOS
+```
+export MAVEN_OPTS="-Xmx2g"
+mvn -f portfolio-app/pom.xml clean verify
+```
+
+```
+set MAVEN_OPTS="-Xmx2g"
+mvn -f portfolio-app\pom.xml -Denforcer.skip=true clean verify
+````
+
+
+## Contribute Code
+
+* Write a [good commit message](https://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html) in English
+* If the change is related to a Github issue, add a line `Issue: #<ISSUE NUMBER>` after an empty line
+* If the change is related to an thread in the forum, add a line `Issue: https://...` with the link to the post in the forum
+* Format the source code. The formatter configuration is part of the project source code. Exception: Do *not* reformat the PDF importer source code. Instead, carefully insert new code into the existing formatting.
+* Add [test cases](https://github.com/buchen/portfolio/tree/master/name.abuchen.portfolio.tests) where applicable. Today, there are no tests that test the SWT UI. But add tests for all calculations.
+* Do not merge the the master branch into your feature branch. Instead, [rebase](https://docs.github.com/en/get-started/using-git/about-git-rebase) your local changes to the head of the master branch.
+* [Create a Pull Request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request) - for example using [GitHub Desktop](https://desktop.github.com/) using this [tutorial](https://docs.github.com/en/desktop/installing-and-configuring-github-desktop/overview/creating-your-first-repository-using-github-desktop)
+
+
 ## Translations
-For translations and language packages of Portfolio Performance we use [POEditor](https://poeditor.com/join/project?hash=4lYKLpEWOY).
 
-If you want to correct the translations or even add a new language for Portfolio Performance, we ask you to create translations
-if you are familiar with the language. ( native language ).
+The project uses Java property files to translate the application into multiple langauges.
 
-A translation via Google Translate or similar is not conducive. Nothing is worse than wrong translations in which the meaning is distorted.
+There are two ways to contribute translations:
+* Register and translate using [POEditor](https://poeditor.com/join/project?hash=4lYKLpEWOY). If you only want to contribute to one language (or fix the translation for existing labels), this is the easiest way. On regular basis we pull the tranlations from POEditor into the source code.
+* Update the property files directly. Open the default property file (the one without the language). The *Resource Bundle Editor* (installed above) will detect all existing languages and display a consolidated editor.
 
-<a name="Join_the_translation_team"></a>
-### Join the translation team
-1. [POEditor.com](https://poeditor.com/join/project?hash=4lYKLpEWOY)
-2. Join translations
-3. Login with your account
-4. Start your translation in your language
-
-Of course you can also add translations via GitHub as a pull request. 
-Please use the ResourceBundle editor in your Eclipse installation.
-
----
+When adding new labels,
+* right-click in the source editor [Source -> Externalize Strings](https://help.eclipse.org/latest/topic/org.eclipse.jdt.doc.user/reference/ref-wizard-externalize-strings.htm?cp=1_4_10_3)
+* use the formatting excactly as done by the Resource Bundle Editor 
+* use [DeepL](https://www.deepl.com) to translate new labels into all existing languages
 
 
-<a name="PDF_importer"></a>
-## PDF importer
-Importers are to be created by bank/broker.
+## PDF Importer
 
-<a name="Path_to_PDF_importer"></a>
-### Path to PDF importer
-_PDF importer_
+Importers are created for each supported bank and/or broker. The process works like this:
+* The users selects one or more PDF files via the import menu (or drags and drops multiple PDF files to the sidebar navigation)
+* Each PDF file are converted to an array of strings; one entry per line
+* Each importer is presented with the strings and applies the regular expresssions to extract transactions
 
-`name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/`
-
-_Test cases:_
-
-`name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/`
+If you want to add an importer for a new bank or a new transaction type, check out the existing importers for naming conventions, structure, formatting, etc.
 
 
-<a name="PDF_importer_file_names"></a>
-### PDF importer file names
-The PDF importer names must be chosen unambiguously.
+### Source Location
 
-**Example: Deutsche Bank**
+PDF importer: `name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/`
+Test cases: `name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/`
 
-_PDF importer:_ `DeutscheBankPDFExtractor.java`
-
-_TestCase:_ `DeutscheBankPDFExtractorTest.java`
+The naming convention is BANK**Extractor** and BANK**ExtractorTest** for extractor class and test class respectively.
 
 
-<a name="Transaction_pairs"></a>
-### Transaction pairs (securities transaction)
+### Imported Transactions
 
-[PortfolioTransaction](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/model/PortfolioTransaction.java)
-* BUY, SELL
-* TRANSFER_IN, TRANSFER_OUT
-* DELIVERY_INBOUND, DELIVERY_OUTBOUND
-
-[AccountTransaction](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/model/AccountTransaction.java)
-* DEPOSIT, REMOVAL
-* INTEREST, INTEREST_CHARGE
-* DIVIDENDS
-* TAXES, TAX_REFUND
-* FEES, FEES_REFUND
+PP separates between [PortfolioTransaction](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/model/PortfolioTransaction.java) (booked on a securities account) and [AccountTransaction](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/model/AccountTransaction.java) (booked on a cash account). The available types are defined as enum within the file, for example for purchase (BUY) and sale (SELL) of securities, etc.
 
 
-<a name="TransactionClasses_securities_transaction"></a>
-### Transaction classes (securities transaction)
+### Anatomy of a PDF Importer
 
 The structure of the PDF importers is as follows:
+
 * Client
-	* `addBankIdentifier();` --> unique recognition feature of the PDF document
+	* `addBankIdentifier` --> unique recognition feature of the PDF document
 * Transaction types (basic types)
-	* `addBuySellTransaction();` --> Purchase and sale ( single settlement )
-	* `addSummaryStatementBuySellTransaction();`  --> Purchase and sale ( multiple settlements )
-	* `addBuyTransactionFundsSavingsPlan();` --> Savings plans
-	* `addDividendeTransaction();` --> Dividends
-	* `addTaxTreatmentForDividendeTransaction();` --> Tax treatment for dividends
-	* `addAdvanceTaxTransaction();` --> Advance tax payment
-  	* `addCreditcardStatementTransaction();` --> Credit card transactions
-  	* `addAccountStatementTransaction();` --> Giro account transactions
-  	* `addDepotStatementTransaction();` --> Securities account transactions ( Settlement account )
-  	* `addTaxStatementTransaction();` --> Tax settlement
-  	* `addDeliveryInOutBoundTransaction();` --> Inbound and outbound deliveries
-  	* `addTransferInOutBoundTransaction();` --> Transfer in and outbound deliveries
-  	* `addReinvestTransaction();` --> Reinvestment transaction
-  	* `addTaxReturnBlock();` --> Tax refund
-  	* `addFeeReturnBlock();` --> Fee refund
+	* `addBuySellTransaction` --> Purchase and sale ( single settlement )
+	* `addSummaryStatementBuySellTransaction`  --> Purchase and sale ( multiple settlements )
+	* `addBuyTransactionFundsSavingsPlan` --> Savings plans
+	* `addDividendeTransaction` --> Dividends
+	* `addTaxTreatmentForDividendeTransaction` --> Tax treatment for dividends
+	* `addAdvanceTaxTransaction` --> Advance tax payment
+  	* `addCreditcardStatementTransaction` --> Credit card transactions
+  	* `addAccountStatementTransaction` --> Giro account transactions
+  	* `addDepotStatementTransaction` --> Securities account transactions ( Settlement account )
+  	* `addTaxStatementTransaction` --> Tax settlement
+  	* `addDeliveryInOutBoundTransaction` --> Inbound and outbound deliveries
+  	* `addTransferInOutBoundTransaction` --> Transfer in and outbound deliveries
+  	* `addReinvestTransaction` --> Reinvestment transaction
+  	* `addTaxReturnBlock` --> Tax refund
+  	* `addFeeReturnBlock` --> Fee refund
 * Bank name
-  	* `getLabel();` --> Bank/broker with full identifier e.g. Deutsche Bank Privat- und Geschäftskunden AG
+  	* `getLabel` --> display label of bank/broker, e.g., *Deutsche Bank Privat- und Geschäftskunden AG*
 * Taxes and fees
-  	* `addTaxesSectionsTransaction();` --> Tax handling
-  	* `addFeesSectionsTransaction();` --> Fee handling
-* Variable manipulation (@Override from [AbstractPDFExtractor.java](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/AbstractPDFExtractor.java) --> [PDFExtractorUtils.java](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/PDFExtractorUtils.java))
-	* e.g. `asAmount()`, `asShares()`, `asExchangeRate()`, ...
-		* If amounts and numbers are not in the standard 1123,25 format, insert them.
-		* Example: [Bank SLM](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/BankSLMPDFExtractor.java) (de_CH)
-		* Example:  [Baader Bank AG](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/BaaderBankPDFExtractor.java) (de_DE + en_US)
-* Process manipulation ( @Override from [Extractor.java](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/Extractor.java) )
-	* `postProcessing();`
-		* Example: [Comdirect](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/ComdirectPDFExtractor.java)
+  	* `addTaxesSectionsTransaction` --> handling of taxes
+  	* `addFeesSectionsTransaction` --> handling of fees
+* Overwrite the value extractor methods if the documents work with non-standard (English, German) locales:
+	* Example: [Bank SLM](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/BankSLMPDFExtractor.java) (de_CH)
+	* Example:  [Baader Bank AG](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/BaaderBankPDFExtractor.java) (de_DE + en_US)
+* Add post processing on imported transaction using a `postProcessing` method:
+	* Example: [Comdirect](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/ComdirectPDFExtractor.java)
 
 
-<a name="Transaction_class_sections_securities_transaction"></a>
-### Transaction class sections ( securities transaction )
+### Naming Conventions for Detected Values
+
 The importers are structured according to the following scheme and the mapping variables are to be adhered to as far as possible:
 * Type (Optional)
   * `type` --> Exchange of the transaction pair ( e.g. from purchase to sale )
@@ -325,220 +255,73 @@ The importers are structured according to the following scheme and the mapping v
 A finished PDF importer as a basis would be e.g. the [V-Bank AG](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/VBankAGPDFExtractor.java) PDF importer.
 
 
-<a name="PDF_importer_auxiliary_class"></a>
-### PDF importer auxiliary class
+### Auxiliary classes
 
-The utility class about standardized conversions, is called by the [AbstractPDFExtractor.java](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/AbstractPDFExtractor.java)
-and processed in the [PDFExtractorUtils.java](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/PDFExtractorUtils.java).
-The [PDFExchangeRate](https://github.com/buchen/portfolio/blob/8d86513b6a4dcd8af0348f73e1b9c7df8af2cd83/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/PDFExchangeRate.java) takes over the processing for foreign currencies.
+The utility class about standardized conversions, is called by the [AbstractPDFExtractor.java](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/AbstractPDFExtractor.java)
+and processed in the [PDFExtractorUtils.java](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/PDFExtractorUtils.java).
+The [PDFExchangeRate](https://github.com/buchen/portfolio/blob/8d86513b6a4dcd8af0348f73e1b9c7df8af2cd83/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/PDFExchangeRate.java) helps processing for foreign currencies.
 
-<a name="Mathematical_calculations_of_amounts"></a>
-### Mathematical calculations of amounts
+Use the [Money](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/money/Money.java) class when working with amounts (it includes the currency and the value rounded to cents). Use *BigDecimal* for exchange rates and the conversion between currencies. 
 
-1. When calculating amounts that are the same currency, use the [Money class](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/money/Money.java).
-2. When calculating amounts which are currency unequal, the amounts are to be calculated in 'BigDecimal' and converted back as 'Money'.
+Use [TextUtil](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/util/TextUtil.java) class for some string manipulation such as trimming strings and stripping whitespace characters. The text created from PDF files has some corner cases that are not supported by the usual Java methods.
 
 
-<a name="String_manipulation"></a>
-### String manipulation
+### Formatting of PDF Importer
 
-For string or text manipulation, use the static import of [TextUtil.java](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio/src/name/abuchen/portfolio/util/TextUtil.java).
+Due to the many comments with text fragments from the PDF documents, we do not auto-format the PDF importer class files. Instead, carefully insert new code into the existing formatting manually. To protect formatting from automatic formatting, use the `@formatter:off` and `@formatter:on`.
 
-
-<a name="Formatting_of_the_source_code"></a>
-### Formatting of the source code
-Eclipse offers the possibility to format the source with the key combination [CTRL]+[SHIFT]+[F].
-
-The result is partly quite badly readable. Also, comments or the like, as well as helpful information, explanations or
-example are destroyed in the formatting. We therefore ask you to dispense with Eclipse's auto-formatting ( only for the PDF importers ).
-Please note that the Checkstyle plug-in will help you.
-
-To protect formatting from automatic formatting, use the `@formatter:off` and `@formatter:on`.
-
-**Example**
-```Java
-//@formatter:off
-// Your notes and comments
-//@formatter:on
-```
-
-Comments with the double `/** ... */` are generally in front of classes or in front of methods to generate JavaDoc.
-Inline, i.e. in the code, we only use `//` for comments. 
-
-Please take a look at the formatting and structure in the other PDF importers!
-Example: [V-Bank AG](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/VBankAGPDFExtractor.java)
+Please take a look at the formatting and structure in the other PDF importers! Example: [V-Bank AG](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/VBankAGPDFExtractor.java)
 
 
-**Example: Eclipse formatting vs. manual formatting**
-```Java
-// Autoformatierung Eclipse
-// Courtage USD -22.01
-transaction.section("currency", "fee").optional().match("^Courtage (?<currency>[\\w]{3}) \\-(?<fee>[\\.,\\d])")
-		.assign((t, v) -> processFeeEntries(t, v, type));
-}
+### Test Cases
 
-// Manual formatting
-transaction
-	// Courtage USD -22.01
-	.section("currency", "fee").optional()
-	.match("^Courtage (?<currency>[\\w]{3}) \\-(?<fee>[\\.,\\d]+)")
-	.assign((t, v) -> processFeeEntries(t, v, type));
-}
-```
+Via the application menu, users can create a test case file. The test file is the extracted text from the PDF documents. Users then anonymize the text by replacing personal idenfiable information and account numbers with alternative text.
 
-```Java
-// Eclipse auto-formatting
-.oneOf(
-		// Endbetrag EUR -50,30
-		section -> section.attributes("amount", "currency").match(
-				"^.* Endbetrag ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(\\-)?(?<amount>[\\.,\\d]+)$")
-				.assign((t, v) -> {
-				    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-				    t.setAmount(asAmount(v.get("amount")));
-				}),
-		// Endbetrag -52,50 EUR
-		// Endbetrag : -760,09 EUR
-		// Gewinn/Verlust -267,59 EUR Endbetrag
-		// EUR 16.508,16
-		// Endbetrag EUR 0,95
-		section -> section.attributes("amount", "currency").match(
-				"^(.* )?Endbetrag ([:\\s]+)?(\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
-				.assign((t, v) -> {
-				    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-				    t.setAmount(asAmount(v.get("amount")));
-				}))
-
-// Manual formatting
-.oneOf(
-		// @formatter:off
-		// Endbetrag      EUR               -50,30
-		// @formatter:on
-		section -> section
-			.attributes("amount", "currency")
-			.match("^.* Endbetrag ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(\\-)?(?<amount>[\\.,\\d]+)$")
-			.assign((t, v) -> {
-			    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-			    t.setAmount(asAmount(v.get("amount")));
-			})
-		,
-		// @formatter:off
-		//        Endbetrag                   -52,50 EUR
-		// Endbetrag     :            -760,09 EUR
-		// Gewinn/Verlust -267,59 EUR             Endbetrag      EUR            16.508,16
-		//                                        Endbetrag      EUR                 0,95
-		// @formatter:on
-		section -> section
-			.attributes("amount", "currency")
-			.match("^(.* )?Endbetrag ([:\\s]+)?(\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
-			.assign((t, v) -> {
-			    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-			    t.setAmount(asAmount(v.get("amount")));
-			})
-	)
-```
-```Java
-// Eclipse auto-formatting
-/**
- * Information: Lime Trading Corp. is a US-based financial services
- * company. The currency is US$. All security currencies are USD. CUSIP
- * Number: The CUSIP number is the WKN number. Dividend transactions:
- * The amount of dividends is reported in gross.
- */
-
-// Manual formatting
-/** @formatter:off
- * Information:
- * Lime Trading Corp. is a US-based financial services company.
- * The currency is US$.
- * 
- * All security currencies are USD.
- * 
- * CUSIP Number:
- * The CUSIP number is the WKN number.
- * 
- * Dividend transactions:
- * The amount of dividends is reported in gross.
- * @formatter:on/
-```
-
----
-
-
-<a name="General_rules_of_test_cases"></a>
-### General rules of the test_cases
-1. TestCase documents ( xyz.txt ) are not modified, parts added or removed.
-2. The PDF debugs as a text file are available through Portfolio Performance via `File` --> `Import` --> `Debug: Extract text from PDF...`.
-3. Upload of PDF debugs ( text files ) is done in UTF-8 format.
-4. The PDF debugs as a text file are to be named as follows ( basic names, if necessary also in foreign language )
-	* `Buy01.txt, Sell01.txt` --> Purchase and sale ( single settlements ) ( e.g. Buy01.txt or Sell01.txt )
-	* `Dividend01.txt` --> Dividends ( single statements )
-	* `SteuermitteilungDividende01.txt` --> Tax settlement for dividends ( single settlement )
-	* `SammelabrechnungKaufVerkauf01.txt` --> Purchase and sale ( multiple settlements )
+* The test files should not be modified beyond the anonymization
+* All source code (including the test files) are stored in UTF-8 encoding
+* Follow the naming convention for test files (type in the local language, two digit counter):
+	* `Buy01.txt, Sell01.txt` --> Purchase and sale (single settlements) ( e.g. Buy01.txt or Sell01.txt )
+	* `Dividend01.txt` --> Dividends (single statements)
+	* `SteuermitteilungDividende01.txt` --> Tax settlement for dividends (single settlement)
+	* `SammelabrechnungKaufVerkauf01.txt` --> Purchase and sale (multiple settlements)
 	* `Wertpapiereingang01.txt` --> Incoming securities
 	* `Wertpapierausgang01.txt` --> Outgoing securities
 	* `Vorabpauschale01.txt` --> Advance taxes
 	* `GiroKontoauzug01.txt` --> Giro account statement
 	* `KreditKontoauszug01.txt` --> Credit card account statement
-	* `Depotauszug01.txt` --> Portfolio transactions ( Settlement account)
-5. TestCase-Namen
- 	* `testWertpapierKauf01()` --> Purchase
- 	* `testWertpapierVerkauf01()` --> Sales
- 	* `testWertpapierKauf01WithSecurityInEUR()` --> Purchase in foreign currency
- 	* `testWertpapierVerkauf01WithSecurityInEUR()` --> Sale in foreign currency
- 	* `testDividende01()` --> Dividends
- 	* `testDividende01WithSecurityInEUR()` -->  Dividends in foreign currency
- 	* `testVorabsteuerpauschale01()` --> Advance taxes
- 	* `testGiroKontoauszug01()` --> Giro account statement
- 	* `testKreditKontoauszug01()` --> Credit card account statement
- 	* `testDepotauszug01()` --> Portfolio transactions ( Settlement account)
-6. TestCases are to be created completely 
-	* Example: [Erste Bank Gruppe](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/erstebank/erstebankPDFExtractorTest.java)
-		* `testWertpapierKauf06()`
-		* `testDividende05()`
-7. If a security is in a foreign currency, e.g. account currency = EUR and security currency = USD, two TestCases have to be created. Once in account currency and once in security currency.
-	* Example: [Erste Bank Gruppe](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/erstebank/erstebankPDFExtractorTest.java)
-		* `testWertpapierKauf09()`
-		* `testWertpapierKauf09WithSecurityInEUR()`
-		* `testDividende10()`
-		* `testDividende10WithSecurityInEUR()`
-8. For account, credit or portfolio transactions
-   	* Example: [DKB AG](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/dkb/DkbPDFExtractorTest.java)
-		* `testGiroKontoauszug01()`
-9. For TestCases where the `postProcessing()` is changed, e.g. two PDF debugs are compared, two TestCases have to be created.
-	* Example: [Comdirect](https://github.com/buchen/portfolio/blob/fe2c944b95cd0c6a2eca49534d6ed21f1586d80c/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/comdirect/ComdirectPDFExtractorTest.java)
-		* `testDividendeWithTaxTreatmentForDividende01()`
-		* `testDividendeWithTaxTreatmentReversedForDividende01()`
+	* `Depotauszug01.txt` --> security account transaction history (settlement account)
+* Samples 
+	*  one transaction per PDF: [Erste Bank Gruppe](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/erstebank/erstebankPDFExtractorTest.java) - see `testWertpapierKauf06()` and `testDividende05()`
+	* supporting securities with multiple currencies: [Erste Bank Gruppe](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/erstebank/erstebankPDFExtractorTest.java) with `testWertpapierKauf09()` / `testWertpapierKauf09WithSecurityInEUR()` and `testDividende10()`/`testDividende10WithSecurityInEUR()`
+		* Background: in the PP model, the currency of the transaction always must match the currency of the security and its historical prices. However, sometimes securities are purchased on an different exchange with prices in an another currency. The importer try to handle this case automatically. This is reflected in the two test cases
+	* multiple transactions per PDF: [DKB AG](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/dkb/DkbPDFExtractorTest.java) with `testGiroKontoauszug01()`
+	* if transactions are created based on two separate PDF files, use post processing: [Comdirect](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/comdirect/ComdirectPDFExtractorTest.java) with `testDividendeWithTaxTreatmentForDividende01()` and `testDividendeWithTaxTreatmentReversedForDividende01()`
 
 
-<a name="Regular_expressions"></a>
-### Regular expressions
-As a good online editor we can recommend [https://regex101.com/](https://regex101.com/).
+### Regular Expressions
 
-- Regular expressions should be created correctly and accurately.
-- All special characters ( `.[]{}()<>*+-=!?^$|` ) have to be escaped. 
-- All special characters ( `äöüÄÖÜß` ), as well as e.g. circumflex or similar have to be escaped by a `.` (dot). 
-- Group Constructs ` ( ... ) ` as low as possible.
-- Quantifiers `a{3,6}` to be selected appropriately if necessary.
-- Character Classes `[ ... ]` if necessary.
-- In `.match(" ... ")` is started with an anchor `^` and ended with `$`.
-- With `.find(" ... ")` anchors are not used. These are already included.
+To test regular expression you can use [https://regex101.com/](https://regex101.com/).
 
-| 	RegEx		|	Example		|  	Wrong			|	Correct					|
-| :------------- 	| :-------------	| :-------------		| :-------------				|
-| Date	 		| 01.01.1970		| `\\d+.\\d+.\\d{4}`		| `[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}`		|
-| 	 		| 1.1.1970		| `\\d+.\\d+.\\d{4}`		| `[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}`		|
-| Time	 		| 12:01			| `\\d+:\\d+`			| `[\\d]{2}\\:[\\d]{2}}`			|
-| ISIN 			| IE00BKM4GZ66		| `\\w+`			| `[A-Z]{2}[A-Z0-9]{9}[0-9]`			|
-|  			| 			| 				| `[\\w]{12}` 					|
-| WKN 			| A111X9		| `\\w+`			| `[A-Z0-9]{6}`					|
-| 	 		| 			| 				| `[\\w]{6}`					|
-| Amount		| 751,68		| `[\\d,.]+`			| `[\\.,\\d]+`					|
-| 		 	| 			| 				| `[\\.\\d]+,[\\d]{2}`				|
-| 		 	| 74'120.00		| `[\\d.']+`			| `[\\.'\\d]+`					|
-| 		 	| 20 120.00		| `[\\d.\\s]+`			| `[\\.\\d\\s]+`				|
-| Currency		| EUR			| `\\w+`			| `[A-Z]{3}`					|
-| 	 		| 			| 				| `[\\w]{3}`					|
-| Currency		| € or $		| `\\D`				| `\\p{Sc}`					|
-| Text			| foo maybe bar		| `foo .*`			| `foo( maybe bar)?`				|
-| 			|  	   		| 				| `foo.*`					|
-| 			| FOO, Foo		| 				| `(?i)foo`					|
+Beside general good practices for regular expresions, keep in mind:
+* all special characters in the PDF document (`äöüÄÖÜß` as well as e.g. circumflex or similar) should be matched by a `.` (dot) because the PDF to text conversion can create different results 
+* expression in `.match(" ... ")` is started with an anchor `^` and ended with `$`
+* with `.find(" ... ")` do not add anchors as they will be automatically added
+
+Keep in mind that the regular expressions work against text that is automatically created from PDF files. Due to the nature of the process, there can always be slight differences in the text files. The following table collects the regular expressions that **worked well** to match typical values.  
+
+| Value         | Example      | Not Helpful         | Works Well |
+| :---------    | :----------- | :------------------ | :------------- |
+| Date          | 01.01.1970   | `\\d+.\\d+.\\d{4}`  | `[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}` |
+|               | 1.1.1970     | `\\d+.\\d+.\\d{4}`  | `[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}` |
+| Time          | 12:01        | `\\d+:\\d+`         | `[\\d]{2}\\:[\\d]{2}}` |
+| ISIN          | IE00BKM4GZ66 | `\\w+`              | `[A-Z]{2}[A-Z0-9]{9}[0-9]` |
+|               |              |                     | `[\\w]{12}` |
+| WKN           | A111X9       | `\\w+`              | `[A-Z0-9]{6}` |
+|               |              |                     | `[\\w]{6}` |
+| Amount        | 751,68       | `[\\d,.]+`          | `[\\.,\\d]+` |
+|               |              |                     | `[\\.\\d]+,[\\d]{2}` |
+|               | 74'120.00    | `[\\d.']+`          | `[\\.'\\d]+` |
+|               | 20 120.00    | `[\\d.\\s]+`        | `[\\.\\d\\s]+` |
+| Currency      | EUR          | `\\w+`              | `[A-Z]{3}` |
+|               |              |                     | `[\\w]{3}` |
+| Currency      | € or $       | `\\D`               | `\\p{Sc}` |
