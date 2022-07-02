@@ -142,9 +142,10 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         .match("^Sparplanausf.hrung .* (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) .*$")
                                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
                                 ,
-                                /***
-                                 * This is for the reinvestment of dividends
-                                 */
+
+                                // This is for the reinvestment of
+                                // dividends
+
                                 // DE40110101001234567890 06.08.2021 0,44 GBP
                                 section -> section
                                         .attributes("date")
@@ -155,6 +156,9 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 // If the type of transaction is "SELL" and the amount
                 // is negative, then the gross amount set. Fees are
                 // processed in a separate transaction.
+
+                // GESAMT 1.395,60 EUR
+                // GESAMT -1.396,60 EUR
                 .section("negative").optional()
                 .match("GESAMT (\\-)?[\\.,\\d]+ [\\w]{3}")
                 .match("GESAMT (?<negative>\\-)[\\.,\\d]+ [\\w]{3}")
@@ -169,10 +173,10 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                 // - one for gross
                                 // - one for the net value 
                                 // we pick the second
-                                // 
+                                // @formatter:on
+
                                 // GESAMT 1.825,60 EUR
                                 // GESAMT 1.792,29 EUR
-                                // @formatter:on
                                 section -> section
                                         .attributes("amount", "currency", "gross", "grossCurrency")
                                         .match("^(GESAMT|TOTAL) (\\-)?(?<gross>[\\.,\\d]+) (?<grossCurrency>[\\w]{3})$")
@@ -190,14 +194,12 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                             }
                                         })
                                 ,
-                                // @formatter:off
                                 // In case there is no tax,
                                 // only one line with "GESAMT"
                                 // exists and we need to grab data from that line
-                                //
+
                                 // GESAMT 1.792,29 EUR
                                 // TOTAL 20,00 EUR
-                                // @formatter:on
                                 section -> section
                                         .attributes("amount", "currency")
                                         .match("^(GESAMT|TOTAL) (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
@@ -407,10 +409,10 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                 // - one for gross
                                 // - one for the net value 
                                 // we pick the second
-                                // 
+                                // @formatter:on
+
                                 // GESAMT 3,83 EUR
                                 // GESAMT 2,83 EUR
-                                // @formatter:on
                                 section -> section
                                         .attributes("amount", "currency")
                                         .match("^GESAMT [\\.,\\d]+ [\\w]{3}$")
@@ -551,7 +553,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
             Pattern pTransactionPosition = Pattern.compile("^(?<transactionPosition>[\\d]) (Barausgleich|Kurswert) (\\-)?[\\.,\\d]+ [\\w]{3}$");
             context.put("skipTransaction", Boolean.FALSE.toString());
             context.put("transactionPosition", "0");
-            // read the current context here
+
             for (String line : lines)
             {
                 Matcher m = pDate.matcher(line);
@@ -715,7 +717,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
     {
         DocumentType type = new DocumentType("KONTOAUSZUG", (context, lines) -> {
             Pattern currency = Pattern.compile("BUCHUNGSTAG / BUCHUNGSTEXT BETRAG IN (?<currency>[\\w]{3})");
-            // read the current context here
+
             for (String line : lines)
             {
                 Matcher m = currency.matcher(line);
@@ -1010,11 +1012,14 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 .match("^((Limit|Stop-Market|Market)-Order )?(Kauf|Verkauf) .* (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})), um (?<time>[\\d]{2}:[\\d]{2}) .*$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"), v.get("time"))))
 
+                // GESAMT 0,34 EUR
+                // GESAMT -0,66 EUR
                 .section("negative").optional()
                 .match("^GESAMT [\\.,\\d]+ [\\w]{3}$")
                 .match("^GESAMT (?<negative>\\-)[\\.,\\d]+ [\\w]{3}$")
                 .assign((t, v) -> type.getCurrentContext().put("negative", "X"))
 
+                // GESAMT -0,66 EUR
                 .section("negative").optional()
                 .match("^GESAMT (?<negative>\\-)[\\.,\\d]+ [\\w]{3}$")
                 .assign((t, v) -> {
