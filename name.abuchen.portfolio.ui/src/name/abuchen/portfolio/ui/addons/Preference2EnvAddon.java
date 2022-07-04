@@ -8,6 +8,7 @@ import org.eclipse.e4.core.di.extensions.Preference;
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.impl.AlphavantageQuoteFeed;
 import name.abuchen.portfolio.online.impl.DivvyDiaryDividendFeed;
+import name.abuchen.portfolio.online.impl.DivvyDiarySearchProvider;
 import name.abuchen.portfolio.online.impl.EODHistoricalDataQuoteFeed;
 import name.abuchen.portfolio.online.impl.FinnhubQuoteFeed;
 import name.abuchen.portfolio.online.impl.FinnhubSearchProvider;
@@ -57,6 +58,7 @@ public class Preference2EnvAddon
                     @Preference(value = UIConstants.Preferences.DIVVYDIARY_API_KEY) String divvyDiaryApiKey)
     {
         Factory.getDividendFeed(DivvyDiaryDividendFeed.class).setApiKey(divvyDiaryApiKey);
+        Factory.getSearchProvider(DivvyDiarySearchProvider.class).setApiKey(divvyDiaryApiKey);
     }
 
     @Inject
