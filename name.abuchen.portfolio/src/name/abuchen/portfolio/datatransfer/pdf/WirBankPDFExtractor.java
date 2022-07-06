@@ -86,7 +86,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
         pdfTransaction
                 // Is type --> "Verkauf" change from BUY to SELL
                 .section("type").optional()
-                .match("^(B.rsenabrechnung|Exchange Settlement) \\- (?<type>(Kauf|Verkauf|Buy|Sell))$")
+                .match("^(B.rsenabrechnung|Exchange Settlement) \\- (?<type>(Kauf|Verkauf|Buy|Sell)).*$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("Verkauf") || v.get("type").equals("Sell"))
                         t.setType(PortfolioTransaction.Type.SELL);
@@ -137,6 +137,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                 })
 
                 .conclude(PDFExtractorUtils.fixGrossValueBuySell())
+
                 .wrap(BuySellEntryItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
