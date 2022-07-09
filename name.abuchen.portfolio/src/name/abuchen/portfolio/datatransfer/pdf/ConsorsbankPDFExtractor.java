@@ -248,36 +248,55 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                         })
                         )
 
-                // Kurswert USD 540,00
-                // umger. zum Devisenkurs USD 1,077900 EUR 500,97
-                //       UMGER. ZUM DEVISENKURS  USD        0,882100   EUR                  56,68
-                .section("fxCurrency", "fxGross", "gross", "exchangeRate", "baseCurrency", "termCurrency").optional()
-                .match("^Kurswert (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,\\d]+)$")
-                .match("^([\\s]+)?(umger\\. zum Devisenkurs|UMGER\\. ZUM DEVISENKURS) ([\\s]+)?(?<termCurrency>[\\w]{3}) ([\\s]+)?(?<exchangeRate>[\\.,\\d]+) ([\\s]+)?(?<baseCurrency>[\\w]{3}) ([\\s]+)?(?<gross>[\\.,\\d]+)$")
-                .assign((t, v) -> {
-                    type.getCurrentContext().putType(asExchangeRate(v));
-
-                    Money gross = Money.of(asCurrencyCode(v.get("baseCurrency")), asAmount(v.get("gross")));
-                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
-
-                    checkAndSetGrossUnit(gross, fxGross, t, type);
-                })
-
-                // Kurswert 343,75 USD
-                // Kurswert in EUR 292,80 EUR
-                // Devisenkurs 1,174000 EUR / USD
-                .section("fxGross", "fxCurrency", "gross", "currency", "baseCurrency", "termCurrency", "exchangeRate").optional()
-                .match("^Kurswert (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
-                .match("^Kurswert in [\\w]{3} (?<gross>[\\.,\\d]+) (?<currency>[\\w]{3})$")
-                .match("^Devisenkurs (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3})$")
-                .assign((t, v) -> {
-                    type.getCurrentContext().putType(asExchangeRate(v));
-
-                    Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
-                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
-
-                    checkAndSetGrossUnit(gross, fxGross, t, type);
-                })
+                .optionalOneOf(
+                                // Kurswert USD 540,00
+                                // umger. zum Devisenkurs USD 1,077900 EUR 500,97
+                                //       UMGER. ZUM DEVISENKURS  USD        0,882100   EUR                  56,68
+                                section -> section.attributes("fxCurrency", "fxGross", "gross", "exchangeRate", "baseCurrency", "termCurrency")
+                                        .match("^Kurswert (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,\\d]+)$")
+                                        .match("^([\\s]+)?(umger\\. zum Devisenkurs|UMGER\\. ZUM DEVISENKURS) ([\\s]+)?(?<termCurrency>[\\w]{3}) ([\\s]+)?(?<exchangeRate>[\\.,\\d]+) ([\\s]+)?(?<baseCurrency>[\\w]{3}) ([\\s]+)?(?<gross>[\\.,\\d]+)$")
+                                        .assign((t, v) -> {
+                                            type.getCurrentContext().putType(asExchangeRate(v));
+                
+                                            Money gross = Money.of(asCurrencyCode(v.get("baseCurrency")), asAmount(v.get("gross")));
+                                            Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                        
+                                            checkAndSetGrossUnit(gross, fxGross, t, type);
+                                        })
+                                ,
+                                // Kurswert 343,75 USD
+                                // Kurswert in EUR 292,80 EUR
+                                // Devisenkurs 1,174000 EUR / USD
+                                section -> section.attributes("fxGross", "fxCurrency", "gross", "currency", "baseCurrency", "termCurrency", "exchangeRate")
+                                        .match("^Kurswert (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
+                                        .match("^Kurswert in [\\w]{3} (?<gross>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                                        .match("^Devisenkurs (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3})$")
+                                        .assign((t, v) -> {
+                                            type.getCurrentContext().putType(asExchangeRate(v));
+                
+                                            Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
+                                            Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                
+                                            checkAndSetGrossUnit(gross, fxGross, t, type);
+                                        })
+                                ,
+                                // Kurswert 1.020.000,00 JPY
+                                // Börsenplatzgebühr 7.760,00 JPY
+                                // Devisenkurs 141,090000 EUR / JPY
+                                // Zwischensumme 7.284,43 EUR
+                                section -> section.attributes("fxGross", "fxCurrency", "baseCurrency", "termCurrency", "exchangeRate")
+                                        .match("^Kurswert (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
+                                        .match("^Devisenkurs (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3})$")
+                                        .assign((t, v) -> {
+                                            PDFExchangeRate exchangeRate = asExchangeRate(v);
+                                            type.getCurrentContext().putType(exchangeRate);
+                
+                                            Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                                            Money gross = exchangeRate.convert(t.getAccountTransaction().getCurrencyCode(), fxGross);
+                
+                                            checkAndSetGrossUnit(gross, fxGross, t, type);
+                                        })
+                        )
 
                 // Limitkurs  5,500000 EUR
                 .section("note").optional()
