@@ -78,6 +78,10 @@
 			<context>ui.menu</context>
 			<path>name.abuchen.portfolio.bootstrap/OSGI-INF/l10n</path>
 			<filename>bundle</filename>
+			<excludes>
+				<string>Bundle-Vendor</string>
+				<string>Bundle-Name</string>
+			</excludes>
 		</artifact>
 		<artifact>
 			<context>taxonomy.security-type</context>
