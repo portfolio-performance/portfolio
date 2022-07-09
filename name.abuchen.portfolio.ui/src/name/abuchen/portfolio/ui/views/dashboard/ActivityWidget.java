@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.views.dashboard;
 
 import java.text.DecimalFormat;
 import java.time.LocalDate;
+import java.time.Year;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +54,8 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
 {
     public enum ChartType
     {
-        COUNT(Messages.ColumnCount), SUM(Messages.ColumnSum);
+        COUNT(Messages.ColumnCount), SUM(Messages.ColumnSum), COUNT_BY_YEAR(Messages.ColumnCountByYear), SUM_BY_YEAR(
+                        Messages.ColumnSumByYear);
 
         private String label;
 
@@ -91,6 +93,14 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
         @Override
         public void paintControl(PaintEvent e)
         {
+            if (chart.getData() instanceof List && !((List<?>) chart.getData()).isEmpty()
+                            && (((List<?>) chart.getData()).get(0) instanceof Year))
+            {
+                // in case that the chart is grouped by year we do not have to
+                // draw the markers per year
+                return;
+            }
+
             @SuppressWarnings("unchecked")
             List<YearMonth> yearMonths = (List<YearMonth>) chart.getData();
             if (yearMonths == null || yearMonths.isEmpty())
@@ -198,9 +208,9 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
         toolTip.setDefaultValueFormat(new DecimalFormat("#")); //$NON-NLS-1$
         toolTip.setXAxisFormat(obj -> {
             Integer index = (Integer) obj;
-            @SuppressWarnings("unchecked")
-            List<YearMonth> yearMonths = (List<YearMonth>) chart.getData();
-            return yearMonths.get(index).toString();
+            List<?> years = (List<?>) chart.getData();
+            return years.get(index).toString();
+
         });
 
         int yHint = get(ChartHeightConfig.class).getPixel();
@@ -266,30 +276,41 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
             ChartType chartType = get(ChartTypeConfig.class).getValue();
 
             toolTip.setDefaultValueFormat(
-                            chartType == ChartType.COUNT ? new DecimalFormat("#") : new AmountNumberFormat()); //$NON-NLS-1$
+                            chartType == ChartType.COUNT || chartType == ChartType.COUNT_BY_YEAR
+                                            ? new DecimalFormat("#") //$NON-NLS-1$
+                                            : new AmountNumberFormat());
 
             IAxis xAxis = chart.getAxisSet().getXAxis(0);
             Interval interval = get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now());
-            List<YearMonth> yearMonths = interval.getYearMonths();
 
             chart.getAxisSet().getYAxis(0).getTick().setFormat(
-                            chartType == ChartType.COUNT ? new DecimalFormat("#") : new ThousandsNumberFormat()); //$NON-NLS-1$
+                            chartType == ChartType.COUNT || chartType == ChartType.COUNT_BY_YEAR
+                                            ? new DecimalFormat("#") //$NON-NLS-1$
+                                            : new ThousandsNumberFormat());
 
-            chart.setData(yearMonths);
+            if (this.isAggregateByYear())
+            {
+                List<Year> years = interval.getYears();
+                chart.setData(years);
+                xAxis.setCategorySeries(years.stream().map(year -> String.valueOf(year.getValue()))
+                                .collect(Collectors.toList()).toArray(new String[0]));
+            }
+            else
+            {
+                List<YearMonth> yearMonths = interval.getYearMonths();
+                chart.setData(yearMonths);
+                xAxis.setCategorySeries(yearMonths.stream().map(ym -> String.valueOf(ym.getMonthValue()))
+                                .collect(Collectors.toList()).toArray(new String[0]));
+            }
 
-            xAxis.setCategorySeries(yearMonths.stream().map(ym -> String.valueOf(ym.getMonthValue()))
-                            .collect(Collectors.toList()).toArray(new String[0]));
+            createSeries(chartType, interval, transactions, PortfolioTransaction.Type.BUY, Colors.ICON_BLUE);
 
-            createSeries(chartType, interval, transactions, yearMonths, PortfolioTransaction.Type.BUY,
-                            Colors.ICON_BLUE);
-
-            createSeries(chartType, interval, transactions, yearMonths, PortfolioTransaction.Type.DELIVERY_INBOUND,
+            createSeries(chartType, interval, transactions, PortfolioTransaction.Type.DELIVERY_INBOUND,
                             Colors.brighter(Colors.ICON_BLUE));
 
-            createSeries(chartType, interval, transactions, yearMonths, PortfolioTransaction.Type.SELL,
-                            Colors.ICON_ORANGE);
+            createSeries(chartType, interval, transactions, PortfolioTransaction.Type.SELL, Colors.ICON_ORANGE);
 
-            createSeries(chartType, interval, transactions, yearMonths, PortfolioTransaction.Type.DELIVERY_OUTBOUND,
+            createSeries(chartType, interval, transactions, PortfolioTransaction.Type.DELIVERY_OUTBOUND,
                             Colors.brighter(Colors.ICON_ORANGE));
 
         }
@@ -314,11 +335,13 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
     }
 
     private void createSeries(ChartType chartType, Interval interval, List<TransactionPair<?>> transactions,
-                    List<YearMonth> yearMonths, PortfolioTransaction.Type type, Color color)
+                    PortfolioTransaction.Type type, Color color)
     {
         IBarSeries barSeries = (IBarSeries) chart.getSeriesSet().createSeries(SeriesType.BAR, type.toString());
+        List<Year> years = interval.getYears();
+        List<YearMonth> yearMonths = interval.getYearMonths();
 
-        double[] series = new double[yearMonths.size()];
+        double[] series = new double[this.isAggregateByYear() ? years.size() : yearMonths.size()];
 
         for (TransactionPair<?> pair : transactions) // NOSONAR
         {
@@ -333,15 +356,20 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
             if (type != tx.get().getTransaction().getType())
                 continue;
 
-            int indexOf = yearMonths.indexOf(YearMonth.from(tx.get().getTransaction().getDateTime()));
+            int indexOf = this.isAggregateByYear() ? years.indexOf(Year.from(tx.get().getTransaction().getDateTime()))
+                            : 
+                            yearMonths.indexOf(YearMonth.from(tx.get().getTransaction().getDateTime()));
+
             if (indexOf >= 0)
             {
                 switch (chartType)
                 {
                     case COUNT:
+                    case COUNT_BY_YEAR:
                         series[indexOf] += 1;
                         break;
                     case SUM:
+                    case SUM_BY_YEAR:
                         series[indexOf] += (tx.get().getTransaction().getMonetaryAmount(converter).getAmount()
                                         / Values.Amount.divider());
                         break;
@@ -350,6 +378,7 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
                 }
             }
         }
+
 
         barSeries.setYSeries(series);
         barSeries.setBarColor(color);
@@ -363,4 +392,10 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
         return title;
     }
 
+    private boolean isAggregateByYear()
+    {
+        ChartType chartType = get(ChartTypeConfig.class).getValue();
+
+        return chartType == ChartType.SUM_BY_YEAR || chartType == ChartType.COUNT_BY_YEAR;
+    }
 }
