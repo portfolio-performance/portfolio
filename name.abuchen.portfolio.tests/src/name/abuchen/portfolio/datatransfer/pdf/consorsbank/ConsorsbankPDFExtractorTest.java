@@ -912,6 +912,94 @@ public class ConsorsbankPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf19_PartialExecution1()
+    {
+        ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf19_partial_execution_1.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("JP3155350006"));
+        assertThat(security.getWkn(), is("910660"));
+        assertThat(security.getName(), is("UYEMURA + CO., C."));
+        assertThat(security.getCurrencyCode(), is("JPY"));
+
+        // check buy sell transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-07-01T02:11:52")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(200)));
+        assertThat(entry.getSource(), is("Kauf19_partial_execution_1.txt"));
+        assertThat(entry.getNote(), is("Limitkurs 5.100,000000 JPY"));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7352.45))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1020000 / 141.09))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(18.07 + 49.95 + (7760 / 141.09)))));
+    }
+
+    @Test
+    public void testWertpapierKauf19_PartialExecution2()
+    {
+        ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf19_partial_execution_2.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("JP3155350006"));
+        assertThat(security.getWkn(), is("910660"));
+        assertThat(security.getName(), is("UYEMURA + CO., C."));
+        assertThat(security.getCurrencyCode(), is("JPY"));
+
+        // check buy sell transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-07-01T02:11:52")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1500)));
+        assertThat(entry.getSource(), is("Kauf19_partial_execution_2.txt"));
+        assertThat(entry.getNote(), is("Limitkurs 5.100,000000 JPY"));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(54356.26))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(54220.71))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(135.55))));
+    }
+
+    @Test
     public void testWertpapierBezug01()
     {
         ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(new Client());
