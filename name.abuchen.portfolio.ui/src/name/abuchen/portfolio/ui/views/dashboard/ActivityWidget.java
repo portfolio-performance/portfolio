@@ -244,6 +244,8 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
     {
         try
         {
+            title.setText(TextUtil.tooltip(getWidget().getLabel()));
+
             chart.suspendUpdate(true);
 
             GridData data = (GridData) chart.getLayoutData();
