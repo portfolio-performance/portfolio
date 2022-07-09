@@ -285,6 +285,8 @@ public enum WidgetFactory
                                     }) //
                                     .build()),
 
+    WEBSITE(Messages.Website, Messages.LabelCommon, BrowserWidget::new),
+
     // typo is API now!!
     VERTICAL_SPACEER(Messages.LabelVerticalSpacer, Messages.LabelCommon, VerticalSpacerWidget::new);
 

@@ -835,6 +835,7 @@ public class Messages extends NLS
     public static String MenuChartXZoomOut;
     public static String MenuChartYZoomIn;
     public static String MenuChartYZoomOut;
+    public static String MenuChangeUrl;
     public static String MenuChooseClientFilter;
     public static String MenuConfigureChart;
     public static String MenuConfigureCurrentDashboard;
@@ -1192,11 +1193,13 @@ public class Messages extends NLS
     public static String TooltipSemiVolatility;
     public static String TooltipTurnoverRate;
     public static String TooltipVolatility;
+    public static String Url;
     public static String WatchlistDelete;
     public static String WatchlistEditDialog;
     public static String WatchlistEditDialogMsg;
     public static String WatchlistNewLabel;
     public static String WatchlistRename;
+    public static String Website;
     public static String BookmarkMenu_EditBookmarks;
     public static String FilterNotRetired;
     public static String MenuFilterTrades;
