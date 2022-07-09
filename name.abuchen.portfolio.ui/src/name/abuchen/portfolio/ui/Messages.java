@@ -129,6 +129,7 @@ public class Messages extends NLS
     public static String ColumnColumnLabel;
     public static String ColumnConvertedAmount;
     public static String ColumnCount;
+    public static String ColumnCountByYear;
     public static String ColumnLatest_MenuLabel;
     public static String ColumnLatestDate_MenuLabel;
     public static String ColumnLatestHistoricalDate_MenuLabel;
@@ -300,6 +301,7 @@ public class Messages extends NLS
     public static String ColumnStatus;
     public static String ColumnSubTotal;
     public static String ColumnSum;
+    public static String ColumnSumByYear;
     public static String ColumnSymbol;
     public static String ColumnTargetCurrency;
     public static String ColumnTargetCurrencyToolTip;
